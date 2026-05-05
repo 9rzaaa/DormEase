@@ -50,6 +50,13 @@ Route::get('/tenants', function () {
     return view('tenants'); // loads manage.blade.php
 })->name('tenants');
 
+Route::get('/documents', function () {
+    if (!Auth::check()) {
+        return redirect('/');
+    }
+    return view('documents');
+})->name('documents');
+
 // Logout
 Route::post('/logout', function () {
     Auth::logout();
