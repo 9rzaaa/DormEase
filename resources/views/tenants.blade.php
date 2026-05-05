@@ -25,6 +25,12 @@
       --white:      #ffffff;
       --ink:        #1a1a2e;
       --ink-muted:  #7a5f6e;
+      --pink-50:    #fdf2f6;
+      --pink-100:   #fce4ec;
+      --pink-200:   #f8bbd0;
+      --pink-400:   #f06292;
+      --pink-500:   #ec407a;
+      --pink-600:   #d81b60;
       --border:     rgba(202,93,134,.12);
       --shadow:     0 2px 16px rgba(202,93,134,.08);
       --ff-display: 'DM Serif Display', Georgia, serif;
@@ -102,11 +108,15 @@
     .breadcrumb { font-size: .8rem; color: var(--ink-muted); }
     .breadcrumb span { color: var(--pink); font-weight: 600; }
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
-    .notif-btn { position: relative; background: none; border: none; font-size: 1.2rem; color: var(--ink-muted); cursor: pointer; padding: .3rem; transition: color .2s; }
-    .notif-btn:hover { color: var(--pink); }
-    .notif-badge { position: absolute; top: 0; right: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--red); border: 2px solid var(--white); }
-    .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--pink-light), var(--pink)); display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: var(--white); cursor: pointer; border: 2px solid var(--pink-light); }
-
+    .notif-bell { width: 36px; height: 36px; border-radius: 50%; background: var(--pink-50); border: 1.5px solid var(--pink-100); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; position: relative; transition: all .2s cubic-bezier(.4,0,.2,1); } .notif-bell:hover { background: var(--pink-100); }
+    .notif-badge { position: absolute; top: -3px; right: -3px; width: 16px; height: 16px; background: var(--pink-500); border-radius: 50%; font-size: 9px; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+    .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink-400), var(--pink-600));
+    border: 2px solid var(--pink-200);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;
+    }
     /* PAGE BODY */
     .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
 
@@ -377,13 +387,16 @@
 <!-- ══ MAIN ══ -->
 <div class="main">
 
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="breadcrumb">Pages / <span>Manage Tenants</span></div>
-    <div class="topbar-right">
-      <button class="notif-btn">🔔<span class="notif-badge"></span></button>
-      <div class="avatar">K</div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="breadcrumb">Pages / <span>Manage Tenants</span></div>
+  <div class="topbar-right">
+    <div class="notif-bell" onclick="showToast('No new notifications')">
+      🔔<div class="notif-badge">4</div>
     </div>
+    <div class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
+  </div>
+</div>
   </header>
 
   <!-- PAGE BODY -->
