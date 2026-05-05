@@ -376,13 +376,30 @@
     </a>
 
 </nav>
+
   <div class="sidebar-logout">
-    <form method="POST" action="{{ route('logout') }}" id="logout-form">@csrf</form>
-    <button class="logout-btn" onclick="document.getElementById('logout-form').submit()">
-      <span>↩</span> Log Out
+    <form method="POST" action="/logout" id="logout-form">@csrf</form>
+      <button class="logout-btn" onclick="openModal('logout-modal')"> <span>↩</span> Log Out
     </button>
   </div>
 </aside>
+
+<!-- Logout Confirm Modal -->
+<div class="modal-overlay" id="logout-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log Out</div>
+      <button class="modal-close" onclick="closeModal('logout-modal')">✕</button>
+    </div>
+    <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">Are you sure you want to log out of DormEase?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('logout-modal')">Cancel</button>
+<form method="POST" action="/logout" id="logout-form">
+  @csrf
+</form>
+<button class="btn-submit" onclick="document.getElementById('logout-form').submit()" style="background:var(--red);">Log Out</button>    </div>
+  </div>
+</div>
 
 <!-- ══ MAIN ══ -->
 <div class="main">

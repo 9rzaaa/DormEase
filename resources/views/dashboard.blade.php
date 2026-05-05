@@ -369,9 +369,7 @@
     .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
     .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-    /* ══════════════════════════════
-       MODAL
-    ══════════════════════════════ */
+    /* MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(26,26,46,.45);
       backdrop-filter: blur(4px); z-index: 300;
@@ -383,20 +381,12 @@
       padding: 2rem; width: 90%; max-width: 440px;
       box-shadow: 0 20px 60px rgba(26,26,46,.2);
       animation: fadeUp .3s ease;
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
     .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
     .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ink-muted); }
-    .modal-field { margin-bottom: 1rem; }
-    .modal-field label { display: block; font-size: .8rem; font-weight: 600; color: var(--ink); margin-bottom: .35rem; }
-    .modal-field input, .modal-field select, .modal-field textarea {
-      width: 100%; padding: .65rem .9rem; border-radius: 10px;
-      border: 1.5px solid var(--gray-light); font-family: var(--ff-body);
-      font-size: .88rem; color: var(--ink); background: #fafafa; outline: none;
-      transition: border-color .2s;
-    }
-    .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { border-color: var(--pink); }
-    .modal-field textarea { resize: vertical; min-height: 80px; }
+    .modal-close:hover { color: var(--red); }
     .modal-actions { display: flex; gap: .7rem; margin-top: 1.4rem; justify-content: flex-end; }
     .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
     .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
@@ -485,8 +475,7 @@
 
   <div class="sidebar-logout">
     <form method="POST" action="/logout" id="logout-form">@csrf</form>
-    <button class="logout-btn" onclick="document.getElementById('logout-form').submit()">
-      <span>↩</span> Log Out
+      <button class="logout-btn" onclick="openModal('logout-modal')"> <span>↩</span> Log Out
     </button>
   </div>
 </aside>
