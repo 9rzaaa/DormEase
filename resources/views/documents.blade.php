@@ -621,7 +621,7 @@ body {
       <div class="notif-bell" onclick="showToast('No new notifications')">
         🔔<div class="notif-badge">4</div>
       </div>
-      <div class="avatar">{{ strtoupper(substr($admin_name, 0, 1)) }}</div>
+      <div class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
     </div>
   </div>
 
