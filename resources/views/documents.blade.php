@@ -545,11 +545,6 @@ body {
 .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
 .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-/* ===== SCROLLBARS ===== */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 4px; }
-
 /* ===== RESPONSIVE ===== */
 @media (max-width: 960px) {
   .doc-layout { grid-template-columns: 1fr; }
