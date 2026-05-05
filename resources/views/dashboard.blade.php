@@ -470,14 +470,12 @@
 
 </nav>
 
-<form method="POST" action="/logout" id="logout-form">
-  @csrf
-</form>
-    <div class="sidebar-logout">
-        <button class="logout-btn" onclick="openModal('logout-modal')">
-        <span class="nav-icon">🔓</span> Log Out
-        </button>
-    </div>
+  <div class="sidebar-logout">
+    <form method="POST" action="/logout" id="logout-form">@csrf</form>
+    <button class="logout-btn" onclick="document.getElementById('logout-form').submit()">
+      <span>↩</span> Log Out
+    </button>
+  </div>
 </aside>
 
 <!-- ══════════════ MAIN ══════════════ -->
