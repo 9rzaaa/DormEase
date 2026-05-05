@@ -54,4 +54,26 @@ Route::post('/logout', function () {
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect('/');
+})->name('logout'); // ✅ add this
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+
+    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
+        ->name('frontdesk.dashboard');
+
+    Route::get('/tenants', fn() => view('tenants'))->name('tenants');
+
+    Route::get('/documents', fn() => view('documents'))->name('documents');
+
+    // 👉 OPTIONAL: direct redirect routes between pages
+    Route::get('/tenants-to-documents', function () {
+        return redirect()->route('documents');
+    });
+
+    Route::get('/documents-to-tenants', function () {
+        return redirect()->route('tenants');
+    });
+
 });

@@ -332,20 +332,42 @@
   </div>
   <div class="sidebar-role">👤 Admin</div>
   <nav class="sidebar-nav">
-    <a href="/dashboard"><button class="nav-item"><span class="nav-icon">🏠</span> Dashboard</button></a>
-    <button class="nav-item active"><span class="nav-icon">👥</span> Manage Tenants</button>
-    <button class="nav-item"><span class="nav-icon">📄</span> Document Management</button>
-    <button class="nav-item"><span class="nav-icon">🚨</span> Emergency Reports</button>
-    <button class="nav-item"><span class="nav-icon">🔧</span> Maintenance Requests</button>
-    <button class="nav-item"><span class="nav-icon">💧</span> Water Billing</button>
-    <button class="nav-item"><span class="nav-icon">🚪</span> Visitor Logs</button>
-    <button class="nav-item"><span class="nav-icon">📢</span> Announcements</button>
+    
+    <a href="{{ route('dashboard') }}" class="nav-item">
+        <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="{{ route('tenants') }}" class="nav-item active">
+        <span class="nav-icon">👥</span> Manage Tenants
+    </a>
+    <a href="{{ route('documents') }}" class="nav-item">
+        <span class="nav-icon">📄</span> Document Management
+    </a>
+    <a href="/emergency" class="nav-item">
+        <span class="nav-icon">🚨</span> Emergency Reports
+    </a>
+    <a href="/maintenance" class="nav-item">
+        <span class="nav-icon">🔧</span> Maintenance Requests
+    </a>
+    <a href="/billing" class="nav-item">
+        <span class="nav-icon">💧</span> Water Billing
+    </a>
+    <a href="/visitors" class="nav-item">
+        <span class="nav-icon">🚪</span> Visitor Logs
+    </a>
+    <a href="/announcements" class="nav-item">
+        <span class="nav-icon">📢</span> Announcements
+    </a>
     <div class="nav-divider"></div>
-    <button class="nav-item"><span class="nav-icon">🧑‍💼</span> Manage Staff</button>
-    <button class="nav-item"><span class="nav-icon">⚙️</span> Settings</button>
-  </nav>
+    <a href="/staff" class="nav-item">
+        <span class="nav-icon">🧑‍💼</span> Manage Staff
+    </a>
+    <a href="/settings" class="nav-item">
+        <span class="nav-icon">⚙️</span> Settings
+    </a>
+
+</nav>
   <div class="sidebar-logout">
-    <form method="POST" action="/logout" id="logout-form">@csrf</form>
+    <form method="POST" action="{{ route('logout') }}" id="logout-form">@csrf</form>
     <button class="logout-btn" onclick="document.getElementById('logout-form').submit()">
       <span>↩</span> Log Out
     </button>
