@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,16 +9,23 @@ Route::post('/login', function () {
     $password = request('password');
     $role     = request('role');
 
-    $user = \App\Models\User::where('email', $email)->first();
+    $user = \App\Models\Staff::where('email', $email)
+                             ->where('is_active', true)
+                             ->first();
 
     if (!$user) {
-        return back()->withErrors(['email' => '❌ No account found with that email.'])->withInput();
+        return back()->withErrors(['email' => 'No account found with that email.'])->withInput();
     }
 
-    if (!\Auth::attempt(['email' => $email, 'password' => $password])) {
-        return back()->withErrors(['email' => '❌ Incorrect password. Please try again.'])->withInput();
+    if (!\Illuminate\Support\Facades\Hash::check($password, $user->password_hash)) {
+        return back()->withErrors(['email' => 'Incorrect password. Please try again.'])->withInput();
     }
 
+    if ($user->role !== $role) {
+        return back()->withErrors(['email' => 'Access denied. Invalid role for this account.'])->withInput();
+    }
+
+    Auth::guard('staff')->login($user, request()->boolean('remember'));
     request()->session()->regenerate();
 
     if ($role === 'frontdesk') {
@@ -30,27 +36,27 @@ Route::post('/login', function () {
 });
 
 Route::get('/frontdesk/dashboard', function () {
-    if (!Auth::check()) return redirect('/');
+    if (!Auth::guard('staff')->check()) return redirect('/');
     return view('frontdeskdb');
 });
 
 Route::get('/dashboard', function () {
-    if (!Auth::check()) return redirect('/');
+    if (!Auth::guard('staff')->check()) return redirect('/');
     return view('dashboard');
 })->name('dashboard');
 
 Route::get('/tenants', function () {
-    if (!Auth::check()) return redirect('/');
+    if (!Auth::guard('staff')->check()) return redirect('/');
     return view('tenants');
 })->name('tenants');
 
 Route::get('/documents', function () {
-    if (!Auth::check()) return redirect('/');
+    if (!Auth::guard('staff')->check()) return redirect('/');
     return view('documents');
 })->name('documents');
 
 Route::post('/logout', function () {
-    Auth::logout();
+    Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect('/');
