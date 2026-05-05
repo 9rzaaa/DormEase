@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -8,4 +7,170 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-pink:         #CA5D86;
+    --color-pink-dark:    #a8446c;
+    --color-pink-deeper:  #7b2d50;
+    --color-pink-light:   #FFB0CE;
+    --color-pink-soft:    #FF7E86;
+    --color-pink-bg:      #fdf5f8;
+    --color-pink-tint:    #fff5f9;
+
+    --color-mint:         #A6E7D8;
+    --color-green:        #29BD9B;
+    --color-green-text:   #1d7a63;
+    --color-green-bg:     #f0fdf8;
+    --color-green-border: #A6E7D8;
+
+    --color-gray-de:      #B5B7C0;
+    --color-gray-light:   #E5ECF6;
+    --color-gray-bg:      #fafafa;
+
+    --color-amber:        #FFD166;
+    --color-peach:        #FFD7C7;
+    --color-salmon:       #EB9C7D;
+    --color-blush:        #FFC5C5;
+
+    --color-error:        #DF0404;
+    --color-error-bg:     #fff0f0;
+
+    --color-ink:          #2d1f28;
+    --color-ink-muted:    #7a5f6e;
+
+    --font-display:       'DM Serif Display', Georgia, serif;
+}
+
+:root {
+    --pink:         var(--color-pink);
+    --pink-dark:    var(--color-pink-dark);
+    --pink-deeper:  var(--color-pink-deeper);
+    --pink-light:   var(--color-pink-light);
+    --pink-soft:    var(--color-pink-soft);
+    --pink-bg:      var(--color-pink-bg);
+    --pink-tint:    var(--color-pink-tint);
+
+    --mint:         var(--color-mint);
+    --green:        var(--color-green);
+    --green-text:   var(--color-green-text);
+    --green-bg:     var(--color-green-bg);
+    --green-border: var(--color-green-border);
+
+    --gray:         var(--color-gray-de);
+    --gray-light:   var(--color-gray-light);
+    --gray-bg:      var(--color-gray-bg);
+
+    --amber:        var(--color-amber);
+    --peach:        var(--color-peach);
+    --salmon:       var(--color-salmon);
+    --blush:        var(--color-blush);
+
+    --red:          var(--color-error);
+    --red-bg:       var(--color-error-bg);
+
+    --white:        #ffffff;
+    --ink:          var(--color-ink);
+    --ink-muted:    var(--color-ink-muted);
+
+    --ff-display:   var(--font-display);
+    --ff-body:      var(--font-sans);
+
+    --radius-sm:    8px;
+    --radius-md:    12px;
+    --radius-lg:    16px;
+    --radius-pill:  100px;
+
+    --transition:   .2s ease;
+}
+
+.de-input {
+    width: 100%;
+    padding: .78rem 1rem .78rem 2.7rem;
+    border: 1.5px solid var(--gray-light);
+    border-radius: var(--radius-md);
+    font-family: var(--ff-body);
+    font-size: .9rem;
+    color: var(--ink);
+    background: var(--gray-bg);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.de-input:focus {
+    border-color: var(--pink);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(202, 93, 134, .12);
+}
+.de-input::placeholder { color: var(--gray); }
+
+.de-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .88rem 1.5rem;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--ff-body);
+    font-size: .95rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+    box-shadow: 0 4px 20px rgba(202, 93, 134, .3);
+    transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    cursor: pointer;
+}
+.de-btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+.de-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 28px rgba(202, 93, 134, .42);
+    filter: brightness(1.05);
+}
+.de-btn-primary:active { transform: translateY(0); }
+
+.de-status-strip {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    padding: .7rem 1rem;
+    background: linear-gradient(90deg, var(--green-bg), #e8faf5);
+    border: 1px solid var(--green-border);
+    border-radius: 10px;
+}
+.de-status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+    animation: de-pulse 2s ease-in-out infinite;
+}
+@keyframes de-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.de-status-strip span { font-size: .77rem; color: var(--green-text); font-weight: 500; }
+
+.de-alert-error {
+    background: var(--red-bg);
+    border: 1.5px solid var(--red);
+    border-radius: var(--radius-md);
+    padding: .8rem 1rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-size: .84rem;
+    color: var(--red);
+    font-weight: 500;
+}
+.de-alert-error img { width: 18px; height: 18px; flex-shrink: 0; }
+
+.de-flash { transition: opacity .4s ease; }
+
+.visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
