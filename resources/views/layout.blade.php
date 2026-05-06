@@ -49,7 +49,6 @@
         a { text-decoration: none; color: inherit; }
         button { font-family: var(--ff-body); cursor: pointer; }
 
-        /* ── Sidebar ── */
         .sidebar {
             width: var(--sidebar-w);
             background: var(--white);
@@ -108,10 +107,8 @@
         }
         .logout-btn:hover { color: var(--red); }
 
-        /* ── Main ── */
         .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* ── Topbar ── */
         .topbar {
             position: sticky; top: 0; z-index: 50;
             background: var(--white); border-bottom: 1px solid var(--border);
@@ -143,7 +140,6 @@
             font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;
         }
 
-        /* ── Cards ── */
         .card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 1.5rem; }
         .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
         .card-title { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
@@ -151,14 +147,12 @@
         .see-all { font-size: .8rem; font-weight: 600; color: var(--pink); background: none; border: none; cursor: pointer; transition: opacity .2s; }
         .see-all:hover { opacity: .7; }
 
-        /* ── Animations ── */
         @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
         .fade-up { opacity:0; animation: fadeUp .5s ease forwards; }
         .d1 { animation-delay:.05s; } .d2 { animation-delay:.12s; }
         .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
         .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-        /* ── Modals ── */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(26,26,46,.45);
             backdrop-filter: blur(4px); z-index: 300;
@@ -192,20 +186,17 @@
         .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
         .btn-submit:hover { background: #a8446c; }
 
-        /* ── Alert items (emergency modal) ── */
         .alert-item { border-radius: 12px; padding: 1rem; border: 1px solid; margin-bottom: .8rem; }
         .alert-item.active   { background: #fff0f0; border-color: var(--blush); }
         .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
         .alert-room   { font-weight: 700; font-size: .9rem; }
         .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
-        /* ── Toast ── */
         .toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 400; background: var(--ink); color: var(--white); padding: .85rem 1.4rem; border-radius: 12px; font-size: .87rem; font-weight: 500; box-shadow: 0 8px 24px rgba(26,26,46,.25); transform: translateY(80px); opacity: 0; transition: transform .35s ease, opacity .35s ease; display: flex; align-items: center; gap: .6rem; }
         .toast.show    { transform: translateY(0); opacity: 1; }
         .toast.success { background: var(--green); }
         .toast.error   { background: var(--red); }
 
-        /* ── Responsive ── */
         @media (max-width: 820px) {
             :root { --sidebar-w: 0px; }
             .sidebar { transform: translateX(-260px); width: 260px; }
@@ -291,7 +282,6 @@
 
 </div>
 
-{{-- Logout Modal --}}
 <div class="modal-overlay" id="logout-modal">
     <div class="modal">
         <div class="modal-header">

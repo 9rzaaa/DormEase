@@ -132,7 +132,6 @@
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
 
-        {{-- Quick Summary --}}
         <div class="card fade-up d2">
             <div class="card-header">
                 <div>
@@ -178,7 +177,6 @@
             </div>
         </div>
 
-        {{-- Maintenance + Emergency row --}}
         <div class="bottom-row fade-up d3">
 
             <div class="card">
@@ -279,9 +277,8 @@
             @endif
         </div>
 
-    </div>{{-- /content-col --}}
+    </div>
 
-    {{-- Right column --}}
     <div class="right-col fade-up d5">
 
         <div class="card">
@@ -338,7 +335,6 @@
 
 @section('modals')
 
-{{-- Announce Modal --}}
 <div class="modal-overlay" id="announce-modal">
     <div class="modal">
         <div class="modal-header">
@@ -360,7 +356,6 @@
     </div>
 </div>
 
-{{-- Emergency Modal --}}
 <div class="modal-overlay" id="emergency-modal">
     <div class="modal">
         <div class="modal-header">
