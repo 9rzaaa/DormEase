@@ -2,7 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/', fn() => view('login'));
+Route::get('/', fn() => view('login'))->name('login');
 
 Route::post('/login', function () {
     $email    = request('email');
@@ -28,58 +28,46 @@ Route::post('/login', function () {
     Auth::guard('staff')->login($user, request()->boolean('remember'));
     request()->session()->regenerate();
 
-    if ($role === 'frontdesk') {
-        return redirect('/frontdesk/dashboard');
-    }
-
-    return redirect('/dashboard');
+    return $role === 'frontdesk'
+        ? redirect('/frontdesk/dashboard')
+        : redirect('/dashboard');
 });
-
-Route::get('/frontdesk/dashboard', function () {
-    if (!Auth::guard('staff')->check()) return redirect('/');
-    return view('frontdeskdb');
-});
-
-Route::get('/dashboard', function () {
-    if (!Auth::guard('staff')->check()) return redirect('/');
-    return view('dashboard');
-})->name('dashboard');
-
-Route::get('/tenants', function () {
-    if (!Auth::guard('staff')->check()) return redirect('/');
-    return view('tenants');
-})->name('tenants');
-
-Route::get('/documents', function () {
-    if (!Auth::guard('staff')->check()) return redirect('/');
-    return view('documents');
-})->name('documents');
 
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect('/');
-})->name('logout'); // ✅ add this
+})->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:staff')->group(function () {
 
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', function () {
+        $staff = Auth::guard('staff')->user();
+        return view('dashboard', [
+            'staff'               => $staff,
+            'totalTenants'        => \App\Models\Tenant::where('is_active', true)->count(),
+            'pendingPayments'     => \App\Models\Payment::where('status', 'pending')->count(),
+            'pendingMaintenance'  => \App\Models\MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
+            'unresolvedReports'   => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->count(),
+            'maintenanceRequests' => \App\Models\MaintenanceRequest::with('tenant')
+                                        ->whereIn('status', ['pending', 'in_progress'])
+                                        ->latest('submitted_at')->take(3)->get(),
+            'announcements'       => \App\Models\Announcement::latest('posted_at')->take(3)->get(),
+            'notifications'       => \App\Models\Notification::where('is_read', false)
+                                        ->latest('created_at')->take(4)->get(),
+            'unreadNotifCount'    => \App\Models\Notification::where('is_read', false)->count(),
+            'latestEmergency'     => \App\Models\EmergencyReport::where('status', '!=', 'resolved')
+                                        ->latest('reported_at')->first(),
+            'allEmergencies'      => \App\Models\EmergencyReport::latest('reported_at')->take(10)->get(),
+            'recentActivities'    => \App\Models\VisitorLog::with('tenant')
+                                        ->latest('arrival_time')->take(5)->get(),
+        ]);
+    })->name('dashboard');
 
-    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
-        ->name('frontdesk.dashboard');
+    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
 
-    Route::get('/tenants', fn() => view('tenants'))->name('tenants');
-
+    Route::get('/tenants',   fn() => view('tenants'))->name('tenants');
     Route::get('/documents', fn() => view('documents'))->name('documents');
-
-    // 👉 OPTIONAL: direct redirect routes between pages
-    Route::get('/tenants-to-documents', function () {
-        return redirect()->route('documents');
-    });
-
-    Route::get('/documents-to-tenants', function () {
-        return redirect()->route('tenants');
-    });
 
 });

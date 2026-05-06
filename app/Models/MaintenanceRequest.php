@@ -1,14 +1,22 @@
-<header class="topbar">
-    <div class="breadcrumb">Pages / <span id="breadcrumb-label">Dashboard</span></div>
-    <div class="topbar-right">
-        <button class="notif-btn" onclick="toggleNotifPanel()" title="Notifications">
-            🔔
-            @if($unreadNotifCount > 0)
-                <span class="notif-badge"></span>
-            @endif
-        </button>
-        <div class="avatar" title="{{ $staff->first_name }}">
-            {{ strtoupper(substr($staff->first_name, 0, 1)) }}
-        </div>
-    </div>
-</header>
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class MaintenanceRequest extends Model
+{
+    protected $table = 'maintenance_requests';
+    protected $primaryKey = 'request_id';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'tenant_id', 'input_type', 'issue_type', 'description',
+        'urgency_level', 'status', 'assigned_to',
+        'admin_notes', 'submitted_at', 'resolved_at',
+    ];
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
+    }
+}
