@@ -4,17 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
 
-use App\Http\Controllers\TenantController;
-use App\Http\Controllers\MaintenanceController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\EmergencyController;
-use App\Http\Controllers\BillingController;
-use App\Http\Controllers\VisitorController;
-use App\Http\Controllers\StaffController;
-
 Route::get('/', fn() => view('login'))->name('login');
 
 Route::post('/login', function () {
