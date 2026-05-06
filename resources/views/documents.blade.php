@@ -213,16 +213,12 @@ body {
     .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
     .nav-divider { height: 1px; background: var(--border); margin: .6rem 0; }
 
-    .sidebar-logout {
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--border);
-    }
+    .sidebar-logout { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
     .logout-btn {
       display: flex; align-items: center; gap: .65rem;
       font-size: .87rem; font-weight: 500; color: var(--ink-muted);
       background: none; border: none; cursor: pointer;
-      padding: .5rem .3rem; width: 100%;
-      transition: color .2s;
+      padding: .5rem .3rem; width: 100%; transition: color .2s;
     }
     .logout-btn:hover { color: var(--red); }
 
@@ -481,27 +477,28 @@ body {
 .file-drop-text strong { color: var(--pink-600); }
 .file-name-preview { margin-top: 8px; font-size: 12px; color: var(--pink-600); font-weight: 600; display: none; }
 
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-.btn-cancel {
-  padding: 9px 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  background: #fff; font-size: 14px; font-weight: 600; color: var(--text-mid);
-  cursor: pointer; font-family: var(--font); transition: var(--ease);
-}
-.btn-cancel:hover { border-color: var(--pink-300); color: var(--pink-500); }
-.btn-primary {
-  padding: 9px 22px;
-  background: linear-gradient(135deg, var(--pink-500), var(--pink-700));
-  color: #fff; border: none; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: var(--ease);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,60,100,.3); }
-.btn-danger {
-  padding: 9px 22px;
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  color: #fff; border: none; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font); transition: var(--ease);
-}
-.btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(220,38,38,.3); }
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(26,26,46,.45);
+      backdrop-filter: blur(4px); z-index: 300;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 20px;
+      padding: 2rem; width: 90%; max-width: 440px;
+      box-shadow: 0 20px 60px rgba(26,26,46,.2);
+      animation: fadeUp .3s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ink-muted); }
+    .modal-close:hover { color: var(--red); }
+    .modal-actions { display: flex; gap: .7rem; margin-top: 1.4rem; justify-content: flex-end; }
+    .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
+    .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .btn-submit:hover { background: #a8446c; }
 
 .doc-preview {
   background: var(--pink-50); border: 1.5px solid var(--border);
@@ -589,8 +586,7 @@ body {
 
   <div class="sidebar-logout">
     <form method="POST" action="/logout" id="logout-form">@csrf</form>
-    <button class="logout-btn" onclick="document.getElementById('logout-form').submit()">
-      <span>↩</span> Log Out
+      <button class="logout-btn" onclick="openModal('logout-modal')">      <span>↩</span> Log Out
     </button>
   </div>
 </aside>
