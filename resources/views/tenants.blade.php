@@ -44,7 +44,7 @@
     .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 600; margin-top: .2rem; }
     .icon-md {width: 26px; height: 26px; object-fit: contain; }
 
-    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;  margin: 0 2rem;}
     .table-header {
         padding: 1.3rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
