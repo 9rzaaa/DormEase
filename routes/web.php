@@ -1,7 +1,19 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
+
+use App\Http\Controllers\TenantController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\EmergencyController;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\VisitorController;
+use App\Http\Controllers\StaffController;
 
 Route::get('/', fn() => view('login'))->name('login');
 
@@ -11,8 +23,8 @@ Route::post('/login', function () {
     $role     = request('role');
 
     $user = \App\Models\Staff::where('email', $email)
-                             ->where('is_active', true)
-                             ->first();
+        ->where('is_active', true)
+        ->first();
 
     if (!$user) {
         return back()->withErrors(['email' => 'No account found with that email.'])->withInput();
@@ -30,8 +42,8 @@ Route::post('/login', function () {
     request()->session()->regenerate();
 
     return $role === 'frontdesk'
-        ? redirect('/frontdesk/dashboard')
-        : redirect('/dashboard');
+        ? redirect()->route('frontdesk.dashboard')
+        : redirect()->route('dashboard');
 });
 
 Route::post('/logout', function () {
@@ -41,32 +53,52 @@ Route::post('/logout', function () {
     return redirect('/');
 })->name('logout');
 
+
 Route::middleware('auth:staff')->group(function () {
 
     Route::get('/dashboard', function () {
         $staff = Auth::guard('staff')->user();
+
         return view('dashboard', [
             'staff'               => $staff,
             'totalTenants'        => \App\Models\Tenant::where('is_active', true)->count(),
             'pendingPayments'     => \App\Models\Payment::where('status', 'pending')->count(),
             'pendingMaintenance'  => \App\Models\MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
             'unresolvedReports'   => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->count(),
+
             'maintenanceRequests' => \App\Models\MaintenanceRequest::with('tenant')
-                                        ->whereIn('status', ['pending', 'in_progress'])
-                                        ->latest('submitted_at')->take(3)->get(),
-            'announcements'       => \App\Models\Announcement::latest('posted_at')->take(3)->get(),
+                ->whereIn('status', ['pending', 'in_progress'])
+                ->latest('submitted_at')
+                ->take(3)
+                ->get(),
+
+            'announcements'       => \App\Models\Announcement::latest('posted_at')
+                ->take(3)
+                ->get(),
+
             'notifications'       => \App\Models\Notification::where('is_read', false)
-                                        ->latest('created_at')->take(4)->get(),
+                ->latest('created_at')
+                ->take(4)
+                ->get(),
+
             'unreadNotifCount'    => \App\Models\Notification::where('is_read', false)->count(),
+
             'latestEmergency'     => \App\Models\EmergencyReport::where('status', '!=', 'resolved')
-                                        ->latest('reported_at')->first(),
-            'allEmergencies'      => \App\Models\EmergencyReport::latest('reported_at')->take(10)->get(),
+                ->latest('reported_at')
+                ->first(),
+
+            'allEmergencies'      => \App\Models\EmergencyReport::latest('reported_at')->get(),
+
             'recentActivities'    => \App\Models\VisitorLog::with('tenant')
-                                        ->latest('arrival_time')->take(5)->get(),
+                ->latest('arrival_time')
+                ->take(5)
+                ->get(),
         ]);
     })->name('dashboard');
 
-    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
+    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
+        ->name('frontdesk.dashboard');
+
 
     Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
     Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
