@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\TenantController;
 
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\MaintenanceController;
@@ -99,15 +100,10 @@ Route::middleware('auth:staff')->group(function () {
         ->name('frontdesk.dashboard');
 
 
-    Route::resource('tenants', TenantController::class);
-    Route::resource('maintenance', MaintenanceController::class);
-    Route::resource('payments', PaymentController::class);
-    Route::resource('announcements', AnnouncementController::class);
-    Route::resource('settings', SettingController::class);
-    Route::resource('documents', DocumentController::class);
-    Route::resource('emergency', EmergencyController::class);
-    Route::resource('billing', BillingController::class);
-    Route::resource('visitors', VisitorController::class);
-    Route::resource('staff', StaffController::class);
+    Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
+    Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
+    Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
+    Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+    Route::get('/documents', fn() => view('documents'))->name('documents');
 
 });

@@ -88,7 +88,7 @@ return [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
+            'port' => env('DB_PORT', '6543'),
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => 'postgres.crwaesnmbowfzgggzynn',
             'password' => env('DB_PASSWORD', ''),
@@ -96,7 +96,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslmode' => 'require',
+            'pgsslmode' => 'require',
         ],
 
         'sqlsrv' => [

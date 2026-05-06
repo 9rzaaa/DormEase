@@ -275,50 +275,49 @@
 @section('modals')
 
 <div class="modal-overlay" id="add-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">➕ Add New Tenant</div>
-            <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
-        </div>
-        <form method="POST" action="{{ route('tenants.store') }}">
-            @csrf
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" placeholder="e.g. Maria" required>
-                </div>
-                <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" placeholder="e.g. Ramos" required>
-                </div>
-                <div class="modal-field">
-                    <label>Room No.</label>
-                    <input type="text" name="room_number" placeholder="e.g. 304" required>
-                </div>
-                <div class="modal-field">
-                    <label>Move-In Date</label>
-                    <input type="date" name="move_in_date">
-                </div>
-                <div class="modal-field">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789">
-                </div>
-                <div class="modal-field">
-                    <label>Status</label>
-                    <select name="status">
-                        <option value="active">Active</option>
-                        <option value="pending">Pending</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="move_out">Move-Out</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Add Tenant</button>
-            </div>
-        </form>
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">➕ Add New Tenant</div>
+      <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
     </div>
+    <form method="POST" action="{{ route('tenants.store') }}">
+      @csrf
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>First Name</label>
+          <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}">
+        </div>
+        <div class="modal-field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}">
+        </div>
+        <div class="modal-field">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}">
+        </div>
+        <div class="modal-field">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Min. 6 characters" required>
+        </div>
+        <div class="modal-field">
+          <label>Room No.</label>
+          <input type="text" name="room_number" placeholder="e.g. 304" required value="{{ old('room_number') }}">
+        </div>
+        <div class="modal-field">
+          <label>Move-In Date</label>
+          <input type="date" name="move_in_date" required value="{{ old('move_in_date') }}">
+        </div>
+        <div class="modal-field full">
+          <label>Contact No.</label>
+          <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Add Tenant</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="modal-overlay" id="view-modal">
@@ -336,235 +335,259 @@
 </div>
 
 <div class="modal-overlay" id="edit-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">✏️ Edit Tenant</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
-        </div>
-        <form method="POST" id="edit-form">
-            @csrf
-            @method('PUT')
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" id="edit-first-name" required>
-                </div>
-                <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" id="edit-last-name" required>
-                </div>
-                <div class="modal-field">
-                    <label>Room No.</label>
-                    <input type="text" name="room_number" id="edit-room">
-                </div>
-                <div class="modal-field">
-                    <label>Move-In Date</label>
-                    <input type="date" name="move_in_date" id="edit-date">
-                </div>
-                <div class="modal-field">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact">
-                </div>
-                <div class="modal-field">
-                    <label>Status</label>
-                    <select name="status" id="edit-status">
-                        <option value="active">Active</option>
-                        <option value="pending">Pending</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="move_out">Move-Out</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
-        </form>
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Edit Tenant</div>
+      <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
     </div>
+    <form method="POST" id="edit-form" action="">
+      @csrf
+      @method('PUT')
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>First Name</label>
+          <input type="text" name="first_name" id="edit-first-name" required>
+        </div>
+        <div class="modal-field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" id="edit-last-name" required>
+        </div>
+        <div class="modal-field">
+          <label>Email</label>
+          <input type="email" name="email" id="edit-email" required>
+        </div>
+        <div class="modal-field">
+          <label>New Password <span style="font-weight:400;color:var(--ink-muted)">(leave blank to keep)</span></label>
+          <input type="password" name="password" placeholder="Leave blank to keep current">
+        </div>
+        <div class="modal-field">
+          <label>Room No.</label>
+          <input type="text" name="room_number" id="edit-room" required>
+        </div>
+        <div class="modal-field">
+          <label>Move-In Date</label>
+          <input type="date" name="move_in_date" id="edit-date" required>
+        </div>
+        <div class="modal-field full">
+          <label>Contact No.</label>
+          <input type="text" name="contact_number" id="edit-contact">
+        </div>
+        <div class="modal-field full">
+          <label>Status</label>
+          <select name="is_active" id="edit-is-active">
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="modal-overlay" id="delete-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">🗑 Delete Tenant</div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
-        </div>
-        <div class="delete-warning">⚠️ This action cannot be undone. The tenant record will be permanently removed.</div>
-        <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-name" style="color:var(--ink);"></strong>?</p>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form method="POST" id="delete-form" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
-            </form>
-        </div>
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🗑 Delete Tenant</div>
+      <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
     </div>
+    <div class="delete-warning">⚠️ This action cannot be undone. The tenant record will be permanently removed.</div>
+    <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-name" style="color:var(--ink);"></strong>?</p>
+    <form method="POST" id="delete-form" action="">
+      @csrf
+      @method('DELETE')
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+        <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 @endsection
 
 @section('scripts')
 <script>
-    const tenants = @json($tenants);
+  // Real tenant data from Laravel
+  const tenants = @json($tenants);
 
-    const PER_PAGE = 8;
-    let currentPage = 1;
-    let filtered = [...tenants];
+  const PER_PAGE = 8;
+  let currentPage = 1;
+  let filtered = [...tenants];
 
-    function badge(status) {
-        const map = {
-            active:   ['badge-active',   'Active'],
-            pending:  ['badge-pending',  'Pending'],
-            inactive: ['badge-inactive', 'Inactive'],
-            move_out: ['badge-moveout',  'Move-Out'],
-        };
-        const [cls, label] = map[status] ?? ['badge-pending', status];
-        return `<span class="badge ${cls}">${label}</span>`;
+  function badge(isActive) {
+    return isActive
+      ? `<span class="badge badge-active">Active</span>`
+      : `<span class="badge badge-inactive">Inactive</span>`;
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  }
+
+  function renderTable() {
+    const start = (currentPage - 1) * PER_PAGE;
+    const pageData = filtered.slice(start, start + PER_PAGE);
+    const tbody = document.getElementById('tenant-tbody');
+
+    if (pageData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
+    } else {
+      tbody.innerHTML = pageData.map(t => `<tr>
+        <td class="td-id">#${t.tenant_id}</td>
+        <td class="td-name">${t.first_name} ${t.last_name}</td>
+        <td>${t.room_number ?? '—'}</td>
+        <td>${fmtDate(t.move_in_date)}</td>
+        <td>${t.contact_number ?? '—'}</td>
+        <td>${t.email}</td>
+        <td>${badge(t.is_active)}</td>
+        <td>
+          <div class="action-group">
+            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>👁</button>
+            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>✏️</button>
+            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('');
     }
 
-    function fmtDate(d) {
-        if (!d) return '—';
-        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const total = filtered.length;
+    const from  = total === 0 ? 0 : start + 1;
+    const to    = Math.min(start + PER_PAGE, total);
+    document.getElementById('showing-label').textContent = `Showing data ${from} to ${to} of ${total} entries`;
+
+    renderPagination();
+    updateStats();
+  }
+
+  function renderPagination() {
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+    const pg = document.getElementById('pagination');
+    let html = '';
+    html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage-1 && i <= currentPage+1)) {
+        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      } else if (i === currentPage-2 || i === currentPage+2) {
+        html += `<span class="page-ellipsis">…</span>`;
+      }
     }
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages||totalPages===0?'disabled':''}>›</button>`;
+    pg.innerHTML = html;
+  }
 
-    function renderTable() {
-        const start    = (currentPage - 1) * PER_PAGE;
-        const pageData = filtered.slice(start, start + PER_PAGE);
-        const tbody    = document.getElementById('tenant-tbody');
-
-        if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No tenants found.</td></tr>`;
-        } else {
-            tbody.innerHTML = pageData.map(t => `
-                <tr>
-                    <td class="td-id">TNT-${String(t.tenant_id).padStart(4,'0')}</td>
-                    <td class="td-name">${t.first_name} ${t.last_name}</td>
-                    <td>${t.room_number ?? '—'}</td>
-                    <td>${fmtDate(t.move_in_date)}</td>
-                    <td>${t.pending_bill > 0 ? '₱' + parseFloat(t.pending_bill).toFixed(2) : '—'}</td>
-                    <td>${t.contact_number ?? '—'}</td>
-                    <td>${badge(t.status)}</td>
-                    <td>
-                        <div class="action-group">
-                            <button class="act-btn" title="View"   onclick='viewTenant(${JSON.stringify(t)})'>👁</button>
-                            <button class="act-btn" title="Edit"   onclick='openEditModal(${JSON.stringify(t)})'>✏️</button>
-                            <button class="act-btn delete" title="Delete" onclick='openDeleteModal(${t.tenant_id}, "${t.first_name} ${t.last_name}")'>🗑</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        const total = filtered.length;
-        const from  = total === 0 ? 0 : start + 1;
-        const to    = Math.min(start + PER_PAGE, total);
-        document.getElementById('showing-label').textContent = `Showing ${from} to ${to} of ${total} entries`;
-        renderPagination();
-    }
-
-    function renderPagination() {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        const pg = document.getElementById('pagination');
-        let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage-1 && i <= currentPage+1)) {
-                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-            } else if (i === currentPage-2 || i === currentPage+2) {
-                html += `<span class="page-ellipsis">…</span>`;
-            }
-        }
-        html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages||totalPages===0?'disabled':''}>›</button>`;
-        pg.innerHTML = html;
-    }
-
-    function goPage(p) {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        if (p < 1 || p > totalPages) return;
-        currentPage = p;
-        renderTable();
-    }
-
-    function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        filtered = tenants.filter(t =>
-            (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
-            String(t.tenant_id).includes(q) ||
-            (t.room_number ?? '').toLowerCase().includes(q) ||
-            (t.contact_number ?? '').toLowerCase().includes(q) ||
-            (t.status ?? '').toLowerCase().includes(q)
-        );
-        currentPage = 1;
-        renderTable();
-    }
-
-    function sortTable() {
-        const val = document.getElementById('sort-select').value;
-        if (val === 'newest') filtered.sort((a,b) => new Date(b.move_in_date) - new Date(a.move_in_date));
-        if (val === 'oldest') filtered.sort((a,b) => new Date(a.move_in_date) - new Date(b.move_in_date));
-        if (val === 'name')   filtered.sort((a,b) => a.first_name.localeCompare(b.first_name));
-        if (val === 'room')   filtered.sort((a,b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
-        currentPage = 1;
-        renderTable();
-    }
-
-    function viewTenant(t) {
-        document.getElementById('view-content').innerHTML = `
-            <div class="view-row"><span class="view-label">Account ID</span><span class="view-val">TNT-${String(t.tenant_id).padStart(4,'0')}</span></div>
-            <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
-            <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
-            <div class="view-row"><span class="view-label">Pending Bill</span><span class="view-val">₱${parseFloat(t.pending_bill ?? 0).toFixed(2)}</span></div>
-            <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${badge(t.status)}</span></div>
-        `;
-        document.getElementById('view-edit-btn').onclick = () => { closeModal('view-modal'); openEditModal(t); };
-        openModal('view-modal');
-    }
-
-    function openEditModal(t) {
-        document.getElementById('edit-form').action = `/tenants/${t.tenant_id}`;
-        document.getElementById('edit-first-name').value = t.first_name;
-        document.getElementById('edit-last-name').value  = t.last_name;
-        document.getElementById('edit-room').value       = t.room_number ?? '';
-        document.getElementById('edit-date').value       = t.move_in_date ?? '';
-        document.getElementById('edit-contact').value    = t.contact_number ?? '';
-        document.getElementById('edit-status').value     = t.status ?? 'active';
-        openModal('edit-modal');
-    }
-
-    function openDeleteModal(id, name) {
-        document.getElementById('delete-name').textContent = name;
-        document.getElementById('delete-form').action = `/tenants/${id}`;
-        openModal('delete-modal');
-    }
-
-    function exportTenants() {
-        const rows = [['Account ID','First Name','Last Name','Room No.','Move-In Date','Pending Bill','Contact No.','Status']];
-        tenants.forEach(t => rows.push([
-            'TNT-' + String(t.tenant_id).padStart(4,'0'),
-            t.first_name, t.last_name,
-            t.room_number ?? '',
-            t.move_in_date ?? '',
-            parseFloat(t.pending_bill ?? 0).toFixed(2),
-            t.contact_number ?? '',
-            t.status
-        ]));
-        const csv  = rows.map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(blob);
-        a.download = 'dormease-tenants.csv';
-        a.click();
-        showToast('📥 Tenants exported as CSV!', 'success');
-    }
-
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-    });
-
+  function goPage(p) {
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+    if (p < 1 || p > totalPages) return;
+    currentPage = p;
     renderTable();
+  }
+
+  function filterTable() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    filtered = tenants.filter(t =>
+      (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
+      (t.room_number ?? '').toLowerCase().includes(q) ||
+      (t.email ?? '').toLowerCase().includes(q) ||
+      (t.contact_number ?? '').toLowerCase().includes(q)
+    );
+    currentPage = 1;
+    renderTable();
+  }
+
+  function sortTable() {
+    const val = document.getElementById('sort-select').value;
+    if (val === 'newest') filtered.sort((a,b) => new Date(b.move_in_date) - new Date(a.move_in_date));
+    if (val === 'oldest') filtered.sort((a,b) => new Date(a.move_in_date) - new Date(b.move_in_date));
+    if (val === 'name')   filtered.sort((a,b) => a.first_name.localeCompare(b.first_name));
+    if (val === 'room')   filtered.sort((a,b) => (a.room_number??'').localeCompare(b.room_number??''));
+    currentPage = 1;
+    renderTable();
+  }
+
+  function updateStats() {
+    document.getElementById('count-total').textContent   = tenants.length;
+    document.getElementById('count-pending').textContent = tenants.filter(t => !t.is_active).length;
+  }
+
+  function viewTenant(t) {
+    document.getElementById('view-content').innerHTML = `
+      <div class="view-row"><span class="view-label">Tenant ID</span><span class="view-val">#${t.tenant_id}</span></div>
+      <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
+      <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email}</span></div>
+      <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
+      <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
+      <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
+      <div class="view-row"><span class="view-label">Status</span><span class="view-val">${badge(t.is_active)}</span></div>
+    `;
+    openModal('view-modal');
+  }
+
+  function openEditModal(t) {
+    document.getElementById('edit-form').action = `/tenants/${t.tenant_id}`;
+    document.getElementById('edit-first-name').value = t.first_name;
+    document.getElementById('edit-last-name').value  = t.last_name;
+    document.getElementById('edit-email').value      = t.email;
+    document.getElementById('edit-room').value       = t.room_number ?? '';
+    document.getElementById('edit-date').value       = t.move_in_date ?? '';
+    document.getElementById('edit-contact').value    = t.contact_number ?? '';
+    document.getElementById('edit-is-active').value  = t.is_active ? '1' : '0';
+    openModal('edit-modal');
+  }
+
+  function openDeleteModal(id, name) {
+    document.getElementById('delete-name').textContent = name;
+    document.getElementById('delete-form').action = `/tenants/${id}`;
+    openModal('delete-modal');
+  }
+
+  function exportTenants() {
+    const rows = [['ID','First Name','Last Name','Email','Room','Move-In Date','Contact','Status']];
+    tenants.forEach(t => rows.push([
+      t.tenant_id, t.first_name, t.last_name, t.email,
+      t.room_number ?? '', t.move_in_date ?? '', t.contact_number ?? '',
+      t.is_active ? 'Active' : 'Inactive'
+    ]));
+    const csv  = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'dormease-tenants.csv'; a.click();
+    showToast('📥 Tenants exported as CSV!', 'success');
+  }
+
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast ' + type;
+    setTimeout(()=> t.classList.add('show'), 10);
+    setTimeout(()=> t.classList.remove('show'), 3200);
+  }
+
+  // Auto-open add modal if there were validation errors
+  @if($errors->any())
+    document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
+  @endif
+
+  // Show success toast
+  @if(session('success'))
+    document.addEventListener('DOMContentLoaded', () => showToast('✅ {{ session("success") }}', 'success'));
+  @endif
+
+  document.getElementById('table-date').textContent =
+    'as of ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  filtered = [...tenants];
+  renderTable();
 </script>
 @endsection
