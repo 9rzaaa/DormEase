@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\TenantController;
 
 Route::get('/', fn() => view('login'))->name('login');
 
@@ -67,7 +68,10 @@ Route::middleware('auth:staff')->group(function () {
 
     Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
 
-    Route::get('/tenants',   fn() => view('tenants'))->name('tenants');
+    Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
+    Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
+    Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
+    Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::get('/documents', fn() => view('documents'))->name('documents');
 
 });

@@ -513,41 +513,43 @@
       <div class="modal-title">➕ Add New Tenant</div>
       <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
     </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>Tenant Name</label>
-        <input type="text" id="add-name" placeholder="e.g. Maria Ramos">
+    <form method="POST" action="{{ route('tenants.store') }}">
+      @csrf
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>First Name</label>
+          <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}">
+        </div>
+        <div class="modal-field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}">
+        </div>
+        <div class="modal-field">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}">
+        </div>
+        <div class="modal-field">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Min. 6 characters" required>
+        </div>
+        <div class="modal-field">
+          <label>Room No.</label>
+          <input type="text" name="room_number" placeholder="e.g. 304" required value="{{ old('room_number') }}">
+        </div>
+        <div class="modal-field">
+          <label>Move-In Date</label>
+          <input type="date" name="move_in_date" required value="{{ old('move_in_date') }}">
+        </div>
+        <div class="modal-field full">
+          <label>Contact No.</label>
+          <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+        </div>
       </div>
-      <div class="modal-field">
-        <label>Room No.</label>
-        <input type="text" id="add-room" placeholder="e.g. 304">
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Add Tenant</button>
       </div>
-      <div class="modal-field">
-        <label>Move-In Date</label>
-        <input type="date" id="add-date">
-      </div>
-      <div class="modal-field">
-        <label>Contact No.</label>
-        <input type="text" id="add-contact" placeholder="e.g. 0912-345-6789">
-      </div>
-      <div class="modal-field">
-        <label>Pending Bill (₱)</label>
-        <input type="number" id="add-bill" placeholder="0.00" min="0" step="0.01">
-      </div>
-      <div class="modal-field">
-        <label>Status</label>
-        <select id="add-status">
-          <option value="Active">Active</option>
-          <option value="Pending">Pending</option>
-          <option value="Inactive">Inactive</option>
-          <option value="Move-Out">Move-Out</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-      <button class="btn-submit" onclick="addTenant()">Add Tenant</button>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -573,41 +575,51 @@
       <div class="modal-title">✏️ Edit Tenant</div>
       <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
     </div>
-    <div class="modal-grid">
-      <div class="modal-field">
-        <label>Tenant Name</label>
-        <input type="text" id="edit-name">
+    <form method="POST" id="edit-form" action="">
+      @csrf
+      @method('PUT')
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>First Name</label>
+          <input type="text" name="first_name" id="edit-first-name" required>
+        </div>
+        <div class="modal-field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" id="edit-last-name" required>
+        </div>
+        <div class="modal-field">
+          <label>Email</label>
+          <input type="email" name="email" id="edit-email" required>
+        </div>
+        <div class="modal-field">
+          <label>New Password <span style="font-weight:400;color:var(--ink-muted)">(leave blank to keep)</span></label>
+          <input type="password" name="password" placeholder="Leave blank to keep current">
+        </div>
+        <div class="modal-field">
+          <label>Room No.</label>
+          <input type="text" name="room_number" id="edit-room" required>
+        </div>
+        <div class="modal-field">
+          <label>Move-In Date</label>
+          <input type="date" name="move_in_date" id="edit-date" required>
+        </div>
+        <div class="modal-field full">
+          <label>Contact No.</label>
+          <input type="text" name="contact_number" id="edit-contact">
+        </div>
+        <div class="modal-field full">
+          <label>Status</label>
+          <select name="is_active" id="edit-is-active">
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+          </select>
+        </div>
       </div>
-      <div class="modal-field">
-        <label>Room No.</label>
-        <input type="text" id="edit-room">
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Save Changes</button>
       </div>
-      <div class="modal-field">
-        <label>Move-In Date</label>
-        <input type="date" id="edit-date">
-      </div>
-      <div class="modal-field">
-        <label>Contact No.</label>
-        <input type="text" id="edit-contact">
-      </div>
-      <div class="modal-field">
-        <label>Pending Bill (₱)</label>
-        <input type="number" id="edit-bill" min="0" step="0.01">
-      </div>
-      <div class="modal-field">
-        <label>Status</label>
-        <select id="edit-status">
-          <option value="Active">Active</option>
-          <option value="Pending">Pending</option>
-          <option value="Inactive">Inactive</option>
-          <option value="Move-Out">Move-Out</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-      <button class="btn-submit" onclick="saveEdit()">Save Changes</button>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -620,10 +632,14 @@
     </div>
     <div class="delete-warning">⚠️ This action cannot be undone. The tenant record will be permanently removed.</div>
     <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-name" style="color:var(--ink);"></strong>?</p>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-      <button class="btn-submit" style="background:var(--red);" onclick="confirmDelete()">Delete</button>
-    </div>
+    <form method="POST" id="delete-form" action="">
+      @csrf
+      @method('DELETE')
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+        <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -631,45 +647,25 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ── DATA ──
-  let tenants = [
-    { id:'R304-01', name:'Maria Ramos',    room:'304', date:'2026-01-10', bill:300.00, contact:'0912-345-6789', status:'Pending'  },
-    { id:'R105-02', name:'Juana Dela Cruz',room:'105', date:'2025-12-28', bill:0.00,   contact:'0923-456-7890', status:'Active'   },
-    { id:'R302-02', name:'Angela Reyes',   room:'302', date:'2025-11-21', bill:220.00, contact:'0934-567-8901', status:'Pending'  },
-    { id:'R202-01', name:'Rosa Bautista',  room:'202', date:'2025-11-05', bill:0.00,   contact:'0945-678-9012', status:'Move-Out' },
-    { id:'R301-01', name:'Kristen Rodis',  room:'301', date:'2025-10-28', bill:150.00, contact:'0956-789-0123', status:'Pending'  },
-    { id:'R105-03', name:'Neri Carpio',    room:'105', date:'2025-10-20', bill:110.00, contact:'0967-890-1234', status:'Inactive' },
-    { id:'R102-03', name:'Jane Sta. Ana',  room:'102', date:'2025-09-21', bill:0.00,   contact:'0978-901-2345', status:'Active'   },
-    { id:'R202-01', name:'Mae Abad',       room:'202', date:'2025-09-10', bill:0.00,   contact:'0989-012-3456', status:'Pending'  },
-    { id:'R401-01', name:'Luz Santos',     room:'401', date:'2025-08-15', bill:80.00,  contact:'0991-123-4567', status:'Active'   },
-    { id:'R303-02', name:'Clara Vidal',    room:'303', date:'2025-07-22', bill:0.00,   contact:'0992-234-5678', status:'Active'   },
-    { id:'R201-01', name:'Donna Cruz',     room:'201', date:'2025-06-30', bill:200.00, contact:'0993-345-6789', status:'Pending'  },
-    { id:'R403-01', name:'Ella Mateo',     room:'403', date:'2025-05-18', bill:0.00,   contact:'0994-456-7890', status:'Active'   },
-  ];
+  // Real tenant data from Laravel
+  const tenants = @json($tenants);
 
   const PER_PAGE = 8;
   let currentPage = 1;
   let filtered = [...tenants];
-  let editIndex = -1;
-  let deleteIndex = -1;
 
-  // ── BADGE ──
-  function badge(status) {
-    const map = {
-      Active: 'badge-active', Pending: 'badge-pending',
-      Inactive: 'badge-inactive', 'Move-Out': 'badge-moveout'
-    };
-    return `<span class="badge ${map[status]||'badge-pending'}">${status}</span>`;
+  function badge(isActive) {
+    return isActive
+      ? `<span class="badge badge-active">Active</span>`
+      : `<span class="badge badge-inactive">Inactive</span>`;
   }
 
-  // ── FORMAT DATE ──
   function fmtDate(d) {
     if (!d) return '—';
     const dt = new Date(d + 'T00:00:00');
     return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   }
 
-  // ── RENDER TABLE ──
   function renderTable() {
     const start = (currentPage - 1) * PER_PAGE;
     const pageData = filtered.slice(start, start + PER_PAGE);
@@ -678,28 +674,24 @@
     if (pageData.length === 0) {
       tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
     } else {
-      tbody.innerHTML = pageData.map((t, i) => {
-        const realIdx = tenants.indexOf(t);
-        return `<tr>
-          <td class="td-id">${t.id}</td>
-          <td class="td-name">${t.name}</td>
-          <td>${t.room}</td>
-          <td>${fmtDate(t.date)}</td>
-          <td>${t.bill > 0 ? '₱' + t.bill.toFixed(2) : '0.00'}</td>
-          <td>${t.contact}</td>
-          <td>${badge(t.status)}</td>
-          <td>
-            <div class="action-group">
-              <button class="act-btn" title="View" onclick="viewTenant(${realIdx})">👁</button>
-              <button class="act-btn" title="Edit" onclick="openEditModal(${realIdx})">✏️</button>
-              <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${realIdx})">🗑</button>
-            </div>
-          </td>
-        </tr>`;
-      }).join('');
+      tbody.innerHTML = pageData.map(t => `<tr>
+        <td class="td-id">#${t.tenant_id}</td>
+        <td class="td-name">${t.first_name} ${t.last_name}</td>
+        <td>${t.room_number ?? '—'}</td>
+        <td>${fmtDate(t.move_in_date)}</td>
+        <td>${t.contact_number ?? '—'}</td>
+        <td>${t.email}</td>
+        <td>${badge(t.is_active)}</td>
+        <td>
+          <div class="action-group">
+            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>👁</button>
+            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>✏️</button>
+            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">🗑</button>
+          </div>
+        </td>
+      </tr>`).join('');
     }
 
-    // showing label
     const total = filtered.length;
     const from  = total === 0 ? 0 : start + 1;
     const to    = Math.min(start + PER_PAGE, total);
@@ -709,14 +701,11 @@
     updateStats();
   }
 
-  // ── PAGINATION ──
   function renderPagination() {
     const totalPages = Math.ceil(filtered.length / PER_PAGE);
     const pg = document.getElementById('pagination');
     let html = '';
-
     html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-
     for (let i = 1; i <= totalPages; i++) {
       if (i === 1 || i === totalPages || (i >= currentPage-1 && i <= currentPage+1)) {
         html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
@@ -724,7 +713,6 @@
         html += `<span class="page-ellipsis">…</span>`;
       }
     }
-
     html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages||totalPages===0?'disabled':''}>›</button>`;
     pg.innerHTML = html;
   }
@@ -736,137 +724,85 @@
     renderTable();
   }
 
-  // ── SEARCH ──
   function filterTable() {
     const q = document.getElementById('search-input').value.toLowerCase();
     filtered = tenants.filter(t =>
-      t.name.toLowerCase().includes(q) ||
-      t.id.toLowerCase().includes(q) ||
-      t.room.toLowerCase().includes(q) ||
-      t.contact.toLowerCase().includes(q) ||
-      t.status.toLowerCase().includes(q)
+      (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
+      (t.room_number ?? '').toLowerCase().includes(q) ||
+      (t.email ?? '').toLowerCase().includes(q) ||
+      (t.contact_number ?? '').toLowerCase().includes(q)
     );
     currentPage = 1;
     renderTable();
   }
 
-  // ── SORT ──
   function sortTable() {
     const val = document.getElementById('sort-select').value;
-    if (val === 'newest') filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
-    if (val === 'oldest') filtered.sort((a,b) => new Date(a.date) - new Date(b.date));
-    if (val === 'name')   filtered.sort((a,b) => a.name.localeCompare(b.name));
-    if (val === 'room')   filtered.sort((a,b) => a.room.localeCompare(b.room));
+    if (val === 'newest') filtered.sort((a,b) => new Date(b.move_in_date) - new Date(a.move_in_date));
+    if (val === 'oldest') filtered.sort((a,b) => new Date(a.move_in_date) - new Date(b.move_in_date));
+    if (val === 'name')   filtered.sort((a,b) => a.first_name.localeCompare(b.first_name));
+    if (val === 'room')   filtered.sort((a,b) => (a.room_number??'').localeCompare(b.room_number??''));
     currentPage = 1;
     renderTable();
   }
 
-  // ── STATS ──
   function updateStats() {
     document.getElementById('count-total').textContent   = tenants.length;
-    document.getElementById('count-pending').textContent = tenants.filter(t=>t.status==='Pending').length;
+    document.getElementById('count-pending').textContent = tenants.filter(t => !t.is_active).length;
   }
 
-  // ── VIEW ──
-  function viewTenant(i) {
-    const t = tenants[i];
-    editIndex = i;
+  function viewTenant(t) {
     document.getElementById('view-content').innerHTML = `
-      <div class="view-row"><span class="view-label">Account ID</span><span class="view-val">${t.id}</span></div>
-      <div class="view-row"><span class="view-label">Tenant Name</span><span class="view-val">${t.name}</span></div>
-      <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room}</span></div>
-      <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.date)}</span></div>
-      <div class="view-row"><span class="view-label">Pending Bill</span><span class="view-val">₱${t.bill.toFixed(2)}</span></div>
-      <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact}</span></div>
-      <div class="view-row"><span class="view-label">Status</span><span class="view-val">${badge(t.status)}</span></div>
+      <div class="view-row"><span class="view-label">Tenant ID</span><span class="view-val">#${t.tenant_id}</span></div>
+      <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
+      <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email}</span></div>
+      <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
+      <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
+      <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
+      <div class="view-row"><span class="view-label">Status</span><span class="view-val">${badge(t.is_active)}</span></div>
     `;
     openModal('view-modal');
   }
 
-  function openEdit() { openEditModal(editIndex); }
-
-  // ── EDIT ──
-  function openEditModal(i) {
-    editIndex = i;
-    const t = tenants[i];
-    document.getElementById('edit-name').value    = t.name;
-    document.getElementById('edit-room').value    = t.room;
-    document.getElementById('edit-date').value    = t.date;
-    document.getElementById('edit-contact').value = t.contact;
-    document.getElementById('edit-bill').value    = t.bill;
-    document.getElementById('edit-status').value  = t.status;
+  function openEditModal(t) {
+    document.getElementById('edit-form').action = `/tenants/${t.tenant_id}`;
+    document.getElementById('edit-first-name').value = t.first_name;
+    document.getElementById('edit-last-name').value  = t.last_name;
+    document.getElementById('edit-email').value      = t.email;
+    document.getElementById('edit-room').value       = t.room_number ?? '';
+    document.getElementById('edit-date').value       = t.move_in_date ?? '';
+    document.getElementById('edit-contact').value    = t.contact_number ?? '';
+    document.getElementById('edit-is-active').value  = t.is_active ? '1' : '0';
     openModal('edit-modal');
   }
 
-  function saveEdit() {
-    const name    = document.getElementById('edit-name').value.trim();
-    const room    = document.getElementById('edit-room').value.trim();
-    const date    = document.getElementById('edit-date').value;
-    const contact = document.getElementById('edit-contact').value.trim();
-    const bill    = parseFloat(document.getElementById('edit-bill').value) || 0;
-    const status  = document.getElementById('edit-status').value;
-    if (!name || !room) { showToast('Name and Room are required.', 'error'); return; }
-    tenants[editIndex] = { ...tenants[editIndex], name, room, date, contact, bill, status };
-    filtered = [...tenants];
-    filterTable();
-    closeModal('edit-modal');
-    showToast('✅ Tenant updated successfully!', 'success');
-  }
-
-  // ── ADD ──
-  function addTenant() {
-    const name    = document.getElementById('add-name').value.trim();
-    const room    = document.getElementById('add-room').value.trim();
-    const date    = document.getElementById('add-date').value;
-    const contact = document.getElementById('add-contact').value.trim();
-    const bill    = parseFloat(document.getElementById('add-bill').value) || 0;
-    const status  = document.getElementById('add-status').value;
-    if (!name || !room) { showToast('Name and Room are required.', 'error'); return; }
-    const newId = 'R' + room.padStart(3,'0') + '-0' + (Math.floor(Math.random()*9)+1);
-    tenants.unshift({ id:newId, name, room, date, contact, bill, status });
-    filtered = [...tenants];
-    currentPage = 1;
-    renderTable();
-    closeModal('add-modal');
-    ['add-name','add-room','add-date','add-contact','add-bill'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('add-status').value = 'Active';
-    showToast('✅ Tenant added successfully!', 'success');
-  }
-
-  // ── DELETE ──
-  function openDeleteModal(i) {
-    deleteIndex = i;
-    document.getElementById('delete-name').textContent = tenants[i].name;
+  function openDeleteModal(id, name) {
+    document.getElementById('delete-name').textContent = name;
+    document.getElementById('delete-form').action = `/tenants/${id}`;
     openModal('delete-modal');
   }
-  function confirmDelete() {
-    tenants.splice(deleteIndex, 1);
-    filtered = [...tenants];
-    if ((currentPage-1)*PER_PAGE >= filtered.length && currentPage > 1) currentPage--;
-    renderTable();
-    closeModal('delete-modal');
-    showToast('🗑 Tenant deleted.', '');
-  }
 
-  // ── EXPORT ──
   function exportTenants() {
-    const rows = [['Account ID','Tenant Name','Room No.','Move-In Date','Pending Bill','Contact No.','Status']];
-    tenants.forEach(t => rows.push([t.id, t.name, t.room, t.date, t.bill.toFixed(2), t.contact, t.status]));
+    const rows = [['ID','First Name','Last Name','Email','Room','Move-In Date','Contact','Status']];
+    tenants.forEach(t => rows.push([
+      t.tenant_id, t.first_name, t.last_name, t.email,
+      t.room_number ?? '', t.move_in_date ?? '', t.contact_number ?? '',
+      t.is_active ? 'Active' : 'Inactive'
+    ]));
     const csv  = rows.map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], {type:'text/csv'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
     a.download = 'dormease-tenants.csv'; a.click();
     showToast('📥 Tenants exported as CSV!', 'success');
   }
 
-  // ── MODALS ──
   function openModal(id)  { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
   });
 
-  // ── TOAST ──
   function showToast(msg, type='') {
     const t = document.getElementById('toast');
     t.textContent = msg; t.className = 'toast ' + type;
@@ -874,9 +810,19 @@
     setTimeout(()=> t.classList.remove('show'), 3200);
   }
 
-  // ── INIT ──
+  // Auto-open add modal if there were validation errors
+  @if($errors->any())
+    document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
+  @endif
+
+  // Show success toast
+  @if(session('success'))
+    document.addEventListener('DOMContentLoaded', () => showToast('✅ {{ session("success") }}', 'success'));
+  @endif
+
   document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
   filtered = [...tenants];
   renderTable();
 </script>
