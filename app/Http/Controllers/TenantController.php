@@ -11,18 +11,10 @@ class TenantController extends Controller
     public function index()
     {
         $staff = auth()->guard('staff')->user();
-
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
-
         $totalTenants = Tenant::count();
-
-        // Active tenants = occupied units
         $occupiedUnits = Tenant::where('is_active', true)->count();
-
-        // Example total available units
-        $totalUnits = 50;
-
-        // Inactive tenants = pending
+        $totalUnits = 25;
         $pendingCount = Tenant::where('is_active', false)->count();
 
         return view('tenants', compact(
@@ -85,7 +77,6 @@ class TenantController extends Controller
             'is_active'
         ]);
 
-        // Only update password if a new one was provided
         if ($request->filled('password')) {
             $data['password_hash'] = Hash::make($request->password);
         }

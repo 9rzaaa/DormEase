@@ -220,48 +220,38 @@
     <div class="sidebar-role">👤 Admin</div>
 
     <nav class="sidebar-nav">
-    <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
-    </a>
-
-    <a href="{{ route('tenants') }}" class="nav-item {{ request()->routeIs('tenants.*') ? 'active' : '' }}">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Manage Tenants
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-docu.png') }}" alt=""></span> Document Management
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-maint.png') }}" alt=""></span> Maintenance Requests
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-bill.png') }}" alt=""></span> Water Billing
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
-    </a>
-
-    <div class="nav-divider"></div>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
-    </a>
-
-    <a href="#" class="nav-item">
-        <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
-    </a>
-</nav>
+        <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
+        </a>
+        <a href="{{ route('tenants') }}" class="nav-item {{ request()->routeIs('tenants.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Manage Tenants
+        </a>
+        <a href="{{ route('documents') }}" class="nav-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-docu.png') }}" alt=""></span> Document Management
+        </a>
+        <a href="{{ route('emergency') }}" class="nav-item {{ request()->routeIs('emergency.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
+        </a>
+        <a href="{{ route('maintenance') }}" class="nav-item {{ request()->routeIs('maintenance.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-maint.png') }}" alt=""></span> Maintenance Requests
+        </a>
+        <a href="{{ route('billing') }}" class="nav-item {{ request()->routeIs('billing.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-bill.png') }}" alt=""></span> Water Billing
+        </a>
+        <a href="{{ route('visitors') }}" class="nav-item {{ request()->routeIs('visitors.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
+        </a>
+        <a href="{{ route('announcements') }}" class="nav-item {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
+        </a>
+        <div class="nav-divider"></div>
+        <a href="{{ route('staff') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
+        </a>
+        <a href="{{ route('settings') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
+        </a>
+    </nav>
 
     <div class="sidebar-logout">
         <form method="POST" action="/logout" id="logout-form">@csrf</form>

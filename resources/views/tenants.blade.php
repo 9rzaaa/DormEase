@@ -44,7 +44,7 @@
     .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 600; margin-top: .2rem; }
     .icon-md {width: 26px; height: 26px; object-fit: contain; }
 
-    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;  margin: 0 2rem;}
+    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden;}
     .table-header {
         padding: 1.3rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
@@ -219,6 +219,7 @@
             <div class="stat-icon-circle">
             <img src="{{ asset('icons/pending.png') }}" class="icon-md" alt="pending">
           </div>
+          <div>
                 <div class="stat-label">Pending Tenants</div>
                 <div class="stat-num">{{ $pendingCount }}</div>
                 <div class="stat-sub">Payment Pending</div>
