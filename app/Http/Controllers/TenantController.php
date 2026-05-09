@@ -10,14 +10,21 @@ class TenantController extends Controller
 {
     public function index()
     {
+        $staff = auth()->guard('staff')->user();
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
-        return view('tenants', [
-        'tenants'       => $tenants,
-        'totalTenants'  => Tenant::count(),
-        'occupiedUnits' => Tenant::whereNotNull('room_number')->where('is_active', true)->count(),
-        'totalUnits'    => 25,
-        'pendingCount'  => Tenant::where('is_active', false)->count(),
-    ]);
+        $totalTenants = Tenant::count();
+        $occupiedUnits = Tenant::where('is_active', true)->count();
+        $totalUnits = 25;
+        $pendingCount = Tenant::where('is_active', false)->count();
+
+        return view('tenants', compact(
+            'staff',
+            'tenants',
+            'totalTenants',
+            'occupiedUnits',
+            'totalUnits',
+            'pendingCount'
+        ));
     }
 
     public function store(Request $request)
@@ -53,7 +60,7 @@ class TenantController extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email,'.$id.',tenant_id|max:100',
+            'email'          => 'required|email|unique:tenants,email,' . $id . ',tenant_id|max:100',
             'contact_number' => 'nullable|string|max:20',
             'room_number'    => 'required|string|max:20',
             'move_in_date'   => 'required|date',
@@ -61,11 +68,15 @@ class TenantController extends Controller
         ]);
 
         $data = $request->only([
-            'first_name', 'last_name', 'email',
-            'contact_number', 'room_number', 'move_in_date', 'is_active'
+            'first_name',
+            'last_name',
+            'email',
+            'contact_number',
+            'room_number',
+            'move_in_date',
+            'is_active'
         ]);
 
-        // Only update password if a new one was provided
         if ($request->filled('password')) {
             $data['password_hash'] = Hash::make($request->password);
         }

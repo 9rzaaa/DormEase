@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
 
-Route::get('/', fn() => view('login'))->name('login');
-
+Route::get('/', fn() => view('public.home'))->name('home');
+Route::get('/login', fn() => view('login'))->name('login');
 Route::post('/login', function () {
     $email    = request('email');
     $password = request('password');
