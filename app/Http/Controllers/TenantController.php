@@ -11,7 +11,13 @@ class TenantController extends Controller
     public function index()
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
-        return view('tenants', compact('tenants'));
+        return view('tenants', [
+        'tenants'       => $tenants,
+        'totalTenants'  => Tenant::count(),
+        'occupiedUnits' => Tenant::whereNotNull('room_number')->where('is_active', true)->count(),
+        'totalUnits'    => 25,
+        'pendingCount'  => Tenant::where('is_active', false)->count(),
+    ]);
     }
 
     public function store(Request $request)

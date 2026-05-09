@@ -6,6 +6,7 @@
 
 @section('styles')
 <style>
+
     .page-body {
         display: grid;
         grid-template-columns: 1fr 280px;
@@ -36,7 +37,7 @@
         transition: transform .2s, box-shadow .2s;
     }
     .stat-box:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(202,93,134,.14); }
-    .stat-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--pink); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: .8rem; }
+    .stat-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--pink); display: flex; align-items: center; justify-content: center; margin-bottom: .8rem; }
     .stat-num   { font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.02em; }
     .stat-label { font-size: .85rem; font-weight: 600; color: var(--ink); margin-top: .3rem; }
     .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 500; margin-top: .15rem; }
@@ -50,7 +51,7 @@
     }
     .maint-row:last-child { border-bottom: none; }
     .maint-row:hover { background: var(--pink-bg); }
-    .maint-type-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--pink-card); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .maint-type-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--pink-card); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .maint-info      { flex: 1; min-width: 0; }
     .maint-title     { font-size: .88rem; font-weight: 600; color: var(--ink); }
     .maint-id        { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; }
@@ -75,18 +76,18 @@
         border-radius: 16px; padding: 1.4rem;
         display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6rem;
     }
-    .emergency-title  { font-size: 1rem; font-weight: 700; color: var(--ink); }
-    .emergency-icon-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--ink); background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: .4rem 0; }
-    .emergency-room   { font-size: .9rem; font-weight: 700; color: var(--ink); }
-    .emergency-type   { font-size: .82rem; font-weight: 600; color: var(--pink); }
-    .emergency-status { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
+    .emergency-title     { font-size: 1rem; font-weight: 700; color: var(--ink); }
+    .emergency-icon-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--ink); background: var(--white); display: flex; align-items: center; justify-content: center; margin: .4rem 0; }
+    .emergency-room      { font-size: .9rem; font-weight: 700; color: var(--ink); }
+    .emergency-type      { font-size: .82rem; font-weight: 600; color: var(--pink); }
+    .emergency-status    { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
     .emergency-btn { margin-top: .5rem; width: 100%; background: var(--pink); color: var(--white); border: none; border-radius: 10px; padding: .65rem; font-size: .85rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .15s; }
     .emergency-btn:hover { background: #a8446c; transform: translateY(-1px); }
 
     .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--border); }
     .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .announce-title { font-size: .9rem; font-weight: 600; color: var(--ink); }
-    .announce-date  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
+    .announce-title   { font-size: .9rem; font-weight: 600; color: var(--ink); }
+    .announce-date    { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
     .announce-actions { display: flex; gap: .5rem; margin-top: .5rem; }
     .announce-action-btn { font-size: .75rem; font-weight: 600; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--border); background: none; color: var(--ink-muted); cursor: pointer; transition: border-color .2s, color .2s; }
     .announce-action-btn:hover { border-color: var(--pink); color: var(--pink); }
@@ -98,7 +99,7 @@
 
     .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
     .notif-item:last-child { border-bottom: none; }
-    .notif-ico  { font-size: 1rem; flex-shrink: 0; margin-top: .1rem; }
+    .notif-ico  { flex-shrink: 0; margin-top: .1rem; }
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
@@ -107,19 +108,25 @@
     .activity-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--pink-light), var(--pink)); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: var(--white); }
     .activity-text { font-size: .8rem; color: var(--ink); line-height: 1.4; }
     .activity-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
-    .icon-md { width: 24px; height: 24px; }
+
+    .icon-sm { width: 16px; height: 16px; object-fit: contain; }
+    .icon-md { width: 24px; height: 24px; object-fit: contain; }
+    .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
         .page-body  { grid-template-columns: 1fr; }
         .right-col  { display: grid; grid-template-columns: 1fr 1fr; }
     }
+
     @media (max-width: 820px) {
         .bottom-row { grid-template-columns: 1fr; }
         .right-col  { grid-template-columns: 1fr; }
     }
+
 </style>
 @endsection
+
 
 @section('content')
 
@@ -127,40 +134,45 @@
 
     <div class="content-col">
 
+        {{-- Page Header --}}
         <div class="page-header fade-up d1">
             <h1>Welcome, {{ $staff->first_name }}!</h1>
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
 
+        {{-- Quick Summary --}}
         <div class="card fade-up d2">
             <div class="card-header">
                 <div>
                     <div class="card-title">Quick Summary</div>
                     <div class="card-sub">As of {{ now()->format('F d, Y') }}</div>
                 </div>
-                <button class="export-btn" onclick="exportSummary()">⬇ Export</button>
+                <button class="export-btn" onclick="exportSummary()">
+                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="">
+                    Export
+                </button>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-icon">
-                       <img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants">
-                      </div>
+                        <img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants">
+                    </div>
                     <div class="stat-num">{{ $totalTenants ?? 0 }}</div>
                     <div class="stat-label">Total Tenants</div>
                     <div class="stat-sub">Currently Registered</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon">
-                      <img src="{{ asset('icons/billing.png') }}" class="icon-md" alt="payments">
+                        <img src="{{ asset('icons/billing.png') }}" class="icon-md" alt="payments">
                     </div>
                     <div class="stat-num">{{ $pendingPayments ?? 0 }}</div>
                     <div class="stat-label">Pending Payments</div>
                     <div class="stat-sub">Unsettled water charges</div>
                 </div>
                 <div class="stat-box">
-                     <div class="stat-icon">
-                      <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="maintenance">
+                    <div class="stat-icon">
+                        <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="maintenance">
                     </div>
                     <div class="stat-num">{{ $pendingMaintenance ?? 0 }}</div>
                     <div class="stat-label">Maintenance Requests</div>
@@ -168,7 +180,7 @@
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon">
-                      <img src="{{ asset('icons/warn.png') }}" class="icon-md" alt="reports">
+                        <img src="{{ asset('icons/warn.png') }}" class="icon-md" alt="reports">
                     </div>
                     <div class="stat-num">{{ $unresolvedReports ?? 0 }}</div>
                     <div class="stat-label">Unresolved Reports</div>
@@ -177,12 +189,13 @@
             </div>
         </div>
 
+        {{-- Maintenance + Emergency --}}
         <div class="bottom-row fade-up d3">
 
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Maintenance Requests</div>
-                    <a href="{{ route('maintenance.index') }}" class="see-all">See All</a>
+                    <a href="/maintenance" class="see-all">See All</a>
                 </div>
 
                 @if($maintenanceRequests->isEmpty())
@@ -191,10 +204,14 @@
                     @foreach($maintenanceRequests as $req)
                         <div class="maint-row">
                             <div class="maint-type-icon">
-                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb')) 🔧
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec')) ⚡
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac')) ❄️
-                                @else 🛠
+                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
+                                    <img src="{{ asset('icons/plumbing.png') }}" class="icon-md" alt="">
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec'))
+                                    <img src="{{ asset('icons/electric.png') }}" class="icon-md" alt="">
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac'))
+                                    <img src="{{ asset('icons/hvac.png') }}" class="icon-md" alt="">
+                                @else
+                                    <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="">
                                 @endif
                             </div>
                             <div class="maint-info">
@@ -232,7 +249,9 @@
             @if($latestEmergency)
                 <div class="emergency-card">
                     <div class="emergency-title">Emergency Report</div>
-                    <div class="emergency-icon-wrap">⚠️</div>
+                    <div class="emergency-icon-wrap">
+                        <img src="{{ asset('icons/emergency.png') }}" class="icon-lg" alt="">
+                    </div>
                     <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}:</div>
                     <div class="emergency-type">{{ $latestEmergency->emergency_type }}</div>
                     <div class="emergency-status">{{ $latestEmergency->status }}</div>
@@ -241,7 +260,9 @@
             @else
                 <div class="emergency-card" style="opacity:.65;">
                     <div class="emergency-title">Emergency Reports</div>
-                    <div class="emergency-icon-wrap">✅</div>
+                    <div class="emergency-icon-wrap">
+                        <img src="{{ asset('icons/check.png') }}" class="icon-lg" alt="">
+                    </div>
                     <div class="emergency-type" style="color:var(--green);">All Clear</div>
                     <div class="emergency-status">No active emergencies</div>
                     <button class="emergency-btn" style="background:var(--green);" onclick="openModal('emergency-modal')">View History</button>
@@ -257,7 +278,7 @@
                 <div style="display:flex;gap:.8rem;align-items:center;">
                     <button class="post-announce-btn" onclick="openModal('announce-modal')">Post Announcement</button>
                     <span style="color:var(--gray);font-size:.8rem;">|</span>
-                    <a href="{{ route('announcements.index') }}" class="see-all">See All</a>
+                    <a href="/announcements" class="see-all">See All</a>
                 </div>
             </div>
 
@@ -279,6 +300,7 @@
 
     </div>
 
+    {{-- Right Column --}}
     <div class="right-col fade-up d5">
 
         <div class="card">
@@ -289,11 +311,16 @@
                 @foreach($notifications as $notif)
                     <div class="notif-item">
                         <div class="notif-ico">
-                            @if($notif->type === 'emergency') 🚨
-                            @elseif($notif->type === 'maintenance') 🔧
-                            @elseif($notif->type === 'visitor') 🚪
-                            @elseif($notif->type === 'tenant') 👤
-                            @else 🔔
+                            @if($notif->type === 'emergency')
+                                <img src="{{ asset('icons/emergency.png') }}" class="icon-sm" alt="">
+                            @elseif($notif->type === 'maintenance')
+                                <img src="{{ asset('icons/maintenance.png') }}" class="icon-sm" alt="">
+                            @elseif($notif->type === 'visitor')
+                                <img src="{{ asset('icons/visitors.png') }}" class="icon-sm" alt="">
+                            @elseif($notif->type === 'tenant')
+                                <img src="{{ asset('icons/tenants.png') }}" class="icon-sm" alt="">
+                            @else
+                                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="">
                             @endif
                         </div>
                         <div>
@@ -333,12 +360,14 @@
 
 @endsection
 
+
 @section('modals')
 
+{{-- Announce Modal --}}
 <div class="modal-overlay" id="announce-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">📢 Post Announcement</div>
+            <div class="modal-title">Post Announcement</div>
             <button class="modal-close" onclick="closeModal('announce-modal')">✕</button>
         </div>
         <div class="modal-field">
@@ -356,10 +385,11 @@
     </div>
 </div>
 
+{{-- Emergency Modal --}}
 <div class="modal-overlay" id="emergency-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">🚨 Emergency Alerts</div>
+            <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">✕</button>
         </div>
         <div style="display:flex;flex-direction:column;gap:.8rem;">
@@ -370,7 +400,7 @@
                     <div class="alert-item {{ $emergency->status === 'resolved' ? 'resolved' : 'active' }}">
                         <div class="alert-room">{{ $emergency->location ?? 'Unknown' }}: {{ $emergency->emergency_type }}</div>
                         <div class="alert-status">
-                            {{ $emergency->status === 'resolved' ? '✅ Resolved' : $emergency->status }}
+                            {{ $emergency->status === 'resolved' ? 'Resolved' : $emergency->status }}
                         </div>
                     </div>
                 @endforeach
@@ -383,6 +413,7 @@
 </div>
 
 @endsection
+
 
 @section('scripts')
 <script>
@@ -400,7 +431,7 @@
         a.href     = URL.createObjectURL(blob);
         a.download = 'dormease-summary.csv';
         a.click();
-        showToast('📥 Summary exported as CSV!', 'success');
+        showToast('Summary exported as CSV!', 'success');
     }
 </script>
 @endsection
