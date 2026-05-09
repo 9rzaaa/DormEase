@@ -223,7 +223,7 @@
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
         </a>
-        <a href="{{ route('tenants') }}" class="nav-item {{ request()->routeIs('tenants.*') ? 'active' : '' }}">
+        <a href="{{ route('tenants') }}" class="nav-item {{ request()->routeIs('tenants') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Manage Tenants
         </a>
         <a href="{{ route('documents') }}" class="nav-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">

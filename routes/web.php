@@ -40,7 +40,7 @@ Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/');
+    return redirect('/login');
 })->name('logout');
 
 Route::middleware('auth:staff')->group(function () {
@@ -67,21 +67,12 @@ Route::middleware('auth:staff')->group(function () {
         ]);
     })->name('dashboard');
 
-    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
-        ->name('frontdesk.dashboard');
-
+    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
     Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
     Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
     Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
-
-    Route::get('/documents',   fn() => view('documents'))->name('documents');
-    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance');
-    Route::get('/emergency',   fn() => view('emergency'))->name('emergency');
-    Route::get('/billing',     fn() => view('billing'))->name('billing');
-    Route::get('/visitors',    fn() => view('visitors'))->name('visitors');
-    Route::get('/staff',       fn() => view('staff'))->name('staff');
-    Route::get('/settings',    fn() => view('settings'))->name('settings');
+    Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
 
     Route::get('/announcements', function () {
         $staff = Auth::guard('staff')->user();
@@ -93,14 +84,25 @@ Route::middleware('auth:staff')->group(function () {
     })->name('announcements');
 
     Route::post('/announcements', function () {
+        $attachment = null;
+        if (request()->hasFile('files')) {
+            $paths = [];
+            foreach (request()->file('files') as $file) {
+                $paths[] = $file->store('announcements', 'public');
+            }
+            $attachment = implode(',', $paths);
+        }
+
         \App\Models\Announcement::create([
-            'title'     => request('title'),
-            'content'   => request('description'),
-            'priority'  => request('priority', 'low'),
-            'status'    => request('status', 'active'),
-            'posted_by' => Auth::guard('staff')->id(),
-            'posted_at' => now(),
+            'title'      => request('title'),
+            'content'    => request('content'),
+            'priority'   => request('priority', 'low'),
+            'status'     => request('status', 'active'),
+            'posted_by'  => Auth::guard('staff')->id(),
+            'posted_at'  => now(),
+            'attachment' => $attachment,
         ]);
+
         return redirect()->route('announcements')->with('success', 'Announcement posted successfully!');
     })->name('announcements.store');
 
@@ -108,19 +110,19 @@ Route::middleware('auth:staff')->group(function () {
         $ann = \App\Models\Announcement::findOrFail($id);
         $ann->update([
             'title'    => request('title'),
-            'content'  => request('description'),
+            'content'  => request('content'),
             'priority' => request('priority', $ann->priority),
             'status'   => request('status', $ann->status),
         ]);
         return redirect()->route('announcements')->with('success', 'Announcement updated!');
     })->name('announcements.update');
 
-    Route::patch('/announcements/{id}/archive', function ($id) {
+    Route::post('/announcements/{id}/archive', function ($id) {
         \App\Models\Announcement::findOrFail($id)->update(['status' => 'closed']);
         return redirect()->route('announcements')->with('success', 'Announcement archived.');
     })->name('announcements.archive');
 
-    Route::patch('/announcements/{id}/restore', function ($id) {
+    Route::post('/announcements/{id}/restore', function ($id) {
         \App\Models\Announcement::findOrFail($id)->update(['status' => 'active']);
         return redirect()->route('announcements')->with('success', 'Announcement restored.');
     })->name('announcements.restore');
@@ -129,5 +131,13 @@ Route::middleware('auth:staff')->group(function () {
         \App\Models\Announcement::findOrFail($id)->delete();
         return redirect()->route('announcements')->with('success', 'Announcement deleted.');
     })->name('announcements.destroy');
+
+    Route::get('/documents',   fn() => view('documents'))->name('documents');
+    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance');
+    Route::get('/emergency',   fn() => view('emergency'))->name('emergency');
+    Route::get('/billing',     fn() => view('billing'))->name('billing');
+    Route::get('/visitors',    fn() => view('visitors'))->name('visitors');
+    Route::get('/staff',       fn() => view('staff'))->name('staff');
+    Route::get('/settings',    fn() => view('settings'))->name('settings');
 
 });

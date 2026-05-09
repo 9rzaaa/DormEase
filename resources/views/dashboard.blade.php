@@ -91,6 +91,7 @@
     .announce-actions { display: flex; gap: .5rem; margin-top: .5rem; }
     .announce-action-btn { font-size: .75rem; font-weight: 600; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--border); background: none; color: var(--ink-muted); cursor: pointer; transition: border-color .2s, color .2s; }
     .announce-action-btn:hover { border-color: var(--pink); color: var(--pink); }
+    .announce-action-btn.delete:hover { border-color: var(--red); color: var(--red); }
     .post-announce-btn { font-size: .8rem; font-weight: 600; color: var(--pink); background: none; border: none; cursor: pointer; }
     .post-announce-btn:hover { text-decoration: underline; }
 
@@ -113,12 +114,20 @@
     .icon-md { width: 24px; height: 24px; object-fit: contain; }
     .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
+    .priority-badge {
+        display: inline-block; font-size: .68rem; font-weight: 700;
+        padding: .15rem .5rem; border-radius: 5px; border: 1.5px solid;
+        margin-left: .4rem; vertical-align: middle;
+    }
+    .priority-low      { color: var(--green);  border-color: var(--green);  background: #f0fdf8; }
+    .priority-moderate { color: var(--salmon); border-color: var(--salmon); background: #fff6f2; }
+    .priority-high     { color: var(--red);    border-color: var(--red);    background: #fff0f0; }
+
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
         .page-body  { grid-template-columns: 1fr; }
         .right-col  { display: grid; grid-template-columns: 1fr 1fr; }
     }
-
     @media (max-width: 820px) {
         .bottom-row { grid-template-columns: 1fr; }
         .right-col  { grid-template-columns: 1fr; }
@@ -134,13 +143,11 @@
 
     <div class="content-col">
 
-        {{-- Page Header --}}
         <div class="page-header fade-up d1">
             <h1>Welcome, {{ $staff->first_name }}!</h1>
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
 
-        {{-- Quick Summary --}}
         <div class="card fade-up d2">
             <div class="card-header">
                 <div>
@@ -155,33 +162,25 @@
 
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-icon">
-                        <img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants">
-                    </div>
+                    <div class="stat-icon"><img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants"></div>
                     <div class="stat-num">{{ $totalTenants ?? 0 }}</div>
                     <div class="stat-label">Total Tenants</div>
                     <div class="stat-sub">Currently Registered</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-icon">
-                        <img src="{{ asset('icons/billing.png') }}" class="icon-md" alt="payments">
-                    </div>
+                    <div class="stat-icon"><img src="{{ asset('icons/billing.png') }}" class="icon-md" alt="payments"></div>
                     <div class="stat-num">{{ $pendingPayments ?? 0 }}</div>
                     <div class="stat-label">Pending Payments</div>
                     <div class="stat-sub">Unsettled water charges</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-icon">
-                        <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="maintenance">
-                    </div>
+                    <div class="stat-icon"><img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="maintenance"></div>
                     <div class="stat-num">{{ $pendingMaintenance ?? 0 }}</div>
                     <div class="stat-label">Maintenance Requests</div>
                     <div class="stat-sub">Pending &amp; in progress</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-icon">
-                        <img src="{{ asset('icons/warn.png') }}" class="icon-md" alt="reports">
-                    </div>
+                    <div class="stat-icon"><img src="{{ asset('icons/warn.png') }}" class="icon-md" alt="reports"></div>
                     <div class="stat-num">{{ $unresolvedReports ?? 0 }}</div>
                     <div class="stat-label">Unresolved Reports</div>
                     <div class="stat-sub">Ongoing concerns</div>
@@ -189,13 +188,12 @@
             </div>
         </div>
 
-        {{-- Maintenance + Emergency --}}
         <div class="bottom-row fade-up d3">
 
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Maintenance Requests</div>
-                    <a href="/maintenance" class="see-all">See All</a>
+                    <a href="{{ route('maintenance') }}" class="see-all">See All</a>
                 </div>
 
                 @if($maintenanceRequests->isEmpty())
@@ -208,8 +206,6 @@
                                     <img src="{{ asset('icons/plumbing.png') }}" class="icon-md" alt="">
                                 @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec'))
                                     <img src="{{ asset('icons/electric.png') }}" class="icon-md" alt="">
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac'))
-                                    <img src="{{ asset('icons/hvac.png') }}" class="icon-md" alt="">
                                 @else
                                     <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="">
                                 @endif
@@ -271,27 +267,37 @@
 
         </div>
 
-        {{-- Announcements --}}
         <div class="card fade-up d4">
             <div class="card-header">
                 <div class="card-title">Latest Announcements</div>
                 <div style="display:flex;gap:.8rem;align-items:center;">
-                    <button class="post-announce-btn" onclick="openModal('announce-modal')">Post Announcement</button>
+                    <button class="post-announce-btn" onclick="openPostModal()">+ Post Announcement</button>
                     <span style="color:var(--gray);font-size:.8rem;">|</span>
-                    <a href="/announcements" class="see-all">See All</a>
+                    <a href="{{ route('announcements') }}" class="see-all">See All</a>
                 </div>
             </div>
 
             @if($announcements->isEmpty())
-                <div class="empty-state">No announcements yet.</div>
+                <div class="empty-state" id="ann-empty">No announcements yet.</div>
             @else
                 @foreach($announcements as $ann)
-                    <div class="announce-item">
-                        <div class="announce-title">{{ $ann->title }}</div>
-                        <div class="announce-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F d, Y') }}</div>
+                    <div class="announce-item" id="ann-row-{{ $ann->announcement_id }}">
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <div class="announce-title">{{ $ann->title }}</div>
+                            <span class="priority-badge priority-{{ strtolower($ann->priority ?? 'low') }}">
+                                {{ ucfirst($ann->priority ?? 'Low') }}
+                            </span>
+                        </div>
+                        <div class="announce-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F d, Y · g:i A') }}</div>
                         <div class="announce-actions">
-                            <button class="announce-action-btn">Edit</button>
-                            <button class="announce-action-btn">Delete</button>
+                            <button class="announce-action-btn"
+                                onclick="openEditModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', '{{ addslashes($ann->content) }}', '{{ $ann->priority }}', '{{ $ann->status }}')">
+                                Edit
+                            </button>
+                            <button class="announce-action-btn delete"
+                                onclick="openDeleteModal({{ $ann->announcement_id }})">
+                                Delete
+                            </button>
                         </div>
                     </div>
                 @endforeach
@@ -300,7 +306,6 @@
 
     </div>
 
-    {{-- Right Column --}}
     <div class="right-col fade-up d5">
 
         <div class="card">
@@ -311,17 +316,8 @@
                 @foreach($notifications as $notif)
                     <div class="notif-item">
                         <div class="notif-ico">
-                            @if($notif->type === 'emergency')
-                                <img src="{{ asset('icons/emergency.png') }}" class="icon-sm" alt="">
-                            @elseif($notif->type === 'maintenance')
-                                <img src="{{ asset('icons/maintenance.png') }}" class="icon-sm" alt="">
-                            @elseif($notif->type === 'visitor')
-                                <img src="{{ asset('icons/visitors.png') }}" class="icon-sm" alt="">
-                            @elseif($notif->type === 'tenant')
-                                <img src="{{ asset('icons/tenants.png') }}" class="icon-sm" alt="">
-                            @else
-                                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="">
-                            @endif
+                            <img src="{{ asset('icons/' . ($notif->type ?? 'bell') . '.png') }}" class="icon-sm" alt=""
+                                 onerror="this.src='{{ asset('icons/bell.png') }}'">
                         </div>
                         <div>
                             <div class="notif-text">{{ $notif->message }}</div>
@@ -363,29 +359,109 @@
 
 @section('modals')
 
-{{-- Announce Modal --}}
 <div class="modal-overlay" id="announce-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post Announcement</div>
             <button class="modal-close" onclick="closeModal('announce-modal')">✕</button>
         </div>
-        <div class="modal-field">
-            <label>Title</label>
-            <input type="text" id="ann-title" placeholder="e.g. Water Billing Reminder">
-        </div>
-        <div class="modal-field">
-            <label>Message</label>
-            <textarea id="ann-body" placeholder="Write your announcement here..."></textarea>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('announce-modal')">Cancel</button>
-            <button class="btn-submit">Post</button>
-        </div>
+        <form method="POST" action="{{ route('announcements.store') }}" id="post-ann-form">
+            @csrf
+            <div class="modal-field">
+                <label>Title *</label>
+                <input type="text" name="title" id="ann-title" placeholder="e.g. Water Billing Reminder" required>
+            </div>
+            <div class="modal-field">
+                <label>Message *</label>
+                <textarea name="description" id="ann-body" placeholder="Write your announcement here..." required></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="modal-field">
+                    <label>Priority</label>
+                    <select name="priority" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select name="status" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('announce-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Post</button>
+            </div>
+        </form>
     </div>
 </div>
 
-{{-- Emergency Modal --}}
+<div class="modal-overlay" id="edit-ann-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Edit Announcement</div>
+            <button class="modal-close" onclick="closeModal('edit-ann-modal')">✕</button>
+        </div>
+        <form method="POST" id="edit-ann-form">
+            @csrf
+            @method('PUT')
+            <div class="modal-field">
+                <label>Title *</label>
+                <input type="text" name="title" id="edit-ann-title" required>
+            </div>
+            <div class="modal-field">
+                <label>Message *</label>
+                <textarea name="description" id="edit-ann-body" required></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="modal-field">
+                    <label>Priority</label>
+                    <select name="priority" id="edit-ann-priority" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select name="status" id="edit-ann-status" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('edit-ann-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-ann-modal">
+    <div class="modal" style="max-width:380px;">
+        <div class="modal-header">
+            <div class="modal-title">Delete Announcement</div>
+            <button class="modal-close" onclick="closeModal('delete-ann-modal')">✕</button>
+        </div>
+        <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">
+            Are you sure you want to delete this announcement? This cannot be undone.
+        </p>
+        <form method="POST" id="delete-ann-form">
+            @csrf
+            @method('DELETE')
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('delete-ann-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal-overlay" id="emergency-modal">
     <div class="modal">
         <div class="modal-header">
@@ -399,9 +475,7 @@
                 @foreach($allEmergencies as $emergency)
                     <div class="alert-item {{ $emergency->status === 'resolved' ? 'resolved' : 'active' }}">
                         <div class="alert-room">{{ $emergency->location ?? 'Unknown' }}: {{ $emergency->emergency_type }}</div>
-                        <div class="alert-status">
-                            {{ $emergency->status === 'resolved' ? 'Resolved' : $emergency->status }}
-                        </div>
+                        <div class="alert-status">{{ $emergency->status === 'resolved' ? 'Resolved' : $emergency->status }}</div>
                     </div>
                 @endforeach
             @endif
@@ -417,6 +491,26 @@
 
 @section('scripts')
 <script>
+    function openPostModal() {
+        document.getElementById('ann-title').value = '';
+        document.getElementById('ann-body').value  = '';
+        openModal('announce-modal');
+    }
+
+    function openEditModal(id, title, content, priority, status) {
+        document.getElementById('edit-ann-title').value    = title;
+        document.getElementById('edit-ann-body').value     = content;
+        document.getElementById('edit-ann-priority').value = priority;
+        document.getElementById('edit-ann-status').value   = status;
+        document.getElementById('edit-ann-form').action    = '/announcements/' + id;
+        openModal('edit-ann-modal');
+    }
+
+    function openDeleteModal(id) {
+        document.getElementById('delete-ann-form').action = '/announcements/' + id;
+        openModal('delete-ann-modal');
+    }
+
     function exportSummary() {
         const rows = [
             ['Metric', 'Value'],
@@ -433,5 +527,12 @@
         a.click();
         showToast('Summary exported as CSV!', 'success');
     }
+
+    @if(session('success'))
+        showToast("{{ session('success') }}", 'success');
+    @endif
+    @if(session('error'))
+        showToast("{{ session('error') }}", 'error');
+    @endif
 </script>
 @endsection
