@@ -5,26 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DormEase – Sanctissimo Rosario Ladies Dormitory</title>
 
-<!--
-=======================================================================
-  DORMEASE LANDING PAGE
-
-  IMAGE SLOTS SUMMARY — search "IMAGE SLOT" to jump to each one:
-    Slot 1 – NAV LOGO          → src/images/logo.png            160×40px PNG transparent
-    Slot 2 – HERO BACKGROUND   → src/images/hero-bg.jpg         1920×1080px (optional)
-    Slot 3 – APP MOCKUP        → src/images/app-mockup.png      560×800px PNG transparent
-    Slot 4 – ABOUT EXTERIOR    → src/images/dorm-exterior.jpg   800×520px
-    Slot 5 – ABOUT ROOM        → src/images/dorm-room.jpg       800×360px
-    Slot 6 – GALLERY MAIN      → src/images/gallery-1.jpg       600×900px
-    Slot 7 – GALLERY TOP-RIGHT → src/images/gallery-2.jpg       600×400px
-    Slot 8 – GALLERY BOT-RIGHT → src/images/gallery-3.jpg       600×400px
-    Slot 9 – FOOTER LOGO       → src/images/logo-white.png      160×40px white version
-
-  Laravel asset path syntax:  src="{{ asset('images/filename.ext') }}"
-  Plain HTML path syntax:     src="src/images/filename.ext"
-=======================================================================
--->
-
 <!-- Fonts: Montserrat (Headlines) + Nunito (Body – closest open-source to Google Sans) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,11 +85,6 @@ nav {
 }
 nav.scrolled { box-shadow: var(--shadow-soft); }
 
-/* ── IMAGE SLOT 1: NAV LOGO ──────────────────────────────────────
-   Plain HTML:  <img src="src/images/logo.png" ...>
-   Laravel:     <img src="{{ asset('images/logo.png') }}" ...>
-   Size: 160×40px PNG with transparency recommended.
-──────────────────────────────────────────────────────────────── */
 .nav-logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
 .nav-logo img { height: 38px; width: auto; object-fit: contain; display: block; filter: drop-shadow(0 2px 4px rgba(58, 32, 16, 0.2)); }
 .nav-logo-fb {
@@ -133,56 +108,56 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 
 /* ── HERO ── */
 .hero {
-  min-height: 100svh; padding: 100px 6% 80px;
-  display: grid; grid-template-columns: 1fr 1fr;
-  align-items: center; gap: 64px;
-  position: relative; overflow: hidden;
+  min-height: 100svh;
+  padding: 0 5% 0 8%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
 }
-/* ── IMAGE SLOT 2: HERO BACKGROUND (optional) ────────────────────
-   To add a background photo, add to .hero style:
-     background-image: url('src/images/hero-bg.jpg');
-     background-size: cover; background-position: center;
-   Then adjust the ::before overlay opacity for readability.
-──────────────────────────────────────────────────────────────── */
-.hero::before {
-  content: ''; position: absolute; top: -140px; right: -140px;
-  width: 580px; height: 580px; border-radius: 50%;
-  background: var(--pink-pale); z-index: 0;
+
+/* ── LEFT CONTENT ── */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 100px 0 80px;
 }
-.hero::after {
-  content: ''; position: absolute; bottom: -80px; left: 28%;
-  width: 320px; height: 320px; border-radius: 50%;
-  background: rgba(214,56,104,0.05); z-index: 0;
-}
-.hero-content { position: relative; z-index: 1; }
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--pink-pale); border: 1px solid var(--pink-light);
-  color: var(--pink-deep); font-size: 0.70rem; font-weight: 700;
+  background: white; border: 1px solid var(--border);
+  color: var(--pink-deep); font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.09em; text-transform: uppercase;
   padding: 6px 16px; border-radius: 100px; margin-bottom: 28px;
+  box-shadow: 0 1px 6px rgba(214,56,104,0.10);
 }
 .hero-badge::before {
   content: ''; width: 6px; height: 6px;
   background: var(--pink); border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: pulse 2s infinite; flex-shrink: 0;
 }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
 .hero h1 {
   font-family: var(--font-head);
-  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
-  font-weight: 800; line-height: 1.1;
-  color: var(--brown); margin-bottom: 24px; letter-spacing: -0.03em;
+  font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+  font-weight: 800; line-height: 1.08;
+  color: var(--brown); margin-bottom: 22px; letter-spacing: -0.03em;
 }
 .hero h1 em { font-style: italic; color: var(--pink); font-weight: 700; }
 
 .hero-sub {
-  font-size: 1rem; color: var(--brown-light);
-  line-height: 1.8; max-width: 460px; margin-bottom: 40px;
+  font-size: 0.97rem; color: var(--brown-light);
+  line-height: 1.85; max-width: 420px; margin-bottom: 36px;
 }
-.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+
+.hero-actions {
+  display: flex; gap: 14px; align-items: center;
+  flex-wrap: wrap; margin-bottom: 44px;
+}
 
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
@@ -192,8 +167,7 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   box-shadow: 0 8px 24px rgba(214,56,104,0.30);
 }
-.btn-primary:hover { background: var(--pink-deep); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(214,56,104,0.40); }
-.btn-primary svg { width: 18px; height: 18px; fill: white; flex-shrink: 0; }
+.btn-primary:hover { background: var(--pink-deep); transform: translateY(-2px); }
 
 .btn-outline {
   display: inline-flex; align-items: center; gap: 8px;
@@ -205,62 +179,136 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 }
 .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
 
-.hero-stats {
-  display: flex; gap: 36px;
-  margin-top: 48px; padding-top: 32px;
+/* ── STATS ROW (under buttons) ── */
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding-top: 32px;
   border-top: 1px solid var(--border);
 }
+.hero-stat-item {
+  flex: 1;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+  flex-shrink: 0;
+}
 .hero-stat-num {
-  font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+  font-family: var(--font-head);
+  font-size: 2rem; font-weight: 800;
   color: var(--pink); line-height: 1;
 }
 .hero-stat-label {
-  font-size: 0.70rem; color: var(--brown-light);
-  margin-top: 4px; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 700;
+  font-size: 0.68rem; color: var(--brown-light);
+  margin-top: 5px; text-transform: uppercase;
+  letter-spacing: 0.10em; font-weight: 700;
 }
 
-/* ── PHONE MOCKUP ── */
-.hero-visual { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; }
-
-/* ── IMAGE SLOT 3: APP MOCKUP ────────────────────────────────────
-   Replace the entire .phone-frame div with:
-     <img src="src/images/app-mockup.png" alt="DormEase App" class="app-mockup-img">
-   In Laravel: src="{{ asset('images/app-mockup.png') }}"
-   Add CSS:    .app-mockup-img { width:280px; animation: float 6s ease-in-out infinite; }
-──────────────────────────────────────────────────────────────── */
-.phone-frame {
-  width: 276px; background: var(--brown); border-radius: 44px; padding: 11px;
-  box-shadow: 0 40px 80px rgba(58,32,16,0.28), 0 0 0 1px rgba(58,32,16,0.12);
-  position: relative; animation: float 6s ease-in-out infinite;
+/* ── RIGHT: ARCH PHOTO ── */
+.hero-arch-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 100svh;
+  z-index: 1;
 }
-@keyframes float { 0%,100%{transform:translateY(0) rotate(-1.5deg)} 50%{transform:translateY(-18px) rotate(-0.5deg)} }
-.phone-notch { width: 76px; height: 26px; background: var(--brown); border-radius: 100px; margin: 0 auto 8px; }
-.phone-screen { background: #FFF0F5; border-radius: 34px; overflow: hidden; min-height: 500px; }
-.phone-status { background:var(--pink); padding:10px 20px 5px; color:white; font-size:10px; font-weight:600; display:flex; justify-content:space-between; }
-.phone-app-bar { background:var(--pink); padding:8px 20px 14px; font-family:var(--font-head); font-size:15px; font-weight:700; color:white; text-align:center; }
-.phone-body { padding:14px; }
-.phone-greeting { font-size:11px; color:var(--brown-light); margin-bottom:2px; }
-.phone-name { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--brown); margin-bottom:13px; }
-.phone-card { background:white; border-radius:13px; padding:11px; margin-bottom:8px; box-shadow:var(--shadow-card); display:flex; align-items:center; gap:10px; }
-.phone-card-icon { width:37px; height:37px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.phone-card-title { font-size:11px; font-weight:600; color:var(--brown); font-family:var(--font-body); }
-.phone-card-sub { font-size:9px; color:var(--brown-light); margin-top:2px; }
-.badge-l { background:#FFF3CD; color:#856404; font-size:8px; padding:2px 6px; border-radius:100px; font-weight:700; }
-.badge-h { background:#FFE0E8; color:var(--pink-deep); font-size:8px; padding:2px 6px; border-radius:100px; font-weight:700; }
-.phone-tabs { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid rgba(214,56,104,0.10); padding:7px 0 3px; margin-top:6px; }
-.phone-tab { text-align:center; }
-.t-icon { font-size:15px; color:#ccc; display:block; }
-.t-icon.on { color:var(--pink); }
-.t-lbl { font-size:7px; color:#bbb; display:block; margin-top:1px; font-weight:600; }
-.t-lbl.on { color:var(--pink); }
 
-.fl-card { position:absolute; background:white; border-radius:var(--r-md); padding:11px 15px; box-shadow:0 8px 32px rgba(58,32,16,0.12); border:1px solid var(--border); }
-.fl-card.tr { top:30px; right:-56px; animation:f2 5s ease-in-out infinite; }
-.fl-card.bl { bottom:80px; left:-76px; animation:f3 7s ease-in-out infinite; }
-@keyframes f2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-@keyframes f3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
-.fl-lbl { font-size:10px; color:var(--brown-light); font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
-.fl-val { font-family:var(--font-head); font-size:17px; font-weight:800; color:var(--pink); margin-top:2px; }
+.hero-blob-top {
+  position: absolute;
+  top: 12%; right: 4%;
+  width: 220px; height: 200px;
+  background: var(--pink-light);
+  border-radius: 60% 80% 40% 70% / 50% 60% 80% 40%;
+  opacity: 0.40;
+  z-index: 0;
+}
+.hero-blob-bottom {
+  position: absolute;
+  bottom: 14%; left: 2%;
+  width: 160px; height: 150px;
+  background: var(--pink-pale);
+  border-radius: 70% 40% 60% 50% / 60% 80% 40% 70%;
+  opacity: 0.75;
+  z-index: 0;
+}
+
+.hero-arch {
+  position: relative;
+  z-index: 1;
+  width: 380px;
+  height: 520px;
+  border-radius: 220px 220px 36px 36px;
+  overflow: hidden;
+  box-shadow: 0 40px 90px rgba(58,32,16,0.16), 0 0 0 10px rgba(214,56,104,0.07);
+}
+.hero-arch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: brightness(0.93) saturate(0.90);
+  transition: transform 0.6s ease;
+}
+.hero-arch:hover img { transform: scale(1.04); }
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: var(--brown);
+  font-family: var(--font-body);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.hero-chip:hover {
+  border-color: var(--pink-light);
+  background: var(--pink-pale);
+  color: var(--pink-deep);
+}
+
+.hero-chip-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--pink-light);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 120px 6% 80px;
+    min-height: auto;
+  }
+  .hero-content { padding: 0; }
+  .hero-arch-wrap { min-height: 420px; }
+  .hero-arch { width: 300px; height: 400px; }
+}
+@media (max-width: 600px) {
+  .hero-arch-wrap { display: none; }
+  .hero-stats-row { gap: 0; }
+}
 
 /* ── SECTION COMMONS ── */
 section { padding: 100px 6%; }
@@ -376,14 +424,22 @@ section { padding: 100px 6%; }
 .amenity { display:flex; align-items:center; gap:10px; font-size:.85rem; color:rgba(255,255,255,0.78); }
 .amenity-dot { width:7px; height:7px; background:var(--pink-light); border-radius:50%; flex-shrink:0; }
 
-/* ── IMAGE SLOTS 4–5: ABOUT PHOTOS ──────────────────────────────
-   Replace .img-ph divs with:
-     <img src="src/images/dorm-exterior.jpg" alt="..." class="about-img">
-   Laravel: src="{{ asset('images/dorm-exterior.jpg') }}"
-   .about-img { width:100%; height:100%; object-fit:cover; display:block; }
-──────────────────────────────────────────────────────────────── */
-.about-photos { display:grid; grid-template-rows:260px 175px; gap:14px; }
-.about-img { width:100%; height:100%; object-fit:cover; display:block; border-radius:var(--r-lg); }
+
+.about-photos {
+  display: grid;
+  grid-template-rows: 280px 280px;
+  gap: 14px;
+}
+
+.about-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: var(--r-lg);
+  filter: brightness(1.05) saturate(1.1); /* counteract dark bg */
+}
 
 .info-card { background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.13); border-radius:var(--r-lg); padding:24px; }
 .ic-lbl { font-size:.66rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pink-light); margin-bottom:5px; font-weight:700; }
@@ -475,143 +531,39 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </ul>
 </nav>
 
-
-<!-- ════════════════════ HERO ════════════════════ -->
 <section class="hero">
+
   <div class="hero-content">
-    <div class="hero-badge">Now available on web &amp; mobile</div>
-    <h1>Your dorm life,<br><em>finally simplified</em></h1>
+    <div class="hero-badge">Safe &middot; Comfortable &middot; Near UST</div>
+    <h1>Your home away<br>from <em>home</em></h1>
     <p class="hero-sub">
-      DormEase brings Sanctissimo Rosario Ladies Dormitory into the digital age — manage maintenance, bills, visitor logs, and announcements all from one app.
+      Sanctissimo Rosario Ladies Dormitory — a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
     </p>
     <div class="hero-actions">
-      <a href="#features" class="btn-primary">
-        <svg viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
-        Explore Features
-      </a>
-      <a href="#contact" class="btn-outline">Contact the Dorm →</a>
+      <a href="#features" class="btn-primary">Explore Rooms</a>
+      <a href="#contact" class="btn-outline">Contact the Dorm</a>
     </div>
-    <div class="hero-stats">
-      <div><div class="hero-stat-num">57</div><div class="hero-stat-label">Tenants</div></div>
-      <div><div class="hero-stat-num">25</div><div class="hero-stat-label">Units</div></div>
-      <div><div class="hero-stat-num">5F</div><div class="hero-stat-label">Floors</div></div>
-      <div><div class="hero-stat-num">24/7</div><div class="hero-stat-label">Security</div></div>
+
+    {{-- Amenity chips --}}
+    <div class="hero-chips">
+      <div class="hero-chip"><span class="hero-chip-dot"></span>24/7 Security</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Wi-Fi</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Elevator</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Own Bathroom</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Near UST</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Aircon</div>
     </div>
   </div>
 
-  <!--
-  ╔══════════════════════════════════════════════════════════════╗
-  ║  IMAGE SLOT 3 — APP MOCKUP                                  ║
-  ║  To use a real screenshot, replace .phone-frame div with:   ║
-  ║    <img src="src/images/app-mockup.png"                     ║
-  ║         alt="DormEase App" class="app-mockup-img">          ║
-  ║  Laravel: src="{{ asset('images/app-mockup.png') }}"        ║
-  ║  Add CSS: .app-mockup-img{width:280px;animation:float...}   ║
-  ╚══════════════════════════════════════════════════════════════╝
-  -->
-  <div class="hero-visual">
-    <div class="fl-card tr">
-      <div class="fl-lbl">Water Bill</div>
-      <div class="fl-val">₱248.50</div>
-      <div style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600;">Due Feb 28</div>
-    </div>
-
-    <div class="phone-frame">
-      <div class="phone-notch"></div>
-      <div class="phone-screen">
-        <div class="phone-status"><span>9:41</span><span>●●●</span></div>
-        <div class="phone-app-bar">DormEase</div>
-        <div class="phone-body">
-          <div class="phone-greeting">Good morning,</div>
-          <div class="phone-name">Maria Santos 👋</div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#FFE0E8;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:var(--pink);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Water Billing</div>
-              <div class="phone-card-sub">February 2026 &nbsp;<span class="badge-l">Low</span></div>
-            </div>
-          </div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#FFE8F0;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:var(--pink);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Urgent Pest Control Notice</div>
-              <div class="phone-card-sub">Feb 17 &nbsp;<span class="badge-h">High</span></div>
-            </div>
-          </div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#E8F0FF;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:#4A78D9;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Visitor Registered</div>
-              <div class="phone-card-sub">Ana Cruz · Today 2:00 PM</div>
-            </div>
-          </div>
-          <div class="phone-tabs">
-            <div class="phone-tab"><span class="t-icon on">⌂</span><span class="t-lbl on">Home</span></div>
-            <div class="phone-tab"><span class="t-icon">👤</span><span class="t-lbl">Visitor</span></div>
-            <div class="phone-tab"><span class="t-icon">⚠</span><span class="t-lbl">Emergency</span></div>
-            <div class="phone-tab"><span class="t-icon">💧</span><span class="t-lbl">Water</span></div>
-            <div class="phone-tab"><span class="t-icon">◯</span><span class="t-lbl">Profile</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fl-card bl">
-      <div class="fl-lbl">Maintenance</div>
-      <div style="font-size:11px;color:var(--pink);font-weight:700;margin-top:4px;">✓ Request Sent</div>
-      <div style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600;">Avg. 2hr response</div>
+  <div class="hero-arch-wrap">
+    <div class="hero-blob-top"></div>
+    <div class="hero-blob-bottom"></div>
+    <div class="hero-arch">
+      <img src="{{ asset('images/sancti.png') }}" alt="Sanctissimo Rosario Dormitory">
     </div>
   </div>
+
 </section>
-
-
-<!-- ════════════════════ FEATURES ════════════════════ -->
-<section class="features" id="features">
-  <div class="features-header reveal">
-    <div class="section-tag">What We Offer</div>
-    <h2 class="section-title">Everything your dorm<br>life needs, <em>in one place</em></h2>
-    <p class="section-sub">From submitting a maintenance request by voice to tracking your water bill in real time — DormEase handles it all, digitally.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feat-card reveal d1">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
-      <div class="feat-title">Maintenance Requests</div>
-      <p class="feat-desc">Submit repair requests via text or voice using NLP — no forms to fill. Track every request status in real time.</p>
-    </div>
-    <div class="feat-card reveal d2">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-      <div class="feat-title">Announcements</div>
-      <p class="feat-desc">Stay updated with dorm-wide announcements tagged by priority — Low, Medium, or High. Never miss a notice.</p>
-    </div>
-    <div class="feat-card reveal d3">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div>
-      <div class="feat-title">Water Billing</div>
-      <p class="feat-desc">Automatic, transparent water bill calculation per floor and per room. Track payment history with full clarity.</p>
-    </div>
-    <div class="feat-card reveal d1">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <div class="feat-title">Visitor Registration</div>
-      <p class="feat-desc">Digitally register and log all visitors. Monitor entries and exits in real time for building security.</p>
-    </div>
-    <div class="feat-card reveal d2">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-      <div class="feat-title">Emergency Reporting</div>
-      <p class="feat-desc">One-tap emergency alerts sent directly to dorm administration. Quick, reliable, and logged for accountability.</p>
-    </div>
-    <div class="feat-card reveal d3">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-      <div class="feat-title">Document Processing</div>
-      <p class="feat-desc">Request and receive important dorm documents digitally. No more queuing or filling out paper forms.</p>
-    </div>
-  </div>
-</section>
-
 
 <!-- ════════════════════ GALLERY ════════════════════ -->
 <section class="gallery" id="gallery">
@@ -697,8 +649,8 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
         <div class="step reveal d1">
           <div class="step-num">1</div>
           <div>
-            <div class="step-title">Create your tenant account</div>
-            <p class="step-desc">Sign up with your room information and get verified by the dormitory admin within 24 hours.</p>
+            <div class="step-title">Inquire now and be a Tenant</div>
+            <p class="step-desc">Contact us to learn more about our dormitory and start your application process.</p>
           </div>
         </div>
         <div class="step reveal d2">
@@ -756,43 +708,20 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!--
-    ╔═══════════════════════════════════════════════════════════╗
-    ║  IMAGE SLOTS 4 & 5 — ABOUT PHOTOS                        ║
-    ║                                                           ║
-    ║  SLOT 4 (top, large): Dorm building exterior             ║
-    ║    Plain:   <img src="src/images/dorm-exterior.jpg"      ║
-    ║                  alt="Dorm exterior" class="about-img">  ║
-    ║    Laravel: src="{{ asset('images/dorm-exterior.jpg') }}"║
-    ║    Size: 800×520px                                        ║
-    ║                                                           ║
-    ║  SLOT 5 (bottom, small): Room interior / bathroom        ║
-    ║    Plain:   <img src="src/images/dorm-room.jpg" ...>     ║
-    ║    Laravel: src="{{ asset('images/dorm-room.jpg') }}"    ║
-    ║    Size: 800×360px                                        ║
-    ╚═══════════════════════════════════════════════════════════╝
-    -->
-    <div class="about-photos reveal">
-      <div style="border-radius:var(--r-lg);overflow:hidden;">
-        <!-- IMAGE SLOT 4: Replace div below with <img> tag -->
-        <div class="img-ph" style="height:260px;border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);">
-          <div class="img-ph-ico" style="background:rgba(255,255,255,0.08);">
-            <svg viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.45);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <span style="color:rgba(255,255,255,0.45);">SLOT 4 · Dorm Exterior<br><small style="opacity:.7;font-size:.62rem;text-transform:none;">src/images/dorm-exterior.jpg · 800×520px</small></span>
-        </div>
-      </div>
-      <div style="border-radius:var(--r-lg);overflow:hidden;">
-        <!-- IMAGE SLOT 5: Replace div below with <img> tag -->
-        <div class="img-ph" style="height:175px;border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);">
-          <div class="img-ph-ico" style="background:rgba(255,255,255,0.08);">
-            <svg viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.45);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <span style="color:rgba(255,255,255,0.45);">SLOT 5 · Room Interior<br><small style="opacity:.7;font-size:.62rem;text-transform:none;">src/images/dorm-room.jpg · 800×360px</small></span>
-        </div>
-      </div>
-    </div>
+<div class="about-photos reveal">
+  <div style="border-radius:var(--r-lg); overflow:hidden; height:280px;">
+    <img src="{{ asset('images/exterior.png') }}"
+         alt="Dorm Exterior"
+         class="about-img"
+         style="object-position: center 16%;">
   </div>
+  <div style="border-radius:var(--r-lg); overflow:hidden; height:280px;">
+    <img src="{{ asset('images/interior.png') }}"
+         alt="Room Interior"
+         class="about-img"
+         style="object-position: center 60%;">
+  </div>
+</div>
 </section>
 
 
@@ -818,13 +747,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   <div class="footer-inner">
     <div>
       <div class="footer-logo">
-        <!--
-        ╔══════════════════════════════════════════════════════╗
-        ║  IMAGE SLOT 9 — FOOTER LOGO (white/light version)   ║
-        ║  Plain:   src="src/images/logo-white.png"           ║
-        ║  Laravel: src="{{ asset('images/logo-white.png') }}"║
-        ╚══════════════════════════════════════════════════════╝
-        -->
+
         <a href="{{ route('login') }}" class="footer-logo">
             <img src="YOUR_LOGO_WHITE_URL_HERE"
                 alt="DormEase"
@@ -856,13 +779,14 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       <a href="#">Sampaloc, Manila</a>
     </div>
   </div>
-  <div class="footer-btm">
-    <span>© 2026 DormEase · Sanctissimo Rosario Ladies Dormitory</span>
-    <div style="display:flex;gap:20px;align-items:center;">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
-    </div>
+<div class="footer-btm">
+  <span>© 2026 DormEase · Sanctissimo Rosario Ladies Dormitory</span>
+  <div style="display:flex;gap:20px;align-items:center;">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+    <a href="{{ route('login') }}">Admin Portal</a>
   </div>
+</div>
 </footer>
 
 <script>
