@@ -4,7 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
 
-Route::get('/', fn() => view('login'))->name('login');
+// ── PUBLIC LANDING PAGE ───────────────────────────────────────────────────────
+// this is now the first page visitors see at yourdomain.com
+Route::get('/', fn() => view('public.home'))->name('home');
+
+// ── ADMIN / STAFF LOGIN ───────────────────────────────────────────────────────
+// moved to /login so it no longer conflicts with the landing page
+Route::get('/login', fn() => view('login'))->name('login');
 
 Route::post('/login', function () {
     $email    = request('email');
@@ -43,6 +49,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 
+// ── PROTECTED ADMIN ROUTES ────────────────────────────────────────────────────
 Route::middleware('auth:staff')->group(function () {
 
     Route::get('/dashboard', function () {
@@ -88,11 +95,9 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
         ->name('frontdesk.dashboard');
 
-
     Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
     Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
     Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::get('/documents', fn() => view('documents'))->name('documents');
-
 });
