@@ -35,7 +35,7 @@
         width: 420px;
         height: 420px;
         border-radius: 50%;
-        background: rgba(255, 176, 206, .08);
+        background: transparent;
         top: -120px;
         left: -120px;
         pointer-events: none;
@@ -47,11 +47,12 @@
         width: 340px;
         height: 340px;
         border-radius: 50%;
-        background: rgba(255, 126, 134, .06);
+        background: transparent;
         bottom: -90px;
         right: -90px;
         pointer-events: none;
     }
+
     .ring {
         position: absolute;
         border-radius: 50%;
@@ -59,6 +60,7 @@
         left: 55%;
         pointer-events: none;
         transform: translate(-50%, -50%);
+        background: transparent;
     }
 
     .ring-1 {
@@ -487,38 +489,9 @@
         opacity: .85;
     }
 
-    .toggle-pw img {
-        width: 18px;
-        height: 18px;
-    }
-
-    .pw-strength {
-        margin-top: .4rem;
-        display: none;
-    }
-
-    .pw-strength.visible {
-        display: block;
-    }
-
-    .pw-bar-track {
-        height: 3px;
-        background: var(--gray-light);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .pw-bar-fill {
-        height: 100%;
-        border-radius: 10px;
-        width: 0;
-        transition: width .4s ease, background .3s ease;
-    }
-
-    .pw-hint {
-        font-size: .7rem;
-        color: var(--gray);
-        margin-top: .3rem;
+    .toggle-pw span {
+        font-size: 1rem;
+        line-height: 1;
     }
 
     .field-row {
@@ -557,13 +530,6 @@
     .btn-login {
         margin-top: .2rem;
         gap: .5rem;
-    }
-
-    .btn-login img {
-        width: 18px;
-        height: 18px;
-        filter: brightness(0) invert(1);
-        flex-shrink: 0;
     }
 
     .divider {
@@ -609,7 +575,6 @@
     .left-logo   { animation: leftSlide .6s ease .10s both; }
     .left-body   { animation: leftSlide .6s ease .24s both; }
     .left-footer { animation: leftSlide .6s ease .38s both; }
-
 
     @media (max-width: 820px) {
         body {
@@ -756,7 +721,6 @@
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         style="padding-right: 2.8rem;"
-                        oninput="checkStrength(this.value)"
                         required
                     >
                     <button
@@ -766,14 +730,13 @@
                         id="pw-toggle"
                         aria-label="Toggle password visibility"
                     >
-                        <img id="pw-eye-icon" src="{{ asset('icons/eye.png') }}" alt="">
+                        <img 
+                        id="pw-eye-icon"
+                        src="{{ asset('icons/eyeon.png') }}"
+                        alt="Toggle Password"
+                        style="width:18px; height:18px;"
+                    >
                     </button>
-                </div>
-                <div class="pw-strength" id="pw-strength">
-                    <div class="pw-bar-track">
-                        <div class="pw-bar-fill" id="pw-bar"></div>
-                    </div>
-                    <div class="pw-hint" id="pw-hint"></div>
                 </div>
             </div>
 
@@ -803,6 +766,7 @@
 
 </div>
 
+
 <script>
 
     function setRole(role) {
@@ -813,47 +777,12 @@
         document.querySelector('.eyebrow').textContent = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
     }
 
-    const eyeOn  = "{{ asset('icons/eye.png') }}";
-    const eyeOff = "{{ asset('icons/eye-off.png') }}";
-
     function togglePw() {
         const input = document.getElementById('password');
         const icon  = document.getElementById('pw-eye-icon');
         const show  = input.type === 'password';
         input.type = show ? 'text' : 'password';
         icon.src   = show ? eyeOff : eyeOn;
-    }
-
-    function checkStrength(val) {
-        const bar     = document.getElementById('pw-bar');
-        const hint    = document.getElementById('pw-hint');
-        const wrapper = document.getElementById('pw-strength');
-
-        if (!val) {
-            wrapper.classList.remove('visible');
-            return;
-        }
-
-        wrapper.classList.add('visible');
-
-        let score = 0;
-        if (val.length >= 8)          score++;
-        if (/[A-Z]/.test(val))        score++;
-        if (/[0-9]/.test(val))        score++;
-        if (/[^A-Za-z0-9]/.test(val)) score++;
-
-        const levels = [
-            { pct: '25%',  color: '#DF0404', label: 'Too weak' },
-            { pct: '50%',  color: '#EB9C7D', label: 'Fair'     },
-            { pct: '75%',  color: '#FFD166', label: 'Good'     },
-            { pct: '100%', color: '#29BD9B', label: 'Strong'   },
-        ];
-
-        const lvl = levels[score - 1] || levels[0];
-        bar.style.width      = lvl.pct;
-        bar.style.background = lvl.color;
-        hint.textContent     = lvl.label;
-        hint.style.color     = lvl.color;
     }
 
 </script>
