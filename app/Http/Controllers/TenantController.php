@@ -10,8 +10,29 @@ class TenantController extends Controller
 {
     public function index()
     {
+        $staff = auth()->guard('staff')->user();
+
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
-        return view('tenants', compact('tenants'));
+
+        $totalTenants = Tenant::count();
+
+        // Active tenants = occupied units
+        $occupiedUnits = Tenant::where('is_active', true)->count();
+
+        // Example total available units
+        $totalUnits = 50;
+
+        // Inactive tenants = pending
+        $pendingCount = Tenant::where('is_active', false)->count();
+
+        return view('tenants', compact(
+            'staff',
+            'tenants',
+            'totalTenants',
+            'occupiedUnits',
+            'totalUnits',
+            'pendingCount'
+        ));
     }
 
     public function store(Request $request)
@@ -47,7 +68,7 @@ class TenantController extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email,'.$id.',tenant_id|max:100',
+            'email'          => 'required|email|unique:tenants,email,' . $id . ',tenant_id|max:100',
             'contact_number' => 'nullable|string|max:20',
             'room_number'    => 'required|string|max:20',
             'move_in_date'   => 'required|date',
@@ -55,8 +76,13 @@ class TenantController extends Controller
         ]);
 
         $data = $request->only([
-            'first_name', 'last_name', 'email',
-            'contact_number', 'room_number', 'move_in_date', 'is_active'
+            'first_name',
+            'last_name',
+            'email',
+            'contact_number',
+            'room_number',
+            'move_in_date',
+            'is_active'
         ]);
 
         // Only update password if a new one was provided
