@@ -782,7 +782,9 @@
         const icon  = document.getElementById('pw-eye-icon');
         const show  = input.type === 'password';
         input.type = show ? 'text' : 'password';
-        icon.src   = show ? eyeOff : eyeOn;
+        icon.src = show
+            ? "{{ asset('icons/eye-off.png') }}"
+            : "{{ asset('icons/eye.png') }}";
     }
 
 </script>

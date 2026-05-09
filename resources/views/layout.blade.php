@@ -241,7 +241,7 @@
         <a href="{{ route('visitors') }}" class="nav-item {{ request()->routeIs('visitors.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-        <a href="{{ route('announcements') }}" class="nav-item {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+        <a href="{{ route('announcements') }}" class="nav-item {{ request()->routeIs('announcements') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
         <div class="nav-divider"></div>
