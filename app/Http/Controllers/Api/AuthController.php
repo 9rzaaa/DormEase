@@ -42,6 +42,7 @@ class AuthController extends Controller
                 'name'             => $tenant->first_name . ' ' . $tenant->last_name,
                 'email'            => $tenant->email,
                 'room'             => $tenant->room_number,
+                'floor'            => $tenant->floor,
                 'is_temp_password' => $tenant->is_temp_password, // ✅ useful for mobile
                 'role'             => 'tenant',
             ]
