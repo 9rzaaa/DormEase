@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class Tenant extends Authenticatable
 {
+    use HasApiTokens;
     protected $primaryKey = 'tenant_id';
 
     protected $fillable = [
