@@ -17,8 +17,8 @@ class AuthController extends Controller
         ]);
 
         $tenant = Tenant::where('account_id', $request->account_id)
-                        ->where('is_active', 1)
-                        ->first();
+            ->where('is_active', 1)
+            ->first();
 
         if (!$tenant || !Hash::check($request->password, $tenant->password_hash)) {
             return response()->json([
@@ -26,17 +26,24 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // ✅ Update status to active + record last login time
+        $tenant->update([
+            'status'        => 'active',
+            'last_login_at' => now(),
+        ]);
+
         $token = $tenant->createToken('mobile-app')->plainTextToken;
 
         return response()->json([
             'token' => $token,
             'user'  => [
-                'id'         => $tenant->tenant_id,
-                'account_id' => $tenant->account_id,
-                'name'       => $tenant->first_name . ' ' . $tenant->last_name,
-                'email'      => $tenant->email,
-                'room'       => $tenant->room_number,
-                'role'       => 'tenant',
+                'id'               => $tenant->tenant_id,
+                'account_id'       => $tenant->account_id,
+                'name'             => $tenant->first_name . ' ' . $tenant->last_name,
+                'email'            => $tenant->email,
+                'room'             => $tenant->room_number,
+                'is_temp_password' => $tenant->is_temp_password, // ✅ useful for mobile
+                'role'             => 'tenant',
             ]
         ]);
     }
