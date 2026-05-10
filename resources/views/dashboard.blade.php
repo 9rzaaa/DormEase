@@ -193,7 +193,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Maintenance Requests</div>
-                    <a href="{{ route('maintenance') }}" class="see-all">See All</a>
+                    <a href="{{ route('maintenance.index') }}" class="see-all">See All</a>
                 </div>
 
                 @if($maintenanceRequests->isEmpty())
@@ -273,7 +273,7 @@
                 <div style="display:flex;gap:.8rem;align-items:center;">
                     <button class="post-announce-btn" onclick="openPostModal()">+ Post Announcement</button>
                     <span style="color:var(--gray);font-size:.8rem;">|</span>
-                    <a href="{{ route('announcements') }}" class="see-all">See All</a>
+                    <a href="{{ route('announcements.index') }}" class="see-all">See All</a>
                 </div>
             </div>
 

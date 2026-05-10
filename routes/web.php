@@ -3,9 +3,22 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnnouncementController;
 
+// ── PUBLIC LANDING PAGE ───────────────────────────────────────────────────────
 Route::get('/', fn() => view('public.home'))->name('home');
-Route::get('/login', fn() => view('login'))->name('login');
+
+// ── STAFF LOGIN ───────────────────────────────────────────────────────────────
+Route::get('/login', function () {
+    if (Auth::guard('staff')->check()) {
+        $user = Auth::guard('staff')->user();
+        return $user->role === 'frontdesk'
+            ? redirect()->route('frontdesk.dashboard')
+            : redirect()->route('dashboard');
+    }
+    return view('login');
+})->name('login');
 
 Route::post('/login', function () {
     $email    = request('email');
@@ -36,108 +49,42 @@ Route::post('/login', function () {
         : redirect()->route('dashboard');
 });
 
+// ── LOGOUT ────────────────────────────────────────────────────────────────────
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/login');
+    return redirect()->route('login');
 })->name('logout');
 
+// ── PROTECTED ROUTES — ADMIN AND STAFF ONLY ───────────────────────────────────
 Route::middleware('auth:staff')->group(function () {
 
-    Route::get('/dashboard', function () {
-        $staff = Auth::guard('staff')->user();
-        return view('dashboard', [
-            'staff'               => $staff,
-            'totalTenants'        => \App\Models\Tenant::where('is_active', true)->count(),
-            'pendingPayments'     => \App\Models\Payment::where('status', 'pending')->count(),
-            'pendingMaintenance'  => \App\Models\MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
-            'unresolvedReports'   => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->count(),
-            'maintenanceRequests' => \App\Models\MaintenanceRequest::with('tenant')
-                ->whereIn('status', ['pending', 'in_progress'])
-                ->latest('submitted_at')
-                ->take(3)
-                ->get(),
-            'announcements'       => \App\Models\Announcement::latest('posted_at')->take(3)->get(),
-            'notifications'       => \App\Models\Notification::where('is_read', false)->latest('created_at')->take(4)->get(),
-            'unreadNotifCount'    => \App\Models\Notification::where('is_read', false)->count(),
-            'latestEmergency'     => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
-            'allEmergencies'      => \App\Models\EmergencyReport::latest('reported_at')->get(),
-            'recentActivities'    => \App\Models\VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
-        ]);
-    })->name('dashboard');
-
+    // ── Dashboard ─────────────────────────────────────────────────────────────
+    Route::get('/dashboard',           [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
-    Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
-    Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
-    Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
-    Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+
+    // ── Tenants ───────────────────────────────────────────────────────────────
+    Route::get('/tenants',                      [TenantController::class, 'index'])->name('tenants.index');
+    Route::post('/tenants',                     [TenantController::class, 'store'])->name('tenants.store');
+    Route::put('/tenants/{id}',                 [TenantController::class, 'update'])->name('tenants.update');
+    Route::delete('/tenants/{id}',              [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
 
-    Route::get('/announcements', function () {
-        $staff = Auth::guard('staff')->user();
-        return view('announcements', [
-            'staff'            => $staff,
-            'unreadNotifCount' => \App\Models\Notification::where('is_read', false)->count(),
-            'announcements'    => \App\Models\Announcement::orderBy('posted_at', 'desc')->get(),
-        ]);
-    })->name('announcements');
+    // ── Announcements ─────────────────────────────────────────────────────────
+    Route::get('/announcements',                    [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements',                   [AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::put('/announcements/{id}',               [AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::post('/announcements/{id}/archive',      [AnnouncementController::class, 'archive'])->name('announcements.archive');
+    Route::post('/announcements/{id}/restore',      [AnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::delete('/announcements/{id}',            [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
-    Route::post('/announcements', function () {
-        $attachment = null;
-        if (request()->hasFile('files')) {
-            $paths = [];
-            foreach (request()->file('files') as $file) {
-                $paths[] = $file->store('announcements', 'public');
-            }
-            $attachment = implode(',', $paths);
-        }
-
-        \App\Models\Announcement::create([
-            'title'      => request('title'),
-            'content'    => request('content'),
-            'priority'   => request('priority', 'low'),
-            'status'     => request('status', 'active'),
-            'posted_by'  => Auth::guard('staff')->id(),
-            'posted_at'  => now(),
-            'attachment' => $attachment,
-        ]);
-
-        return redirect()->route('announcements')->with('success', 'Announcement posted successfully!');
-    })->name('announcements.store');
-
-    Route::put('/announcements/{id}', function ($id) {
-        $ann = \App\Models\Announcement::findOrFail($id);
-        $ann->update([
-            'title'    => request('title'),
-            'content'  => request('content'),
-            'priority' => request('priority', $ann->priority),
-            'status'   => request('status', $ann->status),
-        ]);
-        return redirect()->route('announcements')->with('success', 'Announcement updated!');
-    })->name('announcements.update');
-
-    Route::post('/announcements/{id}/archive', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->update(['status' => 'closed']);
-        return redirect()->route('announcements')->with('success', 'Announcement archived.');
-    })->name('announcements.archive');
-
-    Route::post('/announcements/{id}/restore', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->update(['status' => 'active']);
-        return redirect()->route('announcements')->with('success', 'Announcement restored.');
-    })->name('announcements.restore');
-
-    Route::delete('/announcements/{id}', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->delete();
-        return redirect()->route('announcements')->with('success', 'Announcement deleted.');
-    })->name('announcements.destroy');
-
-    Route::get('/documents',   fn() => view('documents'))->name('documents');
-    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance');
-    Route::get('/emergency',   fn() => view('emergency'))->name('emergency');
-    Route::get('/billing',     fn() => view('billing'))->name('billing');
-    Route::get('/visitors',    fn() => view('visitors'))->name('visitors');
-    Route::get('/staff',       fn() => view('staff'))->name('staff');
-    Route::get('/settings',    fn() => view('settings'))->name('settings');
-
+    // ── Other Pages ───────────────────────────────────────────────────────────
+    Route::get('/documents',  fn() => view('documents'))->name('documents.index');
+    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
+    Route::get('/emergency',  fn() => view('emergency'))->name('emergency.index');
+    Route::get('/billing',    fn() => view('billing'))->name('billing.index');
+    Route::get('/visitors',   fn() => view('visitors'))->name('visitors.index');
+    Route::get('/staff',      fn() => view('staff'))->name('staff.index');
+    Route::get('/settings',   fn() => view('settings'))->name('settings.index');
 });
