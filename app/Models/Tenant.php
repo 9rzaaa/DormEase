@@ -28,6 +28,7 @@ class Tenant extends Authenticatable
         'move_out_date',
         'status',
         'is_active',
+        'last_login_at',
     ];
 
     protected $hidden = [
