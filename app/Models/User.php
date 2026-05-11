@@ -29,4 +29,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function visitorLogs()
+{
+    return $this->hasMany(Visitor::class, 'tenant_id');
+}
+
+public function loggedVisitors()
+{
+    return $this->hasMany(Visitor::class, 'staff_id');
+}
+
 }
