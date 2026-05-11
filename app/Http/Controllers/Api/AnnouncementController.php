@@ -23,6 +23,7 @@ class AnnouncementController extends Controller
                         ? \Carbon\Carbon::parse($a->posted_at)
                         ->format('F j, Y · g:i A')
                         : null,
+                    'attachments' => $a->attachment,
                     'files'      => $a->attachment
                         ? count(explode(',', $a->attachment))
                         : 0,
