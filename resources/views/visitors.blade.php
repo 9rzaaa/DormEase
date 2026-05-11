@@ -271,10 +271,139 @@
     object-fit: contain;
 
 }
+
+/* =========================
+   VISITOR MODAL
+========================= */
+
+.visitor-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.visitor-modal-card {
+    background: var(--white);
+    width: 620px;
+    max-width: 100%;
+    border-radius: 28px;
+    padding: 2.2rem 2.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,.18);
+    position: relative;
+    animation: modalFade .25s ease;
+}
+
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.visitor-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    border: none;
+    background: none;
+    font-size: 2rem;
+    color: #8d7480;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.visitor-modal-close:hover {
+    color: var(--pink);
+    transform: scale(1.08);
+}
+
+.visitor-modal-header {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin-bottom: 2rem;
+}
+
+.visitor-modal-icon {
+    font-size: 1.7rem;
+    color: #6c3eb8;
+}
+
+.visitor-modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -.02em;
+}
+
+.visitor-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.2rem;
+    padding-bottom: .95rem;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-label {
+    color: #8d7480;
+    font-size: .82rem;
+    font-weight: 500;
+}
+
+.modal-value {
+    color: var(--ink);
+    font-size: .82rem;
+    font-weight: 600;
+    text-align: right;
+}
 </style>
 @endsection
 
 @section('content')
+
+<div id="visitorModal" class="visitor-modal">
+
+    <div class="visitor-modal-card">
+
+        <!-- Close Button -->
+        <button
+            type="button"
+            class="visitor-modal-close"
+            onclick="closeModal()"
+        >
+            &times;
+        </button>
+
+        <!-- Header -->
+        <div class="visitor-modal-header">
+            <span class="visitor-modal-icon">👤</span>
+            <h2>Visitor Details</h2>
+        </div>
+
+        <!-- Dynamic Content -->
+        <div id="modalContent" class="visitor-modal-content"></div>
+
+    </div>
+
+</div>
 
 <div class="page-body">
 
@@ -488,7 +617,7 @@
                 <td>${v.staff?.name ?? '—'}</td>
                 <td>${getStatusBadge(v.status)}</td>
                 <td>
-                    <button class="act-btn">👁</button>
+                <button class="act-btn" onclick="viewVisitor(${v.id})">👁</button>
                 </td>
             </tr>
         `).join('');
@@ -564,6 +693,93 @@ function exportLogs() {
     a.click();
 
     window.URL.revokeObjectURL(url);
+}
+
+function viewVisitor(id) {
+
+    const v = logs.find(item => item.id === id);
+
+    if (!v) return;
+
+    document.getElementById('modalContent').innerHTML = `
+
+        ${detailRow(
+            'Visitor ID',
+            'VST-' + String(v.id).padStart(3, '0')
+        )}
+
+        ${detailRow(
+            'Full Name',
+            v.visitor_name ?? '—'
+        )}
+
+        ${detailRow(
+            'Time In',
+            fmtDateTime(v.arrival_time)
+        )}
+
+        ${detailRow(
+            'Time Out',
+            v.departure_time
+                ? fmtDateTime(v.departure_time)
+                : 'Still Inside'
+        )}
+
+        ${detailRow(
+            'Purpose',
+            v.purpose ?? '—'
+        )}
+
+        ${detailRow(
+            'Tenant Visited',
+            v.tenant?.name ?? '—'
+        )}
+
+        ${detailRow(
+            'Logged By',
+            v.staff?.name ?? '—'
+        )}
+
+        ${detailRow(
+            'Status',
+            v.status ?? '—'
+        )}
+    `;
+
+    document.getElementById('visitorModal').style.display = 'flex';
+}
+
+function detailRow(label, value) {
+
+    return `
+        <div class="modal-row">
+
+            <span class="modal-label">
+                ${label}
+            </span>
+
+            <span class="modal-value">
+                ${value}
+            </span>
+
+        </div>
+    `;
+}
+
+function closeModal() {
+
+    const modal = document.getElementById('visitorModal');
+
+    modal.style.display = 'none';
+}
+
+window.onclick = function(event) {
+
+    const modal = document.getElementById('visitorModal');
+
+    if (event.target === modal) {
+        closeModal();
+    }
 }
 
 </script>
