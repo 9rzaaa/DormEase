@@ -31,12 +31,12 @@ class User extends Authenticatable
     }
     public function visitorLogs()
 {
-    return $this->hasMany(Visitor::class, 'tenant_id');
+    return $this->hasMany(VisitorLog::class, 'tenant_id');
 }
 
 public function loggedVisitors()
 {
-    return $this->hasMany(Visitor::class, 'staff_id');
+    return $this->hasMany(VisitorLog::class, 'staff_id');
 }
 
 }

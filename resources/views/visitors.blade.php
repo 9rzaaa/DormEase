@@ -6,25 +6,61 @@
 
 @section('styles')
 <style>
-    /* =========================
-       (UNCHANGED — YOUR FULL UI)
-       ========================= */
+    .page-body {
+        padding: 1.8rem 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 
-    .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
 
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
-    .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--pink); margin-top: .2rem; }
-    .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+    .page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -.02em;
+        line-height: 1.15;
+    }
+
+    .page-header .dorm-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--pink);
+        margin-top: .2rem;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: .75rem;
+        align-items: center;
+        margin-top: .5rem;
+    }
 
     .btn-outline {
-        display: flex; align-items: center; gap: .45rem;
-        padding: .55rem 1.2rem; border-radius: 10px;
-        background: var(--white); color: var(--ink-muted);
-        border: 1.5px solid var(--gray-light); font-size: .87rem; font-weight: 600;
-        transition: border-color .2s, color .2s; cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .55rem 1.2rem;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--ink-muted);
+        border: 1.5px solid var(--gray-light);
+        font-size: .87rem;
+        font-weight: 600;
+        transition: border-color .2s, color .2s;
+        cursor: pointer;
     }
-    .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
+
+    .btn-outline:hover {
+        border-color: var(--pink);
+        color: var(--pink);
+    }
 
     .stats-row {
         display: grid;
@@ -45,10 +81,14 @@
     }
 
     .stat-icon-circle {
-        width: 58px; height: 58px; border-radius: 50%;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
         flex-shrink: 0;
         background: var(--pink);
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .stat-num {
@@ -66,8 +106,6 @@
         margin-top: .2rem;
     }
 
-    .icon-md { width: 26px; height: 26px; object-fit: contain; }
-
     .filters-row {
         display: flex;
         align-items: center;
@@ -75,7 +113,11 @@
         flex-wrap: wrap;
     }
 
-    .filter-group { display: flex; align-items: center; gap: .5rem; }
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
 
     .filter-label {
         font-size: .83rem;
@@ -101,7 +143,10 @@
         font-size: .83rem;
     }
 
-    .search-wrap { position: relative; margin-left: auto; }
+    .search-wrap {
+        position: relative;
+        margin-left: auto;
+    }
 
     .search-wrap input {
         padding: .5rem .9rem .5rem 2.2rem;
@@ -119,7 +164,10 @@
         overflow: hidden;
     }
 
-    table { width: 100%; border-collapse: collapse; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
     th {
         padding: .75rem 1rem;
@@ -127,15 +175,21 @@
         text-transform: uppercase;
         color: var(--ink-muted);
         background: var(--pink-bg);
+        text-align: center;
+        font-weight: 700;
     }
 
     td {
-        padding: .85rem 1rem;
+        padding: .9rem 1rem;
         font-size: .875rem;
         border-bottom: 1px solid var(--border);
+        text-align: center;
+        vertical-align: middle;
     }
 
-    tbody tr:hover { background: var(--pink-bg); }
+    tbody tr:hover {
+        background: var(--pink-bg);
+    }
 
     .badge {
         padding: .28rem .75rem;
@@ -144,54 +198,79 @@
         font-weight: 700;
     }
 
-    .badge-approved { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
-    .badge-pending { background: #fff9e6; color: #c8960c; border: 1.5px solid #f0c040; }
-    .badge-denied { background: #fff0f0; color: var(--red); border: 1.5px solid var(--blush); }
-    .badge-inside { background: var(--pink-card); color: var(--pink); border: 1.5px solid var(--pink-light); }
+    .badge-approved {
+        background: #e8faf5;
+        color: var(--green);
+        border: 1.5px solid var(--green);
+    }
+
+    .badge-pending {
+        background: #fff9e6;
+        color: #c8960c;
+        border: 1.5px solid #f0c040;
+    }
+
+    .badge-denied {
+        background: #fff0f0;
+        color: var(--red);
+        border: 1.5px solid var(--blush);
+    }
+
+    .badge-inside {
+        background: var(--pink-card);
+        color: var(--pink);
+        border: 1.5px solid var(--pink-light);
+    }
 
     .act-btn {
-        width: 30px; height: 30px;
+        width: 30px;
+        height: 30px;
         border-radius: 7px;
         border: 1.5px solid var(--gray-light);
         background: var(--white);
         cursor: pointer;
     }
-    table th,
-    table td {
-    text-align: center !important;
-    vertical-align: middle !important;
-    }
 
-    tbody td {
-    padding: 0.9rem 1rem;
-    }
+    .search-wrap {
+    position: relative;
+    margin-left: auto;
+}
 
-    .td-name {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    }
+.search-wrap .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.6;
+    pointer-events: none;
+}
 
-    td .td-sub {
-    text-align: center;
-    }
+.search-wrap input {
+    padding: .5rem .9rem .5rem 2.2rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--gray-light);
+    font-size: .85rem;
+    width: 220px;
+}
 
-    table {
-    border-collapse: collapse;
-    }
+.stat-icon-circle img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
 
-    th {
-    text-align: center;
-    font-weight: 700;
-    }
+.stat-box:nth-child(2) .stat-icon-circle img {
+    width: 34px;
+    height: 34px;
+}
+.inside-icon {
+    width: 34px; !important;
+    height: 34px; !important;
+    object-fit: contain;
 
-    td {
-    text-align: center;
-    vertical-align: middle;
-    }
-
+}
 </style>
 @endsection
 
@@ -213,9 +292,10 @@
     <div class="stats-row">
 
         <div class="stat-box">
-            <div class="stat-icon-circle">
-                <img src="{{ asset('icons/nav-visit.png') }}" class="icon-md">
-            </div>
+                <div class="stat-icon-circle">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="icon-md">
+        </div>
+
             <div>
                 <div class="stat-num">{{ $visitorsToday ?? 0 }}</div>
                 <div class="stat-label">Visitors Today</div>
@@ -224,8 +304,8 @@
 
         <div class="stat-box">
             <div class="stat-icon-circle">
-                <img src="{{ asset('icons/tenants.png') }}" class="icon-md">
-            </div>
+                <img src="{{ asset('icons/tenants.png') }}" class="icon-md inside-icon">            </div>
+
             <div>
                 <div class="stat-num">{{ $currentlyInside ?? 0 }}</div>
                 <div class="stat-label">Currently Inside</div>
@@ -238,6 +318,7 @@
 
         <div class="filter-group">
             <span class="filter-label">Sort:</span>
+
             <select id="sort-select" class="sort-select" onchange="applyFilters()">
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
@@ -245,13 +326,38 @@
             </select>
         </div>
 
-        <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
-        <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
+        <div class="filter-group">
+            <span class="filter-label">From:</span>
 
-        <div class="search-wrap">
-            <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+            <input
+                type="date"
+                id="date-from"
+                class="date-input"
+                onchange="applyFilters()"
+            >
         </div>
 
+        <div class="filter-group">
+            <span class="filter-label">To:</span>
+
+            <input
+                type="date"
+                id="date-to"
+                class="date-input"
+                onchange="applyFilters()"
+            >
+        </div>
+
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+
+                <input
+                type="text"
+                id="search-input"
+                placeholder="Search visitor..."
+                onkeyup="applyFilters()"
+        >
+</div>
     </div>
 
     <div class="table-card">
@@ -282,7 +388,6 @@
 @section('scripts')
 <script>
 
-    // ✅ FIX 1: Safe JSON output
     const logs = @json($logs ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
     const PER_PAGE = 7;
@@ -290,29 +395,67 @@
     let filtered = Array.isArray(logs) ? [...logs] : [];
 
     function fmtDateTime(dt) {
+
         if (!dt) return '—';
+
         const d = new Date(dt);
+
         return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
     }
 
     function applyFilters() {
 
-        const q = document.getElementById('search-input').value.toLowerCase();
+        const q = document
+            .getElementById('search-input')
+            .value
+            .toLowerCase()
+            .trim();
 
         const from = document.getElementById('date-from').value;
         const to = document.getElementById('date-to').value;
 
+        const sort = document.getElementById('sort-select').value;
+
         filtered = logs.filter(v => {
 
-            const name = (v.visitor_name ?? '').toLowerCase();
+            const visitor = (v.visitor_name ?? '').toLowerCase();
+            const tenant = (v.tenant?.name ?? '').toLowerCase();
+            const purpose = (v.purpose ?? '').toLowerCase();
+            const staff = (v.staff?.name ?? '').toLowerCase();
 
             const arrDate = v.arrival_time
                 ? new Date(v.arrival_time).toISOString().split('T')[0]
                 : '';
 
-            return (!q || name.includes(q))
-                && (!from || arrDate >= from)
-                && (!to || arrDate <= to);
+            const matchesSearch =
+                !q ||
+                visitor.includes(q) ||
+                tenant.includes(q) ||
+                purpose.includes(q) ||
+                staff.includes(q);
+
+            const matchesFrom = !from || arrDate >= from;
+            const matchesTo = !to || arrDate <= to;
+
+            return matchesSearch && matchesFrom && matchesTo;
+        });
+
+        filtered.sort((a, b) => {
+
+            if (sort === 'newest') {
+                return new Date(b.arrival_time) - new Date(a.arrival_time);
+            }
+
+            if (sort === 'oldest') {
+                return new Date(a.arrival_time) - new Date(b.arrival_time);
+            }
+
+            if (sort === 'name') {
+                return (a.visitor_name || '')
+                    .localeCompare(b.visitor_name || '');
+            }
+
+            return 0;
         });
 
         renderTable();
@@ -323,7 +466,15 @@
         const tbody = document.getElementById('logs-tbody');
 
         if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No logs found</td></tr>`;
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align:center;">
+                        No logs found
+                    </td>
+                </tr>
+            `;
+
             return;
         }
 
@@ -336,38 +487,83 @@
                 <td>${v.tenant?.name ?? '—'}</td>
                 <td>${v.staff?.name ?? '—'}</td>
                 <td>${getStatusBadge(v.status)}</td>
-                <td><button class="act-btn">👁</button></td>
+                <td>
+                    <button class="act-btn">👁</button>
+                </td>
             </tr>
         `).join('');
     }
 
-    renderTable();
-
     function getStatusBadge(status) {
-    if (!status) return '—';
 
-    let cls = '';
+        if (!status) return '—';
 
-    switch (status.toLowerCase()) {
-        case 'approved':
-            cls = 'badge badge-approved';
-            break;
-        case 'pending':
-            cls = 'badge badge-pending';
-            break;
-        case 'denied':
-        case 'rejected':
-            cls = 'badge badge-denied';
-            break;
-        case 'inside':
-        case 'currently inside':
-            cls = 'badge badge-inside';
-            break;
-        default:
-            cls = 'badge';
+        const s = status.toLowerCase();
+
+        let cls = '';
+
+        switch (s) {
+
+            case 'approved':
+            case 'completed':
+                cls = 'badge badge-approved';
+                break;
+
+            case 'pending':
+                cls = 'badge badge-pending';
+                break;
+
+            case 'denied':
+            case 'rejected':
+                cls = 'badge badge-denied';
+                break;
+
+            case 'inside':
+            case 'currently inside':
+                cls = 'badge badge-inside';
+                break;
+
+            default:
+                cls = 'badge';
+        }
+
+        const label = status
+            .toString()
+            .toLowerCase()
+            .replace(/\b\w/g, char => char.toUpperCase());
+
+        return `<span class="${cls}">${label}</span>`;
     }
 
-    return `<span class="${cls}">${status}</span>`;
+    applyFilters();
+function exportLogs() {
+
+    if (!filtered.length) {
+        alert("No data to export.");
+        return;
+    }
+
+    let csv = "Name,Time In,Time Out,Purpose,Tenant Visited,Logged By,Status\n";
+
+    filtered.forEach(v => {
+        csv += `"${v.visitor_name ?? ''}",`
+            + `"${fmtDateTime(v.arrival_time)}",`
+            + `"${v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside'}",`
+            + `"${v.purpose ?? ''}",`
+            + `"${v.tenant?.name ?? ''}",`
+            + `"${v.staff?.name ?? ''}",`
+            + `"${v.status ?? ''}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "visitor_logs.csv";
+    a.click();
+
+    window.URL.revokeObjectURL(url);
 }
 
 </script>
