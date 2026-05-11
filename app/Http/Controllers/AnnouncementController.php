@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -45,10 +46,11 @@ class AnnouncementController extends Controller
             'priority'   => $request->priority ?? 'low',
             'status'     => $request->status ?? 'active',
             'attachment' => $attachment,
+            'posted_at'  => now(),
         ]);
 
         return redirect()->route('announcements.index')
-                         ->with('success', 'Announcement posted successfully.');
+            ->with('success', 'Announcement posted successfully.');
     }
 
     public function update(Request $request, $id)
@@ -70,7 +72,7 @@ class AnnouncementController extends Controller
         ]);
 
         return redirect()->route('announcements.index')
-                         ->with('success', 'Announcement updated successfully.');
+            ->with('success', 'Announcement updated successfully.');
     }
 
     public function archive($id)
@@ -79,7 +81,7 @@ class AnnouncementController extends Controller
         $announcement->update(['status' => 'closed']);
 
         return redirect()->route('announcements.index')
-                         ->with('success', 'Announcement archived.');
+            ->with('success', 'Announcement archived.');
     }
 
     public function restore($id)
@@ -88,7 +90,7 @@ class AnnouncementController extends Controller
         $announcement->update(['status' => 'active']);
 
         return redirect()->route('announcements.index')
-                         ->with('success', 'Announcement restored.');
+            ->with('success', 'Announcement restored.');
     }
 
     public function destroy($id)
@@ -104,6 +106,6 @@ class AnnouncementController extends Controller
         $announcement->delete();
 
         return redirect()->route('announcements.index')
-                         ->with('success', 'Announcement deleted.');
+            ->with('success', 'Announcement deleted.');
     }
 }
