@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\VisitorController;
 
 // ── PUBLIC LANDING PAGE ───────────────────────────────────────────────────────
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -88,3 +89,11 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/staff',      fn() => view('staff'))->name('staff.index');
     Route::get('/settings',   fn() => view('settings'))->name('settings.index');
 });
+
+    // Visitor Management Routes ─────────────────────────────────────────────────
+    Route::get('/visitors', [VisitorController::class, 'index'])
+    ->name('visitors.index');
+    Route::post('/visitors/store', [VisitorController::class, 'store'])
+    ->name('visitors.store');
+    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])
+    ->name('visitors.checkout');
