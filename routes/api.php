@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\PasswordController;
+use Illuminate\Support\Facades\Storage;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -19,4 +20,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
     Route::post('/change-password', [PasswordController::class, 'change']);
+
+    Route::post('/profile/photo', function (Request $request) {
+        $request->validate([
+            'profile_photo' => 'required|image|max:2048',
+        ]);
+
+        $user = $request->user();
+
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        $path = $request->file('profile_photo')->store('profile_photos', 'public');
+        $user->update(['profile_photo' => $path]);
+
+        return response()->json(['profile_photo' => $path]);
+    });
 });
