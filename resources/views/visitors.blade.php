@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Visitor Logs')
+@section('title', 'DormEase: Visitor Logs')
 
 @section('page-title', 'Visitor Logs')
 
@@ -272,10 +272,6 @@
 
 }
 
-/* =========================
-   VISITOR MODAL
-========================= */
-
 .visitor-modal {
     display: none;
     position: fixed;
@@ -383,7 +379,6 @@
 
     <div class="visitor-modal-card">
 
-        <!-- Close Button -->
         <button
             type="button"
             class="visitor-modal-close"
@@ -392,13 +387,11 @@
             &times;
         </button>
 
-        <!-- Header -->
         <div class="visitor-modal-header">
             <span class="visitor-modal-icon">👤</span>
             <h2>Visitor Details</h2>
         </div>
 
-        <!-- Dynamic Content -->
         <div id="modalContent" class="visitor-modal-content"></div>
 
     </div>
@@ -414,7 +407,10 @@
         </div>
 
         <div class="header-actions">
-            <button class="btn-outline" onclick="exportLogs()">🔒 Export</button>
+            <button class="btn-outline" onclick="exportLogs()">
+                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                Export
+            </button>
         </div>
     </div>
 
@@ -478,7 +474,9 @@
         </div>
 
         <div class="search-wrap">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+                <img src="{{ asset('icons/search.png') }}" class="icon-sm" alt="Search">
+            </span>
 
                 <input
                 type="text"

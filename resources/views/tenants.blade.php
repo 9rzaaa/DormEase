@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Manage Tenants')
+@section('title', 'DormEase: Manage Tenants')
 @section('page-title', 'Manage Tenants')
 
 @section('styles')
@@ -62,7 +62,8 @@
         transition: border-color .2s, width .3s;
     }
     .search-wrap input:focus { border-color: var(--pink); width: 240px; }
-    .search-wrap::before { content:'🔍'; position:absolute; left:.65rem; top:50%; transform:translateY(-50%); font-size:.8rem; pointer-events:none; }
+
+    .search-icon {position: absolute; left: .65rem; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; align-items: center; justify-content: center; }
 
     .sort-select {
         padding: .5rem .8rem; border-radius: 9px;
@@ -159,7 +160,6 @@
     .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
     .btn-submit:hover { background: #a8446c; }
 
-    /* credentials modal */
     .credentials-box {
         background: #f0fdf4; border: 1.5px solid #86efac;
         border-radius: 14px; padding: 1.4rem; margin-bottom: 1rem;
@@ -209,7 +209,6 @@
 @section('content')
 <div class="page-body">
 
-    {{-- page header --}}
     <div class="page-header fade-up d1">
         <div>
             <h1>Manage Tenants</h1>
@@ -217,11 +216,13 @@
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">＋ Add Tenant</button>
-            <button class="btn-outline" onclick="exportTenants()">⬇ Export</button>
+            <button class="btn-outline" onclick="exportTenants()">
+                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                Export
+            </button>
         </div>
     </div>
 
-    {{-- stats row --}}
     <div class="stats-row fade-up d2">
         <div class="stat-box">
             <div class="stat-icon-circle">
@@ -255,7 +256,6 @@
         </div>
     </div>
 
-    {{-- tenants table --}}
     <div class="table-card fade-up d3">
         <div class="table-header">
             <div>
@@ -264,6 +264,9 @@
             </div>
             <div class="table-controls">
                 <div class="search-wrap">
+                    <span class="search-icon">
+                        <img src="{{ asset('icons/search.png') }}" class="icon-sm" alt="Search">
+                    </span>
                     <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
                 </div>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
@@ -304,7 +307,6 @@
 
 @section('modals')
 
-{{-- ── Credentials Modal — shown after adding a tenant ── --}}
 @if(session('new_account_id'))
 <div class="modal-overlay open" id="credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -347,7 +349,6 @@
 </div>
 @endif
 
-{{-- ── Credentials Modal — shown after password reset ── --}}
 @if(session('reset_account_id'))
 <div class="modal-overlay open" id="reset-credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -389,14 +390,12 @@
 </div>
 @endif
 
-{{-- ── Add Tenant Modal ── --}}
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">➕ Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
         </div>
-        {{-- account id and password are auto-generated — no need to enter them --}}
         <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--pink-bg);padding:.7rem 1rem;border-radius:10px;">
             💡 Account ID and temporary password will be <strong>auto-generated</strong>
             and shown to you after saving.
@@ -455,7 +454,6 @@
     </div>
 </div>
 
-{{-- ── View Tenant Modal ── --}}
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
         <div class="modal-header">
@@ -470,11 +468,13 @@
     </div>
 </div>
 
-{{-- ── Edit Tenant Modal ── --}}
 <div class="modal-overlay" id="edit-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">✏️ Edit Tenant</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
+                Edit Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
         </div>
         <form method="POST" id="edit-form" action="">
@@ -545,11 +545,13 @@
     </div>
 </div>
 
-{{-- ── Reset Password Confirmation Modal ── --}}
 <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
-            <div class="modal-title">🔄 Reset Password</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">
+                Reset Password
+            </div>
             <button class="modal-close" onclick="closeModal('reset-modal')">✕</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
@@ -567,11 +569,13 @@
     </div>
 </div>
 
-{{-- ── Delete Tenant Modal ── --}}
 <div class="modal-overlay" id="delete-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
-            <div class="modal-title">🗑 Delete Tenant</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
+                Delete Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
         </div>
         <div class="delete-warning">
@@ -596,19 +600,15 @@
 
 @section('scripts')
 <script>
-    // tenant data from Laravel
     const tenants = @json($tenants);
 
     const PER_PAGE   = 8;
     let currentPage  = 1;
     let filtered     = [...tenants];
-    let currentTenant = null; // stores tenant being viewed for edit button
-
-    // set table date
+    let currentTenant = null;
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    // ── Badge helpers ────────────────────────────────────────────────────────
     function statusBadge(status) {
         const map = {
             active:   '<span class="badge badge-active">Active</span>',
@@ -628,7 +628,6 @@
         return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    // ── Render table ─────────────────────────────────────────────────────────
     function renderTable() {
         const start    = (currentPage - 1) * PER_PAGE;
         const pageData = filtered.slice(start, start + PER_PAGE);
@@ -651,11 +650,18 @@
                     <td>${statusBadge(t.status)}</td>
                     <td>
                         <div class="action-group">
-                            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>👁</button>
-                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>✏️</button>
-                            <button class="act-btn reset" title="Reset Password" onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">🔑</button>
-                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">🗑</button>
-                        </div>
+                            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">
+                                </button>
+                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
+                                </button>
+                            <button class="act-btn reset" title="Reset Password" onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset Password">
+                                </button>
+                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
+                                </button>
                     </td>
                 </tr>
             `).join('');
@@ -670,7 +676,6 @@
         renderPagination();
     }
 
-    // ── Pagination ────────────────────────────────────────────────────────────
     function renderPagination() {
         const totalPages = Math.ceil(filtered.length / PER_PAGE);
         const pg = document.getElementById('pagination');
@@ -694,7 +699,6 @@
         renderTable();
     }
 
-    // ── Search and sort ───────────────────────────────────────────────────────
     function filterTable() {
         const q = document.getElementById('search-input').value.toLowerCase();
         filtered = tenants.filter(t =>
@@ -718,7 +722,6 @@
         renderTable();
     }
 
-    // ── View modal ────────────────────────────────────────────────────────────
     function viewTenant(t) {
         currentTenant = t;
         document.getElementById('view-content').innerHTML = `
@@ -744,7 +747,6 @@
         }
     }
 
-    // ── Edit modal ────────────────────────────────────────────────────────────
     function openEditModal(t) {
         currentTenant = t;
         document.getElementById('edit-form').action        = `/tenants/${t.tenant_id}`;
@@ -761,21 +763,18 @@
         openModal('edit-modal');
     }
 
-    // ── Reset password modal ──────────────────────────────────────────────────
     function openResetModal(id, name) {
         document.getElementById('reset-name').textContent = name;
         document.getElementById('reset-form').action = `/tenants/${id}/reset-password`;
         openModal('reset-modal');
     }
 
-    // ── Delete modal ──────────────────────────────────────────────────────────
     function openDeleteModal(id, name) {
         document.getElementById('delete-name').textContent = name;
         document.getElementById('delete-form').action = `/tenants/${id}`;
         openModal('delete-modal');
     }
 
-    // ── Export CSV ────────────────────────────────────────────────────────────
     function exportTenants() {
         const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Contact', 'Status']];
         tenants.forEach(t => rows.push([
@@ -794,7 +793,6 @@
         showToast('📥 Tenants exported as CSV!', 'success');
     }
 
-    // ── Copy to clipboard ─────────────────────────────────────────────────────
     function copyText(elementId, btn) {
         const text = document.getElementById(elementId).textContent;
         navigator.clipboard.writeText(text).then(() => {
@@ -803,14 +801,12 @@
         });
     }
 
-    // ── Modal helpers ─────────────────────────────────────────────────────────
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
-    // ── Toast ─────────────────────────────────────────────────────────────────
     function showToast(msg, type = '') {
         const t = document.getElementById('toast');
         if (!t) return;
@@ -820,19 +816,16 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    // ── Auto-open add modal on validation errors ──────────────────────────────
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
     @endif
 
-    // ── Show success toast ────────────────────────────────────────────────────
     @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
         document.addEventListener('DOMContentLoaded', () =>
             showToast('✅ {{ session("success") }}', 'success')
         );
     @endif
 
-    // ── Init ──────────────────────────────────────────────────────────────────
     filtered = [...tenants];
     renderTable();
 </script>
