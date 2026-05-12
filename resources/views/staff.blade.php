@@ -92,13 +92,13 @@
     .td-id   { color: var(--ink-muted); font-size: .82rem; font-family: monospace; }
 
     .badge { display: inline-flex; align-items: center; justify-content: center; padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
-    .badge-onduty  { background: #e8faf5; color: var(--green);  border: 1.5px solid var(--green); }
-    .badge-offduty { background: #fff0f0; color: var(--red);    border: 1.5px solid var(--blush); }
-    .badge-leave   { background: #fff9e6; color: #c8960c;       border: 1.5px solid #f0c040; }
-    .badge-admin   { background: var(--pink-card); color: var(--pink);   border: 1.5px solid var(--pink-light); }
-    .badge-frontdesk { background: #e8f4ff; color: #1a6fbd;    border: 1.5px solid #90c4f8; }
-    .badge-guard   { background: #f3f0ff; color: #6d4fc4;      border: 1.5px solid #c4b5fd; }
-    .badge-staff   { background: #f0fdf8; color: #166534;      border: 1.5px solid #86efac; }
+    .badge-onduty    { background: #e8faf5; color: var(--green);  border: 1.5px solid var(--green); }
+    .badge-offduty   { background: #fff0f0; color: var(--red);    border: 1.5px solid var(--blush); }
+    .badge-leave     { background: #fff9e6; color: #c8960c;       border: 1.5px solid #f0c040; }
+    .badge-admin     { background: var(--pink-card); color: var(--pink); border: 1.5px solid var(--pink-light); }
+    .badge-frontdesk { background: #e8f4ff; color: #1a6fbd;      border: 1.5px solid #90c4f8; }
+    .badge-guard     { background: #f3f0ff; color: #6d4fc4;      border: 1.5px solid #c4b5fd; }
+    .badge-staff     { background: #f0fdf8; color: #166534;      border: 1.5px solid #86efac; }
 
     .action-group { display: flex; align-items: center; gap: .5rem; }
     .act-btn {
@@ -111,8 +111,8 @@
     .act-btn.delete:hover { border-color: var(--red);  background: #fff0f0; }
     .act-btn.toggle:hover { border-color: #f0c040;     background: #fff9e6; }
 
-    .icon-sm {width: 16px; height: 16px; object-fit: contain; }
-    .icon-md {width: 28px; height: 28px; object-fit: contain; }
+    .icon-sm { width: 16px; height: 16px; object-fit: contain; }
+    .icon-md { width: 28px; height: 28px; object-fit: contain; }
 
     .table-footer {
         padding: 1rem 1.5rem;
@@ -165,6 +165,23 @@
 
     .delete-warning { background: #fff0f0; border: 1px solid var(--blush); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; font-size: .88rem; color: var(--red); line-height: 1.6; }
 
+    .credentials-box { background: var(--pink-bg); border: 1.5px solid var(--pink-light); padding: 1rem; border-radius: 14px; margin-bottom: 1rem; }
+    .credentials-box h4 { margin-bottom: .8rem; color: var(--pink); font-size: .95rem; }
+    .credential-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: .7rem; }
+    .credential-row:last-child { margin-bottom: 0; }
+    .credential-label { font-size: .75rem; color: var(--ink-muted); font-weight: 600; }
+    .credential-value { font-weight: 700; font-family: monospace; color: var(--ink); font-size: .95rem; }
+    .copy-btn { padding: .3rem .8rem; border-radius: 7px; border: 1.5px solid var(--pink-light); background: var(--white); color: var(--pink); font-weight: 600; cursor: pointer; font-size: .8rem; transition: background .2s, color .2s; }
+    .copy-btn:hover { background: var(--pink); color: var(--white); }
+    .credentials-warning { background: #fff0f0; border: 1px solid var(--blush); padding: .8rem; border-radius: 10px; font-size: .8rem; color: var(--red); margin-bottom: 1rem; }
+
+    .reset-staff-card { background: var(--pink-bg); border-radius: 12px; padding: 1rem; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 12px; }
+    .reset-staff-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--pink-card); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--pink); flex-shrink: 0; border: 2px solid var(--pink-light); }
+    .reset-staff-name { font-size: .9rem; font-weight: 600; color: var(--ink); }
+    .reset-staff-meta { font-size: .78rem; color: var(--ink-muted); }
+    .reset-warning-box { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
+    .reset-warning-box p { font-size: .82rem; color: #92680a; margin: 0; line-height: 1.55; }
+
     .shift-dot { display: inline-flex; align-items: center; gap: .4rem; }
     .shift-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .shift-dot.day::before   { background: #f59e0b; }
@@ -187,6 +204,51 @@
 
 @section('content')
 <div class="page-body">
+
+    @if(session('new_temp_password'))
+    <div class="modal-overlay open" id="staff-credentials-modal">
+        <div class="modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-title">🔑 Staff Account Created Successfully</div>
+                <button class="modal-close" onclick="closeModal('staff-credentials-modal')">✕</button>
+            </div>
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                Please provide these temporary login credentials to the staff member.
+            </p>
+            <div class="credentials-box">
+                <h4>🔐 Temporary Login Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Email</div>
+                        <div class="credential-value" id="new-email">{{ session('new_email') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('new-email', this)">Copy</button>
+                </div>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Staff ID</div>
+                        <div class="credential-value" id="new-staff-id">{{ session('new_staff_id') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('new-staff-id', this)">Copy</button>
+                </div>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Temporary Password</div>
+                        <div class="credential-value" id="new-temp-password">{{ session('new_temp_password') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('new-temp-password', this)">Copy</button>
+                </div>
+            </div>
+            <div class="credentials-warning">
+                ⚠️ This temporary password will <strong>not be shown again</strong>.
+                Please inform the staff member immediately.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-submit" onclick="closeModal('staff-credentials-modal')">Got it</button>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="page-header fade-up d1">
         <div>
@@ -310,10 +372,10 @@
                     <label>Role</label>
                     <select name="role" required>
                         <option value="">Select role</option>
-                        <option value="admin"      {{ old('role') === 'admin'      ? 'selected' : '' }}>Admin</option>
-                        <option value="frontdesk"  {{ old('role') === 'frontdesk'  ? 'selected' : '' }}>Front Desk</option>
-                        <option value="guard"      {{ old('role') === 'guard'      ? 'selected' : '' }}>Guard</option>
-                        <option value="staff"      {{ old('role') === 'staff'      ? 'selected' : '' }}>Staff</option>
+                        <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
+                        <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
+                        <option value="guard"     {{ old('role') === 'guard'     ? 'selected' : '' }}>Guard</option>
+                        <option value="staff"     {{ old('role') === 'staff'     ? 'selected' : '' }}>Staff</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -451,12 +513,11 @@
 
 @section('scripts')
 <script>
-    const staffList = @json($staffList);
-
-    const PER_PAGE    = 8;
-    let currentPage   = 1;
-    let filtered      = [...staffList];
-    let currentStaff  = null;
+    const staffList  = @json($staffList);
+    const PER_PAGE   = 8;
+    let currentPage  = 1;
+    let filtered     = [...staffList];
+    let currentStaff = null;
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -517,6 +578,9 @@
                             <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${s.staff_id}, '${s.first_name} ${s.last_name}')">
                                 <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
                             </button>
+                            <button class="act-btn toggle" title="Reset Password" onclick='resetTempPassword(${JSON.stringify(s)})'>
+                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -560,9 +624,9 @@
         filtered = staffList.filter(s =>
             (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
             fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
-            (s.role             ?? '').toLowerCase().includes(q) ||
-            (s.contact_number   ?? '').toLowerCase().includes(q) ||
-            (s.email            ?? '').toLowerCase().includes(q)
+            (s.role           ?? '').toLowerCase().includes(q) ||
+            (s.contact_number ?? '').toLowerCase().includes(q) ||
+            (s.email          ?? '').toLowerCase().includes(q)
         );
         currentPage = 1;
         renderTable();
@@ -603,13 +667,13 @@
     function openEditModal(s) {
         currentStaff = s;
         document.getElementById('edit-form').action           = `/staff/${s.staff_id}`;
-        document.getElementById('edit-first-name').value      = s.first_name      ?? '';
-        document.getElementById('edit-last-name').value       = s.last_name       ?? '';
-        document.getElementById('edit-email').value           = s.email           ?? '';
-        document.getElementById('edit-role').value            = s.role            ?? '';
-        document.getElementById('edit-shift').value           = s.shift_schedule  ?? '';
-        document.getElementById('edit-contact').value         = s.contact_number  ?? '';
-        document.getElementById('edit-duty-status').value     = s.duty_status     ?? 'off_duty';
+        document.getElementById('edit-first-name').value      = s.first_name     ?? '';
+        document.getElementById('edit-last-name').value       = s.last_name      ?? '';
+        document.getElementById('edit-email').value           = s.email          ?? '';
+        document.getElementById('edit-role').value            = s.role           ?? '';
+        document.getElementById('edit-shift').value           = s.shift_schedule ?? '';
+        document.getElementById('edit-contact').value         = s.contact_number ?? '';
+        document.getElementById('edit-duty-status').value     = s.duty_status    ?? 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         openModal('edit-modal');
     }
@@ -638,10 +702,155 @@
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function closeModal(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('open');
+        if ((id === 'reset-credentials-modal' || id === 'reset-confirm-modal') && el) el.remove();
+    }
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
+
+    function copyText(id, btn) {
+        const text = document.getElementById(id)?.innerText.trim();
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            const old = btn.innerText;
+            btn.innerText = 'Copied!';
+            setTimeout(() => btn.innerText = old, 1500);
+            showToast('Copied to clipboard!', 'success');
+        });
+    }
+
+    function copyResetText(id, btn) {
+        const text = document.getElementById(id)?.innerText.trim();
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            const old = btn.innerText;
+            btn.innerText = 'Copied!';
+            setTimeout(() => btn.innerText = old, 1500);
+            showToast('Copied to clipboard!', 'success');
+        });
+    }
+
+    function resetTempPassword(s) {
+        const existing = document.getElementById('reset-confirm-modal');
+        if (existing) existing.remove();
+
+        const initials = (s.first_name[0] ?? '') + (s.last_name[0] ?? '');
+
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal-overlay open" id="reset-confirm-modal">
+                <div class="modal" style="max-width:420px;">
+                    <div class="modal-header">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:38px;height:38px;border-radius:10px;background:#fff9e6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">
+                            </div>
+                            <div>
+                                <div class="modal-title">Reset password</div>
+                                <div style="font-size:.78rem;color:var(--ink-muted);">This will generate new credentials</div>
+                            </div>
+                        </div>
+                        <button class="modal-close" onclick="closeModal('reset-confirm-modal')">✕</button>
+                    </div>
+
+                    <div class="reset-staff-card">
+                        <div class="reset-staff-avatar">${initials}</div>
+                        <div>
+                            <div class="reset-staff-name">${s.first_name} ${s.last_name}</div>
+                            <div class="reset-staff-meta">${fmtStaffId(s.staff_id)} · ${s.role ?? '—'}</div>
+                        </div>
+                    </div>
+
+                    <div class="reset-warning-box">
+                        <span style="font-size:1rem;flex-shrink:0;"></span>
+                        <p>A new temporary password will be generated. Share it with the staff member immediately as it will not be shown again.</p>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-cancel" onclick="closeModal('reset-confirm-modal')">Cancel</button>
+                        <button class="btn-submit" style="background:#c8960c;" onclick="confirmReset(${s.staff_id})">Reset password</button>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        document.getElementById('reset-confirm-modal').addEventListener('click', e => {
+            if (e.target === document.getElementById('reset-confirm-modal'))
+                closeModal('reset-confirm-modal');
+        });
+    }
+
+    function confirmReset(id) {
+        closeModal('reset-confirm-modal');
+
+        fetch(`/staff/${id}/reset-password`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const existing = document.getElementById('reset-credentials-modal');
+            if (existing) existing.remove();
+
+            document.body.insertAdjacentHTML('beforeend', `
+                <div class="modal-overlay open" id="reset-credentials-modal">
+                    <div class="modal" style="max-width:460px;">
+                        <div class="modal-header">
+                            <div class="modal-title">Password Reset Successful</div>
+                            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">✕</button>
+                        </div>
+                        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                            Share these credentials with the staff member immediately.
+                        </p>
+                        <div class="credentials-box">
+                            <h4>New Temporary Credentials</h4>
+                            <div class="credential-row">
+                                <div>
+                                    <div class="credential-label">Email</div>
+                                    <div class="credential-value" id="reset-email">${data.reset_email}</div>
+                                </div>
+                                <button class="copy-btn" onclick="copyResetText('reset-email', this)">Copy</button>
+                            </div>
+                            <div class="credential-row">
+                                <div>
+                                    <div class="credential-label">Staff ID</div>
+                                    <div class="credential-value" id="reset-staff-id">${data.reset_staff_id}</div>
+                                </div>
+                                <button class="copy-btn" onclick="copyResetText('reset-staff-id', this)">Copy</button>
+                            </div>
+                            <div class="credential-row">
+                                <div>
+                                    <div class="credential-label">Temporary Password</div>
+                                    <div class="credential-value" id="reset-temp-password">${data.reset_temp_password}</div>
+                                </div>
+                                <button class="copy-btn" onclick="copyResetText('reset-temp-password', this)">Copy</button>
+                            </div>
+                        </div>
+                        <div class="credentials-warning">
+                            This password will <strong>not be shown again</strong>.
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            document.getElementById('reset-credentials-modal').addEventListener('click', e => {
+                if (e.target === document.getElementById('reset-credentials-modal'))
+                    closeModal('reset-credentials-modal');
+            });
+
+            showToast('Password reset successfully!', 'success');
+        })
+        .catch(() => showToast('Failed to reset password.', 'error'));
+    }
 
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
