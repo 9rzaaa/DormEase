@@ -1,23 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DormEase – Sanctissimo Rosario Ladies Dormitory</title>
+<title>DormEase: Sanctissimo Rosario Ladies Dormitory</title>
 
-<!-- Fonts: Montserrat (Headlines) + Nunito (Body – closest open-source to Google Sans) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!--
-  NOTE ON GOOGLE SANS:
-  "Google Sans" is not publicly available on Google Fonts.
-  Nunito is the closest open-source match (similar x-height, roundness, weight range).
-  If you have access to Google Sans, replace --font-body below with:
-    font-family: 'Google Sans', 'Nunito', sans-serif;
-  and serve it from your Laravel public/fonts folder via @font-face.
--->
-
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -43,7 +34,6 @@
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); background: var(--cream); color: var(--brown); overflow-x: hidden; line-height: 1.6; }
 
-/* ── IMAGE PLACEHOLDER UTILITY ── */
 .img-ph {
   background: linear-gradient(135deg, var(--cream-dark) 0%, #e8ddd4 100%);
   border: 2px dashed rgba(214,56,104,0.30);
@@ -73,7 +63,6 @@ body { font-family: var(--font-body); background: var(--cream); color: var(--bro
 .img-ph-ico svg { width: 20px; height: 20px; stroke: var(--pink); fill: none; stroke-width: 1.8; stroke-linecap: round; }
 .img-ph span { position: relative; z-index: 1; line-height: 1.6; }
 
-/* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   background: rgba(253, 232, 239, 0.95);
@@ -106,7 +95,6 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 }
 .nav-cta:hover { background: var(--pink-deep) !important; transform: translateY(-1px); }
 
-/* ── HERO ── */
 .hero {
   min-height: 100svh;
   padding: 0 5% 0 8%;
@@ -119,7 +107,6 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
   background: var(--cream);
 }
 
-/* ── LEFT CONTENT ── */
 .hero-content {
   position: relative;
   z-index: 2;
@@ -179,7 +166,6 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 }
 .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
 
-/* ── STATS ROW (under buttons) ── */
 .hero-stats-row {
   display: flex;
   align-items: center;
@@ -207,7 +193,6 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
   letter-spacing: 0.10em; font-weight: 700;
 }
 
-/* ── RIGHT: ARCH PHOTO ── */
 .hero-arch-wrap {
   position: relative;
   display: flex;
@@ -294,7 +279,6 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
   flex-shrink: 0;
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 960px) {
   .hero {
     grid-template-columns: 1fr;
@@ -310,14 +294,12 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
   .hero-stats-row { gap: 0; }
 }
 
-/* ── SECTION COMMONS ── */
 section { padding: 100px 6%; }
 .section-tag { font-size:.70rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
 .section-title { font-family:var(--font-head); font-size:clamp(1.8rem,3.2vw,2.8rem); font-weight:800; line-height:1.15; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
 .section-title em { color:var(--pink); font-style:italic; font-weight:700; }
 .section-sub { font-size:1rem; color:var(--brown-light); line-height:1.8; max-width:540px; }
 
-/* ── FEATURES ── */
 .features { background:var(--cream); }
 .features-header { max-width:620px; margin-bottom:60px; }
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
@@ -338,8 +320,6 @@ section { padding: 100px 6%; }
 .feat-title { font-family:var(--font-head); font-size:1.0rem; font-weight:700; color:var(--brown); margin-bottom:8px; letter-spacing:-.01em; }
 .feat-desc { font-size:.87rem; color:var(--brown-light); line-height:1.75; }
 
-
-/* ── GALLERY ── */
 .gallery { background:var(--cream-dark); padding-top:80px; padding-bottom:80px; }
 
 .gallery-grid {
@@ -382,7 +362,6 @@ section { padding: 100px 6%; }
   background: white;
 }
 
-/* ── GALLERY LABEL ── */
 .gal-label-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .gal-badge {
   background: var(--pink); color: white;
@@ -394,7 +373,6 @@ section { padding: 100px 6%; }
 .gal-title { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
 .gal-desc { font-size: 0.85rem; color: var(--brown-light); line-height: 1.7; }
 
-/* ── HOW IT WORKS ── */
 .how { background:var(--cream); position:relative; overflow:hidden; }
 .how::before { content:''; position:absolute; top:-200px; right:-200px; width:500px; height:500px; border-radius:50%; background:rgba(214,56,104,0.04); }
 .how-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
@@ -413,7 +391,6 @@ section { padding: 100px 6%; }
 .mini-bdy { padding:7px; flex:1; display:flex; flex-direction:column; gap:5px; }
 .mini-row { background:white; border-radius:5px; height:17px; opacity:.8; }
 
-/* ── ABOUT ── */
 .about { background:var(--brown); color:white; position:relative; overflow:hidden; }
 .about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(214,56,104,0.13); }
 .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; position:relative; z-index:1; }
@@ -450,21 +427,15 @@ section { padding: 100px 6%; }
 .ic-rl { color:rgba(255,255,255,0.48); }
 .ic-rv { color:white; font-weight:600; }
 
-/* ── CTA ── */
 .cta-section { background:var(--pink-pale); text-align:center; }
 .cta-section .section-title { color:var(--brown); margin:0 auto 14px; }
 .cta-section .section-sub { margin:0 auto 40px; color:var(--brown-light); }
 .cta-contact { margin-top:26px; font-size:.88rem; color:var(--brown-light); }
 .cta-contact a { color:var(--pink); text-decoration:none; font-weight:700; }
 
-/* ── FOOTER ── */
 footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 40px; }
 .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
 .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration: none; }
-/* ── IMAGE SLOT 9: FOOTER LOGO (white version) ───────────────────
-   Plain HTML:  src="src/images/logo-white.png"
-   Laravel:     src="{{ asset('images/logo-white.png') }}"
-──────────────────────────────────────────────────────────────── */
 .footer-logo img { height:32px; width:auto; object-fit:contain; }
 .footer-logo-fb { font-family:var(--font-head); font-size:1.2rem; font-weight:800; color:white; letter-spacing:-.02em; }
 .footer-logo-fb span { color:var(--pink-light); }
@@ -476,12 +447,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 .footer-btm a { color:rgba(255,255,255,0.32); text-decoration:none; }
 .footer-btm a:hover { color:var(--pink-light); }
 
-/* ── ANIMATIONS ── */
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
 .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s} .d4{transition-delay:.40s}
 
-/* ── RESPONSIVE ── */
 @media(max-width:960px){
   .hero{grid-template-columns:1fr;padding-top:120px}
   .hero-visual{display:none}
@@ -504,17 +473,8 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </head>
 <body>
 
-<!-- ════════════════════ NAV ════════════════════ -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    <!--
-    ╔══════════════════════════════════════════════════════════╗
-    ║  IMAGE SLOT 1 — LOGO                                    ║
-    ║  Plain HTML:  src="src/images/logo.png"                 ║
-    ║  Laravel:     src="{{ asset('images/logo.png') }}"      ║
-    ║  Size: 160×40px, PNG with transparency                  ║
-    ╚══════════════════════════════════════════════════════════╝
-    -->
     <img src="{{ asset('images/logo.png') }}"
          alt="DormEase Logo"
          style="height: 38px; width: auto; object-fit: contain; display: block;"
@@ -537,14 +497,13 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="hero-badge">Safe &middot; Comfortable &middot; Near UST</div>
     <h1>Your home away<br>from <em>home</em></h1>
     <p class="hero-sub">
-      Sanctissimo Rosario Ladies Dormitory — a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
+      Sanctissimo Rosario Ladies Dormitory: a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
     </p>
     <div class="hero-actions">
       <a href="#features" class="btn-primary">Explore Rooms</a>
       <a href="#contact" class="btn-outline">Contact the Dorm</a>
     </div>
 
-    {{-- Amenity chips --}}
     <div class="hero-chips">
       <div class="hero-chip"><span class="hero-chip-dot"></span>24/7 Security</div>
       <div class="hero-chip"><span class="hero-chip-dot"></span>Wi-Fi</div>
@@ -565,17 +524,14 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 
 </section>
 
-<!-- ════════════════════ GALLERY ════════════════════ -->
 <section class="gallery" id="gallery">
   <div class="reveal">
     <div class="section-tag">Our Rooms</div>
     <h2 class="section-title">Room Types at <em>Sanctissimo Rosario</em></h2>
-    <p class="section-sub">Choose the setup that fits your lifestyle — safe, clean, and near UST and the University Belt.</p>
+    <p class="section-sub">Choose the setup that fits your lifestyle, that is safe, clean, and near UST and the University Belt.</p>
   </div>
 
   <div class="gallery-grid reveal">
-
-    <!-- SOLO ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/solo.jpg') }}" alt="Solo Room" class="gal-img">
@@ -590,7 +546,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- DOUBLE ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/two.jpg') }}" alt="Double Room" class="gal-img">
@@ -605,7 +560,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- TRIPLE ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="gal-img">
@@ -620,7 +574,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- QUAD ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/four.jpg') }}" alt="Quad Room" class="gal-img">
@@ -638,13 +591,12 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ════════════════════ HOW IT WORKS ════════════════════ -->
 <section class="how" id="how">
   <div class="how-inner">
     <div>
       <div class="section-tag reveal">Simple Process</div>
       <h2 class="section-title reveal">Getting started is <em>effortless</em></h2>
-      <p class="section-sub reveal">DormEase is designed so every tenant can use it with zero learning curve — from first-year students to reviewees.</p>
+      <p class="section-sub reveal">DormEase is designed so every tenant can use it with zero learning curve.</p>
       <div class="steps" style="margin-top:48px;">
         <div class="step reveal d1">
           <div class="step-num">1</div>
@@ -682,14 +634,12 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-
-<!-- ════════════════════ ABOUT ════════════════════ -->
 <section class="about" id="about">
   <div class="about-inner">
     <div>
       <div class="section-tag reveal">About the Dormitory</div>
       <h2 class="section-title reveal">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
-      <p class="section-sub reveal">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila — a safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
+      <p class="section-sub reveal">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
       <div class="amenities reveal">
         <div class="amenity"><div class="amenity-dot"></div>24/7 Security + CCTV</div>
         <div class="amenity"><div class="amenity-dot"></div>Elevator Access</div>
@@ -724,8 +674,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </div>
 </section>
 
-
-<!-- ════════════════════ CTA ════════════════════ -->
 <section class="cta-section" id="contact">
   <div class="reveal">
     <div class="section-tag" style="text-align:center;">Get DormEase</div>
@@ -741,8 +689,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-
-<!-- ════════════════════ FOOTER ════════════════════ -->
 <footer>
   <div class="footer-inner">
     <div>
@@ -780,7 +726,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
   </div>
 <div class="footer-btm">
-  <span>© 2026 DormEase · Sanctissimo Rosario Ladies Dormitory</span>
+  <span>© 2026 DormEase: Sanctissimo Rosario Ladies Dormitory</span>
   <div style="display:flex;gap:20px;align-items:center;">
     <a href="#">Privacy Policy</a>
     <a href="#">Terms of Use</a>

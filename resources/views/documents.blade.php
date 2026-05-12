@@ -157,9 +157,6 @@ body {
   min-height: 100vh;
 }
 
-    /* ══════════════════════════════
-       SIDEBAR
-    ══════════════════════════════ */
     .sidebar {
       width: var(--sidebar-w);
       background: var(--white);
@@ -222,8 +219,6 @@ body {
     }
     .logout-btn:hover { color: var(--red); }
 
-/* ===== MAIN WRAP ===== */
-/* ===== MAIN CONTENT ===== */
 .main {
   margin-left: var(--sidebar-w);
   flex: 1;
@@ -268,7 +263,6 @@ body {
   font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;
 }
 
-/* ===== SCROLLABLE CONTENT ===== */
 .content-scroll {
   flex: 1;
   min-height: 0;
@@ -333,10 +327,8 @@ body {
 .search-wrap input { flex:1; border:none; background:transparent; font-family:var(--font); font-size:13px; color:var(--text-dark); outline:none; }
 .search-wrap input::placeholder { color: var(--text-soft); }
 
-/* ===== DOC LAYOUT ===== */
 .doc-layout { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; align-items: start; }
 
-/* ===== CATEGORY PANEL ===== */
 .cat-panel {
   background: var(--card-bg); border: 1.5px solid var(--border);
   border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
@@ -361,7 +353,6 @@ body {
 }
 .cat-item.active .cat-badge { background: var(--pink-700); }
 
-/* ===== DOC CARD ===== */
 .doc-card {
   background: var(--card-bg); border: 1px solid var(--border);
   border-radius: 16px; box-shadow: var(--shadow); overflow: hidden;
@@ -382,7 +373,6 @@ body {
 
 .result-info { font-size: 12px; color: var(--text-soft); padding: 10px 22px 0; }
 
-/* ===== TABLE ===== */
 .doc-table { width: 100%; border-collapse: collapse; }
 .doc-table thead tr {
   background: linear-gradient(135deg, var(--pink-50), #fce4ec);
@@ -440,7 +430,6 @@ body {
 .page-btn.disabled { opacity: .4; pointer-events: none; }
 .page-dots { color: var(--text-soft); font-size: 13px; padding: 0 2px; align-self: center; }
 
-/* ===== MODALS ===== */
 .modal-overlay {
   position: fixed; inset: 0;
   background: rgba(26,26,46,.45); backdrop-filter: blur(4px);
@@ -477,7 +466,6 @@ body {
 .file-drop-text strong { color: var(--pink-600); }
 .file-name-preview { margin-top: 8px; font-size: 12px; color: var(--pink-600); font-weight: 600; display: none; }
 
-    /* MODAL */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(26,26,46,.45);
       backdrop-filter: blur(4px); z-index: 300;
@@ -522,10 +510,9 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 1.8rem 2rem;
-  width: 100%; /* ✅ ensures content stretches properly */
+  width: 100%;
 }
 
-/* ===== TOAST ===== */
 .toast {
   position: fixed; bottom: 28px; right: 28px;
   background: linear-gradient(135deg, var(--pink), #a8446c);
@@ -542,7 +529,6 @@ body {
 .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
 .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 960px) {
   .doc-layout { grid-template-columns: 1fr; }
   .cat-panel { display: flex; flex-wrap: wrap; }
@@ -562,7 +548,6 @@ body {
 </head>
 <body>
 
-{{-- SIDEBAR --}}
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="sidebar-logo-icon">🏠</div>
@@ -591,7 +576,6 @@ body {
   </div>
 </aside>
 
-<!-- Logout Confirm Modal -->
 <div class="modal-overlay" id="logout-modal">
   <div class="modal">
     <div class="modal-header">
@@ -608,7 +592,6 @@ body {
   </div>
 </div>
 
-{{-- MAIN --}}
 <div class="main">
 
   <div class="topbar">
@@ -628,7 +611,6 @@ body {
       <div class="page-sub">{{ $dorm_name }}</div>
     </div>
 
-    {{-- FILTER BAR --}}
     <form method="GET" action="{{ route('documents') }}">
       <div class="filter-bar fade-up d2">
         <span class="filter-label">Filter By:</span>
@@ -667,10 +649,8 @@ body {
       </div>
     </form>
 
-    {{-- LAYOUT --}}
     <div class="doc-layout fade-up d3">
 
-      {{-- Category panel --}}
       <div class="cat-panel">
         @foreach ($categories as $cat => $count)
           <a class="cat-item {{ $filter_cat === $cat ? 'active' : '' }}"
@@ -681,7 +661,6 @@ body {
         @endforeach
       </div>
 
-      {{-- Documents table --}}
       <div class="doc-card fade-up d4">
         <div class="doc-card-header">
           <div class="doc-card-title">Documents</div>
@@ -772,12 +751,11 @@ body {
         @endif
       </div>
 
-    </div>{{-- /doc-layout --}}
-  </div>{{-- /content-scroll --}}
-</div>{{-- /main-wrap --}}
+    </div>
+  </div>
+</div>
 
 
-{{-- UPLOAD MODAL --}}
 <div class="modal-overlay" id="uploadModal">
   <div class="modal">
     <div class="modal-title">Upload New Document</div>
@@ -817,7 +795,6 @@ body {
   </div>
 </div>
 
-{{-- VIEW MODAL --}}
 <div class="modal-overlay" id="viewModal">
   <div class="modal">
     <div class="modal-title">Document Details</div>
@@ -840,7 +817,6 @@ body {
   </div>
 </div>
 
-{{-- EDIT MODAL --}}
 <div class="modal-overlay" id="editModal">
   <div class="modal">
     <div class="modal-title">Edit Document</div>
@@ -867,7 +843,6 @@ body {
   </div>
 </div>
 
-{{-- DELETE MODAL --}}
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
     <div class="modal-title">Delete Document</div>

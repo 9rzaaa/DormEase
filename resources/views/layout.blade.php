@@ -146,6 +146,7 @@
         .card-sub { font-size: .78rem; color: var(--ink-muted); margin-top: .15rem; }
         .see-all { font-size: .8rem; font-weight: 600; color: var(--pink); background: none; border: none; cursor: pointer; transition: opacity .2s; }
         .see-all:hover { opacity: .7; }
+        .icon-sm {width: 18px; height: 18px; object-fit: contain; }
 
         @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
         .fade-up { opacity:0; animation: fadeUp .5s ease forwards; }
@@ -266,7 +267,9 @@
     <div class="sidebar-logout">
         <form method="POST" action="/logout" id="logout-form">@csrf</form>
         <button class="logout-btn" onclick="openModal('logout-modal')">
-            <span class="nav-icon">🔓</span> Log Out
+            <span class="nav-icon">
+                <img src="{{ asset('icons/logout.png') }}" alt="Logout">
+            </span>
         </button>
     </div>
 </aside>
@@ -277,7 +280,7 @@
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
             <div class="notif-bell" title="Notifications">
-                🔔
+                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
                 @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
                     <span class="notif-badge">{{ $unreadNotifCount }}</span>
                 @endif
