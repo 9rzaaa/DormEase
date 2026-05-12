@@ -822,7 +822,7 @@
 
     @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
         document.addEventListener('DOMContentLoaded', () =>
-            showToast('✅ {{ session("success") }}', 'success')
+            showToast('{{ session("success") }}', 'success')
         );
     @endif
 

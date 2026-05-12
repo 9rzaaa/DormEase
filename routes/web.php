@@ -158,6 +158,8 @@ Route::middleware('auth:staff')->group(function () {
         [StaffController::class, 'destroy']
     )->name('staff.destroy');
 
+    Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword']);
+
     Route::get('/documents',
         fn() => view('documents')
     )->name('documents.index');
