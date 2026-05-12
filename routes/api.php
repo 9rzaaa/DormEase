@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\PasswordController;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -16,4 +17,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/announcements', [AnnouncementController::class, 'index']);
+
+    Route::post('/change-password', [PasswordController::class, 'change']);
 });
