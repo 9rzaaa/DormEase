@@ -15,18 +15,20 @@ class Staff extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
-    'first_name',
-    'last_name',
-    'email',
-    'password_hash',
-    'is_temp_password',
-    'role',
-    'position',
-    'contact_number',
-    'shift_schedule',
-    'duty_status',
-    'attachment',
-    'is_active',
+        'staff_code',
+        'first_name',
+        'last_name',
+        'email',
+        'password_hash',
+        'is_temp_password',
+        'role',
+        'position',
+        'account_id',
+        'contact_number',
+        'shift_schedule',
+        'duty_status',
+        'attachment',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -53,9 +55,7 @@ class Staff extends Authenticatable
                 $staff->updateQuietly([
                     'account_id' => 'STF-' . str_pad($staff->staff_id, 4, '0', STR_PAD_LEFT),
                 ]);
-
             }
-
         });
     }
 }
