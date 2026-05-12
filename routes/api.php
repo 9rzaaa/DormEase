@@ -37,4 +37,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
         return response()->json(['profile_photo' => $path]);
     });
+
+    Route::post('/profile/update', function (Request $request) {
+        $user = $request->user();
+
+        $request->validate([
+            'email'          => 'required|email|unique:tenants,email,' . $user->tenant_id . ',tenant_id',
+            'contact_number' => 'nullable|string|max:20',
+        ]);
+
+        $user->update([
+            'email'          => $request->email,
+            'contact_number' => $request->contact_number,
+        ]);
+
+        return response()->json(['message' => 'Profile updated successfully.']);
+    });
 });
