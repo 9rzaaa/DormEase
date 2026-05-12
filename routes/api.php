@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\PasswordController;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Api\VisitorController;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,6 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
     Route::post('/change-password', [PasswordController::class, 'change']);
+
+    Route::get('/visitors',                   [VisitorController::class, 'index']);
+    Route::post('/visitors',                   [VisitorController::class, 'store']);
+    Route::patch('/visitors/{id}/checkout',     [VisitorController::class, 'checkout']);
 
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
