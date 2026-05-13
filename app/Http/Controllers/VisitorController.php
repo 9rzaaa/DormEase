@@ -17,12 +17,24 @@ class VisitorController extends Controller
         $logs = VisitorLog::with(['tenant', 'staff'])
             ->orderByDesc('date_of_visit')
             ->orderByDesc('visitor_id')
-            ->get();
+            ->get()
+            // ── Append a computed full_name so the Blade JS can use
+            //    v.tenant.full_name instead of combining first+last in JS ──────
+            ->each(function ($v) {
+                if ($v->tenant) {
+                    $v->tenant->full_name = trim(
+                        ($v->tenant->first_name ?? '') . ' ' . ($v->tenant->last_name ?? '')
+                    ) ?: ($v->tenant->name ?? '—');
+                }
+                if ($v->staff) {
+                    $v->staff->full_name = trim(
+                        ($v->staff->first_name ?? '') . ' ' . ($v->staff->last_name ?? '')
+                    ) ?: ($v->staff->name ?? '—');
+                }
+            });
 
-        // Visitors today = expected visits for today (date_of_visit, not arrival_time)
         $visitorsToday = VisitorLog::whereDate('date_of_visit', today())->count();
 
-        // Currently inside = checked in (arrival_time set) but not yet checked out
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->count();
@@ -32,7 +44,6 @@ class VisitorController extends Controller
 
     /**
      * PATCH /visitors/{visitor}/check-in
-     * Front desk checks a visitor in — sets arrival_time and confirmed_by.
      */
     public function checkIn(VisitorLog $visitor)
     {
@@ -41,9 +52,9 @@ class VisitorController extends Controller
         }
 
         $visitor->update([
-            'arrival_time'  => now(),
-            'confirmed_by'  => Auth::id(),  // the staff member who confirmed them
-            'status'        => 'inside',
+            'arrival_time' => now(),
+            'confirmed_by' => Auth::id(),
+            'status'       => 'inside',
         ]);
 
         return back()->with('success', 'Visitor checked in.');
@@ -51,7 +62,6 @@ class VisitorController extends Controller
 
     /**
      * PATCH /visitors/{visitor}/check-out
-     * Front desk checks a visitor out.
      */
     public function checkOut(VisitorLog $visitor)
     {

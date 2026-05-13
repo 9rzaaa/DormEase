@@ -10,11 +10,16 @@ class VisitorController extends Controller
 {
     /**
      * GET /api/visitors
-     * Returns the authenticated tenant's visitor logs + today's stats.
      */
     public function index(Request $request)
     {
-        $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
+        $user     = $request->user();
+        $tenantId = $user?->tenant_id ?? $user?->id;
+
+        // ── Resolve tenant full name from separate first/last columns ─────────
+        $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
+            ?: $user?->name
+            ?: 'Unknown';
 
         $logs = VisitorLog::where('tenant_id', $tenantId)
             ->orderByDesc('date_of_visit')
@@ -31,18 +36,16 @@ class VisitorController extends Controller
                     : null,
                 'date_of_visit'  => $v->date_of_visit,
                 'time_of_visit'  => $v->time_of_visit,
-                'arrival_time'   => $v->arrival_time,   // null until front desk checks in
+                'arrival_time'   => $v->arrival_time,
                 'departure_time' => $v->departure_time,
                 'status'         => $v->status,
+                'tenant_name'    => $tenantName,
             ]);
 
-        // FIX: count by date_of_visit (the expected date), not arrival_time
-        // arrival_time is null until front desk checks them in
         $visitorsToday = VisitorLog::where('tenant_id', $tenantId)
             ->whereDate('date_of_visit', today())
             ->count();
 
-        // Active = checked in but not yet checked out
         $activePasses = VisitorLog::where('tenant_id', $tenantId)
             ->whereNotNull('arrival_time')
             ->whereNull('departure_time')
@@ -57,8 +60,6 @@ class VisitorController extends Controller
 
     /**
      * POST /api/visitors
-     * Tenant registers a new visitor.
-     * arrival_time stays NULL — front desk sets it on check-in.
      */
     public function store(Request $request)
     {
@@ -72,7 +73,13 @@ class VisitorController extends Controller
             'time_of_visit' => 'nullable|string|max:20',
         ]);
 
-        $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
+        $user     = $request->user();
+        $tenantId = $user?->tenant_id ?? $user?->id;
+
+        // ── Always derive tenant name from authenticated user ─────────────────
+        $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
+            ?: $user?->name
+            ?: 'Unknown';
 
         $photoPath = null;
         if ($request->hasFile('id_photo')) {
@@ -88,7 +95,7 @@ class VisitorController extends Controller
             'id_photo'      => $photoPath,
             'date_of_visit' => $request->date_of_visit ?? now()->toDateString(),
             'time_of_visit' => $request->time_of_visit ?? now()->format('H:i'),
-            'arrival_time'  => null,    // FIX: was "now()" — front desk sets this, not the tenant
+            'arrival_time'  => null,
             'status'        => 'pending',
             'tenant_id'     => $tenantId,
         ]);
@@ -106,15 +113,15 @@ class VisitorController extends Controller
                     : null,
                 'date_of_visit' => $visitor->date_of_visit,
                 'time_of_visit' => $visitor->time_of_visit,
-                'arrival_time'  => null,    // not checked in yet
+                'arrival_time'  => null,
                 'status'        => $visitor->status,
+                'tenant_name'   => $tenantName,
             ],
         ], 201);
     }
 
     /**
      * PATCH /api/visitors/{id}/checkout
-     * Front desk checks a visitor out.
      */
     public function checkout($id, Request $request)
     {
@@ -134,7 +141,7 @@ class VisitorController extends Controller
 
         $visitor->update([
             'departure_time' => now(),
-            'status'         => 'completed', // FIX: was 'approved'
+            'status'         => 'completed',
         ]);
 
         return response()->json([
