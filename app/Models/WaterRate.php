@@ -18,7 +18,7 @@ class WaterRate extends Model
 
     protected $casts = [
         'effective_month' => 'date',
-        'rate_per_m3'     => 'decimal:2',
+        'rate_per_m3'     => 'decimal:4',
     ];
 
     public function billings()
