@@ -14,25 +14,25 @@ return new class extends Migration
             $table->integer('billing_id')->autoIncrement();
 
             // ERD: tenant_id FK (int) → tenants.tenant_id
-            $table->unsignedBigInteger('tenant_id');
+            $table->unsignedInteger('tenant_id');
             $table->foreign('tenant_id')
-                  ->references('tenant_id')
-                  ->on('tenants')
-                  ->onDelete('cascade');
+                ->references('tenant_id')
+                ->on('tenants')
+                ->onDelete('cascade');
 
             // ERD: rate_id FK (int) → water_rates.rate_id
-            $table->unsignedBigInteger('rate_id')->nullable();
+            $table->unsignedInteger('rate_id')->nullable();
             $table->foreign('rate_id')
-                  ->references('rate_id')
-                  ->on('water_rates')
-                  ->onDelete('set null');
+                ->references('rate_id')
+                ->on('water_rates')
+                ->onDelete('set null');
 
             // ERD: inputted_by FK (int) → staff.staff_id
-            $table->unsignedBigInteger('inputted_by')->nullable();
+            $table->unsignedInteger('inputted_by')->nullable();
             $table->foreign('inputted_by')
-                  ->references('staff_id')
-                  ->on('staff')
-                  ->onDelete('set null');
+                ->references('staff_id')
+                ->on('staff')
+                ->onDelete('set null');
 
             // ERD: billing_month (date)
             $table->date('billing_month');
