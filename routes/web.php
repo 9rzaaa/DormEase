@@ -88,7 +88,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/billing',    fn() => view('billing'))->name('billing.index');
     Route::get('/visitors',   fn() => view('visitors'))->name('visitors.index');
     Route::get('/staff',      fn() => view('staff'))->name('staff.index');
-    Route::get('/settings',   fn() => view('settings'))->name('settings.index');
+    Route::get('/settings',   fn() => view('settings'))->name('settings.index'); 
 });
 
     // Visitor Management Routes ─────────────────────────────────────────────────
