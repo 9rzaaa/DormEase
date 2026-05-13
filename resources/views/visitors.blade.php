@@ -530,7 +530,7 @@
                     <td>${timeIn}</td>
                     <td>${timeOut}</td>
                     <td>${v.purpose ?? '—'}</td>
-                    <td>${v.tenant?.name ?? '—'}</td>
+                    <td>${v.tenant?.full_name ?? '—'}</td>
                     <td>${v.staff?.name  ?? '—'}</td>
                     <td>${getStatusBadge(v.status)}</td>
                     <td>
@@ -572,7 +572,7 @@
                 `"${v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet'}"`,
                 `"${v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside'}"`,
                 `"${v.purpose        ?? ''}"`,
-                `"${v.tenant?.name   ?? ''}"`,
+                `"${v.tenant?.full_name ?? ''}"`,
                 `"${v.staff?.name    ?? ''}"`,
                 `"${v.status         ?? ''}"`,
             ].join(',') + '\n';
@@ -618,7 +618,7 @@
             ${row('Full Name',      v.visitor_name ?? '—')}
             ${row('Contact No.',    v.contact_no   ?? '—')}
             ${row('Purpose',        v.purpose      ?? '—')}
-            ${row('Tenant Visited', v.tenant?.name ?? '—')}
+            ${row('Tenant Visited', v.tenant?.full_name ?? '—')}
 
             <div class="modal-section-title">Schedule</div>
             ${row('Expected Date',  fmtDate(v.date_of_visit))}
