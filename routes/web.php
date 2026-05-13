@@ -8,6 +8,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\FrontdeskController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 
@@ -60,7 +61,7 @@ Route::post('/logout', function () {
 Route::middleware('auth:staff')->group(function () {
 
     Route::get('/dashboard',           [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))->name('frontdesk.dashboard');
+    Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
 
     Route::get('/tenants',                      [TenantController::class, 'index'])->name('tenants.index');
     Route::post('/tenants',                     [TenantController::class, 'store'])->name('tenants.store');
@@ -68,36 +69,33 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/tenants/{id}',              [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
 
-    Route::get('/announcements',                    [AnnouncementController::class, 'index'])->name('announcements.index');
-    Route::post('/announcements',                   [AnnouncementController::class, 'store'])->name('announcements.store');
-    Route::put('/announcements/{id}',               [AnnouncementController::class, 'update'])->name('announcements.update');
-    Route::post('/announcements/{id}/archive',      [AnnouncementController::class, 'archive'])->name('announcements.archive');
-    Route::post('/announcements/{id}/restore',      [AnnouncementController::class, 'restore'])->name('announcements.restore');
-    Route::delete('/announcements/{id}',            [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+    Route::get('/announcements',               [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements',              [AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::put('/announcements/{id}',          [AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::post('/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
+    Route::post('/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::delete('/announcements/{id}',       [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
-    Route::get('/documents',  fn() => view('documents'))->name('documents.index');
-    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
-    Route::get('/emergency',  fn() => view('emergency'))->name('emergency.index');
-    Route::get('/billing',    fn() => view('billing'))->name('billing.index');
-    Route::get('/visitors',   fn() => view('visitors'))->name('visitors.index');
-    Route::get('/staff',         [StaffController::class, 'index'])->name('staff.index');
-    Route::post('/staff',        [StaffController::class, 'store'])->name('staff.store');
-    Route::put('/staff/{id}',    [StaffController::class, 'update'])->name('staff.update');
-    Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+    Route::get('/visitors',                [VisitorController::class, 'index'])->name('visitors.index');
+    Route::post('/visitors/store',         [VisitorController::class, 'store'])->name('visitors.store');
+    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
+
+    Route::get('/staff',                      [StaffController::class, 'index'])->name('staff.index');
+    Route::post('/staff',                     [StaffController::class, 'store'])->name('staff.store');
+    Route::put('/staff/{id}',                 [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{id}',              [StaffController::class, 'destroy'])->name('staff.destroy');
     Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
-    Route::get('/settings',   fn() => view('settings'))->name('settings.index'); 
-});
-
-    Route::get('/visitors', [VisitorController::class, 'index'])
-    ->name('visitors.index');
-    Route::post('/visitors/store', [VisitorController::class, 'store'])
-    ->name('visitors.store');
-    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])
-    ->name('visitors.checkout');
 
     Route::prefix('billing')->name('billing.')->group(function () {
-        Route::get('/',              [BillingController::class, 'index'])->name('index');
-        Route::post('/log',          [BillingController::class, 'log'])->name('log');
-        Route::post('/update-status',[BillingController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-full',  [BillingController::class, 'updateFull'])->name('updateFull');
+        Route::get('/',               [BillingController::class, 'index'])->name('index');
+        Route::post('/log',           [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full',   [BillingController::class, 'updateFull'])->name('updateFull');
     });
+
+    Route::get('/documents',   fn() => view('documents'))->name('documents.index');
+    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
+    Route::get('/emergency',   fn() => view('emergency'))->name('emergency.index');
+    Route::get('/settings',    fn() => view('settings'))->name('settings.index');
+
+});

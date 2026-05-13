@@ -293,7 +293,7 @@
         <a href="#" class="nav-item">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('visitors.index') }}" class="nav-item {{ request()->routeIs('visitors.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
         <a href="#" class="nav-item">

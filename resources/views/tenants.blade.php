@@ -319,7 +319,7 @@
             has been created. Please provide the following credentials to the tenant:
         </p>
         <div class="credentials-box">
-            <h4>🔑 Login Credentials</h4>
+            <h4>Login Credentials</h4>
             <div class="credential-row">
                 <div>
                     <div class="credential-label">Account ID</div>
@@ -579,7 +579,7 @@
             <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
         </div>
         <div class="delete-warning">
-            ⚠️ This action cannot be undone. The tenant record and all associated data will be permanently removed.
+            This action cannot be undone. The tenant record and all associated data will be permanently removed.
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);">
             Are you sure you want to delete
