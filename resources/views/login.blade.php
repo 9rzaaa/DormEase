@@ -756,13 +756,6 @@
 
         </form>
 
-        <div class="divider">or</div>
-
-        <div class="de-status-strip">
-            <div class="de-status-dot"></div>
-            <span>All systems operational &nbsp;·&nbsp; Secure connection</span>
-        </div>
-
     </div>
 
 </div>
