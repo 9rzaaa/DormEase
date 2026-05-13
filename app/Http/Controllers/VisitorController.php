@@ -4,69 +4,70 @@ namespace App\Http\Controllers;
 
 use App\Models\VisitorLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VisitorController extends Controller
 {
+    /**
+     * GET /visitors
+     * Admin sees ALL visitor logs with tenant + staff names.
+     */
     public function index()
     {
         $logs = VisitorLog::with(['tenant', 'staff'])
-            ->latest('arrival_time')
+            ->orderByDesc('date_of_visit')
+            ->orderByDesc('visitor_id')
             ->get();
 
-        $visitorsToday = VisitorLog::whereDate('arrival_time', today())
+        // Visitors today = expected visits for today (date_of_visit, not arrival_time)
+        $visitorsToday = VisitorLog::whereDate('date_of_visit', today())->count();
+
+        // Currently inside = checked in (arrival_time set) but not yet checked out
+        $currentlyInside = VisitorLog::whereNotNull('arrival_time')
+            ->whereNull('departure_time')
             ->count();
 
-        $currentlyInside = VisitorLog::whereNull('departure_time')
-            ->count();
-
-        return view('visitors', [
-            'logs' => $logs,
-            'visitorsToday' => $visitorsToday,
-            'currentlyInside' => $currentlyInside,
-        ]);
+        return view('visitors', compact('logs', 'visitorsToday', 'currentlyInside'));
     }
 
-    public function store(Request $request)
+    /**
+     * PATCH /visitors/{visitor}/check-in
+     * Front desk checks a visitor in — sets arrival_time and confirmed_by.
+     */
+    public function checkIn(VisitorLog $visitor)
     {
-        $request->validate([
-            'visitor_name' => 'required|string|max:255',
-            'contact_no'   => 'nullable|string|max:255',
-            'purpose'      => 'nullable|string|max:255',
-            'id_type'      => 'nullable|string|max:255',
-            'tenant_id'    => 'nullable|exists:users,id',
+        if ($visitor->arrival_time) {
+            return back()->with('error', 'Visitor has already checked in.');
+        }
+
+        $visitor->update([
+            'arrival_time'  => now(),
+            'confirmed_by'  => Auth::id(),  // the staff member who confirmed them
+            'status'        => 'inside',
         ]);
 
-        VisitorLog::create([
-            'visitor_name' => $request->visitor_name,
-            'contact_no'   => $request->contact_no,
-            'purpose'      => $request->purpose,
-            'id_type'      => $request->id_type,
-
-            'date_of_visit' => now()->toDateString(),
-
-            'arrival_time' => now(),
-
-            'status' => 'inside',
-
-            'tenant_id' => $request->tenant_id,
-
-            'staff_id' => auth()->id(),
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Visitor logged successfully.');
+        return back()->with('success', 'Visitor checked in.');
     }
 
-    public function checkout($id)
+    /**
+     * PATCH /visitors/{visitor}/check-out
+     * Front desk checks a visitor out.
+     */
+    public function checkOut(VisitorLog $visitor)
     {
-        $visitor = VisitorLog::findOrFail($id);
+        if (! $visitor->arrival_time) {
+            return back()->with('error', 'Visitor has not checked in yet.');
+        }
+
+        if ($visitor->departure_time) {
+            return back()->with('error', 'Visitor has already checked out.');
+        }
 
         $visitor->update([
             'departure_time' => now(),
-            'status' => 'approved',
+            'status'         => 'completed',
         ]);
 
-        return redirect()->back()
-            ->with('success', 'Visitor checked out.');
+        return back()->with('success', 'Visitor checked out.');
     }
 }
