@@ -60,8 +60,7 @@ Route::post('/logout', function () {
 
 Route::middleware('auth:staff')->group(function () {
 
-    Route::get('/dashboard',           [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/tenants',                      [TenantController::class, 'index'])->name('tenants.index');
     Route::post('/tenants',                     [TenantController::class, 'store'])->name('tenants.store');
@@ -76,7 +75,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('announcements.restore');
     Route::delete('/announcements/{id}',       [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
-    Route::get('/visitors',                [VisitorController::class, 'index'])->name('visitors.index');
+    Route::get('/visitors',                [VisitorController::class, 'adminIndex'])->name('visitors.index');
     Route::post('/visitors/store',         [VisitorController::class, 'store'])->name('visitors.store');
     Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
 
@@ -97,5 +96,9 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
     Route::get('/emergency',   fn() => view('emergency'))->name('emergency.index');
     Route::get('/settings',    fn() => view('settings'))->name('settings.index');
+
+    Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
+    Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
+    Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
 
 });

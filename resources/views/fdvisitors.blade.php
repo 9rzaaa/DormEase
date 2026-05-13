@@ -1,6 +1,6 @@
 @extends('fdlayout')
 
-@section('title', 'DormEase — Visitor Logs')
+@section('title', 'DormEase: Visitor Logs')
 
 @section('page-title', 'Visitor Logs')
 
