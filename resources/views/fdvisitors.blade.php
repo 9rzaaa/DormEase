@@ -249,7 +249,7 @@
                 + Add Walk-in Visitor
             </button>
             <button class="btn-outline" onclick="exportVisitors()">
-                <img src="{{ asset('images/export.png') }}" alt="Export" class="inline-block w-4 h-4 mr-1">
+                <img src="{{ asset('icons/export.png') }}" alt="Export" class="inline-block w-4 h-4 mr-1">
                 Export
             </button>
         </div>
