@@ -6,6 +6,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\VisitorController;
+use App\Http\Controllers\BillingController; // ← added
 
 // ── PUBLIC LANDING PAGE ───────────────────────────────────────────────────────
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -73,27 +74,31 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
 
     // ── Announcements ─────────────────────────────────────────────────────────
-    Route::get('/announcements',                    [AnnouncementController::class, 'index'])->name('announcements.index');
-    Route::post('/announcements',                   [AnnouncementController::class, 'store'])->name('announcements.store');
-    Route::put('/announcements/{id}',               [AnnouncementController::class, 'update'])->name('announcements.update');
-    Route::post('/announcements/{id}/archive',      [AnnouncementController::class, 'archive'])->name('announcements.archive');
-    Route::post('/announcements/{id}/restore',      [AnnouncementController::class, 'restore'])->name('announcements.restore');
-    Route::delete('/announcements/{id}',            [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+    Route::get('/announcements',               [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements',              [AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::put('/announcements/{id}',          [AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::post('/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
+    Route::post('/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::delete('/announcements/{id}',       [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+    // ── Water Billing ─────────────────────────────────────────────────────────
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('/',               [BillingController::class, 'index'])->name('index');
+        Route::post('/log',           [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full',   [BillingController::class, 'updateFull'])->name('updateFull');
+    }); // ← billing group closed here
+
+    // ── Visitors ──────────────────────────────────────────────────────────────
+    Route::get('/visitors',                    [VisitorController::class, 'index'])->name('visitors.index');
+    Route::post('/visitors/store',             [VisitorController::class, 'store'])->name('visitors.store');
+    Route::post('/visitors/checkout/{id}',     [VisitorController::class, 'checkout'])->name('visitors.checkout');
 
     // ── Other Pages ───────────────────────────────────────────────────────────
-    Route::get('/documents',  fn() => view('documents'))->name('documents.index');
+    Route::get('/documents',   fn() => view('documents'))->name('documents.index');
     Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
-    Route::get('/emergency',  fn() => view('emergency'))->name('emergency.index');
-    Route::get('/billing',    fn() => view('billing'))->name('billing.index');
-    Route::get('/visitors',   fn() => view('visitors'))->name('visitors.index');
-    Route::get('/staff',      fn() => view('staff'))->name('staff.index');
-    Route::get('/settings',   fn() => view('settings'))->name('settings.index');
-});
+    Route::get('/emergency',   fn() => view('emergency'))->name('emergency.index');
+    Route::get('/staff',       fn() => view('staff'))->name('staff.index');
+    Route::get('/settings',    fn() => view('settings'))->name('settings.index');
 
-    // Visitor Management Routes ─────────────────────────────────────────────────
-    Route::get('/visitors', [VisitorController::class, 'index'])
-    ->name('visitors.index');
-    Route::post('/visitors/store', [VisitorController::class, 'store'])
-    ->name('visitors.store');
-    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])
-    ->name('visitors.checkout');
+});
