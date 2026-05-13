@@ -300,7 +300,7 @@
         </p>
         <form method="POST" id="notes-form">
             @csrf
-            @method('PUT')
+            @method('PATCH')
             <div class="modal-field">
                 <label>Note</label>
                 <textarea name="notes" id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
@@ -444,7 +444,7 @@
     function openNotesModal(id, name, currentNote) {
         document.getElementById('notes-tenant-name').textContent = name;
         document.getElementById('notes-input').value = currentNote;
-        document.getElementById('notes-form').action = `/tenants/${id}`;
+        document.getElementById('notes-form').action = `/tenants/${id}/notes`;
         openModal('notes-modal');
     }
 
