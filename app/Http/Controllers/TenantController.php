@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class TenantController extends Controller
 {
@@ -35,37 +36,33 @@ class TenantController extends Controller
             'move_in_date'   => 'nullable|date',
         ]);
 
-        // auto-generate account ID and temporary password
-        $accountId   = Tenant::generateAccountId();
+        $accountId    = Tenant::generateAccountId();
         $tempPassword = Tenant::generateTempPassword();
 
         $tenant = Tenant::create([
-            'account_id'      => $accountId,
-            'password_hash'   => Hash::make($tempPassword),
+            'account_id'       => $accountId,
+            'password_hash'    => Hash::make($tempPassword),
             'is_temp_password' => true,
-            'first_name'      => $request->first_name,
-            'last_name'       => $request->last_name,
-            'email'           => $request->email,
-            'contact_number'  => $request->contact_number,
-            'room_number'     => $request->room_number,
-            'floor'           => $request->floor,
-            'stay_type'       => $request->stay_type,
-            'move_in_date'    => $request->move_in_date,
-            'status'          => 'pending',
-            'is_active'       => true,
+            'first_name'       => $request->first_name,
+            'last_name'        => $request->last_name,
+            'email'            => $request->email,
+            'contact_number'   => $request->contact_number,
+            'room_number'      => $request->room_number,
+            'floor'            => $request->floor,
+            'stay_type'        => $request->stay_type,
+            'move_in_date'     => $request->move_in_date,
+            'status'           => 'pending',
+            'is_active'        => true,
         ]);
 
-        // pass the plain text temp password back to the view
-        // so admin can see it and give it to the tenant
-        // this is the ONLY time the plain text password is visible
         return redirect()->route('tenants.index')
-            ->with('success', "Tenant account created successfully.")
-            ->with('new_account_id', $accountId)
+            ->with('success', 'Tenant account created successfully.')
+            ->with('new_account_id',    $accountId)
             ->with('new_temp_password', $tempPassword)
-            ->with('new_tenant_name', $tenant->first_name . ' ' . $tenant->last_name);
+            ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
-    // ── Edit tenant ───────────────────────────────────────────────────────────
+    // ── Edit tenant (web admin) ───────────────────────────────────────────────
     public function update(Request $request, $id)
     {
         $tenant = Tenant::findOrFail($id);
@@ -101,7 +98,56 @@ class TenantController extends Controller
             ->with('success', 'Tenant information updated successfully.');
     }
 
-    // ── Reset tenant password ─────────────────────────────────────────────────
+    // ── API: Update own contact info (email + contact number) ─────────────────
+    public function apiUpdateProfile(Request $request)
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $request->validate([
+            'email'          => 'required|email|unique:tenants,email,' . $tenant->tenant_id . ',tenant_id',
+            'contact_number' => 'required|string|digits:11',
+        ]);
+
+        $tenant->update([
+            'email'          => $request->email,
+            'contact_number' => $request->contact_number,
+        ]);
+
+        return response()->json([
+            'message'        => 'Contact info updated successfully.',
+            'email'          => $tenant->email,
+            'contact_number' => $tenant->contact_number,
+        ]);
+    }
+
+    // ── API: Upload profile photo ─────────────────────────────────────────────
+    public function apiUpdatePhoto(Request $request)
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $request->validate([
+            'profile_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        // Delete old photo if it exists
+        if ($tenant->profile_photo) {
+            Storage::disk('public')->delete($tenant->profile_photo);
+        }
+
+        // Store new photo → storage/app/public/profile_photos/
+        $path = $request->file('profile_photo')->store('profile_photos', 'public');
+
+        $tenant->update(['profile_photo' => $path]);
+
+        return response()->json([
+            'message'       => 'Profile photo updated successfully.',
+            'profile_photo' => $path,
+        ]);
+    }
+
+    // ── Reset tenant password (web admin) ─────────────────────────────────────
     public function resetPassword($id)
     {
         $tenant       = Tenant::findOrFail($id);
@@ -114,7 +160,7 @@ class TenantController extends Controller
 
         return redirect()->route('tenants.index')
             ->with('success', 'Password reset successfully.')
-            ->with('reset_account_id',   $tenant->account_id)
+            ->with('reset_account_id',    $tenant->account_id)
             ->with('reset_temp_password', $tempPassword)
             ->with('reset_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }

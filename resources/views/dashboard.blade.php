@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Dashboard')
+@section('title', 'DormEase: Dashboard')
 
 @section('page-title', 'Dashboard')
 
@@ -259,9 +259,9 @@
                     <div class="emergency-icon-wrap">
                         <img src="{{ asset('icons/check.png') }}" class="icon-lg" alt="">
                     </div>
-                    <div class="emergency-type" style="color:var(--green);">All Clear</div>
+                    <div class="emergency-type" style="color:var(--pink);">All Clear</div>
                     <div class="emergency-status">No active emergencies</div>
-                    <button class="emergency-btn" style="background:var(--green);" onclick="openModal('emergency-modal')">View History</button>
+                    <button class="emergency-btn" style="background:var(--pink);" onclick="openModal('emergency-modal')">View History</button>
                 </div>
             @endif
 
