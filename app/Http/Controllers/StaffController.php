@@ -50,6 +50,7 @@ class StaffController extends Controller
         $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
 
         $staff = Staff::create([
+            'staff_code'       => 'ST-' . str_pad((Staff::max('staff_id') ?? 0) + 1, 3, '0', STR_PAD_LEFT),
             'first_name'       => $request->first_name,
             'last_name'        => $request->last_name,
             'email'            => $request->email,
