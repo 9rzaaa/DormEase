@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\FrontdeskController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 
@@ -81,9 +82,9 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/dashboard',
         [DashboardController::class, 'index']
     )->name('dashboard');
-
+    
     Route::get('/frontdesk/dashboard',
-        fn() => view('frontdeskdb')
+        [FrontdeskController::class, 'index']
     )->name('frontdesk.dashboard');
 
     Route::get('/tenants',
