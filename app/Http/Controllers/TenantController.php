@@ -165,4 +165,24 @@ class TenantController extends Controller
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant account deleted successfully.');
     }
+    public function frontdeskIndex()
+    {
+    $tenants = Tenant::where('is_active', true)
+        ->orderBy('first_name')
+        ->get();
+
+    $totalUnits    = 25;
+    $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
+    $vacantUnits   = $totalUnits - $occupiedUnits;
+
+    return view('fdtenant', [
+        'tenants'       => $tenants,
+        'totalTenants'  => $tenants->count(),
+        'activeCount'   => $tenants->where('status', 'active')->count(),
+        'pendingCount'  => $tenants->where('status', 'pending')->count(),
+        'occupiedUnits' => $occupiedUnits,
+        'vacantUnits'   => $vacantUnits,
+        'totalUnits'    => $totalUnits,
+    ]);
+    }
 }
