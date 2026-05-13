@@ -63,4 +63,9 @@ class Tenant extends Authenticatable
     {
         return Str::random(8);
     }
+
+    public function waterBillings()
+    {
+        return $this->hasMany(WaterBilling::class, 'tenant_id', 'tenant_id');
+    }
 }
