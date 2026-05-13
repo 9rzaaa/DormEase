@@ -3,59 +3,66 @@
 namespace App\Http\Controllers;
 
 use App\Models\VisitorLog;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class VisitorController extends Controller
 {
     public function index()
     {
-        $logs = VisitorLog::with(['tenant', 'staff'])
-            ->orderByDesc('date_of_visit')
-            ->orderByDesc('visitor_id')
-            ->get()
-            ->each(function ($v) {
-                if ($v->tenant) {
-                    $v->tenant->full_name = trim(
-                        ($v->tenant->first_name ?? '') . ' ' . ($v->tenant->last_name ?? '')
-                    ) ?: ($v->tenant->name ?? '—');
-                }
-                if ($v->staff) {
-                    $v->staff->full_name = trim(
-                        ($v->staff->first_name ?? '') . ' ' . ($v->staff->last_name ?? '')
-                    ) ?: ($v->staff->name ?? '—');
-                }
-            });
+        $visitors = VisitorLog::with(['tenant', 'staff'])
+            ->orderByDesc('arrival_time')
+            ->get();
 
-        $visitorsToday = VisitorLog::whereDate('date_of_visit', today())->count();
-
+        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->count();
 
-        return view('visitors', compact('logs', 'visitorsToday', 'currentlyInside'));
+        $tenants = Tenant::where('is_active', true)
+            ->orderBy('first_name')
+            ->get();
+
+        return view('fdvisitors', compact(
+            'visitors',
+            'visitorsToday',
+            'currentlyInside',
+            'tenants'
+        ));
     }
 
-    public function checkIn(VisitorLog $visitor)
+    public function store(Request $request)
     {
-        if ($visitor->arrival_time) {
-            return back()->with('error', 'Visitor has already checked in.');
-        }
-
-        $visitor->update([
-            'arrival_time' => now(),
-            'confirmed_by' => Auth::id(),
-            'status'       => 'inside',
+        $request->validate([
+            'visitor_name' => 'required|string|max:100',
+            'tenant_id'    => 'required|exists:tenants,tenant_id',
+            'purpose'      => 'required|string|max:100',
+            'contact_no'   => 'nullable|string|max:20',
+            'id_type'      => 'nullable|string|max:50',
+            'status'       => 'nullable|string|max:20',
         ]);
 
-        return back()->with('success', 'Visitor checked in.');
+        VisitorLog::create([
+            'visitor_name'  => $request->visitor_name,
+            'tenant_id'     => $request->tenant_id,
+            'confirmed_by'  => Auth::guard('staff')->id(),
+            'purpose'       => $request->purpose,
+            'contact_no'    => $request->contact_no,
+            'id_type'       => $request->id_type,
+            'date_of_visit' => Carbon::today(),
+            'arrival_time'  => now(),
+            'status'        => $request->status ?? 'approved',
+        ]);
+
+        return redirect()->route('visitors.index')
+            ->with('success', 'Visitor logged successfully.');
     }
 
-    public function checkOut(VisitorLog $visitor)
+    public function checkout($id)
     {
-        if (! $visitor->arrival_time) {
-            return back()->with('error', 'Visitor has not checked in yet.');
-        }
+        $visitor = VisitorLog::findOrFail($id);
 
         if ($visitor->departure_time) {
             return back()->with('error', 'Visitor has already checked out.');
@@ -66,6 +73,7 @@ class VisitorController extends Controller
             'status'         => 'completed',
         ]);
 
-        return back()->with('success', 'Visitor checked out.');
+        return redirect()->route('visitors.index')
+            ->with('success', 'Visitor checked out successfully.');
     }
 }

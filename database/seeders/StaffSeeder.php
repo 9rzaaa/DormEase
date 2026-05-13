@@ -18,15 +18,5 @@ class StaffSeeder extends Seeder
             'role'           => 'admin',
             'is_active'      => true,
         ]);
-
-        Staff::create([
-            'staff_code'     => 'STF002',
-            'first_name'     => 'Front',
-            'last_name'      => 'Desk',
-            'email'          => 'frontdesk@dormease.com',
-            'password_hash'  => bcrypt('password123'),
-            'role'           => 'frontdesk',
-            'is_active'      => true,
-        ]);
     }
 }
