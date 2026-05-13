@@ -58,7 +58,6 @@
 
     .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
 
-    /* ── Stat Cards ── */
     .stats-row {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -165,7 +164,6 @@
         width: 220px;
     }
 
-    /* ── Table ── */
     .table-card {
         background: var(--white);
         border-radius: 16px;
@@ -219,7 +217,6 @@
     .act-btn:hover { border-color: var(--pink); background: var(--pink-bg); }
     .time-pending { color: #bbb; font-style: italic; font-size: .78rem; }
 
-    /* ── Modal ── */
     .visitor-modal {
         display: none;
         position: fixed;
@@ -324,7 +321,6 @@
 
 @section('content')
 
-{{-- ── Visitor Detail Modal ── --}}
 <div id="visitorModal" class="visitor-modal">
     <div class="visitor-modal-card">
         <button type="button" class="visitor-modal-close" onclick="closeModal()">&times;</button>
@@ -338,7 +334,6 @@
 
 <div class="page-body">
 
-    {{-- ── Header ── --}}
     <div class="page-header">
         <div>
             <h1>Visitor Logs</h1>
@@ -352,10 +347,8 @@
         </div>
     </div>
 
-    {{-- ── Stat Cards ── --}}
     <div class="stats-row">
 
-        {{-- Visitors Today: visitors whose date_of_visit is today --}}
         <div class="stat-box">
             <div class="stat-icon-circle">
                 <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Visitors">
@@ -367,7 +360,6 @@
             </div>
         </div>
 
-        {{-- Currently Inside: arrival_time is set, departure_time is still null --}}
         <div class="stat-box">
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/tenants.png') }}" alt="Inside" style="width:30px;height:30px;">
@@ -381,7 +373,6 @@
 
     </div>
 
-    {{-- ── Filters ── --}}
     <div class="filters-row">
         <div class="filter-group">
             <span class="filter-label">Sort:</span>
@@ -407,7 +398,6 @@
         </div>
     </div>
 
-    {{-- ── Table ── --}}
     <div class="table-card">
         <table>
             <thead>
@@ -437,8 +427,6 @@
     const logs = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     let filtered = Array.isArray(logs) ? [...logs] : [];
 
-    /* ── Formatters ── */
-
     function fmtDateTime(dt) {
         if (!dt) return '—';
         const d = new Date(dt);
@@ -458,8 +446,6 @@
         const hour = parseInt(h, 10);
         return `${hour % 12 || 12}:${m} ${hour >= 12 ? 'PM' : 'AM'}`;
     }
-
-    /* ── Filters + Sort ── */
 
     function applyFilters() {
         const q    = document.getElementById('search-input').value.toLowerCase().trim();
@@ -491,8 +477,6 @@
         renderTable();
     }
 
-    /* ── Table Renderer ── */
-
     function renderTable() {
         const tbody = document.getElementById('logs-tbody');
 
@@ -512,7 +496,6 @@
                 ? `${fmtDate(v.date_of_visit)}<br><small style="color:#aaa">${fmtTime(v.time_of_visit)}</small>`
                 : '—';
 
-            // Only show Time In when front desk actually checks them in
             const timeIn = v.arrival_time
                 ? fmtDateTime(v.arrival_time)
                 : `<span class="time-pending">Not yet</span>`;
@@ -540,8 +523,6 @@
         }).join('');
     }
 
-    /* ── Status Badge ── */
-
     function getStatusBadge(status) {
         if (!status) return '—';
         const map = {
@@ -557,8 +538,6 @@
         const label = status.replace(/\b\w/g, c => c.toUpperCase());
         return `<span class="badge ${cls}">${label}</span>`;
     }
-
-    /* ── Export CSV ── */
 
     function exportLogs() {
         if (!filtered.length) { alert('No data to export.'); return; }
@@ -584,8 +563,6 @@
         a.click();
         URL.revokeObjectURL(a.href);
     }
-
-    /* ── View Modal ── */
 
     function viewVisitor(id) {
         const v = logs.find(item => item.id === id);

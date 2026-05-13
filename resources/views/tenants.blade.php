@@ -311,7 +311,7 @@
 <div class="modal-overlay open" id="credentials-modal">
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
-            <div class="modal-title">✅ Tenant Account Created</div>
+            <div class="modal-title">Tenant Account Created</div>
             <button class="modal-close" onclick="closeModal('credentials-modal')">✕</button>
         </div>
         <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
@@ -336,7 +336,7 @@
             </div>
         </div>
         <div class="credentials-warning">
-            ⚠️ This temporary password will <strong>not be shown again</strong>.
+            This temporary password will <strong>not be shown again</strong>.
             Please write it down or inform the tenant immediately.
             The tenant will be prompted to change their password on first login.
         </div>
@@ -353,7 +353,7 @@
 <div class="modal-overlay open" id="reset-credentials-modal">
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
-            <div class="modal-title">🔄 Password Reset Successfully</div>
+            <div class="modal-title">Password Reset Successfully</div>
             <button class="modal-close" onclick="closeModal('reset-credentials-modal')">✕</button>
         </div>
         <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
@@ -361,7 +361,7 @@
             has been reset. Please provide the new temporary credentials to the tenant:
         </p>
         <div class="credentials-box">
-            <h4>🔑 New Temporary Credentials</h4>
+            <h4>New Temporary Credentials</h4>
             <div class="credential-row">
                 <div>
                     <div class="credential-label">Account ID</div>
@@ -378,7 +378,7 @@
             </div>
         </div>
         <div class="credentials-warning">
-            ⚠️ This temporary password will <strong>not be shown again</strong>.
+            This temporary password will <strong>not be shown again</strong>.
             Please inform the tenant of their new password immediately.
         </div>
         <div class="modal-actions">
@@ -393,11 +393,11 @@
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">➕ Add New Tenant</div>
+            <div class="modal-title">Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
         </div>
         <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--pink-bg);padding:.7rem 1rem;border-radius:10px;">
-            💡 Account ID and temporary password will be <strong>auto-generated</strong>
+            Account ID and temporary password will be <strong>auto-generated</strong>
             and shown to you after saving.
         </p>
         <form method="POST" action="{{ route('tenants.store') }}">
@@ -790,13 +790,13 @@
         a.href     = URL.createObjectURL(blob);
         a.download = 'dormease-tenants.csv';
         a.click();
-        showToast('📥 Tenants exported as CSV!', 'success');
+        showToast('Tenants exported as CSV!', 'success');
     }
 
     function copyText(elementId, btn) {
         const text = document.getElementById(elementId).textContent;
         navigator.clipboard.writeText(text).then(() => {
-            btn.textContent = '✓ Copied';
+            btn.textContent = 'Copied';
             setTimeout(() => btn.textContent = 'Copy', 2000);
         });
     }

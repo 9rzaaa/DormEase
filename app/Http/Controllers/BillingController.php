@@ -11,15 +11,11 @@ use Carbon\Carbon;
 
 class BillingController extends Controller
 {
-    /* ────────────────────────────────────────────
-     | INDEX
-     ──────────────────────────────────────────── */
     public function index(Request $request)
     {
         $selectedMonth = $request->get('month', now()->format('Y-m-01'));
         $selectedFloor = $request->get('floor', '');
 
-        /* ── Months dropdown ── */
         $months = [];
         for ($i = 0; $i < 12; $i++) {
             $date  = now()->startOfMonth()->subMonths($i);
@@ -31,17 +27,14 @@ class BillingController extends Controller
             ];
         }
 
-        /* ── All active tenants ── */
         $allTenants = Tenant::where('is_active', true)
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
             ->get();
 
-        /* ── Floors dropdown ── */
         $floors = $allTenants->pluck('floor')->unique()->sort()->values();
 
-        /* ── Active floors and logged floors for modal ── */
         $activeFloors = $floors;
 
         $loggedFloors = WaterBilling::whereYear('billing_month',  Carbon::parse($selectedMonth)->year)
@@ -51,7 +44,6 @@ class BillingController extends Controller
 
         $unloggedFloors = $activeFloors->diff($loggedFloors)->values();
 
-        /* ── Existing billing records for this month keyed by tenant_id ── */
         $query = WaterBilling::with('tenant')
             ->whereYear('billing_month',  Carbon::parse($selectedMonth)->year)
             ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month);
@@ -62,19 +54,16 @@ class BillingController extends Controller
 
         $billings = $query->get()->keyBy('tenant_id');
 
-        /* ── Stats ── */
         $totalBill    = $billings->sum('room_share');
         $totalTenants = $allTenants->count();
         $unpaidCount  = $billings->where('payment_status', 'unpaid')->count();
         $overdueCount = $billings->where('payment_status', 'overdue')->count();
 
-        /* ── Group ALL tenants by floor → room ── */
         $tenantsByFloor = $allTenants->groupBy('floor');
         $billingGroups  = [];
 
         foreach ($tenantsByFloor as $floor => $floorTenants) {
 
-            // Skip if floor filter is active and doesn't match
             if ($selectedFloor && $floor != $selectedFloor) continue;
 
             $byRoom       = $floorTenants->groupBy('room_number');
@@ -82,7 +71,6 @@ class BillingController extends Controller
             $pastDue      = 0;
             $floorTotal   = 0;
 
-            // Get billing meta from first billing record on this floor
             $floorBilling = $billings->first(fn($b) => $b->floor == $floor);
 
             foreach ($byRoom as $roomNumber => $roomTenants) {
@@ -162,10 +150,6 @@ class BillingController extends Controller
             'unloggedFloors'
         ));
     }
-
-    /* ────────────────────────────────────────────
-     | LOG — Floor-based, distributes to all tenants
-     ──────────────────────────────────────────── */
     public function log(Request $request)
     {
         $request->validate([
@@ -181,7 +165,6 @@ class BillingController extends Controller
         $consumption = $request->curr_reading - $request->prev_reading;
         $totalBill   = $consumption * ($rate?->rate_per_m3 ?? 0);
 
-        // Get all active tenants on this floor
         $tenants = Tenant::where('is_active', true)
             ->where('floor', $request->floor)
             ->get();
@@ -191,16 +174,13 @@ class BillingController extends Controller
                 ->withErrors(['floor' => 'No active tenants found on Floor ' . $request->floor . '.']);
         }
 
-        // Group by room to calculate occupants per room
         $byRoom = $tenants->groupBy('room_number');
 
-        // Delete existing billing for this floor+month to avoid duplicates
         WaterBilling::where('floor', $request->floor)
             ->whereYear('billing_month',  Carbon::parse($request->billing_month)->year)
             ->whereMonth('billing_month', Carbon::parse($request->billing_month)->month)
             ->delete();
 
-        // Create one record per tenant
         foreach ($tenants as $tenant) {
             $occupantsInRoom = $byRoom[$tenant->room_number]->count();
             $roomShare       = ($request->rooms_sharing > 0 && $occupantsInRoom > 0)
@@ -228,10 +208,6 @@ class BillingController extends Controller
         return redirect()->route('billing.index')
             ->with('success', "Floor {$request->floor} billing logged and distributed to {$tenants->count()} tenants.");
     }
-
-    /* ────────────────────────────────────────────
-     | UPDATE STATUS
-     ──────────────────────────────────────────── */
     public function updateStatus(Request $request)
     {
         $request->validate([
@@ -256,10 +232,6 @@ class BillingController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-    /* ────────────────────────────────────────────
-     | UPDATE FULL
-     ──────────────────────────────────────────── */
     public function updateFull(Request $request)
     {
         $request->validate([
