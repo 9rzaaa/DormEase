@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class TenantController extends Controller
 {
-    // ── Show all tenants ──────────────────────────────────────────────────────
     public function index()
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
@@ -22,7 +21,6 @@ class TenantController extends Controller
         ]);
     }
 
-    // ── Add new tenant ────────────────────────────────────────────────────────
     public function store(Request $request)
     {
         $request->validate([
@@ -62,7 +60,6 @@ class TenantController extends Controller
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
-    // ── Edit tenant (web admin) ───────────────────────────────────────────────
     public function update(Request $request, $id)
     {
         $tenant = Tenant::findOrFail($id);
@@ -98,7 +95,6 @@ class TenantController extends Controller
             ->with('success', 'Tenant information updated successfully.');
     }
 
-    // ── API: Update own contact info (email + contact number) ─────────────────
     public function apiUpdateProfile(Request $request)
     {
         /** @var Tenant $tenant */
@@ -121,7 +117,6 @@ class TenantController extends Controller
         ]);
     }
 
-    // ── API: Upload profile photo ─────────────────────────────────────────────
     public function apiUpdatePhoto(Request $request)
     {
         /** @var Tenant $tenant */
@@ -131,12 +126,10 @@ class TenantController extends Controller
             'profile_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        // Delete old photo if it exists
         if ($tenant->profile_photo) {
             Storage::disk('public')->delete($tenant->profile_photo);
         }
 
-        // Store new photo → storage/app/public/profile_photos/
         $path = $request->file('profile_photo')->store('profile_photos', 'public');
 
         $tenant->update(['profile_photo' => $path]);
@@ -147,7 +140,6 @@ class TenantController extends Controller
         ]);
     }
 
-    // ── Reset tenant password (web admin) ─────────────────────────────────────
     public function resetPassword($id)
     {
         $tenant       = Tenant::findOrFail($id);
@@ -165,7 +157,6 @@ class TenantController extends Controller
             ->with('reset_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
-    // ── Delete tenant ─────────────────────────────────────────────────────────
     public function destroy($id)
     {
         $tenant = Tenant::findOrFail($id);

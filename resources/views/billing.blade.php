@@ -183,13 +183,11 @@
 @section('content')
 <div class="page-body">
 
-    {{-- Header --}}
     <div class="page-header fade-up d1">
         <h1>Water Billing</h1>
         <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
     </div>
 
-    {{-- Stats --}}
     <div class="stats-card fade-up d2">
         <div class="stat-item">
             <div class="stat-icon-circle">
@@ -225,7 +223,6 @@
         </div>
     </div>
 
-    {{-- Filters --}}
     <div class="filters-row fade-up d3">
         <select class="filter-select" id="filter-floor" onchange="applyFilters()">
             <option value="">All Floors</option>
@@ -244,10 +241,12 @@
         </select>
         <button class="btn-filter" onclick="applyFilters()">≡ Filter</button>
         <button class="btn-primary ms-auto" onclick="openModal('log-modal')">Log Water Consumption</button>
-        <button class="btn-outline" onclick="exportBilling()">🔒 Export</button>
+        <button class="btn-outline" onclick="exportBilling()">
+            <img src="{{ asset('images/export.png') }}" alt="Export" class="inline-block w-4 h-4 mr-1">
+            Export
+        </button>
     </div>
 
-    {{-- Floor Groups --}}
     <div id="billing-groups" class="fade-up d4">
         @forelse($billingGroups as $group)
         <div class="floor-group" data-floor="{{ $group['floor'] }}">
@@ -326,11 +325,10 @@
 
 @section('modals')
 
-{{-- Log Water Consumption Modal --}}
 <div class="modal-overlay" id="log-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">💧 Log Water Reading</div>
+            <div class="modal-title">Log Water Reading</div>
             <button class="modal-close" onclick="closeModal('log-modal')">✕</button>
         </div>
         <form method="POST" action="{{ route('billing.log') }}">
@@ -377,17 +375,16 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('log-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">💾 Log & Distribute</button>
+                <button type="submit" class="btn-submit">Log & Distribute</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Update / View Modal --}}
 <div class="modal-overlay" id="update-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">✏️ Update / View Billing</div>
+            <div class="modal-title">Update / View Billing</div>
             <button class="modal-close" onclick="closeModal('update-modal')">✕</button>
         </div>
         <form id="update-form">
@@ -406,7 +403,6 @@
 @section('scripts')
 <script>
 
-    /* ── Filter by floor (client-side) ── */
     function applyFilters() {
         const floor = document.getElementById('filter-floor').value;
         document.querySelectorAll('.floor-group').forEach(g => {
@@ -414,7 +410,6 @@
         });
     }
 
-    /* ── Open Update/View Modal ── */
     function openUpdateModal(room) {
 
         let html = `
@@ -491,7 +486,6 @@
         openModal('update-modal');
     }
 
-    /* ── Live recalculate consumption ── */
     function recalcShare() {
         const prev        = parseFloat(document.getElementById('edit-prev')?.value) || 0;
         const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
@@ -499,7 +493,6 @@
         document.getElementById('edit-consumption').value = consumption.toFixed(2);
     }
 
-    /* ── Save Changes (single listener) ── */
     document.getElementById('update-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -512,7 +505,7 @@
         const firstSelect    = document.querySelector('.status-select');
         const payment_status = firstSelect ? firstSelect.value : 'unpaid';
 
-        if (!billing_id) { showToast('❌ No billing record found.', 'error'); return; }
+        if (!billing_id) { showToast('No billing record found.', 'error'); return; }
 
         try {
             const response = await fetch("{{ route('billing.updateFull') }}", {
@@ -535,29 +528,28 @@
             if (!response.ok) {
                 const errText = await response.text();
                 console.error('HTTP ' + response.status, errText);
-                showToast('❌ Server error ' + response.status, 'error');
+                showToast('Server error ' + response.status, 'error');
                 return;
             }
 
             const data = await response.json();
 
             if (data.success) {
-                showToast('✅ Billing updated successfully!', 'success');
+                showToast('Billing updated successfully!', 'success');
                 closeModal('update-modal');
                 setTimeout(() => location.reload(), 800);
             } else {
-                showToast('❌ Failed to update.', 'error');
+                showToast('Failed to update.', 'error');
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
-            showToast('❌ Network error.', 'error');
+            showToast('Network error.', 'error');
         }
     });
 
-    /* ── Helpers ── */
     function exportBilling() {
-        showToast('📥 Billing data exported!', 'success');
+        showToast('Billing data exported!', 'success');
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -578,7 +570,6 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    /* ── Tenant preview by floor ── */
 const tenantsByFloor = @json(
     $allTenants->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
@@ -599,7 +590,7 @@ function updateTenantPreview(floor) {
 
     const tenants = tenantsByFloor[floor];
     previewList.innerHTML = tenants
-        .map(t => `<div>🏠 Room ${t.room_number} &nbsp;—&nbsp; ${t.name}</div>`)
+        .map(t => `<div>Room ${t.room_number} &nbsp;—&nbsp; ${t.name}</div>`)
         .join('');
 
     preview.style.display = '';
@@ -607,7 +598,7 @@ function updateTenantPreview(floor) {
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', function() {
-            showToast('✅ {{ session("success") }}', 'success');
+            showToast('{{ session("success") }}', 'success');
         });
     @endif
 

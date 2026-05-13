@@ -8,18 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class VisitorController extends Controller
 {
-    /**
-     * GET /visitors
-     * Admin sees ALL visitor logs with tenant + staff names.
-     */
     public function index()
     {
         $logs = VisitorLog::with(['tenant', 'staff'])
             ->orderByDesc('date_of_visit')
             ->orderByDesc('visitor_id')
             ->get()
-            // ── Append a computed full_name so the Blade JS can use
-            //    v.tenant.full_name instead of combining first+last in JS ──────
             ->each(function ($v) {
                 if ($v->tenant) {
                     $v->tenant->full_name = trim(
@@ -42,9 +36,6 @@ class VisitorController extends Controller
         return view('visitors', compact('logs', 'visitorsToday', 'currentlyInside'));
     }
 
-    /**
-     * PATCH /visitors/{visitor}/check-in
-     */
     public function checkIn(VisitorLog $visitor)
     {
         if ($visitor->arrival_time) {
@@ -60,9 +51,6 @@ class VisitorController extends Controller
         return back()->with('success', 'Visitor checked in.');
     }
 
-    /**
-     * PATCH /visitors/{visitor}/check-out
-     */
     public function checkOut(VisitorLog $visitor)
     {
         if (! $visitor->arrival_time) {
