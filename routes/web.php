@@ -6,8 +6,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\VisitorController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\FrontdeskController;
+use App\Http\Controllers\BillingController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 
@@ -189,3 +188,11 @@ Route::middleware('auth:staff')->group(function () {
     ->name('visitors.store');
     Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])
     ->name('visitors.checkout');
+
+    // ── WATER BILLING (FIXED - SINGLE SOURCE OF TRUTH) ────────────────────────
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('/',              [BillingController::class, 'index'])->name('index');
+        Route::post('/log',          [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status',[BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full',  [BillingController::class, 'updateFull'])->name('updateFull');
+    });

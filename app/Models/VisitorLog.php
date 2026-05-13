@@ -39,9 +39,9 @@ class VisitorLog extends Model
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
-        }
-        
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
     public function staff()
     {
         return $this->belongsTo(Staff::class, 'confirmed_by', 'staff_id');
