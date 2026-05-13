@@ -100,5 +100,6 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
     Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
     Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
+    Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
 
 });

@@ -185,4 +185,16 @@ class TenantController extends Controller
         'totalUnits'    => $totalUnits,
     ]);
     }
+
+    public function updateNotes(Request $request, $id)
+    {
+    $request->validate([
+        'notes' => 'nullable|string|max:1000',
+    ]);
+
+    $tenant = Tenant::findOrFail($id);
+    $tenant->update(['notes' => $request->notes]);
+
+    return redirect()->back()->with('success', 'Note saved successfully.');
+    }
 }
