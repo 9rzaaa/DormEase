@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\VisitorLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class VisitorController extends Controller
 {
@@ -18,7 +17,8 @@ class VisitorController extends Controller
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
 
         $logs = VisitorLog::where('tenant_id', $tenantId)
-            ->latest('arrival_time')
+            ->orderByDesc('date_of_visit')
+            ->orderByDesc('visitor_id')
             ->get()
             ->map(fn($v) => [
                 'id'             => $v->visitor_id,
@@ -31,18 +31,20 @@ class VisitorController extends Controller
                     : null,
                 'date_of_visit'  => $v->date_of_visit,
                 'time_of_visit'  => $v->time_of_visit,
-                'arrival_time'   => $v->arrival_time,
+                'arrival_time'   => $v->arrival_time,   // null until front desk checks in
                 'departure_time' => $v->departure_time,
                 'status'         => $v->status,
             ]);
 
+        // FIX: count by date_of_visit (the expected date), not arrival_time
+        // arrival_time is null until front desk checks them in
         $visitorsToday = VisitorLog::where('tenant_id', $tenantId)
-            ->whereDate('arrival_time', today())
+            ->whereDate('date_of_visit', today())
             ->count();
 
-        // active = checked in but not yet checked out
+        // Active = checked in but not yet checked out
         $activePasses = VisitorLog::where('tenant_id', $tenantId)
-            ->whereIn('status', ['inside', 'pending'])
+            ->whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->count();
 
@@ -55,8 +57,8 @@ class VisitorController extends Controller
 
     /**
      * POST /api/visitors
-     * Registers a new visitor. Accepts multipart/form-data so id_photo can
-     * be uploaded as a file alongside the other fields.
+     * Tenant registers a new visitor.
+     * arrival_time stays NULL — front desk sets it on check-in.
      */
     public function store(Request $request)
     {
@@ -72,7 +74,6 @@ class VisitorController extends Controller
 
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
 
-        // store photo if provided
         $photoPath = null;
         if ($request->hasFile('id_photo')) {
             $photoPath = $request->file('id_photo')
@@ -87,7 +88,7 @@ class VisitorController extends Controller
             'id_photo'      => $photoPath,
             'date_of_visit' => $request->date_of_visit ?? now()->toDateString(),
             'time_of_visit' => $request->time_of_visit ?? now()->format('H:i'),
-            'arrival_time'  => now(),
+            'arrival_time'  => null,    // FIX: was "now()" — front desk sets this, not the tenant
             'status'        => 'pending',
             'tenant_id'     => $tenantId,
         ]);
@@ -105,7 +106,7 @@ class VisitorController extends Controller
                     : null,
                 'date_of_visit' => $visitor->date_of_visit,
                 'time_of_visit' => $visitor->time_of_visit,
-                'arrival_time'  => $visitor->arrival_time,
+                'arrival_time'  => null,    // not checked in yet
                 'status'        => $visitor->status,
             ],
         ], 201);
@@ -113,20 +114,27 @@ class VisitorController extends Controller
 
     /**
      * PATCH /api/visitors/{id}/checkout
-     * Marks a visitor as checked out (sets departure_time + status = approved).
+     * Front desk checks a visitor out.
      */
     public function checkout($id, Request $request)
     {
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
 
-        // only allow checkout of the tenant's own visitors
         $visitor = VisitorLog::where('visitor_id', $id)
             ->where('tenant_id', $tenantId)
             ->firstOrFail();
 
+        if (! $visitor->arrival_time) {
+            return response()->json(['message' => 'Visitor has not checked in yet.'], 422);
+        }
+
+        if ($visitor->departure_time) {
+            return response()->json(['message' => 'Visitor has already checked out.'], 422);
+        }
+
         $visitor->update([
             'departure_time' => now(),
-            'status'         => 'approved',
+            'status'         => 'completed', // FIX: was 'approved'
         ]);
 
         return response()->json([
