@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Tenant;
+use App\Models\Staff;
 
 class VisitorLog extends Model
 {
-    // visitor_logs table has no created_at / updated_at columns
     public $timestamps = false;
 
     public function getUpdatedAtColumn()
@@ -38,11 +39,11 @@ class VisitorLog extends Model
 
     public function tenant()
     {
-        return $this->belongsTo(User::class, 'tenant_id');
-    }
-
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
+        }
+        
     public function staff()
     {
-        return $this->belongsTo(User::class, 'confirmed_by');
-    }
+        return $this->belongsTo(Staff::class, 'confirmed_by', 'staff_id');
+        }
 }
