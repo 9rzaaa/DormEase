@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\PasswordController;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\VisitorController;
+use App\Http\Controllers\Api\BillingController;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/visitors',                   [VisitorController::class, 'index']);
     Route::post('/visitors',                   [VisitorController::class, 'store']);
     Route::patch('/visitors/{id}/checkout',     [VisitorController::class, 'checkout']);
+
+    Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
+    Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
