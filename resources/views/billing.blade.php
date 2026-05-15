@@ -855,49 +855,101 @@ document.addEventListener('DOMContentLoaded', function() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Log Form Submit
 // ─────────────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const logForm = document.getElementById('log-form');
-    if (logForm) {
-        logForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    if (!logForm) return;
 
-            const submitBtn    = logForm.querySelector('.btn-submit');
-            const billingMonth = document.getElementById('log-billing-month').value;
-            const monthForUrl  = billingMonth.substring(0, 7) + '-01';
+    logForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-            setButtonLoading(submitBtn, 'Logging...');
+        const submitBtn = logForm.querySelector('.btn-submit');
 
-            try {
-                const response = await fetch("{{ route('billing.log') }}", {
-                    method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: new FormData(this)
-                });
+        // ── Client-side validation ────────────────────────────────────────
+        const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value);
+        const amount = parseFloat(document.getElementById('log-maynilad-amount')?.value);
 
-                if (!response.ok) {
-                    showToast('Server error ' + response.status, 'error');
-                    resetButton(submitBtn, 'Log & Distribute');
-                    return;
-                }
+        if (!m3 || !amount || m3 <= 0 || amount <= 0) {
+            showToast('Please enter valid Maynilad bill figures.', 'error');
+            return;
+        }
 
-                const data = await response.json();
+        const rows = document.querySelectorAll('.floor-reading-row');
+        if (rows.length === 0) {
+            showToast('Please add at least one floor reading.', 'error');
+            return;
+        }
+
+        let valid = true;
+        rows.forEach(row => {
+            const floorSel = row.querySelector('.frr-floor-sel');
+            const prev     = parseFloat(row.querySelector('[name$="[prev]"]')?.value) || 0;
+            const curr     = parseFloat(row.querySelector('[name$="[curr]"]')?.value) || 0;
+
+            if (!floorSel?.value) {
+                showToast('Please select a floor for every reading row.', 'error');
+                valid = false;
+            }
+            if (curr < prev) {
+                showToast(`Floor ${floorSel?.value || ''}: Current reading cannot be less than previous.`, 'error');
+                valid = false;
+            }
+        });
+        if (!valid) return;
+
+        // ── Submit ────────────────────────────────────────────────────────
+        setButtonLoading(submitBtn, 'Logging...');
+
+        try {
+            const response = await fetch("{{ route('billing.log') }}", {
+                method  : 'POST',
+                headers : {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body    : new FormData(logForm),
+            });
+
+            // Guard: make sure we got JSON back, not an HTML error page
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response from server:', text);
+                showToast('Unexpected server response. Check Laravel logs.', 'error');
+                resetButton(submitBtn, 'Log & Distribute');
+                return;
+            }
+
+            const data = await response.json();
+
+            // ── Success ───────────────────────────────────────────────────
+            if (response.ok && data.success) {
                 submitBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Done!`;
                 showToast('✓ ' + (data.message || 'Water billing logged successfully!'), 'success');
 
-                setTimeout(() => {
-                    const floor = document.getElementById('filter-floor').value;
-                    let url = "{{ route('billing.index') }}?month=" + monthForUrl;
-                    if (floor) url += '&floor=' + floor;
-                    window.location.href = url;
-                }, 1000);
+                const billingMonth = document.getElementById('log-billing-month').value;
+                const monthForUrl  = billingMonth.substring(0, 7) + '-01';
+                const floor        = document.getElementById('filter-floor').value;
+                let   url          = "{{ route('billing.index') }}?month=" + monthForUrl;
+                if (floor) url    += '&floor=' + floor;
 
-            } catch (err) {
-                console.error('Network error:', err);
-                showToast('Network error. Please try again.', 'error');
+                setTimeout(() => { window.location.href = url; }, 1000);
+
+            // ── Validation / business error from controller ───────────────
+            } else {
+                const msg = data.message || data.errors
+                    ? (data.message || Object.values(data.errors).flat().join(' '))
+                    : 'Failed to log billing. Please check your inputs.';
+                showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
             }
-        });
-    }
+
+        } catch (err) {
+            console.error('Fetch error:', err);
+            showToast('Network error — please try again.', 'error');
+            resetButton(submitBtn, 'Log & Distribute');
+        }
+    });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

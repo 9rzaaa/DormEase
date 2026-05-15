@@ -18,9 +18,11 @@ class BillingController extends Controller
         $selectedFloor = $request->get('floor', '');
 
         $months = [];
+
         for ($i = 0; $i < 12; $i++) {
             $date  = now()->startOfMonth()->subMonths($i);
             $value = $date->format('Y-m-d');
+
             $months[] = [
                 'value'    => $value,
                 'label'    => $date->format('F Y'),
@@ -28,16 +30,17 @@ class BillingController extends Controller
             ];
         }
 
-        // After building $months array, also ensure the selectedMonth has an entry:
         $selectedCarbon = Carbon::parse($selectedMonth);
+
         $monthExists = collect($months)->contains('value', $selectedMonth);
+
         if (!$monthExists) {
             array_unshift($months, [
                 'value'    => $selectedMonth,
                 'label'    => $selectedCarbon->format('F Y'),
                 'selected' => true,
             ]);
-            // Re-mark selected
+
             $months = array_map(function ($m) use ($selectedMonth) {
                 $m['selected'] = $m['value'] === $selectedMonth;
                 return $m;
@@ -50,19 +53,32 @@ class BillingController extends Controller
             ->orderBy('room_number')
             ->get();
 
-        $floors       = $allTenants->pluck('floor')->unique()->sort()->values();
+        $floors = $allTenants->pluck('floor')->unique()->sort()->values();
+
         $activeFloors = $floors;
 
-        $loggedFloors = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
-            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
+        $loggedFloors = WaterBilling::whereYear(
+            'billing_month',
+            Carbon::parse($selectedMonth)->year
+        )
+            ->whereMonth(
+                'billing_month',
+                Carbon::parse($selectedMonth)->month
+            )
             ->distinct()
             ->pluck('floor');
 
         $unloggedFloors = $activeFloors->diff($loggedFloors)->values();
 
         $billings = WaterBilling::with('tenant')
-            ->whereYear('billing_month', Carbon::parse($selectedMonth)->year)
-            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
+            ->whereYear(
+                'billing_month',
+                Carbon::parse($selectedMonth)->year
+            )
+            ->whereMonth(
+                'billing_month',
+                Carbon::parse($selectedMonth)->month
+            )
             ->get()
             ->keyBy('tenant_id');
 
@@ -75,12 +91,16 @@ class BillingController extends Controller
 
         foreach ($allTenants->groupBy('floor') as $floor => $floorTenants) {
 
-            if ($selectedFloor && $floor != $selectedFloor) continue;
+            if ($selectedFloor && $floor != $selectedFloor) {
+                continue;
+            }
 
             $rooms = [];
             $pastDue = 0;
 
-            $floorBilling = $billings->first(fn($b) => $b->floor == $floor);
+            $floorBilling = $billings->first(
+                fn($b) => $b->floor == $floor
+            );
 
             foreach ($floorTenants->groupBy('room_number') as $roomNumber => $roomTenants) {
 
@@ -95,7 +115,9 @@ class BillingController extends Controller
                     return [
                         'billing_id'     => $billing?->billing_id,
                         'tenant_id'      => $tenant->tenant_id,
-                        'name'           => trim($tenant->first_name . ' ' . $tenant->last_name),
+                        'name'           => trim(
+                            $tenant->first_name . ' ' . $tenant->last_name
+                        ),
                         'room_share'     => $billing?->room_share ?? 0,
                         'payment_status' => $paymentStatus,
                         'dot_class'      => match ($paymentStatus) {
@@ -107,7 +129,14 @@ class BillingController extends Controller
                     ];
                 })->values()->toArray();
 
-                if (collect($tenantRows)->contains(fn($t) => in_array($t['payment_status'], ['unpaid', 'overdue']))) {
+                if (
+                    collect($tenantRows)->contains(
+                        fn($t) => in_array(
+                            $t['payment_status'],
+                            ['unpaid', 'overdue']
+                        )
+                    )
+                ) {
                     $pastDue++;
                 }
 
@@ -134,8 +163,7 @@ class BillingController extends Controller
                     ? number_format($floorBilling->floor_consumption_m3 ?? 0, 2)
                     : '0.00',
                 'total_floor_bill'     => collect($rooms)->sum(
-                    fn($r) =>
-                    collect($r['tenants'])->sum('room_share')
+                    fn($r) => collect($r['tenants'])->sum('room_share')
                 ),
                 'room_count'           => count($rooms),
                 'past_due_count'       => $pastDue,
@@ -164,77 +192,139 @@ class BillingController extends Controller
 
     public function log(Request $request)
     {
-        $request->validate([
-            'billing_month'          => 'required|date',
-            'due_date'               => 'required|date',
-            'maynilad_total_m3'      => 'required|numeric|min:0.01',
-            'maynilad_total_amount'  => 'required|numeric|min:0.01',
-            'floor_readings'         => 'required|array|min:1',
-            'floor_readings.*.floor' => 'required|integer|min:1',
-            'floor_readings.*.prev'  => 'required|numeric|min:0',
-            'floor_readings.*.curr'  => 'required|numeric|min:0|gte:floor_readings.*.prev',
-        ]);
+        try {
+            if (!Auth::guard('staff')->check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Staff not authenticated.'
+                ], 401);
+            }
 
-        $billingMonthDate = Carbon::parse($request->billing_month)->startOfMonth();
+            $request->validate([
+                'billing_month'          => 'required|date',
+                'due_date'               => 'required|date',
+                'maynilad_total_m3'      => 'required|numeric|min:0.01',
+                'maynilad_total_amount'  => 'required|numeric|min:0.01',
+                'floor_readings'         => 'required|array|min:1',
+                'floor_readings.*.floor' => 'required|integer|min:1|distinct',
+                'floor_readings.*.prev'  => 'required|numeric|min:0',
+                'floor_readings.*.curr'  => 'required|numeric|min:0',
+            ]);
 
-        $ratePerM3 = $request->maynilad_total_amount / $request->maynilad_total_m3;
+            $billingMonthDate = Carbon::parse(
+                $request->billing_month
+            )->startOfMonth();
 
-        DB::transaction(function () use ($request, $billingMonthDate, $ratePerM3) {
+            $ratePerM3 = $request->maynilad_total_amount
+                / $request->maynilad_total_m3;
+            $staffId = Auth::guard('staff')->id();
+            $readings = collect($request->floor_readings)
+                ->map(function ($entry) {
+                    return [
+                        'floor' => (int) $entry['floor'],
+                        'prev'  => (float) $entry['prev'],
+                        'curr'  => (float) $entry['curr'],
+                    ];
+                });
+            $floors = $readings->pluck('floor')->unique()->values();
 
-            $rate = WaterRate::updateOrCreate(
-                ['effective_month' => $billingMonthDate->format('Y-m-01')],
-                ['rate_per_m3' => round($ratePerM3, 4)]
-            );
+            DB::transaction(function () use (
+                $readings,
+                $floors,
+                $billingMonthDate,
+                $ratePerM3,
+                $staffId,
+                $request
+            ) {
 
-            foreach ($request->floor_readings as $entry) {
+                $rate = WaterRate::updateOrCreate(
+                    ['effective_month' => $billingMonthDate->format('Y-m-01')],
+                    ['rate_per_m3' => round($ratePerM3, 4)]
+                );
 
-                $floor = (int) $entry['floor'];
-                $prev  = (float) $entry['prev'];
-                $curr  = (float) $entry['curr'];
+                $tenantsByFloor = Tenant::where('is_active', true)
+                    ->whereIn('floor', $floors->all())
+                    ->get()
+                    ->groupBy('floor');
 
-                $consumption = max(0, $curr - $prev);
-                $totalFloorBill = round($consumption * $ratePerM3, 2);
-
-                $tenants = Tenant::where('is_active', true)
-                    ->where('floor', $floor)
-                    ->get();
-
-                if ($tenants->isEmpty()) continue;
-
-                $perTenantShare = round($totalFloorBill / $tenants->count(), 2);
-
-                WaterBilling::where('floor', $floor)
-                    ->whereYear('billing_month', $billingMonthDate->year)
-                    ->whereMonth('billing_month', $billingMonthDate->month)
+                WaterBilling::whereIn('floor', $floors->all())
+                    ->whereDate('billing_month', $billingMonthDate->format('Y-m-d'))
                     ->delete();
 
-                foreach ($tenants as $tenant) {
-                    WaterBilling::create([
-                        'tenant_id'            => $tenant->tenant_id,
-                        'rate_id'              => $rate->rate_id,
-                        'inputted_by'          => Auth::guard('staff')->id(),
-                        'billing_month'        => $billingMonthDate,
-                        'floor'                => $floor,
-                        'floor_consumption_m3' => $consumption,
-                        'prev_reading'         => $prev,
-                        'curr_reading'         => $curr,
-                        'total_floor_bill'     => $totalFloorBill,
-                        'rooms_sharing'        => $tenants->count(),
-                        'occupants_in_room'    => 1,
-                        'room_share'           => $perTenantShare,
-                        'payment_status'       => 'unpaid',
-                        'due_date'             => $request->due_date,
-                    ]);
+                $billingRows = [];
+
+                foreach ($readings as $entry) {
+
+                    $floor = $entry['floor'];
+                    $prev  = $entry['prev'];
+                    $curr  = $entry['curr'];
+
+                    if ($curr < $prev) {
+                        throw new \Exception(
+                            "Current reading cannot be lower than previous reading for floor {$floor}."
+                        );
+                    }
+
+                    $consumption = max(0, $curr - $prev);
+
+                    $totalFloorBill = round(
+                        $consumption * $ratePerM3,
+                        2
+                    );
+
+                    $tenants = $tenantsByFloor->get($floor, collect());
+
+                    if ($tenants->isEmpty()) {
+                        continue;
+                    }
+
+                    $perTenantShare = round(
+                        $totalFloorBill / $tenants->count(),
+                        2
+                    );
+
+                    foreach ($tenants as $tenant) {
+                        $billingRows[] = [
+                            'tenant_id'            => $tenant->tenant_id,
+                            'rate_id'              => $rate->rate_id,
+                            'inputted_by'          => $staffId,
+                            'billing_month'        => $billingMonthDate->format('Y-m-d'),
+                            'floor'                => $floor,
+                            'floor_consumption_m3' => $consumption,
+                            'prev_reading'         => $prev,
+                            'curr_reading'         => $curr,
+                            'total_floor_bill'     => $totalFloorBill,
+                            'rooms_sharing'        => $tenants->count(),
+                            'occupants_in_room'    => 1,
+                            'room_share'           => $perTenantShare,
+                            'payment_status'       => 'unpaid',
+                            'due_date'             => $request->due_date,
+                        ];
+                    }
                 }
-            }
-        });
 
-        $message = "Water billing logged successfully.";
+                if (!empty($billingRows)) {
+                    WaterBilling::insert($billingRows);
+                }
+            });
 
-        return response()->json([
-            'success' => true,
-            'message' => $message
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Water billing logged successfully.'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $e->errors(),
+                'message' => collect($e->errors())->flatten()->first(),
+            ], 422);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updateStatus(Request $request)
@@ -245,11 +335,16 @@ class BillingController extends Controller
         ]);
 
         foreach ($request->billing_ids as $i => $id) {
+
             WaterBilling::where('billing_id', $id)
-                ->update(['payment_status' => $request->statuses[$i]]);
+                ->update([
+                    'payment_status' => $request->statuses[$i]
+                ]);
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     public function updateFull(Request $request)
@@ -264,24 +359,44 @@ class BillingController extends Controller
 
         $billing = WaterBilling::findOrFail($request->billing_id);
 
-        $rate = WaterRate::where('effective_month', Carbon::parse($billing->billing_month)->format('Y-m-01'))
-            ->first();
+        $rate = WaterRate::where(
+            'effective_month',
+            Carbon::parse($billing->billing_month)->format('Y-m-01')
+        )->first();
 
         $ratePerM3 = $rate?->rate_per_m3 ?? 0;
 
-        $consumption = max(0, $request->curr_reading - $request->prev_reading);
+        $consumption = max(
+            0,
+            $request->curr_reading - $request->prev_reading
+        );
+
         $total = round($consumption * $ratePerM3, 2);
 
         $count = WaterBilling::where('floor', $billing->floor)
-            ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
-            ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
+            ->whereYear(
+                'billing_month',
+                Carbon::parse($billing->billing_month)->year
+            )
+            ->whereMonth(
+                'billing_month',
+                Carbon::parse($billing->billing_month)->month
+            )
             ->count();
 
-        $share = $count ? round($total / $count, 2) : 0;
+        $share = $count
+            ? round($total / $count, 2)
+            : 0;
 
         WaterBilling::where('floor', $billing->floor)
-            ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
-            ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
+            ->whereYear(
+                'billing_month',
+                Carbon::parse($billing->billing_month)->year
+            )
+            ->whereMonth(
+                'billing_month',
+                Carbon::parse($billing->billing_month)->month
+            )
             ->update([
                 'prev_reading'         => $request->prev_reading,
                 'curr_reading'         => $request->curr_reading,
@@ -291,10 +406,12 @@ class BillingController extends Controller
                 'due_date'             => $request->due_date,
             ]);
 
-        $billing->update(['payment_status' => $request->payment_status]);
+        $billing->update([
+            'payment_status' => $request->payment_status
+        ]);
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'room_share' => $share
         ]);
     }
