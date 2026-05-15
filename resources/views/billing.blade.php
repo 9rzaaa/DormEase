@@ -25,7 +25,7 @@
     .page-header .dorm-name{
         font-size:1rem;
         font-weight:600;
-        color:#ff4f93;
+        color:#b03060;
         margin-top:.2rem;
     }
 
