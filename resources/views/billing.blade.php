@@ -571,13 +571,11 @@
 @section('content')
 <div class="page-body">
 
-    {{-- Header --}}
     <div class="page-header fade-up d1">
         <h1>Water Billing</h1>
         <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
     </div>
 
-    {{-- Stats --}}
     <div class="stats-card fade-up d2">
         <div class="stat-item">
             <div class="stat-icon-circle">
@@ -613,9 +611,8 @@
         </div>
     </div>
 
-    {{-- Filters --}}
     <div class="filters-row fade-up d3">
-        <select class="filter-select" id="filter-floor" onchange="applyFilters()">
+        <select class="filter-select" id="filter-floor" onchange="applyFloorFilter()">
             <option value="">All Floors</option>
             @foreach($floors as $floor)
                 <option value="{{ $floor }}" {{ $selectedFloor == $floor ? 'selected' : '' }}>
@@ -623,19 +620,21 @@
                 </option>
             @endforeach
         </select>
-        <select class="filter-select" id="filter-month" onchange="applyFilters()">
+        <select class="filter-select" id="filter-month" onchange="applyMonthFilter()">
             @foreach($months as $m)
                 <option value="{{ $m['value'] }}" {{ $m['selected'] ? 'selected' : '' }}>
                     {{ $m['label'] }}
                 </option>
             @endforeach
         </select>
-        <button class="btn-filter" onclick="applyFilters()">≡ Filter</button>
-        <button class="btn-primary ms-auto" onclick="openModal('log-modal')">Log Water Consumption</button>
-        <button class="btn-outline" onclick="exportBilling()">🔒 Export</button>
+        <button class="btn-filter" onclick="applyMonthFilter()">≡ Filter</button>
+        <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
+        <button class="btn-outline" onclick="exportBilling()">
+            <img src="{{ asset('images/export.png') }}" alt="Export" class="inline-block mr-1 w-4 h-4">
+            Export
+        </button>
     </div>
 
-    {{-- Floor Groups --}}
     <div id="billing-groups" class="fade-up d4">
         @forelse($billingGroups as $group)
         <div class="floor-group" data-floor="{{ $group['floor'] }}">
@@ -677,7 +676,7 @@
                                 @foreach($room['tenants'] as $t)
                                 <div class="tenant-row">
                                     <span class="dot {{ $t['dot_class'] }}"></span>
-                                    <span>{{ number_format($t['room_share'], 2) }}</span>
+                                    <span>₱{{ number_format($t['room_share'], 2) }}</span>
                                 </div>
                                 @endforeach
                             </div>
@@ -686,14 +685,14 @@
                         <td>
                             <div class="td-status-col">
                                 @foreach($room['tenants'] as $t)
-                                    <span class="badge badge-{{ $t['payment_status'] }}">
+                                    <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">
                                         {{ ucfirst($t['payment_status']) }}
                                     </span>
                                 @endforeach
                             </div>
                         </td>
                         <td>
-                            <button class="btn-update" onclick="openUpdateModal({{ json_encode($room) }})">
+                            <button class="btn-update" onclick='openUpdateModal(@json($room))'>
                                 Update/View
                             </button>
                         </td>
@@ -714,68 +713,92 @@
 
 @section('modals')
 
-{{-- Log Water Consumption Modal --}}
+{{-- ══════════════════════════════════════════════════════════════════════
+     LOG WATER CONSUMPTION MODAL
+     ══════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="log-modal">
-    <div class="modal">
+    <div class="modal" style="max-width:620px;">
         <div class="modal-header">
-            <div class="modal-title">💧 Log Water Reading</div>
+            <div class="modal-title">💧 Log Water Consumption</div>
             <button class="modal-close" onclick="closeModal('log-modal')">✕</button>
         </div>
-        <form method="POST" action="{{ route('billing.log') }}">
+
+        <form method="POST" action="{{ route('billing.log') }}" id="log-form">
             @csrf
             <div class="modal-grid">
-                <div class="modal-field full">
-                    <label>Floor</label>
-                    <select name="floor" required onchange="updateTenantPreview(this.value)">
-                        <option value="">Select floor</option>
-                        @foreach($activeFloors as $f)
-                            <option value="{{ $f }}">
-                                Floor {{ $f }}
-                                {{ $unloggedFloors->contains($f) ? '⚠ Not yet logged' : '✓ Already logged' }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-field full" id="tenant-preview" style="display:none;">
-                    <label>Tenants on this floor</label>
-                    <div id="tenant-preview-list"
-                        style="background:#fafafa;border:1.5px solid var(--gray-light);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:var(--ink);line-height:2;max-height:160px;overflow-y:auto;">
-                    </div>
-                </div>
+
+                {{-- ── Billing Period ─────────────────────────────────────── --}}
+                <div class="section-label">📅 Billing Period</div>
+
                 <div class="modal-field">
                     <label>Billing Month</label>
-                    <input type="date" name="billing_month" required value="{{ now()->format('Y-m-01') }}">
+                    <input type="date" name="billing_month" id="log-billing-month"
+                           required value="{{ now()->format('Y-m-01') }}">
                 </div>
                 <div class="modal-field">
                     <label>Due Date</label>
-                    <input type="date" name="due_date" required>
+                    <input type="date" name="due_date" id="log-due-date" required>
+                </div>
+
+                {{-- ── Maynilad Bill ──────────────────────────────────────── --}}
+                <div class="section-label">🧾 Maynilad Bill (Mother Meter)</div>
+
+                <div class="modal-field">
+                    <label>Total Cubic Meters (m³)</label>
+                    <input type="number" step="0.01" min="0.01"
+                           name="maynilad_total_m3"
+                           id="log-maynilad-m3"
+                           placeholder="e.g. 120.00"
+                           required
+                           oninput="recalcRate()">
                 </div>
                 <div class="modal-field">
-                    <label>Previous Reading (m³)</label>
-                    <input type="number" step="0.01" name="prev_reading" placeholder="0.00" required>
+                    <label>Total Amount Due (₱)</label>
+                    <input type="number" step="0.01" min="0.01"
+                           name="maynilad_total_amount"
+                           id="log-maynilad-amount"
+                           placeholder="e.g. 4,800.00"
+                           required
+                           oninput="recalcRate()">
                 </div>
-                <div class="modal-field">
-                    <label>Current Reading (m³)</label>
-                    <input type="number" step="0.01" name="curr_reading" placeholder="0.00" required>
+
+                {{-- Live rate preview --}}
+                <div class="rate-preview-box" id="rate-preview-box">
+                    <span>Rate per m³: <strong id="rp-rate">—</strong></span>
+                    <span style="color:var(--ink-muted);font-size:.78rem;">
+                        = Total Amount ÷ Total m³ (from Maynilad bill)
+                    </span>
                 </div>
-                <div class="modal-field full">
-                    <label>Rooms Sharing Submeter</label>
-                    <input type="number" name="rooms_sharing" placeholder="e.g. 4" required>
+
+                {{-- ── Floor Submeter Readings ─────────────────────────────── --}}
+                <div class="section-label">🏢 Floor Submeter Readings</div>
+
+                <div class="floor-readings-list" id="floor-readings-list">
+                    {{-- Rows are injected by JS --}}
                 </div>
+
+                <button type="button" class="btn-add-floor" id="btn-add-floor"
+                        onclick="addFloorRow()">
+                    + Add Floor Reading
+                </button>
+
             </div>
+
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('log-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">💾 Log & Distribute</button>
+                <button type="submit" class="btn-submit">Log &amp; Distribute</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- Update / View Modal --}}
+{{-- ══════════════════════════════════════════════════════════════════════
+     UPDATE / VIEW MODAL
+     ══════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="update-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">✏️ Update / View Billing</div>
+            <div class="modal-title">Update / View Billing</div>
             <button class="modal-close" onclick="closeModal('update-modal')">✕</button>
         </div>
         <form id="update-form">
@@ -794,179 +817,22 @@
 @section('scripts')
 <script>
 
-    /* ── Filter by floor (client-side) ── */
-    function applyFilters() {
-        const floor = document.getElementById('filter-floor').value;
-        document.querySelectorAll('.floor-group').forEach(g => {
-            g.style.display = (!floor || g.dataset.floor == floor) ? '' : 'none';
-        });
-    }
+// ── Button loading helpers ────────────────────────────────────────────────────
+function setButtonLoading(btn, loadingText) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+}
 
-    /* ── Open Update/View Modal ── */
-    function openUpdateModal(room) {
+function resetButton(btn, originalText) {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = originalText;
+}
 
-        let html = `
-            <div class="modal-grid" style="margin-bottom:1rem;">
-                <div class="modal-field">
-                    <label>Room</label>
-                    <input type="text" value="${room.room_number}" disabled style="background:#f0f0f0;color:var(--ink-muted);">
-                </div>
-                <div class="modal-field">
-                    <label>Floor</label>
-                    <input type="text" value="${room.floor}" disabled style="background:#f0f0f0;color:var(--ink-muted);">
-                </div>
-                <div class="modal-field">
-                    <label>Previous Reading (m³)</label>
-                    <input type="number" step="0.01" id="edit-prev" value="${parseFloat(room.prev_reading).toFixed(2)}" oninput="recalcShare()">
-                </div>
-                <div class="modal-field">
-                    <label>Current Reading (m³)</label>
-                    <input type="number" step="0.01" id="edit-curr" value="${parseFloat(room.curr_reading).toFixed(2)}" oninput="recalcShare()">
-                </div>
-                <div class="modal-field">
-                    <label>Floor Consumption (m³)</label>
-                    <input type="text" id="edit-consumption" value="${parseFloat(room.floor_consumption_m3).toFixed(2)}" disabled style="background:#f0f0f0;color:var(--ink-muted);">
-                </div>
-                <div class="modal-field">
-                    <label>Total Floor Bill (₱)</label>
-                    <input type="text" id="edit-total-bill" value="${parseFloat(room.total_floor_bill).toFixed(2)}" disabled style="background:#f0f0f0;color:var(--ink-muted);">
-                </div>
-                <div class="modal-field">
-                    <label>Rooms Sharing</label>
-                    <input type="number" id="edit-rooms" value="${room.rooms_sharing}" min="1" oninput="recalcShare()">
-                </div>
-                <div class="modal-field">
-                    <label>Occupants in Room</label>
-                    <input type="number" id="edit-occupants" value="${room.occupants_in_room}" min="1" oninput="recalcShare()">
-                </div>
-                <div class="modal-field">
-                    <label>Room Share Per Tenant (₱)</label>
-                    <input type="text" id="edit-room-share" value="${parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2)}" disabled style="background:#f0f0f0;color:var(--ink-muted);">
-                </div>
-                <div class="modal-field">
-                    <label>Due Date</label>
-                    <input type="date" id="edit-due-date" value="${room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : ''}">
-                </div>
-            </div>
-        `;
-
-        room.tenants.forEach(function(t) {
-            html += `
-                <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;overflow:hidden;">
-                    <div class="view-row">
-                        <span class="view-label">Tenant</span>
-                        <span class="view-val">${t.name}</span>
-                    </div>
-                    <div class="view-row">
-                        <span class="view-label">Room Share</span>
-                        <span class="view-val tenant-share-display">₱${parseFloat(t.room_share).toFixed(2)}</span>
-                    </div>
-                    <div class="modal-field" style="margin-top:1rem;">
-                        <label>Payment Status</label>
-                        <select class="status-select" data-billing-id="${t.billing_id}">
-                            <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
-                            <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
-                            <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
-                            <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-        });
-
-        document.getElementById('update-form').dataset.billingId = room.tenants[0]?.billing_id ?? '';
-        document.getElementById('update-content').innerHTML = html;
-        openModal('update-modal');
-    }
-
-    /* ── Live recalculate consumption ── */
-    function recalcShare() {
-        const prev        = parseFloat(document.getElementById('edit-prev')?.value) || 0;
-        const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
-        const consumption = Math.max(0, curr - prev);
-        document.getElementById('edit-consumption').value = consumption.toFixed(2);
-    }
-
-    /* ── Save Changes (single listener) ── */
-    document.getElementById('update-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const billing_id     = this.dataset.billingId;
-        const prev_reading   = document.getElementById('edit-prev').value;
-        const curr_reading   = document.getElementById('edit-curr').value;
-        const rooms_sharing  = document.getElementById('edit-rooms').value;
-        const occupants      = document.getElementById('edit-occupants').value;
-        const due_date       = document.getElementById('edit-due-date').value;
-        const firstSelect    = document.querySelector('.status-select');
-        const payment_status = firstSelect ? firstSelect.value : 'unpaid';
-
-        if (!billing_id) { showToast('❌ No billing record found.', 'error'); return; }
-
-        try {
-            const response = await fetch("{{ route('billing.updateFull') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    billing_id        : parseInt(billing_id),
-                    prev_reading      : parseFloat(prev_reading),
-                    curr_reading      : parseFloat(curr_reading),
-                    rooms_sharing     : parseInt(rooms_sharing),
-                    occupants_in_room : parseInt(occupants),
-                    due_date          : due_date,
-                    payment_status    : payment_status,
-                })
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                console.error('HTTP ' + response.status, errText);
-                showToast('❌ Server error ' + response.status, 'error');
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                showToast('✅ Billing updated successfully!', 'success');
-                closeModal('update-modal');
-                setTimeout(() => location.reload(), 800);
-            } else {
-                showToast('❌ Failed to update.', 'error');
-            }
-
-        } catch (err) {
-            console.error('Fetch error:', err);
-            showToast('❌ Network error.', 'error');
-        }
-    });
-
-    /* ── Helpers ── */
-    function exportBilling() {
-        showToast('📥 Billing data exported!', 'success');
-    }
-
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    document.querySelectorAll('.modal-overlay').forEach(function(m) {
-        m.addEventListener('click', function(e) {
-            if (e.target === m) m.classList.remove('open');
-        });
-    });
-
-    function showToast(msg, type) {
-        const t = document.getElementById('toast');
-        if (!t) return;
-        t.textContent = msg;
-        t.className = 'toast ' + (type || '');
-        setTimeout(() => t.classList.add('show'), 10);
-        setTimeout(() => t.classList.remove('show'), 3200);
-    }
-
-    /* ── Tenant preview by floor ── */
+// ─────────────────────────────────────────────────────────────────────────────
+// Tenant data for preview (floor → [{name, room_number}])
+// ─────────────────────────────────────────────────────────────────────────────
 const tenantsByFloor = @json(
     $allTenants->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
@@ -976,28 +842,451 @@ const tenantsByFloor = @json(
     )
 );
 
-function updateTenantPreview(floor) {
-    const preview     = document.getElementById('tenant-preview');
-    const previewList = document.getElementById('tenant-preview-list');
+const activeFloors   = @json($activeFloors->values());
+const unloggedFloors = @json($unloggedFloors->values());
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Log Modal — Rate preview
+// ─────────────────────────────────────────────────────────────────────────────
+function recalcRate() {
+    const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value)     || 0;
+    const amount = parseFloat(document.getElementById('log-maynilad-amount')?.value) || 0;
+    const box    = document.getElementById('rate-preview-box');
+    const rp     = document.getElementById('rp-rate');
+
+    if (m3 > 0 && amount > 0) {
+        const rate = amount / m3;
+        rp.textContent = '₱' + rate.toFixed(4) + ' / m³';
+        box.classList.add('visible');
+        document.querySelectorAll('.floor-reading-row').forEach(row => recalcFloorRow(row));
+    } else {
+        box.classList.remove('visible');
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Log Modal — Floor rows
+// ─────────────────────────────────────────────────────────────────────────────
+let floorRowIdx = 0;
+
+function addFloorRow(defaultFloor) {
+    const list   = document.getElementById('floor-readings-list');
+    const idx    = floorRowIdx++;
+    const floors = activeFloors;
+
+    let opts = floors.map(f => {
+        const warned = unloggedFloors.includes(f) ? '' : ' ✓';
+        const sel    = (defaultFloor && f == defaultFloor) ? ' selected' : '';
+        return `<option value="${f}"${sel}>Floor ${f}${warned}</option>`;
+    }).join('');
+
+    const row = document.createElement('div');
+    row.className = 'floor-reading-row';
+    row.dataset.idx = idx;
+    row.innerHTML = `
+        <div>
+            <div class="frr-label">Floor</div>
+            <select name="floor_readings[${idx}][floor]" class="frr-floor-sel"
+                    style="width:100%;padding:.55rem .5rem;border-radius:8px;border:1.5px solid var(--gray-light);font-size:.83rem;font-family:var(--ff-body);background:var(--white);outline:none;"
+                    onchange="updateFloorPreview(this)" required>
+                <option value="">—</option>
+                ${opts}
+            </select>
+        </div>
+        <div>
+            <div class="frr-label">Prev Reading (m³)</div>
+            <input type="number" step="0.01" min="0"
+                   name="floor_readings[${idx}][prev]"
+                   placeholder="0.00" required
+                   oninput="recalcFloorRow(this.closest('.floor-reading-row'))">
+        </div>
+        <div>
+            <div class="frr-label">Curr Reading (m³)</div>
+            <input type="number" step="0.01" min="0"
+                   name="floor_readings[${idx}][curr]"
+                   placeholder="0.00" required
+                   oninput="recalcFloorRow(this.closest('.floor-reading-row'))">
+        </div>
+        <div>
+            <div class="frr-label">Consumption</div>
+            <input type="text" disabled placeholder="—" class="frr-consumption">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.4rem;align-items:center;">
+            <span class="floor-bill-preview frr-bill-preview">—</span>
+            <button type="button" class="btn-remove-floor" onclick="removeFloorRow(this)" title="Remove">✕</button>
+        </div>
+    `;
+
+    const pillDiv = document.createElement('div');
+    pillDiv.style.cssText = 'grid-column:1/-1;margin-top:-.3rem;';
+    pillDiv.innerHTML = `<span class="tenant-pill frr-tenant-pill" style="display:none;"></span>`;
+    row.appendChild(pillDiv);
+
+    list.appendChild(row);
+
+    if (defaultFloor) {
+        const sel = row.querySelector('.frr-floor-sel');
+        sel.value = defaultFloor;
+        updateFloorPreview(sel);
+    }
+}
+
+function removeFloorRow(btn) {
+    btn.closest('.floor-reading-row').remove();
+}
+
+function updateFloorPreview(sel) {
+    const row   = sel.closest('.floor-reading-row');
+    const floor = sel.value;
+    const pill  = row.querySelector('.frr-tenant-pill');
 
     if (!floor || !tenantsByFloor[floor]) {
-        preview.style.display = 'none';
+        pill.style.display = 'none';
         return;
     }
 
-    const tenants = tenantsByFloor[floor];
-    previewList.innerHTML = tenants
-        .map(t => `<div>🏠 Room ${t.room_number} &nbsp;—&nbsp; ${t.name}</div>`)
-        .join('');
+    const count = tenantsByFloor[floor].length;
+    pill.textContent = `👥 ${count} tenant${count !== 1 ? 's' : ''} on Floor ${floor}`;
+    pill.style.display = 'inline-flex';
 
-    preview.style.display = '';
+    recalcFloorRow(row);
 }
 
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('✅ {{ session("success") }}', 'success');
+function recalcFloorRow(row) {
+    const m3        = parseFloat(document.getElementById('log-maynilad-m3')?.value)     || 0;
+    const amount    = parseFloat(document.getElementById('log-maynilad-amount')?.value) || 0;
+    const ratePerM3 = m3 > 0 ? amount / m3 : 0;
+
+    const prevInput = row.querySelector('[name$="[prev]"]');
+    const currInput = row.querySelector('[name$="[curr]"]');
+    const consInput = row.querySelector('.frr-consumption');
+    const billSpan  = row.querySelector('.frr-bill-preview');
+    const floorSel  = row.querySelector('.frr-floor-sel');
+
+    const prev        = parseFloat(prevInput?.value) || 0;
+    const curr        = parseFloat(currInput?.value) || 0;
+    const consumption = Math.max(0, curr - prev);
+
+    if (consInput) consInput.value = consumption.toFixed(2) + ' m³';
+
+    if (billSpan && ratePerM3 > 0) {
+        const floorBill   = consumption * ratePerM3;
+        const floor       = floorSel?.value;
+        const tenantCount = (floor && tenantsByFloor[floor]) ? tenantsByFloor[floor].length : 0;
+        const perHead     = tenantCount > 0 ? floorBill / tenantCount : 0;
+
+        billSpan.textContent = tenantCount > 0
+            ? `₱${floorBill.toFixed(2)} · ₱${perHead.toFixed(2)}/head`
+            : `₱${floorBill.toFixed(2)}`;
+    } else if (billSpan) {
+        billSpan.textContent = '—';
+    }
+}
+
+function openLogModal() {
+    document.getElementById('floor-readings-list').innerHTML = '';
+    floorRowIdx = 0;
+    const toAdd = unloggedFloors.length > 0 ? unloggedFloors : [activeFloors[0] ?? ''];
+    toAdd.forEach(f => addFloorRow(f));
+    openModal('log-modal');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Filters
+// ─────────────────────────────────────────────────────────────────────────────
+function applyFloorFilter() {
+    const floor = document.getElementById('filter-floor').value;
+    document.querySelectorAll('.floor-group').forEach(g => {
+        g.style.display = (!floor || g.dataset.floor == floor) ? '' : 'none';
+    });
+}
+
+function applyMonthFilter() {
+    const month = document.getElementById('filter-month').value;
+    const floor = document.getElementById('filter-floor').value;
+    let url = "{{ route('billing.index') }}?month=" + month;
+    if (floor) url += '&floor=' + floor;
+    window.location.href = url;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Update / View Modal
+// ─────────────────────────────────────────────────────────────────────────────
+function openUpdateModal(room) {
+    let html = `
+        <div class="modal-grid" style="margin-bottom:1rem;">
+            <div class="modal-field">
+                <label>Room</label>
+                <input type="text" value="${room.room_number}" disabled>
+            </div>
+            <div class="modal-field">
+                <label>Floor</label>
+                <input type="text" value="${room.floor}" disabled>
+            </div>
+            <div class="modal-field">
+                <label>Previous Reading (m³)</label>
+                <input type="number" step="0.01" id="edit-prev" value="${parseFloat(room.prev_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+                <label>Current Reading (m³)</label>
+                <input type="number" step="0.01" id="edit-curr" value="${parseFloat(room.curr_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+                <label>Floor Consumption (m³)</label>
+                <input type="text" id="edit-consumption" value="${parseFloat(room.floor_consumption_m3 ?? 0).toFixed(2)}" disabled>
+            </div>
+            <div class="modal-field">
+                <label>Total Floor Bill (₱)</label>
+                <input type="text" id="edit-total-bill" value="${parseFloat(room.total_floor_bill ?? 0).toFixed(2)}" disabled>
+            </div>
+            <div class="modal-field">
+                <label>Per Tenant Share (₱)</label>
+                <input type="text" id="edit-room-share" value="${parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2)}" disabled>
+            </div>
+            <div class="modal-field">
+                <label>Due Date</label>
+                <input type="date" id="edit-due-date" value="${room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : ''}">
+            </div>
+        </div>
+    `;
+
+    room.tenants.forEach(function(t) {
+        html += `
+            <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
+                <div class="view-row">
+                    <span class="view-label">Tenant</span>
+                    <span class="view-val">${t.name}</span>
+                </div>
+                <div class="view-row">
+                    <span class="view-label">Share</span>
+                    <span class="view-val tenant-share-display">₱${parseFloat(t.room_share).toFixed(2)}</span>
+                </div>
+                <div class="modal-field" style="margin-top:1rem;">
+                    <label>Payment Status</label>
+                    <select class="status-select" data-billing-id="${t.billing_id}">
+                        <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
+                        <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
+                        <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
+                        <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
+                    </select>
+                </div>
+            </div>
+        `;
+    });
+
+    document.getElementById('update-form').dataset.billingId = room.tenants[0]?.billing_id ?? '';
+    document.getElementById('update-content').innerHTML = html;
+    openModal('update-modal');
+}
+
+function recalcUpdateShare() {
+    const prev        = parseFloat(document.getElementById('edit-prev')?.value) || 0;
+    const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
+    const consumption = Math.max(0, curr - prev);
+    if (document.getElementById('edit-consumption'))
+        document.getElementById('edit-consumption').value = consumption.toFixed(2);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Update Form Submit
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const updateForm = document.getElementById('update-form');
+    if (updateForm) {
+        updateForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const saveBtn        = updateForm.querySelector('.btn-submit');
+            const billing_id     = this.dataset.billingId;
+            const prev_reading   = document.getElementById('edit-prev').value;
+            const curr_reading   = document.getElementById('edit-curr').value;
+            const due_date       = document.getElementById('edit-due-date').value;
+            const firstSelect    = document.querySelector('.status-select');
+            const payment_status = firstSelect ? firstSelect.value : 'unpaid';
+
+            if (!billing_id) {
+                showToast('No billing record found.', 'error');
+                return;
+            }
+
+            setButtonLoading(saveBtn, 'Saving...');
+
+            try {
+                const response = await fetch("{{ route('billing.updateFull') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        billing_id     : parseInt(billing_id),
+                        prev_reading   : parseFloat(prev_reading),
+                        curr_reading   : parseFloat(curr_reading),
+                        due_date       : due_date,
+                        payment_status : payment_status,
+                    })
+                });
+
+                if (!response.ok) {
+                    showToast('Server error ' + response.status, 'error');
+                    resetButton(saveBtn, 'Save Changes');
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
+                    showToast('Billing updated successfully!', 'success');
+                    closeModal('update-modal');
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast('Failed to update.', 'error');
+                    resetButton(saveBtn, 'Save Changes');
+                }
+            } catch (err) {
+                showToast('Network error.', 'error');
+                resetButton(saveBtn, 'Save Changes');
+            }
         });
-    @endif
+    }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Log Form Submit
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    const logForm = document.getElementById('log-form');
+    if (!logForm) return;
+
+    logForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const submitBtn = logForm.querySelector('.btn-submit');
+
+        // ── Client-side validation ────────────────────────────────────────
+        const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value);
+        const amount = parseFloat(document.getElementById('log-maynilad-amount')?.value);
+
+        if (!m3 || !amount || m3 <= 0 || amount <= 0) {
+            showToast('Please enter valid Maynilad bill figures.', 'error');
+            return;
+        }
+
+        const rows = document.querySelectorAll('.floor-reading-row');
+        if (rows.length === 0) {
+            showToast('Please add at least one floor reading.', 'error');
+            return;
+        }
+
+        let valid = true;
+        rows.forEach(row => {
+            const floorSel = row.querySelector('.frr-floor-sel');
+            const prev     = parseFloat(row.querySelector('[name$="[prev]"]')?.value) || 0;
+            const curr     = parseFloat(row.querySelector('[name$="[curr]"]')?.value) || 0;
+
+            if (!floorSel?.value) {
+                showToast('Please select a floor for every reading row.', 'error');
+                valid = false;
+            }
+            if (curr < prev) {
+                showToast(`Floor ${floorSel?.value || ''}: Current reading cannot be less than previous.`, 'error');
+                valid = false;
+            }
+        });
+        if (!valid) return;
+
+        // ── Submit ────────────────────────────────────────────────────────
+        setButtonLoading(submitBtn, 'Logging...');
+
+        try {
+            const response = await fetch("{{ route('billing.log') }}", {
+                method  : 'POST',
+                headers : {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body    : new FormData(logForm),
+            });
+
+            // Guard: make sure we got JSON back, not an HTML error page
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Non-JSON response from server:', text);
+                showToast('Unexpected server response. Check Laravel logs.', 'error');
+                resetButton(submitBtn, 'Log & Distribute');
+                return;
+            }
+
+            const data = await response.json();
+
+            // ── Success ───────────────────────────────────────────────────
+            if (response.ok && data.success) {
+                submitBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Done!`;
+                showToast('✓ ' + (data.message || 'Water billing logged successfully!'), 'success');
+
+                const billingMonth = document.getElementById('log-billing-month').value;
+                const monthForUrl  = billingMonth.substring(0, 7) + '-01';
+                const floor        = document.getElementById('filter-floor').value;
+                let   url          = "{{ route('billing.index') }}?month=" + monthForUrl;
+                if (floor) url    += '&floor=' + floor;
+
+                setTimeout(() => { window.location.href = url; }, 1000);
+
+            // ── Validation / business error from controller ───────────────
+            } else {
+                const msg = data.message || data.errors
+                    ? (data.message || Object.values(data.errors).flat().join(' '))
+                    : 'Failed to log billing. Please check your inputs.';
+                showToast(msg, 'error');
+                resetButton(submitBtn, 'Log & Distribute');
+            }
+
+        } catch (err) {
+            console.error('Fetch error:', err);
+            showToast('Network error — please try again.', 'error');
+            resetButton(submitBtn, 'Log & Distribute');
+        }
+    });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export
+// ─────────────────────────────────────────────────────────────────────────────
+function exportBilling() {
+    showToast('Billing data exported!', 'success');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Modal helpers
+// ─────────────────────────────────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(m) {
+    m.addEventListener('click', function(e) {
+        if (e.target === m) m.classList.remove('open');
+    });
+});
+
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'toast ' + (type || '');
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Session toasts
+// ─────────────────────────────────────────────────────────────────────────────
+@if(session('success'))
+    document.addEventListener('DOMContentLoaded', function() {
+        showToast('{{ session("success") }}', 'success');
+    });
+@endif
 
 </script>
 @endsection

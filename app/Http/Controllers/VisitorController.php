@@ -1,72 +1,89 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\VisitorLog;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 class VisitorController extends Controller
 {
     public function index()
     {
-        $logs = VisitorLog::with(['tenant', 'staff'])
-            ->latest('arrival_time')
+        $visitors = VisitorLog::with(['tenant', 'staff'])
+            ->orderByDesc('arrival_time')
             ->get();
-
-        $visitorsToday = VisitorLog::whereDate('arrival_time', today())
+        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $currentlyInside = VisitorLog::whereNotNull('arrival_time')
+            ->whereNull('departure_time')
             ->count();
+        $tenants = Tenant::where('is_active', true)
+            ->orderBy('first_name')
+            ->get();
+        return view('fdvisitors', compact(
+            'visitors',
+            'visitorsToday',
+            'currentlyInside',
+            'tenants'
+        ));
+    }
 
-        $currentlyInside = VisitorLog::whereNull('departure_time')
+    public function adminIndex()
+    {
+        $visitors = VisitorLog::with(['tenant', 'staff'])
+            ->orderByDesc('arrival_time')
+            ->get();
+        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $currentlyInside = VisitorLog::whereNotNull('arrival_time')
+            ->whereNull('departure_time')
             ->count();
-
+        $tenants = Tenant::where('is_active', true)
+            ->orderBy('first_name')
+            ->get();
         return view('visitors', [
-            'logs' => $logs,
-            'visitorsToday' => $visitorsToday,
+            'visitors'        => $visitors,
+            'logs'            => $visitors,
+            'visitorsToday'   => $visitorsToday,
             'currentlyInside' => $currentlyInside,
-        ]);
+            'tenants'         => $tenants,
+            ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'visitor_name' => 'required|string|max:255',
-            'contact_no'   => 'nullable|string|max:255',
-            'purpose'      => 'nullable|string|max:255',
-            'id_type'      => 'nullable|string|max:255',
-            'tenant_id'    => 'nullable|exists:users,id',
+            'visitor_name' => 'required|string|max:100',
+            'tenant_id'    => 'required|exists:tenants,tenant_id',
+            'purpose'      => 'required|string|max:100',
+            'contact_no'   => 'nullable|string|max:20',
+            'id_type'      => 'nullable|string|max:50',
+            'status'       => 'nullable|string|max:20',
         ]);
-
         VisitorLog::create([
-            'visitor_name' => $request->visitor_name,
-            'contact_no'   => $request->contact_no,
-            'purpose'      => $request->purpose,
-            'id_type'      => $request->id_type,
-
-            'date_of_visit' => now()->toDateString(),
-
-            'arrival_time' => now(),
-
-            'status' => 'inside',
-
-            'tenant_id' => $request->tenant_id,
-
-            'staff_id' => auth()->id(),
+            'visitor_name'  => $request->visitor_name,
+            'tenant_id'     => $request->tenant_id,
+            'confirmed_by'  => Auth::guard('staff')->id(),
+            'purpose'       => $request->purpose,
+            'contact_no'    => $request->contact_no,
+            'id_type'       => $request->id_type,
+            'date_of_visit' => Carbon::today(),
+            'arrival_time'  => now(),
+            'status'        => $request->status ?? 'approved',
         ]);
-
-        return redirect()->back()
+        return redirect()->route('visitors.index')
             ->with('success', 'Visitor logged successfully.');
     }
 
     public function checkout($id)
     {
         $visitor = VisitorLog::findOrFail($id);
-
+        if ($visitor->departure_time) {
+            return back()->with('error', 'Visitor has already checked out.');
+        }
         $visitor->update([
             'departure_time' => now(),
-            'status' => 'approved',
+            'status'         => 'completed',
         ]);
-
-        return redirect()->back()
-            ->with('success', 'Visitor checked out.');
+        return redirect()->route('visitors.index')
+            ->with('success', 'Visitor checked out successfully.');
     }
 }

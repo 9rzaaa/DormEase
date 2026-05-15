@@ -209,14 +209,14 @@
     <div class="modal-overlay open" id="staff-credentials-modal">
         <div class="modal" style="max-width:440px;">
             <div class="modal-header">
-                <div class="modal-title">🔑 Staff Account Created Successfully</div>
+                <div class="modal-title">Staff Account Created Successfully</div>
                 <button class="modal-close" onclick="closeModal('staff-credentials-modal')">✕</button>
             </div>
             <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
                 Please provide these temporary login credentials to the staff member.
             </p>
             <div class="credentials-box">
-                <h4>🔐 Temporary Login Credentials</h4>
+                <h4>Temporary Login Credentials</h4>
                 <div class="credential-row">
                     <div>
                         <div class="credential-label">Email</div>
@@ -240,7 +240,7 @@
                 </div>
             </div>
             <div class="credentials-warning">
-                ⚠️ This temporary password will <strong>not be shown again</strong>.
+                This temporary password will <strong>not be shown again</strong>.
                 Please inform the staff member immediately.
             </div>
             <div class="modal-actions">
