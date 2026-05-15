@@ -287,6 +287,13 @@ class BillingController extends Controller
                         continue;
                     }
 
+                    $roomsSharing = $tenants
+                        ->pluck('room_number')
+                        ->filter()
+                        ->unique()
+                        ->count();
+                    $occupantsByRoom = $tenants->groupBy('room_number')->map->count();
+
                     $perTenantShare = round(
                         $totalFloorBill / $tenants->count(),
                         2
@@ -303,8 +310,8 @@ class BillingController extends Controller
                             'prev_reading'         => $prev,
                             'curr_reading'         => $curr,
                             'total_floor_bill'     => $totalFloorBill,
-                            'rooms_sharing'        => $tenants->count(),
-                            'occupants_in_room'    => 1,
+                            'rooms_sharing'        => $roomsSharing,
+                            'occupants_in_room'    => $occupantsByRoom->get($tenant->room_number, 1),
                             'room_share'           => $perTenantShare,
                             'payment_status'       => 'unpaid',
                             'due_date'             => $request->due_date,
