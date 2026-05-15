@@ -26,8 +26,8 @@
 
     .content-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
 
-    .page-header h1 { font-size: 2rem; font-weight: 700; color: #b03060; letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: #b03060; margin-top: .2rem; }
+    .page-header h1 { font-size: 2rem; font-weight: 700; color: #E8175D; letter-spacing: -.02em; line-height: 1.15; }
+    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: #E8175D; margin-top: .2rem; }
 
     /* cards get a baby-pink border */
     .card { border-color: var(--baby-pink); }
