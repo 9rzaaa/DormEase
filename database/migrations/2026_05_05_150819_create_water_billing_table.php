@@ -67,6 +67,17 @@ return new class extends Migration
             // ERD: due_date (date)
             $table->date('due_date')->nullable();
         });
+
+        Schema::table('water_billing', function (Blueprint $table) {
+            // Used in every floor+month query (log, updateFull, index)
+            $table->index(['floor', 'billing_month'], 'idx_floor_month');
+
+            // Used in index() to filter by month
+            $table->index('billing_month', 'idx_billing_month');
+
+            // Used in keyBy('tenant_id') lookups
+            $table->index('tenant_id', 'idx_tenant_id');
+        });
     }
 
     public function down(): void
