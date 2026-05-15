@@ -173,6 +173,22 @@
         color:#ff4f93;
     }
 
+    .btn-outline .export-icon{
+        width:1rem;
+        height:1rem;
+        object-fit:contain;
+        flex-shrink:0;
+        opacity:.72;
+        filter:grayscale(1) brightness(.45);
+        transition:opacity .2s, filter .2s, transform .15s;
+    }
+
+    .btn-outline:hover .export-icon{
+        opacity:1;
+        filter:none;
+        transform:translateY(-1px);
+    }
+
     .ms-auto{
         margin-left:auto;
     }
@@ -535,6 +551,66 @@
     .view-val{
         font-weight:600;
         color:#7a2d4f;
+    }
+
+    .payment-proof-card{
+        margin-top:.85rem;
+        padding:.9rem;
+        border:1px solid #ffe0eb;
+        border-radius:14px;
+        background:#fffafd;
+    }
+
+    .payment-proof-head{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:.75rem;
+        margin-bottom:.75rem;
+        color:#b03060;
+        font-size:.82rem;
+        font-weight:700;
+    }
+
+    .payment-proof-meta{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:.6rem;
+        margin-bottom:.75rem;
+    }
+
+    .payment-proof-meta .view-row{
+        padding:.45rem .55rem;
+        border:1px solid #ffe0eb;
+        border-radius:10px;
+        background:#fff;
+    }
+
+    .proof-image-link{
+        display:block;
+        border:1px solid #ffd3e3;
+        border-radius:12px;
+        overflow:hidden;
+        background:#fff;
+    }
+
+    .proof-image{
+        width:100%;
+        max-height:220px;
+        object-fit:contain;
+        display:block;
+        background:#fff;
+    }
+
+    .proof-empty{
+        margin-top:.75rem;
+        padding:.8rem;
+        border:1px dashed #ffd3e3;
+        border-radius:12px;
+        background:#fff;
+        color:#b77a94;
+        font-size:.82rem;
+        text-align:center;
     }
 
     .empty-floor{
@@ -1028,7 +1104,7 @@
         <button class="btn-filter" onclick="applyMonthFilter()">≡ Filter</button>
         <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
         <button class="btn-outline" onclick="exportBilling()">
-            <img src="{{ asset('images/export.png') }}" alt="Export" class="inline-block mr-1 w-4 h-4">
+            <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
             Export
         </button>
     </div>
@@ -1416,6 +1492,18 @@ function applyMonthFilter() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Update / View Modal
 // ─────────────────────────────────────────────────────────────────────────────
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, function(char) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;',
+        }[char];
+    });
+}
+
 function openUpdateModal(room) {
     let html = `
         <div class="modal-grid" style="margin-bottom:1rem;">
@@ -1455,19 +1543,47 @@ function openUpdateModal(room) {
     `;
 
     room.tenants.forEach(function(t) {
+        const referenceCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
+        const submittedAt = t.payment_submitted_at ? escapeHtml(t.payment_submitted_at) : '—';
+        const proofUrl = t.proof_of_payment_url ? escapeHtml(t.proof_of_payment_url) : '';
+        const proofHtml = proofUrl
+            ? `
+                <a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
+                    <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(t.name)}" class="proof-image">
+                </a>
+            `
+            : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
+
         html += `
             <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
                 <div class="view-row">
                     <span class="view-label">Tenant</span>
-                    <span class="view-val">${t.name}</span>
+                    <span class="view-val">${escapeHtml(t.name)}</span>
                 </div>
                 <div class="view-row">
                     <span class="view-label">Share</span>
                     <span class="view-val tenant-share-display">₱${parseFloat(t.room_share).toFixed(2)}</span>
                 </div>
+                <div class="payment-proof-card">
+                    <div class="payment-proof-head">
+                        <span>Payment Proof</span>
+                        <span class="badge badge-${String(t.payment_status || 'unpaid').replaceAll(' ', '-')}">${escapeHtml(t.payment_status || 'unpaid')}</span>
+                    </div>
+                    <div class="payment-proof-meta">
+                        <div class="view-row">
+                            <span class="view-label">Reference</span>
+                            <span class="view-val">${referenceCode}</span>
+                        </div>
+                        <div class="view-row">
+                            <span class="view-label">Submitted</span>
+                            <span class="view-val">${submittedAt}</span>
+                        </div>
+                    </div>
+                    ${proofHtml}
+                </div>
                 <div class="modal-field" style="margin-top:1rem;">
                     <label>Payment Status</label>
-                    <select class="status-select" data-billing-id="${t.billing_id}">
+                    <select class="status-select" data-billing-id="${t.billing_id ?? ''}">
                         <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
                         <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
                         <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
@@ -1505,8 +1621,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const prev_reading   = document.getElementById('edit-prev').value;
             const curr_reading   = document.getElementById('edit-curr').value;
             const due_date       = document.getElementById('edit-due-date').value;
-            const firstSelect    = document.querySelector('.status-select');
+            const statusSelects  = updateForm.querySelectorAll('.status-select');
+            const firstSelect    = statusSelects[0];
             const payment_status = firstSelect ? firstSelect.value : 'unpaid';
+            const status_updates = Array.from(statusSelects)
+                .map(select => ({
+                    billing_id: parseInt(select.dataset.billingId),
+                    payment_status: select.value,
+                }))
+                .filter(update => Number.isInteger(update.billing_id));
 
             if (!billing_id) {
                 showToast('No billing record found.', 'error');
@@ -1528,23 +1651,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         curr_reading   : parseFloat(curr_reading),
                         due_date       : due_date,
                         payment_status : payment_status,
+                        status_updates : status_updates,
                     })
                 });
 
-                if (!response.ok) {
-                    showToast('Server error ' + response.status, 'error');
-                    resetButton(saveBtn, 'Save Changes');
-                    return;
-                }
-
                 const data = await response.json();
-                if (data.success) {
+                if (response.ok && data.success) {
                     saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
                     showToast('Billing updated successfully!', 'success');
                     closeModal('update-modal');
                     setTimeout(() => location.reload(), 800);
                 } else {
-                    showToast('Failed to update.', 'error');
+                    showToast(data.message || 'Failed to update.', 'error');
                     resetButton(saveBtn, 'Save Changes');
                 }
             } catch (err) {

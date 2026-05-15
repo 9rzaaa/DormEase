@@ -8,6 +8,7 @@ use App\Models\WaterRate;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class BillingController extends Controller
@@ -57,6 +58,13 @@ class BillingController extends Controller
                 ? Carbon::parse($currentBilling->due_date)->format('F d, Y')
                 : '—',
             'status'         => ucfirst($currentBilling->payment_status ?? 'unpaid'),
+            'proof_of_payment' => $currentBilling->proof_of_payment
+                ? Storage::disk('public')->url($currentBilling->proof_of_payment)
+                : null,
+            'reference_code' => $currentBilling->payment_reference_code,
+            'payment_submitted_at' => $currentBilling->payment_submitted_at
+                ? Carbon::parse($currentBilling->payment_submitted_at)->format('F d, Y h:i A')
+                : null,
         ];
 
         $breakdownData = [
@@ -83,11 +91,13 @@ class BillingController extends Controller
     }
 
     // ── POST /api/water-bill/pay ──────────────────────────────────────────────
-    // Marks a billing record as paid for the authenticated tenant.
+    // Submits payment proof for admin verification.
     public function tenantPay(Request $request)
     {
         $request->validate([
             'billing_id' => 'required|integer',
+            'proof_of_payment' => 'required|image|max:4096',
+            'reference_code' => 'required|string|max:100',
         ]);
 
         /** @var Tenant $tenant */
@@ -106,14 +116,26 @@ class BillingController extends Controller
         }
 
         if (strtolower($billing->payment_status) === 'paid') {
-            return response()->json(['message' => 'Already paid.'], 422);
+            return response()->json(['message' => 'Already verified as paid.'], 422);
         }
 
-        $billing->update(['payment_status' => 'paid']);
+        if ($billing->proof_of_payment) {
+            Storage::disk('public')->delete($billing->proof_of_payment);
+        }
+
+        $path = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+
+        $billing->update([
+            'payment_status' => 'pending',
+            'proof_of_payment' => $path,
+            'payment_reference_code' => $request->reference_code,
+            'payment_submitted_at' => now(),
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Payment recorded successfully.',
+            'message' => 'Payment proof submitted for verification.',
+            'status' => 'Pending',
         ]);
     }
 }
