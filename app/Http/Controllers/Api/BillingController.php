@@ -65,6 +65,7 @@ class BillingController extends Controller
         // ── Build response ────────────────────────────────────────────────────
         $currentBillingData = [
             'id'             => $currentBilling->billing_id,
+            'room_number'    => $tenant->room_number,
             'billing_period' => Carbon::parse($currentBilling->billing_month)->format('F Y'),
             'as_of'          => now()->format('F d, Y'),
             'amount_due'     => number_format($currentBilling->room_share, 2),
@@ -82,6 +83,7 @@ class BillingController extends Controller
         ];
 
         $breakdownData = [
+            'room_number'       => $tenant->room_number,
             'floor_consumption' => number_format($currentBilling->floor_consumption_m3, 2),
             'water_rate'        => number_format($rate?->rate_per_m3 ?? 0, 2),
             'total_floor_bill'  => number_format($currentBilling->total_floor_bill, 2),
