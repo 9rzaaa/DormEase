@@ -25,6 +25,9 @@ class WaterBilling extends Model
         'occupants_in_room',
         'room_share',
         'payment_status',
+        'proof_of_payment',
+        'payment_reference_code',
+        'payment_submitted_at',
         'due_date',
     ];
 
@@ -36,6 +39,7 @@ class WaterBilling extends Model
         'curr_reading'         => 'decimal:2',
         'total_floor_bill'     => 'decimal:2',
         'room_share'           => 'decimal:2',
+        'payment_submitted_at'  => 'datetime',
     ];
     public function tenant()
     {

@@ -64,6 +64,11 @@ return new class extends Migration
             // ERD: payment_status (varchar)
             $table->string('payment_status')->default('unpaid');
 
+            // Tenant-submitted proof for admin verification
+            $table->string('proof_of_payment')->nullable();
+            $table->string('payment_reference_code')->nullable();
+            $table->timestamp('payment_submitted_at')->nullable();
+
             // ERD: due_date (date)
             $table->date('due_date')->nullable();
         });

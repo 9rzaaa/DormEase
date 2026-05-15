@@ -8,6 +8,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class BillingController extends Controller
@@ -120,6 +121,14 @@ class BillingController extends Controller
                         ),
                         'room_share'     => $billing?->room_share ?? 0,
                         'payment_status' => $paymentStatus,
+                        'proof_of_payment' => $billing?->proof_of_payment,
+                        'proof_of_payment_url' => $billing?->proof_of_payment
+                            ? Storage::disk('public')->url($billing->proof_of_payment)
+                            : null,
+                        'payment_reference_code' => $billing?->payment_reference_code,
+                        'payment_submitted_at' => $billing?->payment_submitted_at
+                            ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
+                            : null,
                         'dot_class'      => match ($paymentStatus) {
                             'paid'       => 'dot-green',
                             'overdue'    => 'dot-red',
@@ -355,6 +364,9 @@ class BillingController extends Controller
             'curr_reading'   => 'required|numeric|min:0|gte:prev_reading',
             'due_date'       => 'required|date',
             'payment_status' => 'required|string',
+            'status_updates' => 'nullable|array',
+            'status_updates.*.billing_id' => 'required_with:status_updates|integer',
+            'status_updates.*.payment_status' => 'required_with:status_updates|string|in:unpaid,pending,paid,overdue',
         ]);
 
         $billing = WaterBilling::findOrFail($request->billing_id);
@@ -406,9 +418,36 @@ class BillingController extends Controller
                 'due_date'             => $request->due_date,
             ]);
 
-        $billing->update([
-            'payment_status' => $request->payment_status
-        ]);
+        if ($request->filled('status_updates')) {
+            foreach ($request->status_updates as $statusUpdate) {
+                $billingToUpdate = WaterBilling::findOrFail($statusUpdate['billing_id']);
+
+                if (
+                    $statusUpdate['payment_status'] === 'paid'
+                    && empty($billingToUpdate->proof_of_payment)
+                ) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Proof of payment is required before marking a tenant as paid.'
+                    ], 422);
+                }
+
+                $billingToUpdate->update([
+                    'payment_status' => $statusUpdate['payment_status']
+                ]);
+            }
+        } else {
+            if ($request->payment_status === 'paid' && empty($billing->proof_of_payment)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Proof of payment is required before marking a tenant as paid.'
+                ], 422);
+            }
+
+            $billing->update([
+                'payment_status' => $request->payment_status
+            ]);
+        }
 
         return response()->json([
             'success'   => true,
