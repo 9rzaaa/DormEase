@@ -41,6 +41,20 @@ class BillingController extends Controller
         // ── Water rate for breakdown ──────────────────────────────────────────
         $rate = WaterRate::find($currentBilling->rate_id);
 
+        $floorTenants = Tenant::where('is_active', true)
+            ->where('floor', $currentBilling->floor)
+            ->whereNotNull('room_number')
+            ->get();
+
+        $roomsSharing = $floorTenants
+            ->pluck('room_number')
+            ->unique()
+            ->count();
+
+        $occupantsInRoom = $floorTenants
+            ->where('room_number', $tenant->room_number)
+            ->count();
+
         // ── Payment history (up to 6 records after the current one) ──────────
         $historyBillings = WaterBilling::where('tenant_id', $tenant->tenant_id)
             ->orderByDesc('billing_month')
@@ -71,9 +85,9 @@ class BillingController extends Controller
             'floor_consumption' => number_format($currentBilling->floor_consumption_m3, 2),
             'water_rate'        => number_format($rate?->rate_per_m3 ?? 0, 2),
             'total_floor_bill'  => number_format($currentBilling->total_floor_bill, 2),
-            'rooms_sharing'     => $currentBilling->rooms_sharing,
+            'rooms_sharing'     => $roomsSharing,
             'room_share'        => number_format($currentBilling->room_share, 2),
-            'occupants'         => $currentBilling->occupants_in_room,
+            'occupants'         => $occupantsInRoom,
         ];
 
         $historyData = $historyBillings->map(fn($b) => [
