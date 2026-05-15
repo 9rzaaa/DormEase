@@ -17,7 +17,7 @@
     .page-header h1{
         font-size:2rem;
         font-weight:700;
-        color:#b03060;
+        color:#E8175D;
         letter-spacing:-.02em;
         line-height:1.15;
     }
@@ -25,7 +25,7 @@
     .page-header .dorm-name{
         font-size:1rem;
         font-weight:600;
-        color:#b03060;
+        color:#E8175D;
         margin-top:.2rem;
     }
 
@@ -565,6 +565,404 @@
     .d3{ animation-delay:.2s; }
     .d4{ animation-delay:.28s; }
 
+    /* ═══════════════════════════════════════════
+   LOG MODAL — RESTYLED
+═══════════════════════════════════════════ */
+
+#log-modal .modal {
+    padding: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    max-width: 640px;
+}
+
+/* ── Header ── */
+.log-modal-header {
+    padding: 1.5rem 1.8rem 1.3rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #E8175D;
+}
+
+.log-modal-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    pointer-events: none;
+}
+
+.log-modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 40px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    pointer-events: none;
+}
+
+.log-header-left {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.log-header-icon {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    border: 1.5px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.log-header-title {
+    font-size: 1.13rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    color: #E8175D;
+}
+
+.log-header-sub {
+    font-size: .76rem;
+    color: rgba(255,255,255,.75);
+    font-weight: 600;
+    margin-top: .15rem;
+    color: #e8175d;
+}
+
+#log-modal .modal-close {
+    position: relative;
+    z-index: 1;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.28);
+    color: #fff;
+    font-size: .85rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .18s;
+    flex-shrink: 0;
+}
+
+#log-modal .modal-close:hover {
+    background: rgba(255,255,255,.28);
+    color: #fff;
+}
+
+/* ── Body ── */
+.log-modal-body {
+    padding: 1.5rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    max-height: 62vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ffb3cf transparent;
+}
+
+.log-modal-body::-webkit-scrollbar { width: 5px; }
+.log-modal-body::-webkit-scrollbar-thumb {
+    background: #ffb3cf;
+    border-radius: 20px;
+}
+
+/* ── Section labels ── */
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .71rem;
+    font-weight: 800;
+    color: #E8175D;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    margin-bottom: -.2rem;
+}
+
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ffd3e3;
+    margin-left: .3rem;
+}
+
+/* ── Modal grid (override inside log modal) ── */
+#log-modal .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+    align-items: start;
+}
+
+#log-modal .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+#log-modal .modal-field.full { grid-column: 1 / -1; }
+
+#log-modal .modal-field label {
+    font-size: .74rem;
+    font-weight: 700;
+    color: #b03060;
+    letter-spacing: .02em;
+    margin-bottom: 0;
+}
+
+#log-modal .modal-field input,
+#log-modal .modal-field select {
+    padding: .6rem .9rem;
+    border-radius: 12px;
+    border: 1.5px solid #ffd3e3;
+    background: #fffafd;
+    font-size: .85rem;
+    color: #7a2d4f;
+    transition: border-color .18s, box-shadow .18s;
+}
+
+#log-modal .modal-field input:focus,
+#log-modal .modal-field select:focus {
+    border-color: #E8175D;
+    box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+    background: #fff;
+}
+
+/* ── Rate preview box (replaces old .rate-preview-box) ── */
+.rate-preview-box {
+    grid-column: 1 / -1;
+    display: none;
+    align-items: center;
+    gap: .6rem;
+    padding: .65rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff0f5 0%, #ffe0ec 100%);
+    border: 1.5px solid #ffb3cf;
+}
+
+.rate-preview-box.visible { display: flex; }
+
+.rate-preview-box::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #E8175D;
+    flex-shrink: 0;
+    animation: rateBlip 1.6s infinite;
+}
+
+@keyframes rateBlip {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: .6; }
+}
+
+.rate-preview-box > span:first-of-type {
+    font-size: .82rem;
+    color: #b03060;
+    font-weight: 600;
+}
+
+.rate-preview-box > span:first-of-type strong {
+    color: #E8175D;
+    font-weight: 800;
+}
+
+.rate-preview-box > span:last-of-type {
+    font-size: .75rem;
+    color: #c8708a;
+    margin-left: auto;
+}
+
+/* ── Floor readings list wrapper ── */
+.floor-readings-list {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+}
+
+/* ── Floor reading row ── */
+.floor-reading-row {
+    background: #fff7fb;
+    border: 1.5px solid #ffd3e3;
+    border-radius: 16px;
+    padding: .9rem 1rem;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+    gap: .6rem;
+    align-items: end;
+    transition: border-color .18s, box-shadow .18s;
+}
+
+.floor-reading-row:hover {
+    border-color: #ff9dc0;
+    box-shadow: 0 4px 14px rgba(232,23,93,.08);
+}
+
+.frr-label {
+    font-size: .69rem;
+    font-weight: 700;
+    color: #b03060;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .26rem;
+}
+
+.floor-reading-row input,
+.floor-reading-row select {
+    padding: .55rem .75rem;
+    border-radius: 10px;
+    border: 1.5px solid #ffd3e3;
+    background: #fff;
+    font-size: .82rem;
+    color: #7a2d4f;
+    outline: none;
+    transition: border-color .18s;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.floor-reading-row input:focus,
+.floor-reading-row select:focus { border-color: #E8175D; }
+
+.floor-reading-row input:disabled {
+    background: #faf5f8;
+    color: #c08090;
+}
+
+/* bill preview chip */
+.floor-bill-preview {
+    display: inline-flex;
+    align-items: center;
+    padding: .28rem .65rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+    color: #fff;
+    font-size: .71rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* remove button */
+.btn-remove-floor {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1.5px solid #ffd3e3;
+    color: #e04870;
+    font-size: .75rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: .18s;
+    font-family: inherit;
+}
+
+.btn-remove-floor:hover {
+    background: #fff0f5;
+    border-color: #ff4f93;
+}
+
+/* pill under each floor row */
+.tenant-pill {
+    grid-column: 1 / -1;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #b03060;
+    background: #ffeaf2;
+    border-radius: 999px;
+    padding: .22rem .8rem;
+    width: fit-content;
+    margin-top: -.15rem;
+}
+
+/* ── Add floor button ── */
+.btn-add-floor {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    padding: .65rem;
+    border-radius: 12px;
+    border: 1.5px dashed #ffb3cf;
+    background: transparent;
+    color: #E8175D;
+    font-size: .83rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .18s;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: .1rem;
+}
+
+.btn-add-floor:hover {
+    background: #fff0f5;
+    border-color: #E8175D;
+}
+
+/* ── Footer ── */
+.log-modal-footer {
+    padding: 1rem 1.8rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    justify-content: flex-end;
+    border-top: 1px solid #ffe0eb;
+    background: #fffafd;
+}
+
+#log-modal .btn-cancel {
+    padding: .62rem 1.3rem;
+    border-radius: 12px;
+    border: 1.5px solid #ffd3e3;
+    background: #fff;
+    color: #b03060;
+    font-size: .86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .18s;
+}
+
+#log-modal .btn-cancel:hover {
+    border-color: #ff4f93;
+    color: #ff4f93;
+}
+
+#log-modal .btn-submit {
+    padding: .62rem 1.6rem;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+    color: #fff;
+    font-size: .86rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .18s;
+    box-shadow: 0 6px 18px rgba(232,23,93,.28);
+}
+
+#log-modal .btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(232,23,93,.35);
+}
+
 </style>
 @endsection
 
@@ -713,82 +1111,88 @@
 
 @section('modals')
 
-{{-- ══════════════════════════════════════════════════════════════════════
-     LOG WATER CONSUMPTION MODAL
-     ══════════════════════════════════════════════════════════════════════ --}}
 <div class="modal-overlay" id="log-modal">
-    <div class="modal" style="max-width:620px;">
-        <div class="modal-header">
-            <div class="modal-title">💧 Log Water Consumption</div>
+    <div class="modal" style="max-width:640px;">
+
+        {{-- Header --}}
+        <div class="log-modal-header">
+            <div class="log-header-left">
+                <div class="log-header-icon">💧</div>
+                <div>
+                    <div class="log-header-title">Log Water Consumption</div>
+                    <div class="log-header-sub">Sanctissimo Rosario Ladies Dormitory</div>
+                </div>
+            </div>
             <button class="modal-close" onclick="closeModal('log-modal')">✕</button>
         </div>
 
+        {{-- Body --}}
         <form method="POST" action="{{ route('billing.log') }}" id="log-form">
             @csrf
-            <div class="modal-grid">
+            <div class="log-modal-body">
 
-                {{-- ── Billing Period ─────────────────────────────────────── --}}
+                {{-- ── Billing Period ── --}}
                 <div class="section-label">📅 Billing Period</div>
-
-                <div class="modal-field">
-                    <label>Billing Month</label>
-                    <input type="date" name="billing_month" id="log-billing-month"
-                           required value="{{ now()->format('Y-m-01') }}">
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label>Billing Month</label>
+                        <input type="date" name="billing_month" id="log-billing-month"
+                               required value="{{ now()->format('Y-m-01') }}">
+                    </div>
+                    <div class="modal-field">
+                        <label>Due Date</label>
+                        <input type="date" name="due_date" id="log-due-date" required>
+                    </div>
                 </div>
-                <div class="modal-field">
-                    <label>Due Date</label>
-                    <input type="date" name="due_date" id="log-due-date" required>
-                </div>
 
-                {{-- ── Maynilad Bill ──────────────────────────────────────── --}}
+                {{-- ── Maynilad Bill ── --}}
                 <div class="section-label">🧾 Maynilad Bill (Mother Meter)</div>
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label>Total Cubic Meters (m³)</label>
+                        <input type="number" step="0.01" min="0.01"
+                               name="maynilad_total_m3"
+                               id="log-maynilad-m3"
+                               placeholder="e.g. 120.00"
+                               required
+                               oninput="recalcRate()">
+                    </div>
+                    <div class="modal-field">
+                        <label>Total Amount Due (₱)</label>
+                        <input type="number" step="0.01" min="0.01"
+                               name="maynilad_total_amount"
+                               id="log-maynilad-amount"
+                               placeholder="e.g. 4,800.00"
+                               required
+                               oninput="recalcRate()">
+                    </div>
 
-                <div class="modal-field">
-                    <label>Total Cubic Meters (m³)</label>
-                    <input type="number" step="0.01" min="0.01"
-                           name="maynilad_total_m3"
-                           id="log-maynilad-m3"
-                           placeholder="e.g. 120.00"
-                           required
-                           oninput="recalcRate()">
-                </div>
-                <div class="modal-field">
-                    <label>Total Amount Due (₱)</label>
-                    <input type="number" step="0.01" min="0.01"
-                           name="maynilad_total_amount"
-                           id="log-maynilad-amount"
-                           placeholder="e.g. 4,800.00"
-                           required
-                           oninput="recalcRate()">
+                    {{-- Live rate preview --}}
+                    <div class="rate-preview-box" id="rate-preview-box">
+                        <span>Rate per m³: <strong id="rp-rate">—</strong></span>
+                        <span>= Total Amount ÷ Total m³ (from Maynilad bill)</span>
+                    </div>
                 </div>
 
-                {{-- Live rate preview --}}
-                <div class="rate-preview-box" id="rate-preview-box">
-                    <span>Rate per m³: <strong id="rp-rate">—</strong></span>
-                    <span style="color:var(--ink-muted);font-size:.78rem;">
-                        = Total Amount ÷ Total m³ (from Maynilad bill)
-                    </span>
-                </div>
-
-                {{-- ── Floor Submeter Readings ─────────────────────────────── --}}
+                {{-- ── Floor Submeter Readings ── --}}
                 <div class="section-label">🏢 Floor Submeter Readings</div>
-
-                <div class="floor-readings-list" id="floor-readings-list">
-                    {{-- Rows are injected by JS --}}
+                <div class="modal-grid">
+                    <div class="floor-readings-list" id="floor-readings-list"></div>
+                    <button type="button" class="btn-add-floor" id="btn-add-floor"
+                            onclick="addFloorRow()">
+                        ＋ Add Floor Reading
+                    </button>
                 </div>
-
-                <button type="button" class="btn-add-floor" id="btn-add-floor"
-                        onclick="addFloorRow()">
-                    + Add Floor Reading
-                </button>
 
             </div>
 
-            <div class="modal-actions">
+            {{-- Footer --}}
+            <div class="log-modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('log-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Log &amp; Distribute</button>
+                <button type="submit" class="btn-submit">Log &amp; Distribute →</button>
             </div>
         </form>
+
     </div>
 </div>
 

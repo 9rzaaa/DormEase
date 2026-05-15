@@ -213,44 +213,22 @@
 .search-wrap {
     position: relative;
     display: flex;
-    align-items: center;
+    text-align: left;
 }
 
 .search-wrap input {
-    padding: .5rem .9rem .5rem 2.4rem; /* space for icon */
+    padding: .5rem .9rem;
     border-radius: 10px;
     border: none;
     font-size: .85rem;
-    width: 200px;
+    width: 150px;
     outline: none;
     background: #fff;
     box-shadow: 0 4px 12px rgba(0,0,0,.1);
     color: #333;
+    text-align: left;
 }
 
-.search-icon {
-    position: absolute;
-    left: .7rem;
-    display: flex;
-    align-items: center;
-    pointer-events: none;
-}
-
-.search-icon img {
-    width: 14px;
-    height: 14px;
-    opacity: .7;
-}
-
-.search-wrap::before {
-    content: '🔍';
-    position: absolute;
-    left: .6rem;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: .8rem;
-    pointer-events: none;
-}
 
 /* ───────── SORT SELECT ───────── */
 .sort-select {
@@ -607,6 +585,22 @@ tbody tr:hover {
     font-weight: 700;
     box-shadow: 0 4px 10px rgba(255, 216, 77, 0.25);
 }
+
+table th,
+table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Account ID LEFT aligned */
+.td-id {
+    text-align: left;
+}
+
+/* Tenant Name LEFT aligned */
+.td-name {
+    text-align: left;
+}
 </style>
 @endsection
 
@@ -668,16 +662,22 @@ tbody tr:hover {
             </div>
             <div class="table-controls">
                 <div class="search-wrap">
-                    <span class="search-icon">
-                        <img src="{{ asset('icons/search.png') }}" class="icon-sm" alt="Search">
-                    </span>
-                    <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
+                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
                 </div>
-                <select class="sort-select" id="sort-select" onchange="sortTable()">
+                <select class="sort-select" id="sort-select" onchange="applyFilters()">
                     <option value="newest">Sort by: Newest</option>
                     <option value="oldest">Sort by: Oldest</option>
+                    <option value="floor">Sort by: Floor</option>
                     <option value="name">Sort by: Name</option>
                     <option value="room">Sort by: Room</option>
+                </select>
+
+                <!-- NEW FLOOR FILTER -->
+                <select class="sort-select" id="floor-filter" onchange="applyFilters()">
+                    <option value="">All Floors</option>
+                    @for($i = 2; $i <= 5; $i++)
+                    <option value="{{ $i }}">Floor {{ $i }}</option>
+                    @endfor
                 </select>
             </div>
         </div>
@@ -688,9 +688,9 @@ tbody tr:hover {
                     <tr>
                         <th>Account ID</th>
                         <th>Tenant Name</th>
-                        <th>Room No.</th>
-                        <th>Floor</th>
+                        <th>Floor & Room No.</th>
                         <th>Move-In Date</th>
+                        <th>Move-Out Date</th>
                         <th>Contact No.</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -1031,7 +1031,7 @@ tbody tr:hover {
     }
 
     function tempBadge(isTemp) {
-        return isTemp ? '<span class="badge badge-temp">Temp Password</span>' : '';
+        return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
     }
 
     function fmtDate(d) {
@@ -1045,36 +1045,55 @@ tbody tr:hover {
         const tbody    = document.getElementById('tenant-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(t => `
                 <tr>
-                    <td class="td-id">${t.account_id ?? '—'}</td>
-                    <td class="td-name">
-                        ${t.first_name} ${t.last_name}
-                        ${tempBadge(t.is_temp_password)}
-                    </td>
-                    <td>${t.room_number ?? '—'}</td>
-                    <td>${t.floor ? 'Floor ' + t.floor : '—'}</td>
-                    <td>${fmtDate(t.move_in_date)}</td>
-                    <td>${t.contact_number ?? '—'}</td>
-                    <td>${statusBadge(t.status)}</td>
-                    <td>
-                        <div class="action-group">
-                            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>
-                                <img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">
-                                </button>
-                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>
-                                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
-                                </button>
-                            <button class="act-btn reset" title="Reset Password" onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
-                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset Password">
-                                </button>
-                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
-                                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
-                                </button>
-                    </td>
-                </tr>
+    <td class="td-id">${t.account_id ?? '—'}</td>
+
+    <td class="td-name">
+        ${t.first_name} ${t.last_name}
+        ${tempBadge(t.is_temp_password)}
+    </td>
+
+    <td>
+    ${t.floor && t.room_number
+        ? `${t.floor}-${t.room_number}`
+        : (t.room_number ?? '—')}
+    </td>
+
+    <td>${fmtDate(t.move_in_date)}</td>
+
+    <td>${t.move_out_date ? fmtDate(t.move_out_date) : '—'}</td>
+
+    <td>${t.contact_number ?? '—'}</td>
+
+    <td>${statusBadge(t.status)}</td>
+
+    <td>
+        <div class="action-group">
+            <button class="act-btn" title="View"
+                onclick='viewTenant(${JSON.stringify(t)})'>
+                <img src="{{ asset('icons/eye.png') }}" class="icon-sm">
+            </button>
+
+            <button class="act-btn" title="Edit"
+                onclick='openEditModal(${JSON.stringify(t)})'>
+                <img src="{{ asset('icons/edit.png') }}" class="icon-sm">
+            </button>
+
+            <button class="act-btn reset" title="Reset Password"
+                onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                <img src="{{ asset('icons/reset.png') }}" class="icon-sm">
+            </button>
+
+            <button class="act-btn delete" title="Delete"
+                onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                <img src="{{ asset('icons/delete.png') }}" class="icon-sm">
+            </button>
+        </div>
+    </td>
+</tr>
             `).join('');
         }
 
@@ -1110,18 +1129,35 @@ tbody tr:hover {
         renderTable();
     }
 
-    function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        filtered = tenants.filter(t =>
+    function applyFilters() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const sort = document.getElementById('sort-select').value;
+    const floor = document.getElementById('floor-filter').value;
+
+    filtered = tenants.filter(t => {
+
+        const matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
             (t.account_id  ?? '').toLowerCase().includes(q) ||
             (t.room_number ?? '').toLowerCase().includes(q) ||
-            (t.email       ?? '').toLowerCase().includes(q) ||
-            (t.contact_number ?? '').toLowerCase().includes(q)
-        );
-        currentPage = 1;
-        renderTable();
-    }
+            (t.email ?? '').toLowerCase().includes(q) ||
+            (t.contact_number ?? '').toLowerCase().includes(q);
+
+        const matchesFloor =
+            floor === "" || String(t.floor) === floor;
+
+        return matchesSearch && matchesFloor;
+    });
+
+    // sorting
+    if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    if (sort === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    if (sort === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
+    if (sort === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
+
+    currentPage = 1;
+    renderTable();
+}
 
     function sortTable() {
         const val = document.getElementById('sort-select').value;
@@ -1129,6 +1165,13 @@ tbody tr:hover {
         if (val === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         if (val === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
         if (val === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
+        if (val === 'floor') {
+        filtered.sort((a, b) => {
+        const fa = parseInt(a.floor ?? 0);
+        const fb = parseInt(b.floor ?? 0);
+        return fa - fb;
+    });
+}
         currentPage = 1;
         renderTable();
     }
@@ -1140,8 +1183,14 @@ tbody tr:hover {
             <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
             <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email}</span></div>
             <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Floor</span><span class="view-val">${t.floor ? 'Floor ' + t.floor : '—'}</span></div>
+            <div class="view-row">
+            <span class="view-label">Floor & Room No.</span>
+            <span class="view-val">
+                ${t.floor && t.room_number
+                ? `${t.floor}-${t.room_number}`
+                : (t.room_number ?? '—')}
+            </span>
+            </div>
             <div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">${t.stay_type ?? '—'}</span></div>
             <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
             <div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">${fmtDate(t.move_out_date)}</span></div>
@@ -1187,12 +1236,13 @@ tbody tr:hover {
     }
 
     function exportTenants() {
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Contact', 'Status']];
-        tenants.forEach(t => rows.push([
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Move-Out Date', 'Contact', 'Status']];        tenants.forEach(t => rows.push([
             t.account_id ?? '',
             t.first_name, t.last_name, t.email,
             t.room_number ?? '', t.floor ?? '',
-            t.move_in_date ?? '', t.contact_number ?? '',
+            t.move_in_date ?? '',
+            t.move_out_date ?? '',
+            t.contact_number ?? '',
             t.status
         ]));
         const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
