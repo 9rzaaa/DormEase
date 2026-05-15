@@ -1,7 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Manage Tenants')
-
+@section('title', 'DormEase: Manage Tenants')
 @section('page-title', 'Manage Tenants')
 
 @section('styles')
@@ -597,7 +596,10 @@ tbody tr:hover {
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">＋ Add Tenant</button>
-            <button class="btn-outline" onclick="exportTenants()">⬇ Export</button>
+            <button class="btn-outline" onclick="exportTenants()">
+                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                Export
+            </button>
         </div>
     </div>
 
@@ -608,7 +610,7 @@ tbody tr:hover {
             </div>
             <div>
                 <div class="stat-label">Total Tenants</div>
-                <div class="stat-num">{{ $totalTenants }}</div>
+                <div class="stat-num" id="count-total">{{ $totalTenants }}</div>
                 <div class="stat-sub">Currently Registered</div>
             </div>
         </div>
@@ -617,9 +619,9 @@ tbody tr:hover {
                 <img src="{{ asset('icons/bed.png') }}" class="icon-md" alt="units">
             </div>
             <div>
-                <div class="stat-label">Units Occupied</div>
-                <div class="stat-num">{{ $occupiedUnits }}</div>
-                <div class="stat-sub">Out of {{ $totalUnits }} available</div>
+                <div class="stat-label">Active Tenants</div>
+                <div class="stat-num" id="count-active">{{ $activeCount }}</div>
+                <div class="stat-sub">Currently Active</div>
             </div>
         </div>
         <div class="stat-box">
@@ -638,10 +640,13 @@ tbody tr:hover {
         <div class="table-header">
             <div>
                 <div class="table-title">All Tenants</div>
-                <div class="table-date">as of {{ now()->format('F d, Y') }}</div>
+                <div class="table-date" id="table-date"></div>
             </div>
             <div class="table-controls">
                 <div class="search-wrap">
+                    <span class="search-icon">
+                        <img src="{{ asset('icons/search.png') }}" class="icon-sm" alt="Search">
+                    </span>
                     <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
                 </div>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
@@ -660,8 +665,8 @@ tbody tr:hover {
                         <th>Account ID</th>
                         <th>Tenant Name</th>
                         <th>Room No.</th>
+                        <th>Floor</th>
                         <th>Move-In Date</th>
-                        <th>Pending Bill</th>
                         <th>Contact No.</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -682,43 +687,143 @@ tbody tr:hover {
 
 @section('modals')
 
+@if(session('new_account_id'))
+<div class="modal-overlay open" id="credentials-modal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+            <div class="modal-title">Tenant Account Created</div>
+            <button class="modal-close" onclick="closeModal('credentials-modal')">✕</button>
+        </div>
+        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+            The account for <strong style="color:var(--ink);">{{ session('new_tenant_name') }}</strong>
+            has been created. Please provide the following credentials to the tenant:
+        </p>
+        <div class="credentials-box">
+            <h4>Login Credentials</h4>
+            <div class="credential-row">
+                <div>
+                    <div class="credential-label">Account ID</div>
+                    <div class="credential-value" id="cred-account-id">{{ session('new_account_id') }}</div>
+                </div>
+                <button class="copy-btn" onclick="copyText('cred-account-id', this)">Copy</button>
+            </div>
+            <div class="credential-row">
+                <div>
+                    <div class="credential-label">Temporary Password</div>
+                    <div class="credential-value" id="cred-temp-password">{{ session('new_temp_password') }}</div>
+                </div>
+                <button class="copy-btn" onclick="copyText('cred-temp-password', this)">Copy</button>
+            </div>
+        </div>
+        <div class="credentials-warning">
+            This temporary password will <strong>not be shown again</strong>.
+            Please write it down or inform the tenant immediately.
+            The tenant will be prompted to change their password on first login.
+        </div>
+        <div class="modal-actions">
+            <button class="btn-submit" onclick="closeModal('credentials-modal')">
+                Got it, I've noted the credentials
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(session('reset_account_id'))
+<div class="modal-overlay open" id="reset-credentials-modal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+            <div class="modal-title">Password Reset Successfully</div>
+            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">✕</button>
+        </div>
+        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+            The password for <strong style="color:var(--ink);">{{ session('reset_tenant_name') }}</strong>
+            has been reset. Please provide the new temporary credentials to the tenant:
+        </p>
+        <div class="credentials-box">
+            <h4>New Temporary Credentials</h4>
+            <div class="credential-row">
+                <div>
+                    <div class="credential-label">Account ID</div>
+                    <div class="credential-value" id="reset-account-id">{{ session('reset_account_id') }}</div>
+                </div>
+                <button class="copy-btn" onclick="copyText('reset-account-id', this)">Copy</button>
+            </div>
+            <div class="credential-row">
+                <div>
+                    <div class="credential-label">New Temporary Password</div>
+                    <div class="credential-value" id="reset-temp-password">{{ session('reset_temp_password') }}</div>
+                </div>
+                <button class="copy-btn" onclick="copyText('reset-temp-password', this)">Copy</button>
+            </div>
+        </div>
+        <div class="credentials-warning">
+            This temporary password will <strong>not be shown again</strong>.
+            Please inform the tenant of their new password immediately.
+        </div>
+        <div class="modal-actions">
+            <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">
+                Got it, I've noted the credentials
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">➕ Add New Tenant</div>
+            <div class="modal-title">Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
         </div>
+        <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--pink-bg);padding:.7rem 1rem;border-radius:10px;">
+            Account ID and temporary password will be <strong>auto-generated</strong>
+            and shown to you after saving.
+        </p>
         <form method="POST" action="{{ route('tenants.store') }}">
             @csrf
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>First Name</label>
-                    <input type="text" name="first_name" placeholder="e.g. Maria" required>
+                    <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}">
                 </div>
                 <div class="modal-field">
                     <label>Last Name</label>
-                    <input type="text" name="last_name" placeholder="e.g. Ramos" required>
+                    <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}">
+                </div>
+                <div class="modal-field full">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}">
                 </div>
                 <div class="modal-field">
                     <label>Room No.</label>
-                    <input type="text" name="room_number" placeholder="e.g. 304" required>
+                    <input type="text" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                </div>
+                <div class="modal-field">
+                    <label>Floor</label>
+                    <select name="floor">
+                        <option value="">Select floor</option>
+                        @for($i = 1; $i <= 5; $i++)
+                            <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Stay Type</label>
+                    <select name="stay_type">
+                        <option value="">Select type</option>
+                        <option value="Bed Spacer" {{ old('stay_type') === 'Bed Spacer' ? 'selected' : '' }}>Bed Spacer</option>
+                        <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
+                        <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
+                    </select>
                 </div>
                 <div class="modal-field">
                     <label>Move-In Date</label>
-                    <input type="date" name="move_in_date">
+                    <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
                 </div>
-                <div class="modal-field">
+                <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789">
-                </div>
-                <div class="modal-field">
-                    <label>Status</label>
-                    <select name="status">
-                        <option value="active">Active</option>
-                        <option value="pending">Pending</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="move_out">Move-Out</option>
-                    </select>
+                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
                 </div>
             </div>
             <div class="modal-actions">
@@ -738,7 +843,7 @@ tbody tr:hover {
         <div id="view-content"></div>
         <div class="modal-actions" style="margin-top:1rem;">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-            <button class="btn-submit" id="view-edit-btn">Edit</button>
+            <button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>
         </div>
     </div>
 </div>
@@ -746,10 +851,13 @@ tbody tr:hover {
 <div class="modal-overlay" id="edit-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">✏️ Edit Tenant</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
+                Edit Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
         </div>
-        <form method="POST" id="edit-form">
+        <form method="POST" id="edit-form" action="">
             @csrf
             @method('PUT')
             <div class="modal-grid">
@@ -761,25 +869,51 @@ tbody tr:hover {
                     <label>Last Name</label>
                     <input type="text" name="last_name" id="edit-last-name" required>
                 </div>
+                <div class="modal-field full">
+                    <label>Email</label>
+                    <input type="email" name="email" id="edit-email" required>
+                </div>
                 <div class="modal-field">
                     <label>Room No.</label>
                     <input type="text" name="room_number" id="edit-room">
+                </div>
+                <div class="modal-field">
+                    <label>Floor</label>
+                    <select name="floor" id="edit-floor">
+                        <option value="">Select floor</option>
+                        @for($i = 1; $i <= 5; $i++)
+                            <option value="{{ $i }}">Floor {{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Stay Type</label>
+                    <select name="stay_type" id="edit-stay-type">
+                        <option value="">Select type</option>
+                        <option value="Bed Spacer">Bed Spacer</option>
+                        <option value="Solo Room">Solo Room</option>
+                        <option value="Shared Room">Shared Room</option>
+                    </select>
                 </div>
                 <div class="modal-field">
                     <label>Move-In Date</label>
                     <input type="date" name="move_in_date" id="edit-date">
                 </div>
                 <div class="modal-field">
+                    <label>Move-Out Date</label>
+                    <input type="date" name="move_out_date" id="edit-moveout">
+                </div>
+                <div class="modal-field full">
                     <label>Contact No.</label>
                     <input type="text" name="contact_number" id="edit-contact">
                 </div>
-                <div class="modal-field">
+                <div class="modal-field full">
                     <label>Status</label>
                     <select name="status" id="edit-status">
                         <option value="active">Active</option>
                         <option value="pending">Pending</option>
+                        <option value="move_out">Move Out</option>
                         <option value="inactive">Inactive</option>
-                        <option value="move_out">Move-Out</option>
                     </select>
                 </div>
             </div>
@@ -791,10 +925,37 @@ tbody tr:hover {
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
-    <div class="modal">
+<div class="modal-overlay" id="reset-modal">
+    <div class="modal" style="max-width:400px;">
         <div class="modal-header">
-            <div class="modal-title">🗑 Delete Tenant</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">
+                Reset Password
+            </div>
+            <button class="modal-close" onclick="closeModal('reset-modal')">✕</button>
+        </div>
+        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
+            Are you sure you want to reset the password for
+            <strong id="reset-name" style="color:var(--ink);"></strong>?
+            A new temporary password will be generated.
+        </p>
+        <form method="POST" id="reset-form" action="">
+            @csrf
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('reset-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" style="background:#f0c040;color:#1a1a2e;">Reset Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-modal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
+                Delete Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
         </div>
         <div class="delete-warning">⚠️ This action cannot be undone. The tenant record will be permanently removed.</div>
@@ -807,6 +968,18 @@ tbody tr:hover {
                 <button type="submit" class="btn-submit" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
             </form>
         </div>
+        <p style="font-size:.9rem;color:var(--ink-muted);">
+            Are you sure you want to delete
+            <strong id="delete-name" style="color:var(--ink);"></strong>?
+        </p>
+        <form method="POST" id="delete-form" action="">
+            @csrf
+            @method('DELETE')
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -816,24 +989,30 @@ tbody tr:hover {
 <script>
     const tenants = @json($tenants);
 
-    const PER_PAGE = 8;
-    let currentPage = 1;
-    let filtered = [...tenants];
+    const PER_PAGE   = 8;
+    let currentPage  = 1;
+    let filtered     = [...tenants];
+    let currentTenant = null;
+    document.getElementById('table-date').textContent =
+        'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    function badge(status) {
+    function statusBadge(status) {
         const map = {
-            active:   ['badge-active',   'Active'],
-            pending:  ['badge-pending',  'Pending'],
-            inactive: ['badge-inactive', 'Inactive'],
-            move_out: ['badge-moveout',  'Move-Out'],
+            active:   '<span class="badge badge-active">Active</span>',
+            pending:  '<span class="badge badge-pending">Pending</span>',
+            move_out: '<span class="badge badge-moveout">Move Out</span>',
+            inactive: '<span class="badge badge-inactive">Inactive</span>',
         };
-        const [cls, label] = map[status] ?? ['badge-pending', status];
-        return `<span class="badge ${cls}">${label}</span>`;
+        return map[status] ?? `<span class="badge badge-inactive">${status}</span>`;
+    }
+
+    function tempBadge(isTemp) {
+        return isTemp ? '<span class="badge badge-temp">Temp Password</span>' : '';
     }
 
     function fmtDate(d) {
         if (!d) return '—';
-        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     function renderTable() {
@@ -842,23 +1021,34 @@ tbody tr:hover {
         const tbody    = document.getElementById('tenant-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No tenants found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(t => `
                 <tr>
-                    <td class="td-id">TNT-${String(t.tenant_id).padStart(4,'0')}</td>
-                    <td class="td-name">${t.first_name} ${t.last_name}</td>
+                    <td class="td-id">${t.account_id ?? '—'}</td>
+                    <td class="td-name">
+                        ${t.first_name} ${t.last_name}
+                        ${tempBadge(t.is_temp_password)}
+                    </td>
                     <td>${t.room_number ?? '—'}</td>
+                    <td>${t.floor ? 'Floor ' + t.floor : '—'}</td>
                     <td>${fmtDate(t.move_in_date)}</td>
-                    <td>${t.pending_bill > 0 ? '₱' + parseFloat(t.pending_bill).toFixed(2) : '—'}</td>
                     <td>${t.contact_number ?? '—'}</td>
-                    <td>${badge(t.status)}</td>
+                    <td>${statusBadge(t.status)}</td>
                     <td>
                         <div class="action-group">
-                            <button class="act-btn" title="View"   onclick='viewTenant(${JSON.stringify(t)})'>👁</button>
-                            <button class="act-btn" title="Edit"   onclick='openEditModal(${JSON.stringify(t)})'>✏️</button>
-                            <button class="act-btn delete" title="Delete" onclick='openDeleteModal(${t.tenant_id}, "${t.first_name} ${t.last_name}")'>🗑</button>
-                        </div>
+                            <button class="act-btn" title="View" onclick='viewTenant(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">
+                                </button>
+                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
+                                </button>
+                            <button class="act-btn reset" title="Reset Password" onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset Password">
+                                </button>
+                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
+                                </button>
                     </td>
                 </tr>
             `).join('');
@@ -867,22 +1057,25 @@ tbody tr:hover {
         const total = filtered.length;
         const from  = total === 0 ? 0 : start + 1;
         const to    = Math.min(start + PER_PAGE, total);
-        document.getElementById('showing-label').textContent = `Showing ${from} to ${to} of ${total} entries`;
+        document.getElementById('showing-label').textContent =
+            `Showing data ${from} to ${to} of ${total} entries`;
+
         renderPagination();
     }
 
     function renderPagination() {
         const totalPages = Math.ceil(filtered.length / PER_PAGE);
         const pg = document.getElementById('pagination');
-        let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+        let html = '';
+        html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
         for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage-1 && i <= currentPage+1)) {
-                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-            } else if (i === currentPage-2 || i === currentPage+2) {
-                html += `<span class="page-ellipsis">…</span>`;
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span style="color:var(--ink-muted);padding:0 .2rem">…</span>`;
             }
         }
-        html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages||totalPages===0?'disabled':''}>›</button>`;
+        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>›</button>`;
         pg.innerHTML = html;
     }
 
@@ -897,10 +1090,10 @@ tbody tr:hover {
         const q = document.getElementById('search-input').value.toLowerCase();
         filtered = tenants.filter(t =>
             (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
-            String(t.tenant_id).includes(q) ||
+            (t.account_id  ?? '').toLowerCase().includes(q) ||
             (t.room_number ?? '').toLowerCase().includes(q) ||
-            (t.contact_number ?? '').toLowerCase().includes(q) ||
-            (t.status ?? '').toLowerCase().includes(q)
+            (t.email       ?? '').toLowerCase().includes(q) ||
+            (t.contact_number ?? '').toLowerCase().includes(q)
         );
         currentPage = 1;
         renderTable();
@@ -908,37 +1101,59 @@ tbody tr:hover {
 
     function sortTable() {
         const val = document.getElementById('sort-select').value;
-        if (val === 'newest') filtered.sort((a,b) => new Date(b.move_in_date) - new Date(a.move_in_date));
-        if (val === 'oldest') filtered.sort((a,b) => new Date(a.move_in_date) - new Date(b.move_in_date));
-        if (val === 'name')   filtered.sort((a,b) => a.first_name.localeCompare(b.first_name));
-        if (val === 'room')   filtered.sort((a,b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
+        if (val === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        if (val === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        if (val === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
+        if (val === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
         currentPage = 1;
         renderTable();
     }
 
     function viewTenant(t) {
+        currentTenant = t;
         document.getElementById('view-content').innerHTML = `
-            <div class="view-row"><span class="view-label">Account ID</span><span class="view-val">TNT-${String(t.tenant_id).padStart(4,'0')}</span></div>
+            <div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">${t.account_id ?? '—'}</span></div>
             <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
-            <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
-            <div class="view-row"><span class="view-label">Pending Bill</span><span class="view-val">₱${parseFloat(t.pending_bill ?? 0).toFixed(2)}</span></div>
+            <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email}</span></div>
             <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${badge(t.status)}</span></div>
+            <div class="view-row"><span class="view-label">Room No.</span><span class="view-val">${t.room_number ?? '—'}</span></div>
+            <div class="view-row"><span class="view-label">Floor</span><span class="view-val">${t.floor ? 'Floor ' + t.floor : '—'}</span></div>
+            <div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">${t.stay_type ?? '—'}</span></div>
+            <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
+            <div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">${fmtDate(t.move_out_date)}</span></div>
+            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${statusBadge(t.status)}</span></div>
+            <div class="view-row"><span class="view-label">Password Status</span><span class="view-val">${t.is_temp_password ? tempBadge(true) + ' Not yet changed' : '✅ Changed by tenant'}</span></div>
         `;
-        document.getElementById('view-edit-btn').onclick = () => { closeModal('view-modal'); openEditModal(t); };
         openModal('view-modal');
     }
 
+    function switchToEdit() {
+        if (currentTenant) {
+            closeModal('view-modal');
+            setTimeout(() => openEditModal(currentTenant), 200);
+        }
+    }
+
     function openEditModal(t) {
-        document.getElementById('edit-form').action = `/tenants/${t.tenant_id}`;
-        document.getElementById('edit-first-name').value = t.first_name;
-        document.getElementById('edit-last-name').value  = t.last_name;
-        document.getElementById('edit-room').value       = t.room_number ?? '';
-        document.getElementById('edit-date').value       = t.move_in_date ?? '';
-        document.getElementById('edit-contact').value    = t.contact_number ?? '';
-        document.getElementById('edit-status').value     = t.status ?? 'active';
+        currentTenant = t;
+        document.getElementById('edit-form').action        = `/tenants/${t.tenant_id}`;
+        document.getElementById('edit-first-name').value  = t.first_name ?? '';
+        document.getElementById('edit-last-name').value   = t.last_name  ?? '';
+        document.getElementById('edit-email').value       = t.email      ?? '';
+        document.getElementById('edit-room').value        = t.room_number ?? '';
+        document.getElementById('edit-floor').value       = t.floor      ?? '';
+        document.getElementById('edit-stay-type').value   = t.stay_type  ?? '';
+        document.getElementById('edit-date').value        = t.move_in_date  ?? '';
+        document.getElementById('edit-moveout').value     = t.move_out_date ?? '';
+        document.getElementById('edit-contact').value     = t.contact_number ?? '';
+        document.getElementById('edit-status').value      = t.status ?? 'pending';
         openModal('edit-modal');
+    }
+
+    function openResetModal(id, name) {
+        document.getElementById('reset-name').textContent = name;
+        document.getElementById('reset-form').action = `/tenants/${id}/reset-password`;
+        openModal('reset-modal');
     }
 
     function openDeleteModal(id, name) {
@@ -948,23 +1163,29 @@ tbody tr:hover {
     }
 
     function exportTenants() {
-        const rows = [['Account ID','First Name','Last Name','Room No.','Move-In Date','Pending Bill','Contact No.','Status']];
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Contact', 'Status']];
         tenants.forEach(t => rows.push([
-            'TNT-' + String(t.tenant_id).padStart(4,'0'),
-            t.first_name, t.last_name,
-            t.room_number ?? '',
-            t.move_in_date ?? '',
-            parseFloat(t.pending_bill ?? 0).toFixed(2),
-            t.contact_number ?? '',
+            t.account_id ?? '',
+            t.first_name, t.last_name, t.email,
+            t.room_number ?? '', t.floor ?? '',
+            t.move_in_date ?? '', t.contact_number ?? '',
             t.status
         ]));
-        const csv  = rows.map(r => r.join(',')).join('\n');
+        const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv' });
         const a    = document.createElement('a');
         a.href     = URL.createObjectURL(blob);
         a.download = 'dormease-tenants.csv';
         a.click();
-        showToast('📥 Tenants exported as CSV!', 'success');
+        showToast('Tenants exported as CSV!', 'success');
+    }
+
+    function copyText(elementId, btn) {
+        const text = document.getElementById(elementId).textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'Copied';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        });
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -973,6 +1194,26 @@ tbody tr:hover {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
+    function showToast(msg, type = '') {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent  = msg;
+        t.className    = 'toast ' + type;
+        setTimeout(() => t.classList.add('show'), 10);
+        setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    @if($errors->any())
+        document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
+    @endif
+
+    @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
+        document.addEventListener('DOMContentLoaded', () =>
+            showToast('{{ session("success") }}', 'success')
+        );
+    @endif
+
+    filtered = [...tenants];
     renderTable();
 </script>
 @endsection

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password_hash');
             $table->string('role');
+            $table->string('account_id')->nullable();
             $table->string('contact_number')->nullable();
             $table->string('shift_schedule')->nullable();
             $table->string('duty_status')->nullable();

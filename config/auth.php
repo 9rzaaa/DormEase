@@ -1,5 +1,7 @@
 <?php
+
 use App\Models\Staff;
+use App\Models\Tenant;
 use App\Models\User;
 
 return [
@@ -17,6 +19,12 @@ return [
             'driver' => 'session',
             'provider' => 'staff',
         ],
+
+        // ── Tenant guard for mobile app (Sanctum token auth) ──────────────────
+        'tenant' => [
+            'driver'   => 'session',
+            'provider' => 'tenants',
+        ],
     ],
 
     'providers' => [
@@ -27,6 +35,12 @@ return [
         'staff' => [
             'driver' => 'eloquent',
             'model' => Staff::class,
+        ],
+
+        // ── Tenant provider ───────────────────────────────────────────────────
+        'tenants' => [
+            'driver' => 'eloquent',
+            'model'  => Tenant::class,
         ],
     ],
 
