@@ -6,6 +6,14 @@
 
 @section('styles')
 <style>
+    :root {
+        --hot-pink:   #E8175D;
+        --bright-pink:#FF2D78;
+        --mid-pink:   #FF6BA8;
+        --baby-pink:  #FFD6E7;
+        --blush:      #FFF0F6;
+        --petal:      #FFE4F0;
+    }
 
     .page-body {
         display: grid;
@@ -13,115 +21,148 @@
         gap: 1.5rem;
         padding: 1.8rem 2rem;
         flex: 1;
+        background: var(--blush);
     }
 
     .content-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
 
-    .page-header { margin-bottom: .25rem; }
     .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--pink); margin-top: .2rem; }
+    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--hot-pink); margin-top: .2rem; }
+
+    /* cards get a baby-pink border */
+    .card { border-color: var(--baby-pink); }
 
     .export-btn {
         display: flex; align-items: center; gap: .4rem;
         padding: .45rem 1rem; border-radius: 8px;
-        border: 1.5px solid var(--gray-light); background: var(--white);
-        font-size: .82rem; font-weight: 600; color: var(--ink-muted);
-        transition: border-color .2s, color .2s;
+        border: 1.5px solid var(--bright-pink);
+        background: var(--petal);
+        font-size: .82rem; font-weight: 700; color: var(--hot-pink);
+        transition: background .2s, color .2s;
     }
-    .export-btn:hover { border-color: var(--pink); color: var(--pink); }
+    .export-btn:hover { background: var(--baby-pink); }
 
+    /* ── STAT BOXES: solid vivid pink gradient fills ── */
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
     .stat-box {
-        background: var(--pink-card); border-radius: 12px; padding: 1.1rem;
-        border: 1px solid rgba(202,93,134,.1);
+        border-radius: 14px; padding: 1.1rem;
+        border: none;
         transition: transform .2s, box-shadow .2s;
     }
-    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(202,93,134,.14); }
-    .stat-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--pink); display: flex; align-items: center; justify-content: center; margin-bottom: .8rem; }
-    .stat-num   { font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.02em; }
-    .stat-label { font-size: .85rem; font-weight: 600; color: var(--ink); margin-top: .3rem; }
-    .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 500; margin-top: .15rem; }
+    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
+    /* ── STAT BOXES: all match Pending Payments ── */
+    .stat-box {
+    border-radius: 14px; padding: 1.1rem;
+    border: none;
+    background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+    transition: transform .2s, box-shadow .2s;
+}
+.stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
+
+/* remove the individual nth-child overrides entirely */
+
+    .stat-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; margin-bottom: .8rem; }
+    .stat-icon img { filter: brightness(0) invert(1); }
+    .stat-num   { font-size: 1.9rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.03em; }
+    .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
+    .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
 
     .bottom-row { display: grid; grid-template-columns: 1fr 260px; gap: 1.2rem; }
 
     .maint-row {
         display: flex; align-items: center; gap: 1rem;
-        padding: .9rem .5rem; border-bottom: 1px solid var(--border);
+        padding: .9rem .5rem; border-bottom: 1px solid var(--petal);
         cursor: pointer; transition: background .15s; border-radius: 8px;
     }
     .maint-row:last-child { border-bottom: none; }
-    .maint-row:hover { background: var(--pink-bg); }
-    .maint-type-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--pink-card); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .maint-info      { flex: 1; min-width: 0; }
-    .maint-title     { font-size: .88rem; font-weight: 600; color: var(--ink); }
+    .maint-row:hover { background: var(--petal); }
+    .maint-type-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--blush); border: 1.5px solid var(--baby-pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .maint-title     { font-size: .88rem; font-weight: 700; color: var(--ink); }
     .maint-id        { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; }
-    .maint-desc-col  { flex: 1; min-width: 0; }
     .maint-desc      { font-size: .83rem; color: var(--ink); font-weight: 500; }
     .maint-tags      { display: flex; gap: .35rem; margin-top: .3rem; flex-wrap: wrap; }
 
-    .tag          { font-size: .7rem; font-weight: 600; padding: .18rem .55rem; border-radius: 5px; border: 1.5px solid; }
-    .tag-urgent   { color: var(--red);    border-color: var(--red);        background: #fff0f0; }
-    .tag-moderate { color: var(--salmon); border-color: var(--salmon);     background: #fff6f2; }
-    .tag-low      { color: var(--green);  border-color: var(--green);      background: #f0fdf8; }
-    .tag-progress { color: var(--pink);   border-color: var(--pink-light); background: var(--pink-card); }
-    .tag-pending  { color: var(--salmon); border-color: var(--peach);      background: #fff8f4; }
+    .tag          { font-size: .7rem; font-weight: 700; padding: .18rem .55rem; border-radius: 5px; border: 1.5px solid; }
+    .tag-urgent   { color: #C4003A;    border-color: #FF2D78;       background: var(--baby-pink); }
+    .tag-moderate { color: #a84c00;    border-color: #f5a24b;       background: #fff6ed; }
+    .tag-low      { color: #1a7a4a;    border-color: #5bcb8a;       background: #eafbf0; }
+    .tag-progress { color: #A0005C;    border-color: var(--mid-pink); background: var(--petal); }
+    .tag-pending  { color: #8A1040;    border-color: #FFB3D0;       background: var(--baby-pink); }
 
     .maint-assign { font-size: .82rem; color: var(--ink-muted); white-space: nowrap; flex-shrink: 0; }
-    .maint-arrow  { color: var(--gray); font-size: .9rem; flex-shrink: 0; }
+    .maint-arrow  { color: var(--hot-pink); font-size: .9rem; flex-shrink: 0; }
 
     .empty-state { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: .88rem; }
 
+    /* ── EMERGENCY CARD: vivid pink ── */
     .emergency-card {
-        background: var(--pink-card); border: 1.5px solid var(--pink-light);
+        background: linear-gradient(160deg, #FF2D78 0%, #E8175D 100%);
+        border: 1.5px solid #FF2D78;
         border-radius: 16px; padding: 1.4rem;
         display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6rem;
     }
-    .emergency-title     { font-size: 1rem; font-weight: 700; color: var(--ink); }
-    .emergency-icon-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--ink); background: var(--white); display: flex; align-items: center; justify-content: center; margin: .4rem 0; }
-    .emergency-room      { font-size: .9rem; font-weight: 700; color: var(--ink); }
-    .emergency-type      { font-size: .82rem; font-weight: 600; color: var(--pink); }
-    .emergency-status    { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
-    .emergency-btn { margin-top: .5rem; width: 100%; background: var(--pink); color: var(--white); border: none; border-radius: 10px; padding: .65rem; font-size: .85rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .15s; }
-    .emergency-btn:hover { background: #a8446c; transform: translateY(-1px); }
+    .emergency-title     { font-size: 1rem; font-weight: 800; color: #fff; }
+    .emergency-icon-wrap {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.45);
+    background: rgba(255,255,255,.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: .5rem 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+}    .emergency-icon-wrap img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    filter: none;
+    }
+    .emergency-room      { font-size: .9rem; font-weight: 700; color: #fff; }
+    .emergency-type      { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.88); }
+    .emergency-status    { font-size: .78rem; color: rgba(255,255,255,.7); font-style: italic; }
+    .emergency-btn { margin-top: .5rem; width: 100%; background: #fff; color: var(--hot-pink); border: none; border-radius: 10px; padding: .65rem; font-size: .85rem; font-weight: 800; cursor: pointer; transition: background .2s; }
+    .emergency-btn:hover { background: var(--baby-pink); }
 
-    .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--border); }
+    /* ── ANNOUNCEMENTS ── */
+    .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--petal); }
     .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .announce-title   { font-size: .9rem; font-weight: 600; color: var(--ink); }
+    .announce-title   { font-size: .9rem; font-weight: 700; color: var(--ink); }
     .announce-date    { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
     .announce-actions { display: flex; gap: .5rem; margin-top: .5rem; }
-    .announce-action-btn { font-size: .75rem; font-weight: 600; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--border); background: none; color: var(--ink-muted); cursor: pointer; transition: border-color .2s, color .2s; }
-    .announce-action-btn:hover { border-color: var(--pink); color: var(--pink); }
-    .announce-action-btn.delete:hover { border-color: var(--red); color: var(--red); }
-    .post-announce-btn { font-size: .8rem; font-weight: 600; color: var(--pink); background: none; border: none; cursor: pointer; }
-    .post-announce-btn:hover { text-decoration: underline; }
+    .announce-action-btn { font-size: .75rem; font-weight: 700; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--baby-pink); background: var(--petal); color: var(--hot-pink); cursor: pointer; transition: background .2s; }
+    .announce-action-btn:hover { background: var(--baby-pink); }
+    .announce-action-btn.delete { background: #fff0f3; border-color: var(--mid-pink); color: #C4003A; }
+    .announce-action-btn.delete:hover { background: var(--baby-pink); }
+    .post-announce-btn { font-size: .8rem; font-weight: 700; color: var(--hot-pink); background: var(--petal); border: 1.5px solid var(--baby-pink); border-radius: 7px; padding: .28rem .75rem; cursor: pointer; }
+    .post-announce-btn:hover { background: var(--baby-pink); }
 
+    /* ── PRIORITY BADGES ── */
+    .priority-badge { display: inline-block; font-size: .68rem; font-weight: 800; padding: .15rem .5rem; border-radius: 5px; border: 1.5px solid; margin-left: .4rem; vertical-align: middle; }
+    .priority-low      { color: #1a7a4a; border-color: #5bcb8a;    background: #eafbf0; }
+    .priority-moderate { color: #a84c00; border-color: #f5a24b;    background: #fff6ed; }
+    .priority-high     { color: #C4003A; border-color: var(--bright-pink); background: var(--baby-pink); }
+
+    /* ── RIGHT COLUMN ── */
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
-    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--petal); cursor: pointer; }
     .notif-item:last-child { border-bottom: none; }
-    .notif-ico  { flex-shrink: 0; margin-top: .1rem; }
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
-    .activity-item { display: flex; align-items: flex-start; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid var(--border); }
+    .activity-item { display: flex; align-items: flex-start; gap: .75rem; padding: .6rem 0; border-bottom: 1px solid var(--petal); }
     .activity-item:last-child { border-bottom: none; }
-    .activity-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--pink-light), var(--pink)); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: var(--white); }
+    .activity-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--baby-pink), var(--hot-pink)); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 800; color: white; }
     .activity-text { font-size: .8rem; color: var(--ink); line-height: 1.4; }
     .activity-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
+    /* ── ICON HELPERS ── */
     .icon-sm { width: 16px; height: 16px; object-fit: contain; }
     .icon-md { width: 24px; height: 24px; object-fit: contain; }
     .icon-lg { width: 30px; height: 30px; object-fit: contain; }
-
-    .priority-badge {
-        display: inline-block; font-size: .68rem; font-weight: 700;
-        padding: .15rem .5rem; border-radius: 5px; border: 1.5px solid;
-        margin-left: .4rem; vertical-align: middle;
-    }
-    .priority-low      { color: var(--green);  border-color: var(--green);  background: #f0fdf8; }
-    .priority-moderate { color: var(--salmon); border-color: var(--salmon); background: #fff6f2; }
-    .priority-high     { color: var(--red);    border-color: var(--red);    background: #fff0f0; }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -132,7 +173,6 @@
         .bottom-row { grid-template-columns: 1fr; }
         .right-col  { grid-template-columns: 1fr; }
     }
-
 </style>
 @endsection
 
@@ -259,9 +299,9 @@
                     <div class="emergency-icon-wrap">
                         <img src="{{ asset('icons/check.png') }}" class="icon-lg" alt="">
                     </div>
-                    <div class="emergency-type" style="color:var(--pink);">All Clear</div>
+                    <div class="emergency-type" style="color:#D63375;">All Clear</div>
                     <div class="emergency-status">No active emergencies</div>
-                    <button class="emergency-btn" style="background:var(--pink);" onclick="openModal('emergency-modal')">View History</button>
+                    <button class="emergency-btn" style="background:#D63375; color: white;" onclick="openModal('emergency-modal')">View History</button>
                 </div>
             @endif
 
