@@ -212,10 +212,12 @@
 /* ───────── SEARCH ───────── */
 .search-wrap {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .search-wrap input {
-    padding: .5rem .9rem .5rem 2.1rem;
+    padding: .5rem .9rem .5rem 2.4rem; /* space for icon */
     border-radius: 10px;
     border: none;
     font-size: .85rem;
@@ -224,6 +226,20 @@
     background: #fff;
     box-shadow: 0 4px 12px rgba(0,0,0,.1);
     color: #333;
+}
+
+.search-icon {
+    position: absolute;
+    left: .7rem;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+.search-icon img {
+    width: 14px;
+    height: 14px;
+    opacity: .7;
 }
 
 .search-wrap::before {
@@ -582,6 +598,14 @@ tbody tr:hover {
 @media (max-width: 600px) {
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
+}
+
+.badge-temp {
+    background: #fff3b0;
+    color: #5a3d00;
+    border: 1px solid #ffd84d;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 216, 77, 0.25);
 }
 </style>
 @endsection
