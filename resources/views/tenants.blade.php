@@ -154,13 +154,14 @@
 
 .stat-label {
     font-size: .8rem;
-    color: rgba(255,255,255,.85);
+    color: rgba(247, 245, 245, 0.967);
     margin-bottom: .15rem;
+    font-weight: 700;
 }
 
 .stat-sub {
     font-size: .73rem;
-    color: rgba(255,255,255,.65);
+    color: rgba(248, 246, 246, 0.955);
     font-weight: 600;
     margin-top: .15rem;
 }
@@ -649,7 +650,7 @@ table td {
             <div>
                 <div class="stat-label">Pending Tenants</div>
                 <div class="stat-num">{{ $pendingCount }}</div>
-                <div class="stat-sub">Payment Pending</div>
+                <div class="stat-sub">Not Yet Logged In</div>
             </div>
         </div>
     </div>

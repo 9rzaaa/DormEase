@@ -13,26 +13,36 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --pink:        #D63868;
-  --pink-light:  #F4A8C0;
-  --pink-pale:   #FDE8EF;
-  --pink-deep:   #9C2046;
-  --cream:       #FBF6F0;
-  --cream-dark:  #F2EAE2;
-  --brown:       #3A2010;
-  --brown-mid:   #6B3D25;
-  --brown-light: #9A6850;
+  --pink-1:      #E8175D;
+  --pink-2:      #FF2D78;
+  --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+  --soft-bg:     #fff7fb;
+  --pink:        var(--pink-1);
+  --pink-light:  #FF7FB0;
+  --pink-pale:   #FFE4F0;
+  --pink-deep:   #8A123B;
+  --cream:       var(--soft-bg);
+  --cream-dark:  #FFEAF3;
+  --brown:       #241018;
+  --brown-mid:   #5A2638;
+  --brown-light: #744B5D;
   --white:       #FFFFFF;
-  --border:      rgba(214,56,104,0.15);
+  --border:      rgba(232,23,93,0.18);
   --font-head:   'Montserrat', 'Segoe UI', sans-serif;
   --font-body:   'Nunito', 'Google Sans', sans-serif;
-  --shadow-soft: 0 4px 32px rgba(214,56,104,0.12);
-  --shadow-card: 0 2px 20px rgba(58,32,16,0.08);
+  --shadow-soft: 0 4px 32px rgba(232,23,93,0.16);
+  --shadow-card: 0 2px 20px rgba(36,16,24,0.09);
   --r-sm: 8px; --r-md: 16px; --r-lg: 28px; --r-xl: 48px;
 }
 
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); background: var(--cream); color: var(--brown); overflow-x: hidden; line-height: 1.6; }
+
+.site-header {
+  position: relative;
+  background: var(--pink-pale);
+  border-bottom: 1px solid rgba(232,23,93,0.12);
+}
 
 .img-ph {
   background: linear-gradient(135deg, var(--cream-dark) 0%, #e8ddd4 100%);
@@ -64,36 +74,111 @@ body { font-family: var(--font-body); background: var(--cream); color: var(--bro
 .img-ph span { position: relative; z-index: 1; line-height: 1.6; }
 
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(253, 232, 239, 0.95);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 6%; height: 70px;
+  position: fixed; top: 54px; left: 50%; z-index: 100;
+  width: min(1220px, calc(100% - 12%));
+  transform: translateX(-50%);
+  background: rgba(255, 228, 240, 0.96);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(36,16,24,0.78);
+  border-radius: 999px;
+  padding: 0 38px; height: 86px;
   display: flex; align-items: center; justify-content: space-between;
-  transition: box-shadow 0.3s;
+  transition: top 0.25s ease, box-shadow 0.3s;
 }
-nav.scrolled { box-shadow: var(--shadow-soft); }
+nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
+
+.top-notice {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 101;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 5%;
+  background: var(--gradient-pink);
+  color: white;
+  font-family: var(--font-head);
+  font-size: .86rem;
+  font-weight: 800;
+  text-align: center;
+}
 
 .nav-logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
-.nav-logo img { height: 38px; width: auto; object-fit: contain; display: block; filter: drop-shadow(0 2px 4px rgba(58, 32, 16, 0.2)); }
+.nav-logo img { height: 58px; width: auto; object-fit: contain; display: block; background:var(--gradient-pink); border-radius:50%; padding:8px; filter: drop-shadow(0 2px 7px rgba(36, 16, 24, 0.22)); }
 .nav-logo-fb {
-  font-family: var(--font-head); font-size: 1.3rem; font-weight: 800;
+  font-family: var(--font-head); font-size: 1.55rem; font-weight: 800;
   color: var(--brown); letter-spacing: -0.02em;
 }
 .nav-logo-fb span { color: var(--pink); }
 
-.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links { display: flex; align-items: center; gap: 30px; list-style: none; }
 .nav-links a {
-  text-decoration: none; font-size: 0.875rem; font-weight: 500;
-  color: var(--brown-light); letter-spacing: 0.01em; transition: color 0.2s;
+  text-decoration: none; font-size: .98rem; font-weight: 700;
+  color: var(--brown); letter-spacing: 0.01em; transition: color 0.2s, background 0.2s;
 }
 .nav-links a:hover { color: var(--pink); }
 .nav-cta {
-  background: var(--pink) !important; color: white !important;
-  padding: 9px 24px !important; border-radius: 100px !important;
-  font-weight: 700 !important; transition: background 0.2s, transform 0.15s !important;
+  background: var(--gradient-pink) !important; color: white !important;
+  padding: 11px 26px !important; border-radius: 100px !important;
+  font-weight: 700 !important; transition: filter 0.2s, transform 0.15s !important;
+  box-shadow: 0 8px 18px rgba(232,23,93,0.24);
 }
-.nav-cta:hover { background: var(--pink-deep) !important; transform: translateY(-1px); }
+.nav-cta:hover { filter: brightness(0.94); transform: translateY(-1px); }
+
+.header-info-strip {
+  padding: 154px 6% 16px;
+  background: var(--pink-pale);
+  border-bottom: 1px solid rgba(232,23,93,0.12);
+}
+.header-info-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.header-info-item {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 0 24px;
+  border-left: 1px solid rgba(36,16,24,0.20);
+}
+.header-info-item:last-child { border-right: 1px solid rgba(36,16,24,0.20); }
+.header-info-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: white;
+  color: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(232,23,93,0.10);
+}
+.header-info-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.header-info-title {
+  font-family: var(--font-head);
+  font-size: .98rem;
+  font-weight: 800;
+  color: var(--brown);
+  line-height: 1.25;
+}
+.header-info-text {
+  font-size: .82rem;
+  color: var(--brown-light);
+  line-height: 1.45;
+  margin-top: 3px;
+}
 
 .hero {
   min-height: 100svh;
@@ -148,13 +233,13 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--pink); color: white; text-decoration: none;
+  background: var(--gradient-pink); color: white; text-decoration: none;
   font-family: var(--font-body); font-size: 0.9rem; font-weight: 700;
   padding: 14px 32px; border-radius: 100px;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 8px 24px rgba(214,56,104,0.30);
+  transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(232,23,93,0.32);
 }
-.btn-primary:hover { background: var(--pink-deep); transform: translateY(-2px); }
+.btn-primary:hover { filter: brightness(0.94); transform: translateY(-2px); }
 
 .btn-outline {
   display: inline-flex; align-items: center; gap: 8px;
@@ -310,7 +395,7 @@ section { padding: 100px 6%; }
 }
 .feat-card::before {
   content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg,var(--pink),var(--pink-light));
+  background:var(--gradient-pink);
   transform:scaleX(0); transform-origin:left; transition:transform .3s;
 }
 .feat-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-soft); }
@@ -324,7 +409,7 @@ section { padding: 100px 6%; }
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
   margin-top: 48px;
 }
@@ -341,8 +426,8 @@ section { padding: 100px 6%; }
   border-radius: 0;
   overflow: hidden;
   width: 100%;
-  height: 320px;              
-  background: none; 
+  aspect-ratio: 1 / 1;
+  background: transparent;
 }
 
 .gal-img {
@@ -352,7 +437,7 @@ section { padding: 100px 6%; }
   object-position: center;
   display: block;
   transition: transform .4s;
-  background: none;
+  background: transparent;
 }
 
 .gal-item:hover .gal-img { transform: scale(1.02); }
@@ -364,7 +449,7 @@ section { padding: 100px 6%; }
 
 .gal-label-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .gal-badge {
-  background: var(--pink); color: white;
+  background: var(--gradient-pink); color: white;
   font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
   padding: 4px 12px; border-radius: 100px;
@@ -378,7 +463,7 @@ section { padding: 100px 6%; }
 .how-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
 .steps { display:flex; flex-direction:column; gap:30px; }
 .step { display:flex; gap:18px; align-items:flex-start; }
-.step-num { width:42px; height:42px; background:var(--pink); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:1rem; font-weight:800; flex-shrink:0; }
+.step-num { width:42px; height:42px; background:var(--gradient-pink); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:1rem; font-weight:800; flex-shrink:0; }
 .step-title { font-family:var(--font-head); font-size:1.0rem; font-weight:700; color:var(--brown); margin-bottom:5px; }
 .step-desc { font-size:.87rem; color:var(--brown-light); line-height:1.75; }
 .how-img-main { background:white; border-radius:var(--r-xl); box-shadow:var(--shadow-soft); padding:36px 28px; text-align:center; }
@@ -392,7 +477,7 @@ section { padding: 100px 6%; }
 .mini-row { background:white; border-radius:5px; height:17px; opacity:.8; }
 
 .about { background:var(--brown); color:white; position:relative; overflow:hidden; }
-.about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(214,56,104,0.13); }
+.about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(255,45,120,0.16); }
 .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; position:relative; z-index:1; }
 .about .section-tag { color:var(--pink-light); }
 .about .section-title { color:white; }
@@ -404,8 +489,24 @@ section { padding: 100px 6%; }
 
 .about-photos {
   display: grid;
-  grid-template-rows: 280px 280px;
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.about-photo {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+}
+
+.about-photo:first-child {
+  aspect-ratio: 4 / 3;
+}
+
+.about-photo:last-child {
+  aspect-ratio: 3 / 4;
+  margin-top: 52px;
 }
 
 .about-img {
@@ -415,6 +516,7 @@ section { padding: 100px 6%; }
   object-position: center;
   display: block;
   border-radius: var(--r-lg);
+  background: transparent;
   filter: brightness(1.05) saturate(1.1); /* counteract dark bg */
 }
 
@@ -427,22 +529,99 @@ section { padding: 100px 6%; }
 .ic-rl { color:rgba(255,255,255,0.48); }
 .ic-rv { color:white; font-weight:600; }
 
-.cta-section { background:var(--pink-pale); text-align:center; }
-.cta-section .section-title { color:var(--brown); margin:0 auto 14px; }
-.cta-section .section-sub { margin:0 auto 40px; color:var(--brown-light); }
-.cta-contact { margin-top:26px; font-size:.88rem; color:var(--brown-light); }
+.cta-section { background:var(--pink-pale); }
+.contact-inner {
+  display: grid;
+  grid-template-columns: minmax(460px, 1fr) minmax(260px, 360px);
+  gap: 54px;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.contact-copy { text-align: left; }
+.cta-section .section-tag { margin-bottom: 9px; }
+.cta-section .section-title { color:var(--brown); margin:0 0 16px; font-size:clamp(2.35rem,4vw,3.35rem); max-width:620px; }
+.cta-section .section-sub { margin:0 0 32px; color:var(--brown-light); font-size:1.12rem; line-height:1.7; max-width:620px; }
+.cta-section .btn-primary { font-size:1.02rem; padding:16px 38px; }
+.cta-contact { margin-top:26px; font-size:1rem; line-height:1.65; color:var(--brown-light); max-width:520px; }
 .cta-contact a { color:var(--pink); text-decoration:none; font-weight:700; }
+.contact-map-wrap {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid rgba(232,23,93,0.20);
+  background: transparent;
+  box-shadow: var(--shadow-card);
+  display: block;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.contact-map-wrap:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(232,23,93,0.18);
+}
+.contact-map-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--pink-deep);
+  font-size: .82rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.contact-map-prompt svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .2s ease;
+}
+.contact-map-link:hover .contact-map-prompt svg { transform: translate(2px, -2px); }
+.contact-map-wrap.map-missing::after {
+  content: 'Add map image at public/images/map.jpg';
+  display: block;
+  padding: 34px 18px;
+  color: var(--brown-light);
+  font-size: .85rem;
+  font-weight: 700;
+}
+.contact-map-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: transparent;
+}
+.contact-map-link {
+  color: inherit;
+  text-decoration: none;
+}
 
 footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 40px; }
 .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
 .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration: none; }
-.footer-logo img { height:32px; width:auto; object-fit:contain; }
+.footer-logo img { height:56px; width:auto; object-fit:contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.22)); }
 .footer-logo-fb { font-family:var(--font-head); font-size:1.2rem; font-weight:800; color:white; letter-spacing:-.02em; }
 .footer-logo-fb span { color:var(--pink-light); }
 .footer-brand p { font-size:.83rem; line-height:1.75; max-width:250px; }
 .footer-col h4 { font-size:.66rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(255,255,255,0.32); margin-bottom:16px; font-weight:700; }
 .footer-col a { display:block; font-size:.87rem; color:rgba(255,255,255,0.52); text-decoration:none; margin-bottom:10px; transition:color .2s; }
 .footer-col a:hover { color:var(--pink-light); }
+.footer-social {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.footer-social svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
 .footer-btm { border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:.78rem; }
 .footer-btm a { color:rgba(255,255,255,0.32); text-decoration:none; }
 .footer-btm a:hover { color:var(--pink-light); }
@@ -459,27 +638,69 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .gal-item.tall{grid-row:span 1}
   .how-inner{grid-template-columns:1fr}
   .about-inner{grid-template-columns:1fr}
+  .about-photos{max-width:760px;width:100%;margin:0 auto;}
   .footer-inner{grid-template-columns:1fr 1fr}
   .nav-links li:not(:last-child){display:none}
+  .contact-inner{grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:36px;}
+  .cta-section .section-title{font-size:clamp(2rem,4vw,2.7rem);}
+  .cta-section .section-sub{font-size:1rem;}
+  .header-info-inner{grid-template-columns:1fr 1fr;gap:18px;}
+  .header-info-item{border:1px solid rgba(36,16,24,0.14);border-radius:var(--r-md);padding:16px;background:rgba(255,255,255,0.55);}
+  .header-info-item:last-child{border-right:1px solid rgba(36,16,24,0.14);}
+}
+@media(max-width:760px){
+  nav{top:46px;height:auto;min-height:76px;padding:10px 5%;gap:14px;flex-wrap:wrap;border-radius:28px;width:calc(100% - 28px);}
+  nav.scrolled{top:12px;}
+  .top-notice{font-size:.74rem;min-height:30px;}
+  .header-info-strip{padding:138px 5% 10px;}
+  .nav-logo img{height:44px;}
+  .nav-logo-fb{font-size:1.22rem;}
+  .nav-links{gap:0;margin-left:auto;}
+  section{padding:72px 5%;}
+  .hero{padding:108px 5% 70px;}
+  .hero-actions{align-items:stretch;}
+  .btn-primary,.btn-outline{justify-content:center;width:100%;}
+  .gallery-grid{grid-template-columns:1fr;max-width:460px;margin-left:auto;margin-right:auto;}
+  .about-photos{grid-template-columns:1fr;max-width:460px;}
+  .about-photo:last-child{margin-top:0;aspect-ratio:3 / 4;}
+  .contact-inner{grid-template-columns:1fr;gap:32px;max-width:460px;}
+  .contact-copy{text-align:center;}
+  .cta-section .section-title,.cta-section .section-sub{margin-left:auto;margin-right:auto;}
+  .cta-contact{margin-left:auto;margin-right:auto;}
+  .footer-btm{flex-direction:column;gap:16px;align-items:flex-start;}
 }
 @media(max-width:600px){
   .features-grid{grid-template-columns:1fr}
   .gallery-grid{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr}
   .hero h1{font-size:2.2rem}
+  .amenities{grid-template-columns:1fr;}
+  .mini-phones{transform:scale(.9);transform-origin:center;}
+  .contact-map-wrap{border-radius:var(--r-md);}
+  .header-info-inner{grid-template-columns:1fr;}
+  .header-info-item{grid-template-columns:40px 1fr;}
+  .header-info-icon{width:40px;height:40px;}
+}
+@media(max-width:420px){
+  .hero-chip{font-size:.74rem;padding:7px 11px;}
+  .section-title{font-size:1.72rem;}
+  .gal-label{padding:14px 16px 18px;}
+  .gal-label-top{align-items:flex-start;flex-direction:column;gap:6px;}
 }
 
 </style>
 </head>
 <body>
 
+<header class="site-header">
+<div class="top-notice">Sanctissimo Rosario Ladies Dormitory &middot; Safe student housing near UST</div>
+
 <nav id="navbar">
   <a href="#" class="nav-logo">
     <img src="{{ asset('images/logo.png') }}"
          alt="DormEase Logo"
-         style="height: 38px; width: auto; object-fit: contain; display: block;"
          onerror="this.style.display='none'">
-    <span class="nav-logo-fb" style="font-family: var(--font-head); font-size: 1.3rem; font-weight: 800; color: var(--brown); letter-spacing: -0.02em;">Dorm<span style="color: var(--pink);">Ease</span></span>
+    <span class="nav-logo-fb">Dorm<span>Ease</span></span>
   </a>
 
   <ul class="nav-links">
@@ -490,6 +711,64 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
 </nav>
+
+<div class="header-info-strip">
+  <div class="header-info-inner">
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 11l9-7 9 7"></path>
+          <path d="M5 10v10h14V10"></path>
+          <path d="M9 20v-6h6v6"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Ladies Dormitory</div>
+        <div class="header-info-text">Study-friendly rooms for female students in Sampaloc.</div>
+      </div>
+    </div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21s7-4.4 7-11a7 7 0 1 0-14 0c0 6.6 7 11 7 11z"></path>
+          <circle cx="12" cy="10" r="2.5"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Near UST &amp; UBelt</div>
+        <div class="header-info-text">Located along Navarra Street with nearby campus access.</div>
+      </div>
+    </div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"></path>
+          <path d="M9.5 12l1.8 1.8 3.7-4"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">24/7 Security</div>
+        <div class="header-info-text">CCTV, secure entry, and dorm support for tenants.</div>
+      </div>
+    </div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M6 7v13h12V7"></path>
+          <path d="M9 7V5h6v2"></path>
+          <path d="M9 12h6"></path>
+          <path d="M9 16h4"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Rooms &amp; Amenities</div>
+        <div class="header-info-text">Semi-furnished rooms with Wi-Fi, elevator, and own bathroom.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</header>
 
 <section class="hero">
 
@@ -625,7 +904,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="how-img-main reveal">
       <div class="mini-phones">
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">DORMEASE</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:70%"></div><div class="mini-row"></div><div class="mini-row" style="width:80%"></div><div class="mini-row"></div></div></div></div>
-        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:#9C2046"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
+        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:var(--pink-deep)"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">WATER BILL</div></div><div class="mini-bdy"><div style="background:white;border-radius:4px;height:26px;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;font-weight:800;color:var(--pink);font-family:var(--font-head)">₱248.50</span></div><div class="mini-row" style="width:75%"></div><div class="mini-row"></div><div class="mini-row" style="width:55%"></div></div></div></div>
       </div>
       <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
@@ -659,13 +938,13 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
 
 <div class="about-photos reveal">
-  <div style="border-radius:var(--r-lg); overflow:hidden; height:280px;">
+  <div class="about-photo">
     <img src="{{ asset('images/exterior.png') }}"
          alt="Dorm Exterior"
          class="about-img"
          style="object-position: center 16%;">
   </div>
-  <div style="border-radius:var(--r-lg); overflow:hidden; height:280px;">
+  <div class="about-photo">
     <img src="{{ asset('images/interior.png') }}"
          alt="Room Interior"
          class="about-img"
@@ -675,8 +954,9 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </section>
 
 <section class="cta-section" id="contact">
-  <div class="reveal">
-    <div class="section-tag" style="text-align:center;">Get DormEase</div>
+  <div class="contact-inner reveal">
+    <div class="contact-copy">
+      <div class="section-tag">Get DormEase</div>
     <h2 class="section-title">Ready to experience<br>a <em>smarter</em> dorm life?</h2>
     <p class="section-sub">DormEase is available to all tenants of Sanctissimo Rosario Ladies Dormitory. Contact the administration to get access.</p>
     <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
@@ -686,6 +966,26 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="cta-contact">
       1229 Navarra Street, Sampaloc, Manila &nbsp;·&nbsp; Near UST &amp; University Belt
     </div>
+    </div>
+    <a class="contact-map-link"
+       href="https://maps.google.com/?q=1235%20Navarra%20St,%20Sampaloc,%20Manila,%201015%20Metro%20Manila&ftid=0x3397b5ffdcdacc75:0x38ad8e34f1c2236f&entry=gps&lucs=,94284469,94231188,47071704,94218641,94282134,94286869&g_st=ipc"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Open Sanctissimo Rosario Ladies Dormitory in Google Maps">
+      <span class="contact-map-wrap">
+        <img src="{{ asset('images/map.jpg') }}"
+             alt="Map to Sanctissimo Rosario Ladies Dormitory"
+             class="contact-map-img"
+             onerror="this.style.display='none';this.parentElement.classList.add('map-missing')">
+      </span>
+      <span class="contact-map-prompt">
+        Click here to see directions
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 17L17 7"></path>
+          <path d="M9 7h8v8"></path>
+        </svg>
+      </span>
+    </a>
   </div>
 </section>
 
@@ -695,7 +995,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       <div class="footer-logo">
 
         <a href="{{ route('login') }}" class="footer-logo">
-            <img src="YOUR_LOGO_WHITE_URL_HERE"
+            <img src="{{ asset('images/logo.png') }}"
                 alt="DormEase"
                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
             <span class="footer-logo-fb" style="display:none;">Dorm<span>Ease</span></span>
@@ -721,6 +1021,12 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="footer-col">
       <h4>Contact</h4>
       <a href="tel:+639175359723">+63 917 535 9723</a>
+      <a class="footer-social" href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.23.2 2.23.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z"/>
+        </svg>
+        fb.com/USTNavarra
+      </a>
       <a href="#">1229 Navarra St.</a>
       <a href="#">Sampaloc, Manila</a>
     </div>
