@@ -106,7 +106,7 @@
     .nav-item {
         display: flex; align-items: center; gap: .75rem;
         padding: .68rem .85rem; border-radius: 10px;
-        font-size: .87rem; font-weight: 500; color: var(--ink-muted);
+        font-size: .87rem; font-weight: 500; color: #E8175D;
         cursor: pointer; margin-bottom: .15rem;
         transition: background .2s, color .2s;
         border: none; background: none; width: 100%; text-align: left;
@@ -119,7 +119,8 @@
     }
     .nav-item.active img { filter: brightness(0) invert(1); }
     .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
-    .nav-icon img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
+    .nav-icon img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
 
     .nav-divider { height: 1.5px; background: var(--baby-pink); margin: .6rem 0; }
 
