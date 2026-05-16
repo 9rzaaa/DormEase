@@ -111,15 +111,15 @@
 
     .stat-label {
         font-size: .85rem;
-        color: rgba(255,255,255,.85);
-        font-weight: 500;
+        color: white;
+        font-weight: 700;
         margin-top: .2rem;
     }
 
     .stat-sub {
         font-size: .76rem;
-        color: rgba(255,255,255,.65);
-        font-weight: 600;
+        color: white;
+        font-weight: 700;
         margin-top: .15rem;
     }
 
@@ -270,6 +270,7 @@
 .table-controls .sort-select option {
     color: #e8175d;
     background: #fff;
+    font-weight: 700;
 }
 
 .table-controls .filter-divider {
@@ -278,13 +279,6 @@
     background: rgba(255,255,255,.45);
     flex-shrink: 0;
 }
-
-@media (max-width: 900px) {
-    .table-header { flex-direction: column; align-items: flex-start; }
-    .table-controls { flex-wrap: wrap; }
-    .table-controls .search-wrap input { width: 150px; }
-}
-
     /* ───────── TABLE ───────── */
     .table-wrap { overflow-x: auto; }
 
@@ -294,7 +288,7 @@
         padding: .75rem 1rem;
         font-size: .75rem;
         text-transform: uppercase;
-        color: var(--ink-muted);
+        color: #e8175d;
         background: var(--pink-bg);
         text-align: center;
         font-weight: 700;
