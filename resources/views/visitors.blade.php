@@ -23,7 +23,7 @@
     .page-header h1 {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--ink);
+        color: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);;
         letter-spacing: -.02em;
         line-height: 1.15;
     }
@@ -31,7 +31,7 @@
     .page-header .dorm-name {
         font-size: 1rem;
         font-weight: 600;
-        color: var(--pink);
+        color: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);;
         margin-top: .2rem;
     }
 
@@ -62,100 +62,160 @@
         color: var(--pink);
     }
 
+    /* ───────── STATS ───────── */
     .stats-row {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr 1fr;
         gap: 1.2rem;
-        max-width: 680px;
     }
 
     .stat-box {
-        background: var(--white);
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-        padding: 1.3rem 1.5rem;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(255,79,147,.25);
+        padding: 1.6rem 1.8rem;
         display: flex;
         align-items: center;
-        gap: 1.2rem;
+        gap: 1.4rem;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .stat-icon-circle {
-        width: 58px;
-        height: 58px;
+        width: 72px;
+        height: 72px;
         border-radius: 50%;
-        flex-shrink: 0;
-        background: var(--pink);
+        background: rgba(255,255,255,.18);
+        backdrop-filter: blur(8px);
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,.25);
+    }
+
+    .stat-icon-circle img {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
     }
 
     .stat-num {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 700;
-        color: var(--ink);
+        color: #fff;
         line-height: 1;
         letter-spacing: -.03em;
     }
 
     .stat-label {
-        font-size: .8rem;
-        color: var(--pink);
-        font-weight: 600;
+        font-size: .85rem;
+        color: rgba(255,255,255,.85);
+        font-weight: 500;
         margin-top: .2rem;
     }
 
+    .stat-sub {
+        font-size: .76rem;
+        color: rgba(255,255,255,.65);
+        font-weight: 600;
+        margin-top: .15rem;
+    }
+
+    @media (max-width: 640px) {
+        .stats-row { grid-template-columns: 1fr; }
+    }
+
+    /* ───────── FILTERS ───────── */
     .filters-row {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
+        gap: .75rem;
+        flex-wrap: nowrap;
+        padding: .75rem 1.1rem;
     }
 
     .filter-group {
         display: flex;
         align-items: center;
-        gap: .5rem;
+        gap: .4rem;
+        flex-shrink: 0;
     }
 
     .filter-label {
-        font-size: .83rem;
-        font-weight: 600;
-        color: var(--ink-muted);
+        font-size: .8rem;
+        font-weight: 700;
+        color: #b03060;
+        background: #ffffff;
+        white-space: nowrap;
     }
 
-    .sort-select {
-        padding: .5rem .8rem;
-        border-radius: 9px;
-        border: 1.5px solid var(--gray-light);
-        background: var(--white);
-        font-size: .83rem;
-        color: var(--ink-muted);
-        cursor: pointer;
-    }
-
+    .sort-select,
     .date-input {
-        padding: .5rem .8rem;
+        padding: .45rem .75rem;
         border-radius: 9px;
-        border: 1.5px solid var(--gray-light);
-        background: var(--white);
-        font-size: .83rem;
+        border: 2px solid #ffd3e3;
+        background: #ffffff;
+        font-size: .82rem;
+        color: #b03060;
+        cursor: pointer;
+        outline: none;
+        transition: border-color .2s;
+        white-space: nowrap;
+    }
+
+    .sort-select:focus,
+    .date-input:focus {
+        border-color: #E8175D;
+    }
+
+    .filter-divider {
+        width: 1px;
+        height: 22px;
+        background: #ffd3e3;
+        flex-shrink: 0;
     }
 
     .search-wrap {
         position: relative;
         margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    .search-wrap .search-icon {
+        position: absolute;
+        left: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 13px;
+        opacity: 0.5;
+        pointer-events: none;
     }
 
     .search-wrap input {
-        padding: .5rem .9rem .5rem 2.2rem;
+        padding: .45rem .9rem;
         border-radius: 9px;
-        border: 1.5px solid var(--gray-light);
-        font-size: .85rem;
-        width: 220px;
+        border: 2px solid #ffd3e3;
+        font-size: .83rem;
+        width: 200px;
+        background: #ffffff;
+        color: #b03060;
+        outline: none;
+        transition: border-color .2s;
     }
 
+    .search-wrap input:focus {
+        border-color: #E8175D;
+    }
+
+    .search-wrap input::placeholder {
+        color: #d08aaa;
+    }
+
+    /* ───────── TABLE CARD ───────── */
     .table-card {
         background: var(--white);
         border-radius: 16px;
@@ -191,6 +251,7 @@
         background: var(--pink-bg);
     }
 
+    /* ───────── BADGES ───────── */
     .badge {
         padding: .28rem .75rem;
         border-radius: 7px;
@@ -222,6 +283,7 @@
         border: 1.5px solid var(--pink-light);
     }
 
+    /* ───────── ACTION BUTTON ───────── */
     .act-btn {
         width: 30px;
         height: 30px;
@@ -231,149 +293,110 @@
         cursor: pointer;
     }
 
-    .search-wrap {
-    position: relative;
-    margin-left: auto;
-}
-
-.search-wrap .search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.search-wrap input {
-    padding: .5rem .9rem .5rem 2.2rem;
-    border-radius: 9px;
-    border: 1.5px solid var(--gray-light);
-    font-size: .85rem;
-    width: 220px;
-}
-
-.stat-icon-circle img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-}
-
-.stat-box:nth-child(2) .stat-icon-circle img {
-    width: 34px;
-    height: 34px;
-}
-.inside-icon {
-    width: 34px; !important;
-    height: 34px; !important;
-    object-fit: contain;
-
-}
-
-/* =========================
-   VISITOR MODAL
-========================= */
-
-.visitor-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-}
-
-.visitor-modal-card {
-    background: var(--white);
-    width: 620px;
-    max-width: 100%;
-    border-radius: 28px;
-    padding: 2.2rem 2.5rem;
-    box-shadow: 0 15px 40px rgba(0,0,0,.18);
-    position: relative;
-    animation: modalFade .25s ease;
-}
-
-@keyframes modalFade {
-    from {
-        opacity: 0;
-        transform: translateY(10px) scale(.98);
+    /* ───────── VISITOR MODAL ───────── */
+    .visitor-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    .visitor-modal-card {
+        background: var(--white);
+        width: 620px;
+        max-width: 100%;
+        border-radius: 28px;
+        padding: 2.2rem 2.5rem;
+        box-shadow: 0 15px 40px rgba(0,0,0,.18);
+        position: relative;
+        animation: modalFade .25s ease;
     }
-}
 
-.visitor-modal-close {
-    position: absolute;
-    top: 18px;
-    right: 22px;
-    border: none;
-    background: none;
-    font-size: 2rem;
-    color: #8d7480;
-    cursor: pointer;
-    transition: .2s ease;
-}
+    @keyframes modalFade {
+        from { opacity: 0; transform: translateY(10px) scale(.98); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);   }
+    }
 
-.visitor-modal-close:hover {
-    color: var(--pink);
-    transform: scale(1.08);
-}
+    .visitor-modal-close {
+        position: absolute;
+        top: 18px;
+        right: 22px;
+        border: none;
+        background: none;
+        font-size: 2rem;
+        color: #8d7480;
+        cursor: pointer;
+        transition: .2s ease;
+    }
 
-.visitor-modal-header {
-    display: flex;
-    align-items: center;
-    gap: .8rem;
-    margin-bottom: 2rem;
-}
+    .visitor-modal-close:hover {
+        color: var(--pink);
+        transform: scale(1.08);
+    }
 
-.visitor-modal-icon {
-    font-size: 1.7rem;
-    color: #6c3eb8;
-}
+    .visitor-modal-header {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+        margin-bottom: 2rem;
+    }
 
-.visitor-modal-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--ink);
-    letter-spacing: -.02em;
-}
+    .visitor-modal-icon {
+        font-size: 1.7rem;
+        color: #6c3eb8;
+    }
 
-.visitor-modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+    .visitor-modal-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -.02em;
+    }
 
-.modal-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1.2rem;
-    padding-bottom: .95rem;
-    border-bottom: 1px solid #eee;
-}
+    .visitor-modal-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 
-.modal-label {
-    color: #8d7480;
-    font-size: .82rem;
-    font-weight: 500;
-}
+    .modal-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.2rem;
+        padding-bottom: .95rem;
+        border-bottom: 1px solid #eee;
+    }
 
-.modal-value {
-    color: var(--ink);
-    font-size: .82rem;
-    font-weight: 600;
-    text-align: right;
-}
+    .modal-label {
+        color: #8d7480;
+        font-size: .82rem;
+        font-weight: 500;
+    }
+
+    .modal-value {
+        color: var(--ink);
+        font-size: .82rem;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    /* ───────── ANIMATIONS ───────── */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    .fade-up { animation: fadeIn .45s ease both; }
+    .d1 { animation-delay: .05s; }
+    .d2 { animation-delay: .12s; }
+    .d3 { animation-delay: .2s;  }
+    .d4 { animation-delay: .28s; }
 </style>
 @endsection
 
@@ -418,76 +441,64 @@
         </div>
     </div>
 
-    <div class="stats-row">
-
-        <div class="stat-box">
-                <div class="stat-icon-circle">
-                <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="icon-md">
+    <div class="stats-row fade-up d2">
+    <div class="stat-box">
+        <div class="stat-icon-circle">
+            <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Visitors">
         </div>
-
-            <div>
-                <div class="stat-num">{{ $visitorsToday ?? 0 }}</div>
-                <div class="stat-label">Visitors Today</div>
-            </div>
+        <div>
+            <div class="stat-num">{{ $visitorsToday }}</div>
+            <div class="stat-label">Visitors Today</div>
+            <div class="stat-sub">Expected for {{ now()->format('M d, Y') }}</div>
         </div>
-
-        <div class="stat-box">
-            <div class="stat-icon-circle">
-                <img src="{{ asset('icons/tenants.png') }}" class="icon-md inside-icon">            </div>
-
-            <div>
-                <div class="stat-num">{{ $currentlyInside ?? 0 }}</div>
-                <div class="stat-label">Currently Inside</div>
-            </div>
-        </div>
-
     </div>
+    <div class="stat-box">
+        <div class="stat-icon-circle">
+            <img src="{{ asset('icons/tenants.png') }}" alt="Inside">
+        </div>
+        <div>
+            <div class="stat-num">{{ $currentlyInside }}</div>
+            <div class="stat-label">Currently Inside</div>
+            <div class="stat-sub">Checked in, not yet checked out</div>
+        </div>
+    </div>
+</div>
 
     <div class="filters-row">
 
-        <div class="filter-group">
-            <span class="filter-label">Sort:</span>
-
-            <select id="sort-select" class="sort-select" onchange="applyFilters()">
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="name">Name</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <span class="filter-label">From:</span>
-
-            <input
-                type="date"
-                id="date-from"
-                class="date-input"
-                onchange="applyFilters()"
-            >
-        </div>
-
-        <div class="filter-group">
-            <span class="filter-label">To:</span>
-
-            <input
-                type="date"
-                id="date-to"
-                class="date-input"
-                onchange="applyFilters()"
-            >
-        </div>
-
-        <div class="search-wrap">
-            <span class="search-icon">🔍</span>
-
-                <input
-                type="text"
-                id="search-input"
-                placeholder="Search visitor..."
-                onkeyup="applyFilters()"
-        >
-</div>
+    <div class="filter-group">
+        <span class="filter-label">Sort:</span>
+        <select id="sort-select" class="sort-select" onchange="applyFilters()">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name</option>
+        </select>
     </div>
+
+    <div class="filter-divider"></div>
+
+    <div class="filter-group">
+        <span class="filter-label">From:</span>
+        <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
+    </div>
+
+    <div class="filter-group">
+        <span class="filter-label">To:</span>
+        <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <div class="search-wrap">
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search visitor..."
+            onkeyup="applyFilters()"
+        >
+    </div>
+
+</div>
 
     <div class="table-card">
 
