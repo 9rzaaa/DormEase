@@ -22,7 +22,7 @@
     .page-header h1 {
         font-size: 2rem;
         font-weight: 700;
-        color: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);;
+        color: #E8175D;
         letter-spacing: -.02em;
         line-height: 1.15;
     }
@@ -30,7 +30,7 @@
     .page-header .dorm-name {
         font-size: 1rem;
         font-weight: 600;
-        color: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);;
+        color: #E8175D;
         margin-top: .2rem;
     }
 
@@ -101,13 +101,6 @@
         filter: brightness(0) invert(1);
     }
 
-    .stat-icon-circle img {
-        width: 26px;
-        height: 26px;
-        object-fit: contain;
-        filter: brightness(0) invert(1);
-    }
-
     .stat-num {
         font-size: 2.2rem;
         font-weight: 700;
@@ -134,92 +127,6 @@
         .stats-row { grid-template-columns: 1fr; }
     }
 
-    /* ───────── FILTERS ───────── */
-    .filters-row {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        flex-wrap: nowrap;
-        padding: .75rem 1.1rem;
-    }
-
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: .4rem;
-        flex-shrink: 0;
-    }
-
-    .filter-label {
-        font-size: .8rem;
-        font-weight: 700;
-        color: #b03060;
-        background: #ffffff;
-        white-space: nowrap;
-    }
-
-    .sort-select,
-    .date-input {
-        padding: .45rem .75rem;
-        border-radius: 9px;
-        border: 2px solid #ffd3e3;
-        background: #ffffff;
-        font-size: .82rem;
-        color: #b03060;
-        cursor: pointer;
-        outline: none;
-        transition: border-color .2s;
-        white-space: nowrap;
-    }
-
-    .sort-select:focus,
-    .date-input:focus {
-        border-color: #E8175D;
-    }
-
-    .filter-divider {
-        width: 1px;
-        height: 22px;
-        background: #ffd3e3;
-        flex-shrink: 0;
-    }
-
-    .search-wrap {
-        position: relative;
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-
-    .search-wrap .search-icon {
-        position: absolute;
-        left: 9px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 13px;
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
-    .search-wrap input {
-        padding: .45rem .9rem;
-        border-radius: 9px;
-        border: 2px solid #ffd3e3;
-        font-size: .83rem;
-        width: 200px;
-        background: #ffffff;
-        color: #b03060;
-        outline: none;
-        transition: border-color .2s;
-    }
-
-    .search-wrap input:focus {
-        border-color: #E8175D;
-    }
-
-    .search-wrap input::placeholder {
-        color: #d08aaa;
-    }
-
     /* ───────── TABLE CARD ───────── */
     .table-card {
         background: var(--white);
@@ -227,8 +134,159 @@
         border: 1px solid var(--border);
         box-shadow: var(--shadow);
         overflow: hidden;
-        overflow-x: auto;
     }
+
+    /* ───────── TABLE HEADER ───────── */
+    .table-header {
+        padding: 1.1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        flex-wrap: wrap;
+        gap: .8rem;
+    }
+
+    .table-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+    }
+
+    .table-date {
+        font-size: .78rem;
+        color: rgba(255,255,255,.75);
+        margin-top: .1rem;
+    }
+
+    /* ───────── TABLE CONTROLS (inside header) ───────── */
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: nowrap;
+}
+
+.table-controls .search-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.table-controls .search-wrap .search-icon {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: #e8175d;
+    pointer-events: none;
+}
+
+.table-controls .search-wrap input {
+    padding: .45rem .9rem;
+    border-radius: 9px;
+    border: none;
+    font-size: .83rem;
+    width: 190px;
+    background: #ffffff;
+    color: #e8175d;
+    outline: none;
+    transition: box-shadow .2s;
+}
+
+.table-controls .search-wrap input:focus {
+    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
+}
+
+.table-controls .search-wrap input::placeholder {
+    color: #f0a0b8;
+}
+
+.table-controls .date-range-wrap {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    flex-shrink: 0;
+}
+
+.table-controls .date-range-wrap .range-label {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.table-controls .date-range-wrap .range-sep {
+    font-size: .8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.75);
+    white-space: nowrap;
+}
+
+.table-controls .date-input {
+    padding: .42rem .7rem;
+    border-radius: 9px;
+    border: none;
+    background: #ffffff;
+    font-size: .82rem;
+    color: #e8175d;
+    cursor: pointer;
+    outline: none;
+    transition: box-shadow .2s;
+    white-space: nowrap;
+}
+
+.table-controls .date-input:focus {
+    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
+}
+
+.table-controls .filter-label {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.table-controls .sort-select,
+.table-controls .date-input {
+    padding: .42rem .7rem;
+    border-radius: 9px;
+    border: none;
+    background: #ffffff;
+    font-size: .82rem;
+    color: #e8175d;
+    cursor: pointer;
+    outline: none;
+    transition: box-shadow .2s;
+    white-space: nowrap;
+}
+
+.table-controls .sort-select:focus,
+.table-controls .date-input:focus {
+    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
+}
+
+.table-controls .sort-select option {
+    color: #e8175d;
+    background: #fff;
+}
+
+.table-controls .filter-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255,255,255,.45);
+    flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+    .table-header { flex-direction: column; align-items: flex-start; }
+    .table-controls { flex-wrap: wrap; }
+    .table-controls .search-wrap input { width: 150px; }
+}
+
+    /* ───────── TABLE ───────── */
+    .table-wrap { overflow-x: auto; }
 
     table { width: 100%; border-collapse: collapse; min-width: 980px; }
 
@@ -254,27 +312,29 @@
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: var(--pink-bg); }
 
+    /* ───────── BADGES ───────── */
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
-    .badge-completed { background:#e8faf5; color:var(--green); border:1.5px solid var(--green); }
-    .badge-pending   { background:#fff9e6; color:#c8960c;      border:1.5px solid #f0c040;      }
-    .badge-denied    { background:#fff0f0; color:var(--red);   border:1.5px solid var(--blush); }
-    .badge-inside    { background:var(--pink-card); color:var(--pink); border:1.5px solid var(--pink-light); }
+    .badge-completed { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
+    .badge-pending   { background: #fff9e6; color: #c8960c;      border: 1.5px solid #f0c040;      }
+    .badge-denied    { background: #fff0f0; color: var(--red);   border: 1.5px solid var(--blush); }
+    .badge-inside    { background: var(--pink-card); color: var(--pink); border: 1.5px solid var(--pink-light); }
 
-    /* ───────── BADGES ───────── */
-    .badge {
-        padding: .28rem .75rem;
+    .time-pending { color: #bbb; font-style: italic; font-size: .78rem; }
+
+    /* ───────── ACTION BUTTON ───────── */
+    .act-btn {
+        width: 30px;
+        height: 30px;
         border-radius: 7px;
         border: 1.5px solid var(--gray-light);
         background: var(--white);
         cursor: pointer;
-        font-size: .9rem;
-        transition: border-color .2s, background .2s;
     }
 
     .act-btn:hover { border-color: var(--pink); background: var(--pink-bg); }
-    .time-pending { color: #bbb; font-style: italic; font-size: .78rem; }
 
+    /* ───────── VISITOR MODAL ───────── */
     .visitor-modal {
         display: none;
         position: fixed;
@@ -300,16 +360,20 @@
     }
 
     @keyframes modalFade {
-        from { opacity:0; transform:translateY(10px) scale(.98); }
-        to   { opacity:1; transform:translateY(0)    scale(1);   }
+        from { opacity: 0; transform: translateY(10px) scale(.98); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);   }
     }
 
     .visitor-modal-close {
         position: absolute;
-        top: 18px; right: 22px;
-        border: none; background: none;
-        font-size: 2rem; color: #8d7480;
-        cursor: pointer; line-height: 1;
+        top: 18px;
+        right: 22px;
+        border: none;
+        background: none;
+        font-size: 2rem;
+        color: #8d7480;
+        cursor: pointer;
+        line-height: 1;
         transition: color .2s;
     }
 
@@ -337,87 +401,6 @@
         letter-spacing: .06em;
         color: var(--pink);
         margin: 1.1rem 0 .3rem;
-    }
-
-    /* ───────── ACTION BUTTON ───────── */
-    .act-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 7px;
-        border: 1.5px solid var(--gray-light);
-        background: var(--white);
-        cursor: pointer;
-    }
-
-    /* ───────── VISITOR MODAL ───────── */
-    .visitor-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.45);
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        padding: 20px;
-    }
-
-    .visitor-modal-card {
-        background: var(--white);
-        width: 620px;
-        max-width: 100%;
-        border-radius: 28px;
-        padding: 2.2rem 2.5rem;
-        box-shadow: 0 15px 40px rgba(0,0,0,.18);
-        position: relative;
-        animation: modalFade .25s ease;
-    }
-
-    @keyframes modalFade {
-        from { opacity: 0; transform: translateY(10px) scale(.98); }
-        to   { opacity: 1; transform: translateY(0)    scale(1);   }
-    }
-
-    .visitor-modal-close {
-        position: absolute;
-        top: 18px;
-        right: 22px;
-        border: none;
-        background: none;
-        font-size: 2rem;
-        color: #8d7480;
-        cursor: pointer;
-        transition: .2s ease;
-    }
-
-    .visitor-modal-close:hover {
-        color: var(--pink);
-        transform: scale(1.08);
-    }
-
-    .visitor-modal-header {
-        display: flex;
-        align-items: center;
-        gap: .8rem;
-        margin-bottom: 2rem;
-    }
-
-    .visitor-modal-icon {
-        font-size: 1.7rem;
-        color: #6c3eb8;
-    }
-
-    .visitor-modal-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--ink);
-        letter-spacing: -.02em;
-    }
-
-    .visitor-modal-content {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
     }
 
     .modal-row {
@@ -485,29 +468,46 @@
     </div>
 
     <div class="stats-row fade-up d2">
-    <div class="stat-box">
-        <div class="stat-icon-circle">
-            <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Visitors">
+        <div class="stat-box">
+            <div class="stat-icon-circle">
+                <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Visitors">
+            </div>
+            <div>
+                <div class="stat-num">{{ $visitorsToday }}</div>
+                <div class="stat-label">Visitors Today</div>
+                <div class="stat-sub">Expected for {{ now()->format('M d, Y') }}</div>
+            </div>
         </div>
-        <div>
-            <div class="stat-num">{{ $visitorsToday }}</div>
-            <div class="stat-label">Visitors Today</div>
-            <div class="stat-sub">Expected for {{ now()->format('M d, Y') }}</div>
+        <div class="stat-box">
+            <div class="stat-icon-circle">
+                <img src="{{ asset('icons/tenants.png') }}" alt="Inside">
+            </div>
+            <div>
+                <div class="stat-num">{{ $currentlyInside }}</div>
+                <div class="stat-label">Currently Inside</div>
+                <div class="stat-sub">Checked in, not yet checked out</div>
+            </div>
         </div>
     </div>
-    <div class="stat-box">
-        <div class="stat-icon-circle">
-            <img src="{{ asset('icons/tenants.png') }}" alt="Inside">
-        </div>
-        <div>
-            <div class="stat-num">{{ $currentlyInside }}</div>
-            <div class="stat-label">Currently Inside</div>
-            <div class="stat-sub">Checked in, not yet checked out</div>
-        </div>
-    </div>
-</div>
 
-    <div class="filters-row">
+    <div class="table-card">
+        <div class="table-header">
+            <div>
+                <div class="table-title">All Visitors</div>
+                <div class="table-date">as of {{ now()->format('F d, Y') }}</div>
+            </div>
+
+            <div class="table-controls">
+    <div class="search-wrap">
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search visitor..."
+            onkeyup="applyFilters()"
+        >
+    </div>
+
+    <div class="filter-divider"></div>
 
     <div class="filter-group">
         <span class="filter-label">Sort:</span>
@@ -520,46 +520,34 @@
 
     <div class="filter-divider"></div>
 
-    <div class="filter-group">
-        <span class="filter-label">From:</span>
+    {{-- Single date range --}}
+    <div class="date-range-wrap">
+        <span class="range-label">Date:</span>
         <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
-    </div>
-
-    <div class="filter-group">
-        <span class="filter-label">To:</span>
+        <span class="range-sep">—</span>
         <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
     </div>
-
-    <div class="filter-divider"></div>
-
-    <div class="search-wrap">
-        <input
-            type="text"
-            id="search-input"
-            placeholder="Search visitor..."
-            onkeyup="applyFilters()"
-        >
-    </div>
-
 </div>
+        </div>
 
-    <div class="table-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Expected Visit</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Purpose</th>
-                    <th>Tenant Visited</th>
-                    <th>Logged By</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="logs-tbody"></tbody>
-        </table>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Expected Visit</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Purpose</th>
+                        <th>Tenant Visited</th>
+                        <th>Logged By</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-tbody"></tbody>
+            </table>
+        </div>
     </div>
 
 </div>
@@ -581,7 +569,7 @@
 
     function fmtDate(s) {
         if (!s) return '—';
-        const d = new Date(s + 'T00:00:00'); // prevent UTC midnight rollback
+        const d = new Date(s + 'T00:00:00');
         return d.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
     }
 
