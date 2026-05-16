@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,8 +11,17 @@ class Announcement extends Model
     public $timestamps    = false;
 
     protected $fillable = [
-        'posted_by', 'title', 'content',
-        'priority', 'status', 'attachment', 'posted_at',
+        'posted_by',
+        'title',
+        'content',
+        'priority',
+        'status',
+        'attachment',
+        'posted_at',
+    ];
+
+    protected $casts = [
+        'posted_at' => 'datetime',
     ];
 
     public function getIdAttribute()

@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Announcements')
+@section('title', 'DormEase: Announcements')
 @section('page-title', 'Announcements')
 
 @section('styles')
@@ -270,7 +270,7 @@
             <img src="{{ asset('icons/warning.png') }}" alt=""> High Priority
         </button>
         <button class="filter-btn" onclick="setFilter(this,'low')">
-            <img src="{{ asset('icons/check.png') }}" alt=""> Low Priority
+            <img src="{{ asset('icons/lowprio.png') }}" alt=""> Low Priority
         </button>
     </div>
 
@@ -427,7 +427,7 @@
                     </div>
                 @empty
                     <div class="empty-col">
-                        <img class="empty-icon" src="{{ asset('icons/archive.png') }}" alt="">
+                        <img class="empty-icon" src="{{ asset('icons/check.png') }}" alt="">
                         <div>No closed announcements</div>
                     </div>
                 @endforelse
