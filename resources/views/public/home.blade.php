@@ -647,6 +647,28 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   letter-spacing:.02em;
 }
 
+/* Scroll-to-top button */
+    #scrollTopBtn {
+      position:fixed; bottom:32px; right:32px; z-index:999;
+      width:50px; height:50px; border:none; border-radius:50%;
+      background:var(--gradient-pink); color:white;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; box-shadow:0 8px 24px rgba(232,23,93,.36);
+      opacity:0; transform:translateY(16px) scale(.85);
+      transition:opacity .3s ease, transform .3s ease, box-shadow .2s;
+      pointer-events:none;
+    }
+    #scrollTopBtn.visible {
+      opacity:1; transform:translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    #scrollTopBtn:hover {
+      box-shadow:0 12px 32px rgba(232,23,93,.52);
+      transform:translateY(-3px) scale(1.07);
+    }
+    #scrollTopBtn:active { transform:translateY(0) scale(.96); }
+    #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
 .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s} .d4{transition-delay:.40s}
@@ -690,6 +712,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .cta-contact{margin-left:auto;margin-right:auto;}
   .footer-btm{flex-direction:column;gap:16px;align-items:flex-start;}
   .footer-btm-right{align-items:flex-start;}
+  #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
 }
 @media(max-width:600px){
   .features-grid{grid-template-columns:1fr}
@@ -1070,9 +1093,24 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </div>
 </footer>
 
+<!-- Scroll to Top Button -->
+<button id="scrollTopBtn" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+
+  // Scroll-to-top logic
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', scrollY > 300);
+  });
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.10 });
