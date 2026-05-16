@@ -119,7 +119,7 @@
     .stat-sub {
         font-size: .76rem;
         color: white;
-        font-weight: 700;
+        font-weight: 500;
         margin-top: .15rem;
     }
 
