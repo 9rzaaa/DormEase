@@ -11,6 +11,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FrontdeskController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
+Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
 
 Route::get('/login', function () {
     if (Auth::guard('staff')->check()) {
