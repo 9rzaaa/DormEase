@@ -611,20 +611,41 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 .footer-col h4 { font-size:.66rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(255,255,255,0.32); margin-bottom:16px; font-weight:700; }
 .footer-col a { display:block; font-size:.87rem; color:rgba(255,255,255,0.52); text-decoration:none; margin-bottom:10px; transition:color .2s; }
 .footer-col a:hover { color:var(--pink-light); }
-.footer-social {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 8px;
-}
-.footer-social svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-  flex-shrink: 0;
-}
-.footer-btm { border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:.78rem; }
+.footer-btm { border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; display:flex; justify-content:space-between; align-items:center; gap:22px; font-size:.78rem; }
+.footer-btm-right { display:flex; gap:22px; align-items:center; flex-wrap:wrap; }
+.footer-links { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
 .footer-btm a { color:rgba(255,255,255,0.32); text-decoration:none; }
 .footer-btm a:hover { color:var(--pink-light); }
+.footer-socials { display:flex; align-items:center; gap:12px; }
+.footer-social-icon {
+  position:relative;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:#111;
+  color:white;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.14);
+  transition:transform .2s, background .2s, border-color .2s;
+}
+.footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
+.footer-social-icon img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.footer-social-fallback {
+  font-family:var(--font-head);
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:.02em;
+}
 
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
@@ -668,6 +689,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .cta-section .section-title,.cta-section .section-sub{margin-left:auto;margin-right:auto;}
   .cta-contact{margin-left:auto;margin-right:auto;}
   .footer-btm{flex-direction:column;gap:16px;align-items:flex-start;}
+  .footer-btm-right{align-items:flex-start;}
 }
 @media(max-width:600px){
   .features-grid{grid-template-columns:1fr}
@@ -696,7 +718,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 <div class="top-notice">Sanctissimo Rosario Ladies Dormitory &middot; Safe student housing near UST</div>
 
 <nav id="navbar">
-  <a href="#" class="nav-logo">
+  <a href="{{ route('home') }}" class="nav-logo">
     <img src="{{ asset('images/logo.png') }}"
          alt="DormEase Logo"
          onerror="this.style.display='none'">
@@ -1013,30 +1035,37 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
     <div class="footer-col">
       <h4>Dormitory</h4>
-      <a href="#">About</a>
-      <a href="#">Room Types</a>
+      <a href="#about">About</a>
+      <a href="#gallery">Room Types</a>
       <a href="#">Amenities</a>
-      <a href="#">Location</a>
+      <a href="https://maps.google.com/?q=1235%20Navarra%20St,%20Sampaloc,%20Manila,%201015%20Metro%20Manila&ftid=0x3397b5ffdcdacc75:0x38ad8e34f1c2236f&entry=gps&lucs=,94284469,94231188,47071704,94218641,94282134,94286869&g_st=ipc">Location</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
       <a href="tel:+639175359723">+63 917 535 9723</a>
-      <a class="footer-social" href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.23.2 2.23.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z"/>
-        </svg>
-        fb.com/USTNavarra
-      </a>
       <a href="#">1229 Navarra St.</a>
       <a href="#">Sampaloc, Manila</a>
     </div>
   </div>
 <div class="footer-btm">
   <span>© 2026 DormEase: Sanctissimo Rosario Ladies Dormitory</span>
-  <div style="display:flex;gap:20px;align-items:center;">
+  <div class="footer-btm-right">
+    <div class="footer-socials">
+      <a class="footer-social-icon" href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <img src="{{ asset('icons/facebook.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+      <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory?fbclid=IwY2xjawR1agFleHRuA2FlbQIxMABicmlkETFSMGd2UUk5MFBOMmltNUFuc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHm3CWQe1WuTvPBmFvhFx21eNhAD0Y0JvuJhC5csQx8pZ743hf2XciRZ6CKtT_aem_C2XJTMgOF6fVl_8IZKtidQ" aria-label="Instagram">
+        <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+      <a class="footer-social-icon" href="https://l.facebook.com/l.php?u=https%3A%2F%2Ftiktok.com%2F%40srbdormitory%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExUjBndlFJOTBQTjJpbTVBbnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR6_VD_SV6fgSa0DXK4qeWb12Ne2lLBJb3G41h5iz8rzZUjFq372zpT3q8ls0g_aem_9JUss0K1Lc7HjetMsE4voA&h=AUDRue1ADoYkZA6tVa6ikWVG8ujEpdIZMrpxzczAeWIhOpmRnEhV3IRWDokouMeG0yF_vyQsoztM2tgpcrMEqluI-XTDcAmfFZi035sm-pFYQRrSvR8MsbVDjhygV88LNg7M" aria-label="TikTok">
+        <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="footer-links">
     <a href="#">Privacy Policy</a>
     <a href="#">Terms of Use</a>
     <a href="{{ route('login') }}">Admin Portal</a>
+    </div>
   </div>
 </div>
 </footer>
