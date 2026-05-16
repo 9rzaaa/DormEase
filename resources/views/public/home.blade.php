@@ -780,7 +780,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </p>
     <div class="hero-actions">
       <a href="#features" class="btn-primary">Explore Rooms</a>
-      <a href="#contact" class="btn-outline">Contact the Dorm</a>
+      <a href="{{ route('safety.features') }}" class="btn-outline">Safety Features</a>
     </div>
 
     <div class="hero-chips">
