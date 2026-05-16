@@ -25,7 +25,7 @@
     }
     html { scroll-behavior:smooth; }
     body { font-family:var(--font-body); background:var(--cream); color:var(--brown); line-height:1.6; overflow-x:hidden; }
-    .site-header { position:relative; background:var(--pink-pale); border-bottom:1px solid rgba(232,23,93,.12); }
+    .site-header { position:relative; background:var(--cream); }
     .top-notice { position:absolute; top:0; left:0; right:0; z-index:101; min-height:34px; display:flex; align-items:center; justify-content:center; padding:6px 5%; background:var(--gradient-pink); color:white; font-family:var(--font-head); font-size:.86rem; font-weight:800; text-align:center; }
     nav { position:fixed; top:54px; left:50%; z-index:100; width:min(1220px,calc(100% - 12%)); transform:translateX(-50%); background:rgba(255,228,240,.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1.5px solid rgba(36,16,24,.78); border-radius:999px; padding:0 38px; height:86px; display:flex; align-items:center; justify-content:space-between; transition:top .25s ease,box-shadow .3s; }
     nav.scrolled { top:18px; box-shadow:0 16px 34px rgba(36,16,24,.12); }
@@ -37,7 +37,7 @@
     .nav-links a { text-decoration:none; font-size:.98rem; font-weight:700; color:var(--brown); transition:color .2s; }
     .nav-links a:hover { color:var(--pink); }
     .nav-cta { background:var(--gradient-pink) !important; color:white !important; padding:11px 26px !important; border-radius:100px !important; box-shadow:0 8px 18px rgba(232,23,93,.24); }
-    .header-spacer { height:154px; background:var(--pink-pale); }
+    .header-spacer { height:154px; background:var(--cream); }
     .safety-hero { padding:70px 6% 52px; background:var(--cream); }
     .safety-hero-inner { max-width:1180px; margin:0 auto; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
@@ -79,6 +79,27 @@
     .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
     .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
     .footer-social-fallback { font-family:var(--font-head); font-size:1rem; font-weight:900; letter-spacing:.02em; }
+    /* Scroll-to-top button */
+    #scrollTopBtn {
+      position:fixed; bottom:32px; right:32px; z-index:999;
+      width:50px; height:50px; border:none; border-radius:50%;
+      background:var(--gradient-pink); color:white;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; box-shadow:0 8px 24px rgba(232,23,93,.36);
+      opacity:0; transform:translateY(16px) scale(.85);
+      transition:opacity .3s ease, transform .3s ease, box-shadow .2s;
+      pointer-events:none;
+    }
+    #scrollTopBtn.visible {
+      opacity:1; transform:translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    #scrollTopBtn:hover {
+      box-shadow:0 12px 32px rgba(232,23,93,.52);
+      transform:translateY(-3px) scale(1.07);
+    }
+    #scrollTopBtn:active { transform:translateY(0) scale(.96); }
+    #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
     @media(max-width:960px){
       .nav-links li:not(:last-child){display:none}
       .slide-stage{grid-template-columns:1fr}
@@ -97,6 +118,7 @@
       .slide-info{padding:34px 26px}
       .footer-btm{flex-direction:column;gap:16px;align-items:flex-start}
       .footer-btm-right{align-items:flex-start}
+      #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
     }
     @media(max-width:600px){
       .footer-inner{grid-template-columns:1fr}
@@ -186,9 +208,23 @@
   </div>
 </footer>
 
+<!-- Scroll to Top Button -->
+<button id="scrollTopBtn" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+
+  // Scroll-to-top logic
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', scrollY > 300);
+  });
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   const slides = [
     { image: "{{ asset('images/f2.jpg') }}", kicker: "Location Safety", title: "Nearby Barangay Outpost and Tricycle Terminal", body: "The dormitory is positioned near helpful neighborhood points, including a barangay outpost and a tricycle terminal for nearby transport access.", points: ["Barangay outpost nearby", "Tricycle terminal beside the area", "Accessible street-level location"] },
