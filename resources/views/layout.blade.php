@@ -20,7 +20,6 @@
         --blush:      #FFF0F6;
         --petal:      #FFE4F0;
 
-        /* keep old names mapped to new values so nothing else breaks */
         --pink:       #E8175D;
         --pink-light: #FFB3D0;
         --pink-soft:  #FF2D78;
@@ -164,13 +163,70 @@
         display: flex; align-items: center; justify-content: center;
         border: 2px solid #fff;
     }
+
+    /* ── AVATAR + DROPDOWN ── */
+    .avatar-wrap { position: relative; }
     .avatar {
         width: 36px; height: 36px; border-radius: 50%;
         background: linear-gradient(135deg, #FF2D78, #E8175D);
         border: 2px solid var(--baby-pink);
         display: flex; align-items: center; justify-content: center;
-        font-size: 14px; font-weight: 800; color: #fff; cursor: pointer;
+        font-size: 14px; font-weight: 800; color: #fff;
+        cursor: pointer; overflow: hidden;
+        transition: box-shadow .2s;
+        flex-shrink: 0;
     }
+    .avatar:hover { box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .avatar-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(232,23,93,.14);
+        width: 210px;
+        overflow: hidden;
+        opacity: 0; transform: translateY(8px) scale(.97);
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        z-index: 200;
+    }
+    .avatar-dropdown.open {
+        opacity: 1; transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .dropdown-header {
+        padding: .9rem 1rem .75rem;
+        border-bottom: 1px solid var(--baby-pink);
+        display: flex; align-items: center; gap: .7rem;
+    }
+    .dropdown-avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        background: linear-gradient(135deg, #FF2D78, #E8175D);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 800; color: #fff;
+        flex-shrink: 0; overflow: hidden;
+    }
+    .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .dropdown-name { font-size: .85rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+    .dropdown-role { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
+
+    .dropdown-menu { padding: .4rem; }
+    .dropdown-item {
+        display: flex; align-items: center; gap: .6rem;
+        padding: .55rem .75rem; border-radius: 9px;
+        font-size: .84rem; font-weight: 500; color: var(--ink-muted);
+        cursor: pointer; transition: background .15s, color .15s;
+        text-decoration: none; border: none; background: none; width: 100%;
+    }
+    .dropdown-item:hover { background: var(--petal); color: var(--hot-pink); }
+    .dropdown-item img { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; opacity: .7; }
+    .dropdown-item:hover img { opacity: 1; }
+    .dropdown-divider { height: 1px; background: var(--baby-pink); margin: .3rem .4rem; }
+    .dropdown-item.danger { color: var(--red); }
+    .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
     /* ── CARDS ── */
     .card {
@@ -352,9 +408,47 @@
                     <span class="notif-badge">{{ $unreadNotifCount }}</span>
                 @endif
             </div>
-            <div class="avatar" title="{{ $staff->first_name ?? 'A' }}">
-                {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+
+            {{-- Avatar with dropdown --}}
+            <div class="avatar-wrap" id="avatar-wrap">
+                <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'Account' }}">
+                    @if(isset($staff->profile_photo) && $staff->profile_photo)
+                        <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="Avatar">
+                    @else
+                        {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                    @endif
+                </div>
+
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">
+                            @if(isset($staff->profile_photo) && $staff->profile_photo)
+                                <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="">
+                            @else
+                                {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                            @endif
+                        </div>
+                        <div>
+                            <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
+                            <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('profile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
+                            <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
+                        </a>
+                        <a href="{{ route('settings.index') }}" class="dropdown-item">
+                            <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item danger" onclick="closeAvatarDropdown(); openModal('logout-modal');">
+                            <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
+                        </button>
+                    </div>
+                </div>
             </div>
+            {{-- end avatar dropdown --}}
+
         </div>
     </header>
 
@@ -395,6 +489,23 @@
         setTimeout(() => t.classList.add('show'),    10);
         setTimeout(() => t.classList.remove('show'), 3200);
     }
+
+    /* ── AVATAR DROPDOWN ── */
+    function toggleAvatarDropdown() {
+        document.getElementById('avatar-dropdown').classList.toggle('open');
+    }
+    function closeAvatarDropdown() {
+        document.getElementById('avatar-dropdown').classList.remove('open');
+    }
+    document.addEventListener('click', e => {
+        const wrap = document.getElementById('avatar-wrap');
+        /* Only close when clicking truly outside the wrap */
+        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
+    });
+    /* Close dropdown AFTER navigation links are followed, not before */
+    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
+        el.addEventListener('click', () => closeAvatarDropdown());
+    });
 </script>
 
 @yield('scripts')
