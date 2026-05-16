@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DormEase — Login</title>
+    <title>DormEase: Login</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -754,13 +755,6 @@
             </button>
 
         </form>
-
-        <div class="divider">or</div>
-
-        <div class="de-status-strip">
-            <div class="de-status-dot"></div>
-            <span>All systems operational &nbsp;·&nbsp; Secure connection</span>
-        </div>
 
     </div>
 

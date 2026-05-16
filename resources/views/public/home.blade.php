@@ -1,69 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DormEase – Sanctissimo Rosario Ladies Dormitory</title>
+<title>DormEase: Sanctissimo Rosario Ladies Dormitory</title>
 
-<!--
-=======================================================================
-  DORMEASE LANDING PAGE
-
-  IMAGE SLOTS SUMMARY — search "IMAGE SLOT" to jump to each one:
-    Slot 1 – NAV LOGO          → src/images/logo.png            160×40px PNG transparent
-    Slot 2 – HERO BACKGROUND   → src/images/hero-bg.jpg         1920×1080px (optional)
-    Slot 3 – APP MOCKUP        → src/images/app-mockup.png      560×800px PNG transparent
-    Slot 4 – ABOUT EXTERIOR    → src/images/dorm-exterior.jpg   800×520px
-    Slot 5 – ABOUT ROOM        → src/images/dorm-room.jpg       800×360px
-    Slot 6 – GALLERY MAIN      → src/images/gallery-1.jpg       600×900px
-    Slot 7 – GALLERY TOP-RIGHT → src/images/gallery-2.jpg       600×400px
-    Slot 8 – GALLERY BOT-RIGHT → src/images/gallery-3.jpg       600×400px
-    Slot 9 – FOOTER LOGO       → src/images/logo-white.png      160×40px white version
-
-  Laravel asset path syntax:  src="{{ asset('images/filename.ext') }}"
-  Plain HTML path syntax:     src="src/images/filename.ext"
-=======================================================================
--->
-
-<!-- Fonts: Montserrat (Headlines) + Nunito (Body – closest open-source to Google Sans) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!--
-  NOTE ON GOOGLE SANS:
-  "Google Sans" is not publicly available on Google Fonts.
-  Nunito is the closest open-source match (similar x-height, roundness, weight range).
-  If you have access to Google Sans, replace --font-body below with:
-    font-family: 'Google Sans', 'Nunito', sans-serif;
-  and serve it from your Laravel public/fonts folder via @font-face.
--->
-
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --pink:        #D63868;
-  --pink-light:  #F4A8C0;
-  --pink-pale:   #FDE8EF;
-  --pink-deep:   #9C2046;
-  --cream:       #FBF6F0;
-  --cream-dark:  #F2EAE2;
-  --brown:       #3A2010;
-  --brown-mid:   #6B3D25;
-  --brown-light: #9A6850;
+  --pink-1:      #E8175D;
+  --pink-2:      #FF2D78;
+  --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+  --soft-bg:     #fff7fb;
+  --pink:        var(--pink-1);
+  --pink-light:  #FF7FB0;
+  --pink-pale:   #FFE4F0;
+  --pink-deep:   #8A123B;
+  --cream:       var(--soft-bg);
+  --cream-dark:  #FFEAF3;
+  --brown:       #241018;
+  --brown-mid:   #5A2638;
+  --brown-light: #744B5D;
   --white:       #FFFFFF;
-  --border:      rgba(214,56,104,0.15);
+  --border:      rgba(232,23,93,0.18);
   --font-head:   'Montserrat', 'Segoe UI', sans-serif;
   --font-body:   'Nunito', 'Google Sans', sans-serif;
-  --shadow-soft: 0 4px 32px rgba(214,56,104,0.12);
-  --shadow-card: 0 2px 20px rgba(58,32,16,0.08);
+  --shadow-soft: 0 4px 32px rgba(232,23,93,0.16);
+  --shadow-card: 0 2px 20px rgba(36,16,24,0.09);
   --r-sm: 8px; --r-md: 16px; --r-lg: 28px; --r-xl: 48px;
 }
 
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); background: var(--cream); color: var(--brown); overflow-x: hidden; line-height: 1.6; }
 
-/* ── IMAGE PLACEHOLDER UTILITY ── */
+.site-header {
+  position: relative;
+  background: var(--pink-pale);
+  border-bottom: 1px solid rgba(232,23,93,0.12);
+}
+
 .img-ph {
   background: linear-gradient(135deg, var(--cream-dark) 0%, #e8ddd4 100%);
   border: 2px dashed rgba(214,56,104,0.30);
@@ -93,107 +73,173 @@ body { font-family: var(--font-body); background: var(--cream); color: var(--bro
 .img-ph-ico svg { width: 20px; height: 20px; stroke: var(--pink); fill: none; stroke-width: 1.8; stroke-linecap: round; }
 .img-ph span { position: relative; z-index: 1; line-height: 1.6; }
 
-/* ── NAV ── */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(253, 232, 239, 0.95);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 6%; height: 70px;
+  position: fixed; top: 54px; left: 50%; z-index: 100;
+  width: min(1220px, calc(100% - 12%));
+  transform: translateX(-50%);
+  background: rgba(255, 228, 240, 0.96);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(36,16,24,0.78);
+  border-radius: 999px;
+  padding: 0 38px; height: 86px;
   display: flex; align-items: center; justify-content: space-between;
-  transition: box-shadow 0.3s;
+  transition: top 0.25s ease, box-shadow 0.3s;
 }
-nav.scrolled { box-shadow: var(--shadow-soft); }
+nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
 
-/* ── IMAGE SLOT 1: NAV LOGO ──────────────────────────────────────
-   Plain HTML:  <img src="src/images/logo.png" ...>
-   Laravel:     <img src="{{ asset('images/logo.png') }}" ...>
-   Size: 160×40px PNG with transparency recommended.
-──────────────────────────────────────────────────────────────── */
+.top-notice {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 101;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 5%;
+  background: var(--gradient-pink);
+  color: white;
+  font-family: var(--font-head);
+  font-size: .86rem;
+  font-weight: 800;
+  text-align: center;
+}
+
 .nav-logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
-.nav-logo img { height: 38px; width: auto; object-fit: contain; display: block; filter: drop-shadow(0 2px 4px rgba(58, 32, 16, 0.2)); }
+.nav-logo img { height: 58px; width: auto; object-fit: contain; display: block; background:var(--gradient-pink); border-radius:50%; padding:8px; filter: drop-shadow(0 2px 7px rgba(36, 16, 24, 0.22)); }
 .nav-logo-fb {
-  font-family: var(--font-head); font-size: 1.3rem; font-weight: 800;
+  font-family: var(--font-head); font-size: 1.55rem; font-weight: 800;
   color: var(--brown); letter-spacing: -0.02em;
 }
 .nav-logo-fb span { color: var(--pink); }
 
-.nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+.nav-links { display: flex; align-items: center; gap: 30px; list-style: none; }
 .nav-links a {
-  text-decoration: none; font-size: 0.875rem; font-weight: 500;
-  color: var(--brown-light); letter-spacing: 0.01em; transition: color 0.2s;
+  text-decoration: none; font-size: .98rem; font-weight: 700;
+  color: var(--brown); letter-spacing: 0.01em; transition: color 0.2s, background 0.2s;
 }
 .nav-links a:hover { color: var(--pink); }
 .nav-cta {
-  background: var(--pink) !important; color: white !important;
-  padding: 9px 24px !important; border-radius: 100px !important;
-  font-weight: 700 !important; transition: background 0.2s, transform 0.15s !important;
+  background: var(--gradient-pink) !important; color: white !important;
+  padding: 11px 26px !important; border-radius: 100px !important;
+  font-weight: 700 !important; transition: filter 0.2s, transform 0.15s !important;
+  box-shadow: 0 8px 18px rgba(232,23,93,0.24);
 }
-.nav-cta:hover { background: var(--pink-deep) !important; transform: translateY(-1px); }
+.nav-cta:hover { filter: brightness(0.94); transform: translateY(-1px); }
 
-/* ── HERO ── */
+.header-info-strip {
+  padding: 154px 6% 16px;
+  background: var(--pink-pale);
+  border-bottom: 1px solid rgba(232,23,93,0.12);
+}
+.header-info-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.header-info-item {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 0 24px;
+  border-left: 1px solid rgba(36,16,24,0.20);
+}
+.header-info-item:last-child { border-right: 1px solid rgba(36,16,24,0.20); }
+.header-info-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: white;
+  color: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(232,23,93,0.10);
+}
+.header-info-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.header-info-title {
+  font-family: var(--font-head);
+  font-size: .98rem;
+  font-weight: 800;
+  color: var(--brown);
+  line-height: 1.25;
+}
+.header-info-text {
+  font-size: .82rem;
+  color: var(--brown-light);
+  line-height: 1.45;
+  margin-top: 3px;
+}
+
 .hero {
-  min-height: 100svh; padding: 100px 6% 80px;
-  display: grid; grid-template-columns: 1fr 1fr;
-  align-items: center; gap: 64px;
-  position: relative; overflow: hidden;
+  min-height: 100svh;
+  padding: 0 5% 0 8%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
 }
-/* ── IMAGE SLOT 2: HERO BACKGROUND (optional) ────────────────────
-   To add a background photo, add to .hero style:
-     background-image: url('src/images/hero-bg.jpg');
-     background-size: cover; background-position: center;
-   Then adjust the ::before overlay opacity for readability.
-──────────────────────────────────────────────────────────────── */
-.hero::before {
-  content: ''; position: absolute; top: -140px; right: -140px;
-  width: 580px; height: 580px; border-radius: 50%;
-  background: var(--pink-pale); z-index: 0;
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 100px 0 80px;
 }
-.hero::after {
-  content: ''; position: absolute; bottom: -80px; left: 28%;
-  width: 320px; height: 320px; border-radius: 50%;
-  background: rgba(214,56,104,0.05); z-index: 0;
-}
-.hero-content { position: relative; z-index: 1; }
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--pink-pale); border: 1px solid var(--pink-light);
-  color: var(--pink-deep); font-size: 0.70rem; font-weight: 700;
+  background: white; border: 1px solid var(--border);
+  color: var(--pink-deep); font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.09em; text-transform: uppercase;
   padding: 6px 16px; border-radius: 100px; margin-bottom: 28px;
+  box-shadow: 0 1px 6px rgba(214,56,104,0.10);
 }
 .hero-badge::before {
   content: ''; width: 6px; height: 6px;
   background: var(--pink); border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: pulse 2s infinite; flex-shrink: 0;
 }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 
 .hero h1 {
   font-family: var(--font-head);
-  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
-  font-weight: 800; line-height: 1.1;
-  color: var(--brown); margin-bottom: 24px; letter-spacing: -0.03em;
+  font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+  font-weight: 800; line-height: 1.08;
+  color: var(--brown); margin-bottom: 22px; letter-spacing: -0.03em;
 }
 .hero h1 em { font-style: italic; color: var(--pink); font-weight: 700; }
 
 .hero-sub {
-  font-size: 1rem; color: var(--brown-light);
-  line-height: 1.8; max-width: 460px; margin-bottom: 40px;
+  font-size: 0.97rem; color: var(--brown-light);
+  line-height: 1.85; max-width: 420px; margin-bottom: 36px;
 }
-.hero-actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+
+.hero-actions {
+  display: flex; gap: 14px; align-items: center;
+  flex-wrap: wrap; margin-bottom: 44px;
+}
 
 .btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
-  background: var(--pink); color: white; text-decoration: none;
+  background: var(--gradient-pink); color: white; text-decoration: none;
   font-family: var(--font-body); font-size: 0.9rem; font-weight: 700;
   padding: 14px 32px; border-radius: 100px;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 8px 24px rgba(214,56,104,0.30);
+  transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(232,23,93,0.32);
 }
-.btn-primary:hover { background: var(--pink-deep); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(214,56,104,0.40); }
-.btn-primary svg { width: 18px; height: 18px; fill: white; flex-shrink: 0; }
+.btn-primary:hover { filter: brightness(0.94); transform: translateY(-2px); }
 
 .btn-outline {
   display: inline-flex; align-items: center; gap: 8px;
@@ -205,71 +251,140 @@ nav.scrolled { box-shadow: var(--shadow-soft); }
 }
 .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
 
-.hero-stats {
-  display: flex; gap: 36px;
-  margin-top: 48px; padding-top: 32px;
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding-top: 32px;
   border-top: 1px solid var(--border);
 }
+.hero-stat-item {
+  flex: 1;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+  flex-shrink: 0;
+}
 .hero-stat-num {
-  font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+  font-family: var(--font-head);
+  font-size: 2rem; font-weight: 800;
   color: var(--pink); line-height: 1;
 }
 .hero-stat-label {
-  font-size: 0.70rem; color: var(--brown-light);
-  margin-top: 4px; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 700;
+  font-size: 0.68rem; color: var(--brown-light);
+  margin-top: 5px; text-transform: uppercase;
+  letter-spacing: 0.10em; font-weight: 700;
 }
 
-/* ── PHONE MOCKUP ── */
-.hero-visual { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; }
-
-/* ── IMAGE SLOT 3: APP MOCKUP ────────────────────────────────────
-   Replace the entire .phone-frame div with:
-     <img src="src/images/app-mockup.png" alt="DormEase App" class="app-mockup-img">
-   In Laravel: src="{{ asset('images/app-mockup.png') }}"
-   Add CSS:    .app-mockup-img { width:280px; animation: float 6s ease-in-out infinite; }
-──────────────────────────────────────────────────────────────── */
-.phone-frame {
-  width: 276px; background: var(--brown); border-radius: 44px; padding: 11px;
-  box-shadow: 0 40px 80px rgba(58,32,16,0.28), 0 0 0 1px rgba(58,32,16,0.12);
-  position: relative; animation: float 6s ease-in-out infinite;
+.hero-arch-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 100svh;
+  z-index: 1;
 }
-@keyframes float { 0%,100%{transform:translateY(0) rotate(-1.5deg)} 50%{transform:translateY(-18px) rotate(-0.5deg)} }
-.phone-notch { width: 76px; height: 26px; background: var(--brown); border-radius: 100px; margin: 0 auto 8px; }
-.phone-screen { background: #FFF0F5; border-radius: 34px; overflow: hidden; min-height: 500px; }
-.phone-status { background:var(--pink); padding:10px 20px 5px; color:white; font-size:10px; font-weight:600; display:flex; justify-content:space-between; }
-.phone-app-bar { background:var(--pink); padding:8px 20px 14px; font-family:var(--font-head); font-size:15px; font-weight:700; color:white; text-align:center; }
-.phone-body { padding:14px; }
-.phone-greeting { font-size:11px; color:var(--brown-light); margin-bottom:2px; }
-.phone-name { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--brown); margin-bottom:13px; }
-.phone-card { background:white; border-radius:13px; padding:11px; margin-bottom:8px; box-shadow:var(--shadow-card); display:flex; align-items:center; gap:10px; }
-.phone-card-icon { width:37px; height:37px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.phone-card-title { font-size:11px; font-weight:600; color:var(--brown); font-family:var(--font-body); }
-.phone-card-sub { font-size:9px; color:var(--brown-light); margin-top:2px; }
-.badge-l { background:#FFF3CD; color:#856404; font-size:8px; padding:2px 6px; border-radius:100px; font-weight:700; }
-.badge-h { background:#FFE0E8; color:var(--pink-deep); font-size:8px; padding:2px 6px; border-radius:100px; font-weight:700; }
-.phone-tabs { display:grid; grid-template-columns:repeat(5,1fr); border-top:1px solid rgba(214,56,104,0.10); padding:7px 0 3px; margin-top:6px; }
-.phone-tab { text-align:center; }
-.t-icon { font-size:15px; color:#ccc; display:block; }
-.t-icon.on { color:var(--pink); }
-.t-lbl { font-size:7px; color:#bbb; display:block; margin-top:1px; font-weight:600; }
-.t-lbl.on { color:var(--pink); }
 
-.fl-card { position:absolute; background:white; border-radius:var(--r-md); padding:11px 15px; box-shadow:0 8px 32px rgba(58,32,16,0.12); border:1px solid var(--border); }
-.fl-card.tr { top:30px; right:-56px; animation:f2 5s ease-in-out infinite; }
-.fl-card.bl { bottom:80px; left:-76px; animation:f3 7s ease-in-out infinite; }
-@keyframes f2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-@keyframes f3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
-.fl-lbl { font-size:10px; color:var(--brown-light); font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
-.fl-val { font-family:var(--font-head); font-size:17px; font-weight:800; color:var(--pink); margin-top:2px; }
+.hero-blob-top {
+  position: absolute;
+  top: 12%; right: 4%;
+  width: 220px; height: 200px;
+  background: var(--pink-light);
+  border-radius: 60% 80% 40% 70% / 50% 60% 80% 40%;
+  opacity: 0.40;
+  z-index: 0;
+}
+.hero-blob-bottom {
+  position: absolute;
+  bottom: 14%; left: 2%;
+  width: 160px; height: 150px;
+  background: var(--pink-pale);
+  border-radius: 70% 40% 60% 50% / 60% 80% 40% 70%;
+  opacity: 0.75;
+  z-index: 0;
+}
 
-/* ── SECTION COMMONS ── */
+.hero-arch {
+  position: relative;
+  z-index: 1;
+  width: 380px;
+  height: 520px;
+  border-radius: 220px 220px 36px 36px;
+  overflow: hidden;
+  box-shadow: 0 40px 90px rgba(58,32,16,0.16), 0 0 0 10px rgba(214,56,104,0.07);
+}
+.hero-arch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: brightness(0.93) saturate(0.90);
+  transition: transform 0.6s ease;
+}
+.hero-arch:hover img { transform: scale(1.04); }
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: var(--brown);
+  font-family: var(--font-body);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.hero-chip:hover {
+  border-color: var(--pink-light);
+  background: var(--pink-pale);
+  color: var(--pink-deep);
+}
+
+.hero-chip-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--pink-light);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 120px 6% 80px;
+    min-height: auto;
+  }
+  .hero-content { padding: 0; }
+  .hero-arch-wrap { min-height: 420px; }
+  .hero-arch { width: 300px; height: 400px; }
+}
+@media (max-width: 600px) {
+  .hero-arch-wrap { display: none; }
+  .hero-stats-row { gap: 0; }
+}
+
 section { padding: 100px 6%; }
 .section-tag { font-size:.70rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
 .section-title { font-family:var(--font-head); font-size:clamp(1.8rem,3.2vw,2.8rem); font-weight:800; line-height:1.15; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
 .section-title em { color:var(--pink); font-style:italic; font-weight:700; }
 .section-sub { font-size:1rem; color:var(--brown-light); line-height:1.8; max-width:540px; }
 
-/* ── FEATURES ── */
 .features { background:var(--cream); }
 .features-header { max-width:620px; margin-bottom:60px; }
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
@@ -280,7 +395,7 @@ section { padding: 100px 6%; }
 }
 .feat-card::before {
   content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg,var(--pink),var(--pink-light));
+  background:var(--gradient-pink);
   transform:scaleX(0); transform-origin:left; transition:transform .3s;
 }
 .feat-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-soft); }
@@ -290,13 +405,11 @@ section { padding: 100px 6%; }
 .feat-title { font-family:var(--font-head); font-size:1.0rem; font-weight:700; color:var(--brown); margin-bottom:8px; letter-spacing:-.01em; }
 .feat-desc { font-size:.87rem; color:var(--brown-light); line-height:1.75; }
 
-
-/* ── GALLERY ── */
 .gallery { background:var(--cream-dark); padding-top:80px; padding-bottom:80px; }
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 24px;
   margin-top: 48px;
 }
@@ -313,8 +426,8 @@ section { padding: 100px 6%; }
   border-radius: 0;
   overflow: hidden;
   width: 100%;
-  height: 320px;              
-  background: none; 
+  aspect-ratio: 1 / 1;
+  background: transparent;
 }
 
 .gal-img {
@@ -324,7 +437,7 @@ section { padding: 100px 6%; }
   object-position: center;
   display: block;
   transition: transform .4s;
-  background: none;
+  background: transparent;
 }
 
 .gal-item:hover .gal-img { transform: scale(1.02); }
@@ -334,10 +447,9 @@ section { padding: 100px 6%; }
   background: white;
 }
 
-/* ── GALLERY LABEL ── */
 .gal-label-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .gal-badge {
-  background: var(--pink); color: white;
+  background: var(--gradient-pink); color: white;
   font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
   padding: 4px 12px; border-radius: 100px;
@@ -346,13 +458,12 @@ section { padding: 100px 6%; }
 .gal-title { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
 .gal-desc { font-size: 0.85rem; color: var(--brown-light); line-height: 1.7; }
 
-/* ── HOW IT WORKS ── */
 .how { background:var(--cream); position:relative; overflow:hidden; }
 .how::before { content:''; position:absolute; top:-200px; right:-200px; width:500px; height:500px; border-radius:50%; background:rgba(214,56,104,0.04); }
 .how-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
 .steps { display:flex; flex-direction:column; gap:30px; }
 .step { display:flex; gap:18px; align-items:flex-start; }
-.step-num { width:42px; height:42px; background:var(--pink); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:1rem; font-weight:800; flex-shrink:0; }
+.step-num { width:42px; height:42px; background:var(--gradient-pink); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-size:1rem; font-weight:800; flex-shrink:0; }
 .step-title { font-family:var(--font-head); font-size:1.0rem; font-weight:700; color:var(--brown); margin-bottom:5px; }
 .step-desc { font-size:.87rem; color:var(--brown-light); line-height:1.75; }
 .how-img-main { background:white; border-radius:var(--r-xl); box-shadow:var(--shadow-soft); padding:36px 28px; text-align:center; }
@@ -365,9 +476,8 @@ section { padding: 100px 6%; }
 .mini-bdy { padding:7px; flex:1; display:flex; flex-direction:column; gap:5px; }
 .mini-row { background:white; border-radius:5px; height:17px; opacity:.8; }
 
-/* ── ABOUT ── */
 .about { background:var(--brown); color:white; position:relative; overflow:hidden; }
-.about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(214,56,104,0.13); }
+.about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(255,45,120,0.16); }
 .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; position:relative; z-index:1; }
 .about .section-tag { color:var(--pink-light); }
 .about .section-title { color:white; }
@@ -376,14 +486,39 @@ section { padding: 100px 6%; }
 .amenity { display:flex; align-items:center; gap:10px; font-size:.85rem; color:rgba(255,255,255,0.78); }
 .amenity-dot { width:7px; height:7px; background:var(--pink-light); border-radius:50%; flex-shrink:0; }
 
-/* ── IMAGE SLOTS 4–5: ABOUT PHOTOS ──────────────────────────────
-   Replace .img-ph divs with:
-     <img src="src/images/dorm-exterior.jpg" alt="..." class="about-img">
-   Laravel: src="{{ asset('images/dorm-exterior.jpg') }}"
-   .about-img { width:100%; height:100%; object-fit:cover; display:block; }
-──────────────────────────────────────────────────────────────── */
-.about-photos { display:grid; grid-template-rows:260px 175px; gap:14px; }
-.about-img { width:100%; height:100%; object-fit:cover; display:block; border-radius:var(--r-lg); }
+
+.about-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.about-photo {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+}
+
+.about-photo:first-child {
+  aspect-ratio: 4 / 3;
+}
+
+.about-photo:last-child {
+  aspect-ratio: 3 / 4;
+  margin-top: 52px;
+}
+
+.about-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: var(--r-lg);
+  background: transparent;
+  filter: brightness(1.05) saturate(1.1); /* counteract dark bg */
+}
 
 .info-card { background:rgba(255,255,255,0.08); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.13); border-radius:var(--r-lg); padding:24px; }
 .ic-lbl { font-size:.66rem; text-transform:uppercase; letter-spacing:.12em; color:var(--pink-light); margin-bottom:5px; font-weight:700; }
@@ -394,38 +529,150 @@ section { padding: 100px 6%; }
 .ic-rl { color:rgba(255,255,255,0.48); }
 .ic-rv { color:white; font-weight:600; }
 
-/* ── CTA ── */
-.cta-section { background:var(--pink-pale); text-align:center; }
-.cta-section .section-title { color:var(--brown); margin:0 auto 14px; }
-.cta-section .section-sub { margin:0 auto 40px; color:var(--brown-light); }
-.cta-contact { margin-top:26px; font-size:.88rem; color:var(--brown-light); }
+.cta-section { background:var(--pink-pale); }
+.contact-inner {
+  display: grid;
+  grid-template-columns: minmax(460px, 1fr) minmax(260px, 360px);
+  gap: 54px;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.contact-copy { text-align: left; }
+.cta-section .section-tag { margin-bottom: 9px; }
+.cta-section .section-title { color:var(--brown); margin:0 0 16px; font-size:clamp(2.35rem,4vw,3.35rem); max-width:620px; }
+.cta-section .section-sub { margin:0 0 32px; color:var(--brown-light); font-size:1.12rem; line-height:1.7; max-width:620px; }
+.cta-section .btn-primary { font-size:1.02rem; padding:16px 38px; }
+.cta-contact { margin-top:26px; font-size:1rem; line-height:1.65; color:var(--brown-light); max-width:520px; }
 .cta-contact a { color:var(--pink); text-decoration:none; font-weight:700; }
+.contact-map-wrap {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid rgba(232,23,93,0.20);
+  background: transparent;
+  box-shadow: var(--shadow-card);
+  display: block;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.contact-map-wrap:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(232,23,93,0.18);
+}
+.contact-map-prompt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--pink-deep);
+  font-size: .82rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.contact-map-prompt svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .2s ease;
+}
+.contact-map-link:hover .contact-map-prompt svg { transform: translate(2px, -2px); }
+.contact-map-wrap.map-missing::after {
+  content: 'Add map image at public/images/map.jpg';
+  display: block;
+  padding: 34px 18px;
+  color: var(--brown-light);
+  font-size: .85rem;
+  font-weight: 700;
+}
+.contact-map-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: transparent;
+}
+.contact-map-link {
+  color: inherit;
+  text-decoration: none;
+}
 
-/* ── FOOTER ── */
 footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 40px; }
 .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
 .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration: none; }
-/* ── IMAGE SLOT 9: FOOTER LOGO (white version) ───────────────────
-   Plain HTML:  src="src/images/logo-white.png"
-   Laravel:     src="{{ asset('images/logo-white.png') }}"
-──────────────────────────────────────────────────────────────── */
-.footer-logo img { height:32px; width:auto; object-fit:contain; }
+.footer-logo img { height:56px; width:auto; object-fit:contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.22)); }
 .footer-logo-fb { font-family:var(--font-head); font-size:1.2rem; font-weight:800; color:white; letter-spacing:-.02em; }
 .footer-logo-fb span { color:var(--pink-light); }
 .footer-brand p { font-size:.83rem; line-height:1.75; max-width:250px; }
 .footer-col h4 { font-size:.66rem; text-transform:uppercase; letter-spacing:.12em; color:rgba(255,255,255,0.32); margin-bottom:16px; font-weight:700; }
 .footer-col a { display:block; font-size:.87rem; color:rgba(255,255,255,0.52); text-decoration:none; margin-bottom:10px; transition:color .2s; }
 .footer-col a:hover { color:var(--pink-light); }
-.footer-btm { border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:.78rem; }
+.footer-btm { border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; display:flex; justify-content:space-between; align-items:center; gap:22px; font-size:.78rem; }
+.footer-btm-right { display:flex; gap:22px; align-items:center; flex-wrap:wrap; }
+.footer-links { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
 .footer-btm a { color:rgba(255,255,255,0.32); text-decoration:none; }
 .footer-btm a:hover { color:var(--pink-light); }
+.footer-socials { display:flex; align-items:center; gap:12px; }
+.footer-social-icon {
+  position:relative;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:#111;
+  color:white;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.14);
+  transition:transform .2s, background .2s, border-color .2s;
+}
+.footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
+.footer-social-icon img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.footer-social-fallback {
+  font-family:var(--font-head);
+  font-size:1rem;
+  font-weight:900;
+  letter-spacing:.02em;
+}
 
-/* ── ANIMATIONS ── */
+/* Scroll-to-top button */
+    #scrollTopBtn {
+      position:fixed; bottom:32px; right:32px; z-index:999;
+      width:50px; height:50px; border:none; border-radius:50%;
+      background:var(--gradient-pink); color:white;
+      display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; box-shadow:0 8px 24px rgba(232,23,93,.36);
+      opacity:0; transform:translateY(16px) scale(.85);
+      transition:opacity .3s ease, transform .3s ease, box-shadow .2s;
+      pointer-events:none;
+    }
+    #scrollTopBtn.visible {
+      opacity:1; transform:translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    #scrollTopBtn:hover {
+      box-shadow:0 12px 32px rgba(232,23,93,.52);
+      transform:translateY(-3px) scale(1.07);
+    }
+    #scrollTopBtn:active { transform:translateY(0) scale(.96); }
+    #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
 .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s} .d4{transition-delay:.40s}
 
-/* ── RESPONSIVE ── */
 @media(max-width:960px){
   .hero{grid-template-columns:1fr;padding-top:120px}
   .hero-visual{display:none}
@@ -434,36 +681,71 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .gal-item.tall{grid-row:span 1}
   .how-inner{grid-template-columns:1fr}
   .about-inner{grid-template-columns:1fr}
+  .about-photos{max-width:760px;width:100%;margin:0 auto;}
   .footer-inner{grid-template-columns:1fr 1fr}
   .nav-links li:not(:last-child){display:none}
+  .contact-inner{grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:36px;}
+  .cta-section .section-title{font-size:clamp(2rem,4vw,2.7rem);}
+  .cta-section .section-sub{font-size:1rem;}
+  .header-info-inner{grid-template-columns:1fr 1fr;gap:18px;}
+  .header-info-item{border:1px solid rgba(36,16,24,0.14);border-radius:var(--r-md);padding:16px;background:rgba(255,255,255,0.55);}
+  .header-info-item:last-child{border-right:1px solid rgba(36,16,24,0.14);}
+}
+@media(max-width:760px){
+  nav{top:46px;height:auto;min-height:76px;padding:10px 5%;gap:14px;flex-wrap:wrap;border-radius:28px;width:calc(100% - 28px);}
+  nav.scrolled{top:12px;}
+  .top-notice{font-size:.74rem;min-height:30px;}
+  .header-info-strip{padding:138px 5% 10px;}
+  .nav-logo img{height:44px;}
+  .nav-logo-fb{font-size:1.22rem;}
+  .nav-links{gap:0;margin-left:auto;}
+  section{padding:72px 5%;}
+  .hero{padding:108px 5% 70px;}
+  .hero-actions{align-items:stretch;}
+  .btn-primary,.btn-outline{justify-content:center;width:100%;}
+  .gallery-grid{grid-template-columns:1fr;max-width:460px;margin-left:auto;margin-right:auto;}
+  .about-photos{grid-template-columns:1fr;max-width:460px;}
+  .about-photo:last-child{margin-top:0;aspect-ratio:3 / 4;}
+  .contact-inner{grid-template-columns:1fr;gap:32px;max-width:460px;}
+  .contact-copy{text-align:center;}
+  .cta-section .section-title,.cta-section .section-sub{margin-left:auto;margin-right:auto;}
+  .cta-contact{margin-left:auto;margin-right:auto;}
+  .footer-btm{flex-direction:column;gap:16px;align-items:flex-start;}
+  .footer-btm-right{align-items:flex-start;}
+  #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
 }
 @media(max-width:600px){
   .features-grid{grid-template-columns:1fr}
   .gallery-grid{grid-template-columns:1fr}
   .footer-inner{grid-template-columns:1fr}
   .hero h1{font-size:2.2rem}
+  .amenities{grid-template-columns:1fr;}
+  .mini-phones{transform:scale(.9);transform-origin:center;}
+  .contact-map-wrap{border-radius:var(--r-md);}
+  .header-info-inner{grid-template-columns:1fr;}
+  .header-info-item{grid-template-columns:40px 1fr;}
+  .header-info-icon{width:40px;height:40px;}
+}
+@media(max-width:420px){
+  .hero-chip{font-size:.74rem;padding:7px 11px;}
+  .section-title{font-size:1.72rem;}
+  .gal-label{padding:14px 16px 18px;}
+  .gal-label-top{align-items:flex-start;flex-direction:column;gap:6px;}
 }
 
 </style>
 </head>
 <body>
 
-<!-- ════════════════════ NAV ════════════════════ -->
+<header class="site-header">
+<div class="top-notice">Sanctissimo Rosario Ladies Dormitory &middot; Safe student housing near UST</div>
+
 <nav id="navbar">
-  <a href="#" class="nav-logo">
-    <!--
-    ╔══════════════════════════════════════════════════════════╗
-    ║  IMAGE SLOT 1 — LOGO                                    ║
-    ║  Plain HTML:  src="src/images/logo.png"                 ║
-    ║  Laravel:     src="{{ asset('images/logo.png') }}"      ║
-    ║  Size: 160×40px, PNG with transparency                  ║
-    ╚══════════════════════════════════════════════════════════╝
-    -->
+  <a href="{{ route('home') }}" class="nav-logo">
     <img src="{{ asset('images/logo.png') }}"
          alt="DormEase Logo"
-         style="height: 38px; width: auto; object-fit: contain; display: block;"
          onerror="this.style.display='none'">
-    <span class="nav-logo-fb" style="font-family: var(--font-head); font-size: 1.3rem; font-weight: 800; color: var(--brown); letter-spacing: -0.02em;">Dorm<span style="color: var(--pink);">Ease</span></span>
+    <span class="nav-logo-fb">Dorm<span>Ease</span></span>
   </a>
 
   <ul class="nav-links">
@@ -475,155 +757,105 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </ul>
 </nav>
 
-
-<!-- ════════════════════ HERO ════════════════════ -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge">Now available on web &amp; mobile</div>
-    <h1>Your dorm life,<br><em>finally simplified</em></h1>
-    <p class="hero-sub">
-      DormEase brings Sanctissimo Rosario Ladies Dormitory into the digital age — manage maintenance, bills, visitor logs, and announcements all from one app.
-    </p>
-    <div class="hero-actions">
-      <a href="#features" class="btn-primary">
-        <svg viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
-        Explore Features
-      </a>
-      <a href="#contact" class="btn-outline">Contact the Dorm →</a>
-    </div>
-    <div class="hero-stats">
-      <div><div class="hero-stat-num">57</div><div class="hero-stat-label">Tenants</div></div>
-      <div><div class="hero-stat-num">25</div><div class="hero-stat-label">Units</div></div>
-      <div><div class="hero-stat-num">5F</div><div class="hero-stat-label">Floors</div></div>
-      <div><div class="hero-stat-num">24/7</div><div class="hero-stat-label">Security</div></div>
-    </div>
-  </div>
-
-  <!--
-  ╔══════════════════════════════════════════════════════════════╗
-  ║  IMAGE SLOT 3 — APP MOCKUP                                  ║
-  ║  To use a real screenshot, replace .phone-frame div with:   ║
-  ║    <img src="src/images/app-mockup.png"                     ║
-  ║         alt="DormEase App" class="app-mockup-img">          ║
-  ║  Laravel: src="{{ asset('images/app-mockup.png') }}"        ║
-  ║  Add CSS: .app-mockup-img{width:280px;animation:float...}   ║
-  ╚══════════════════════════════════════════════════════════════╝
-  -->
-  <div class="hero-visual">
-    <div class="fl-card tr">
-      <div class="fl-lbl">Water Bill</div>
-      <div class="fl-val">₱248.50</div>
-      <div style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600;">Due Feb 28</div>
-    </div>
-
-    <div class="phone-frame">
-      <div class="phone-notch"></div>
-      <div class="phone-screen">
-        <div class="phone-status"><span>9:41</span><span>●●●</span></div>
-        <div class="phone-app-bar">DormEase</div>
-        <div class="phone-body">
-          <div class="phone-greeting">Good morning,</div>
-          <div class="phone-name">Maria Santos 👋</div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#FFE0E8;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:var(--pink);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Water Billing</div>
-              <div class="phone-card-sub">February 2026 &nbsp;<span class="badge-l">Low</span></div>
-            </div>
-          </div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#FFE8F0;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:var(--pink);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Urgent Pest Control Notice</div>
-              <div class="phone-card-sub">Feb 17 &nbsp;<span class="badge-h">High</span></div>
-            </div>
-          </div>
-          <div class="phone-card">
-            <div class="phone-card-icon" style="background:#E8F0FF;">
-              <svg viewBox="0 0 24 24" style="width:19px;height:19px;stroke:#4A78D9;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-            </div>
-            <div>
-              <div class="phone-card-title">Visitor Registered</div>
-              <div class="phone-card-sub">Ana Cruz · Today 2:00 PM</div>
-            </div>
-          </div>
-          <div class="phone-tabs">
-            <div class="phone-tab"><span class="t-icon on">⌂</span><span class="t-lbl on">Home</span></div>
-            <div class="phone-tab"><span class="t-icon">👤</span><span class="t-lbl">Visitor</span></div>
-            <div class="phone-tab"><span class="t-icon">⚠</span><span class="t-lbl">Emergency</span></div>
-            <div class="phone-tab"><span class="t-icon">💧</span><span class="t-lbl">Water</span></div>
-            <div class="phone-tab"><span class="t-icon">◯</span><span class="t-lbl">Profile</span></div>
-          </div>
-        </div>
+<div class="header-info-strip">
+  <div class="header-info-inner">
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 11l9-7 9 7"></path>
+          <path d="M5 10v10h14V10"></path>
+          <path d="M9 20v-6h6v6"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Ladies Dormitory</div>
+        <div class="header-info-text">Study-friendly rooms for female students in Sampaloc.</div>
       </div>
     </div>
-
-    <div class="fl-card bl">
-      <div class="fl-lbl">Maintenance</div>
-      <div style="font-size:11px;color:var(--pink);font-weight:700;margin-top:4px;">✓ Request Sent</div>
-      <div style="font-size:9px;color:#bbb;margin-top:2px;font-weight:600;">Avg. 2hr response</div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21s7-4.4 7-11a7 7 0 1 0-14 0c0 6.6 7 11 7 11z"></path>
+          <circle cx="12" cy="10" r="2.5"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Near UST &amp; UBelt</div>
+        <div class="header-info-text">Located along Navarra Street with nearby campus access.</div>
+      </div>
+    </div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"></path>
+          <path d="M9.5 12l1.8 1.8 3.7-4"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">24/7 Security</div>
+        <div class="header-info-text">CCTV, secure entry, and dorm support for tenants.</div>
+      </div>
+    </div>
+    <div class="header-info-item">
+      <div class="header-info-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M6 7v13h12V7"></path>
+          <path d="M9 7V5h6v2"></path>
+          <path d="M9 12h6"></path>
+          <path d="M9 16h4"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="header-info-title">Rooms &amp; Amenities</div>
+        <div class="header-info-text">Semi-furnished rooms with Wi-Fi, elevator, and own bathroom.</div>
+      </div>
     </div>
   </div>
+</div>
+</header>
+
+<section class="hero">
+
+  <div class="hero-content">
+    <div class="hero-badge">Safe &middot; Comfortable &middot; Near UST</div>
+    <h1>Your home away<br>from <em>home</em></h1>
+    <p class="hero-sub">
+      Sanctissimo Rosario Ladies Dormitory: a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
+    </p>
+    <div class="hero-actions">
+      <a href="#features" class="btn-primary">Explore Rooms</a>
+      <a href="{{ route('safety.features') }}" class="btn-outline">Safety Features</a>
+    </div>
+
+    <div class="hero-chips">
+      <div class="hero-chip"><span class="hero-chip-dot"></span>24/7 Security</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Wi-Fi</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Elevator</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Own Bathroom</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Near UST</div>
+      <div class="hero-chip"><span class="hero-chip-dot"></span>Aircon</div>
+    </div>
+  </div>
+
+  <div class="hero-arch-wrap">
+    <div class="hero-blob-top"></div>
+    <div class="hero-blob-bottom"></div>
+    <div class="hero-arch">
+      <img src="{{ asset('images/sancti.png') }}" alt="Sanctissimo Rosario Dormitory">
+    </div>
+  </div>
+
 </section>
 
-
-<!-- ════════════════════ FEATURES ════════════════════ -->
-<section class="features" id="features">
-  <div class="features-header reveal">
-    <div class="section-tag">What We Offer</div>
-    <h2 class="section-title">Everything your dorm<br>life needs, <em>in one place</em></h2>
-    <p class="section-sub">From submitting a maintenance request by voice to tracking your water bill in real time — DormEase handles it all, digitally.</p>
-  </div>
-  <div class="features-grid">
-    <div class="feat-card reveal d1">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
-      <div class="feat-title">Maintenance Requests</div>
-      <p class="feat-desc">Submit repair requests via text or voice using NLP — no forms to fill. Track every request status in real time.</p>
-    </div>
-    <div class="feat-card reveal d2">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-      <div class="feat-title">Announcements</div>
-      <p class="feat-desc">Stay updated with dorm-wide announcements tagged by priority — Low, Medium, or High. Never miss a notice.</p>
-    </div>
-    <div class="feat-card reveal d3">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div>
-      <div class="feat-title">Water Billing</div>
-      <p class="feat-desc">Automatic, transparent water bill calculation per floor and per room. Track payment history with full clarity.</p>
-    </div>
-    <div class="feat-card reveal d1">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <div class="feat-title">Visitor Registration</div>
-      <p class="feat-desc">Digitally register and log all visitors. Monitor entries and exits in real time for building security.</p>
-    </div>
-    <div class="feat-card reveal d2">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-      <div class="feat-title">Emergency Reporting</div>
-      <p class="feat-desc">One-tap emergency alerts sent directly to dorm administration. Quick, reliable, and logged for accountability.</p>
-    </div>
-    <div class="feat-card reveal d3">
-      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-      <div class="feat-title">Document Processing</div>
-      <p class="feat-desc">Request and receive important dorm documents digitally. No more queuing or filling out paper forms.</p>
-    </div>
-  </div>
-</section>
-
-
-<!-- ════════════════════ GALLERY ════════════════════ -->
 <section class="gallery" id="gallery">
   <div class="reveal">
     <div class="section-tag">Our Rooms</div>
     <h2 class="section-title">Room Types at <em>Sanctissimo Rosario</em></h2>
-    <p class="section-sub">Choose the setup that fits your lifestyle — safe, clean, and near UST and the University Belt.</p>
+    <p class="section-sub">Choose the setup that fits your lifestyle, that is safe, clean, and near UST and the University Belt.</p>
   </div>
 
   <div class="gallery-grid reveal">
-
-    <!-- SOLO ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/solo.jpg') }}" alt="Solo Room" class="gal-img">
@@ -638,7 +870,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- DOUBLE ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/two.jpg') }}" alt="Double Room" class="gal-img">
@@ -653,7 +884,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- TRIPLE ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="gal-img">
@@ -668,7 +898,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!-- QUAD ROOM -->
     <div class="gal-item">
       <div class="gal-img-wrap">
         <img src="{{ asset('images/four.jpg') }}" alt="Quad Room" class="gal-img">
@@ -686,19 +915,18 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ════════════════════ HOW IT WORKS ════════════════════ -->
 <section class="how" id="how">
   <div class="how-inner">
     <div>
       <div class="section-tag reveal">Simple Process</div>
       <h2 class="section-title reveal">Getting started is <em>effortless</em></h2>
-      <p class="section-sub reveal">DormEase is designed so every tenant can use it with zero learning curve — from first-year students to reviewees.</p>
+      <p class="section-sub reveal">DormEase is designed so every tenant can use it with zero learning curve.</p>
       <div class="steps" style="margin-top:48px;">
         <div class="step reveal d1">
           <div class="step-num">1</div>
           <div>
-            <div class="step-title">Create your tenant account</div>
-            <p class="step-desc">Sign up with your room information and get verified by the dormitory admin within 24 hours.</p>
+            <div class="step-title">Inquire now and be a Tenant</div>
+            <p class="step-desc">Contact us to learn more about our dormitory and start your application process.</p>
           </div>
         </div>
         <div class="step reveal d2">
@@ -721,7 +949,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="how-img-main reveal">
       <div class="mini-phones">
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">DORMEASE</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:70%"></div><div class="mini-row"></div><div class="mini-row" style="width:80%"></div><div class="mini-row"></div></div></div></div>
-        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:#9C2046"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
+        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:var(--pink-deep)"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">WATER BILL</div></div><div class="mini-bdy"><div style="background:white;border-radius:4px;height:26px;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;font-weight:800;color:var(--pink);font-family:var(--font-head)">₱248.50</span></div><div class="mini-row" style="width:75%"></div><div class="mini-row"></div><div class="mini-row" style="width:55%"></div></div></div></div>
       </div>
       <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
@@ -730,14 +958,12 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-
-<!-- ════════════════════ ABOUT ════════════════════ -->
 <section class="about" id="about">
   <div class="about-inner">
     <div>
       <div class="section-tag reveal">About the Dormitory</div>
       <h2 class="section-title reveal">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
-      <p class="section-sub reveal">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila — a safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
+      <p class="section-sub reveal">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
       <div class="amenities reveal">
         <div class="amenity"><div class="amenity-dot"></div>24/7 Security + CCTV</div>
         <div class="amenity"><div class="amenity-dot"></div>Elevator Access</div>
@@ -756,50 +982,26 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <!--
-    ╔═══════════════════════════════════════════════════════════╗
-    ║  IMAGE SLOTS 4 & 5 — ABOUT PHOTOS                        ║
-    ║                                                           ║
-    ║  SLOT 4 (top, large): Dorm building exterior             ║
-    ║    Plain:   <img src="src/images/dorm-exterior.jpg"      ║
-    ║                  alt="Dorm exterior" class="about-img">  ║
-    ║    Laravel: src="{{ asset('images/dorm-exterior.jpg') }}"║
-    ║    Size: 800×520px                                        ║
-    ║                                                           ║
-    ║  SLOT 5 (bottom, small): Room interior / bathroom        ║
-    ║    Plain:   <img src="src/images/dorm-room.jpg" ...>     ║
-    ║    Laravel: src="{{ asset('images/dorm-room.jpg') }}"    ║
-    ║    Size: 800×360px                                        ║
-    ╚═══════════════════════════════════════════════════════════╝
-    -->
-    <div class="about-photos reveal">
-      <div style="border-radius:var(--r-lg);overflow:hidden;">
-        <!-- IMAGE SLOT 4: Replace div below with <img> tag -->
-        <div class="img-ph" style="height:260px;border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);">
-          <div class="img-ph-ico" style="background:rgba(255,255,255,0.08);">
-            <svg viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.45);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <span style="color:rgba(255,255,255,0.45);">SLOT 4 · Dorm Exterior<br><small style="opacity:.7;font-size:.62rem;text-transform:none;">src/images/dorm-exterior.jpg · 800×520px</small></span>
-        </div>
-      </div>
-      <div style="border-radius:var(--r-lg);overflow:hidden;">
-        <!-- IMAGE SLOT 5: Replace div below with <img> tag -->
-        <div class="img-ph" style="height:175px;border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);">
-          <div class="img-ph-ico" style="background:rgba(255,255,255,0.08);">
-            <svg viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.45);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <span style="color:rgba(255,255,255,0.45);">SLOT 5 · Room Interior<br><small style="opacity:.7;font-size:.62rem;text-transform:none;">src/images/dorm-room.jpg · 800×360px</small></span>
-        </div>
-      </div>
-    </div>
+<div class="about-photos reveal">
+  <div class="about-photo">
+    <img src="{{ asset('images/exterior.png') }}"
+         alt="Dorm Exterior"
+         class="about-img"
+         style="object-position: center 16%;">
   </div>
+  <div class="about-photo">
+    <img src="{{ asset('images/interior.png') }}"
+         alt="Room Interior"
+         class="about-img"
+         style="object-position: center 60%;">
+  </div>
+</div>
 </section>
 
-
-<!-- ════════════════════ CTA ════════════════════ -->
 <section class="cta-section" id="contact">
-  <div class="reveal">
-    <div class="section-tag" style="text-align:center;">Get DormEase</div>
+  <div class="contact-inner reveal">
+    <div class="contact-copy">
+      <div class="section-tag">Get DormEase</div>
     <h2 class="section-title">Ready to experience<br>a <em>smarter</em> dorm life?</h2>
     <p class="section-sub">DormEase is available to all tenants of Sanctissimo Rosario Ladies Dormitory. Contact the administration to get access.</p>
     <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
@@ -809,24 +1011,36 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="cta-contact">
       1229 Navarra Street, Sampaloc, Manila &nbsp;·&nbsp; Near UST &amp; University Belt
     </div>
+    </div>
+    <a class="contact-map-link"
+       href="https://maps.google.com/?q=1235%20Navarra%20St,%20Sampaloc,%20Manila,%201015%20Metro%20Manila&ftid=0x3397b5ffdcdacc75:0x38ad8e34f1c2236f&entry=gps&lucs=,94284469,94231188,47071704,94218641,94282134,94286869&g_st=ipc"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="Open Sanctissimo Rosario Ladies Dormitory in Google Maps">
+      <span class="contact-map-wrap">
+        <img src="{{ asset('images/map.jpg') }}"
+             alt="Map to Sanctissimo Rosario Ladies Dormitory"
+             class="contact-map-img"
+             onerror="this.style.display='none';this.parentElement.classList.add('map-missing')">
+      </span>
+      <span class="contact-map-prompt">
+        Click here to see directions
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 17L17 7"></path>
+          <path d="M9 7h8v8"></path>
+        </svg>
+      </span>
+    </a>
   </div>
 </section>
 
-
-<!-- ════════════════════ FOOTER ════════════════════ -->
 <footer>
   <div class="footer-inner">
     <div>
       <div class="footer-logo">
-        <!--
-        ╔══════════════════════════════════════════════════════╗
-        ║  IMAGE SLOT 9 — FOOTER LOGO (white/light version)   ║
-        ║  Plain:   src="src/images/logo-white.png"           ║
-        ║  Laravel: src="{{ asset('images/logo-white.png') }}"║
-        ╚══════════════════════════════════════════════════════╝
-        -->
+
         <a href="{{ route('login') }}" class="footer-logo">
-            <img src="YOUR_LOGO_WHITE_URL_HERE"
+            <img src="{{ asset('images/logo.png') }}"
                 alt="DormEase"
                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
             <span class="footer-logo-fb" style="display:none;">Dorm<span>Ease</span></span>
@@ -844,10 +1058,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
     <div class="footer-col">
       <h4>Dormitory</h4>
-      <a href="#">About</a>
-      <a href="#">Room Types</a>
+      <a href="#about">About</a>
+      <a href="#gallery">Room Types</a>
       <a href="#">Amenities</a>
-      <a href="#">Location</a>
+      <a href="https://maps.google.com/?q=1235%20Navarra%20St,%20Sampaloc,%20Manila,%201015%20Metro%20Manila&ftid=0x3397b5ffdcdacc75:0x38ad8e34f1c2236f&entry=gps&lucs=,94284469,94231188,47071704,94218641,94282134,94286869&g_st=ipc">Location</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
@@ -856,18 +1070,47 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       <a href="#">Sampaloc, Manila</a>
     </div>
   </div>
-  <div class="footer-btm">
-    <span>© 2026 DormEase · Sanctissimo Rosario Ladies Dormitory</span>
-    <div style="display:flex;gap:20px;align-items:center;">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
+<div class="footer-btm">
+  <span>© 2026 DormEase: Sanctissimo Rosario Ladies Dormitory</span>
+  <div class="footer-btm-right">
+    <div class="footer-socials">
+      <a class="footer-social-icon" href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <img src="{{ asset('icons/facebook.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+      <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory?fbclid=IwY2xjawR1agFleHRuA2FlbQIxMABicmlkETFSMGd2UUk5MFBOMmltNUFuc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHm3CWQe1WuTvPBmFvhFx21eNhAD0Y0JvuJhC5csQx8pZ743hf2XciRZ6CKtT_aem_C2XJTMgOF6fVl_8IZKtidQ" aria-label="Instagram">
+        <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+      <a class="footer-social-icon" href="https://l.facebook.com/l.php?u=https%3A%2F%2Ftiktok.com%2F%40srbdormitory%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExUjBndlFJOTBQTjJpbTVBbnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR6_VD_SV6fgSa0DXK4qeWb12Ne2lLBJb3G41h5iz8rzZUjFq372zpT3q8ls0g_aem_9JUss0K1Lc7HjetMsE4voA&h=AUDRue1ADoYkZA6tVa6ikWVG8ujEpdIZMrpxzczAeWIhOpmRnEhV3IRWDokouMeG0yF_vyQsoztM2tgpcrMEqluI-XTDcAmfFZi035sm-pFYQRrSvR8MsbVDjhygV88LNg7M" aria-label="TikTok">
+        <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Use</a>
+    <a href="{{ route('login') }}">Admin Portal</a>
     </div>
   </div>
+</div>
 </footer>
+
+<!-- Scroll to Top Button -->
+<button id="scrollTopBtn" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
 
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+
+  // Scroll-to-top logic
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', scrollY > 300);
+  });
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.10 });

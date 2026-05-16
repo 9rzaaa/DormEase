@@ -5,26 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class TenantController extends Controller
 {
     public function index()
     {
-        $staff = auth()->guard('staff')->user();
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
-        $totalTenants = Tenant::count();
-        $occupiedUnits = Tenant::where('is_active', true)->count();
-        $totalUnits = 25;
-        $pendingCount = Tenant::where('is_active', false)->count();
 
-        return view('tenants', compact(
-            'staff',
-            'tenants',
-            'totalTenants',
-            'occupiedUnits',
-            'totalUnits',
-            'pendingCount'
-        ));
+        return view('tenants', [
+            'tenants'      => $tenants,
+            'totalTenants' => $tenants->count(),
+            'activeCount'  => $tenants->where('status', 'active')->count(),
+            'pendingCount' => $tenants->where('status', 'pending')->count(),
+        ]);
     }
 
     public function store(Request $request)
@@ -32,25 +26,38 @@ class TenantController extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email|max:100',
-            'password'       => 'required|string|min:6',
+            'email'          => 'required|email|unique:tenants,email',
             'contact_number' => 'nullable|string|max:20',
-            'room_number'    => 'required|string|max:20',
-            'move_in_date'   => 'required|date',
+            'room_number'    => 'nullable|string|max:20',
+            'floor'          => 'nullable|integer|min:1|max:5',
+            'stay_type'      => 'nullable|string|max:50',
+            'move_in_date'   => 'nullable|date',
         ]);
 
-        Tenant::create([
-            'first_name'     => $request->first_name,
-            'last_name'      => $request->last_name,
-            'email'          => $request->email,
-            'password_hash'  => Hash::make($request->password),
-            'contact_number' => $request->contact_number,
-            'room_number'    => $request->room_number,
-            'move_in_date'   => $request->move_in_date,
-            'is_active'      => true,
+        $accountId    = Tenant::generateAccountId();
+        $tempPassword = Tenant::generateTempPassword();
+
+        $tenant = Tenant::create([
+            'account_id'       => $accountId,
+            'password_hash'    => Hash::make($tempPassword),
+            'is_temp_password' => true,
+            'first_name'       => $request->first_name,
+            'last_name'        => $request->last_name,
+            'email'            => $request->email,
+            'contact_number'   => $request->contact_number,
+            'room_number'      => $request->room_number,
+            'floor'            => $request->floor,
+            'stay_type'        => $request->stay_type,
+            'move_in_date'     => $request->move_in_date,
+            'status'           => 'pending',
+            'is_active'        => true,
         ]);
 
-        return redirect()->route('tenants')->with('success', 'Tenant added successfully!');
+        return redirect()->route('tenants.index')
+            ->with('success', 'Tenant account created successfully.')
+            ->with('new_account_id',    $accountId)
+            ->with('new_temp_password', $tempPassword)
+            ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
     public function update(Request $request, $id)
@@ -60,35 +67,134 @@ class TenantController extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email,' . $id . ',tenant_id|max:100',
+            'email'          => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
             'contact_number' => 'nullable|string|max:20',
-            'room_number'    => 'required|string|max:20',
-            'move_in_date'   => 'required|date',
-            'is_active'      => 'boolean',
+            'room_number'    => 'nullable|string|max:20',
+            'floor'          => 'nullable|integer|min:1|max:5',
+            'stay_type'      => 'nullable|string|max:50',
+            'move_in_date'   => 'nullable|date',
+            'move_out_date'  => 'nullable|date',
+            'status'         => 'required|in:active,pending,move_out,inactive',
         ]);
 
-        $data = $request->only([
-            'first_name',
-            'last_name',
-            'email',
-            'contact_number',
-            'room_number',
-            'move_in_date',
-            'is_active'
+        $tenant->update([
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
+            'email'          => $request->email,
+            'contact_number' => $request->contact_number,
+            'room_number'    => $request->room_number,
+            'floor'          => $request->floor,
+            'stay_type'      => $request->stay_type,
+            'move_in_date'   => $request->move_in_date,
+            'move_out_date'  => $request->move_out_date,
+            'status'         => $request->status,
+            'is_active'      => $request->status !== 'inactive',
         ]);
 
-        if ($request->filled('password')) {
-            $data['password_hash'] = Hash::make($request->password);
+        return redirect()->route('tenants.index')
+            ->with('success', 'Tenant information updated successfully.');
+    }
+
+    public function apiUpdateProfile(Request $request)
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $request->validate([
+            'email'          => 'required|email|unique:tenants,email,' . $tenant->tenant_id . ',tenant_id',
+            'contact_number' => 'required|string|digits:11',
+        ]);
+
+        $tenant->update([
+            'email'          => $request->email,
+            'contact_number' => $request->contact_number,
+        ]);
+
+        return response()->json([
+            'message'        => 'Contact info updated successfully.',
+            'email'          => $tenant->email,
+            'contact_number' => $tenant->contact_number,
+        ]);
+    }
+
+    public function apiUpdatePhoto(Request $request)
+    {
+        /** @var Tenant $tenant */
+        $tenant = $request->user();
+
+        $request->validate([
+            'profile_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        if ($tenant->profile_photo) {
+            Storage::disk('public')->delete($tenant->profile_photo);
         }
 
-        $tenant->update($data);
+        $path = $request->file('profile_photo')->store('profile_photos', 'public');
 
-        return redirect()->route('tenants')->with('success', 'Tenant updated successfully!');
+        $tenant->update(['profile_photo' => $path]);
+
+        return response()->json([
+            'message'       => 'Profile photo updated successfully.',
+            'profile_photo' => $path,
+        ]);
+    }
+
+    public function resetPassword($id)
+    {
+        $tenant       = Tenant::findOrFail($id);
+        $tempPassword = Tenant::generateTempPassword();
+
+        $tenant->update([
+            'password_hash'    => Hash::make($tempPassword),
+            'is_temp_password' => true,
+        ]);
+
+        return redirect()->route('tenants.index')
+            ->with('success', 'Password reset successfully.')
+            ->with('reset_account_id',    $tenant->account_id)
+            ->with('reset_temp_password', $tempPassword)
+            ->with('reset_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
     public function destroy($id)
     {
-        Tenant::findOrFail($id)->delete();
-        return redirect()->route('tenants')->with('success', 'Tenant deleted.');
+        $tenant = Tenant::findOrFail($id);
+        $tenant->delete();
+
+        return redirect()->route('tenants.index')
+            ->with('success', 'Tenant account deleted successfully.');
+    }
+    public function frontdeskIndex()
+    {
+    $tenants = Tenant::where('is_active', true)
+        ->orderBy('first_name')
+        ->get();
+
+    $totalUnits    = 25;
+    $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
+    $vacantUnits   = $totalUnits - $occupiedUnits;
+
+    return view('fdtenant', [
+        'tenants'       => $tenants,
+        'totalTenants'  => $tenants->count(),
+        'activeCount'   => $tenants->where('status', 'active')->count(),
+        'pendingCount'  => $tenants->where('status', 'pending')->count(),
+        'occupiedUnits' => $occupiedUnits,
+        'vacantUnits'   => $vacantUnits,
+        'totalUnits'    => $totalUnits,
+    ]);
+    }
+
+    public function updateNotes(Request $request, $id)
+    {
+    $request->validate([
+        'notes' => 'nullable|string|max:1000',
+    ]);
+
+    $tenant = Tenant::findOrFail($id);
+    $tenant->update(['notes' => $request->notes]);
+
+    return redirect()->back()->with('success', 'Note saved successfully.');
     }
 }

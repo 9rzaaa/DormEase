@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'DormEase — Announcements')
+@section('title', 'DormEase: Announcements')
 @section('page-title', 'Announcements')
 
 @section('styles')
@@ -76,7 +76,7 @@
         width: 32px; height: 32px; border-radius: 8px;
         background: #E8175D; border: 1px solid var(--border);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; font-size: .9rem; transition: background .2s;
+        cursor: pointer; transition: background .2s;
     }
     .compose-tool-btn:hover { background: #E8175D; }
 
@@ -135,7 +135,6 @@
         position: relative;
     }
     .ann-card:hover { box-shadow: 0 6px 20px rgba(202,93,134,.14); transform: translateY(-2px); }
-
     .ann-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: .55rem; }
 
     .priority-tag {
@@ -157,24 +156,20 @@
     .ann-title { font-size: .92rem; font-weight: 700; color: var(--ink); margin-bottom: .35rem; line-height: 1.35; }
     .ann-desc  { font-size: .8rem; color: var(--ink-muted); line-height: 1.55; margin-bottom: .7rem;
                  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
     .ann-footer { display: flex; align-items: center; justify-content: space-between; }
     .ann-date   { font-size: .73rem; color: var(--ink-muted); }
     .ann-files  { display: flex; align-items: center; gap: .3rem; font-size: .73rem; color: var(--ink-muted); }
-    .ann-files svg { opacity: .6; }
+    .ann-files img { width: 12px; height: 12px; opacity: .5; }
 
-    .empty-col {
-        text-align: center; padding: 2rem 1rem;
-        color: var(--ink-muted); font-size: .83rem;
-    }
-    .empty-col .empty-icon { font-size: 2rem; margin-bottom: .5rem; opacity: .4; }
+    .empty-col { text-align: center; padding: 2rem 1rem; color: var(--ink-muted); font-size: .83rem; }
+    .empty-col .empty-icon { width: 36px; height: 36px; opacity: .3; margin: 0 auto .5rem; }
 
     .ann-menu-wrap { position: relative; }
     .ann-dropdown {
         position: absolute; right: 0; top: 100%;
         background: var(--white); border: 1px solid var(--border);
         border-radius: 10px; box-shadow: 0 8px 24px rgba(26,26,46,.12);
-        z-index: 200; min-width: 140px;
+        z-index: 200; min-width: 150px;
         display: none; flex-direction: column; overflow: hidden;
     }
     .ann-dropdown.open { display: flex; }
@@ -182,6 +177,7 @@
         padding: .6rem 1rem; font-size: .82rem; font-weight: 500;
         color: var(--ink); cursor: pointer; transition: background .15s;
         border: none; background: none; text-align: left; width: 100%;
+        display: flex; align-items: center; gap: .5rem;
     }
     .ann-dropdown-item:hover { background: #f0f0f0; color: #E8175D; }
     .ann-dropdown-item.danger { color: var(--red); }
@@ -212,6 +208,28 @@
         .columns-wrapper { grid-template-columns: 1fr; }
         .page-body { padding: 1rem; }
     }
+    .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { border-color: var(--pink); }
+    .modal-field textarea { resize: vertical; min-height: 100px; }
+    .modal-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
+    .btn-cancel:hover { border-color: var(--pink); color: var(--pink); }
+    .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .btn-submit:hover { background: #a8446c; }
+    .btn-danger { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--red); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; }
+
+    .view-row { display: flex; justify-content: space-between; align-items: flex-start; padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
+    .view-row:last-child { border-bottom: none; }
+    .view-label { color: var(--ink-muted); font-weight: 500; flex-shrink: 0; margin-right: 1rem; }
+    .view-val   { font-weight: 600; color: var(--ink); text-align: right; }
+
+    .delete-warning { background: #fff0f0; border: 1px solid var(--blush); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; font-size: .88rem; color: var(--red); line-height: 1.6; }
+
+    @media (max-width: 1100px) { .columns-wrapper { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 700px)  { .columns-wrapper { grid-template-columns: 1fr; } .page-body { padding: 1rem; } }
+
+    .fade-up { animation: fadeUp .45s ease both; }
+    .d1{animation-delay:.05s;} .d2{animation-delay:.12s;} .d3{animation-delay:.2s;} .d4{animation-delay:.28s;}
 </style>
 @endsection
 
@@ -224,35 +242,50 @@
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <button class="btn-post" onclick="openModal('post-modal')">
-            ＋ Post New Announcement
+            <img src="{{ asset('icons/announce.png') }}" alt=""> Post New Announcement
         </button>
     </div>
 
     <div class="compose-card fade-up d2">
         <div class="compose-top">
             <div class="compose-avatar">{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}</div>
-            <input class="compose-title-input" type="text" placeholder="Title" id="quick-title">
-            <button class="compose-close" onclick="document.getElementById('quick-title').value='';document.getElementById('quick-desc').value=''">✕</button>
+            <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openModal('post-modal')" readonly>
+            <button class="compose-close" onclick="openModal('post-modal')">
+                <img src="{{ asset('icons/edit.png') }}" style="width:16px;height:16px;opacity:.5;" alt="">
+            </button>
         </div>
-        <textarea class="compose-body-input" id="quick-desc" placeholder="Description" rows="2"></textarea>
+        <textarea class="compose-body-input" id="quick-desc" placeholder="What do you want to announce?" rows="2" onclick="openModal('post-modal')" readonly></textarea>
         <div class="compose-footer">
             <div class="compose-tools">
-                <button class="compose-tool-btn" title="Priority">🚩</button>
-                <button class="compose-tool-btn" title="Attach file">🔗</button>
-                <button class="compose-tool-btn" title="Schedule">🕐</button>
+                <button class="compose-tool-btn" title="Priority" onclick="openModal('post-modal')">
+                    <img src="{{ asset('icons/flag.png') }}" alt="">
+                </button>
+                <button class="compose-tool-btn" title="Attach file" onclick="openModal('post-modal')">
+                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                </button>
             </div>
             <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openModal('post-modal')">
-                Post New Announcement
+                <img src="{{ asset('icons/announce.png') }}" alt=""> Post
             </button>
         </div>
     </div>
 
     <div class="filters-row fade-up d3">
-        <button class="filter-btn active" onclick="setFilter(this,'all')">≡ Filter</button>
-        <button class="filter-btn" onclick="setFilter(this,'week')">📅 This Week</button>
-        <button class="filter-btn" onclick="setFilter(this,'month')">📅 This Month</button>
-        <button class="filter-btn" onclick="setFilter(this,'high')">🔴 High Priority</button>
-        <button class="filter-btn" onclick="setFilter(this,'low')">🟢 Low Priority</button>
+        <button class="filter-btn active" onclick="setFilter(this,'all')">
+            <img src="{{ asset('icons/filter.png') }}" alt=""> All
+        </button>
+        <button class="filter-btn" onclick="setFilter(this,'week')">
+            <img src="{{ asset('icons/calendar.png') }}" alt=""> This Week
+        </button>
+        <button class="filter-btn" onclick="setFilter(this,'month')">
+            <img src="{{ asset('icons/calendar.png') }}" alt=""> This Month
+        </button>
+        <button class="filter-btn" onclick="setFilter(this,'high')">
+            <img src="{{ asset('icons/warning.png') }}" alt=""> High Priority
+        </button>
+        <button class="filter-btn" onclick="setFilter(this,'low')">
+            <img src="{{ asset('icons/lowprio.png') }}" alt=""> Low Priority
+        </button>
     </div>
 
     <div class="columns-wrapper fade-up d4">
@@ -263,36 +296,54 @@
                 <span class="col-title">All</span>
                 <span class="col-count">{{ $announcements->count() }}</span>
             </div>
-            <div class="kanban-col-body" id="col-all">
+            <div class="kanban-col-body">
                 @forelse($announcements as $ann)
-                    <div class="ann-card" onclick="openViewModal({{ $ann->id }})">
+                    <div class="ann-card" onclick="openViewModal({{ $ann->announcement_id }})">
                         <div class="ann-card-top">
                             <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-{{ $ann->id }}')">•••</button>
-                                <div class="ann-dropdown" id="menu-{{ $ann->id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->id }}, event)">✏️ Edit</button>
-                                    <button class="ann-dropdown-item" onclick="archiveAnn({{ $ann->id }}, event)">📦 Archive</button>
-                                    <button class="ann-dropdown-item danger" onclick="deleteAnn({{ $ann->id }}, event)">🗑 Delete</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')">•••</button>
+                                <div class="ann-dropdown" id="menu-all-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
+                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
+                                    </button>
+                                    @if($ann->status !== 'closed')
+                                        <button class="ann-dropdown-item" onclick="submitForm('archive-{{ $ann->announcement_id }}', event)">
+                                            <img src="{{ asset('icons/archive.png') }}" alt=""> Archive
+                                        </button>
+                                    @else
+                                        <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
+                                            <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
+                                        </button>
+                                    @endif
+                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
+                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->description }}</div>
+                        <div class="ann-desc">{{ $ann->content }}</div>
                         <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->created_at ?? now())->format('F j, Y · g:i A') }}</span>
-                            <span class="ann-files">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                                {{ $ann->files_count ?? 0 }} files
-                            </span>
+                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
+                            @if($ann->attachment)
+                                <span class="ann-files">
+                                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                                    {{ count(explode(',', $ann->attachment)) }} file(s)
+                                </span>
+                            @endif
                         </div>
                     </div>
+
+                    <form id="archive-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.archive', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+                    <form id="restore-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.restore', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+
                 @empty
                     <div class="empty-col">
-                        <div class="empty-icon">📢</div>
-                        No announcements yet
+                        <img class="empty-icon" src="{{ asset('icons/announce.png') }}" alt="">
+                        <div>No announcements yet</div>
                     </div>
                 @endforelse
             </div>
@@ -308,34 +359,42 @@
             </div>
             <div class="kanban-col-body">
                 @forelse($announcements->where('status','active') as $ann)
-                    <div class="ann-card" onclick="openViewModal({{ $ann->id }})">
+                    <div class="ann-card" onclick="openViewModal({{ $ann->announcement_id }})">
                         <div class="ann-card-top">
                             <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-a-{{ $ann->id }}')">•••</button>
-                                <div class="ann-dropdown" id="menu-a-{{ $ann->id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->id }}, event)">✏️ Edit</button>
-                                    <button class="ann-dropdown-item" onclick="archiveAnn({{ $ann->id }}, event)">📦 Archive</button>
-                                    <button class="ann-dropdown-item danger" onclick="deleteAnn({{ $ann->id }}, event)">🗑 Delete</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')">•••</button>
+                                <div class="ann-dropdown" id="menu-act-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
+                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
+                                    </button>
+                                    <button class="ann-dropdown-item" onclick="submitForm('archive-{{ $ann->announcement_id }}', event)">
+                                        <img src="{{ asset('icons/archive.png') }}" alt=""> Archive
+                                    </button>
+                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
+                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->description }}</div>
+                        <div class="ann-desc">{{ $ann->content }}</div>
                         <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->created_at ?? now())->format('F j, Y · g:i A') }}</span>
-                            <span class="ann-files">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                                {{ $ann->files_count ?? 0 }} files
-                            </span>
+                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
+                            @if($ann->attachment)
+                                <span class="ann-files">
+                                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                                    {{ count(explode(',', $ann->attachment)) }} file(s)
+                                </span>
+                            @endif
                         </div>
                     </div>
                 @empty
                     <div class="empty-col">
-                        <div class="empty-icon">✅</div>
-                        No active announcements
+                        <img class="empty-icon" src="{{ asset('icons/check.png') }}" alt="">
+                        <div>No active announcements</div>
                     </div>
                 @endforelse
             </div>
@@ -351,53 +410,56 @@
             </div>
             <div class="kanban-col-body">
                 @forelse($announcements->where('status','closed') as $ann)
-                    <div class="ann-card" style="opacity:.75;" onclick="openViewModal({{ $ann->id }})">
+                    <div class="ann-card" style="opacity:.75;" onclick="openViewModal({{ $ann->announcement_id }})">
                         <div class="ann-card-top">
                             <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-c-{{ $ann->id }}')">•••</button>
-                                <div class="ann-dropdown" id="menu-c-{{ $ann->id }}">
-                                    <button class="ann-dropdown-item" onclick="restoreAnn({{ $ann->id }}, event)">♻️ Restore</button>
-                                    <button class="ann-dropdown-item danger" onclick="deleteAnn({{ $ann->id }}, event)">🗑 Delete</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')">•••</button>
+                                <div class="ann-dropdown" id="menu-cls-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
+                                        <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
+                                    </button>
+                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
+                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->description }}</div>
+                        <div class="ann-desc">{{ $ann->content }}</div>
                         <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->created_at ?? now())->format('F j, Y · g:i A') }}</span>
-                            <span class="ann-files">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-                                {{ $ann->files_count ?? 0 }} files
-                            </span>
+                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
+                            @if($ann->attachment)
+                                <span class="ann-files">
+                                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                                    {{ count(explode(',', $ann->attachment)) }} file(s)
+                                </span>
+                            @endif
                         </div>
                     </div>
                 @empty
                     <div class="empty-col">
-                        <div class="empty-icon">🗄</div>
-                        No closed announcements
+                        <img class="empty-icon" src="{{ asset('icons/check.png') }}" alt="">
+                        <div>No closed announcements</div>
                     </div>
                 @endforelse
             </div>
         </div>
 
     </div>
-
 </div>
 @endsection
-
 
 @section('modals')
 
 <div class="modal-overlay" id="post-modal">
-    <div class="modal" style="max-width:520px;">
+    <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post New Announcement</div>
             <button class="modal-close" onclick="closeModal('post-modal')">✕</button>
         </div>
-
         <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="modal-field">
@@ -405,13 +467,13 @@
                 <input type="text" name="title" placeholder="e.g. Water Interruption Notice" required>
             </div>
             <div class="modal-field">
-                <label>Description *</label>
-                <textarea name="description" placeholder="Write your announcement here..." required></textarea>
+                <label>Content *</label>
+                <textarea name="content" placeholder="Write your announcement here..." required></textarea>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div class="modal-grid-2">
                 <div class="modal-field">
                     <label>Priority</label>
-                    <select name="priority" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                    <select name="priority">
                         <option value="low">Low</option>
                         <option value="moderate">Moderate</option>
                         <option value="high">High</option>
@@ -419,7 +481,7 @@
                 </div>
                 <div class="modal-field">
                     <label>Status</label>
-                    <select name="status" style="width:100%;padding:.6rem .85rem;border-radius:9px;border:1.5px solid var(--gray-light);font-family:var(--ff-body);font-size:.87rem;color:var(--ink);outline:none;">
+                    <select name="status">
                         <option value="active">Active</option>
                         <option value="closed">Closed</option>
                     </select>
@@ -437,34 +499,96 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
-    <div class="modal" style="max-width:520px;">
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal">
         <div class="modal-header">
-            <div class="modal-title" id="view-title">Announcement</div>
+            <div class="modal-title">Edit Announcement</div>
+            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+        </div>
+        <form method="POST" id="edit-form">
+            @csrf
+            @method('PUT')
+            <div class="modal-field">
+                <label>Title *</label>
+                <input type="text" name="title" id="edit-title" required>
+            </div>
+            <div class="modal-field">
+                <label>Content *</label>
+                <textarea name="content" id="edit-content" required></textarea>
+            </div>
+            <div class="modal-grid-2">
+                <div class="modal-field">
+                    <label>Priority</label>
+                    <select name="priority" id="edit-priority">
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select name="status" id="edit-status">
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="view-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="view-modal-title">Announcement</div>
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
-        <p id="view-priority" style="margin-bottom:.8rem;"></p>
-        <p id="view-desc" style="font-size:.9rem;color:var(--ink-muted);line-height:1.7;margin-bottom:1rem;"></p>
-        <p id="view-date" style="font-size:.78rem;color:var(--ink-muted);"></p>
+        <div id="view-modal-content"></div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" id="view-edit-btn">Edit</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Delete Announcement</div>
+            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+        </div>
+        <div class="delete-warning">This action cannot be undone. The announcement will be permanently removed.</div>
+        <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+            <form method="POST" id="delete-form" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-danger">Delete</button>
+            </form>
         </div>
     </div>
 </div>
 
 @endsection
 
-
 @section('scripts')
 <script>
-    function setFilter(btn, type) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    const annData = @json($announcements->keyBy('announcement_id'));
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
 
     function toggleMenu(e, id) {
         e.stopPropagation();
-        const menu = document.getElementById(id);
+        const menu   = document.getElementById(id);
         const isOpen = menu.classList.contains('open');
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
         if (!isOpen) menu.classList.add('open');
@@ -473,23 +597,52 @@
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
     });
 
-    const annData = @json($announcements->keyBy('id'));
+    function setFilter(btn, type) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function submitForm(formId, e) {
+        e.stopPropagation();
+        document.getElementById(formId).submit();
+    }
 
     function openViewModal(id) {
         const ann = annData[id];
         if (!ann) return;
-        document.getElementById('view-title').textContent    = ann.title;
-        document.getElementById('view-desc').textContent     = ann.description;
-        document.getElementById('view-priority').innerHTML   =
-            `<span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ann.priority||'Low'}</span>`;
-        document.getElementById('view-date').textContent     = ann.created_at || '';
+        document.getElementById('view-modal-title').textContent = ann.title;
+        document.getElementById('view-modal-content').innerHTML = `
+            <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
+            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
+            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${ann.posted_at||''}</span></div>
+            <div style="margin-top:1rem;font-size:.9rem;color:var(--ink-muted);line-height:1.7;">${ann.content}</div>
+        `;
+        document.getElementById('view-edit-btn').onclick = () => { closeModal('view-modal'); openEditModal(id, new Event('click')); };
         openModal('view-modal');
     }
 
-    function openEditModal(id, e)  { e.stopPropagation(); showToast('Edit coming soon', ''); }
-    function archiveAnn(id, e)     { e.stopPropagation(); showToast('Archived!', 'success'); }
-    function restoreAnn(id, e)     { e.stopPropagation(); showToast('Restored!', 'success'); }
-    function deleteAnn(id, e)      { e.stopPropagation(); showToast('Deleted!', 'error'); }
+    function openEditModal(id, e) {
+        e.stopPropagation();
+        const ann = annData[id];
+        if (!ann) return;
+        document.getElementById('edit-form').action  = `/announcements/${id}`;
+        document.getElementById('edit-title').value   = ann.title;
+        document.getElementById('edit-content').value = ann.content;
+        document.getElementById('edit-priority').value = ann.priority || 'low';
+        document.getElementById('edit-status').value   = ann.status   || 'active';
+        openModal('edit-modal');
+    }
+
+    function openDeleteModal(id, name, e) {
+        e.stopPropagation();
+        document.getElementById('delete-ann-name').textContent = name;
+        document.getElementById('delete-form').action = `/announcements/${id}`;
+        openModal('delete-modal');
+    }
+
+    function ucFirst(str) {
+        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
 
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');

@@ -3,9 +3,26 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\VisitorController;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\FrontdeskController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
-Route::get('/login', fn() => view('login'))->name('login');
+Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
+
+Route::get('/login', function () {
+    if (Auth::guard('staff')->check()) {
+        $user = Auth::guard('staff')->user();
+        return $user->role === 'frontdesk'
+            ? redirect()->route('frontdesk.dashboard')
+            : redirect()->route('dashboard');
+    }
+    return view('login');
+})->name('login');
 
 Route::post('/login', function () {
     $email    = request('email');
@@ -40,94 +57,63 @@ Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/');
+    return redirect()->route('login');
 })->name('logout');
 
 Route::middleware('auth:staff')->group(function () {
 
-    Route::get('/dashboard', function () {
-        $staff = Auth::guard('staff')->user();
-        return view('dashboard', [
-            'staff'               => $staff,
-            'totalTenants'        => \App\Models\Tenant::where('is_active', true)->count(),
-            'pendingPayments'     => \App\Models\Payment::where('status', 'pending')->count(),
-            'pendingMaintenance'  => \App\Models\MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
-            'unresolvedReports'   => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->count(),
-            'maintenanceRequests' => \App\Models\MaintenanceRequest::with('tenant')
-                ->whereIn('status', ['pending', 'in_progress'])
-                ->latest('submitted_at')
-                ->take(3)
-                ->get(),
-            'announcements'       => \App\Models\Announcement::latest('posted_at')->take(3)->get(),
-            'notifications'       => \App\Models\Notification::where('is_read', false)->latest('created_at')->take(4)->get(),
-            'unreadNotifCount'    => \App\Models\Notification::where('is_read', false)->count(),
-            'latestEmergency'     => \App\Models\EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
-            'allEmergencies'      => \App\Models\EmergencyReport::latest('reported_at')->get(),
-            'recentActivities'    => \App\Models\VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
-        ]);
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/frontdesk/dashboard', fn() => view('frontdeskdb'))
-        ->name('frontdesk.dashboard');
+    Route::get('/tenants',                      [TenantController::class, 'index'])->name('tenants.index');
+    Route::post('/tenants',                     [TenantController::class, 'store'])->name('tenants.store');
+    Route::put('/tenants/{id}',                 [TenantController::class, 'update'])->name('tenants.update');
+    Route::delete('/tenants/{id}',              [TenantController::class, 'destroy'])->name('tenants.destroy');
+    Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
 
-    Route::get('/tenants',         [TenantController::class, 'index'])->name('tenants');
-    Route::post('/tenants',        [TenantController::class, 'store'])->name('tenants.store');
-    Route::put('/tenants/{id}',    [TenantController::class, 'update'])->name('tenants.update');
-    Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+    Route::get('/announcements',               [AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('/announcements',              [AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::put('/announcements/{id}',          [AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::post('/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
+    Route::post('/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::delete('/announcements/{id}',       [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
-    Route::get('/documents',   fn() => view('documents'))->name('documents');
-    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance');
-    Route::get('/emergency',   fn() => view('emergency'))->name('emergency');
-    Route::get('/billing',     fn() => view('billing'))->name('billing');
-    Route::get('/visitors',    fn() => view('visitors'))->name('visitors');
-    Route::get('/staff',       fn() => view('staff'))->name('staff');
-    Route::get('/settings',    fn() => view('settings'))->name('settings');
+    Route::get('/visitors',                [VisitorController::class, 'adminIndex'])->name('visitors.index');
+    Route::post('/visitors/store',         [VisitorController::class, 'store'])->name('visitors.store');
+    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
 
-    Route::get('/announcements', function () {
-        $staff = Auth::guard('staff')->user();
-        return view('announcements', [
-            'staff'            => $staff,
-            'unreadNotifCount' => \App\Models\Notification::where('is_read', false)->count(),
-            'announcements'    => \App\Models\Announcement::orderBy('posted_at', 'desc')->get(),
-        ]);
-    })->name('announcements');
+    Route::get('/staff',                      [StaffController::class, 'index'])->name('staff.index');
+    Route::post('/staff',                     [StaffController::class, 'store'])->name('staff.store');
+    Route::put('/staff/{id}',                 [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{id}',              [StaffController::class, 'destroy'])->name('staff.destroy');
+    Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
 
-    Route::post('/announcements', function () {
-        \App\Models\Announcement::create([
-            'title'     => request('title'),
-            'content'   => request('description'),
-            'priority'  => request('priority', 'low'),
-            'status'    => request('status', 'active'),
-            'posted_by' => Auth::guard('staff')->id(),
-            'posted_at' => now(),
-        ]);
-        return redirect()->route('announcements')->with('success', 'Announcement posted successfully!');
-    })->name('announcements.store');
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('/',               [BillingController::class, 'index'])->name('index');
+        Route::post('/log',           [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full',   [BillingController::class, 'updateFull'])->name('updateFull');
+    });
 
-    Route::put('/announcements/{id}', function ($id) {
-        $ann = \App\Models\Announcement::findOrFail($id);
-        $ann->update([
-            'title'    => request('title'),
-            'content'  => request('description'),
-            'priority' => request('priority', $ann->priority),
-            'status'   => request('status', $ann->status),
-        ]);
-        return redirect()->route('announcements')->with('success', 'Announcement updated!');
-    })->name('announcements.update');
+    Route::get('/documents',   fn() => view('documents'))->name('documents.index');
+    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
+    Route::get('/emergency',   fn() => view('emergency'))->name('emergency.index');
+    Route::get('/settings',    fn() => view('settings'))->name('settings.index');
 
-    Route::patch('/announcements/{id}/archive', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->update(['status' => 'closed']);
-        return redirect()->route('announcements')->with('success', 'Announcement archived.');
-    })->name('announcements.archive');
+    Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
+    Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
+    Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
+    Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
 
-    Route::patch('/announcements/{id}/restore', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->update(['status' => 'active']);
-        return redirect()->route('announcements')->with('success', 'Announcement restored.');
-    })->name('announcements.restore');
-
-    Route::delete('/announcements/{id}', function ($id) {
-        \App\Models\Announcement::findOrFail($id)->delete();
-        return redirect()->route('announcements')->with('success', 'Announcement deleted.');
-    })->name('announcements.destroy');
-
+    // View profile page
+    Route::get('/profile', [ProfileController::class, 'index'])
+         ->name('profile.index');
+    // Update personal info + photo
+    Route::put('/profile', [ProfileController::class, 'update'])
+         ->name('profile.update');
+    // Change password
+    Route::put('/profile/password', [ProfileController::class, 'password'])
+         ->name('profile.password');
+    // Deactivate account
+    Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])
+         ->name('profile.deactivate');
 });
