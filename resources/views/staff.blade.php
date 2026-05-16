@@ -60,7 +60,7 @@
     }
     .stat-num   { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -.03em; }
     .stat-label { font-size: .85rem; color: white; font-weight: 700; margin-top: .2rem; }
-    .stat-sub   { font-size: .76rem; color: white; font-weight: 700; margin-top: .15rem; }
+    .stat-sub   { font-size: .76rem; color: white; font-weight: 500; margin-top: .15rem; }
 
     /* ───────── TABLE CARD ───────── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
