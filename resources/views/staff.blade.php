@@ -59,8 +59,8 @@
         filter: brightness(0) invert(1);
     }
     .stat-num   { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -.03em; }
-    .stat-label { font-size: .85rem; color: rgba(255,255,255,.85); font-weight: 500; margin-top: .2rem; }
-    .stat-sub   { font-size: .76rem; color: rgba(255,255,255,.65); font-weight: 600; margin-top: .15rem; }
+    .stat-label { font-size: .85rem; color: white; font-weight: 700; margin-top: .2rem; }
+    .stat-sub   { font-size: .76rem; color: white; font-weight: 700; margin-top: .15rem; }
 
     /* ───────── TABLE CARD ───────── */
     .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
@@ -108,7 +108,7 @@
     thead tr { background: var(--pink-bg); }
     th {
         padding: .75rem 1rem; text-align: left;
-        font-size: .75rem; font-weight: 700; color: var(--ink-muted);
+        font-size: .75rem; font-weight: 700; color: #E8175D;
         text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
     }
     td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1px solid var(--border); vertical-align: middle; }
