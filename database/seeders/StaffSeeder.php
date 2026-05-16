@@ -25,7 +25,7 @@ class StaffSeeder extends Seeder
             'last_name'      => 'Desk',
             'email'          => 'frontdesk@dormease.com',
             'password_hash'  => bcrypt('Staff123'),
-            'role'           => 'staff',
+            'role'           => 'frontdesk',
             'is_active'      => true,
         ]);
     }
