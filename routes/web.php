@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
 Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
+Route::get('/features', fn() => view('public.features'))->name('features');
 
 Route::get('/login', function () {
     if (Auth::guard('staff')->check()) {
