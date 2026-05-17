@@ -34,9 +34,10 @@
     .nav-logo-fb { font-family:var(--font-head); font-size:1.55rem; font-weight:800; color:var(--brown); letter-spacing:-.02em; }
     .nav-logo-fb span { color:var(--pink); }
     .nav-links { display:flex; align-items:center; gap:30px; list-style:none; }
-    .nav-links a { text-decoration:none; font-size:.98rem; font-weight:700; color:var(--brown); transition:color .2s; }
+    .nav-links a { text-decoration:none; font-size:.98rem; font-weight:700; color:var(--brown); letter-spacing:.01em; transition:color .2s,background .2s; }
     .nav-links a:hover { color:var(--pink); }
-    .nav-cta { background:var(--gradient-pink) !important; color:white !important; padding:11px 26px !important; border-radius:100px !important; box-shadow:0 8px 18px rgba(232,23,93,.24); }
+    .nav-cta { background:var(--gradient-pink) !important; color:white !important; padding:11px 26px !important; border-radius:100px !important; font-weight:700 !important; transition:filter .2s,transform .15s !important; box-shadow:0 8px 18px rgba(232,23,93,.24); }
+    .nav-cta:hover { filter:brightness(.94); transform:translateY(-1px); }
     .header-spacer { height:154px; background:var(--cream); }
     .safety-hero { padding:70px 6% 52px; background:var(--cream); }
     .safety-hero-inner { max-width:1180px; margin:0 auto; }
@@ -135,10 +136,10 @@
       <span class="nav-logo-fb">Dorm<span>Ease</span></span>
     </a>
     <ul class="nav-links">
-      <li><a href="{{ route('home') }}#features">Features</a></li>
       <li><a href="{{ route('home') }}#gallery">Gallery</a></li>
       <li><a href="{{ route('home') }}#how">How it Works</a></li>
       <li><a href="{{ route('home') }}#about">About</a></li>
+      <li><a href="{{ route('faqs') }}">FAQs</a></li>
       <li><a href="{{ route('home') }}#contact" class="nav-cta">Contact Us</a></li>
     </ul>
   </nav>
