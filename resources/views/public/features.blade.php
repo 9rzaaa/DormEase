@@ -92,7 +92,7 @@
 
     /* Card image side — phone mockup shell */
     .feat-img-wrap {
-      background: linear-gradient(135deg, var(--pink-pale) 0%, #fce8f0 100%);
+      background: linear-gradient(135deg, var(--pink-light) 0%, #fce8f0 100%);
       display: flex; align-items: center; justify-content: center;
       padding: 24px 20px; position: relative; overflow: hidden;
     }
@@ -361,7 +361,7 @@
         </div>
 
         <!-- 2. Announcements -->
-        <div class="feat-card flip">
+        <div class="feat-card flip" id="announcements">
           <div class="feat-info">
             <div class="feat-number">Feature 02</div>
             <div class="feat-title">Announcements</div>
@@ -385,7 +385,7 @@
         </div>
 
         <!-- 3. Maintenance Request -->
-        <div class="feat-card">
+        <div class="feat-card" id="maintenance">
           <div class="feat-info">
             <div class="feat-number">Feature 03</div>
             <div class="feat-title">Maintenance Request</div>
@@ -433,7 +433,7 @@
         </div>
 
         <!-- 5. Water Bill -->
-        <div class="feat-card">
+        <div class="feat-card" id="water-bill">
           <div class="feat-info">
             <div class="feat-number">Feature 05</div>
             <div class="feat-title">Water Bill</div>
@@ -457,7 +457,7 @@
         </div>
 
         <!-- 6. Visitor Registration -->
-        <div class="feat-card flip">
+        <div class="feat-card flip" id="visitor">
           <div class="feat-info">
             <div class="feat-number">Feature 06</div>
             <div class="feat-title">Visitor Registration</div>
@@ -543,7 +543,14 @@
       </a>
       <p class="footer-brand">A web and mobile dormitory management system for Sanctissimo Rosario Ladies Dormitory, Sampaloc, Manila.</p>
     </div>
-    <div class="footer-col"><h4>Features</h4><a href="{{ route('home') }}#features">Maintenance</a><a href="{{ route('home') }}#features">Announcements</a><a href="{{ route('home') }}#features">Water Billing</a><a href="{{ route('home') }}#features">Visitor Log</a><a href="{{ route('safety.features') }}">Safety Features</a></div>
+    <div class="footer-col">
+        <h4>Features</h4>
+        <a href="#maintenance">Maintenance</a>
+        <a href="#announcements">Announcements</a>
+        <a href="#water-bill">Water Billing</a>
+        <a href="#visitor">Visitor Log</a>
+        <a href="{{ route('safety.features') }}">Safety Features</a>
+    </div>
     <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>
     <div class="footer-col"><h4>Contact</h4><a href="tel:+639175359723">+63 917 535 9723</a><a href="#">1229 Navarra St.</a><a href="#">Sampaloc, Manila</a></div>
   </div>
