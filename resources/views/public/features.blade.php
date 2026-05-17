@@ -54,22 +54,22 @@
     .hero-badges { display:flex; flex-wrap:wrap; gap:10px; }
     .hero-badge { display:inline-flex; align-items:center; gap:7px; background:white; border:1.5px solid var(--border); border-radius:100px; padding:8px 16px; font-size:.82rem; font-weight:700; color:var(--brown); box-shadow:var(--shadow-card); }
     .hero-badge svg { width:15px; height:15px; stroke:var(--pink); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
-    /* Hero phone cluster */
+    /* Hero phone cluster — white & pink theme */
     .hero-phones { position:relative; display:flex; justify-content:center; align-items:flex-end; gap:-20px; height:420px; }
-    .hero-phone { width:180px; background:var(--brown); border-radius:28px; box-shadow:0 24px 56px rgba(36,16,24,.28); overflow:hidden; position:absolute; border:3px solid rgba(255,255,255,.12); }
+    .hero-phone { width:180px; background:white; border-radius:28px; box-shadow:0 24px 56px rgba(232,23,93,.18), 0 8px 24px rgba(36,16,24,.10); overflow:hidden; position:absolute; border:2px solid var(--border); }
     .hero-phone-1 { left:50%; transform:translateX(-120%) rotate(-8deg); bottom:0; height:340px; }
-    .hero-phone-2 { left:50%; transform:translateX(-50%); bottom:20px; height:380px; z-index:2; }
+    .hero-phone-2 { left:50%; transform:translateX(-50%); bottom:20px; height:380px; z-index:2; border-color:rgba(232,23,93,.35); box-shadow:0 28px 64px rgba(232,23,93,.22), 0 8px 24px rgba(36,16,24,.10); }
     .hero-phone-3 { left:50%; transform:translateX(20%) rotate(8deg); bottom:0; height:340px; }
-    .phone-screen { width:100%; height:100%; background:linear-gradient(160deg,#2a0f1e 0%,#1a0810 100%); display:flex; flex-direction:column; padding:14px 12px 12px; }
+    .phone-screen { width:100%; height:100%; background:white; display:flex; flex-direction:column; padding:14px 12px 12px; }
     .phone-statusbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-    .phone-time { font-family:var(--font-head); font-size:.6rem; font-weight:800; color:rgba(255,255,255,.7); }
+    .phone-time { font-family:var(--font-head); font-size:.6rem; font-weight:800; color:var(--brown); }
     .phone-icons { display:flex; gap:3px; align-items:center; }
-    .phone-icons span { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.5); }
-    .phone-notch { width:50px; height:8px; background:#000; border-radius:99px; margin:0 auto 10px; }
+    .phone-icons span { width:4px; height:4px; border-radius:50%; background:var(--pink-light); }
+    .phone-notch { width:50px; height:8px; background:var(--pink-pale); border-radius:99px; margin:0 auto 10px; }
     .phone-app-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; flex:1; }
-    .phone-app-tile { background:rgba(232,23,93,.15); border:1px solid rgba(232,23,93,.25); border-radius:10px; padding:8px 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
-    .phone-app-tile svg { width:18px; height:18px; stroke:var(--pink-light); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-    .phone-app-label { font-size:.42rem; font-weight:700; color:rgba(255,255,255,.6); text-align:center; font-family:var(--font-head); }
+    .phone-app-tile { background:var(--pink-pale); border:1px solid var(--border); border-radius:10px; padding:8px 6px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+    .phone-app-tile svg { width:18px; height:18px; stroke:var(--pink); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .phone-app-label { font-size:.42rem; font-weight:700; color:var(--brown-light); text-align:center; font-family:var(--font-head); }
 
     /* ── FEATURES GRID ── */
     .features-section { padding:20px 6% 100px; background:var(--cream); }
@@ -77,9 +77,8 @@
     .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
 
     /* Feature card */
-    .feat-card { background:white; border:1.5px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-card); overflow:hidden; display:grid; grid-template-columns:1fr 1fr; min-height:380px; transition:box-shadow .3s, transform .3s; }
+    .feat-card { background:white; border:1.5px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-card); overflow:hidden; display:grid; grid-template-columns:1fr 1fr; min-height:260px; transition:box-shadow .3s, transform .3s; }
     .feat-card:hover { box-shadow:var(--shadow-soft); transform:translateY(-4px); }
-    /* Alternate layout for odd cards */
     .feat-card.flip { direction:rtl; }
     .feat-card.flip > * { direction:ltr; }
 
@@ -91,71 +90,77 @@
     .feat-tags { display:flex; flex-wrap:wrap; gap:7px; }
     .feat-tag { font-size:.72rem; font-weight:700; color:var(--pink); background:var(--pink-pale); border-radius:100px; padding:4px 12px; }
 
-    /* Card phone side */
-    .feat-phone-wrap { background:linear-gradient(135deg, #2c0f1f 0%, #160810 100%); display:flex; align-items:center; justify-content:center; padding:28px 20px; position:relative; overflow:hidden; }
-    .feat-phone-wrap::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 60% 40%, rgba(232,23,93,.18) 0%, transparent 70%); }
-    .feat-phone-mock { width:130px; background:#1a0810; border-radius:22px; border:2.5px solid rgba(255,255,255,.1); box-shadow:0 16px 40px rgba(0,0,0,.45); overflow:hidden; position:relative; z-index:1; }
-    .fpm-bar { height:8px; background:#000; display:flex; align-items:center; justify-content:center; }
-    .fpm-notch { width:36px; height:5px; background:#111; border-radius:99px; }
-    .fpm-screen { padding:10px 9px 9px; background:linear-gradient(170deg,#1e0a14 0%,#120609 100%); }
-    /* Screen content variants */
-    .fpm-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-    .fpm-greeting { font-family:var(--font-head); font-size:.48rem; font-weight:800; color:rgba(255,255,255,.85); }
-    .fpm-avatar { width:16px; height:16px; border-radius:50%; background:var(--gradient-pink); }
-    .fpm-card { background:var(--gradient-pink); border-radius:8px; padding:8px; margin-bottom:7px; }
-    .fpm-card-label { font-size:.38rem; color:rgba(255,255,255,.7); font-weight:600; margin-bottom:2px; }
-    .fpm-card-amount { font-family:var(--font-head); font-size:.7rem; font-weight:800; color:white; }
-    .fpm-row { display:flex; gap:5px; margin-bottom:5px; }
-    .fpm-mini-card { flex:1; background:rgba(232,23,93,.15); border:1px solid rgba(232,23,93,.22); border-radius:6px; padding:6px 5px; }
-    .fpm-mini-label { font-size:.35rem; color:rgba(255,255,255,.5); margin-bottom:2px; }
-    .fpm-mini-val { font-family:var(--font-head); font-size:.52rem; font-weight:800; color:rgba(255,255,255,.85); }
-    .fpm-list-item { display:flex; align-items:center; gap:5px; padding:5px 0; border-bottom:1px solid rgba(255,255,255,.06); }
-    .fpm-list-dot { width:6px; height:6px; border-radius:50%; background:var(--pink-light); flex-shrink:0; }
-    .fpm-list-text { font-size:.38rem; color:rgba(255,255,255,.6); flex:1; line-height:1.3; }
-    .fpm-list-badge { font-size:.3rem; font-weight:700; background:rgba(232,23,93,.3); color:var(--pink-light); padding:2px 5px; border-radius:99px; }
-    .fpm-section-label { font-size:.38rem; font-weight:800; color:rgba(255,255,255,.35); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; margin-top:5px; }
-    .fpm-announce-item { background:rgba(255,255,255,.05); border-radius:5px; padding:5px; margin-bottom:4px; }
-    .fpm-announce-title { font-size:.4rem; font-weight:700; color:rgba(255,255,255,.8); margin-bottom:1px; }
-    .fpm-announce-body { font-size:.33rem; color:rgba(255,255,255,.4); line-height:1.4; }
-    .fpm-announce-time { font-size:.3rem; color:var(--pink-light); margin-top:2px; }
-    .fpm-voice-btn { background:var(--gradient-pink); border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:8px auto 5px; box-shadow:0 4px 12px rgba(232,23,93,.4); }
-    .fpm-voice-btn svg { width:13px; height:13px; stroke:white; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-    .fpm-voice-label { text-align:center; font-size:.35rem; color:rgba(255,255,255,.5); margin-bottom:6px; }
-    .fpm-input-bar { background:rgba(255,255,255,.08); border-radius:5px; padding:5px 7px; font-size:.38rem; color:rgba(255,255,255,.4); margin-bottom:6px; }
-    .fpm-urgency-row { display:flex; gap:4px; margin-bottom:6px; }
-    .fpm-urgency-chip { flex:1; border-radius:99px; padding:3px 0; text-align:center; font-size:.33rem; font-weight:700; }
-    .fpm-u-low { background:rgba(34,197,94,.15); color:#4ade80; border:1px solid rgba(34,197,94,.25); }
-    .fpm-u-med { background:rgba(251,191,36,.15); color:#fbbf24; border:1px solid rgba(251,191,36,.25); }
-    .fpm-u-high { background:rgba(232,23,93,.2); color:var(--pink-light); border:1px solid rgba(232,23,93,.3); }
-    .fpm-alert-btn { background:linear-gradient(135deg,#dc2626,#ef4444); border-radius:8px; padding:8px; text-align:center; margin-bottom:6px; }
-    .fpm-alert-btn-icon { font-size:.9rem; display:block; margin-bottom:2px; }
-    .fpm-alert-btn-text { font-family:var(--font-head); font-size:.42rem; font-weight:800; color:white; }
-    .fpm-bill-amount { text-align:center; margin:6px 0; }
-    .fpm-bill-label { font-size:.35rem; color:rgba(255,255,255,.4); }
-    .fpm-bill-value { font-family:var(--font-head); font-size:.9rem; font-weight:800; color:white; }
-    .fpm-bill-due { font-size:.33rem; color:var(--pink-light); }
-    .fpm-qr { width:38px; height:38px; background:white; border-radius:5px; margin:5px auto; display:grid; grid-template-columns:repeat(5,1fr); gap:1px; padding:3px; }
-    .fpm-qr span { background:#1a0810; border-radius:1px; }
-    .fpm-qr span.w { background:white; }
-    .fpm-payment-row { display:flex; gap:4px; }
-    .fpm-pay-chip { flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:5px; padding:4px 2px; text-align:center; font-size:.32rem; font-weight:700; color:rgba(255,255,255,.55); }
-    .fpm-form-field { background:rgba(255,255,255,.06); border-radius:5px; padding:5px 7px; margin-bottom:4px; }
-    .fpm-form-field-label { font-size:.3rem; color:rgba(255,255,255,.35); margin-bottom:1px; }
-    .fpm-form-field-val { font-size:.4rem; color:rgba(255,255,255,.7); font-weight:600; }
-    .fpm-submit-btn { background:var(--gradient-pink); border-radius:6px; padding:5px; text-align:center; font-family:var(--font-head); font-size:.4rem; font-weight:800; color:white; margin-top:4px; }
-    .fpm-doc-item { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.05); border-radius:5px; padding:5px; margin-bottom:4px; }
-    .fpm-doc-icon { width:18px; height:18px; background:rgba(232,23,93,.2); border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .fpm-doc-icon svg { width:10px; height:10px; stroke:var(--pink-light); fill:none; stroke-width:2; stroke-linecap:round; }
-    .fpm-doc-name { font-size:.38rem; color:rgba(255,255,255,.7); font-weight:600; flex:1; }
-    .fpm-doc-status { font-size:.3rem; padding:2px 5px; border-radius:99px; font-weight:700; }
-    .fpm-status-ready { background:rgba(34,197,94,.2); color:#4ade80; }
-    .fpm-status-proc { background:rgba(251,191,36,.15); color:#fbbf24; }
-    .fpm-notif-item { display:flex; gap:5px; padding:5px 0; border-bottom:1px solid rgba(255,255,255,.05); }
-    .fpm-notif-dot { width:6px; height:6px; border-radius:50%; margin-top:4px; flex-shrink:0; }
-    .fpm-notif-content { flex:1; }
-    .fpm-notif-title { font-size:.38rem; font-weight:700; color:rgba(255,255,255,.8); margin-bottom:1px; }
-    .fpm-notif-body { font-size:.32rem; color:rgba(255,255,255,.4); line-height:1.3; }
-    .fpm-notif-time { font-size:.28rem; color:rgba(255,255,255,.25); margin-top:1px; }
+    /* Card image side — phone mockup shell */
+    .feat-img-wrap {
+      background: linear-gradient(135deg, var(--pink-pale) 0%, #fce8f0 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px 20px; position: relative; overflow: hidden;
+    }
+    .feat-img-wrap::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 30%, rgba(232,23,93,.10) 0%, transparent 65%);
+    }
+    /* Phone shell */
+    .phone-shell {
+      position: relative; z-index: 1;
+      width: 138px;               /* ~297px at 0.465 scale */
+      border-radius: 22px;
+      background: var(--brown);
+      border: 3px solid rgba(255,255,255,.18);
+      box-shadow: 0 12px 36px rgba(36,16,24,.22), 0 2px 8px rgba(232,23,93,.12),
+                  inset 0 1px 0 rgba(255,255,255,.08);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    /* Top bar with notch */
+    .phone-shell-top {
+      height: 20px; background: var(--brown);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .phone-shell-top::before {
+      content: ''; position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.15);
+    }
+    .phone-shell-notch {
+      width: 44px; height: 10px; background: #0e0408;
+      border-radius: 0 0 8px 8px; margin-top: -10px;
+    }
+    /* Screen area — aspect ratio matches 297×587 ≈ 1:1.976 */
+    .phone-shell-screen {
+      width: 100%;
+      aspect-ratio: 297 / 587;
+      overflow: hidden; background: #000; display: block;
+      position: relative;
+    }
+    .phone-shell-screen img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    .phone-shell-screen .feat-img-placeholder {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1e0a14 0%, #120609 100%);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px; padding: 16px;
+    }
+    .phone-shell-screen .feat-img-placeholder svg {
+      width: 28px; height: 28px; stroke: var(--pink-light);
+      fill: none; stroke-width: 1.5; stroke-linecap: round;
+      stroke-linejoin: round; opacity: .6;
+    }
+    .phone-shell-screen .feat-img-placeholder span {
+      font-family: var(--font-head); font-size: .55rem; font-weight: 700;
+      color: rgba(255,255,255,.4); text-align: center; letter-spacing: .04em;
+    }
+    /* Bottom bar with home indicator */
+    .phone-shell-bottom {
+      height: 16px; background: var(--brown);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phone-shell-home {
+      width: 32px; height: 3px; background: rgba(255,255,255,.2);
+      border-radius: 99px;
+    }
 
     /* ── FOOTER ── */
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
@@ -278,15 +283,35 @@
             <div class="phone-statusbar"><span class="phone-time">9:41</span><div class="phone-icons"><span></span><span></span><span></span></div></div>
             <div class="phone-notch"></div>
             <div style="padding:0 2px;">
-              <div class="fpm-header"><span class="fpm-greeting">Hi, Maria 👋</span><div class="fpm-avatar"></div></div>
-              <div class="fpm-card"><div class="fpm-card-label">Current Water Bill</div><div class="fpm-card-amount">₱ 320.00</div></div>
-              <div class="fpm-row">
-                <div class="fpm-mini-card"><div class="fpm-mini-label">Requests</div><div class="fpm-mini-val">2</div></div>
-                <div class="fpm-mini-card"><div class="fpm-mini-label">Announcements</div><div class="fpm-mini-val">3</div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-family:var(--font-head);font-size:.48rem;font-weight:800;color:var(--brown);">Hi, Maria 👋</span>
+                <div style="width:16px;height:16px;border-radius:50%;background:var(--gradient-pink);"></div>
               </div>
-              <div class="fpm-section-label">Recent Activity</div>
-              <div class="fpm-list-item"><div class="fpm-list-dot"></div><div class="fpm-list-text">Leaky faucet — Room 204</div><div class="fpm-list-badge">In Progress</div></div>
-              <div class="fpm-list-item"><div class="fpm-list-dot" style="background:#4ade80"></div><div class="fpm-list-text">Water bill for May paid</div><div class="fpm-list-badge" style="background:rgba(74,222,128,.2);color:#4ade80">Done</div></div>
+              <div style="background:var(--gradient-pink);border-radius:8px;padding:8px;margin-bottom:7px;">
+                <div style="font-size:.35rem;color:rgba(255,255,255,.8);margin-bottom:2px;">Current Water Bill</div>
+                <div style="font-family:var(--font-head);font-size:.7rem;font-weight:800;color:white;">₱ 320.00</div>
+              </div>
+              <div style="display:flex;gap:5px;margin-bottom:6px;">
+                <div style="flex:1;background:var(--pink-pale);border:1px solid var(--border);border-radius:6px;padding:6px 5px;">
+                  <div style="font-size:.32rem;color:var(--brown-light);margin-bottom:2px;">Requests</div>
+                  <div style="font-family:var(--font-head);font-size:.52rem;font-weight:800;color:var(--brown);">2</div>
+                </div>
+                <div style="flex:1;background:var(--pink-pale);border:1px solid var(--border);border-radius:6px;padding:6px 5px;">
+                  <div style="font-size:.32rem;color:var(--brown-light);margin-bottom:2px;">Announcements</div>
+                  <div style="font-family:var(--font-head);font-size:.52rem;font-weight:800;color:var(--brown);">3</div>
+                </div>
+              </div>
+              <div style="font-size:.35rem;font-weight:800;color:var(--pink-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Recent Activity</div>
+              <div style="display:flex;align-items:center;gap:5px;padding:4px 0;border-bottom:1px solid var(--border);">
+                <div style="width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0;"></div>
+                <div style="font-size:.36rem;color:var(--brown-light);flex:1;">Leaky faucet — Room 204</div>
+                <div style="font-size:.28rem;font-weight:700;background:var(--pink-pale);color:var(--pink);padding:2px 5px;border-radius:99px;">In Progress</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:5px;padding:4px 0;">
+                <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+                <div style="font-size:.36rem;color:var(--brown-light);flex:1;">Water bill for May paid</div>
+                <div style="font-size:.28rem;font-weight:700;background:rgba(34,197,94,.1);color:#16a34a;padding:2px 5px;border-radius:99px;">Done</div>
+              </div>
             </div>
           </div>
         </div>
@@ -319,22 +344,18 @@
             <p class="feat-desc">A personalized home screen showing your current water bill, pending request count, latest announcements, and quick-access buttons to every feature — all in one glance.</p>
             <div class="feat-tags"><span class="feat-tag">Overview</span><span class="feat-tag">Quick Access</span><span class="feat-tag">Personalized</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Hi, Maria 👋</span><div class="fpm-avatar"></div></div>
-                <div class="fpm-card"><div class="fpm-card-label">Current Water Bill</div><div class="fpm-card-amount">₱ 320.00</div></div>
-                <div class="fpm-row">
-                  <div class="fpm-mini-card"><div class="fpm-mini-label">Requests</div><div class="fpm-mini-val">2 Pending</div></div>
-                  <div class="fpm-mini-card"><div class="fpm-mini-label">Notices</div><div class="fpm-mini-val">3 New</div></div>
-                </div>
-                <div class="fpm-section-label">Quick Access</div>
-                <div class="fpm-row">
-                  <div class="fpm-mini-card" style="text-align:center"><div class="fpm-mini-val" style="font-size:.38rem">🔧 Maintenance</div></div>
-                  <div class="fpm-mini-card" style="text-align:center"><div class="fpm-mini-val" style="font-size:.38rem">💧 Water Bill</div></div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/dashboard.png') }}" alt="Dashboard UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                  <span>Dashboard UI</span>
                 </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -347,27 +368,18 @@
             <p class="feat-desc">View all active announcements posted by the Administrator. Push notifications alert you the moment a new post goes live — so you never miss an important update.</p>
             <div class="feat-tags"><span class="feat-tag">Push Notifications</span><span class="feat-tag">Real-time</span><span class="feat-tag">Admin Posts</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Announcements</span></div>
-                <div class="fpm-announce-item">
-                  <div class="fpm-announce-title">🔔 Water Interruption Notice</div>
-                  <div class="fpm-announce-body">Water supply will be cut on May 20, 8AM–12PM for pipe maintenance.</div>
-                  <div class="fpm-announce-time">Today, 8:30 AM</div>
-                </div>
-                <div class="fpm-announce-item">
-                  <div class="fpm-announce-title">📋 May Billing Statement</div>
-                  <div class="fpm-announce-body">May water bills are now available. Please settle by May 28.</div>
-                  <div class="fpm-announce-time">Yesterday, 3:00 PM</div>
-                </div>
-                <div class="fpm-announce-item">
-                  <div class="fpm-announce-title">🏠 Dorm Clean-up Day</div>
-                  <div class="fpm-announce-body">General cleaning scheduled for Saturday. All tenants must participate.</div>
-                  <div class="fpm-announce-time">May 14, 10:00 AM</div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/announcements.png') }}" alt="Announcements UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  <span>Announcements UI</span>
                 </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -380,22 +392,18 @@
             <p class="feat-desc">Submit requests via typed text or voice input powered by the Vosk Speech Recognition Engine. The system auto-classifies urgency (Low / Medium / High) and detects the issue category using rule-based NLP before you confirm.</p>
             <div class="feat-tags"><span class="feat-tag">Voice Input</span><span class="feat-tag">NLP Classification</span><span class="feat-tag">Urgency Detection</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">New Request</span></div>
-                <div class="fpm-voice-btn"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
-                <div class="fpm-voice-label">Tap to speak or type below</div>
-                <div class="fpm-input-bar">Leaking faucet in bathroom...</div>
-                <div class="fpm-section-label">Detected — Plumbing · Urgency</div>
-                <div class="fpm-urgency-row">
-                  <div class="fpm-urgency-chip fpm-u-low">Low</div>
-                  <div class="fpm-urgency-chip fpm-u-med" style="border-width:2px">Medium ✓</div>
-                  <div class="fpm-urgency-chip fpm-u-high">High</div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/maintenance.png') }}" alt="Maintenance Request UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  <span>Maintenance Request UI</span>
                 </div>
-                <div class="fpm-submit-btn">Confirm & Submit</div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -408,22 +416,18 @@
             <p class="feat-desc">Quickly report emergencies using the alert button, text, or voice input. Upon submission, an immediate push notification is sent to the Administrator and Front Desk Staff so help can arrive fast.</p>
             <div class="feat-tags"><span class="feat-tag">Instant Alert</span><span class="feat-tag">Voice Input</span><span class="feat-tag">Staff Notified</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Emergency Report</span></div>
-                <div class="fpm-alert-btn">
-                  <span class="fpm-alert-btn-icon">🚨</span>
-                  <span class="fpm-alert-btn-text">TAP TO REPORT EMERGENCY</span>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/emergency.png') }}" alt="Emergency Report UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>Emergency Report UI</span>
                 </div>
-                <div class="fpm-voice-btn" style="background:linear-gradient(135deg,#dc2626,#ef4444);width:24px;height:24px"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
-                <div class="fpm-voice-label">Or describe the emergency</div>
-                <div class="fpm-input-bar">Fire on 3rd floor hallway...</div>
-                <div class="fpm-section-label">Notification will be sent to</div>
-                <div class="fpm-list-item"><div class="fpm-list-dot" style="background:#ef4444"></div><div class="fpm-list-text">Administrator</div></div>
-                <div class="fpm-list-item"><div class="fpm-list-dot" style="background:#ef4444"></div><div class="fpm-list-text">Front Desk Staff</div></div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -436,30 +440,18 @@
             <p class="feat-desc">View your current billing amount, consumption breakdown, due date, and payment history. Pay directly via QR code using GCash, Maya, or bank transfer, then upload your proof of payment right in the app.</p>
             <div class="feat-tags"><span class="feat-tag">GCash / Maya</span><span class="feat-tag">QR Payment</span><span class="feat-tag">Proof Upload</span><span class="feat-tag">History</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Water Bill</span></div>
-                <div class="fpm-bill-amount">
-                  <div class="fpm-bill-label">Amount Due</div>
-                  <div class="fpm-bill-value">₱320.00</div>
-                  <div class="fpm-bill-due">Due: May 28, 2026</div>
-                </div>
-                <div class="fpm-section-label">Pay via QR Code</div>
-                <div class="fpm-qr">
-                  <span></span><span class="w"></span><span></span><span class="w"></span><span></span>
-                  <span class="w"></span><span></span><span class="w"></span><span></span><span class="w"></span>
-                  <span></span><span class="w"></span><span></span><span class="w"></span><span></span>
-                  <span class="w"></span><span></span><span class="w"></span><span></span><span class="w"></span>
-                  <span></span><span class="w"></span><span></span><span class="w"></span><span></span>
-                </div>
-                <div class="fpm-payment-row">
-                  <div class="fpm-pay-chip">GCash</div>
-                  <div class="fpm-pay-chip">Maya</div>
-                  <div class="fpm-pay-chip">Bank</div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/water-bill.png') }}" alt="Water Bill UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  <span>Water Bill UI</span>
                 </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -472,18 +464,18 @@
             <p class="feat-desc">Pre-register your expected visitors by entering their name, contact number, purpose of visit, ID type, and expected arrival time. Front Desk Staff can verify them quickly upon arrival.</p>
             <div class="feat-tags"><span class="feat-tag">Pre-registration</span><span class="feat-tag">Staff Verification</span><span class="feat-tag">Visitor Log</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Register Visitor</span></div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">Visitor Name</div><div class="fpm-form-field-val">Ana Santos</div></div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">Contact Number</div><div class="fpm-form-field-val">+63 912 345 6789</div></div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">Purpose of Visit</div><div class="fpm-form-field-val">Study session</div></div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">ID Type</div><div class="fpm-form-field-val">School ID</div></div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">Expected Arrival</div><div class="fpm-form-field-val">May 17 · 2:00 PM</div></div>
-                <div class="fpm-submit-btn">Pre-register Visitor</div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/visitor.png') }}" alt="Visitor Registration UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span>Visitor Registration UI</span>
+                </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -496,28 +488,18 @@
             <p class="feat-desc">Submit requests for administrative documents, choose between a digital or printed copy, and track your request status in real time — from submission all the way to download or pickup.</p>
             <div class="feat-tags"><span class="feat-tag">Digital or Print</span><span class="feat-tag">Status Tracking</span><span class="feat-tag">Download</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Document Requests</span></div>
-                <div class="fpm-doc-item">
-                  <div class="fpm-doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                  <div class="fpm-doc-name">Certificate of Residency</div>
-                  <div class="fpm-doc-status fpm-status-ready">Ready</div>
-                </div>
-                <div class="fpm-doc-item">
-                  <div class="fpm-doc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                  <div class="fpm-doc-name">Good Moral Certificate</div>
-                  <div class="fpm-doc-status fpm-status-proc">Processing</div>
-                </div>
-                <div class="fpm-section-label">Request New Document</div>
-                <div class="fpm-form-field"><div class="fpm-form-field-label">Document Type</div><div class="fpm-form-field-val">Select document...</div></div>
-                <div class="fpm-row">
-                  <div class="fpm-mini-card" style="text-align:center"><div class="fpm-mini-val" style="font-size:.38rem">📄 Digital</div></div>
-                  <div class="fpm-mini-card" style="text-align:center;background:rgba(232,23,93,.22);border-color:rgba(232,23,93,.4)"><div class="fpm-mini-val" style="font-size:.38rem;color:var(--pink-light)">🖨️ Print ✓</div></div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/document.png') }}" alt="Document Request UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <span>Document Request UI</span>
                 </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -530,28 +512,18 @@
             <p class="feat-desc">See all your push notifications in one place — announcement alerts, maintenance request updates, billing reminders, and document request status changes, all organized and timestamped.</p>
             <div class="feat-tags"><span class="feat-tag">Push Alerts</span><span class="feat-tag">All-in-one</span><span class="feat-tag">Timestamped</span></div>
           </div>
-          <div class="feat-phone-wrap">
-            <div class="feat-phone-mock">
-              <div class="fpm-bar"><div class="fpm-notch"></div></div>
-              <div class="fpm-screen">
-                <div class="fpm-header"><span class="fpm-greeting">Notifications</span></div>
-                <div class="fpm-notif-item">
-                  <div class="fpm-notif-dot" style="background:var(--pink-light)"></div>
-                  <div class="fpm-notif-content"><div class="fpm-notif-title">📢 New Announcement</div><div class="fpm-notif-body">Water interruption scheduled for May 20.</div><div class="fpm-notif-time">Just now</div></div>
-                </div>
-                <div class="fpm-notif-item">
-                  <div class="fpm-notif-dot" style="background:#4ade80"></div>
-                  <div class="fpm-notif-content"><div class="fpm-notif-title">🔧 Request Updated</div><div class="fpm-notif-body">Your maintenance request is now In Progress.</div><div class="fpm-notif-time">2 hrs ago</div></div>
-                </div>
-                <div class="fpm-notif-item">
-                  <div class="fpm-notif-dot" style="background:#fbbf24"></div>
-                  <div class="fpm-notif-content"><div class="fpm-notif-title">💧 Billing Reminder</div><div class="fpm-notif-body">May water bill due in 3 days. ₱320.00</div><div class="fpm-notif-time">Yesterday</div></div>
-                </div>
-                <div class="fpm-notif-item">
-                  <div class="fpm-notif-dot" style="background:#818cf8"></div>
-                  <div class="fpm-notif-content"><div class="fpm-notif-title">📄 Document Ready</div><div class="fpm-notif-body">Your Certificate of Residency is ready for download.</div><div class="fpm-notif-time">May 15</div></div>
+          <div class="feat-img-wrap">
+            <div class="phone-shell">
+              <div class="phone-shell-top"><div class="phone-shell-notch"></div></div>
+              <div class="phone-shell-screen">
+                <img src="{{ asset('images/features/notifications.png') }}" alt="Notifications UI"
+                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="feat-img-placeholder" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="12" y1="2" x2="12" y2="4"/></svg>
+                  <span>Notifications UI</span>
                 </div>
               </div>
+              <div class="phone-shell-bottom"><div class="phone-shell-home"></div></div>
             </div>
           </div>
         </div>
@@ -589,7 +561,7 @@
           <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
         </a>
       </div>
-      <div class="footer-links"><a href="#">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
+      <div class="footer-links"><a href="#">Privacy Policy</a><a href="{{ route ('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
     </div>
   </div>
 </footer>
