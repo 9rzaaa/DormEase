@@ -490,10 +490,10 @@ section { padding: 100px 6%; }
 
 
 .about-photos {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  align-items: start;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
 }
 
 .about-photo {
@@ -502,13 +502,9 @@ section { padding: 100px 6%; }
   box-shadow: 0 16px 34px rgba(0,0,0,0.18);
 }
 
-.about-photo:first-child {
-  aspect-ratio: 4 / 3;
-}
-
-.about-photo:last-child {
-  aspect-ratio: 3 / 4;
-  margin-top: 52px;
+.about-main-photo {
+  width: min(100%, 460px);
+  height: clamp(500px, 42vw, 620px);
 }
 
 .about-img {
@@ -706,8 +702,8 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .hero-actions{align-items:stretch;}
   .btn-primary,.btn-outline{justify-content:center;width:100%;}
   .gallery-grid{grid-template-columns:1fr;max-width:460px;margin-left:auto;margin-right:auto;}
-  .about-photos{grid-template-columns:1fr;max-width:460px;}
-  .about-photo:last-child{margin-top:0;aspect-ratio:3 / 4;}
+  .about-photos{max-width:460px;}
+  .about-main-photo{height:min(560px, 120vw);}
   .contact-inner{grid-template-columns:1fr;gap:32px;max-width:460px;}
   .contact-copy{text-align:center;}
   .cta-section .section-title,.cta-section .section-sub{margin-left:auto;margin-right:auto;}
@@ -994,17 +990,11 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
 
 <div class="about-photos reveal">
-  <div class="about-photo">
-    <img src="{{ asset('images/exterior.png') }}"
-         alt="Dorm Exterior"
+  <div class="about-photo about-main-photo">
+    <img src="{{ asset('images/main.jpg') }}"
+         alt="Sanctissimo Rosario Ladies Dormitory"
          class="about-img"
-         style="object-position: center 16%;">
-  </div>
-  <div class="about-photo">
-    <img src="{{ asset('images/interior.png') }}"
-         alt="Room Interior"
-         class="about-img"
-         style="object-position: center 60%;">
+         style="object-position: center;">
   </div>
 </div>
 </section>
