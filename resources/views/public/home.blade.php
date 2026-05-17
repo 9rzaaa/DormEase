@@ -956,8 +956,17 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
       <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
       <p style="font-size:.76rem;color:var(--brown-light);margin-top:4px;font-weight:600;">— Room 3B Tenant</p>
+      
+      <a href="{{ route('features') }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;">
+        More Features
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;">
+          <path d="M5 12h14"></path>
+          <path d="M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
     </div>
   </div>
+
 </section>
 
 <section class="about" id="about">
