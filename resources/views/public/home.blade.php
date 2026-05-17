@@ -1088,7 +1088,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
     <div class="footer-links">
     <a href="#">Privacy Policy</a>
-    <a href="#">Terms of Use</a>
+    <a href="{{ route('faqs') }}">FAQs</a>
     <a href="{{ route('login') }}">Admin Portal</a>
     </div>
   </div>
