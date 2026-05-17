@@ -118,6 +118,8 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
   color: var(--brown); letter-spacing: 0.01em; transition: color 0.2s, background 0.2s;
 }
 .nav-links a:hover { color: var(--pink); }
+.nav-links a.nav-active { color:var(--pink); position:relative; }
+.nav-links a.nav-active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2.5px; border-radius:99px; background:var(--gradient-pink); }
 .nav-cta {
   background: var(--gradient-pink) !important; color: white !important;
   padding: 11px 26px !important; border-radius: 100px !important;
@@ -749,10 +751,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </a>
 
   <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
     <li><a href="#gallery">Gallery</a></li>
     <li><a href="#how">How it Works</a></li>
     <li><a href="#about">About</a></li>
+    <li><a href="{{ route('faqs') }}">FAQs</a></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
 </nav>
@@ -815,7 +817,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </div>
 </header>
 
-<section class="hero">
+<section class="hero" id="hero">
 
   <div class="hero-content">
     <div class="hero-badge">Safe &middot; Comfortable &middot; Near UST</div>
@@ -1115,6 +1117,24 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.10 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Highlight nav link matching the section currently in view
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('nav-active'));
+        const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('nav-active');
+      }
+    });
+  }, {
+    rootMargin: '-40% 0px -55% 0px', // triggers when section is near middle of viewport
+    threshold: 0
+  });
+
+  document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
 </script>
 </body>
 </html>

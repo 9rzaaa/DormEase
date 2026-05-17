@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
+Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 
 Route::get('/login', function () {
     if (Auth::guard('staff')->check()) {
@@ -106,14 +107,14 @@ Route::middleware('auth:staff')->group(function () {
 
     // View profile page
     Route::get('/profile', [ProfileController::class, 'index'])
-         ->name('profile.index');
+        ->name('profile.index');
     // Update personal info + photo
     Route::put('/profile', [ProfileController::class, 'update'])
-         ->name('profile.update');
+        ->name('profile.update');
     // Change password
     Route::put('/profile/password', [ProfileController::class, 'password'])
-         ->name('profile.password');
+        ->name('profile.password');
     // Deactivate account
     Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])
-         ->name('profile.deactivate');
+        ->name('profile.deactivate');
 });
