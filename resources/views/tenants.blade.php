@@ -172,7 +172,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: .8rem;
-    background: var(--blush);
+    background: var(--white);
     border-bottom: 2px solid var(--bright-pink);
 }
 
