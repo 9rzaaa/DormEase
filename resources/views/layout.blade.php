@@ -29,6 +29,10 @@
         --soft-bg:    #fff7fb;
         --pink-bg:    var(--petal);
         --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        --pink-bg-soft: #fffafd;
+        --pink-bg-page: #fff7fb;
+        --border-pink: #ffd3e3;
+        --border-pink-mid: #ffe0eb;
 
         --gray:       #B5B7C0;
         --gray-light: #E5ECF6;
@@ -41,6 +45,13 @@
         --ink:        #2D0A1A;
         --ink-muted:  #7A3A55;
         --black:      #1A1A1A;
+        --ink-deep:   #7a2d4f;
+        --ink-soft:   #b03060;
+        
+        --shadow-pink-card: 0 4px 10px rgba(0,0,0,.04), 0 14px 30px rgba(232,23,93,.18), 0 24px 50px rgba(232,23,93,.12);
+        --shadow-pink-btn: 0 6px 18px rgba(255,79,147,.22);
+        --shadow-pink-modal: 0 20px 60px rgba(255,79,147,.2);
+        --shadow-stats: 0 10px 30px rgba(255,79,147,.25);
 
         --ease:   all .2s cubic-bezier(.4,0,.2,1);
         --border: rgba(255,45,120,.15);
@@ -362,7 +373,7 @@
         <div class="sidebar-logo-text">Dorm<em>Ease</em></div>
     </div>
 
-    <div class="sidebar-role">👤 Admin</div>
+    <div class="sidebar-role">Admin</div>
 
     <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
