@@ -206,20 +206,26 @@
     .rooms-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1px;
+        gap: 0;
         background: var(--border-pink-mid);
+        border-top: 2px solid #ff8fbc;
     }
 
     .room-card {
         background: var(--white);
-        padding: .85rem 1rem;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
         gap: 0;
-        transition: background .12s;
+        transition: all .15s ease;
+    
+        border-right: 2px solid #ff8fbc;
+        border-bottom: 2px solid #ff8fbc;
+
+        position: relative;
     }
 
-    .room-card:hover { background: var(--pink-bg-soft); }
+    .room-card:hover { background: var(--pink-bg-soft); z-index: 2; box-shadow: 0 6px 18px rgba(232,23,93,.12); }
 
     .room-card-head {
         display: flex;
