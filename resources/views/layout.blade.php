@@ -20,17 +20,11 @@
         --blush:      #FFF0F6;
         --petal:      #FFE4F0;
 
-        --pink:       #E8175D;
-        --pink-light: #FFB3D0;
-        --pink-soft:  #FF2D78;
-        --pink-bg:    #FFF0F6;
-        --pink-card:  #FFE4F0;
         --pink-50:    #FFF0F6;
         --pink-100:   #FFD6E7;
         --pink-200:   #FFB3D0;
         --pink-400:   #FF2D78;
         --pink-500:   #E8175D;
-        --pink-600:   #E8175D;
 
         --gray:       #B5B7C0;
         --gray-light: #E5ECF6;
@@ -38,11 +32,11 @@
         --green:      #29BD9B;
         --peach:      #FFD7C7;
         --salmon:     #EB9C7D;
-        --blush-alt:  #FFC5C5;
         --red:        #DF0404;
         --white:      #ffffff;
         --ink:        #2D0A1A;
         --ink-muted:  #7A3A55;
+        --black:      #1A1A1A;
 
         --ease:   all .2s cubic-bezier(.4,0,.2,1);
         --border: rgba(255,45,120,.15);
@@ -64,7 +58,6 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: var(--ff-body); cursor: pointer; }
 
-    /* ── SIDEBAR ── */
     .sidebar {
         width: var(--sidebar-w);
         background: var(--white);
@@ -82,7 +75,7 @@
     }
     .sidebar-logo-icon {
         width: 38px; height: 38px; border-radius: 10px;
-        background: linear-gradient(135deg, #FF2D78 0%, #E8175D 100%);
+        background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; flex-shrink: 0;
     }
@@ -106,37 +99,67 @@
     .nav-item {
         display: flex; align-items: center; gap: .75rem;
         padding: .68rem .85rem; border-radius: 10px;
-        font-size: .87rem; font-weight: 500; color: #E8175D;
+        font-size: .87rem; font-weight: 500; color: var(--black);
         cursor: pointer; margin-bottom: .15rem;
         transition: background .2s, color .2s;
         border: none; background: none; width: 100%; text-align: left;
     }
     .nav-item:hover  { background: var(--petal); color: var(--hot-pink); }
+    .nav-item:hover .nav-icon img {
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
     .nav-item.active {
-        background: linear-gradient(135deg, #FF2D78 0%, #E8175D 100%);
-        color: #fff; font-weight: 700;
+        background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
+        color: var(--white); font-weight: 700;
         box-shadow: 0 4px 14px rgba(232,23,93,.30);
     }
-    .nav-item.active img { filter: brightness(0) invert(1); }
+    .nav-item.active .nav-icon img { filter: brightness(0) invert(1); }
     .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
-    .nav-icon img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
-}
+    .nav-icon img {
+        width: 18px; height: 18px; object-fit: contain; vertical-align: middle;
+        filter: brightness(0);
+    }
 
     .nav-divider { height: 1.5px; background: var(--baby-pink); margin: .6rem 0; }
 
     .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--baby-pink); }
+    
     .logout-btn {
-        display: flex; align-items: center; gap: .65rem;
-        font-size: .87rem; font-weight: 500; color: var(--ink-muted);
-        background: none; border: none; cursor: pointer;
-        padding: .5rem .3rem; width: 100%; transition: color .2s;
-    }
-    .logout-btn:hover { color: var(--red); }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+        padding: .55rem .8rem;
 
-    /* ── MAIN ── */
+        border: none;
+        border-radius: 10px;
+
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+
+        font-size: .8rem;
+        font-weight: 700;
+
+        cursor: pointer;
+        transition: var(--ease);
+
+        box-shadow: 0 3px 10px rgba(232,23,93,.22);
+    }
+
+    .logout-btn:hover {
+        transform: translateY(-1px);
+        opacity: .95;
+    }
+
+    .logout-btn img {
+        width: 15px;
+        height: 15px;
+        filter: brightness(0) invert(1);
+    }
+
     .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* ── TOPBAR ── */
     .topbar {
         position: sticky; top: 0; z-index: 50;
         background: var(--white);
@@ -160,19 +183,18 @@
         position: absolute; top: -3px; right: -3px;
         width: 16px; height: 16px;
         background: var(--bright-pink);
-        border-radius: 50%; font-size: 9px; color: #fff; font-weight: 800;
+        border-radius: 50%; font-size: 9px; color: var(--white); font-weight: 800;
         display: flex; align-items: center; justify-content: center;
-        border: 2px solid #fff;
+        border: 2px solid var(--white);
     }
 
-    /* ── AVATAR + DROPDOWN ── */
     .avatar-wrap { position: relative; }
     .avatar {
         width: 36px; height: 36px; border-radius: 50%;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         border: 2px solid var(--baby-pink);
         display: flex; align-items: center; justify-content: center;
-        font-size: 14px; font-weight: 800; color: #fff;
+        font-size: 14px; font-weight: 800; color: var(--white);
         cursor: pointer; overflow: hidden;
         transition: box-shadow .2s;
         flex-shrink: 0;
@@ -205,9 +227,9 @@
     }
     .dropdown-avatar {
         width: 38px; height: 38px; border-radius: 50%;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         display: flex; align-items: center; justify-content: center;
-        font-size: 13px; font-weight: 800; color: #fff;
+        font-size: 13px; font-weight: 800; color: var(--white);
         flex-shrink: 0; overflow: hidden;
     }
     .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -229,7 +251,6 @@
     .dropdown-item.danger { color: var(--red); }
     .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
-    /* ── CARDS ── */
     .card {
         background: var(--white);
         border-radius: 16px;
@@ -244,14 +265,12 @@
     .see-all:hover { opacity: .7; }
     .icon-sm { width: 18px; height: 18px; object-fit: contain; }
 
-    /* ── ANIMATIONS ── */
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .fade-up { opacity:0; animation: fadeUp .5s ease forwards; }
     .d1 { animation-delay:.05s; } .d2 { animation-delay:.12s; }
     .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
     .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-    /* ── MODALS ── */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(45,10,26,.50);
@@ -293,23 +312,21 @@
     .btn-cancel:hover { border-color: var(--mid-pink); color: var(--hot-pink); }
     .btn-submit {
         padding: .6rem 1.4rem; border-radius: 9px; border: none;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
-        color: #fff; font-size: .87rem; font-weight: 800; cursor: pointer;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white); font-size: .87rem; font-weight: 800; cursor: pointer;
         transition: opacity .2s, transform .15s;
     }
     .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-    /* ── ALERT ITEMS ── */
     .alert-item { border-radius: 12px; padding: 1rem; border: 1.5px solid; margin-bottom: .8rem; }
     .alert-item.active   { background: #fff0f5; border-color: var(--baby-pink); }
     .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
     .alert-room   { font-weight: 700; font-size: .9rem; color: var(--ink); }
     .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
-    /* ── TOAST ── */
     .toast {
         position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
-        background: var(--ink); color: #fff;
+        background: var(--ink); color: var(--white);
         padding: .85rem 1.4rem; border-radius: 12px;
         font-size: .87rem; font-weight: 600;
         box-shadow: 0 8px 24px rgba(232,23,93,.20);
@@ -321,7 +338,6 @@
     .toast.success { background: var(--green); }
     .toast.error   { background: var(--red); }
 
-    /* ── RESPONSIVE ── */
     @media (max-width: 820px) {
         :root { --sidebar-w: 0px; }
         .sidebar { transform: translateX(-260px); width: 260px; }
@@ -394,6 +410,7 @@
             <span class="nav-icon">
                 <img src="{{ asset('icons/logout.png') }}" alt="Logout">
             </span>
+            Log Out
         </button>
     </div>
 </aside>
@@ -410,7 +427,6 @@
                 @endif
             </div>
 
-            {{-- Avatar with dropdown --}}
             <div class="avatar-wrap" id="avatar-wrap">
                 <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'Account' }}">
                     @if(isset($staff->profile_photo) && $staff->profile_photo)
@@ -448,8 +464,6 @@
                     </div>
                 </div>
             </div>
-            {{-- end avatar dropdown --}}
-
         </div>
     </header>
 
@@ -491,7 +505,6 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    /* ── AVATAR DROPDOWN ── */
     function toggleAvatarDropdown() {
         document.getElementById('avatar-dropdown').classList.toggle('open');
     }
@@ -500,10 +513,8 @@
     }
     document.addEventListener('click', e => {
         const wrap = document.getElementById('avatar-wrap');
-        /* Only close when clicking truly outside the wrap */
         if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
     });
-    /* Close dropdown AFTER navigation links are followed, not before */
     document.querySelectorAll('.dropdown-item[href]').forEach(el => {
         el.addEventListener('click', () => closeAvatarDropdown());
     });
