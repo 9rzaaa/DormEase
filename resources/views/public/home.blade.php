@@ -1094,7 +1094,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 </div>
 </footer>
 
-<!-- Scroll to Top Button -->
 <button id="scrollTopBtn" aria-label="Scroll to top">
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </button>
@@ -1103,7 +1102,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
 
-  // Scroll-to-top logic
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => {
     scrollTopBtn.classList.toggle('visible', scrollY > 300);
@@ -1117,7 +1115,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   }, { threshold: 0.10 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-  // Highlight nav link matching the section currently in view
   const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
 
   const observer = new IntersectionObserver((entries) => {
@@ -1129,7 +1126,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       }
     });
   }, {
-    rootMargin: '-40% 0px -55% 0px', // triggers when section is near middle of viewport
+    rootMargin: '-40% 0px -55% 0px',
     threshold: 0
   });
 

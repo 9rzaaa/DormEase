@@ -4,7 +4,7 @@
   <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FAQs | DormEase</title>
+  <title>FAQs: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,6 @@
     html { scroll-behavior:smooth; }
     body { font-family:var(--font-body); background:var(--cream); color:var(--brown); line-height:1.6; overflow-x:hidden; }
 
-    /* ── HEADER / NAV (exact match from safety page) ── */
     .site-header { position:relative; background:var(--cream); }
     .top-notice { position:absolute; top:0; left:0; right:0; z-index:101; min-height:34px; display:flex; align-items:center; justify-content:center; padding:6px 5%; background:var(--gradient-pink); color:white; font-family:var(--font-head); font-size:.86rem; font-weight:800; text-align:center; }
     nav { position:fixed; top:54px; left:50%; z-index:100; width:min(1220px,calc(100% - 12%)); transform:translateX(-50%); background:rgba(255,228,240,.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1.5px solid rgba(36,16,24,.78); border-radius:999px; padding:0 38px; height:86px; display:flex; align-items:center; justify-content:space-between; transition:top .25s ease,box-shadow .3s; }
@@ -44,7 +43,6 @@
     .nav-cta:hover { filter:brightness(.94); transform:translateY(-1px); }
     .header-spacer { height:154px; background:var(--cream); }
 
-    /* ── FAQ HERO ── */
     .faq-hero { padding:70px 6% 52px; background:var(--cream); }
     .faq-hero-inner { max-width:1180px; margin:0 auto; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
@@ -52,11 +50,9 @@
     h1 em { color:var(--pink); font-style:italic; }
     .hero-copy { color:var(--brown-light); font-size:1.05rem; line-height:1.8; max-width:680px; margin-top:22px; }
 
-    /* ── FAQ SECTION ── */
     .faq-section { padding:0 6% 100px; background:var(--cream); }
     .faq-inner { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1fr 1.72fr; gap:72px; align-items:start; }
 
-    /* Left sticky label */
     .faq-left { position:sticky; top:160px; }
     .faq-left-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:14px; }
     .faq-left-title { font-family:var(--font-head); font-size:clamp(2rem,3.2vw,3.1rem); line-height:1.1; font-weight:800; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
@@ -66,7 +62,6 @@
     .faq-contact-link:hover { gap:14px; }
     .faq-contact-link svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
 
-    /* Right accordion */
     .faq-list { display:flex; flex-direction:column; gap:12px; }
     .faq-item { background:white; border:1.5px solid var(--border); border-radius:var(--r-md); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow .25s, border-color .25s; }
     .faq-item.open { border-color:rgba(232,23,93,.38); box-shadow:0 4px 28px rgba(232,23,93,.12); }
@@ -81,7 +76,6 @@
     .faq-answer-inner { padding:0 26px 22px; color:var(--brown-light); font-size:.95rem; line-height:1.78; border-top:1px solid rgba(232,23,93,.10); padding-top:18px; }
     .faq-item.open .faq-answer { max-height:400px; }
 
-    /* ── FOOTER (exact match from safety page) ── */
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
     .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
     .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration:none; }
@@ -101,7 +95,6 @@
     .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
     .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 
-    /* ── SCROLL TO TOP ── */
     #scrollTopBtn {
       position:fixed; bottom:32px; right:32px; z-index:999;
       width:50px; height:50px; border:none; border-radius:50%;
@@ -117,7 +110,6 @@
     #scrollTopBtn:active { transform:translateY(0) scale(.96); }
     #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
 
-    /* ── RESPONSIVE ── */
     @media(max-width:960px){
       .nav-links li:not(:last-child){display:none}
       .footer-inner{grid-template-columns:1fr 1fr}
@@ -177,7 +169,6 @@
   <section class="faq-section">
     <div class="faq-inner">
 
-      <!-- Left sticky panel -->
       <div class="faq-left">
         <div class="faq-left-tag">FAQs</div>
         <h2 class="faq-left-title">Dormitory <em>FAQs</em></h2>
@@ -188,7 +179,6 @@
         </a>
       </div>
 
-      <!-- Right accordion -->
       <div class="faq-list" id="faqList">
 
         <div class="faq-item open">
@@ -291,8 +281,8 @@
           </div>
         </div>
 
-      </div><!-- /.faq-list -->
-    </div><!-- /.faq-inner -->
+      </div>
+    </div>
   </section>
 </main>
 
@@ -328,17 +318,14 @@
   </div>
 </footer>
 
-<!-- Scroll to Top Button -->
 <button id="scrollTopBtn" aria-label="Scroll to top">
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </button>
 
 <script>
-  // Nav scroll effect
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
 
-  // Scroll-to-top
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => {
     scrollTopBtn.classList.toggle('visible', scrollY > 300);
@@ -347,12 +334,10 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // FAQ accordion — opens on hover, click kept as fallback for touch/keyboard
   const items = document.querySelectorAll('.faq-item');
   items.forEach(item => {
     const btn = item.querySelector('.faq-btn');
 
-    // Hover: open on mouseenter, switch to hovered item
     item.addEventListener('mouseenter', () => {
       items.forEach(i => {
         i.classList.remove('open');
@@ -362,7 +347,6 @@
       btn.setAttribute('aria-expanded', 'true');
     });
 
-    // Click fallback for touch / keyboard users
     btn.addEventListener('click', () => {
       const isOpen = item.classList.contains('open');
       items.forEach(i => {
