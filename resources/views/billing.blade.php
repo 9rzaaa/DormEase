@@ -933,7 +933,7 @@
                 @if($group['past_due_count'] > 0)
                     <span class="floor-chip" style="background:#ffe9ee;color:#e04867;border-color:#ffb3c1;">{{ $group['past_due_count'] }} past due</span>
                 @endif
-                <span class="floor-due">Due {{ $group['due_date'] }}</span>
+                <span class="floor-due">Due: {{ $group['due_date'] }}</span>
             </div>
 
             <div class="rooms-grid">

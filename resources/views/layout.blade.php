@@ -26,6 +26,10 @@
         --pink-400:   #FF2D78;
         --pink-500:   #E8175D;
 
+        --pink: var(--hot-pink);
+        --pink-light: var(--baby-pink);
+        --pink-card:  var(--petal);
+
         --soft-bg:    #fff7fb;
         --pink-bg:    var(--petal);
         --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
