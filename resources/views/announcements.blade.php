@@ -104,7 +104,7 @@
         outline:none;
         background:transparent;
         font-size:.95rem;
-        font-weight:600;
+        font-weight:550;
         color:var(--ink);
     }
 
