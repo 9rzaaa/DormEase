@@ -5,14 +5,6 @@
 
 @section('styles')
 <style>
-:root{
-    --pink-1: #E8175D;
-    --pink-2: #FF2D78;
-    --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
-    --soft-bg: #fff7fb;
-}
-
-/* ───────── PAGE ───────── */
 .page-body {
     padding: 1.8rem 2rem;
     flex: 1;
@@ -24,7 +16,6 @@
     min-width: 0;
 }
 
-/* ───────── HEADER ───────── */
 .page-header {
     display: flex;
     align-items: center;
@@ -36,7 +27,7 @@
 .page-header h1 {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--pink-1);
+    color: var(--black);
     letter-spacing: -.02em;
     line-height: 1.15;
     margin: 0;
@@ -45,11 +36,10 @@
 .page-header .dorm-name {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--pink-2);
+    color: var(--bright-pink);
     margin-top: .2rem;
 }
 
-/* ───────── HEADER ACTIONS ───────── */
 .header-actions {
     display: flex;
     align-items: center;
@@ -57,7 +47,6 @@
     flex-shrink: 0;
 }
 
-/* ───────── BUTTONS ───────── */
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -65,7 +54,7 @@
     padding: .6rem 1.2rem;
     border-radius: 12px;
     background: var(--gradient-pink);
-    color: #fff;
+    color: var(--white);
     border: none;
     font-size: .87rem;
     font-weight: 700;
@@ -87,9 +76,9 @@
     gap: .45rem;
     padding: .6rem 1.2rem;
     border-radius: 12px;
-    background: #fff;
-    color: var(--pink-1);
-    border: 1.5px solid #ffd3e3;
+    background: var(--white);
+    color: var(--hot-pink);
+    border: 1.5px solid var(--pink-100);
     font-size: .87rem;
     font-weight: 600;
     cursor: pointer;
@@ -98,11 +87,10 @@
 }
 
 .btn-outline:hover {
-    border-color: var(--pink-2);
-    color: var(--pink-2);
+    border-color: var(--bright-pink);
+    color: var(--bright-pink);
 }
 
-/* ───────── STATS ───────── */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -131,7 +119,7 @@
     height: 56px;
     border-radius: 50%;
     flex-shrink: 0;
-    background: rgba(255,255,255,.22);
+    background: var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,35 +130,34 @@
     width: 28px;
     height: 28px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
 .stat-num {
     font-size: 2rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--white);
     line-height: 1;
 }
 
 .stat-label {
     font-size: .8rem;
-    color: rgba(247, 245, 245, 0.967);
+    color: rgba(247,245,245,.967);
     margin-bottom: .15rem;
     font-weight: 700;
 }
 
 .stat-sub {
     font-size: .73rem;
-    color: rgba(248, 246, 246, 0.955);
+    color: rgba(248,246,246,.955);
     font-weight: 600;
     margin-top: .15rem;
 }
 
-/* ───────── TABLE CARD ───────── */
 .table-card {
-    background: #fff;
+    background: var(--white);
     border-radius: 18px;
-    border: none;
+    border: 2px solid var(--bright-pink);
     overflow: hidden;
     box-shadow:
         0 10px 20px rgba(0,0,0,.05),
@@ -178,7 +165,6 @@
     box-sizing: border-box;
 }
 
-/* ───────── TABLE HEADER ───────── */
 .table-header {
     padding: 1.2rem 1.5rem;
     display: flex;
@@ -186,23 +172,23 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: .8rem;
-    background: var(--gradient-pink);
+    background: var(--white);
+    border-bottom: 2px solid var(--bright-pink);
 }
 
 .table-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--ink);
     margin: 0;
 }
 
 .table-date {
     font-size: .78rem;
-    color: rgba(255,255,255,.75);
+    color: var(--bright-pink);
     margin-top: .1rem;
 }
 
-/* ───────── TABLE CONTROLS ───────── */
 .table-controls {
     display: flex;
     align-items: center;
@@ -210,7 +196,6 @@
     flex-wrap: wrap;
 }
 
-/* ───────── SEARCH ───────── */
 .search-wrap {
     position: relative;
     display: flex;
@@ -220,26 +205,24 @@
 .search-wrap input {
     padding: .5rem .9rem;
     border-radius: 10px;
-    border: none;
+    border: 1px solid var(--pink-100);
     font-size: .85rem;
     width: 150px;
     outline: none;
-    background: #fff;
+    background: var(--white);
     box-shadow: 0 4px 12px rgba(0,0,0,.1);
-    color: #333;
+    color: var(--ink);
     text-align: left;
 }
 
-
-/* ───────── SORT SELECT ───────── */
 .sort-select {
     padding: .5rem .9rem;
     border-radius: 10px;
-    border: none;
+    border: 1px solid var(--pink-100);
     font-size: .82rem;
-    font-weight: 600;
-    background: #fff;
-    color: var(--pink-1);
+    font-weight: 400;
+    background: var(--white);
+    color: var(--ink-muted);
     cursor: pointer;
     outline: none;
     box-shadow: 0 4px 12px rgba(0,0,0,.1);
@@ -255,39 +238,41 @@
     box-shadow: 0 0 0 2px rgba(232,23,93,.25);
 }
 
-/* ───────── TABLE ───────── */
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; background: var(--white); }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    background: var(--white);
 }
 
 thead tr {
-    background: #ffe3ef;
+    background: var(--white);
+    border-bottom: 2px solid var(--bright-pink);
 }
 
 th {
     padding: .75rem 1rem;
     font-size: .75rem;
-    font-weight: 700;
-    color: var(--pink-1);
+    font-weight: 600;
+    color: var(--bright-pink);
+    letter-spacing: .04em;
     text-transform: uppercase;
     white-space: nowrap;
+    background: var(--white);
 }
 
 td {
     padding: .85rem 1rem;
     font-size: .875rem;
-    border-bottom: 1px solid #ffe0eb;
-    color: #7a2d4f;
+    border-bottom: 1px solid var(--pink-100);
+    color: var(--ink);
 }
 
 tbody tr:hover {
     background: var(--soft-bg);
 }
 
-/* ───────── BADGES ───────── */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -299,10 +284,10 @@ tbody tr:hover {
 
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
-.badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid #ffb3c1; }
-.badge-moveout  { background: #ffe3ef; color: var(--pink-1); border: 1px solid #ff9db0; }
+.badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
+.badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
+.badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
 
-/* ───────── ACTION BUTTONS ───────── */
 .action-group {
     display: flex;
     align-items: center;
@@ -313,8 +298,8 @@ tbody tr:hover {
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    border: 1px solid #ffd3e3;
-    background: #fff;
+    border: 1px solid var(--pink-100);
+    background: var(--white);
     cursor: pointer;
     transition: .2s;
     display: inline-flex;
@@ -324,11 +309,10 @@ tbody tr:hover {
 }
 
 .act-btn:hover {
-    border-color: var(--pink-2);
+    border-color: var(--bright-pink);
     box-shadow: 0 6px 14px rgba(232,23,93,.15);
 }
 
-/* ───────── TABLE FOOTER ───────── */
 .table-footer {
     display: flex;
     align-items: center;
@@ -336,7 +320,7 @@ tbody tr:hover {
     padding: .9rem 1.2rem;
     flex-wrap: wrap;
     gap: .5rem;
-    border-top: 1px solid #ffe0eb;
+    border-top: 1px solid var(--pink-100);
 }
 
 .table-showing {
@@ -355,9 +339,9 @@ tbody tr:hover {
     height: 32px;
     padding: 0 .5rem;
     border-radius: 8px;
-    border: 1.5px solid #ffd3e3;
-    background: #fff;
-    color: var(--pink-1);
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--hot-pink);
     font-size: .82rem;
     font-weight: 600;
     cursor: pointer;
@@ -366,13 +350,13 @@ tbody tr:hover {
 
 .page-btn:hover:not(:disabled) {
     background: var(--gradient-pink);
-    color: #fff;
+    color: var(--white);
     border-color: transparent;
 }
 
 .page-btn.active {
     background: var(--gradient-pink);
-    color: #fff;
+    color: var(--white);
     border-color: transparent;
 }
 
@@ -394,57 +378,6 @@ tbody tr:hover {
     font-size: .9rem;
 }
 
-/* ───────── MODAL ───────── */
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.35);
-    backdrop-filter: blur(5px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-}
-
-.modal-overlay.open { display: flex; }
-
-.modal {
-    background: #fff;
-    border-radius: 22px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 480px;
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.12),
-        0 25px 70px rgba(232,23,93,.2);
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.2rem;
-}
-
-.modal-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--pink-1);
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1rem;
-    color: #b06080;
-    cursor: pointer;
-    padding: .2rem .4rem;
-    border-radius: 6px;
-    transition: .2s;
-}
-
-.modal-close:hover { background: #ffe3ef; color: var(--pink-1); }
-
 .modal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -461,7 +394,7 @@ tbody tr:hover {
 .modal-field label {
     font-size: .78rem;
     font-weight: 700;
-    color: var(--pink-1);
+    color: var(--hot-pink);
     text-transform: uppercase;
     letter-spacing: .03em;
 }
@@ -471,7 +404,7 @@ tbody tr:hover {
     width: 100%;
     padding: .65rem .9rem;
     border-radius: 10px;
-    border: 1.5px solid #ffd3e3;
+    border: 1.5px solid var(--pink-100);
     background: #fffafd;
     font-size: .875rem;
     color: #5a1e38;
@@ -482,48 +415,12 @@ tbody tr:hover {
 
 .modal-field input:focus,
 .modal-field select:focus {
-    border-color: var(--pink-2);
+    border-color: var(--bright-pink);
 }
-
-.modal-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: .75rem;
-}
-
-.btn-cancel {
-    padding: .6rem 1.2rem;
-    border-radius: 10px;
-    background: #fff;
-    border: 1.5px solid #ffd3e3;
-    color: #b06080;
-    font-size: .875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .2s;
-}
-
-.btn-cancel:hover { border-color: var(--pink-2); color: var(--pink-1); }
-
-.btn-submit {
-    padding: .6rem 1.4rem;
-    border-radius: 10px;
-    background: var(--gradient-pink);
-    border: none;
-    color: #fff;
-    font-size: .875rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(232,23,93,.25);
-    transition: .2s;
-}
-
-.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
 
 .delete-warning {
     background: #fff0f0;
-    border: 1px solid #ffb3c1;
+    border: 1px solid var(--pink-200);
     border-radius: 10px;
     padding: .75rem 1rem;
     font-size: .85rem;
@@ -536,7 +433,7 @@ tbody tr:hover {
     justify-content: space-between;
     align-items: center;
     padding: .6rem 0;
-    border-bottom: 1px solid #ffe0eb;
+    border-bottom: 1px solid var(--pink-100);
 }
 
 .view-row:last-child { border-bottom: none; }
@@ -544,7 +441,7 @@ tbody tr:hover {
 .view-label {
     font-size: .78rem;
     font-weight: 700;
-    color: var(--pink-1);
+    color: var(--hot-pink);
     text-transform: uppercase;
     letter-spacing: .03em;
 }
@@ -555,7 +452,76 @@ tbody tr:hover {
     font-weight: 500;
 }
 
-/* ───────── ANIMATION ───────── */
+.credentials-box {
+    background: var(--soft-bg);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.credentials-box h4 {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--hot-pink);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: .75rem;
+}
+
+.credential-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+
+.credential-row:last-child { border-bottom: none; }
+
+.credential-label {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-bottom: .15rem;
+}
+
+.credential-value {
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: monospace;
+}
+
+.copy-btn {
+    padding: .3rem .75rem;
+    border-radius: 7px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--hot-pink);
+    font-size: .75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.copy-btn:hover {
+    background: var(--gradient-pink);
+    color: var(--white);
+    border-color: transparent;
+}
+
+.credentials-warning {
+    background: #fff9e6;
+    border: 1px solid #f0c040;
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    font-size: .82rem;
+    color: #7a5400;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
 .fade-up { animation: fadeIn .45s ease both; }
 
 @keyframes fadeIn {
@@ -567,7 +533,15 @@ tbody tr:hover {
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s; }
 
-/* ───────── RESPONSIVE ───────── */
+table th,
+table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.td-id  { text-align: left; }
+.td-name { text-align: left; }
+
 @media (max-width: 900px) {
     .stats-row { grid-template-columns: 1fr; }
     .modal-grid { grid-template-columns: 1fr; }
@@ -577,30 +551,6 @@ tbody tr:hover {
 @media (max-width: 600px) {
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
-}
-
-.badge-temp {
-    background: #fff3b0;
-    color: #5a3d00;
-    border: 1px solid #ffd84d;
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba(255, 216, 77, 0.25);
-}
-
-table th,
-table td {
-    text-align: center;
-    vertical-align: middle;
-}
-
-/* Account ID LEFT aligned */
-.td-id {
-    text-align: left;
-}
-
-/* Tenant Name LEFT aligned */
-.td-name {
-    text-align: left;
 }
 </style>
 @endsection
@@ -672,8 +622,6 @@ table td {
                     <option value="name">Sort by: Name</option>
                     <option value="room">Sort by: Room</option>
                 </select>
-
-                <!-- NEW FLOOR FILTER -->
                 <select class="sort-select" id="floor-filter" onchange="applyFilters()">
                     <option value="">All Floors</option>
                     @for($i = 2; $i <= 5; $i++)
@@ -801,7 +749,7 @@ table td {
             <div class="modal-title">Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
         </div>
-        <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--pink-bg);padding:.7rem 1rem;border-radius:10px;">
+        <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--petal);padding:.7rem 1rem;border-radius:10px;">
             Account ID and temporary password will be <strong>auto-generated</strong>
             and shown to you after saving.
         </p>
@@ -862,7 +810,7 @@ table td {
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">👤 Tenant Details</div>
+            <div class="modal-title">Tenant Details</div>
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
         <div id="view-content"></div>
@@ -983,28 +931,16 @@ table td {
             </div>
             <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
         </div>
-        <div class="delete-warning">⚠️ This action cannot be undone. The tenant record will be permanently removed.</div>
+        <div class="delete-warning">Warning: This action cannot be undone. The tenant record will be permanently removed.</div>
         <p style="font-size:.9rem;color:#b06080;">Are you sure you want to delete <strong id="delete-name" style="color:#5a1e38;"></strong>?</p>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form method="POST" id="delete-form" style="display:inline;">
+            <form method="POST" id="delete-form" action="">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-submit" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
+                <button type="submit" class="btn-submit" style="background:var(--red);box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
             </form>
         </div>
-        <p style="font-size:.9rem;color:var(--ink-muted);">
-            Are you sure you want to delete
-            <strong id="delete-name" style="color:var(--ink);"></strong>?
-        </p>
-        <form method="POST" id="delete-form" action="">
-            @csrf
-            @method('DELETE')
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -1050,51 +986,41 @@ table td {
         } else {
             tbody.innerHTML = pageData.map(t => `
                 <tr>
-    <td class="td-id">${t.account_id ?? '—'}</td>
-
-    <td class="td-name">
-        ${t.first_name} ${t.last_name}
-        ${tempBadge(t.is_temp_password)}
-    </td>
-
-    <td>
-    ${t.floor && t.room_number
-        ? `${t.floor}-${t.room_number}`
-        : (t.room_number ?? '—')}
-    </td>
-
-    <td>${fmtDate(t.move_in_date)}</td>
-
-    <td>${t.move_out_date ? fmtDate(t.move_out_date) : '—'}</td>
-
-    <td>${t.contact_number ?? '—'}</td>
-
-    <td>${statusBadge(t.status)}</td>
-
-    <td>
-        <div class="action-group">
-            <button class="act-btn" title="View"
-                onclick='viewTenant(${JSON.stringify(t)})'>
-                <img src="{{ asset('icons/eye.png') }}" class="icon-sm">
-            </button>
-
-            <button class="act-btn" title="Edit"
-                onclick='openEditModal(${JSON.stringify(t)})'>
-                <img src="{{ asset('icons/edit.png') }}" class="icon-sm">
-            </button>
-
-            <button class="act-btn reset" title="Reset Password"
-                onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
-                <img src="{{ asset('icons/reset.png') }}" class="icon-sm">
-            </button>
-
-            <button class="act-btn delete" title="Delete"
-                onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
-                <img src="{{ asset('icons/delete.png') }}" class="icon-sm">
-            </button>
-        </div>
-    </td>
-</tr>
+                    <td class="td-id">${t.account_id ?? '—'}</td>
+                    <td class="td-name">
+                        ${t.first_name} ${t.last_name}
+                        ${tempBadge(t.is_temp_password)}
+                    </td>
+                    <td>
+                        ${t.floor && t.room_number
+                            ? `${t.floor}-${t.room_number}`
+                            : (t.room_number ?? '—')}
+                    </td>
+                    <td>${fmtDate(t.move_in_date)}</td>
+                    <td>${t.move_out_date ? fmtDate(t.move_out_date) : '—'}</td>
+                    <td>${t.contact_number ?? '—'}</td>
+                    <td>${statusBadge(t.status)}</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="act-btn" title="View"
+                                onclick='viewTenant(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/eye.png') }}" class="icon-sm">
+                            </button>
+                            <button class="act-btn" title="Edit"
+                                onclick='openEditModal(${JSON.stringify(t)})'>
+                                <img src="{{ asset('icons/edit.png') }}" class="icon-sm">
+                            </button>
+                            <button class="act-btn reset" title="Reset Password"
+                                onclick="openResetModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm">
+                            </button>
+                            <button class="act-btn delete" title="Delete"
+                                onclick="openDeleteModal(${t.tenant_id}, '${t.first_name} ${t.last_name}')">
+                                <img src="{{ asset('icons/delete.png') }}" class="icon-sm">
+                            </button>
+                        </div>
+                    </td>
+                </tr>
             `).join('');
         }
 
@@ -1131,48 +1057,29 @@ table td {
     }
 
     function applyFilters() {
-    const q = document.getElementById('search-input').value.toLowerCase();
-    const sort = document.getElementById('sort-select').value;
-    const floor = document.getElementById('floor-filter').value;
+        const q = document.getElementById('search-input').value.toLowerCase();
+        const sort = document.getElementById('sort-select').value;
+        const floor = document.getElementById('floor-filter').value;
 
-    filtered = tenants.filter(t => {
+        filtered = tenants.filter(t => {
+            const matchesSearch =
+                (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
+                (t.account_id  ?? '').toLowerCase().includes(q) ||
+                (t.room_number ?? '').toLowerCase().includes(q) ||
+                (t.email ?? '').toLowerCase().includes(q) ||
+                (t.contact_number ?? '').toLowerCase().includes(q);
 
-        const matchesSearch =
-            (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
-            (t.account_id  ?? '').toLowerCase().includes(q) ||
-            (t.room_number ?? '').toLowerCase().includes(q) ||
-            (t.email ?? '').toLowerCase().includes(q) ||
-            (t.contact_number ?? '').toLowerCase().includes(q);
+            const matchesFloor = floor === "" || String(t.floor) === floor;
 
-        const matchesFloor =
-            floor === "" || String(t.floor) === floor;
+            return matchesSearch && matchesFloor;
+        });
 
-        return matchesSearch && matchesFloor;
-    });
+        if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        if (sort === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        if (sort === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
+        if (sort === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
+        if (sort === 'floor')  filtered.sort((a, b) => parseInt(a.floor ?? 0) - parseInt(b.floor ?? 0));
 
-    // sorting
-    if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    if (sort === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    if (sort === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
-    if (sort === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
-
-    currentPage = 1;
-    renderTable();
-}
-
-    function sortTable() {
-        const val = document.getElementById('sort-select').value;
-        if (val === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        if (val === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        if (val === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
-        if (val === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
-        if (val === 'floor') {
-        filtered.sort((a, b) => {
-        const fa = parseInt(a.floor ?? 0);
-        const fb = parseInt(b.floor ?? 0);
-        return fa - fb;
-    });
-}
         currentPage = 1;
         renderTable();
     }
@@ -1185,18 +1092,16 @@ table td {
             <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email}</span></div>
             <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
             <div class="view-row">
-            <span class="view-label">Floor & Room No.</span>
-            <span class="view-val">
-                ${t.floor && t.room_number
-                ? `${t.floor}-${t.room_number}`
-                : (t.room_number ?? '—')}
-            </span>
+                <span class="view-label">Floor & Room No.</span>
+                <span class="view-val">
+                    ${t.floor && t.room_number ? `${t.floor}-${t.room_number}` : (t.room_number ?? '—')}
+                </span>
             </div>
             <div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">${t.stay_type ?? '—'}</span></div>
             <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
             <div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">${fmtDate(t.move_out_date)}</span></div>
             <div class="view-row"><span class="view-label">Status</span><span class="view-val">${statusBadge(t.status)}</span></div>
-            <div class="view-row"><span class="view-label">Password Status</span><span class="view-val">${t.is_temp_password ? tempBadge(true) + ' Not yet changed' : '✅ Changed by tenant'}</span></div>
+            <div class="view-row"><span class="view-label">Password Status</span><span class="view-val">${t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant'}</span></div>
         `;
         openModal('view-modal');
     }
@@ -1237,7 +1142,8 @@ table td {
     }
 
     function exportTenants() {
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Move-Out Date', 'Contact', 'Status']];        tenants.forEach(t => rows.push([
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Room', 'Floor', 'Move-In Date', 'Move-Out Date', 'Contact', 'Status']];
+        tenants.forEach(t => rows.push([
             t.account_id ?? '',
             t.first_name, t.last_name, t.email,
             t.room_number ?? '', t.floor ?? '',
@@ -1261,21 +1167,6 @@ table td {
             btn.textContent = 'Copied';
             setTimeout(() => btn.textContent = 'Copy', 2000);
         });
-    }
-
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-    });
-
-    function showToast(msg, type = '') {
-        const t = document.getElementById('toast');
-        if (!t) return;
-        t.textContent  = msg;
-        t.className    = 'toast ' + type;
-        setTimeout(() => t.classList.add('show'), 10);
-        setTimeout(() => t.classList.remove('show'), 3200);
     }
 
     @if($errors->any())

@@ -26,6 +26,10 @@
         --pink-400:   #FF2D78;
         --pink-500:   #E8175D;
 
+        --soft-bg:    #fff7fb;
+        --pink-bg:    var(--petal);
+        --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+
         --gray:       #B5B7C0;
         --gray-light: #E5ECF6;
         --mint:       #A6E7D8;
@@ -280,7 +284,7 @@
     .modal-overlay.open { display: flex; }
     .modal {
         background: var(--white); border-radius: 20px;
-        padding: 2rem; width: 90%; max-width: 440px;
+        padding: 2rem; width: 90%; max-width: 480px;
         box-shadow: 0 20px 60px rgba(232,23,93,.18);
         animation: fadeUp .3s ease;
         max-height: 90vh; overflow-y: auto;
