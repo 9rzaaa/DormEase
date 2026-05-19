@@ -51,6 +51,15 @@
         --black:      #1A1A1A;
         --ink-deep:   #7a2d4f;
         --ink-soft:   #b03060;
+
+        --badge-leave-text:      #c8960c;
+        --badge-leave-border:    #f0c040;
+        --badge-frontdesk-text:  #1a6fbd;
+        --badge-frontdesk-border: #90c4f8;
+        --badge-guard-text:      #6d4fc4;
+        --badge-guard-border:    #c4b5fd;
+        --shift-day:             #f59e0b;
+        --shift-night:           #6366f1;
         
         --shadow-pink-card: 0 4px 10px rgba(0,0,0,.04), 0 14px 30px rgba(232,23,93,.18), 0 24px 50px rgba(232,23,93,.12);
         --shadow-pink-btn: 0 6px 18px rgba(255,79,147,.22);
