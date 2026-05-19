@@ -272,25 +272,33 @@
     }
 
     .btn-update {
-        padding: .26rem .65rem;
-        border-radius: 8px;
-        background: var(--gradient-pink);
-        color: var(--white);
-        border: none;
-        font-size: .7rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: var(--ease);
-        white-space: nowrap;
-        flex-shrink: 0;
-        box-shadow: 0 3px 10px rgba(255,79,147,.18);
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    background: var(--gradient-pink);
+    border: none;
+    cursor: pointer;
+    transition: var(--ease);
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(255,79,147,.18);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    }
+
+    .btn-update img {
+        width: 12px;
+        height: 12px;
+
+        filter: brightness(0) invert(1);
     }
 
     .btn-update:hover {
         transform: translateY(-1px);
         box-shadow: 0 6px 14px rgba(255,79,147,.28);
     }
-
     .tenants-list {
         display: flex;
         flex-direction: column;
@@ -939,7 +947,9 @@
                                 <span class="room-meta-occ">{{ $room['occupants_in_room'] }} occupant{{ $room['occupants_in_room'] != 1 ? 's' : '' }}</span>
                             </div>
                         </div>
-                        <button class="btn-update" onclick='openUpdateModal(@json($room))'>View</button>
+                        <button class="btn-update" onclick='openUpdateModal(@json($room))' title="Edit Billing">
+                            <img src="{{ asset('icons/edit.png') }}" alt="Edit">
+                        </button>
                     </div>
                     <div class="tenants-list">
                         @foreach($room['tenants'] as $t)
