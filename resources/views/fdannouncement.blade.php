@@ -39,36 +39,6 @@
         margin-top: .2rem;
     }
 
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        flex-wrap: wrap;
-    }
-
-    .btn-post {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        padding: .62rem 1.3rem;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white);
-        border: none;
-        font-size: .87rem;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 8px 22px rgba(255,45,120,.28);
-        transition: transform .2s, box-shadow .2s;
-        white-space: nowrap;
-        font-family: var(--ff-body);
-    }
-
-    .btn-post:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(255,45,120,.38);
-    }
-
     .filter-bar {
         display: flex;
         align-items: center;
@@ -264,13 +234,6 @@
         gap: .4rem;
     }
 
-    .ann-meta img {
-        width: 13px;
-        height: 13px;
-        object-fit: contain;
-        opacity: .45;
-    }
-
     .ann-actions {
         display: flex;
         align-items: center;
@@ -302,8 +265,6 @@
         object-fit: contain;
     }
 
-    .act-btn.danger:hover { border-color: #e04867; }
-
     .file-chip {
         display: inline-flex;
         align-items: center;
@@ -333,55 +294,6 @@
         border: 2px dashed var(--pink-200);
     }
 
-    /* Modal fields */
-    .modal-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .9rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .modal-field-full { grid-column: 1 / -1; }
-
-    .ann-modal-field {
-        display: flex;
-        flex-direction: column;
-        gap: .35rem;
-    }
-
-    .ann-modal-field label {
-        font-size: .76rem;
-        font-weight: 700;
-        color: var(--hot-pink);
-        text-transform: uppercase;
-        letter-spacing: .04em;
-    }
-
-    .ann-modal-field input,
-    .ann-modal-field select,
-    .ann-modal-field textarea {
-        width: 100%;
-        padding: .6rem .9rem;
-        border-radius: 10px;
-        border: 1.5px solid var(--pink-200);
-        background: var(--pink-50);
-        font-size: .875rem;
-        color: var(--ink);
-        font-family: var(--ff-body);
-        outline: none;
-        box-sizing: border-box;
-        transition: border-color .2s, background .2s;
-    }
-
-    .ann-modal-field textarea { min-height: 110px; resize: vertical; }
-
-    .ann-modal-field input:focus,
-    .ann-modal-field select:focus,
-    .ann-modal-field textarea:focus {
-        border-color: var(--bright-pink);
-        background: var(--white);
-    }
-
     .view-detail-row {
         display: flex;
         flex-direction: column;
@@ -407,36 +319,6 @@
         line-height: 1.6;
     }
 
-    .delete-warn {
-        background: #fff0f0;
-        border: 1.5px solid #ffc8d0;
-        border-radius: 10px;
-        padding: .7rem 1rem;
-        font-size: .83rem;
-        color: #c0303a;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-
-    .file-upload-area {
-        border: 2px dashed var(--pink-200);
-        border-radius: 10px;
-        padding: .9rem;
-        text-align: center;
-        font-size: .8rem;
-        color: var(--ink-muted);
-        cursor: pointer;
-        transition: border-color .2s, background .2s;
-        background: var(--pink-50);
-    }
-
-    .file-upload-area:hover {
-        border-color: var(--bright-pink);
-        background: var(--white);
-    }
-
-    .file-upload-area input[type="file"] { display: none; }
-
     .fade-up { animation: fdFadeUp .45s ease both; }
     @keyframes fdFadeUp {
         from { opacity: 0; transform: translateY(12px); }
@@ -449,7 +331,6 @@
     @media (max-width: 800px) {
         .columns-wrap { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
-        .modal-grid { grid-template-columns: 1fr; }
     }
 </style>
 @endsection
@@ -514,73 +395,6 @@
         <div id="view-content"></div>
         <div class="modal-actions" style="margin-top:1rem;">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-            <button class="btn-submit" onclick="switchToEdit()">Edit</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="edit-modal">
-    <div class="modal" style="max-width:540px;">
-        <div class="modal-header">
-            <div class="modal-title">Edit Announcement</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
-        </div>
-        <form id="edit-form" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="_from" value="frontdesk">
-            <div class="modal-grid">
-                <div class="ann-modal-field modal-field-full">
-                    <label>Title</label>
-                    <input type="text" name="title" id="edit-title" required>
-                </div>
-                <div class="ann-modal-field">
-                    <label>Priority</label>
-                    <select name="priority" id="edit-priority">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-                <div class="ann-modal-field">
-                    <label>Status</label>
-                    <select name="status" id="edit-status">
-                        <option value="active">Active</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div class="ann-modal-field modal-field-full">
-                    <label>Content</label>
-                    <textarea name="content" id="edit-content" required></textarea>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{{-- DELETE MODAL --}}
-<div class="modal-overlay" id="delete-modal">
-    <div class="modal" style="max-width:400px;">
-        <div class="modal-header">
-            <div class="modal-title">Delete Announcement</div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
-        </div>
-        <div class="delete-warn">This action cannot be undone. The announcement will be permanently deleted.</div>
-        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
-            Delete <strong id="delete-label" style="color:var(--ink);"></strong>?
-        </p>
-        <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form id="delete-form" method="POST">
-                @csrf
-                @method('DELETE')
-                <input type="hidden" name="_from" value="frontdesk">
-                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
-            </form>
         </div>
     </div>
 </div>
@@ -591,7 +405,6 @@
 <script>
     const announcements = @json($announcements);
     let filtered = [...announcements];
-    let currentAnn = null;
 
     function priorityBadge(p) {
         const map = {
@@ -641,29 +454,6 @@
                         <button class="act-btn" title="View" onclick='viewAnn(${JSON.stringify(r)})'>
                             <img src="{{ asset('icons/eye.png') }}" alt="View">
                         </button>
-                        <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
-                            <img src="{{ asset('icons/edit.png') }}" alt="Edit">
-                        </button>
-                        ${isClosed
-                            ? `<form method="POST" action="/frontdesk/announcements/${r.id}/restore" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="_from" value="frontdesk">
-                                    <button type="submit" class="act-btn" title="Restore" style="border-color:#8cdebb;">
-                                        <img src="{{ asset('icons/restore.png') }}" alt="Restore">
-                                    </button>
-                                </form>`
-
-                                `<form method="POST" action="/frontdesk/announcements/${r.id}/archive" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="_from" value="frontdesk">
-                                    <button type="submit" class="act-btn" title="Archive">
-                                        <img src="{{ asset('icons/archive.png') }}" alt="Archive">
-                                    </button>
-                                </form>`
-                        }
-                        <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.id}, '${escHtml(r.title)}')">
-                            <img src="{{ asset('icons/delete.png') }}" alt="Delete">
-                        </button>
                     </div>
                 </div>
             </div>
@@ -706,7 +496,6 @@
     }
 
     function viewAnn(r) {
-        currentAnn = r;
         const files = r.attachment
             ? r.attachment.split(',').filter(f => f.trim()).map(f =>
                 `<a href="/storage/${f.trim()}" target="_blank" style="color:var(--bright-pink);font-size:.82rem;">${f.trim().split('/').pop()}</a>`
@@ -742,38 +531,6 @@
             </div>
         `;
         openModal('view-modal');
-    }
-
-    function switchToEdit() {
-        if (currentAnn) {
-            closeModal('view-modal');
-            setTimeout(() => openEditModal(currentAnn), 200);
-        }
-    }
-
-    function openEditModal(r) {
-        currentAnn = r;
-        document.getElementById('edit-title').value    = r.title    ?? '';
-        document.getElementById('edit-priority').value = r.priority ?? 'low';
-        document.getElementById('edit-status').value   = r.status   ?? 'active';
-        document.getElementById('edit-content').value  = r.content  ?? '';
-        document.getElementById('edit-form').action    = `/frontdesk/announcements/${r.id}`;
-        openModal('edit-modal');
-    }
-
-    function openDeleteModal(id, title) {
-        document.getElementById('delete-label').textContent = title;
-        document.getElementById('delete-form').action = `/frontdesk/announcements/${id}`;
-        openModal('delete-modal');
-    }
-
-    function showFileNames(input, listId) {
-        const list = document.getElementById(listId);
-        if (input.files.length === 0) {
-            list.textContent = '';
-            return;
-        }
-        list.textContent = Array.from(input.files).map(f => f.name).join(', ');
     }
 
     @if(session('success'))

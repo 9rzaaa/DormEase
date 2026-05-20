@@ -84,7 +84,7 @@ class AnnouncementController extends Controller
     public function archive(Request $request, $id)
     {
         Announcement::findOrFail($id)->update(['status' => 'closed']);
-        $route = $request->routeIs('frontdesk.*')
+        $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';
         return redirect()->route($route)
