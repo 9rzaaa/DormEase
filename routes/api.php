@@ -8,28 +8,35 @@ use App\Http\Controllers\Api\PasswordController;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\BillingController;
+use App\Http\Controllers\Api\DocumentRequestController;
 
-// Public routes
+// ── Public routes ─────────────────────────────────────────────────────────────
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected routes (requires token)
+// ── Protected routes (requires Sanctum token) ─────────────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
     Route::post('/change-password', [PasswordController::class, 'change']);
 
-    Route::get('/visitors',                   [VisitorController::class, 'index']);
-    Route::post('/visitors',                   [VisitorController::class, 'store']);
-    Route::patch('/visitors/{id}/checkout',     [VisitorController::class, 'checkout']);
+    Route::get('/visitors',                 [VisitorController::class, 'index']);
+    Route::post('/visitors',                [VisitorController::class, 'store']);
+    Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
 
     Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
+    // ── Document Requests ─────────────────────────────────────────────────────
+    Route::post('/document-requests', [DocumentRequestController::class, 'store']);
+
+    // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
             'profile_photo' => 'required|image|max:2048',
@@ -62,4 +69,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
         return response()->json(['message' => 'Profile updated successfully.']);
     });
+
 });
