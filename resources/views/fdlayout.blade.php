@@ -42,6 +42,7 @@
             --pink-400:   #f06292;
             --pink-500:   #ec407a;
             --pink-600:   #d81b60;
+            --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
             
             --ease:       all .2s cubic-bezier(.4,0,.2,1);
             --border:     rgba(202,93,134,.12);
