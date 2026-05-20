@@ -15,6 +15,12 @@ class EmergencyReport extends Model
         'admin_notes', 'reported_at', 'resolved_at',
     ];
 
+    protected $casts = [
+        'is_panic_alert' => 'boolean',
+        'reported_at'    => 'datetime',
+        'resolved_at'    => 'datetime',
+    ];
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
