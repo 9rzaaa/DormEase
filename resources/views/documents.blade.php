@@ -13,8 +13,6 @@
     }
 
     .filter-bar {
-        background: var(--white);
-        border-bottom: 1.5px solid var(--baby-pink);
         padding: .85rem 2rem;
         display: flex;
         align-items: center;
@@ -35,7 +33,7 @@
         font-size: .82rem;
         font-family: var(--ff-body);
         outline: none;
-        background: var(--blush);
+        background: white;
         color: var(--ink);
         cursor: pointer;
         transition: border-color .2s;
@@ -50,7 +48,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        background: var(--petal);
+        background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 9px;
         padding: .45rem .9rem;
@@ -311,7 +309,7 @@
 
 @section('content')
 
-<div style="padding: 1.2rem 2rem .4rem; background: var(--white); border-bottom: 1.5px solid var(--baby-pink);">
+<div style="padding: 1.2rem 2rem .4rem; solid var(--baby-pink);">
     <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--ink);">Document Management</h1>
     <p class="doc-subtitle">Sanctissimo Rosario Ladies Dormitory</p>
 </div>
