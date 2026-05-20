@@ -366,7 +366,7 @@
         <a href="{{ route('frontdesk.visitors') }}" class="nav-item {{ request()->routeIs('frontdesk.visitors') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-        <a href="{{ route('frontdesk.announcements') }}" class="nav-item">
+        <a href="{{ route('frontdesk.announcements') }}" class="nav-item {{ request()->routeIs('frontdesk.announcements*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
 
