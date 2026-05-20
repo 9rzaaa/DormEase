@@ -42,61 +42,59 @@
     .stats-row {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
+        gap: 1.2rem;
+        box-sizing: border-box;
     }
 
     .stat-card {
-        background: var(--white);
-        border-radius: 16px;
-        border: 2px solid var(--bright-pink);
+        background: var(--gradient-pink);
+        border-radius: 18px;
+        border: none;
+        box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
         padding: 1.4rem 1.5rem;
         display: flex;
         align-items: center;
-        gap: 1.1rem;
-        box-shadow: 0 4px 16px rgba(255,45,120,.08);
-        transition: transform .2s, box-shadow .2s;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 26px rgba(255,45,120,.15);
+        gap: 1.2rem;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
     }
 
     .stat-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(255,45,120,.25);
-        padding: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,.15);
+        padding: 0;
         box-sizing: border-box;
     }
 
     .stat-icon img {
-        width: 26px;
-        height: 26px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
-        filter: brightness(0) invert(1);
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
 
     .stat-num {
         font-size: 2rem;
-        font-weight: 800;
-        color: var(--ink);
+        font-weight: 700;
+        color: var(--white);
         line-height: 1;
     }
 
     .stat-label {
-        font-size: .75rem;
+        font-size: .8rem;
+        color: rgba(247,245,245,.967);
         font-weight: 700;
-        color: var(--ink-muted);
-        text-transform: uppercase;
-        letter-spacing: .04em;
         margin-bottom: .15rem;
+        text-transform: none;
+        letter-spacing: normal;
     }
 
     .table-card {
@@ -510,7 +508,7 @@
     <div class="stats-row fade-up d2">
         <div class="stat-card">
             <div class="stat-icon">
-                <img src="{{ asset('icons/nav-emerg.png') }}" alt="Total">
+                <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
             </div>
             <div>
                 <div class="stat-label">Total Emergencies</div>
@@ -519,7 +517,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-icon">
-                <img src="{{ asset('icons/warn.png') }}" alt="Critical">
+                <img src="{{ asset('icons/warn.png') }}" alt="">
             </div>
             <div>
                 <div class="stat-label">Critical Emergencies</div>
@@ -528,7 +526,7 @@
         </div>
         <div class="stat-card">
             <div class="stat-icon">
-                <img src="{{ asset('icons/resolved.png') }}" alt="Resolved">
+                <img src="{{ asset('icons/resolved.png') }}" alt="">
             </div>
             <div>
                 <div class="stat-label">Resolved Emergencies</div>
