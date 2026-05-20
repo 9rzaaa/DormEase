@@ -68,7 +68,7 @@
         text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
         border-bottom: 1.5px solid var(--bright-pink);
     }
-    td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1px solid var(--border); vertical-align: middle; }
+    td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1.5px solid var(--bright-pink); vertical-align: middle; }
     tbody tr { transition: background .15s; }
     tbody tr:hover { background: var(--pink-bg); }
     tbody tr:last-child td { border-bottom: none; }

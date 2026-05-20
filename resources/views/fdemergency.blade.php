@@ -256,7 +256,7 @@
     td {
         padding: .85rem 1rem;
         font-size: .855rem;
-        border-bottom: 1px solid var(--pink-100);
+        border-bottom: 1px solid var(--bright-pink);
         color: var(--ink);
         vertical-align: middle;
     }
