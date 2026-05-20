@@ -61,11 +61,12 @@
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
-    thead tr { background: var(--pink-bg); }
+    thead tr { background: var(--pink-100); }
     th {
         padding: .75rem 1rem; text-align: left;
         font-size: .75rem; font-weight: 700; color: var(--ink-muted);
         text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+        border-bottom: 1.5px solid var(--bright-pink);
     }
     td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1px solid var(--border); vertical-align: middle; }
     tbody tr { transition: background .15s; }
