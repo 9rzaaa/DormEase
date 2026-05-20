@@ -177,7 +177,7 @@
     }
 
     .floor-name {
-        font-size: .8rem;
+        font-size: .85rem;
         font-weight: 800;
         color: var(--bright-pink);
         text-transform: uppercase;
@@ -189,7 +189,7 @@
         align-items: center;
         padding: .15rem .55rem;
         border-radius: 999px;
-        font-size: .7rem;
+        font-size: .75rem;
         font-weight: 700;
         background: rgba(255,255,255,.6);
         color: var(--black);
@@ -197,7 +197,7 @@
     }
 
     .floor-due {
-        font-size: .72rem;
+        font-size: .75rem;
         font-weight: 700;
         color: var(--black);
         margin-left: auto;
@@ -205,7 +205,7 @@
 
     .rooms-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 0;
         background: var(--border-pink-mid);
         border-top: 2px solid #ff8fbc;
@@ -213,7 +213,7 @@
 
     .room-card {
         background: var(--white);
-        padding: 1rem;
+        padding: 1.15rem;
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -250,7 +250,7 @@
         border-radius: 10px;
         background: var(--gradient-pink);
         color: var(--white);
-        font-size: .72rem;
+        font-size: .82rem;
         font-weight: 800;
         letter-spacing: .01em;
         flex-shrink: 0;
@@ -259,14 +259,14 @@
     .room-meta-stack { display: flex; flex-direction: column; gap: 0; }
 
     .room-meta-label {
-        font-size: .8rem;
+        font-size: .95rem;
         font-weight: 700;
         color: var(--bright-pink);
         line-height: 1.2;
     }
 
     .room-meta-occ {
-        font-size: .68rem;
+        font-size: .8rem;
         font-weight: 500;
         color: var(--ink-soft);
     }
@@ -310,7 +310,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .38rem 0;
+        padding: .5rem 0;
         gap: .5rem;
     }
 
@@ -355,7 +355,7 @@
     }
 
     .t-amount {
-        font-size: .78rem;
+        font-size: .85rem;
         font-weight: 700;
         color: var(--hot-pink);
         white-space: nowrap;
@@ -365,9 +365,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: .12rem .45rem;
+        padding: .18rem .55rem;
         border-radius: 999px;
-        font-size: .6rem;
+        font-size: .72rem;
         font-weight: 700;
         white-space: nowrap;
     }
@@ -382,7 +382,7 @@
         padding: 1.5rem;
         text-align: center;
         color: var(--ink-soft);
-        font-size: .88rem;
+        font-size: 1rem;
         grid-column: 1 / -1;
     }
 
@@ -760,7 +760,7 @@
         border-radius: 10px;
         border: 1.5px solid var(--border-pink);
         background: var(--white);
-        font-size: .82rem;
+        font-size: .79rem;
         color: var(--ink-deep);
         outline: none;
         transition: border-color .18s;
