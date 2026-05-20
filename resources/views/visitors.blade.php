@@ -140,6 +140,7 @@
         background: var(--white);
         flex-wrap: wrap;
         gap: .8rem;
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     .table-title {
@@ -262,7 +263,10 @@
         flex-shrink: 0;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { 
+        overflow-x: auto;
+        border-top: 2px solid var(--bright-pink);
+    }
 
     table { width: 100%; border-collapse: collapse; min-width: 980px; }
 
@@ -275,6 +279,7 @@
         text-align: center;
         font-weight: 700;
         white-space: nowrap;
+        border-bottom: 2px solid var(--bright-pink);
     }
 
     td {

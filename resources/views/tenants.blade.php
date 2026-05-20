@@ -247,7 +247,7 @@ table {
 }
 
 thead tr {
-    background: var(--white);
+    background: var(--blush);
     border-bottom: 2px solid var(--bright-pink);
 }
 
@@ -259,7 +259,7 @@ th {
     letter-spacing: .04em;
     text-transform: uppercase;
     white-space: nowrap;
-    background: var(--white);
+    background: var(--blush);
 }
 
 td {
