@@ -10,6 +10,7 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FrontdeskController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmergencyController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
@@ -106,16 +107,17 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
     Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
 
-    // View profile page
+    Route::get('/frontdesk/emergency',       [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
+    Route::post('/frontdesk/emergency',      [EmergencyController::class, 'store'])->name('frontdesk.emergency.store');
+    Route::put('/frontdesk/emergency/{id}',  [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
+    Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
+
     Route::get('/profile', [ProfileController::class, 'index'])
         ->name('profile.index');
-    // Update personal info + photo
     Route::put('/profile', [ProfileController::class, 'update'])
         ->name('profile.update');
-    // Change password
     Route::put('/profile/password', [ProfileController::class, 'password'])
         ->name('profile.password');
-    // Deactivate account
     Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])
         ->name('profile.deactivate');
 });

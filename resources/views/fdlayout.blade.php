@@ -360,7 +360,7 @@
         <a href="{{ route('frontdesk.tenants') }}" class="nav-item {{ request()->routeIs('frontdesk.tenants') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Tenant Directory
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.emergency') }}" class="nav-item {{ request()->routeIs('frontdesk.emergency') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
         <a href="{{ route('frontdesk.visitors') }}" class="nav-item {{ request()->routeIs('frontdesk.visitors') ? 'active' : '' }}">
