@@ -26,7 +26,6 @@
     html { scroll-behavior:smooth; }
     body { font-family:var(--font-body); background:var(--cream); color:var(--brown); line-height:1.6; overflow-x:hidden; }
 
-    /* ── HEADER / NAV ── */
     .site-header { position:relative; background:var(--cream); }
     .top-notice { position:absolute; top:0; left:0; right:0; z-index:101; min-height:34px; display:flex; align-items:center; justify-content:center; padding:6px 5%; background:var(--gradient-pink); color:white; font-family:var(--font-head); font-size:.86rem; font-weight:800; text-align:center; }
     nav { position:fixed; top:54px; left:50%; z-index:100; width:min(1220px,calc(100% - 12%)); transform:translateX(-50%); background:rgba(255,228,240,.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1.5px solid rgba(36,16,24,.78); border-radius:999px; padding:0 38px; height:86px; display:flex; align-items:center; justify-content:space-between; transition:top .25s ease,box-shadow .3s; }
@@ -44,7 +43,6 @@
     .nav-cta:hover { filter:brightness(.94); transform:translateY(-1px); }
     .header-spacer { height:154px; background:var(--cream); }
 
-    /* ── HERO ── */
     .features-hero { padding:70px 6% 60px; background:var(--cream); }
     .features-hero-inner { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
@@ -54,7 +52,6 @@
     .hero-badges { display:flex; flex-wrap:wrap; gap:10px; }
     .hero-badge { display:inline-flex; align-items:center; gap:7px; background:white; border:1.5px solid var(--border); border-radius:100px; padding:8px 16px; font-size:.82rem; font-weight:700; color:var(--brown); box-shadow:var(--shadow-card); }
     .hero-badge svg { width:15px; height:15px; stroke:var(--pink); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
-    /* Hero phone cluster — white & pink theme */
     .hero-phones { position:relative; display:flex; justify-content:center; align-items:flex-end; gap:-20px; height:420px; }
     .hero-phone { width:180px; background:white; border-radius:28px; box-shadow:0 24px 56px rgba(232,23,93,.18), 0 8px 24px rgba(36,16,24,.10); overflow:hidden; position:absolute; border:2px solid var(--border); }
     .hero-phone-1 { left:50%; transform:translateX(-120%) rotate(-8deg); bottom:0; height:340px; }
@@ -71,18 +68,15 @@
     .phone-app-tile svg { width:18px; height:18px; stroke:var(--pink); fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
     .phone-app-label { font-size:.42rem; font-weight:700; color:var(--brown-light); text-align:center; font-family:var(--font-head); }
 
-    /* ── FEATURES GRID ── */
     .features-section { padding:20px 6% 100px; background:var(--cream); }
     .features-inner { max-width:1180px; margin:0 auto; }
     .features-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
 
-    /* Feature card */
     .feat-card { background:white; border:1.5px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-card); overflow:hidden; display:grid; grid-template-columns:1fr 1fr; min-height:260px; transition:box-shadow .3s, transform .3s; }
     .feat-card:hover { box-shadow:var(--shadow-soft); transform:translateY(-4px); }
     .feat-card.flip { direction:rtl; }
     .feat-card.flip > * { direction:ltr; }
 
-    /* Card info side */
     .feat-info { padding:36px 32px; display:flex; flex-direction:column; justify-content:center; }
     .feat-number { font-family:var(--font-head); font-size:.68rem; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--pink-light); margin-bottom:10px; }
     .feat-title { font-family:var(--font-head); font-size:1.35rem; font-weight:800; color:var(--brown); line-height:1.2; margin-bottom:12px; }
@@ -90,7 +84,6 @@
     .feat-tags { display:flex; flex-wrap:wrap; gap:7px; }
     .feat-tag { font-size:.72rem; font-weight:700; color:var(--pink); background:var(--pink-pale); border-radius:100px; padding:4px 12px; }
 
-    /* Card image side — phone mockup shell */
     .feat-img-wrap {
       background: linear-gradient(135deg, var(--pink-light) 0%, #fce8f0 100%);
       display: flex; align-items: center; justify-content: center;
@@ -100,10 +93,9 @@
       content: ''; position: absolute; inset: 0;
       background: radial-gradient(ellipse at 60% 30%, rgba(232,23,93,.10) 0%, transparent 65%);
     }
-    /* Phone shell */
     .phone-shell {
       position: relative; z-index: 1;
-      width: 138px;               /* ~297px at 0.465 scale */
+      width: 138px;
       border-radius: 22px;
       background: var(--brown);
       border: 3px solid rgba(255,255,255,.18);
@@ -112,7 +104,6 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-    /* Top bar with notch */
     .phone-shell-top {
       height: 20px; background: var(--brown);
       display: flex; align-items: center; justify-content: center;
@@ -126,7 +117,6 @@
       width: 44px; height: 10px; background: #0e0408;
       border-radius: 0 0 8px 8px; margin-top: -10px;
     }
-    /* Screen area — aspect ratio matches 297×587 ≈ 1:1.976 */
     .phone-shell-screen {
       width: 100%;
       aspect-ratio: 297 / 587;
@@ -152,7 +142,6 @@
       font-family: var(--font-head); font-size: .55rem; font-weight: 700;
       color: rgba(255,255,255,.4); text-align: center; letter-spacing: .04em;
     }
-    /* Bottom bar with home indicator */
     .phone-shell-bottom {
       height: 16px; background: var(--brown);
       display: flex; align-items: center; justify-content: center;
@@ -162,7 +151,6 @@
       border-radius: 99px;
     }
 
-    /* ── FOOTER ── */
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
     .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
     .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration:none; }
@@ -182,14 +170,12 @@
     .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
     .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 
-    /* ── SCROLL TO TOP ── */
     #scrollTopBtn { position:fixed; bottom:32px; right:32px; z-index:999; width:50px; height:50px; border:none; border-radius:50%; background:var(--gradient-pink); color:white; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 24px rgba(232,23,93,.36); opacity:0; transform:translateY(16px) scale(.85); transition:opacity .3s ease,transform .3s ease,box-shadow .2s; pointer-events:none; }
     #scrollTopBtn.visible { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
     #scrollTopBtn:hover { box-shadow:0 12px 32px rgba(232,23,93,.52); transform:translateY(-3px) scale(1.07); }
     #scrollTopBtn:active { transform:translateY(0) scale(.96); }
     #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
 
-    /* ── RESPONSIVE ── */
     @media(max-width:1060px){
       .features-grid { grid-template-columns:1fr; }
       .feat-card { grid-template-columns:1fr 1fr; }
@@ -222,7 +208,6 @@
       .footer-inner{grid-template-columns:1fr}
     }
 
-    /* Entrance animation */
     .feat-card { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; }
     .feat-card.visible { opacity:1; transform:translateY(0); }
     .feat-card:hover { transform:translateY(-4px) !important; }
@@ -250,13 +235,12 @@
 
 <main>
 
-  <!-- HERO -->
   <section class="features-hero">
     <div class="features-hero-inner">
       <div>
         <div class="section-tag">Mobile Application</div>
         <h1 class="hero-headline">Everything a Tenant Needs,<br><em>In One App.</em></h1>
-        <p class="hero-copy">DormEase gives Sanctissimo Rosario tenants a complete mobile experience — from paying water bills to filing maintenance requests, all from their phone.</p>
+        <p class="hero-copy">DormEase gives Sanctissimo Rosario tenants a complete mobile experience!</p>
         <div class="hero-badges">
           <span class="hero-badge"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Secure & Private</span>
           <span class="hero-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Real-time Updates</span>
@@ -264,7 +248,6 @@
           <span class="hero-badge"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>Android & iOS</span>
         </div>
       </div>
-      <!-- Phone cluster decoration -->
       <div class="hero-phones" aria-hidden="true">
         <div class="hero-phone hero-phone-1">
           <div class="phone-screen">
@@ -304,7 +287,7 @@
               <div style="font-size:.35rem;font-weight:800;color:var(--pink-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Recent Activity</div>
               <div style="display:flex;align-items:center;gap:5px;padding:4px 0;border-bottom:1px solid var(--border);">
                 <div style="width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0;"></div>
-                <div style="font-size:.36rem;color:var(--brown-light);flex:1;">Leaky faucet — Room 204</div>
+                <div style="font-size:.36rem;color:var(--brown-light);flex:1;">Leaky faucet - Room 204</div>
                 <div style="font-size:.28rem;font-weight:700;background:var(--pink-pale);color:var(--pink);padding:2px 5px;border-radius:99px;">In Progress</div>
               </div>
               <div style="display:flex;align-items:center;gap:5px;padding:4px 0;">
@@ -331,17 +314,15 @@
     </div>
   </section>
 
-  <!-- FEATURES GRID -->
   <section class="features-section">
     <div class="features-inner">
       <div class="features-grid">
 
-        <!-- 1. Dashboard -->
         <div class="feat-card">
           <div class="feat-info">
             <div class="feat-number">Feature 01</div>
             <div class="feat-title">Dashboard</div>
-            <p class="feat-desc">A personalized home screen showing your current water bill, pending request count, latest announcements, and quick-access buttons to every feature — all in one glance.</p>
+            <p class="feat-desc">A personalized home screen showing your current water bill, pending request count, latest announcements, and quick-access buttons to every feature, all in one glance.</p>
             <div class="feat-tags"><span class="feat-tag">Overview</span><span class="feat-tag">Quick Access</span><span class="feat-tag">Personalized</span></div>
           </div>
           <div class="feat-img-wrap">
@@ -360,12 +341,11 @@
           </div>
         </div>
 
-        <!-- 2. Announcements -->
         <div class="feat-card flip" id="announcements">
           <div class="feat-info">
             <div class="feat-number">Feature 02</div>
             <div class="feat-title">Announcements</div>
-            <p class="feat-desc">View all active announcements posted by the Administrator. Push notifications alert you the moment a new post goes live — so you never miss an important update.</p>
+            <p class="feat-desc">View all active announcements posted by the Administrator. Push notifications alert you the moment a new post goes live, so you never miss an important update.</p>
             <div class="feat-tags"><span class="feat-tag">Push Notifications</span><span class="feat-tag">Real-time</span><span class="feat-tag">Admin Posts</span></div>
           </div>
           <div class="feat-img-wrap">
@@ -384,7 +364,6 @@
           </div>
         </div>
 
-        <!-- 3. Maintenance Request -->
         <div class="feat-card" id="maintenance">
           <div class="feat-info">
             <div class="feat-number">Feature 03</div>
@@ -408,7 +387,6 @@
           </div>
         </div>
 
-        <!-- 4. Emergency Report -->
         <div class="feat-card flip">
           <div class="feat-info">
             <div class="feat-number">Feature 04</div>
@@ -432,7 +410,6 @@
           </div>
         </div>
 
-        <!-- 5. Water Bill -->
         <div class="feat-card" id="water-bill">
           <div class="feat-info">
             <div class="feat-number">Feature 05</div>
@@ -456,7 +433,6 @@
           </div>
         </div>
 
-        <!-- 6. Visitor Registration -->
         <div class="feat-card flip" id="visitor">
           <div class="feat-info">
             <div class="feat-number">Feature 06</div>
@@ -480,12 +456,11 @@
           </div>
         </div>
 
-        <!-- 7. Document Request -->
         <div class="feat-card">
           <div class="feat-info">
             <div class="feat-number">Feature 07</div>
             <div class="feat-title">Document Request</div>
-            <p class="feat-desc">Submit requests for administrative documents, choose between a digital or printed copy, and track your request status in real time — from submission all the way to download or pickup.</p>
+            <p class="feat-desc">Submit requests for administrative documents, choose between a digital or printed copy, and track your request status in real time.</p>
             <div class="feat-tags"><span class="feat-tag">Digital or Print</span><span class="feat-tag">Status Tracking</span><span class="feat-tag">Download</span></div>
           </div>
           <div class="feat-img-wrap">
@@ -504,12 +479,11 @@
           </div>
         </div>
 
-        <!-- 8. Notifications -->
         <div class="feat-card flip">
           <div class="feat-info">
             <div class="feat-number">Feature 08</div>
             <div class="feat-title">Notifications</div>
-            <p class="feat-desc">See all your push notifications in one place — announcement alerts, maintenance request updates, billing reminders, and document request status changes, all organized and timestamped.</p>
+            <p class="feat-desc">See all your push notifications in one place: announcement alerts, maintenance request updates, billing reminders, and document request status changes, all organized and timestamped.</p>
             <div class="feat-tags"><span class="feat-tag">Push Alerts</span><span class="feat-tag">All-in-one</span><span class="feat-tag">Timestamped</span></div>
           </div>
           <div class="feat-img-wrap">
@@ -528,8 +502,8 @@
           </div>
         </div>
 
-      </div><!-- /.features-grid -->
-    </div><!-- /.features-inner -->
+      </div>
+    </div>
   </section>
 
 </main>
@@ -578,16 +552,13 @@
 </button>
 
 <script>
-  // Nav scroll
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
 
-  // Scroll-to-top
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('visible', scrollY > 300));
   scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-  // Entrance animations via IntersectionObserver
   const cards = document.querySelectorAll('.feat-card');
   const cardObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
