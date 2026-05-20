@@ -14,7 +14,7 @@
     <style>
     :root {
         --hot-pink:   #E8175D;
-        --bright-pink:#FF2D78;
+        --bright-pink: #FF2D78;
         --mid-pink:   #FF6BA8;
         --baby-pink:  #FFD6E7;
         --blush:      #FFF0F6;

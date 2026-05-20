@@ -162,7 +162,7 @@
     <div class="faq-hero-inner">
       <div class="section-tag">Help Center</div>
       <h1>Frequently Asked <em>Questions</em></h1>
-      <p class="hero-copy">Find answers to the most common questions about living at Sanctissimo Rosario Ladies Dormitory — from move-in to daily life and everything in between.</p>
+      <p class="hero-copy">Find answers to the most common questions about living at Sanctissimo Rosario Ladies Dormitory!</p>
     </div>
   </section>
 
@@ -237,7 +237,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Tenants can file a maintenance request directly through the DormEase app or web portal. Simply describe the issue, specify the location, and submit. Management will review your request and assign it to the appropriate personnel. You can track the status of your request in real time through your tenant dashboard — from submission to resolution.</div>
+            <div class="faq-answer-inner">Tenants can file a maintenance request directly through the DormEase app or web portal. Simply describe the issue, specify the location, and submit. Management will review your request and assign it to the appropriate personnel. You can track the status of your request in real time through your tenant dashboard.</div>
           </div>
         </div>
 
@@ -247,7 +247,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">All official announcements — including billing notices, scheduled maintenance, dormitory events, and policy updates — are posted through the DormEase platform. Tenants receive notifications on their registered devices. Physical notices may also be posted on bulletin boards per floor for important reminders.</div>
+            <div class="faq-answer-inner">All official announcements, including billing notices, scheduled maintenance, dormitory events, and policy updates, are posted through the DormEase platform. Tenants receive notifications on their registered devices. Physical notices may also be posted on bulletin boards per floor for important reminders.</div>
           </div>
         </div>
 
@@ -277,7 +277,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly billing statements — including rent and water charges — are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
+            <div class="faq-answer-inner">Monthly billing statements, including rent and water charges, are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
           </div>
         </div>
 
