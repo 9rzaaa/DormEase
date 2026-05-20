@@ -140,7 +140,7 @@
         background: var(--white);
         flex-wrap: wrap;
         gap: .8rem;
-        border-bottom: 1.5px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     .table-title {

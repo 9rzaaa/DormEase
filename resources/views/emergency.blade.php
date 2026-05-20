@@ -212,6 +212,7 @@
         letter-spacing: .05em;
         white-space: nowrap;
         text-align: left;
+        border-bottom: 1.5px solid var(--bright-pink);
     }
 
     td {
