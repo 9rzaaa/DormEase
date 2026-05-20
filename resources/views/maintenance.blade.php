@@ -236,14 +236,15 @@
     .table-card {
         background: var(--white);
         border-radius: 18px;
-        border: 1.5px solid var(--baby-pink);
+        border: 2px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
     }
 
     .table-card-header {
         padding: 1.2rem 1.5rem .8rem;
-        border-bottom: 1.5px solid var(--petal);
+        border-bottom: 2px solid var(--bright-pink);
+        background: var(--white);
     }
 
     .table-card-title {
@@ -275,12 +276,12 @@
         text-transform: uppercase;
         letter-spacing: .05em;
         background: var(--blush);
-        border-bottom: 1.5px solid var(--baby-pink);
+        border-bottom: 2px solid var(--bright-pink);
         white-space: nowrap;
     }
 
     tbody tr {
-        border-bottom: 1px solid var(--petal);
+        border-bottom: 2px solid var(--baby-pink);
         transition: background .15s;
     }
 
@@ -414,9 +415,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-top: 1.5px solid var(--petal);
+        border-top: 2px solid var(--petal);
         flex-wrap: wrap;
         gap: .5rem;
+        background: var(--white)
     }
 
     .table-info {
