@@ -12,6 +12,8 @@ use App\Http\Controllers\FrontdeskController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmergencyController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentRequestController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
@@ -98,8 +100,17 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/update-full',   [BillingController::class, 'updateFull'])->name('updateFull');
     });
 
-    Route::get('/documents',   fn() => view('documents'))->name('documents.index');
-    
+    Route::get('/documents', [DocumentController::class, 'page'])->name('documents.index');
+
+    Route::get('/api/documents',              [DocumentController::class, 'index']);
+    Route::post('/api/documents',             [DocumentController::class, 'store']);
+    Route::get('/api/documents/{document}',   [DocumentController::class, 'show']);
+    Route::put('/api/documents/{document}',   [DocumentController::class, 'update']);
+    Route::delete('/api/documents/{document}',[DocumentController::class, 'destroy']);
+
+    Route::get('/api/document-requests',                        [DocumentRequestController::class, 'index']);
+    Route::post('/api/document-requests/{documentRequest}',     [DocumentRequestController::class, 'update']);
+
     Route::get('/maintenance',         [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::put('/maintenance/{id}',    [MaintenanceController::class, 'update'])->name('maintenance.update');
     Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
@@ -115,19 +126,15 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
     Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
 
-    Route::get('/frontdesk/emergency',       [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
-    Route::post('/frontdesk/emergency',      [EmergencyController::class, 'store'])->name('frontdesk.emergency.store');
-    Route::put('/frontdesk/emergency/{id}',  [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
+    Route::get('/frontdesk/emergency',         [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
+    Route::post('/frontdesk/emergency',        [EmergencyController::class, 'store'])->name('frontdesk.emergency.store');
+    Route::put('/frontdesk/emergency/{id}',    [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
     Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
 
-    Route::get('/frontdesk/announcements',               [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
+    Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
 
-    Route::get('/profile', [ProfileController::class, 'index'])
-        ->name('profile.index');
-    Route::put('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-    Route::put('/profile/password', [ProfileController::class, 'password'])
-        ->name('profile.password');
-    Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])
-        ->name('profile.deactivate');
+    Route::get('/profile',             [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile',             [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password',    [ProfileController::class, 'password'])->name('profile.password');
+    Route::put('/profile/deactivate',  [ProfileController::class, 'deactivate'])->name('profile.deactivate');
 });

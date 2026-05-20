@@ -3,23 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Document extends Model
+class DocumentRequest extends Model
 {
-    use HasFactory;
-
-    protected $primaryKey = 'document_id';
     public $timestamps = false;
 
+    protected $primaryKey = 'doc_request_id';
+
     protected $fillable = [
-        'uploaded_by',
         'tenant_id',
-        'title',
         'document_type',
-        'visibility',
-        'file_path',
-        'file_size',
+        'purpose',
+        'delivery_type',
+        'date_needed',
+        'status',
+        'admin_remarks',
+        'submitted_at',
+        'processed_at',
     ];
 
     protected $appends = ['tenant_name'];
@@ -27,11 +27,6 @@ class Document extends Model
     public function tenant()
     {
         return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
-    }
-
-    public function uploader()
-    {
-        return $this->belongsTo(Staff::class, 'uploaded_by');
     }
 
     public function getTenantNameAttribute()
