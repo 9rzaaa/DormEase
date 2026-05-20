@@ -5,73 +5,217 @@
 
 @section('styles')
 <style>
-    .doc-subtitle {
-        font-size: .9rem;
-        font-weight: 600;
-        color: var(--hot-pink);
-        margin-top: .1rem;
+    .page-body {
+        padding: 1.8rem 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background: var(--blush);
+        box-sizing: border-box;
     }
 
-    .filter-bar {
-        padding: .85rem 2rem;
+    .page-header {
         display: flex;
-        align-items: center;
-        gap: 14px;
+        align-items: flex-start;
+        justify-content: space-between;
         flex-wrap: wrap;
+        gap: 1rem;
     }
-    .filter-bar label {
-        font-size: .8rem;
-        color: var(--ink-muted);
-        font-weight: 600;
-        white-space: nowrap;
-    }
-    .filter-bar select,
-    .filter-bar input[type="date"] {
-        border: 1.5px solid var(--baby-pink);
-        border-radius: 9px;
-        padding: .45rem .85rem;
-        font-size: .82rem;
-        font-family: var(--ff-body);
-        outline: none;
-        background: white;
+
+    .page-header-text h1 {
+        font-size: 2rem;
+        font-weight: 700;
         color: var(--ink);
-        cursor: pointer;
-        transition: border-color .2s;
+        letter-spacing: -.02em;
+        line-height: 1.15;
+        margin: 0;
     }
-    .filter-bar select:focus,
-    .filter-bar input[type="date"]:focus {
-        border-color: var(--bright-pink);
-        background: var(--white);
+
+    .page-header-text .dorm-sub {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--bright-pink);
+        margin-top: .2rem;
     }
-    .search-box {
-        margin-left: auto;
+
+    .header-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: .6rem;
+    }
+
+    .btn-upload {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .58rem 1.2rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        border: none;
+        font-size: .85rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(232,23,93,.3);
+        transition: transform .2s, box-shadow .2s;
+        font-family: var(--ff-body);
+    }
+
+    .btn-upload:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(232,23,93,.38);
+    }
+
+    .btn-upload img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+    }
+
+    .tab-bar {
+        display: flex;
+        align-items: center;
+        gap: 0;
         background: var(--white);
+        border-radius: 12px;
         border: 1.5px solid var(--baby-pink);
+        padding: .3rem;
+        width: fit-content;
+        box-shadow: 0 2px 8px rgba(232,23,93,.06);
+    }
+
+    .tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .5rem 1.2rem;
         border-radius: 9px;
-        padding: .45rem .9rem;
-        transition: border-color .2s;
-    }
-    .search-box:focus-within {
-        border-color: var(--bright-pink);
-        background: var(--white);
-    }
-    .search-box input {
         border: none;
         background: transparent;
-        outline: none;
+        font-size: .84rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        cursor: pointer;
+        transition: background .2s, color .2s;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+    }
+
+    .tab-btn img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .5;
+        transition: opacity .2s;
+    }
+
+    .tab-btn.active {
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        box-shadow: 0 3px 10px rgba(232,23,93,.25);
+    }
+
+    .tab-btn.active img {
+        filter: brightness(0) invert(1);
+        opacity: 1;
+    }
+
+    .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(232,23,93,.15);
+        color: var(--bright-pink);
+        border-radius: 20px;
+        font-size: .68rem;
+        font-weight: 800;
+        padding: 1px 6px;
+        min-width: 18px;
+    }
+
+    .tab-btn.active .tab-badge {
+        background: rgba(255,255,255,.25);
+        color: var(--white);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .toolbar {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-label {
         font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+    }
+
+    .toolbar-select {
+        padding: .45rem 1.8rem .45rem .75rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        color: var(--ink);
+        font-size: .82rem;
+        font-weight: 600;
+        font-family: var(--ff-body);
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right .6rem center;
+        transition: border-color .2s;
+        box-shadow: 0 2px 8px rgba(232,23,93,.05);
+    }
+
+    .toolbar-select:focus { border-color: var(--bright-pink); }
+
+    .search-wrap {
+        margin-left: auto;
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-wrap input {
+        padding: .45rem .85rem .45rem 2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        font-size: .82rem;
+        color: var(--ink);
+        outline: none;
         width: 200px;
         font-family: var(--ff-body);
-        color: var(--ink);
+        transition: border-color .2s, width .3s;
+        box-shadow: 0 2px 8px rgba(232,23,93,.05);
+    }
+
+    .search-wrap input:focus {
+        border-color: var(--bright-pink);
+        width: 240px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: .6rem;
+        width: 14px;
+        height: 14px;
+        opacity: .4;
+        pointer-events: none;
     }
 
     .doc-layout {
         display: flex;
-        padding: 1.5rem 2rem;
-        gap: 1.5rem;
+        gap: 1.2rem;
         align-items: flex-start;
     }
 
@@ -82,44 +226,61 @@
         border-radius: 14px;
         border: 1.5px solid var(--baby-pink);
         overflow: hidden;
-        box-shadow: var(--shadow);
+        box-shadow: 0 2px 12px rgba(232,23,93,.06);
     }
+
+    .sidebar-heading {
+        padding: .7rem 1rem .5rem;
+        font-size: .7rem;
+        font-weight: 800;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        border-bottom: 1.5px solid var(--baby-pink);
+    }
+
     .type-btn {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        padding: .75rem 1rem;
+        padding: .65rem 1rem;
         border: none;
         border-bottom: 1px solid var(--petal);
         background: transparent;
         color: var(--ink);
-        font-size: .82rem;
+        font-size: .81rem;
         font-family: var(--ff-body);
         font-weight: 500;
         text-align: left;
         cursor: pointer;
         transition: background .15s, color .15s;
     }
+
     .type-btn:last-child { border-bottom: none; }
     .type-btn:hover:not(.active) { background: var(--blush); color: var(--hot-pink); }
+
     .type-btn.active {
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         color: var(--white);
         font-weight: 700;
     }
+
     .type-count {
-        background: var(--hot-pink);
-        color: var(--white);
+        background: rgba(232,23,93,.12);
+        color: var(--hot-pink);
         border-radius: 20px;
-        font-size: .7rem;
+        font-size: .68rem;
         font-weight: 800;
         padding: 1px 7px;
-        min-width: 22px;
+        min-width: 20px;
         text-align: center;
+        flex-shrink: 0;
     }
+
     .type-btn.active .type-count {
-        background: rgba(255,255,255,0.28);
+        background: rgba(255,255,255,.25);
+        color: var(--white);
     }
 
     .table-card {
@@ -128,57 +289,65 @@
         border-radius: 14px;
         border: 1.5px solid var(--baby-pink);
         overflow: hidden;
-        box-shadow: var(--shadow);
+        box-shadow: 0 2px 16px rgba(232,23,93,.07);
     }
+
     .table-card-header {
+        padding: 1rem 1.4rem;
+        border-bottom: 1.5px solid var(--petal);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1rem 1.4rem;
-        border-bottom: 1.5px solid var(--petal);
+        gap: .8rem;
+        flex-wrap: wrap;
     }
-    .table-card-header h2 {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--hot-pink);
-    }
-    .btn-upload {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        padding: .5rem 1.1rem;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white);
-        border: none;
-        border-radius: 9px;
-        font-size: .82rem;
-        font-weight: 700;
-        font-family: var(--ff-body);
-        cursor: pointer;
-        box-shadow: var(--shadow-pink-btn);
-        transition: opacity .2s, transform .15s;
-    }
-    .btn-upload:hover { opacity: .9; transform: translateY(-1px); }
 
-    .doc-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-    .doc-table thead tr { background: var(--petal); }
-    .doc-table th {
-        padding: .75rem 1.2rem;
-        text-align: left;
-        font-weight: 700;
-        color: var(--ink-muted);
+    .table-card-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .table-card-sub {
         font-size: .75rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .83rem;
+    }
+
+    thead th {
+        padding: .65rem 1rem;
+        text-align: left;
+        font-size: .71rem;
+        font-weight: 800;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        background: var(--blush);
+        border-bottom: 1.5px solid var(--baby-pink);
         white-space: nowrap;
     }
-    .doc-table th .sort-arrow { color: var(--gray); margin-left: 3px; }
-    .doc-table td {
-        padding: .85rem 1.2rem;
+
+    tbody tr {
         border-bottom: 1px solid var(--petal);
+        transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fff7fb; }
+
+    tbody td {
+        padding: .75rem 1rem;
         color: var(--ink);
         vertical-align: middle;
     }
-    .doc-table tbody tr:last-child td { border-bottom: none; }
-    .doc-table tbody tr:hover { background: var(--blush); }
 
     .doc-title-cell {
         display: flex;
@@ -186,6 +355,7 @@
         gap: .5rem;
         font-weight: 600;
     }
+
     .doc-dot {
         width: 8px;
         height: 8px;
@@ -193,242 +363,498 @@
         flex-shrink: 0;
     }
 
-    .action-btns { display: flex; align-items: center; gap: .6rem; }
-    .action-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--gray);
-        padding: 0;
+    .visibility-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: .18rem .55rem;
+        border-radius: 6px;
+        font-size: .7rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .vis-all      { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .vis-specific { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+    .vis-admin    { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+
+    .file-type-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: .18rem .5rem;
+        border-radius: 5px;
+        font-size: .68rem;
+        font-weight: 800;
+        letter-spacing: .02em;
+        white-space: nowrap;
+        text-transform: uppercase;
+    }
+
+    .ft-pdf  { background: #fde8e8; color: #c0392b; border: 1px solid #f5b7b1; }
+    .ft-img  { background: #e8f8e8; color: #27ae60; border: 1px solid #a9dfbf; }
+    .ft-word { background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
+    .ft-xl   { background: #e6f4ea; color: #188038; border: 1px solid #a8d5b5; }
+    .ft-other{ background: #f5f5f5; color: #666; border: 1px solid #ddd; }
+
+    .req-status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: .2rem .65rem;
+        border-radius: 20px;
+        font-size: .71rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .req-pending    { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .req-approved   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .req-denied     { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .req-processing { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .req-ready      { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+
+    .action-group {
         display: flex;
         align-items: center;
-        transition: color .15s;
-    }
-    .action-btn:hover { color: var(--hot-pink); }
-    .action-btn.delete:hover { color: var(--red); }
-
-    .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: var(--ink-muted);
-        font-size: .9rem;
+        gap: .3rem;
     }
 
-    .pagination-wrap {
-        display: flex;
+    .act-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        cursor: pointer;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: .4rem;
-        padding: 1.1rem;
-        border-top: 1.5px solid var(--petal);
+        transition: .2s;
+        font-family: var(--ff-body);
     }
+
+    .act-btn:hover {
+        border-color: var(--bright-pink);
+        box-shadow: 0 3px 10px rgba(255,45,120,.15);
+    }
+
+    .act-btn img {
+        width: 13px;
+        height: 13px;
+        object-fit: contain;
+    }
+
+    .act-btn.danger:hover { border-color: #e04867; }
+
+    .table-footer {
+        padding: .85rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1.5px solid var(--petal);
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .table-info {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
     .page-btn {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         border-radius: 8px;
         border: 1.5px solid var(--baby-pink);
         background: var(--white);
+        font-size: .8rem;
+        font-weight: 700;
         color: var(--ink-muted);
-        font-size: .82rem;
-        font-weight: 500;
-        font-family: var(--ff-body);
         cursor: pointer;
-        transition: all .15s;
         display: flex;
         align-items: center;
         justify-content: center;
-    }
-    .page-btn:hover:not(:disabled) { border-color: var(--hot-pink); color: var(--hot-pink); }
-    .page-btn.active {
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white);
-        border-color: transparent;
-        font-weight: 700;
-    }
-    .page-btn:disabled { opacity: .4; cursor: not-allowed; }
-    .page-prev-next {
-        padding: 0 .9rem;
-        width: auto;
-        font-size: .8rem;
-        font-weight: 600;
+        transition: .2s;
+        font-family: var(--ff-body);
     }
 
-    .modal-field select {
-        width: 100%;
-        padding: .6rem .85rem;
-        border-radius: 9px;
-        border: 1.5px solid var(--baby-pink);
-        font-family: var(--ff-body);
-        font-size: .87rem;
-        color: var(--ink);
-        outline: none;
-        background: var(--blush);
-        transition: border-color .2s;
+    .page-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+
+    .page-btn.active {
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        border-color: transparent;
+        color: var(--white);
+        box-shadow: 0 3px 10px rgba(232,23,93,.3);
     }
-    .modal-field select:focus {
+
+    .page-btn:disabled { opacity: .35; cursor: default; }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--ink-muted);
+        font-size: .88rem;
+    }
+
+    .empty-state img {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+        opacity: .35;
+        display: block;
+        margin: 0 auto .6rem;
+    }
+
+    .modal-field {
+        display: flex;
+        flex-direction: column;
+        gap: .35rem;
+        margin-bottom: .9rem;
+    }
+
+    .modal-field label {
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .modal-field input,
+    .modal-field select,
+    .modal-field textarea {
+        width: 100%;
+        padding: .6rem .9rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--blush);
+        font-size: .875rem;
+        color: var(--ink);
+        font-family: var(--ff-body);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .2s, background .2s;
+    }
+
+    .modal-field textarea { min-height: 80px; resize: vertical; }
+
+    .modal-field input:focus,
+    .modal-field select:focus,
+    .modal-field textarea:focus {
         border-color: var(--bright-pink);
         background: var(--white);
     }
+
     .modal-field input[type="file"] {
-        padding: .45rem .85rem;
+        padding: .45rem .75rem;
         cursor: pointer;
     }
 
-    .detail-row {
+    .modal-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .8rem;
+    }
+
+    .modal-full { grid-column: 1 / -1; }
+
+    .view-detail-row {
         display: flex;
-        gap: 1rem;
-        padding: .55rem 0;
+        flex-direction: column;
+        gap: .15rem;
+        padding: .6rem 0;
         border-bottom: 1px solid var(--petal);
-        font-size: .85rem;
     }
-    .detail-row:last-child { border-bottom: none; }
-    .detail-label {
-        min-width: 130px;
+
+    .view-detail-row:last-child { border-bottom: none; }
+
+    .view-detail-label {
+        font-size: .7rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .view-detail-val {
+        font-size: .875rem;
+        color: var(--ink);
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    .remark-box {
+        background: var(--blush);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        font-size: .83rem;
         color: var(--ink-muted);
-        font-weight: 600;
-        font-size: .78rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
     }
-    .detail-value { color: var(--ink); font-weight: 500; }
+
     .btn-view-file {
         display: inline-flex;
         align-items: center;
         gap: .4rem;
-        margin-top: 1rem;
-        padding: .55rem 1.2rem;
+        padding: .5rem 1.1rem;
+        border-radius: 9px;
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         color: var(--white);
-        border-radius: 9px;
-        font-size: .84rem;
+        font-size: .82rem;
         font-weight: 700;
         text-decoration: none;
+        margin-top: .6rem;
         transition: opacity .2s;
     }
+
     .btn-view-file:hover { opacity: .88; }
+
+    .delete-warn {
+        background: #fff0f0;
+        border: 1.5px solid #ffc8d0;
+        border-radius: 10px;
+        padding: .7rem 1rem;
+        font-size: .83rem;
+        color: #c0303a;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .fade-up { animation: mFadeUp .45s ease both; }
+    @keyframes mFadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .d1 { animation-delay: .05s; }
+    .d2 { animation-delay: .12s; }
+    .d3 { animation-delay: .2s; }
+
+    @media (max-width: 900px) {
+        .doc-layout { flex-direction: column; }
+        .type-sidebar { width: 100%; }
+        .modal-two-col { grid-template-columns: 1fr; }
+        .page-body { padding: 1.2rem 1rem; }
+    }
 </style>
 @endsection
 
 @section('content')
+<div class="page-body">
 
-<div style="padding: 1.2rem 2rem .4rem; solid var(--baby-pink);">
-    <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--ink);">Document Management</h1>
-    <p class="doc-subtitle">Sanctissimo Rosario Ladies Dormitory</p>
-</div>
-
-<div class="filter-bar">
-    <label>Filter By:</label>
-    <select id="filter-status">
-        <option value="">All</option>
-        <option value="Active">Active</option>
-        <option value="Archived">Archived</option>
-    </select>
-
-    <label>Document Type:</label>
-    <select id="filter-type">
-        <option value="">All</option>
-        @foreach([
-            'Voucher','Turnover Sheet','Tenant Info Sheet',
-            'Sleepover of Non-Tenants','Letter for Renewal','Guards Form',
-            'Approval to Leave After Curfew','After Curfew Arrivals','Move In/Out List'
-        ] as $type)
-            <option value="{{ $type }}">{{ $type }}</option>
-        @endforeach
-    </select>
-
-    <label>From:</label>
-    <input type="date" id="filter-from">
-    <label>to</label>
-    <input type="date" id="filter-to">
-
-    <div class="search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--hot-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="search-input" placeholder="Search by Title or Tenant">
-    </div>
-</div>
-
-<div class="doc-layout">
-
-    <div class="type-sidebar" id="type-sidebar">
-        <button class="type-btn active" data-type="" onclick="setType(this, '')">
-            All Documents <span class="type-count" id="count-all">0</span>
-        </button>
-        @foreach([
-            'Voucher','Turnover Sheet','Tenant Info Sheet',
-            'Sleepover of Non-Tenants','Letter for Renewal','Guards Form',
-            'Approval to Leave After Curfew','After Curfew Arrivals','Move In/Out List'
-        ] as $type)
-        <button class="type-btn" data-type="{{ $type }}" onclick="setType(this, '{{ $type }}')">
-            {{ $type }}
-            <span class="type-count" id="count-{{ Str::slug($type) }}">0</span>
-        </button>
-        @endforeach
-    </div>
-
-    <div class="table-card">
-        <div class="table-card-header">
-            <h2>Documents</h2>
+    <div class="page-header fade-up d1">
+        <div class="page-header-text">
+            <h1>Document Management</h1>
+            <div class="dorm-sub">Sanctissimo Rosario Ladies Dormitory</div>
+        </div>
+        <div class="header-actions">
             <button class="btn-upload" onclick="openModal('upload-modal')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                Upload New Document
+                <img src="{{ asset('icons/attach.png') }}" alt="">
+                Upload Document
             </button>
         </div>
-
-        <table class="doc-table">
-            <thead>
-                <tr>
-                    <th>Title <span class="sort-arrow">↓</span></th>
-                    <th>Document Type <span class="sort-arrow">↓</span></th>
-                    <th>Tenant Name <span class="sort-arrow">↓</span></th>
-                    <th>Date Posted <span class="sort-arrow">↓</span></th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="doc-tbody">
-                <tr><td colspan="5" class="empty-state">Loading…</td></tr>
-            </tbody>
-        </table>
-
-        <div class="pagination-wrap" id="pagination"></div>
     </div>
-</div>
 
+    <div class="fade-up d2">
+        <div class="tab-bar">
+            <button class="tab-btn active" id="tab-docs-btn" onclick="switchTab('docs')">
+                <img src="{{ asset('icons/nav-docu.png') }}" alt="">
+                Documents
+                <span class="tab-badge" id="tab-docs-count">0</span>
+            </button>
+            <button class="tab-btn" id="tab-reqs-btn" onclick="switchTab('reqs')">
+                <img src="{{ asset('icons/pending.png') }}" alt="">
+                Document Requests
+                <span class="tab-badge" id="tab-reqs-count">0</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="tab-panel active fade-up d3" id="panel-docs">
+        <div class="toolbar">
+            <span class="toolbar-label">Category:</span>
+            <select class="toolbar-select" id="doc-filter-type" onchange="docApplyFilters()">
+                <option value="">All Types</option>
+                @foreach($docTypes as $type)
+                    <option value="{{ $type }}">{{ $type }}</option>
+                @endforeach
+            </select>
+
+            <span class="toolbar-label">Visibility:</span>
+            <select class="toolbar-select" id="doc-filter-vis" onchange="docApplyFilters()">
+                <option value="">All</option>
+                <option value="all">All Tenants</option>
+                <option value="specific">Specific Tenant</option>
+                <option value="admin">Admin Only</option>
+            </select>
+
+            <div class="search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                <input type="text" id="doc-search" placeholder="Search title, tenant..." oninput="docApplyFilters()">
+            </div>
+        </div>
+
+        <div class="doc-layout">
+            <div class="type-sidebar">
+                <div class="sidebar-heading">Categories</div>
+                <button class="type-btn active" data-type="" onclick="docSetType(this, '')">
+                    All Documents
+                    <span class="type-count" id="sc-all">0</span>
+                </button>
+                @foreach($docTypes as $type)
+                <button class="type-btn" data-type="{{ $type }}" onclick="docSetType(this, '{{ $type }}')">
+                    {{ $type }}
+                    <span class="type-count" id="sc-{{ Str::slug($type) }}">0</span>
+                </button>
+                @endforeach
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div>
+                        <div class="table-card-title">Documents</div>
+                        <div class="table-card-sub" id="doc-date-label">as of {{ now()->format('F d, Y') }}</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Visibility</th>
+                                <th>Tenant</th>
+                                <th>File Type</th>
+                                <th>Date Uploaded</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="doc-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-info" id="doc-info">Showing 0 entries</div>
+                    <div class="pagination" id="doc-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-panel" id="panel-reqs">
+        <div class="toolbar">
+            <span class="toolbar-label">Status:</span>
+            <select class="toolbar-select" id="req-filter-status" onchange="reqApplyFilters()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="approved">Approved</option>
+                <option value="ready">Ready</option>
+                <option value="denied">Denied</option>
+            </select>
+
+            <span class="toolbar-label">Sort:</span>
+            <select class="toolbar-select" id="req-sort" onchange="reqApplyFilters()">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+            </select>
+
+            <div class="search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                <input type="text" id="req-search" placeholder="Search tenant, document type..." oninput="reqApplyFilters()">
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-card-header">
+                <div>
+                    <div class="table-card-title">Document Requests</div>
+                    <div class="table-card-sub">Requests submitted by tenants via the mobile app</div>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Tenant</th>
+                            <th>Document Type</th>
+                            <th>Purpose</th>
+                            <th>Delivery</th>
+                            <th>Date Needed</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="req-tbody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-info" id="req-info">Showing 0 entries</div>
+                <div class="pagination" id="req-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
 @endsection
 
 @section('modals')
 
 <div class="modal-overlay" id="upload-modal">
-    <div class="modal">
+    <div class="modal" style="max-width:560px;">
         <div class="modal-header">
-            <div class="modal-title">Upload New Document</div>
+            <div class="modal-title">Upload Document</div>
             <button class="modal-close" onclick="closeModal('upload-modal')">✕</button>
         </div>
-        <div class="modal-field">
-            <label>Title *</label>
-            <input type="text" id="upload-title" placeholder="e.g. SR-Receipt-Feb2026">
-        </div>
-        <div class="modal-field">
-            <label>Document Type *</label>
-            <select id="upload-type">
-                @foreach([
-                    'Voucher','Turnover Sheet','Tenant Info Sheet',
-                    'Sleepover of Non-Tenants','Letter for Renewal','Guards Form',
-                    'Approval to Leave After Curfew','After Curfew Arrivals','Move In/Out List'
-                ] as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="modal-field">
-            <label>Tenant Name</label>
-            <input type="text" id="upload-tenant" placeholder="Leave blank for admin uploads">
-        </div>
-        <div class="modal-field">
-            <label>File (max 20MB)</label>
-            <input type="file" id="upload-file">
+        <div class="modal-two-col">
+            <div class="modal-field modal-full">
+                <label>Title</label>
+                <input type="text" id="up-title" placeholder="e.g. March 2026 Voucher">
+            </div>
+            <div class="modal-field">
+                <label>Category</label>
+                <select id="up-type">
+                    @foreach($docTypes as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
+                    @endforeach
+                    <option value="__new__">+ New Category</option>
+                </select>
+            </div>
+            <div class="modal-field" id="new-category-field" style="display:none;">
+                <label>New Category Name</label>
+                <input type="text" id="up-new-type" placeholder="e.g. Incident Report">
+            </div>
+            <div class="modal-field">
+                <label>Visibility</label>
+                <select id="up-visibility" onchange="toggleTenantSelect()">
+                    <option value="all">All Tenants</option>
+                    <option value="specific">Specific Tenant</option>
+                    <option value="admin">Admin Only</option>
+                </select>
+            </div>
+            <div class="modal-field modal-full" id="tenant-select-field" style="display:none;">
+                <label>Select Tenant</label>
+                <select id="up-tenant">
+                    <option value="">Choose a tenant...</option>
+                    @foreach($tenants as $tenant)
+                        <option value="{{ $tenant->tenant_id }}">
+                            {{ $tenant->first_name }} {{ $tenant->last_name }}
+                            @if($tenant->room_number) — Rm {{ $tenant->room_number }} @endif
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="modal-field modal-full">
+                <label>File (PDF, PNG, JPG, DOCX, XLSX — max 20MB)</label>
+                <input type="file" id="up-file" accept=".pdf,.png,.jpg,.jpeg,.docx,.doc,.xlsx,.xls">
+            </div>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('upload-modal')">Cancel</button>
@@ -437,70 +863,123 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
-    <div class="modal">
+<div class="modal-overlay" id="view-doc-modal">
+    <div class="modal" style="max-width:500px;">
         <div class="modal-header">
             <div class="modal-title">Document Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('view-doc-modal')">✕</button>
         </div>
-        <div id="view-modal-body"></div>
+        <div id="view-doc-content"></div>
+        <div class="modal-actions" style="margin-top:1rem;">
+            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEditDoc()">Edit</button>
+        </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="edit-modal">
-    <div class="modal">
+<div class="modal-overlay" id="edit-doc-modal">
+    <div class="modal" style="max-width:500px;">
         <div class="modal-header">
             <div class="modal-title">Edit Document</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('edit-doc-modal')">✕</button>
         </div>
-        <input type="hidden" id="edit-id">
+        <input type="hidden" id="edit-doc-id">
         <div class="modal-field">
-            <label>Title *</label>
-            <input type="text" id="edit-title">
+            <label>Title</label>
+            <input type="text" id="edit-doc-title">
         </div>
         <div class="modal-field">
-            <label>Document Type *</label>
-            <select id="edit-type">
-                @foreach([
-                    'Voucher','Turnover Sheet','Tenant Info Sheet',
-                    'Sleepover of Non-Tenants','Letter for Renewal','Guards Form',
-                    'Approval to Leave After Curfew','After Curfew Arrivals','Move In/Out List'
-                ] as $type)
+            <label>Category</label>
+            <select id="edit-doc-type">
+                @foreach($docTypes as $type)
                     <option value="{{ $type }}">{{ $type }}</option>
                 @endforeach
             </select>
         </div>
         <div class="modal-field">
-            <label>Tenant Name</label>
-            <input type="text" id="edit-tenant">
+            <label>Visibility</label>
+            <select id="edit-doc-vis" onchange="toggleEditTenantSelect()">
+                <option value="all">All Tenants</option>
+                <option value="specific">Specific Tenant</option>
+                <option value="admin">Admin Only</option>
+            </select>
         </div>
-        <div class="modal-field">
-            <label>Status</label>
-            <select id="edit-status">
-                <option value="Active">Active</option>
-                <option value="Archived">Archived</option>
+        <div class="modal-field" id="edit-tenant-field" style="display:none;">
+            <label>Tenant</label>
+            <select id="edit-doc-tenant">
+                <option value="">Choose a tenant...</option>
+                @foreach($tenants as $tenant)
+                    <option value="{{ $tenant->tenant_id }}">
+                        {{ $tenant->first_name }} {{ $tenant->last_name }}
+                        @if($tenant->room_number) — Rm {{ $tenant->room_number }} @endif
+                    </option>
+                @endforeach
             </select>
         </div>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-            <button class="btn-submit" onclick="submitEdit()">Save Changes</button>
+            <button class="btn-cancel" onclick="closeModal('edit-doc-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitEditDoc()">Save Changes</button>
         </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
-    <div class="modal">
+<div class="modal-overlay" id="delete-doc-modal">
+    <div class="modal" style="max-width:400px;">
         <div class="modal-header">
             <div class="modal-title">Delete Document</div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('delete-doc-modal')">✕</button>
         </div>
-        <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">
-            Are you sure you want to delete this document? This cannot be undone.
+        <div class="delete-warn">This action cannot be undone. The document and its file will be permanently deleted.</div>
+        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
+            Delete <strong id="delete-doc-label" style="color:var(--ink);"></strong>?
         </p>
-        <input type="hidden" id="delete-id">
+        <input type="hidden" id="delete-doc-id">
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <button class="btn-submit" style="background:var(--red);" onclick="confirmDelete()">Delete</button>
+            <button class="btn-cancel" onclick="closeModal('delete-doc-modal')">Cancel</button>
+            <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteDoc()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="view-req-modal">
+    <div class="modal" style="max-width:520px;">
+        <div class="modal-header">
+            <div class="modal-title">Request Details</div>
+            <button class="modal-close" onclick="closeModal('view-req-modal')">✕</button>
+        </div>
+        <div id="view-req-content"></div>
+        <div class="modal-actions" style="margin-top:1rem;" id="view-req-actions"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="update-req-modal">
+    <div class="modal" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Update Request</div>
+            <button class="modal-close" onclick="closeModal('update-req-modal')">✕</button>
+        </div>
+        <input type="hidden" id="upd-req-id">
+        <div class="modal-field">
+            <label>Status</label>
+            <select id="upd-req-status">
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="approved">Approved</option>
+                <option value="ready">Ready for Pickup / Sending</option>
+                <option value="denied">Denied</option>
+            </select>
+        </div>
+        <div class="modal-field">
+            <label>Admin Remarks</label>
+            <textarea id="upd-req-remarks" placeholder="Add remarks or reason for denial..."></textarea>
+        </div>
+        <div class="modal-field" id="upd-doc-field">
+            <label>Attach Fulfilled Document (optional)</label>
+            <input type="file" id="upd-req-file" accept=".pdf,.png,.jpg,.jpeg,.docx,.doc,.xlsx,.xls">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitUpdateReq()">Save Changes</button>
         </div>
     </div>
 </div>
@@ -509,256 +988,492 @@
 
 @section('scripts')
 <script>
-const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+    const CSRF     = document.querySelector('meta[name="csrf-token"]').content;
+    const docTypes = @json($docTypes);
 
-const TYPE_COLORS = {
-    'Voucher':                          '#FF6BA8',
-    'Turnover Sheet':                   '#E8175D',
-    'Tenant Info Sheet':                '#FF2D78',
-    'Sleepover of Non-Tenants':         '#A06CD5',
-    'Letter for Renewal':               '#4ECDC4',
-    'Guards Form':                      '#45B7D1',
-    'Approval to Leave After Curfew':   '#F7B731',
-    'After Curfew Arrivals':            '#FC5C65',
-    'Move In/Out List':                 '#26de81',
-};
+    const TYPE_COLORS = {
+        'Voucher':                        '#FF6BA8',
+        'Turnover Sheet':                 '#E8175D',
+        'Tenant Info Sheet':              '#FF2D78',
+        'Sleepover of Non-Tenants':       '#A06CD5',
+        'Letter for Renewal':             '#4ECDC4',
+        'Guards Form':                    '#45B7D1',
+        'Approval to Leave After Curfew': '#F7B731',
+        'After Curfew Arrivals':          '#FC5C65',
+        'Move In/Out List':               '#26de81',
+    };
 
-let state = {
-    type: '',
-    status: '',
-    search: '',
-    from: '',
-    to: '',
-    page: 1,
-    perPage: 9,
-};
+    const eyeIcon    = "{{ asset('icons/eye.png') }}";
+    const editIcon   = "{{ asset('icons/edit.png') }}";
+    const deleteIcon = "{{ asset('icons/delete.png') }}";
+    const attachIcon = "{{ asset('icons/attach.png') }}";
 
-function debounce(fn, ms) {
-    let t;
-    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-}
+    let docState = { type: '', vis: '', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+    let reqState = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+    let currentDoc = null;
+    let currentReq = null;
 
-document.getElementById('filter-status').addEventListener('change', e => { state.status = e.target.value; state.page = 1; fetchDocs(); });
-document.getElementById('filter-type').addEventListener('change',   e => { state.type   = e.target.value; state.page = 1; syncSidebar(); fetchDocs(); });
-document.getElementById('filter-from').addEventListener('change',   e => { state.from   = e.target.value; state.page = 1; fetchDocs(); });
-document.getElementById('filter-to').addEventListener('change',     e => { state.to     = e.target.value; state.page = 1; fetchDocs(); });
-document.getElementById('search-input').addEventListener('input', debounce(e => { state.search = e.target.value; state.page = 1; fetchDocs(); }, 350));
-
-function setType(btn, type) {
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.type = type;
-    state.page = 1;
-    document.getElementById('filter-type').value = type;
-    fetchDocs();
-}
-
-function syncSidebar() {
-    document.querySelectorAll('.type-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.type === state.type);
-    });
-}
-
-async function fetchDocs() {
-    const tbody = document.getElementById('doc-tbody');
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Loading…</td></tr>`;
-
-    const params = new URLSearchParams();
-    if (state.type)   params.set('document_type', state.type);
-    if (state.status) params.set('status',         state.status);
-    if (state.search) params.set('search',         state.search);
-    if (state.from)   params.set('from',           state.from);
-    if (state.to)     params.set('to',             state.to);
-    params.set('page',     state.page);
-    params.set('per_page', state.perPage);
-
-    try {
-        const res  = await fetch(`/api/documents?${params}`, {
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
-        });
-        const data = await res.json();
-        renderTable(data.data || []);
-        renderPagination(data.last_page || 1, data.current_page || 1);
-        renderCounts(data.counts || {});
-    } catch {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state" style="color:var(--red)">Failed to load documents.</td></tr>`;
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + tab + '-btn').classList.add('active');
+        document.getElementById('panel-' + tab).classList.add('active');
+        if (tab === 'docs') fetchDocs();
+        if (tab === 'reqs') fetchReqs();
     }
-}
 
-function renderTable(docs) {
-    const tbody = document.getElementById('doc-tbody');
-    if (!docs.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No documents found.</td></tr>`;
-        return;
+    function toggleTenantSelect() {
+        const v = document.getElementById('up-visibility').value;
+        document.getElementById('tenant-select-field').style.display = v === 'specific' ? 'flex' : 'none';
     }
-    tbody.innerHTML = docs.map(doc => {
-        const color = TYPE_COLORS[doc.document_type] || '#B5B7C0';
-        const date  = doc.created_at
-            ? new Date(doc.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-            : '—';
-        return `
-        <tr>
-            <td>
-                <div class="doc-title-cell">
-                    <span class="doc-dot" style="background:${color}"></span>
-                    ${esc(doc.title)}
-                </div>
-            </td>
-            <td>${esc(doc.document_type)}</td>
-            <td>${esc(doc.tenant_name || '—')}</td>
-            <td style="white-space:nowrap">${date}</td>
-            <td>
-                <div class="action-btns">
-                    <button class="action-btn" title="View" onclick='viewDoc(${JSON.stringify(doc)})'>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    </button>
-                    <button class="action-btn" title="Edit" onclick='editDoc(${JSON.stringify(doc)})'>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    </button>
-                    <button class="action-btn delete" title="Delete" onclick="promptDelete(${doc.id})">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                    </button>
-                </div>
-            </td>
-        </tr>`;
-    }).join('');
-}
 
-function renderCounts(counts) {
-    const total = Object.values(counts).reduce((a, b) => a + b, 0);
-    document.getElementById('count-all').textContent = total;
-    document.querySelectorAll('.type-btn[data-type]').forEach(btn => {
-        const t  = btn.dataset.type;
-        if (!t) return;
-        const el = btn.querySelector('.type-count');
-        if (el) el.textContent = counts[t] || 0;
+    function toggleEditTenantSelect() {
+        const v = document.getElementById('edit-doc-vis').value;
+        document.getElementById('edit-tenant-field').style.display = v === 'specific' ? 'flex' : 'none';
+    }
+
+    document.getElementById('up-type').addEventListener('change', function() {
+        document.getElementById('new-category-field').style.display = this.value === '__new__' ? 'flex' : 'none';
     });
-}
 
-function renderPagination(totalPages, current) {
-    const wrap = document.getElementById('pagination');
-    if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
 
-    let html = `<button class="page-btn page-prev-next" ${current === 1 ? 'disabled' : ''} onclick="goPage(${current - 1})">‹ Previous</button>`;
-    for (let i = 1; i <= totalPages; i++) {
-        if (totalPages > 7 && i > 4 && i < totalPages - 1) {
-            if (i === 5) html += `<span style="color:var(--gray);padding:0 4px">…</span>`;
-            continue;
+    function escHtml(str) {
+        return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function fileTypeBadge(path) {
+        if (!path) return '<span class="file-type-badge ft-other">—</span>';
+        const ext = path.split('.').pop().toLowerCase();
+        if (ext === 'pdf')  return '<span class="file-type-badge ft-pdf">PDF</span>';
+        if (['png','jpg','jpeg'].includes(ext)) return '<span class="file-type-badge ft-img">Image</span>';
+        if (['doc','docx'].includes(ext))       return '<span class="file-type-badge ft-word">Word</span>';
+        if (['xls','xlsx'].includes(ext))       return '<span class="file-type-badge ft-xl">Excel</span>';
+        return `<span class="file-type-badge ft-other">${ext.toUpperCase()}</span>`;
+    }
+
+    function visBadge(v) {
+        if (v === 'all')      return '<span class="visibility-badge vis-all">All Tenants</span>';
+        if (v === 'specific') return '<span class="visibility-badge vis-specific">Specific Tenant</span>';
+        return '<span class="visibility-badge vis-admin">Admin Only</span>';
+    }
+
+    function reqStatusBadge(s) {
+        const map = {
+            pending:    '<span class="req-status-badge req-pending">Pending</span>',
+            processing: '<span class="req-status-badge req-processing">Processing</span>',
+            approved:   '<span class="req-status-badge req-approved">Approved</span>',
+            ready:      '<span class="req-status-badge req-ready">Ready</span>',
+            denied:     '<span class="req-status-badge req-denied">Denied</span>',
+        };
+        return map[s] ?? '<span class="req-status-badge req-pending">Pending</span>';
+    }
+
+    async function fetchDocs() {
+        document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
+        try {
+            const res  = await fetch('/api/documents', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            const data = await res.json();
+            console.log('DOCS RESPONSE:', data);  // ADD THIS
+            if (data.error) {
+                document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
+                return;
+            }
+            docState.data = data.data ?? data;
+            docApplyFilters();
+            updateDocCounts();
+            document.getElementById('tab-docs-count').textContent = docState.data.length;
+        } catch(e) {
+            console.log('DOCS ERROR:', e);  // ADD THIS
+            document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load documents.</div></td></tr>`;
         }
-        html += `<button class="page-btn ${i === current ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
     }
-    html += `<button class="page-btn page-prev-next" ${current === totalPages ? 'disabled' : ''} onclick="goPage(${current + 1})">Next ›</button>`;
-    wrap.innerHTML = html;
-}
 
-function goPage(p) { state.page = p; fetchDocs(); }
-
-function viewDoc(doc) {
-    const date = doc.created_at
-        ? new Date(doc.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-        : '—';
-    document.getElementById('view-modal-body').innerHTML = `
-        <div class="detail-row"><span class="detail-label">Title</span><span class="detail-value">${esc(doc.title)}</span></div>
-        <div class="detail-row"><span class="detail-label">Document Type</span><span class="detail-value">${esc(doc.document_type)}</span></div>
-        <div class="detail-row"><span class="detail-label">Tenant Name</span><span class="detail-value">${esc(doc.tenant_name || '—')}</span></div>
-        <div class="detail-row"><span class="detail-label">Date Posted</span><span class="detail-value">${date}</span></div>
-        <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${esc(doc.status || 'Active')}</span></div>
-        ${doc.file_path ? `<a class="btn-view-file" href="/storage/${doc.file_path}" target="_blank">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Open File
-        </a>` : '<p style="margin-top:.8rem;font-size:.82rem;color:var(--gray)">No file attached.</p>'}
-    `;
-    openModal('view-modal');
-}
-
-function editDoc(doc) {
-    document.getElementById('edit-id').value     = doc.id;
-    document.getElementById('edit-title').value  = doc.title;
-    document.getElementById('edit-type').value   = doc.document_type;
-    document.getElementById('edit-tenant').value = doc.tenant_name || '';
-    document.getElementById('edit-status').value = doc.status || 'Active';
-    openModal('edit-modal');
-}
-
-async function submitEdit() {
-    const id     = document.getElementById('edit-id').value;
-    const title  = document.getElementById('edit-title').value.trim();
-    const type   = document.getElementById('edit-type').value;
-    const tenant = document.getElementById('edit-tenant').value.trim();
-    const status = document.getElementById('edit-status').value;
-
-    if (!title) { showToast('Title is required', 'error'); return; }
-
-    try {
-        const res = await fetch(`/api/documents/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ title, document_type: type, tenant_name: tenant, status }),
+    function docApplyFilters() {
+        const q   = document.getElementById('doc-search').value.toLowerCase();
+        const vis = document.getElementById('doc-filter-vis').value;
+        docState.vis    = vis;
+        docState.search = q;
+        docState.filtered = docState.data.filter(d => {
+            const matchType   = !docState.type || d.document_type === docState.type;
+            const matchVis    = !vis || d.visibility === vis;
+            const matchSearch = !q ||
+                (d.title ?? '').toLowerCase().includes(q) ||
+                (d.tenant_name ?? '').toLowerCase().includes(q) ||
+                (d.document_type ?? '').toLowerCase().includes(q);
+            return matchType && matchVis && matchSearch;
         });
-        if (!res.ok) throw new Error();
-        closeModal('edit-modal');
-        showToast('Document updated', 'success');
-        fetchDocs();
-    } catch { showToast('Update failed', 'error'); }
-}
+        docState.page = 1;
+        renderDocTable();
+    }
 
-async function submitUpload() {
-    const title  = document.getElementById('upload-title').value.trim();
-    const type   = document.getElementById('upload-type').value;
-    const tenant = document.getElementById('upload-tenant').value.trim();
-    const file   = document.getElementById('upload-file').files[0];
+    function docSetType(btn, type) {
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        docState.type = type;
+        document.getElementById('doc-filter-type').value = type;
+        docApplyFilters();
+    }
 
-    if (!title) { showToast('Title is required', 'error'); return; }
-
-    const fd = new FormData();
-    fd.append('title', title);
-    fd.append('document_type', type);
-    if (tenant) fd.append('tenant_name', tenant);
-    if (file)   fd.append('file', file);
-
-    try {
-        const res = await fetch('/api/documents', {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: fd,
+    function updateDocCounts() {
+        const counts = {};
+        docState.data.forEach(d => { counts[d.document_type] = (counts[d.document_type] || 0) + 1; });
+        document.getElementById('sc-all').textContent = docState.data.length;
+        document.querySelectorAll('.type-btn[data-type]').forEach(btn => {
+            const t  = btn.dataset.type;
+            if (!t) return;
+            const el = btn.querySelector('.type-count');
+            const slug = t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+            const countEl = document.getElementById('sc-' + slug);
+            if (countEl) countEl.textContent = counts[t] || 0;
         });
-        if (!res.ok) throw new Error();
-        closeModal('upload-modal');
-        document.getElementById('upload-title').value  = '';
-        document.getElementById('upload-tenant').value = '';
-        document.getElementById('upload-file').value   = '';
-        showToast('Document uploaded', 'success');
-        fetchDocs();
-    } catch { showToast('Upload failed', 'error'); }
-}
+    }
 
-function promptDelete(id) {
-    document.getElementById('delete-id').value = id;
-    openModal('delete-modal');
-}
+    function renderDocTable() {
+        const start = (docState.page - 1) * docState.perPage;
+        const page  = docState.filtered.slice(start, start + docState.perPage);
+        const tbody = document.getElementById('doc-tbody');
 
-async function confirmDelete() {
-    const id = document.getElementById('delete-id').value;
-    try {
-        const res = await fetch(`/api/documents/${id}`, {
-            method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        if (!page.length) {
+            tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No documents found.</div></td></tr>`;
+        } else {
+            tbody.innerHTML = page.map(d => {
+                const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
+                return `<tr>
+                    <td>
+                        <div class="doc-title-cell">
+                            <span class="doc-dot" style="background:${color}"></span>
+                            ${escHtml(d.title)}
+                        </div>
+                    </td>
+                    <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
+                    <td>${visBadge(d.visibility)}</td>
+                    <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
+                    <td>${fileTypeBadge(d.file_path)}</td>
+                    <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
+                    <td>
+                        <div class="action-group">
+                            <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(d)})'>
+                                <img src="${eyeIcon}" alt="View">
+                            </button>
+                            <button class="act-btn" title="Edit" onclick='openEditDoc(${JSON.stringify(d)})'>
+                                <img src="${editIcon}" alt="Edit">
+                            </button>
+                            <button class="act-btn danger" title="Delete" onclick="promptDeleteDoc(${d.document_id}, '${escHtml(d.title)}')">
+                                <img src="${deleteIcon}" alt="Delete">
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        const total  = docState.filtered.length;
+        const endIdx = Math.min(start + docState.perPage, total);
+        document.getElementById('doc-info').textContent = `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+        renderPagination('doc-pagination', docState.page, Math.ceil(total / docState.perPage), p => { docState.page = p; renderDocTable(); });
+    }
+
+    function viewDoc(d) {
+        currentDoc = d;
+        document.getElementById('view-doc-content').innerHTML = `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Title</div>
+                <div class="view-detail-val">${escHtml(d.title)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Category</div>
+                <div class="view-detail-val">${escHtml(d.document_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Visibility</div>
+                <div class="view-detail-val">${visBadge(d.visibility)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Tenant</div>
+                <div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">File Type</div>
+                <div class="view-detail-val">${fileTypeBadge(d.file_path)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Date Uploaded</div>
+                <div class="view-detail-val">${fmtDate(d.created_at)}</div>
+            </div>
+            ${d.file_path ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>` : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
+        `;
+        openModal('view-doc-modal');
+    }
+
+    function switchToEditDoc() {
+        if (currentDoc) { closeModal('view-doc-modal'); setTimeout(() => openEditDoc(currentDoc), 200); }
+    }
+
+    function openEditDoc(d) {
+        currentDoc = d;
+        document.getElementById('edit-doc-id').value = d.document_id;
+        document.getElementById('edit-doc-title').value   = d.title;
+        document.getElementById('edit-doc-type').value    = d.document_type;
+        document.getElementById('edit-doc-vis').value     = d.visibility ?? 'admin';
+        document.getElementById('edit-doc-tenant').value  = d.tenant_id ?? '';
+        toggleEditTenantSelect();
+        openModal('edit-doc-modal');
+    }
+
+    async function submitEditDoc() {
+        const id    = document.getElementById('edit-doc-id').value;
+        const title = document.getElementById('edit-doc-title').value.trim();
+        const type  = document.getElementById('edit-doc-type').value;
+        const vis   = document.getElementById('edit-doc-vis').value;
+        const tid   = document.getElementById('edit-doc-tenant').value;
+        if (!title) { showToast('Title is required', 'error'); return; }
+        try {
+            const res = await fetch(`/api/documents/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ title, document_type: type, visibility: vis, tenant_id: tid || null }),
+            });
+            if (!res.ok) throw new Error();
+            closeModal('edit-doc-modal');
+            showToast('Document updated successfully.', 'success');
+            fetchDocs();
+        } catch { showToast('Update failed.', 'error'); }
+    }
+
+    function promptDeleteDoc(id, title) {
+        document.getElementById('delete-doc-id').value         = id;
+        document.getElementById('delete-doc-label').textContent = title;
+        openModal('delete-doc-modal');
+    }
+
+    async function confirmDeleteDoc() {
+        const id = document.getElementById('delete-doc-id').value;
+        try {
+            const res = await fetch(`/api/documents/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            });
+            if (!res.ok) throw new Error();
+            closeModal('delete-doc-modal');
+            showToast('Document deleted.', 'success');
+            fetchDocs();
+        } catch { showToast('Delete failed.', 'error'); }
+    }
+
+    async function submitUpload() {
+        const title  = document.getElementById('up-title').value.trim();
+        let   type   = document.getElementById('up-type').value;
+        const vis    = document.getElementById('up-visibility').value;
+        const tid    = document.getElementById('up-tenant').value;
+        const file   = document.getElementById('up-file').files[0];
+
+        if (type === '__new__') {
+            type = document.getElementById('up-new-type').value.trim();
+            if (!type) { showToast('Please enter a category name.', 'error'); return; }
+        }
+
+        if (!title) { showToast('Title is required.', 'error'); return; }
+
+        const fd = new FormData();
+        fd.append('title', title);
+        fd.append('document_type', type);
+        fd.append('visibility', vis);
+        if (vis === 'specific' && tid) fd.append('tenant_id', tid);
+        if (file) fd.append('file', file);
+
+        try {
+            const res = await fetch('/api/documents', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: fd,
+            });
+            if (!res.ok) throw new Error();
+            closeModal('upload-modal');
+            document.getElementById('up-title').value = '';
+            document.getElementById('up-file').value  = '';
+            showToast('Document uploaded successfully.', 'success');
+            fetchDocs();
+        } catch { showToast('Upload failed.', 'error'); }
+    }
+
+    async function fetchReqs() {
+        document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state">Loading...</div></td></tr>`;
+        try {
+            const res  = await fetch('/api/document-requests', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            const data = await res.json();
+            console.log('REQS RESPONSE:', data);  // ADD THIS
+            if (data.error) {
+                document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
+                return;
+            }
+            reqState.data = data.data ?? data;
+            const pending = reqState.data.filter(r => r.status === 'pending').length;
+            document.getElementById('tab-reqs-count').textContent = pending;
+            reqApplyFilters();
+        } catch(e) {
+            console.log('REQS ERROR:', e);  // ADD THIS
+            document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+        }
+    }
+
+    function reqApplyFilters() {
+        const q      = document.getElementById('req-search').value.toLowerCase();
+        const status = document.getElementById('req-filter-status').value;
+        const sort   = document.getElementById('req-sort').value;
+
+        reqState.filtered = reqState.data.filter(r => {
+            const matchStatus = !status || r.status === status;
+            const matchSearch = !q ||
+                (r.document_type ?? '').toLowerCase().includes(q) ||
+                (r.tenant_name   ?? '').toLowerCase().includes(q) ||
+                (r.purpose       ?? '').toLowerCase().includes(q);
+            return matchStatus && matchSearch;
         });
-        if (!res.ok) throw new Error();
-        closeModal('delete-modal');
-        showToast('Document deleted', 'success');
-        fetchDocs();
-    } catch { showToast('Delete failed', 'error'); }
-}
 
-function esc(str) {
-    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+        if (sort === 'newest') reqState.filtered.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+        if (sort === 'oldest') reqState.filtered.sort((a,b) => new Date(a.submitted_at) - new Date(b.submitted_at));
 
-fetchDocs();
+        reqState.page = 1;
+        renderReqTable();
+    }
+
+    function renderReqTable() {
+        const start = (reqState.page - 1) * reqState.perPage;
+        const page  = reqState.filtered.slice(start, start + reqState.perPage);
+        const tbody = document.getElementById('req-tbody');
+
+        if (!page.length) {
+            tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><img src="{{ asset('icons/pending.png') }}" alt="">No document requests found.</div></td></tr>`;
+        } else {
+            tbody.innerHTML = page.map(r => `<tr>
+                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</td>
+                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(r.tenant_name ?? '—')}</td>
+                <td style="font-size:.82rem;">${escHtml(r.document_type)}</td>
+                <td style="font-size:.8rem;color:var(--ink-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.purpose)}">${escHtml(r.purpose ?? '—')}</td>
+                <td style="font-size:.8rem;">${escHtml(r.delivery_type ?? '—')}</td>
+                <td style="font-size:.8rem;white-space:nowrap;">${fmtDate(r.date_needed)}</td>
+                <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
+                <td>${reqStatusBadge(r.status)}</td>
+                <td>
+                    <div class="action-group">
+                        <button class="act-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
+                            <img src="${eyeIcon}" alt="View">
+                        </button>
+                        <button class="act-btn" title="Update" onclick='openUpdateReq(${JSON.stringify(r)})'>
+                            <img src="${editIcon}" alt="Update">
+                        </button>
+                    </div>
+                </td>
+            </tr>`).join('');
+        }
+
+        const total  = reqState.filtered.length;
+        const endIdx = Math.min(start + reqState.perPage, total);
+        document.getElementById('req-info').textContent = `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+        renderPagination('req-pagination', reqState.page, Math.ceil(total / reqState.perPage), p => { reqState.page = p; renderReqTable(); });
+    }
+
+    function viewReq(r) {
+        currentReq = r;
+        document.getElementById('view-req-content').innerHTML = `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Request ID</div>
+                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Tenant</div>
+                <div class="view-detail-val">${escHtml(r.tenant_name ?? '—')}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Document Type</div>
+                <div class="view-detail-val">${escHtml(r.document_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Purpose</div>
+                <div class="view-detail-val">${escHtml(r.purpose ?? '—')}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Delivery Type</div>
+                <div class="view-detail-val">${escHtml(r.delivery_type ?? '—')}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Date Needed</div>
+                <div class="view-detail-val">${fmtDate(r.date_needed)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Submitted</div>
+                <div class="view-detail-val">${fmtDate(r.submitted_at)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Status</div>
+                <div class="view-detail-val">${reqStatusBadge(r.status)}</div>
+            </div>
+            ${r.admin_remarks ? `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Admin Remarks</div>
+                <div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div>
+            </div>` : ''}
+
+        `;
+        document.getElementById('view-req-actions').innerHTML = `
+            <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
+            <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
+        `;
+        openModal('view-req-modal');
+    }
+
+    function openUpdateReq(r) {
+        currentReq = r;
+        document.getElementById('upd-req-id').value      = r.doc_request_id;
+        document.getElementById('upd-req-status').value  = r.status ?? 'pending';
+        document.getElementById('upd-req-remarks').value = r.admin_remarks ?? '';
+        document.getElementById('upd-req-file').value    = '';
+        openModal('update-req-modal');
+    }
+
+    async function submitUpdateReq() {
+        const id      = document.getElementById('upd-req-id').value;
+        const status  = document.getElementById('upd-req-status').value;
+        const remarks = document.getElementById('upd-req-remarks').value;
+        
+        try {
+            const res = await fetch(`/api/document-requests/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': CSRF,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-HTTP-Method-Override': 'PUT'
+                },
+                body: JSON.stringify({ status, admin_remarks: remarks }),
+            });
+            if (!res.ok) throw new Error();
+            closeModal('update-req-modal');
+            showToast('Request updated successfully.', 'success');
+            fetchReqs();
+        } catch { showToast('Update failed.', 'error'); }
+    }
+
+    function renderPagination(containerId, currentPage, totalPages, onGo) {
+        const pg = document.getElementById(containerId);
+        if (totalPages <= 1) { pg.innerHTML = ''; return; }
+        let html = `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage - 1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="(${onGo.toString()})(${i})">${i}</button>`;
+        }
+        html += `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage + 1})" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`;
+        pg.innerHTML = html;
+    }
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
+    @endif
+
+    fetchDocs();
+    fetchReqs();
 </script>
 @endsection

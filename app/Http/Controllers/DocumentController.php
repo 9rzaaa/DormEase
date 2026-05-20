@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Document;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class DocumentController extends Controller
 {
@@ -21,125 +21,83 @@ class DocumentController extends Controller
         'Move In/Out List',
     ];
 
-    /**
-     * Blade page
-     */
     public function page()
     {
-        return view('documents');
+        $fromDb   = Document::distinct()->pluck('document_type')->filter()->values()->toArray();
+        $docTypes = collect(array_unique(array_merge(self::TYPES, $fromDb)))->values();
+
+        $tenants = Tenant::select('tenant_id', 'first_name', 'last_name', 'room_number')
+                        ->orderBy('first_name')
+                        ->get();
+
+        return view('documents', compact('docTypes', 'tenants'));
     }
 
-    /**
-     * API: GET /api/documents
-     */
     public function index(Request $request)
     {
-        $query = Document::query()->latest();
-
-        if ($request->filled('document_type')) {
-            $query->where('document_type', $request->document_type);
+        try {
+            $docs = Document::with('tenant')->orderBy('date_posted', 'desc')->get();
+            return response()->json($docs);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function ($q) use ($s) {
-                $q->where('title', 'like', "%{$s}%")
-                  ->orWhere('tenant_name', 'like', "%{$s}%");
-            });
-        }
-        if ($request->filled('from')) {
-            $query->whereDate('created_at', '>=', $request->from);
-        }
-        if ($request->filled('to')) {
-            $query->whereDate('created_at', '<=', $request->to);
-        }
-
-        $perPage   = min((int) $request->get('per_page', 9), 50);
-        $paginated = $query->paginate($perPage);
-
-        $counts = Document::selectRaw('document_type, COUNT(*) as total')
-            ->groupBy('document_type')
-            ->pluck('total', 'document_type')
-            ->toArray();
-
-        return response()->json(
-            array_merge($paginated->toArray(), ['counts' => $counts])
-        );
     }
 
-    /**
-     * API: POST /api/documents
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
-            'document_type' => ['required', Rule::in(self::TYPES)],
-            'tenant_name'   => 'nullable|string|max:255',
-            'status'        => 'nullable|in:Active,Archived',
+            'document_type' => 'required|string|max:255',
+            'visibility'    => 'required|in:all,specific,admin',
+            'tenant_id'     => 'nullable|exists:tenants,tenant_id',
             'file'          => 'nullable|file|max:20480',
         ]);
 
-        $filePath = $fileName = $fileType = null;
-
+        $filePath = null;
         if ($request->hasFile('file')) {
-            $file     = $request->file('file');
-            $fileName = $file->getClientOriginalName();
-            $fileType = $file->getMimeType();
-            $filePath = $file->store('documents', 'public');
+            $filePath = $request->file('file')->store('documents', 'public');
         }
 
         $doc = Document::create([
             'title'         => $validated['title'],
             'document_type' => $validated['document_type'],
-            'tenant_name'   => $validated['tenant_name'] ?? null,
-            'status'        => $validated['status'] ?? 'Active',
+            'visibility'    => $validated['visibility'],
+            'tenant_id'     => $validated['tenant_id'] ?? null,
             'file_path'     => $filePath,
-            'file_name'     => $fileName,
-            'file_type'     => $fileType,
             'uploaded_by'   => auth('staff')->id(),
+            'date_posted'   => now(),
         ]);
 
+        $doc->load('tenant');
         return response()->json($doc, 201);
     }
 
-    /**
-     * API: GET /api/documents/{document}
-     */
     public function show(Document $document)
     {
+        $document->load('tenant');
         return response()->json($document);
     }
 
-    /**
-     * API: PUT /api/documents/{document}
-     */
     public function update(Request $request, Document $document)
     {
         $validated = $request->validate([
             'title'         => 'sometimes|required|string|max:255',
-            'document_type' => ['sometimes', 'required', Rule::in(self::TYPES)],
-            'tenant_name'   => 'nullable|string|max:255',
-            'status'        => 'nullable|in:Active,Archived',
+            'document_type' => 'sometimes|required|string|max:255',
+            'visibility'    => 'sometimes|required|in:all,specific,admin',
+            'tenant_id'     => 'nullable|exists:tenants,tenant_id',
         ]);
 
         $document->update($validated);
-
+        $document->load('tenant');
         return response()->json($document);
     }
 
-    /**
-     * API: DELETE /api/documents/{document}
-     */
     public function destroy(Document $document)
     {
         if ($document->file_path) {
             Storage::disk('public')->delete($document->file_path);
         }
         $document->delete();
-
         return response()->json(['message' => 'Deleted successfully']);
     }
 }
