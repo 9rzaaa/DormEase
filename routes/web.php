@@ -99,8 +99,11 @@ Route::middleware('auth:staff')->group(function () {
 
     Route::get('/documents',   fn() => view('documents'))->name('documents.index');
     Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
-    Route::get('/emergency',   fn() => view('emergency'))->name('emergency.index');
+    Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
     Route::get('/settings',    fn() => view('settings'))->name('settings.index');
+
+    Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('admin.emergency.update');
+    Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('admin.emergency.destroy');
 
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
     Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
