@@ -115,6 +115,13 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/emergency/{id}',  [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
     Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
 
+    Route::get('/frontdesk/announcements',               [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
+    Route::post('/frontdesk/announcements',              [AnnouncementController::class, 'store'])->name('frontdesk.announcements.store');
+    Route::put('/frontdesk/announcements/{id}',          [AnnouncementController::class, 'update'])->name('frontdesk.announcements.update');
+    Route::post('/frontdesk/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('frontdesk.announcements.archive');
+    Route::post('/frontdesk/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('frontdesk.announcements.restore');
+    Route::delete('/frontdesk/announcements/{id}',       [AnnouncementController::class, 'destroy'])->name('frontdesk.announcements.destroy');
+
     Route::get('/profile', [ProfileController::class, 'index'])
         ->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'update'])
