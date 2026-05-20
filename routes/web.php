@@ -11,6 +11,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FrontdeskController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmergencyController;
+use App\Http\Controllers\MaintenanceController;
 
 Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
@@ -98,7 +99,11 @@ Route::middleware('auth:staff')->group(function () {
     });
 
     Route::get('/documents',   fn() => view('documents'))->name('documents.index');
-    Route::get('/maintenance', fn() => view('maintenance'))->name('maintenance.index');
+    
+    Route::get('/maintenance',         [MaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::put('/maintenance/{id}',    [MaintenanceController::class, 'update'])->name('maintenance.update');
+    Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
+
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
     Route::get('/settings',    fn() => view('settings'))->name('settings.index');
 
