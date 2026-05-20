@@ -14,7 +14,7 @@
     <style>
     :root {
         --hot-pink:   #E8175D;
-        --bright-pink: #FF2D78;
+        --bright-pink: #d63375;
         --mid-pink:   #FF6BA8;
         --baby-pink:  #FFD6E7;
         --blush:      #FFF0F6;
@@ -32,7 +32,7 @@
 
         --soft-bg:    #fff7fb;
         --pink-bg:    var(--petal);
-        --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
         --pink-bg-soft: #fffafd;
         --pink-bg-page: #fff7fb;
         --border-pink: #ffd3e3;
