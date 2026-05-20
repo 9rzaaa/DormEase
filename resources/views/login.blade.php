@@ -13,7 +13,32 @@
 
 <style>
 
+    :root {
+        --hot-pink:   #E8175D;
+        --bright-pink: #FF2D78;
+        --pink:       #CA5D86;
+        --pink-light: #FFB0CE;
+        --pink-card:  #fce8f1;
+        --pink-bg:    #fdf0f5;
+        --pink-tint:  #fff0f6;
+        --pink-100:   #fce4ec;
+        --gray-light: #E5ECF6;
+        --gray:       #B5B7C0;
+        --white:      #ffffff;
+        --ink:        #1a1a2e;
+        --ink-muted:  #7a5f6e;
+        --red:        #DF0404;
+        --ff-display: 'DM Serif Display', Georgia, serif;
+        --ff-body:    'DM Sans', sans-serif;
+        --transition: .2s cubic-bezier(.4,0,.2,1);
+        --radius-md:  10px;
+        --radius-pill: 999px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+        font-family: var(--ff-body);
         display: flex;
         min-height: 100vh;
         overflow: hidden;
@@ -21,7 +46,7 @@
 
     .left {
         flex: 1;
-        background: linear-gradient(160deg, #CA5D86 0%, #a8446c 40%, #7b2d50 100%);
+        background: linear-gradient(160deg, var(--bright-pink) 0%, var(--hot-pink) 45%, #b0103f 100%);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -33,78 +58,66 @@
     .left::before {
         content: '';
         position: absolute;
-        width: 420px;
-        height: 420px;
+        width: 420px; height: 420px;
         border-radius: 50%;
         background: transparent;
-        top: -120px;
-        left: -120px;
+        top: -120px; left: -120px;
         pointer-events: none;
     }
 
     .left::after {
         content: '';
         position: absolute;
-        width: 340px;
-        height: 340px;
+        width: 340px; height: 340px;
         border-radius: 50%;
         background: transparent;
-        bottom: -90px;
-        right: -90px;
+        bottom: -90px; right: -90px;
         pointer-events: none;
     }
 
     .ring {
         position: absolute;
         border-radius: 50%;
-        top: 50%;
-        left: 55%;
+        top: 50%; left: 55%;
         pointer-events: none;
         transform: translate(-50%, -50%);
         background: transparent;
     }
 
     .ring-1 {
-        width: 220px;
-        height: 220px;
-        border: 1.5px dashed rgba(255, 255, 255, .8);
+        width: 220px; height: 220px;
+        border: 1.5px dashed rgba(255,255,255,.8);
         animation: spinSlow 22s linear infinite;
     }
 
     .ring-2 {
-        width: 360px;
-        height: 360px;
-        border: 1px dashed rgba(255, 255, 255, .6);
+        width: 360px; height: 360px;
+        border: 1px dashed rgba(255,255,255,.55);
         animation: spinSlow 38s linear infinite reverse;
     }
 
     .ring-3 {
-        width: 500px;
-        height: 500px;
-        border: 1px dashed rgba(255, 255, 255, .4);
+        width: 500px; height: 500px;
+        border: 1px dashed rgba(255,255,255,.35);
         animation: spinSlow 55s linear infinite;
     }
 
     @keyframes spinSlow {
-        to {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     .dot-grid {
         position: absolute;
-        bottom: 130px;
-        left: 3rem;
+        bottom: 130px; left: 3rem;
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 10px;
-        opacity: .16;
+        opacity: .18;
         pointer-events: none;
     }
 
     .dot-grid span {
-        width: 4px;
-        height: 4px;
+        width: 4px; height: 4px;
         border-radius: 50%;
         background: #fff;
         display: block;
@@ -112,8 +125,7 @@
 
     .student-wrap {
         position: absolute;
-        bottom: 0;
-        right: 0;
+        bottom: 0; right: 0;
         width: 600px;
         z-index: 1;
         pointer-events: none;
@@ -124,18 +136,16 @@
     .student-wrap::after {
         content: '';
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: 0; left: 0; right: 0;
         height: 120px;
-        background: linear-gradient(to top, #7b2d50 0%, transparent 100%);
+        background: linear-gradient(to top, #b0103f 0%, transparent 100%);
         pointer-events: none;
     }
 
     .student-wrap img {
         width: 100%;
         display: block;
-        filter: drop-shadow(-8px 0 32px rgba(0, 0, 0, .25));
+        filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
     }
 
     @keyframes float {
@@ -152,28 +162,19 @@
     }
 
     .logo-mark {
-        width: 44px;
-        height: 44px;
-        background: rgba(255, 255, 255, .2);
-        border: 2px solid rgba(255, 255, 255, .4);
+        width: 44px; height: 44px;
+        background: rgba(255,255,255,.2);
+        border: 2px solid rgba(255,255,255,.4);
         border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
         backdrop-filter: blur(6px);
         overflow: hidden;
         transition: background var(--transition);
     }
 
-    .logo-mark:hover {
-        background: rgba(255, 255, 255, .32);
-    }
+    .logo-mark:hover { background: rgba(255,255,255,.32); }
 
-    .logo-mark img {
-        width: 26px;
-        height: 26px;
-        object-fit: contain;
-    }
+    .logo-mark img { width: 26px; height: 26px; object-fit: contain; }
 
     .logo-text {
         font-family: var(--ff-display);
@@ -182,15 +183,9 @@
         letter-spacing: -.01em;
     }
 
-    .logo-text span {
-        font-style: italic;
-        opacity: .85;
-    }
+    .logo-text span { font-style: italic; opacity: .85; }
 
-    .left-body {
-        position: relative;
-        z-index: 2;
-    }
+    .left-body { position: relative; z-index: 2; }
 
     .left-body h1 {
         font-family: var(--ff-display);
@@ -201,14 +196,11 @@
         margin-bottom: 1.1rem;
     }
 
-    .left-body h1 em {
-        font-style: italic;
-        color: var(--pink-light);
-    }
+    .left-body h1 em { font-style: italic; color: var(--pink-light); }
 
     .left-body p {
         font-size: .94rem;
-        color: rgba(255, 255, 255, .7);
+        color: rgba(255,255,255,.72);
         line-height: 1.75;
         max-width: 310px;
     }
@@ -221,37 +213,30 @@
     }
 
     .pill {
-        background: rgba(255, 255, 255, .13);
-        border: 1px solid rgba(255, 255, 255, .22);
+        background: rgba(255,255,255,.15);
+        border: 1px solid rgba(255,255,255,.25);
         color: #fff;
-        font-size: .76rem;
-        font-weight: 500;
+        font-size: .76rem; font-weight: 500;
         padding: .32rem .8rem;
         border-radius: var(--radius-pill);
-        display: flex;
-        align-items: center;
-        gap: .4rem;
+        display: flex; align-items: center; gap: .4rem;
         backdrop-filter: blur(4px);
         transition: background var(--transition), border-color var(--transition);
         cursor: default;
     }
 
     .pill:hover {
-        background: rgba(255, 255, 255, .22);
-        border-color: rgba(255, 255, 255, .4);
+        background: rgba(255,255,255,.25);
+        border-color: rgba(255,255,255,.45);
     }
 
-    .pill img {
-        width: 13px;
-        height: 13px;
-        filter: brightness(0) invert(1);
-    }
+    .pill img { width: 13px; height: 13px; filter: brightness(0) invert(1); }
 
     .left-footer {
         position: relative;
         z-index: 2;
         font-size: .75rem;
-        color: rgba(255, 255, 255, .38);
+        color: rgba(255,255,255,.38);
     }
 
     .right {
@@ -269,11 +254,18 @@
     .right::before {
         content: '';
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 200px;
-        height: 200px;
-        background: radial-gradient(ellipse at top right, #ffe4ef 0%, transparent 70%);
+        top: 0; right: 0;
+        width: 220px; height: 220px;
+        background: radial-gradient(ellipse at top right, var(--pink-100) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .right::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 180px; height: 180px;
+        background: radial-gradient(ellipse at bottom left, var(--pink-100) 0%, transparent 70%);
         pointer-events: none;
     }
 
@@ -284,16 +276,14 @@
         z-index: 1;
     }
 
-    .form-header {
-        margin-bottom: 1.8rem;
-    }
+    .form-header { margin-bottom: 1.8rem; }
 
     .eyebrow {
         font-size: .72rem;
-        font-weight: 600;
+        font-weight: 700;
         letter-spacing: .1em;
         text-transform: uppercase;
-        color: var(--pink);
+        color: var(--bright-pink);
         margin-bottom: .55rem;
         display: flex;
         align-items: center;
@@ -303,9 +293,8 @@
     .eyebrow::before {
         content: '';
         display: block;
-        width: 20px;
-        height: 2px;
-        background: var(--pink);
+        width: 20px; height: 2px;
+        background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
         border-radius: 2px;
     }
 
@@ -318,10 +307,7 @@
         letter-spacing: -.02em;
     }
 
-    .form-header h2 em {
-        font-style: italic;
-        color: var(--pink);
-    }
+    .form-header h2 em { font-style: italic; color: var(--hot-pink); }
 
     .form-header p {
         font-size: .86rem;
@@ -351,20 +337,19 @@
         padding: .85rem 1rem;
         background: var(--white);
         text-align: left;
-        display: flex;
-        align-items: center;
-        gap: .65rem;
+        display: flex; align-items: center; gap: .65rem;
         transition: border-color var(--transition), background var(--transition),
                     box-shadow var(--transition), transform .15s;
         position: relative;
         overflow: hidden;
+        cursor: pointer;
     }
 
     .role-btn::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(202, 93, 134, .06) 0%, transparent 60%);
+        background: linear-gradient(135deg, rgba(255,45,120,.07) 0%, transparent 60%);
         opacity: 0;
         transition: opacity var(--transition);
     }
@@ -376,124 +361,83 @@
         transform: translateY(-1px);
     }
 
-    .role-btn:active {
-        transform: translateY(0);
-    }
+    .role-btn:active { transform: translateY(0); }
 
     .role-btn.active {
-        border-color: var(--pink);
+        border-color: var(--bright-pink);
         background: var(--pink-tint);
-        box-shadow: 0 0 0 3px rgba(202, 93, 134, .1);
+        box-shadow: 0 0 0 3px rgba(255,45,120,.12);
     }
 
     .role-icon {
-        width: 38px;
-        height: 38px;
+        width: 38px; height: 38px;
         flex-shrink: 0;
         border-radius: 10px;
         background: var(--gray-light);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
         transition: background var(--transition);
     }
 
-    .role-icon img {
-        width: 20px;
-        height: 20px;
-        object-fit: contain;
-    }
+    .role-icon img { width: 20px; height: 20px; object-fit: contain; }
 
     .role-btn.active .role-icon {
-        background: var(--pink-light);
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
     }
 
-    .role-name {
-        font-size: .84rem;
-        font-weight: 600;
-        color: var(--ink);
-    }
+    .role-btn.active .role-icon img { filter: brightness(0) invert(1); }
 
-    .role-desc {
-        font-size: .71rem;
-        color: var(--ink-muted);
-        margin-top: .1rem;
-    }
+    .role-name { font-size: .84rem; font-weight: 600; color: var(--ink); }
+    .role-desc { font-size: .71rem; color: var(--ink-muted); margin-top: .1rem; }
+    .role-btn.active .role-name { color: var(--hot-pink); }
 
-    .role-btn.active .role-name {
-        color: var(--pink);
-    }
-
-    .field {
-        margin-bottom: 1.15rem;
-    }
+    .field { margin-bottom: 1.15rem; }
 
     .field label {
         display: block;
-        font-size: .78rem;
-        font-weight: 600;
+        font-size: .78rem; font-weight: 600;
         color: var(--ink);
         margin-bottom: .42rem;
     }
 
-    .input-wrap {
-        position: relative;
-    }
+    .input-wrap { position: relative; }
 
     .input-icon {
         position: absolute;
-        left: .9rem;
-        top: 50%;
+        left: .9rem; top: 50%;
         transform: translateY(-50%);
-        width: 18px;
-        height: 18px;
+        width: 18px; height: 18px;
         pointer-events: none;
-        opacity: .4;
+        opacity: .35;
     }
 
     .input-wrap::after {
         content: '';
         position: absolute;
         bottom: 1px;
-        left: 50%;
-        right: 50%;
+        left: 50%; right: 50%;
         height: 2px;
-        background: var(--pink);
+        background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
         border-radius: 0 0 var(--radius-md) var(--radius-md);
         transition: left .25s ease, right .25s ease;
         pointer-events: none;
     }
 
-    .input-wrap:focus-within::after {
-        left: 1px;
-        right: 1px;
-    }
+    .input-wrap:focus-within::after { left: 1px; right: 1px; }
 
     .toggle-pw {
         position: absolute;
-        right: .9rem;
-        top: 50%;
+        right: .9rem; top: 50%;
         transform: translateY(-50%);
-        background: none;
-        border: none;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
+        background: none; border: none; padding: 0;
+        display: flex; align-items: center; justify-content: center;
+        width: 24px; height: 24px;
         opacity: .38;
         transition: opacity var(--transition);
+        cursor: pointer;
     }
 
-    .toggle-pw:hover {
-        opacity: .85;
-    }
-
-    .toggle-pw span {
-        font-size: 1rem;
-        line-height: 1;
-    }
+    .toggle-pw:hover { opacity: .85; }
+    .toggle-pw span { font-size: 1rem; line-height: 1; }
 
     .field-row {
         display: flex;
@@ -503,40 +447,79 @@
     }
 
     .remember {
-        display: flex;
-        align-items: center;
-        gap: .4rem;
+        display: flex; align-items: center; gap: .4rem;
         font-size: .82rem;
         color: var(--ink-muted);
         cursor: pointer;
     }
 
     .remember input[type="checkbox"] {
-        accent-color: var(--pink);
-        width: 15px;
-        height: 15px;
+        accent-color: var(--bright-pink);
+        width: 15px; height: 15px;
     }
 
     .forgot {
         font-size: .82rem;
-        color: var(--pink);
+        color: var(--hot-pink);
         font-weight: 600;
         transition: opacity var(--transition);
+        text-decoration: none;
     }
 
-    .forgot:hover {
-        opacity: .7;
+    .forgot:hover { opacity: .7; }
+
+    .btn-login { margin-top: .2rem; gap: .5rem; }
+
+    .de-btn-primary {
+        width: 100%;
+        padding: .75rem 1.4rem;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        color: var(--white);
+        font-family: var(--ff-body);
+        font-size: .93rem; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(232,23,93,.35);
+        transition: opacity var(--transition), transform .15s;
     }
 
-    .btn-login {
-        margin-top: .2rem;
-        gap: .5rem;
+    .de-btn-primary:hover { opacity: .92; transform: translateY(-1px); }
+    .de-btn-primary:active { transform: translateY(0); }
+
+    .de-input {
+        width: 100%;
+        padding: .72rem .9rem .72rem 2.6rem;
+        border-radius: var(--radius-md);
+        border: 1.5px solid var(--gray-light);
+        font-family: var(--ff-body);
+        font-size: .88rem;
+        color: var(--ink);
+        background: var(--pink-bg);
+        outline: none;
+        transition: border-color var(--transition), background var(--transition);
     }
+
+    .de-input:focus { border-color: var(--bright-pink); background: var(--white); }
+    .de-input::placeholder { color: var(--gray); }
+
+    .de-alert-error {
+        display: flex; align-items: center; gap: .5rem;
+        background: #fff0f3;
+        border: 1.5px solid var(--pink-light);
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        font-size: .83rem;
+        color: var(--hot-pink);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .de-alert-error img { width: 16px; height: 16px; flex-shrink: 0; }
 
     .divider {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
+        display: flex; align-items: center; gap: .75rem;
         margin: 1.3rem 0;
         font-size: .74rem;
         color: var(--gray);
@@ -578,30 +561,11 @@
     .left-footer { animation: leftSlide .6s ease .38s both; }
 
     @media (max-width: 820px) {
-        body {
-            flex-direction: column;
-            overflow: auto;
-        }
-
-        .left {
-            min-height: 240px;
-            padding: 2rem;
-        }
-
-        .left-body h1 {
-            font-size: 2rem;
-        }
-
-        .right {
-            width: 100%;
-            padding: 2.5rem 1.5rem;
-        }
-
-        .ring,
-        .dot-grid,
-        .student-wrap {
-            display: none;
-        }
+        body { flex-direction: column; overflow: auto; }
+        .left { min-height: 240px; padding: 2rem; }
+        .left-body h1 { font-size: 2rem; }
+        .right { width: 100%; padding: 2.5rem 1.5rem; }
+        .ring, .dot-grid, .student-wrap { display: none; }
     }
 
 </style>
@@ -731,12 +695,12 @@
                         id="pw-toggle"
                         aria-label="Toggle password visibility"
                     >
-                        <img 
-                        id="pw-eye-icon"
-                        src="{{ asset('icons/eyeon.png') }}"
-                        alt="Toggle Password"
-                        style="width:18px; height:18px;"
-                    >
+                        <img
+                            id="pw-eye-icon"
+                            src="{{ asset('icons/eyeon.png') }}"
+                            alt="Toggle Password"
+                            style="width:18px; height:18px;"
+                        >
                     </button>
                 </div>
             </div>
@@ -759,7 +723,6 @@
     </div>
 
 </div>
-
 
 <script>
 
