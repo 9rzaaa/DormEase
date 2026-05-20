@@ -217,6 +217,35 @@
         .icon-md { width: 24px; height: 24px; object-fit: contain; }
         .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
+        .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+ 
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
+        .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+        
+        .btn-outline {
+            display: flex; align-items: center; gap: .45rem;
+            padding: .55rem 1.2rem; border-radius: 10px;
+            background: var(--white); color: var(--ink-muted);
+            border: 1.5px solid var(--gray-light); font-size: .87rem; font-weight: 600;
+            transition: border-color .2s, color .2s; cursor: pointer;
+        }
+        .btn-outline:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+        .btn-outline img { width: 16px; height: 16px; opacity: .6; }
+        
+        .view-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
+        .view-row:last-child { border-bottom: none; }
+        .view-label { color: var(--ink-muted); font-weight: 500; }
+        .view-val { font-weight: 600; color: var(--ink); text-align: right; }
+        
+        .modal-field select {
+            width: 100%; padding: .6rem .85rem; border-radius: 9px;
+            border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
+            font-size: .87rem; color: var(--ink); outline: none; transition: border-color .2s;
+            background: var(--pink-bg);
+        }
+        .modal-field select:focus { border-color: var(--bright-pink); background: var(--white); }
+
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
         .fade-up { opacity: 0; animation: fadeUp .5s ease forwards; }

@@ -5,69 +5,59 @@
 
 @section('styles')
 <style>
-    .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
-
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
-    .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--pink); margin-top: .2rem; }
-    .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
-
-    .btn-outline {
-        display: flex; align-items: center; gap: .45rem;
-        padding: .55rem 1.2rem; border-radius: 10px;
-        background: var(--white); color: var(--ink-muted);
-        border: 1.5px solid var(--gray-light); font-size: .87rem; font-weight: 600;
-        transition: border-color .2s, color .2s; cursor: pointer;
-    }
-    .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
-    .btn-outline img { width: 16px; height: 16px; opacity: .6; }
+    .dorm-name { font-size: 1rem; font-weight: 600; color: var(--bright-pink); margin-top: .2rem; }
 
     .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
     .stat-box {
-        background: var(--white); border-radius: 16px;
-        border: 1px solid var(--border); box-shadow: var(--shadow);
-        padding: 1.3rem 1.5rem;
-        display: flex; align-items: center; gap: 1.2rem;
+        border-radius: 14px; padding: 1.1rem;
+        border: none;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        transition: transform .2s, box-shadow .2s;
     }
+    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
     .stat-icon-circle {
-        width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
-        background: var(--pink);
+        width: 40px; height: 40px; border-radius: 10px;
+        background: var(--white);
         display: flex; align-items: center; justify-content: center;
+        margin-bottom: .8rem;
     }
-    .stat-icon-circle img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); }
-    .stat-num   { font-size: 2rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.03em; }
-    .stat-label { font-size: .8rem; color: var(--ink-muted); margin-top: .1rem; }
-    .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 600; margin-top: .2rem; }
+    .stat-icon-circle img {
+        width: 22px; height: 22px; object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .stat-num   { font-size: 1.9rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -.03em; }
+    .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
+    .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
 
-    .table-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+    .table-card { background: var(--white); border-radius: 16px; border: 1.5px solid var(--bright-pink); box-shadow: var(--shadow); overflow: hidden; }
     .table-header {
         padding: 1.3rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
-        border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: .8rem;
+        border-bottom: 1.5px solid var(--pink-light); flex-wrap: wrap; gap: .8rem;
     }
     .table-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
-    .table-date  { font-size: .78rem; color: var(--pink); font-weight: 500; margin-top: .15rem; }
+    .table-date  { font-size: .78rem; color: var(--bright-pink); font-weight: 600; margin-top: .15rem; }
     .table-controls { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
 
     .search-wrap { position: relative; }
     .search-wrap input {
         padding: .5rem .9rem .5rem 2.2rem;
-        border-radius: 9px; border: 1.5px solid var(--gray-light);
+        border-radius: 9px; border: 1.5px solid var(--pink-light);
         font-family: var(--ff-body); font-size: .85rem; color: var(--ink);
         background: var(--pink-bg); outline: none; width: 200px;
         transition: border-color .2s, width .3s;
     }
-    .search-wrap input:focus { border-color: var(--pink); width: 240px; }
+    .search-wrap input:focus { border-color: var(--bright-pink); width: 240px; }
     .search-icon { position: absolute; left: .65rem; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; align-items: center; }
-    .search-icon img { width: 14px; height: 14px; opacity: .5; }
+    .search-icon img { width: 14px; height: 14px; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
 
     .sort-select {
         padding: .5rem .8rem; border-radius: 9px;
-        border: 1.5px solid var(--gray-light); background: var(--white);
+        border: 1.5px solid var(--pink-light); background: var(--white);
         font-family: var(--ff-body); font-size: .83rem; color: var(--ink-muted);
         outline: none; cursor: pointer;
     }
-    .sort-select:focus { border-color: var(--pink); }
+    .sort-select:focus { border-color: var(--bright-pink); }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
@@ -87,12 +77,12 @@
     .action-group { display: flex; align-items: center; gap: .5rem; }
     .act-btn {
         width: 30px; height: 30px; border-radius: 7px;
-        border: 1.5px solid var(--gray-light); background: var(--white);
+        border: 1.5px solid var(--pink-light); background: var(--white);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; transition: border-color .2s, background .2s;
     }
     .act-btn img { width: 15px; height: 15px; opacity: .6; }
-    .act-btn:hover { border-color: var(--pink); background: var(--pink-bg); }
+    .act-btn:hover { border-color: var(--bright-pink); background: var(--pink-bg); }
     .act-btn:hover img { opacity: 1; }
 
     .table-footer {
@@ -104,71 +94,25 @@
     .pagination { display: flex; align-items: center; gap: .35rem; }
     .page-btn {
         width: 32px; height: 32px; border-radius: 8px;
-        border: 1.5px solid var(--gray-light); background: var(--white);
-        font-size: .83rem; font-weight: 600; color: var(--ink-muted);
+        border: 1.5px solid var(--pink-light); background: var(--white);
+        font-size: .83rem; font-weight: 600; color: var(--bright-pink);
         cursor: pointer; transition: border-color .2s, background .2s, color .2s;
         display: flex; align-items: center; justify-content: center;
     }
-    .page-btn:hover  { border-color: var(--pink); color: var(--pink); }
-    .page-btn.active { background: var(--pink); color: var(--white); border-color: var(--pink); }
+    .page-btn:hover { border-color: var(--bright-pink); background: var(--pink-card); }
+    .page-btn.active { background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink)); color: var(--white); border-color: var(--hot-pink); }
     .page-btn:disabled { opacity: .4; cursor: default; }
-
-    .modal-overlay {
-        position: fixed; inset: 0; background: rgba(26,26,46,.45);
-        backdrop-filter: blur(4px); z-index: 300;
-        display: none; align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-        background: var(--white); border-radius: 20px;
-        padding: 2rem; width: 90%; max-width: 480px;
-        box-shadow: 0 20px 60px rgba(26,26,46,.2);
-        animation: fadeUp .3s ease;
-        max-height: 90vh; overflow-y: auto;
-    }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px);} to{opacity:1;transform:translateY(0);} }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.4rem; }
-    .modal-title  { font-size: 1.15rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .5rem; }
-    .modal-title img { width: 20px; height: 20px; opacity: .7; }
-    .modal-close  { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ink-muted); transition: color .2s; }
-    .modal-close:hover { color: var(--red); }
-
-    .view-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
-    .view-row:last-child { border-bottom: none; }
-    .view-label { color: var(--ink-muted); font-weight: 500; }
-    .view-val   { font-weight: 600; color: var(--ink); text-align: right; }
-
-    .modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
-    .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
-    .btn-cancel:hover { border-color: var(--pink); color: var(--pink); }
-    .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s; }
-    .btn-submit:hover { background: #a8446c; }
-
-    .modal-field { margin-bottom: 1rem; }
-    .modal-field label { display: block; font-size: .8rem; font-weight: 600; color: var(--ink); margin-bottom: .35rem; }
-    .modal-field input, .modal-field select, .modal-field textarea {
-        width: 100%; padding: .65rem .9rem; border-radius: 10px;
-        border: 1.5px solid var(--gray-light); font-family: var(--ff-body);
-        font-size: .88rem; color: var(--ink); background: #fafafa; outline: none;
-        transition: border-color .2s;
-    }
-    .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus { border-color: var(--pink); background: var(--white); }
-    .modal-field textarea { resize: vertical; min-height: 80px; }
 
     .tenant-avatar {
         width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-        background: linear-gradient(135deg, var(--pink-light), var(--pink));
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
         display: flex; align-items: center; justify-content: center;
         font-size: .82rem; font-weight: 700; color: var(--white);
     }
     .name-cell { display: flex; align-items: center; gap: .75rem; }
 
-    @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
-    .fade-up { animation: fadeIn .45s ease both; }
-    .d1{animation-delay:.05s;} .d2{animation-delay:.12s;} .d3{animation-delay:.2s;}
-
     @media(max-width:900px) {
-        .stats-row  { grid-template-columns: 1fr; }
+        .stats-row { grid-template-columns: 1fr; }
         .page-header { flex-direction: column; gap: 1rem; }
     }
 </style>
@@ -194,31 +138,25 @@
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/tenants.png') }}" alt="">
             </div>
-            <div>
-                <div class="stat-label">Total Tenants</div>
-                <div class="stat-num">{{ $totalTenants }}</div>
-                <div class="stat-sub">Currently Registered</div>
-            </div>
+            <div class="stat-label">Total Tenants</div>
+            <div class="stat-num">{{ $totalTenants }}</div>
+            <div class="stat-sub">Currently Registered</div>
         </div>
         <div class="stat-box">
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/bed.png') }}" alt="">
             </div>
-            <div>
-                <div class="stat-label">Units Occupied</div>
-                <div class="stat-num">{{ $occupiedUnits }}</div>
-                <div class="stat-sub">Out of {{ $totalUnits }} available</div>
-            </div>
+            <div class="stat-label">Units Occupied</div>
+            <div class="stat-num">{{ $occupiedUnits }}</div>
+            <div class="stat-sub">Out of {{ $totalUnits }} available</div>
         </div>
         <div class="stat-box">
-            <div class="stat-icon-circle" style="background: var(--pink);">
+            <div class="stat-icon-circle">
                 <img src="{{ asset('icons/bed.png') }}" alt="">
             </div>
-            <div>
-                <div class="stat-label">Vacant Units</div>
-                <div class="stat-num">{{ $vacantUnits }}</div>
-                <div class="stat-sub">Out of {{ $totalUnits }} units</div>
-            </div>
+            <div class="stat-label">Vacant Units</div>
+            <div class="stat-num">{{ $vacantUnits }}</div>
+            <div class="stat-sub">Out of {{ $totalUnits }} units</div>
         </div>
     </div>
 
@@ -465,12 +403,6 @@
         a.click();
         showToast('Tenants exported as CSV!', 'success');
     }
-
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () =>

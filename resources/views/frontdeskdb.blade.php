@@ -1,7 +1,6 @@
 @extends('fdlayout')
 
 @section('title', 'DormEase: Front Desk Dashboard')
-
 @section('page-title', 'Dashboard')
 
 @section('styles')
@@ -18,8 +17,7 @@
 
     .content-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
 
-    .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--bright-pink); margin-top: .2rem; }
+    .dorm-name { font-size: 1rem; font-weight: 600; color: var(--bright-pink); margin-top: .2rem; }
 
     .export-btn {
         display: flex; align-items: center; gap: .4rem;
@@ -27,7 +25,7 @@
         border: 1.5px solid var(--bright-pink);
         background: var(--pink-card);
         font-size: .82rem; font-weight: 700; color: var(--hot-pink);
-        transition: background .2s;
+        transition: background .2s; cursor: pointer;
     }
     .export-btn:hover { background: var(--pink-100); }
 
@@ -46,9 +44,7 @@
         display: flex; align-items: center; justify-content: center;
         margin-bottom: .8rem;
     }
-    .stat-icon img {
-        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
-    }
+    .stat-icon img { filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
     .stat-num   { font-size: 1.9rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -.03em; }
     .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
     .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
@@ -98,8 +94,6 @@
         cursor: pointer; transition: opacity .2s;
     }
     .emergency-btn:hover { opacity: .88; }
-    .emergency-clear .emergency-btn { background: var(--bright-pink) !important; }
-    .emergency-clear .emergency-btn:hover { background: var(--hot-pink) !important; opacity: 1; }
 
     .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--pink-card); }
     .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
@@ -116,10 +110,6 @@
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
     .empty-state { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: .88rem; }
-
-    .icon-sm { width: 16px; height: 16px; object-fit: contain; }
-    .icon-md { width: 24px; height: 24px; object-fit: contain; }
-    .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -143,8 +133,10 @@
     <div class="content-col">
 
         <div class="page-header fade-up d1">
-            <h1>Welcome, {{ $staff->first_name }}!</h1>
-            <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+            <div>
+                <h1>Welcome, {{ $staff->first_name }}!</h1>
+                <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+            </div>
         </div>
 
         <div class="card fade-up d2">
@@ -233,7 +225,7 @@
                     <button class="emergency-btn" onclick="openModal('emergency-modal')">View All Alerts</button>
                 </div>
             @else
-                <div class="emergency-card emergency-clear">
+                <div class="emergency-card">
                     <div class="emergency-title">Emergency Reports</div>
                     <div class="emergency-icon-wrap">
                         <img src="{{ asset('icons/check.png') }}" alt="" class="check-icon">
