@@ -21,10 +21,10 @@ class DashboardController extends Controller
             'staff'               => $staff,
             'totalTenants'        => Tenant::where('is_active', true)->count(),
             'pendingPayments'     => Payment::where('status', 'pending')->count(),
-            'pendingMaintenance'  => MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
+            'pendingMaintenance'  => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
             'unresolvedReports'   => EmergencyReport::where('status', '!=', 'resolved')->count(),
             'maintenanceRequests' => MaintenanceRequest::with('tenant')
-                ->whereIn('status', ['pending', 'in_progress'])
+                ->whereIn('status', ['pending', 'in-progress'])
                 ->latest('submitted_at')
                 ->take(3)
                 ->get(),
