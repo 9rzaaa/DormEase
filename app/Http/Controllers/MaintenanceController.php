@@ -50,8 +50,8 @@ class MaintenanceController extends Controller
 
         $maintenance->update([
             'status'        => $request->status,
-            'urgency'       => $request->urgency,
-            'admin_remarks' => $request->admin_remarks,
+            'urgency_level' => $request->urgency,
+            'admin_notes'   => $request->admin_remarks,
         ]);
 
         return redirect()->route('maintenance.index')
