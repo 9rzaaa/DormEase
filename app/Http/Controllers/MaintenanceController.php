@@ -48,11 +48,18 @@ class MaintenanceController extends Controller
             'admin_remarks' => 'nullable|string|max:1000',
         ]);
 
-        $maintenance->update([
+        $adminNotes = $request->admin_remarks;
+        $updates = [
             'status'        => $request->status,
             'urgency_level' => $request->urgency,
-            'admin_notes'   => $request->admin_remarks,
-        ]);
+            'admin_notes'   => $adminNotes,
+        ];
+
+        if ($adminNotes !== $maintenance->admin_notes) {
+            $updates['admin_notes_at'] = filled($adminNotes) ? now() : null;
+        }
+
+        $maintenance->update($updates);
 
         return redirect()->route('maintenance.index')
             ->with('success', 'Maintenance request updated successfully.');

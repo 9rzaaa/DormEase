@@ -13,58 +13,129 @@ class MaintenanceController extends Controller
         'plumbing' => [
             'priority' => 'moderate',
             'keywords' => [
-                'leak', 'leaking', 'water', 'faucet', 'sink', 'toilet', 'pipe',
-                'drain', 'shower', 'flush', 'clog', 'clogged', 'overflow',
+                'leak',
+                'leaking',
+                'water',
+                'faucet',
+                'sink',
+                'toilet',
+                'pipe',
+                'drain',
+                'shower',
+                'flush',
+                'clog',
+                'clogged',
+                'overflow',
             ],
         ],
         'electrical' => [
             'priority' => 'urgent',
             'keywords' => [
-                'electric', 'electrical', 'power', 'outlet', 'socket', 'spark',
-                'wire', 'wiring', 'breaker', 'short circuit', 'brownout',
-                'light', 'lights', 'flicker', 'flickering',
+                'electric',
+                'electrical',
+                'power',
+                'outlet',
+                'socket',
+                'spark',
+                'wire',
+                'wiring',
+                'breaker',
+                'short circuit',
+                'brownout',
+                'light',
+                'lights',
+                'flicker',
+                'flickering',
             ],
         ],
         'hvac' => [
             'priority' => 'moderate',
             'keywords' => [
-                'aircon', 'air conditioning', 'ac', 'a c', 'cooling', 'hvac',
-                'fan', 'ventilation', 'hot room',
+                'aircon',
+                'air conditioning',
+                'ac',
+                'a c',
+                'cooling',
+                'hvac',
+                'fan',
+                'ventilation',
+                'hot room',
             ],
         ],
         'appliance' => [
             'priority' => 'low',
             'keywords' => [
-                'appliance', 'fridge', 'refrigerator', 'stove', 'microwave',
-                'washer', 'washing machine', 'kettle',
+                'appliance',
+                'fridge',
+                'refrigerator',
+                'stove',
+                'microwave',
+                'washer',
+                'washing machine',
+                'kettle',
             ],
         ],
         'carpentry' => [
             'priority' => 'low',
             'keywords' => [
-                'door', 'cabinet', 'chair', 'table', 'bed', 'lock', 'window',
-                'drawer', 'furniture', 'hinge', 'wood',
+                'door',
+                'cabinet',
+                'chair',
+                'table',
+                'bed',
+                'lock',
+                'window',
+                'drawer',
+                'furniture',
+                'hinge',
+                'wood',
             ],
         ],
         'pest' => [
             'priority' => 'urgent',
             'keywords' => [
-                'pest', 'cockroach', 'roach', 'ant', 'ants', 'rat', 'rats',
-                'mouse', 'mice', 'termite', 'insect', 'bug', 'mosquito',
+                'pest',
+                'cockroach',
+                'roach',
+                'ant',
+                'ants',
+                'rat',
+                'rats',
+                'mouse',
+                'mice',
+                'termite',
+                'insect',
+                'bug',
+                'mosquito',
             ],
         ],
         'cleaning' => [
             'priority' => 'low',
             'keywords' => [
-                'clean', 'cleaning', 'dirty', 'trash', 'garbage', 'smell',
-                'odor', 'stain', 'mold', 'mould',
+                'clean',
+                'cleaning',
+                'dirty',
+                'trash',
+                'garbage',
+                'smell',
+                'odor',
+                'stain',
+                'mold',
+                'mould',
             ],
         ],
         'internet' => [
             'priority' => 'moderate',
             'keywords' => [
-                'internet', 'wifi', 'wi fi', 'wi-fi', 'cable', 'router',
-                'connection', 'signal', 'network',
+                'internet',
+                'wifi',
+                'wi fi',
+                'wi-fi',
+                'cable',
+                'router',
+                'connection',
+                'signal',
+                'network',
             ],
         ],
     ];
@@ -76,7 +147,7 @@ class MaintenanceController extends Controller
         $requests = MaintenanceRequest::where('tenant_id', $tenantId)
             ->latest('submitted_at')
             ->get()
-            ->map(fn ($maintenance) => [
+            ->map(fn($maintenance) => [
                 'id' => $maintenance->request_id,
                 'room_number' => $maintenance->room_number,
                 'input_type' => $maintenance->input_type,
@@ -85,8 +156,9 @@ class MaintenanceController extends Controller
                 'urgency_level' => $maintenance->urgency_level,
                 'status' => $maintenance->status,
                 'admin_notes' => $maintenance->admin_notes,
-                'submitted_at' => optional($maintenance->submitted_at)->toDateTimeString(),
-                'resolved_at' => optional($maintenance->resolved_at)->toDateTimeString(),
+                'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
+                'submitted_at' => $this->formatApiDate($maintenance->submitted_at),
+                'resolved_at' => $this->formatApiDate($maintenance->resolved_at),
             ]);
 
         return response()->json([
@@ -126,9 +198,17 @@ class MaintenanceController extends Controller
                 'description' => $maintenance->description,
                 'urgency_level' => $maintenance->urgency_level,
                 'status' => $maintenance->status,
-                'submitted_at' => optional($maintenance->submitted_at)->toDateTimeString(),
+                'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
+                'submitted_at' => $this->formatApiDate($maintenance->submitted_at),
             ],
         ], 201);
+    }
+
+    private function formatApiDate($date): ?string
+    {
+        return $date
+            ? $date->copy()->timezone('Asia/Manila')->toIso8601String()
+            : null;
     }
 
     private function cleanText(string $text): string

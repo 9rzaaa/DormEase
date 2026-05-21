@@ -21,6 +21,7 @@ class MaintenanceRequest extends Model
         'urgency_level',
         'status',
         'admin_notes',
+        'admin_notes_at',
         'assigned_to',
         'submitted_at',
         'resolved_at',
@@ -29,6 +30,7 @@ class MaintenanceRequest extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
         'resolved_at' => 'datetime',
+        'admin_notes_at' => 'datetime',
     ];
 
     public function tenant()
