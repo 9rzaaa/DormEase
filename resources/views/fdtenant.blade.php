@@ -170,18 +170,25 @@
             <div class="table-controls">
                 <div class="search-wrap">
                     <span class="search-icon">
-                        <img src="{{ asset('icons/search.png') }}" alt="">
-                    </span>
-                    <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
-                </div>
-                <select class="sort-select" id="sort-select" onchange="sortTable()">
-                    <option value="newest">Sort by: Newest</option>
-                    <option value="oldest">Sort by: Oldest</option>
-                    <option value="name">Sort by: Name</option>
-                    <option value="floor">Sort by: Floor</option>
-                    <option value="room">Sort by: Room</option>
-                </select>
-            </div>
+                    <img src="{{ asset('icons/search.png') }}" alt="">
+            </span>
+                <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
+        </div>
+            <select class="sort-select" id="sort-select" onchange="sortTable()">
+            <option value="newest">Sort by: Newest</option>
+            <option value="oldest">Sort by: Oldest</option>
+            <option value="name">Sort by: Name</option>
+            <option value="floor">Sort by: Floor</option>
+            <option value="room">Sort by: Room</option>
+    </select>
+    <select class="sort-select" id="floor-filter" onchange="filterTable()">
+        <option value="">All Floors</option>
+        <option value="2">Floor 2</option>
+        <option value="3">Floor 3</option>
+        <option value="4">Floor 4</option>
+        <option value="5">Floor 5</option>
+    </select>
+</div>
         </div>
 
         <div class="table-wrap">
@@ -344,16 +351,24 @@
     }
 
     function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        filtered = tenants.filter(t =>
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const floorVal = document.getElementById('floor-filter').value;
+
+    filtered = tenants.filter(t => {
+        const matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
             (t.room_number    ?? '').toLowerCase().includes(q) ||
             (t.contact_number ?? '').toLowerCase().includes(q) ||
-            String(t.floor ?? '').includes(q)
-        );
-        currentPage = 1;
-        renderTable();
-    }
+            String(t.floor ?? '').includes(q);
+
+        const matchesFloor = floorVal === '' || String(t.floor) === floorVal;
+
+        return matchesSearch && matchesFloor;
+    });
+
+    currentPage = 1;
+    renderTable();
+}
 
     function sortTable() {
         const val = document.getElementById('sort-select').value;
