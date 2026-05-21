@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
+use App\Http\Controllers\Api\MaintenanceController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::post('/login', [AuthController::class, 'login']);
@@ -35,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ── Document Requests ─────────────────────────────────────────────────────
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
+
+    Route::get('/maintenance', [MaintenanceController::class, 'index']);
+    Route::post('/maintenance', [MaintenanceController::class, 'store']);
 
     // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {

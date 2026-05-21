@@ -9,20 +9,26 @@ class MaintenanceRequest extends Model
     use HasFactory;
 
     protected $table = 'maintenance_requests';
-    protected $primaryKey = 'id';
-    public $timestamps = true;
+    protected $primaryKey = 'request_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'tenant_id',
         'room_number',
+        'input_type',
         'issue_type',
         'description',
-        'urgency',
+        'urgency_level',
         'status',
-        'admin_remarks',
+        'admin_notes',
         'assigned_to',
         'submitted_at',
         'resolved_at',
+    ];
+
+    protected $casts = [
+        'submitted_at' => 'datetime',
+        'resolved_at' => 'datetime',
     ];
 
     public function tenant()

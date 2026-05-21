@@ -800,9 +800,12 @@
         plumbing:   'issue-plumbing',
         electrical: 'issue-electrical',
         hvac:       'issue-hvac',
+        appliance:  'issue-general',
         carpentry:  'issue-carpentry',
-        general:    'issue-general',
         pest:       'issue-pest',
+        cleaning:   'issue-general',
+        internet:   'issue-hvac',
+        general:    'issue-general',
         other:      'issue-other',
     };
 
