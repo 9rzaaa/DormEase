@@ -98,7 +98,6 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'description' => 'required|string|max:5000',
-            'room_number' => 'nullable|string|max:50',
             'input_type' => 'nullable|in:voice,text',
         ]);
 
@@ -108,7 +107,7 @@ class MaintenanceController extends Controller
 
         $maintenance = MaintenanceRequest::create([
             'tenant_id' => $tenant?->tenant_id,
-            'room_number' => $validated['room_number'] ?? $tenant?->room_number,
+            'room_number' => $tenant?->room_number,
             'input_type' => $validated['input_type'] ?? 'text',
             'issue_type' => $classification['issue_type'],
             'description' => $cleanedDescription,
