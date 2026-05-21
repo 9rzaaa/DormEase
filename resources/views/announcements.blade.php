@@ -948,9 +948,66 @@
     });
 
     function setFilter(btn, type) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const now   = new Date();
+    const cards = document.querySelectorAll('.ann-card');
+
+    cards.forEach(card => {
+        const id       = getCardId(card);
+        const ann      = annData[id];
+        if (!ann) return;
+
+        const postedAt = new Date(ann.posted_at);
+        let show       = false;
+
+        if (type === 'all') {
+            show = true;
+        } else if (type === 'week') {
+            const weekAgo = new Date(now);
+            weekAgo.setDate(now.getDate() - 7);
+            show = postedAt >= weekAgo;
+        } else if (type === 'month') {
+            show = postedAt.getMonth() === now.getMonth() &&
+                   postedAt.getFullYear() === now.getFullYear();
+        } else if (type === 'high') {
+            show = (ann.priority || '').toLowerCase() === 'high';
+        } else if (type === 'low') {
+            show = (ann.priority || '').toLowerCase() === 'low';
+        }
+
+        card.style.display = show ? '' : 'none';
+    });
+
+    // Update column counts after filtering
+    document.querySelectorAll('.kanban-col').forEach(col => {
+        const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
+        const countEl = col.querySelector('.col-count');
+        if (countEl) countEl.textContent = visible;
+
+        // Show/hide empty state
+        let emptyEl = col.querySelector('.empty-col');
+        const body  = col.querySelector('.kanban-col-body');
+        if (visible === 0) {
+            if (!emptyEl) {
+                emptyEl = document.createElement('div');
+                emptyEl.className   = 'empty-col filter-empty';
+                emptyEl.innerHTML   = '<div>No announcements match this filter.</div>';
+                body.appendChild(emptyEl);
+            }
+            emptyEl.style.display = '';
+        } else if (emptyEl) {
+            emptyEl.style.display = 'none';
+        }
+    });
+        }
+
+        function getCardId(card) {
+        // Extract ID from the onclick attribute
+        const match = card.getAttribute('onclick')?.match(/openViewModal\((\d+)\)/);
+        return match ? match[1] : null;
+        }
 
     function submitForm(formId, e) {
         e.stopPropagation();
