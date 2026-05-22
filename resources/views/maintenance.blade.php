@@ -264,13 +264,14 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        font-size: .83rem;
+        table-layout: fixed;
+        font-size: .88rem;
     }
 
     thead th {
-        padding: .7rem 1rem;
-        text-align: left;
-        font-size: .72rem;
+        padding: .75rem .85rem;
+        text-align: center;
+        font-size: .78rem;
         font-weight: 800;
         color: var(--ink-muted);
         text-transform: uppercase;
@@ -289,20 +290,22 @@
     tbody tr:hover { background: #fff7fb; }
 
     tbody td {
-        padding: .75rem 1rem;
+        padding: .8rem .85rem;
         color: var(--ink);
         vertical-align: middle;
+        text-align: center;
+        font-weight: 500;
     }
 
     .req-id {
         font-weight: 700;
         color: var(--hot-pink);
-        font-size: .8rem;
+        font-size: .86rem;
         white-space: nowrap;
     }
 
     .req-date {
-        font-size: .78rem;
+        font-size: .84rem;
         color: var(--ink-muted);
         white-space: nowrap;
     }
@@ -314,8 +317,8 @@
         background: var(--petal);
         border: 1px solid var(--baby-pink);
         border-radius: 6px;
-        padding: .18rem .55rem;
-        font-size: .78rem;
+        padding: .22rem .56rem;
+        font-size: .84rem;
         font-weight: 700;
         color: var(--hot-pink);
         white-space: nowrap;
@@ -330,9 +333,10 @@
     .issue-type {
         display: inline-flex;
         align-items: center;
-        padding: .18rem .55rem;
+        justify-content: center;
+        padding: .22rem .56rem;
         border-radius: 6px;
-        font-size: .72rem;
+        font-size: .78rem;
         font-weight: 700;
         white-space: nowrap;
     }
@@ -346,20 +350,24 @@
     .issue-other       { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
 
     .desc-cell {
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        max-width: 100%;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        overflow-wrap: break-word;
         color: var(--ink-muted);
-        font-size: .8rem;
+        font-size: .86rem;
+        text-align: center;
+        line-height: 1.35;
     }
 
     .urgency-badge {
         display: inline-flex;
         align-items: center;
-        padding: .18rem .55rem;
+        justify-content: center;
+        padding: .22rem .56rem;
         border-radius: 6px;
-        font-size: .72rem;
+        font-size: .78rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: .03em;
@@ -373,11 +381,19 @@
     .status-badge {
         display: inline-flex;
         align-items: center;
-        padding: .2rem .65rem;
+        justify-content: center;
+        padding: .24rem .64rem;
         border-radius: 20px;
-        font-size: .72rem;
+        font-size: .78rem;
         font-weight: 800;
         white-space: nowrap;
+    }
+
+    .action-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
     }
 
     .status-pending     { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
@@ -386,10 +402,10 @@
     .status-closed      { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
 
     .action-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        border: 1.5px solid var(--baby-pink);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--baby-pink);
         background: var(--white);
         cursor: pointer;
         display: inline-flex;
@@ -401,12 +417,12 @@
 
     .action-btn:hover {
         border-color: var(--bright-pink);
-        box-shadow: 0 3px 10px rgba(255,45,120,.15);
+        box-shadow: 0 6px 14px rgba(232,23,93,.15);
     }
 
     .action-btn img {
-        width: 13px;
-        height: 13px;
+        width: 14px;
+        height: 14px;
         object-fit: contain;
     }
 
@@ -692,7 +708,7 @@
                         <th>Description</th>
                         <th>Urgency</th>
                         <th>Status</th>
-                        <th></th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -860,7 +876,7 @@
             <td>${urgencyBadge(r.urgency)}</td>
             <td>${statusBadge(r.status)}</td>
             <td>
-                <div style="display:flex;gap:.3rem;">
+                <div class="action-cell">
                     <button class="action-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
                         <img src="${eyeIcon}" alt="View">
                     </button>
