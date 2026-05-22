@@ -217,14 +217,12 @@
                     @foreach($maintenanceRequests as $req)
                         <div class="maint-row">
                             <div class="maint-type-icon">
-                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
-                                    <img src="{{ asset('icons/plumbing.png') }}" class="icon-md" alt="">
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec'))
-                                    <img src="{{ asset('icons/electric.png') }}" class="icon-md" alt="">
-                                @else
-                                    <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="">
+                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb')) 🔧
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec')) ⚡
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac')) ❄️
+                                @else 🛠
                                 @endif
-                            </div>
+                        </div>
                             <div class="maint-info">
                                 <div class="maint-title">
                                     {{ $req->issue_type }}
