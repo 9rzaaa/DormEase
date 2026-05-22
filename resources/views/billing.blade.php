@@ -196,6 +196,13 @@
         border: 1px solid rgba(255,105,155,.2);
     }
 
+    .floor-summary-chip {
+        background: #fff0f6;
+        color: #191617;
+        border-color: #ffc7dc;
+        box-shadow: 0 3px 10px rgba(255,79,147,.08);
+    }
+
     .floor-due {
         font-size: .75rem;
         font-weight: 700;
@@ -927,9 +934,9 @@
 
             <div class="floor-header">
                 <span class="floor-name">{{ $group['submeter_label'] }}</span>
-                <span class="floor-chip">{{ $group['floor_consumption_m3'] }} m³</span>
-                <span class="floor-chip">₱{{ number_format($group['total_floor_bill'], 2) }}</span>
-                <span class="floor-chip">{{ $group['room_count'] }} rooms</span>
+                <span class="floor-chip floor-summary-chip">{{ $group['floor_consumption_m3'] }} m³</span>
+                <span class="floor-chip floor-summary-chip">₱{{ number_format($group['total_floor_bill'], 2) }}</span>
+                <span class="floor-chip floor-summary-chip">{{ $group['room_count'] }} rooms</span>
                 @if($group['past_due_count'] > 0)
                     <span class="floor-chip" style="background:#ffe9ee;color:#e04867;border-color:#ffb3c1;">{{ $group['past_due_count'] }} past due</span>
                 @endif
