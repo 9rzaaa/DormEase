@@ -1096,6 +1096,8 @@ const tenantsByFloor = @json(
 
 const activeFloors   = @json($activeFloors->values());
 const unloggedFloors = @json($unloggedFloors->values());
+const billingExportGroups = @json($billingGroups);
+const selectedBillingMonth = @json($selectedMonth);
 
 function recalcRate() {
     const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value)     || 0;
@@ -1515,7 +1517,62 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function exportBilling() {
-    showToast('Billing data exported!', 'success');
+    const rows = [[
+        'Billing Month',
+        'Floor',
+        'Due Date',
+        'Floor Consumption (m3)',
+        'Total Floor Bill',
+        'Room Number',
+        'Occupants',
+        'Tenant',
+        'Tenant Share',
+        'Payment Status',
+        'Reference Code',
+        'Payment Submitted At'
+    ]];
+
+    billingExportGroups.forEach(group => {
+        group.rooms.forEach(room => {
+            room.tenants.forEach(tenant => {
+                rows.push([
+                    selectedBillingMonth,
+                    group.floor,
+                    group.due_date,
+                    group.floor_consumption_m3,
+                    Number(group.total_floor_bill || 0).toFixed(2),
+                    room.room_number,
+                    room.occupants_in_room,
+                    tenant.name,
+                    Number(tenant.room_share || 0).toFixed(2),
+                    tenant.payment_status,
+                    tenant.payment_reference_code || '',
+                    tenant.payment_submitted_at || ''
+                ]);
+            });
+        });
+    });
+
+    if (rows.length === 1) {
+        showToast('No billing data to export.', 'error');
+        return;
+    }
+
+    const csv = rows
+        .map(row => row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    const monthLabel = String(selectedBillingMonth || new Date().toISOString().slice(0, 10)).slice(0, 7);
+
+    a.href = URL.createObjectURL(blob);
+    a.download = `water-billing-${monthLabel}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+
+    showToast('Billing data exported as CSV!', 'success');
 }
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
