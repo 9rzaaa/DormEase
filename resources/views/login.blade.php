@@ -697,7 +697,7 @@
                     >
                         <img
                             id="pw-eye-icon"
-                            src="{{ asset('icons/eyeon.png') }}"
+                            src="{{ asset('icons/eye.png') }}"
                             alt="Toggle Password"
                             style="width:18px; height:18px;"
                         >
@@ -739,9 +739,9 @@
         const icon  = document.getElementById('pw-eye-icon');
         const show  = input.type === 'password';
         input.type = show ? 'text' : 'password';
-        icon.src = show
-            ? "{{ asset('icons/eye-off.png') }}"
-            : "{{ asset('icons/eye.png') }}";
+      icon.src = show
+            ? "{{ asset('icons/eye.png') }}"
+            : "{{ asset('icons/eye-off.png') }}";
     }
 
 </script>
