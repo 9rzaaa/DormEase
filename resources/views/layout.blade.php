@@ -252,7 +252,7 @@
     }
 
     /* Add to the CSS */
-    .avatar-wrap { padding-bottom: 10px; }
+    .avatar-wrap { padding-bottom: 0px; }
     .avatar-dropdown { top: 100%; margin-top: 0px; }
 
     .dropdown-header {
