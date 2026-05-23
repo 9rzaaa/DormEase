@@ -104,9 +104,9 @@ Route::middleware('auth:staff')->group(function () {
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
         Route::get('/', [BillingController::class, 'index'])->name('index');
-        Route::post('/log', [BillingController::class, 'log']);
-        Route::post('/update-status', [BillingController::class, 'updateStatus']);
-        Route::post('/update-full', [BillingController::class, 'updateFull']);
+        Route::post('/log', [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
     });
 
     // documents (admin ui)
