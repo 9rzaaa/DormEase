@@ -540,7 +540,7 @@ table td {
 }
 
 .td-id  { text-align: left; }
-.td-name { text-align: left; }
+.td-name { text-align: center; }
 
 @media (max-width: 900px) {
     .stats-row { grid-template-columns: 1fr; }
@@ -987,7 +987,7 @@ table td {
             tbody.innerHTML = pageData.map(t => `
                 <tr>
                     <td class="td-id">${t.account_id ?? '—'}</td>
-                    <td class="td-name">
+                    <td class="td-name" style="${t.is_temp_password ? '' : 'text-align:center;'}">
                         ${t.first_name} ${t.last_name}
                         ${tempBadge(t.is_temp_password)}
                     </td>
