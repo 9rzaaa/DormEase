@@ -21,6 +21,7 @@ Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
 Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 Route::get('/features', fn() => view('public.features'))->name('features');
+Route::redirect('/register', '/login')->name('register');
 
 // auth
 Route::get('/login', function () {
@@ -91,15 +92,17 @@ Route::middleware('auth:staff')->group(function () {
 
     // visitors
     Route::get('/visitors', [VisitorController::class, 'adminIndex'])->name('visitors.index');
-    Route::post('/visitors/store', [VisitorController::class, 'store']);
-    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout']);
+    Route::post('/visitors/store', [VisitorController::class, 'store'])->name('visitors.store');
+    Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
+    Route::put('/visitors/timein/{id}', [VisitorController::class, 'timein'])->name('visitors.timein');
+    Route::put('/visitors/{id}/status', [VisitorController::class, 'updateStatus'])->name('visitors.status');
 
     // staff
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-    Route::post('/staff', [StaffController::class, 'store']);
-    Route::put('/staff/{id}', [StaffController::class, 'update']);
-    Route::delete('/staff/{id}', [StaffController::class, 'destroy']);
-    Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword']);
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+    Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
@@ -111,41 +114,41 @@ Route::middleware('auth:staff')->group(function () {
 
     // documents (admin ui)
     Route::get('/documents', [DocumentController::class, 'page'])->name('documents.index');
-    Route::get('/admin/documents', [DocumentController::class, 'index']);
-    Route::post('/admin/documents', [DocumentController::class, 'store']);
-    Route::get('/admin/documents/{document}', [DocumentController::class, 'show']);
-    Route::put('/admin/documents/{document}', [DocumentController::class, 'update']);
-    Route::delete('/admin/documents/{document}', [DocumentController::class, 'destroy']);
+    Route::get('/admin/documents', [DocumentController::class, 'index'])->name('admin.documents.index');
+    Route::post('/admin/documents', [DocumentController::class, 'store'])->name('admin.documents.store');
+    Route::get('/admin/documents/{document}', [DocumentController::class, 'show'])->name('admin.documents.show');
+    Route::put('/admin/documents/{document}', [DocumentController::class, 'update'])->name('admin.documents.update');
+    Route::delete('/admin/documents/{document}', [DocumentController::class, 'destroy'])->name('admin.documents.destroy');
 
     // document requests (admin)
-    Route::get('/admin/document-requests', [DocumentRequestController::class, 'index']);
-    Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+    Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
+    Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])->name('admin.document-requests.update');
 
     // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
-    Route::put('/maintenance/{id}', [MaintenanceController::class, 'update']);
-    Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy']);
+    Route::put('/maintenance/{id}', [MaintenanceController::class, 'update'])->name('maintenance.update');
+    Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
 
     // emergency
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
-    Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update']);
-    Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy']);
+    Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
+    Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
 
     // frontdesk
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
-    Route::get('/frontdesk/visitors', [VisitorController::class, 'index']);
-    Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex']);
-    Route::get('/frontdesk/emergency', [EmergencyController::class, 'frontdeskIndex']);
-    Route::post('/frontdesk/emergency', [EmergencyController::class, 'store']);
-    Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update']);
-    Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy']);
-    Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex']);
+    Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
+    Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
+    Route::get('/frontdesk/emergency', [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
+    Route::post('/frontdesk/emergency', [EmergencyController::class, 'store'])->name('frontdesk.emergency.store');
+    Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
+    Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
+    Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
 
     // profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile', [ProfileController::class, 'update']);
-    Route::put('/profile/password', [ProfileController::class, 'password']);
-    Route::put('/profile/deactivate', [ProfileController::class, 'deactivate']);
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
+    Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
 
     // settings
     Route::get('/settings', fn() => view('settings'))->name('settings.index');
