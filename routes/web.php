@@ -15,6 +15,7 @@ use App\Http\Controllers\EmergencyController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentRequestController;
+use App\Http\Controllers\FDProfileController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -152,4 +153,10 @@ Route::middleware('auth:staff')->group(function () {
 
     // settings
     Route::get('/settings', fn() => view('settings'))->name('settings.index');
+
+    //front desk profile
+    Route::get('/frontdesk/profile',            [FDProfileController::class, 'index'])->name('fdprofile.index');
+    Route::put('/frontdesk/profile/info',       [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
+    Route::put('/frontdesk/profile/password',   [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
+    Route::put('/frontdesk/profile/deactivate', [FDProfileController::class, 'deactivate'])->name('frontdesk.profile.deactivate');
 });
