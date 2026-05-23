@@ -493,7 +493,7 @@
                         </div>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item">
+                        <a href="{{ route('fdprofile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
                             <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
                         </a>
                         <a href="#" class="dropdown-item">
