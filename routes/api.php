@@ -2,10 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\PasswordController;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
@@ -22,19 +23,25 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // ── Announcements ─────────────────────────────────────────────────────────
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
+    // ── Password ──────────────────────────────────────────────────────────────
     Route::post('/change-password', [PasswordController::class, 'change']);
 
+    // ── Visitors ──────────────────────────────────────────────────────────────
     Route::get('/visitors',                 [VisitorController::class, 'index']);
     Route::post('/visitors',                [VisitorController::class, 'store']);
     Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
 
+    // ── Billing ───────────────────────────────────────────────────────────────
     Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
     // ── Document Requests ─────────────────────────────────────────────────────
+    Route::get('/document-requests', [DocumentRequestController::class, 'index']); // ✅ FIXED (this was missing)
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
+    Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
 
     // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {
