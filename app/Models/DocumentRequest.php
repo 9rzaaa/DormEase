@@ -16,8 +16,10 @@ class DocumentRequest extends Model
         'purpose',
         'delivery_type',
         'date_needed',
+        'attachment',
         'status',
         'admin_remarks',
+        'fulfilled_file',
         'submitted_at',
         'processed_at',
     ];

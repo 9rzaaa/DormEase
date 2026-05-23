@@ -676,6 +676,9 @@
         </div>
     </div>
 
+    {{-- ═══════════════════════════════════════════════════════
+         DOCUMENTS TAB
+    ═══════════════════════════════════════════════════════ --}}
     <div class="tab-panel active fade-up d3" id="panel-docs">
         <div class="toolbar">
             <span class="toolbar-label">Category:</span>
@@ -746,6 +749,9 @@
         </div>
     </div>
 
+    {{-- ═══════════════════════════════════════════════════════
+         DOCUMENT REQUESTS TAB
+    ═══════════════════════════════════════════════════════ --}}
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
@@ -807,6 +813,7 @@
 
 @section('modals')
 
+{{-- ── Upload Document Modal ── --}}
 <div class="modal-overlay" id="upload-modal">
     <div class="modal" style="max-width:560px;">
         <div class="modal-header">
@@ -863,6 +870,7 @@
     </div>
 </div>
 
+{{-- ── View Document Modal ── --}}
 <div class="modal-overlay" id="view-doc-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -877,6 +885,7 @@
     </div>
 </div>
 
+{{-- ── Edit Document Modal ── --}}
 <div class="modal-overlay" id="edit-doc-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -923,6 +932,7 @@
     </div>
 </div>
 
+{{-- ── Delete Document Modal ── --}}
 <div class="modal-overlay" id="delete-doc-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -941,6 +951,7 @@
     </div>
 </div>
 
+{{-- ── View Request Modal ── --}}
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -952,6 +963,7 @@
     </div>
 </div>
 
+{{-- ── Update Request Modal ── --}}
 <div class="modal-overlay" id="update-req-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -974,8 +986,8 @@
             <textarea id="upd-req-remarks" placeholder="Add remarks or reason for denial..."></textarea>
         </div>
         <div class="modal-field" id="upd-doc-field">
-            <label>Attach Fulfilled Document (optional)</label>
-            <input type="file" id="upd-req-file" accept=".pdf,.png,.jpg,.jpeg,.docx,.doc,.xlsx,.xls">
+            <label>Attach Fulfilled Document — PDF only (optional)</label>
+            <input type="file" id="upd-req-file" accept=".pdf">
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
@@ -1013,6 +1025,7 @@
     let currentDoc = null;
     let currentReq = null;
 
+    // Tab switching document and document requestss
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1022,6 +1035,7 @@
         if (tab === 'reqs') fetchReqs();
     }
 
+    // Helpers
     function toggleTenantSelect() {
         const v = document.getElementById('up-visibility').value;
         document.getElementById('tenant-select-field').style.display = v === 'specific' ? 'flex' : 'none';
@@ -1032,7 +1046,7 @@
         document.getElementById('edit-tenant-field').style.display = v === 'specific' ? 'flex' : 'none';
     }
 
-    document.getElementById('up-type').addEventListener('change', function() {
+    document.getElementById('up-type').addEventListener('change', function () {
         document.getElementById('new-category-field').style.display = this.value === '__new__' ? 'flex' : 'none';
     });
 
@@ -1042,16 +1056,16 @@
     }
 
     function escHtml(str) {
-        return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+        return (str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
     function fileTypeBadge(path) {
         if (!path) return '<span class="file-type-badge ft-other">—</span>';
         const ext = path.split('.').pop().toLowerCase();
-        if (ext === 'pdf')  return '<span class="file-type-badge ft-pdf">PDF</span>';
-        if (['png','jpg','jpeg'].includes(ext)) return '<span class="file-type-badge ft-img">Image</span>';
-        if (['doc','docx'].includes(ext))       return '<span class="file-type-badge ft-word">Word</span>';
-        if (['xls','xlsx'].includes(ext))       return '<span class="file-type-badge ft-xl">Excel</span>';
+        if (ext === 'pdf')                          return '<span class="file-type-badge ft-pdf">PDF</span>';
+        if (['png', 'jpg', 'jpeg'].includes(ext))   return '<span class="file-type-badge ft-img">Image</span>';
+        if (['doc', 'docx'].includes(ext))          return '<span class="file-type-badge ft-word">Word</span>';
+        if (['xls', 'xlsx'].includes(ext))          return '<span class="file-type-badge ft-xl">Excel</span>';
         return `<span class="file-type-badge ft-other">${ext.toUpperCase()}</span>`;
     }
 
@@ -1072,12 +1086,24 @@
         return map[s] ?? '<span class="req-status-badge req-pending">Pending</span>';
     }
 
+    function renderPagination(containerId, currentPage, totalPages, onGo) {
+        const pg = document.getElementById(containerId);
+        if (totalPages <= 1) { pg.innerHTML = ''; return; }
+        let html = `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&#8249;</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="(${onGo.toString()})(${i})">${i}</button>`;
+        }
+        html += `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&#8250;</button>`;
+        pg.innerHTML = html;
+    }
+
+    // DOCUMENTS TAB = /admin/documents
+
     async function fetchDocs() {
         document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
         try {
-            const res  = await fetch('/api/documents', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            const res  = await fetch('/admin/documents', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
             const data = await res.json();
-            console.log('DOCS RESPONSE:', data);  // ADD THIS
             if (data.error) {
                 document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
                 return;
@@ -1086,8 +1112,7 @@
             docApplyFilters();
             updateDocCounts();
             document.getElementById('tab-docs-count').textContent = docState.data.length;
-        } catch(e) {
-            console.log('DOCS ERROR:', e);  // ADD THIS
+        } catch (e) {
             document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load documents.</div></td></tr>`;
         }
     }
@@ -1101,8 +1126,8 @@
             const matchType   = !docState.type || d.document_type === docState.type;
             const matchVis    = !vis || d.visibility === vis;
             const matchSearch = !q ||
-                (d.title ?? '').toLowerCase().includes(q) ||
-                (d.tenant_name ?? '').toLowerCase().includes(q) ||
+                (d.title         ?? '').toLowerCase().includes(q) ||
+                (d.tenant_name   ?? '').toLowerCase().includes(q) ||
                 (d.document_type ?? '').toLowerCase().includes(q);
             return matchType && matchVis && matchSearch;
         });
@@ -1123,10 +1148,9 @@
         docState.data.forEach(d => { counts[d.document_type] = (counts[d.document_type] || 0) + 1; });
         document.getElementById('sc-all').textContent = docState.data.length;
         document.querySelectorAll('.type-btn[data-type]').forEach(btn => {
-            const t  = btn.dataset.type;
+            const t = btn.dataset.type;
             if (!t) return;
-            const el = btn.querySelector('.type-count');
-            const slug = t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+            const slug    = t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
             const countEl = document.getElementById('sc-' + slug);
             if (countEl) countEl.textContent = counts[t] || 0;
         });
@@ -1204,7 +1228,9 @@
                 <div class="view-detail-label">Date Uploaded</div>
                 <div class="view-detail-val">${fmtDate(d.created_at)}</div>
             </div>
-            ${d.file_path ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>` : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
+            ${d.file_path
+                ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>`
+                : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
         `;
         openModal('view-doc-modal');
     }
@@ -1215,11 +1241,11 @@
 
     function openEditDoc(d) {
         currentDoc = d;
-        document.getElementById('edit-doc-id').value = d.document_id;
-        document.getElementById('edit-doc-title').value   = d.title;
-        document.getElementById('edit-doc-type').value    = d.document_type;
-        document.getElementById('edit-doc-vis').value     = d.visibility ?? 'admin';
-        document.getElementById('edit-doc-tenant').value  = d.tenant_id ?? '';
+        document.getElementById('edit-doc-id').value    = d.document_id;
+        document.getElementById('edit-doc-title').value = d.title;
+        document.getElementById('edit-doc-type').value  = d.document_type;
+        document.getElementById('edit-doc-vis').value   = d.visibility ?? 'admin';
+        document.getElementById('edit-doc-tenant').value = d.tenant_id ?? '';
         toggleEditTenantSelect();
         openModal('edit-doc-modal');
     }
@@ -1232,7 +1258,7 @@
         const tid   = document.getElementById('edit-doc-tenant').value;
         if (!title) { showToast('Title is required', 'error'); return; }
         try {
-            const res = await fetch(`/api/documents/${id}`, {
+            const res = await fetch(`/admin/documents/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
                 body: JSON.stringify({ title, document_type: type, visibility: vis, tenant_id: tid || null }),
@@ -1245,7 +1271,7 @@
     }
 
     function promptDeleteDoc(id, title) {
-        document.getElementById('delete-doc-id').value         = id;
+        document.getElementById('delete-doc-id').value          = id;
         document.getElementById('delete-doc-label').textContent = title;
         openModal('delete-doc-modal');
     }
@@ -1253,7 +1279,7 @@
     async function confirmDeleteDoc() {
         const id = document.getElementById('delete-doc-id').value;
         try {
-            const res = await fetch(`/api/documents/${id}`, {
+            const res = await fetch(`/admin/documents/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
             });
@@ -1265,17 +1291,16 @@
     }
 
     async function submitUpload() {
-        const title  = document.getElementById('up-title').value.trim();
-        let   type   = document.getElementById('up-type').value;
-        const vis    = document.getElementById('up-visibility').value;
-        const tid    = document.getElementById('up-tenant').value;
-        const file   = document.getElementById('up-file').files[0];
+        const title = document.getElementById('up-title').value.trim();
+        let   type  = document.getElementById('up-type').value;
+        const vis   = document.getElementById('up-visibility').value;
+        const tid   = document.getElementById('up-tenant').value;
+        const file  = document.getElementById('up-file').files[0];
 
         if (type === '__new__') {
             type = document.getElementById('up-new-type').value.trim();
             if (!type) { showToast('Please enter a category name.', 'error'); return; }
         }
-
         if (!title) { showToast('Title is required.', 'error'); return; }
 
         const fd = new FormData();
@@ -1286,7 +1311,7 @@
         if (file) fd.append('file', file);
 
         try {
-            const res = await fetch('/api/documents', {
+            const res = await fetch('/admin/documents', {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
                 body: fd,
@@ -1300,12 +1325,13 @@
         } catch { showToast('Upload failed.', 'error'); }
     }
 
+    // DOCUMENT REQUESTS TAB  =  /admin/document-requests
+
     async function fetchReqs() {
         document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state">Loading...</div></td></tr>`;
         try {
-            const res  = await fetch('/api/document-requests', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            const res  = await fetch('/admin/document-requests', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
             const data = await res.json();
-            console.log('REQS RESPONSE:', data);  // ADD THIS
             if (data.error) {
                 document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
                 return;
@@ -1314,8 +1340,7 @@
             const pending = reqState.data.filter(r => r.status === 'pending').length;
             document.getElementById('tab-reqs-count').textContent = pending;
             reqApplyFilters();
-        } catch(e) {
-            console.log('REQS ERROR:', e);  // ADD THIS
+        } catch (e) {
             document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
         }
     }
@@ -1334,8 +1359,8 @@
             return matchStatus && matchSearch;
         });
 
-        if (sort === 'newest') reqState.filtered.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
-        if (sort === 'oldest') reqState.filtered.sort((a,b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+        if (sort === 'newest') reqState.filtered.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+        if (sort === 'oldest') reqState.filtered.sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
 
         reqState.page = 1;
         renderReqTable();
@@ -1350,7 +1375,7 @@
             tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><img src="{{ asset('icons/pending.png') }}" alt="">No document requests found.</div></td></tr>`;
         } else {
             tbody.innerHTML = page.map(r => `<tr>
-                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</td>
+                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(r.tenant_name ?? '—')}</td>
                 <td style="font-size:.82rem;">${escHtml(r.document_type)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.purpose)}">${escHtml(r.purpose ?? '—')}</td>
@@ -1379,10 +1404,19 @@
 
     function viewReq(r) {
         currentReq = r;
+
+        const attachmentHtml = r.attachment
+            ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">📎 View Tenant's Uploaded Form</a>`
+            : '<span style="font-size:.82rem;color:var(--ink-muted);">No attachment uploaded.</span>';
+
+        const fulfilledHtml = r.fulfilled_file
+            ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank">📄 View Fulfilled Document</a>`
+            : '<span style="font-size:.82rem;color:var(--ink-muted);">No document sent yet.</span>';
+
         document.getElementById('view-req-content').innerHTML = `
             <div class="view-detail-row">
                 <div class="view-detail-label">Request ID</div>
-                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</div>
+                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</div>
             </div>
             <div class="view-detail-row">
                 <div class="view-detail-label">Tenant</div>
@@ -1417,7 +1451,14 @@
                 <div class="view-detail-label">Admin Remarks</div>
                 <div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div>
             </div>` : ''}
-
+            <div class="view-detail-row">
+                <div class="view-detail-label">Tenant Attachment</div>
+                <div class="view-detail-val">${attachmentHtml}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Fulfilled Document</div>
+                <div class="view-detail-val">${fulfilledHtml}</div>
+            </div>
         `;
         document.getElementById('view-req-actions').innerHTML = `
             <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
@@ -1439,36 +1480,48 @@
         const id      = document.getElementById('upd-req-id').value;
         const status  = document.getElementById('upd-req-status').value;
         const remarks = document.getElementById('upd-req-remarks').value;
-        
+        const file    = document.getElementById('upd-req-file').files[0];
+
+        // Client-side PDF validation
+        if (file) {
+            if (file.type !== 'application/pdf') {
+                showToast('Only PDF files are allowed.', 'error');
+                return;
+            }
+            if (file.size > 20 * 1024 * 1024) {
+                showToast('File must be under 20MB.', 'error');
+                return;
+            }
+        }
+
+        const fd = new FormData();
+        fd.append('_method', 'PUT');
+        fd.append('status', status);
+        fd.append('admin_remarks', remarks);
+        if (file) fd.append('fulfilled_file', file);
+
         try {
-            const res = await fetch(`/api/document-requests/${id}`, {
-                method: 'POST',
+            const res = await fetch(`/admin/document-requests/${id}`, {
+                method: 'POST',    
                 headers: {
                     'X-CSRF-TOKEN': CSRF,
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-HTTP-Method-Override': 'PUT'
                 },
-                body: JSON.stringify({ status, admin_remarks: remarks }),
+                body: fd,
             });
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message ?? 'Update failed');
+            }
             closeModal('update-req-modal');
             showToast('Request updated successfully.', 'success');
             fetchReqs();
-        } catch { showToast('Update failed.', 'error'); }
-    }
-
-    function renderPagination(containerId, currentPage, totalPages, onGo) {
-        const pg = document.getElementById(containerId);
-        if (totalPages <= 1) { pg.innerHTML = ''; return; }
-        let html = `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage - 1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
-        for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="(${onGo.toString()})(${i})">${i}</button>`;
+        } catch (e) {
+            showToast(e.message ?? 'Update failed.', 'error');
         }
-        html += `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage + 1})" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`;
-        pg.innerHTML = html;
     }
 
+    // Init
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
