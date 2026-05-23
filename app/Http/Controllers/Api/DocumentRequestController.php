@@ -8,6 +8,15 @@ use Illuminate\Http\Request;
 
 class DocumentRequestController extends Controller
 {
+    public function index(Request $request)
+    {
+        $records = DocumentRequest::where('tenant_id', $request->user()->tenant_id)
+            ->orderBy('submitted_at', 'desc')
+            ->get();
+
+        return response()->json($records);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -40,10 +49,5 @@ class DocumentRequestController extends Controller
             'message' => 'Request submitted successfully.',
             'data'    => $documentRequest,
         ], 201);
-        
-        $records = DocumentRequest::where('tenant_id', $request->user()->tenant_id)
-                    ->orderBy('submitted_at', 'desc')
-                    ->get();
-    return response()->json($records);
     }
 }
