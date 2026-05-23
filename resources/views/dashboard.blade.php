@@ -217,14 +217,12 @@
                     @foreach($maintenanceRequests as $req)
                         <div class="maint-row">
                             <div class="maint-type-icon">
-                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
-                                    <img src="{{ asset('icons/plumbing.png') }}" class="icon-md" alt="">
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec'))
-                                    <img src="{{ asset('icons/electric.png') }}" class="icon-md" alt="">
-                                @else
-                                    <img src="{{ asset('icons/maintenance.png') }}" class="icon-md" alt="">
+                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb')) 🔧
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec')) ⚡
+                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac')) ❄️
+                                @else 🛠
                                 @endif
-                            </div>
+                        </div>
                             <div class="maint-info">
                                 <div class="maint-title">
                                     {{ $req->issue_type }}
@@ -261,7 +259,7 @@
                 <div class="emergency-card">
                     <div class="emergency-title">Emergency Report</div>
                     <div class="emergency-icon-wrap">
-                        <img src="{{ asset('icons/emergency.png') }}" class="icon-lg" alt="">
+                        <img src="{{ asset('icons/panic.png') }}" class="icon-lg" alt="">
                     </div>
                     <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}:</div>
                     <div class="emergency-type">{{ $latestEmergency->emergency_type }}</div>

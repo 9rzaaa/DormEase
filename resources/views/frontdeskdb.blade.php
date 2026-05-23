@@ -217,7 +217,7 @@
                 <div class="emergency-card">
                     <div class="emergency-title">Emergency Report</div>
                     <div class="emergency-icon-wrap">
-                        <img src="{{ asset('icons/emergency.png') }}" class="icon-lg" alt="">
+                        <img src="{{ asset('icons/panic.png') }}" class="icon-lg" alt="">
                     </div>
                     <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}:</div>
                     <div class="emergency-type">{{ $latestEmergency->emergency_type }}</div>

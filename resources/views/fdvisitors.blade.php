@@ -21,22 +21,46 @@
     .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
 
     .stat-box {
-        background: var(--white); border-radius: 16px;
-        border: 1.5px solid var(--pink-light); box-shadow: var(--shadow);
-        padding: 1.3rem 1.5rem;
-        display: flex; align-items: center; gap: 1.2rem;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        border-radius: 18px;
+        border: none;
+        box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
+        padding: 1.4rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
         transition: transform .2s, box-shadow .2s;
     }
-    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.15); }
+
+    .stat-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(232,23,93,.35);
+    }
 
     .stat-icon-circle {
-        width: 58px; height: 58px; border-radius: 50%; flex-shrink: 0;
-        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
-        display: flex; align-items: center; justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(0,0,0,.15);
     }
-    .stat-icon-circle img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); }
-    .stat-num   { font-size: 2rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.03em; }
-    .stat-label { font-size: .85rem; color: var(--ink-muted); margin-top: .1rem; font-weight: 500; }
+
+    .stat-icon-circle img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+
+    .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; letter-spacing: -.03em; }
+    .stat-label { font-size: .85rem; color: rgba(247,245,245,.967); margin-top: .1rem; font-weight: 600; }
 
     .table-card { background: var(--white); border-radius: 16px; border: 1.5px solid var(--bright-pink); box-shadow: var(--shadow); overflow: hidden; }
 
@@ -85,13 +109,14 @@
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
-    thead tr { background: var(--pink-bg); }
+    thead tr { background: var(--pink-100); }
     th {
         padding: .75rem 1rem; text-align: left;
         font-size: .73rem; font-weight: 700; color: var(--ink-muted);
         text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+        border-bottom: 1.5px solid var(--bright-pink);
     }
-    td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1px solid var(--border); vertical-align: middle; }
+    td { padding: .85rem 1rem; font-size: .875rem; color: var(--ink); border-bottom: 1.5px solid var(--border); vertical-align: middle; }
     tbody tr { transition: background .15s; }
     tbody tr:hover { background: var(--pink-bg); }
     tbody tr:last-child td { border-bottom: none; }
@@ -206,7 +231,7 @@
     <div class="stats-row fade-up d2">
         <div class="stat-box">
             <div class="stat-icon-circle">
-                <img src="{{ asset('icons/visitor.png') }}" class="icon-md" alt="">
+                <img src="{{ asset('icons/visitor.png') }}" alt="">
             </div>
             <div>
                 <div class="stat-num">{{ $visitorsToday ?? 0 }}</div>
@@ -215,7 +240,7 @@
         </div>
         <div class="stat-box">
             <div class="stat-icon-circle">
-                <img src="{{ asset('icons/nav-db.png') }}" class="icon-md" alt="">
+                <img src="{{ asset('icons/nav-db.png') }}" alt="">
             </div>
             <div>
                 <div class="stat-num">{{ $currentlyInside ?? 0 }}</div>

@@ -103,6 +103,10 @@ class BillingController extends Controller
                 fn($b) => $b->floor == $floor
             );
 
+            $isDueDatePassed = $floorBilling?->due_date
+                ? Carbon::parse($floorBilling->due_date)->lt(now()->startOfDay())
+                : false;
+
             foreach ($floorTenants->groupBy('room_number') as $roomNumber => $roomTenants) {
 
                 $tenantRows = $roomTenants->map(function ($tenant) use ($billings) {
@@ -139,7 +143,8 @@ class BillingController extends Controller
                 })->values()->toArray();
 
                 if (
-                    collect($tenantRows)->contains(
+                    $isDueDatePassed
+                    && collect($tenantRows)->contains(
                         fn($t) => in_array(
                             $t['payment_status'],
                             ['unpaid', 'overdue']

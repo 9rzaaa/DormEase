@@ -140,6 +140,7 @@
         background: var(--white);
         flex-wrap: wrap;
         gap: .8rem;
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     .table-title {
@@ -262,9 +263,17 @@
         flex-shrink: 0;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { 
+        overflow-x: auto;
+        border-top: 2px solid var(--bright-pink);
+    }
 
-    table { width: 100%; border-collapse: collapse; min-width: 980px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 980px;
+    }
 
     th {
         padding: .75rem 1rem;
@@ -275,6 +284,7 @@
         text-align: center;
         font-weight: 700;
         white-space: nowrap;
+        border-bottom: 2px solid var(--bright-pink);
     }
 
     td {
@@ -286,7 +296,7 @@
     }
 
     tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: var(--pink-bg); }
+    tbody tr:hover { background: #fff7fb; }
 
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
@@ -298,15 +308,65 @@
     .time-pending { color: var(--gray); font-style: italic; font-size: .78rem; }
 
     .act-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 7px;
-        border: 1.5px solid var(--gray-light);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--baby-pink);
         background: var(--white);
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s;
+        font-family: var(--ff-body);
     }
 
-    .act-btn:hover { border-color: var(--hot-pink); background: var(--pink-bg); }
+    .act-btn:hover {
+        border-color: var(--bright-pink);
+        box-shadow: 0 6px 14px rgba(232,23,93,.15);
+    }
+
+    .act-btn img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    .id-photo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .55rem;
+        margin-top: .8rem;
+    }
+
+    .id-photo-wrap img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: min(320px, 45vh);
+        object-fit: contain;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-pink-mid);
+        background: var(--white);
+    }
+
+    .id-photo-wrap a {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        text-decoration: none;
+    }
+
+    .id-photo-wrap a:hover { text-decoration: underline; }
+
+    .no-id-photo {
+        margin: 0;
+        color: var(--ink-muted);
+        font-size: .82rem;
+        font-style: italic;
+    }
 
     .visitor-modal {
         display: none;
@@ -530,6 +590,7 @@
 
     const logs = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     let filtered = Array.isArray(logs) ? [...logs] : [];
+    const eyeIcon = "{{ asset('icons/eye.png') }}";
 
     function fmtDateTime(dt) {
         if (!dt) return '—';
@@ -612,7 +673,7 @@
 
             return `
                 <tr>
-                    <td style="font-weight:600;text-align:left">${v.visitor_name ?? '—'}</td>
+                    <td style="font-weight:600">${v.visitor_name ?? '—'}</td>
                     <td>${expectedVisit}</td>
                     <td>${timeIn}</td>
                     <td>${timeOut}</td>
@@ -621,7 +682,9 @@
                     <td>${v.staff?.name  ?? '—'}</td>
                     <td>${getStatusBadge(v.status)}</td>
                     <td>
-                        <button class="act-btn" title="View details" onclick="viewVisitor(${v.id})">👁</button>
+                        <button class="act-btn" title="View details" onclick="viewVisitor(${v.id})">
+                            <img src="${eyeIcon}" alt="View">
+                        </button>
                     </td>
                 </tr>`;
         }).join('');

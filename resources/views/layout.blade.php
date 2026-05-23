@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DormEase')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
@@ -14,7 +15,7 @@
     <style>
     :root {
         --hot-pink:   #E8175D;
-        --bright-pink: #FF2D78;
+        --bright-pink: #d63375;
         --mid-pink:   #FF6BA8;
         --baby-pink:  #FFD6E7;
         --blush:      #FFF0F6;
@@ -32,7 +33,7 @@
 
         --soft-bg:    #fff7fb;
         --pink-bg:    var(--petal);
-        --gradient-pink: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
         --pink-bg-soft: #fffafd;
         --pink-bg-page: #fff7fb;
         --border-pink: #ffd3e3;
@@ -231,22 +232,28 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
-        background: var(--white);
-        border: 1.5px solid var(--baby-pink);
-        border-radius: 14px;
-        box-shadow: 0 8px 32px rgba(232,23,93,.14);
-        width: 210px;
-        overflow: hidden;
-        opacity: 0; transform: translateY(8px) scale(.97);
-        pointer-events: none;
-        transition: opacity .2s ease, transform .2s ease;
-        z-index: 200;
+    position: absolute; top: calc(100% + 10px); right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(232,23,93,.14);
+    width: 210px;
+    overflow: hidden;
+    opacity: 0; transform: translateY(8px) scale(.97);
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 200;
     }
-    .avatar-dropdown.open {
-        opacity: 1; transform: translateY(0) scale(1);
-        pointer-events: auto;
+
+    .avatar-dropdown.open,
+    .avatar-wrap:hover .avatar-dropdown {
+    opacity: 1; transform: translateY(0) scale(1);
+    pointer-events: auto;
     }
+
+    /* Add to the CSS */
+    .avatar-wrap { padding-bottom: 10px; }
+    .avatar-dropdown { top: 100%; margin-top: 0px; }
 
     .dropdown-header {
         padding: .9rem 1rem .75rem;

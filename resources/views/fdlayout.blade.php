@@ -16,7 +16,7 @@
 
         :root {
             --hot-pink:   #E8175D;
-            --bright-pink: #FF2D78;
+            --bright-pink: #d63375;
             --pink:       #CA5D86;
             --pink-light: #FFB0CE;
             --pink-soft:  #FF7E86;
@@ -42,6 +42,7 @@
             --pink-400:   #f06292;
             --pink-500:   #ec407a;
             --pink-600:   #d81b60;
+            --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
             
             --ease:       all .2s cubic-bezier(.4,0,.2,1);
             --border:     rgba(202,93,134,.12);
@@ -360,13 +361,13 @@
         <a href="{{ route('frontdesk.tenants') }}" class="nav-item {{ request()->routeIs('frontdesk.tenants') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Tenant Directory
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.emergency') }}" class="nav-item {{ request()->routeIs('frontdesk.emergency') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
         <a href="{{ route('frontdesk.visitors') }}" class="nav-item {{ request()->routeIs('frontdesk.visitors') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.announcements') }}" class="nav-item {{ request()->routeIs('frontdesk.announcements*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
 

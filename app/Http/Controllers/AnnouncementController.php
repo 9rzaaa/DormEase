@@ -1,20 +1,26 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Announcement;
-
 class AnnouncementController extends Controller
 {
     public function index()
     {
         $staff         = Auth::guard('staff')->user();
         $announcements = Announcement::latest('posted_at')->get();
-
         return view('announcements', [
+            'staff'         => $staff,
+            'announcements' => $announcements,
+        ]);
+    }
+
+    public function frontdeskIndex()
+    {
+        $staff         = Auth::guard('staff')->user();
+        $announcements = Announcement::latest('posted_at')->get();
+        return view('fdannouncement', [
             'staff'         => $staff,
             'announcements' => $announcements,
         ]);
@@ -23,13 +29,12 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'       => 'required|string|max:255',
-            'content'     => 'required|string',
-            'priority'    => 'nullable|in:low,moderate,high',
-            'status'      => 'nullable|in:active,closed',
-            'files.*'     => 'nullable|file|max:5120',
+            'title'    => 'required|string|max:255',
+            'content'  => 'required|string',
+            'priority' => 'nullable|in:low,moderate,high',
+            'status'   => 'nullable|in:active,closed',
+            'files.*'  => 'nullable|file|max:5120',
         ]);
-
         $attachment = null;
         if ($request->hasFile('files')) {
             $paths = [];
@@ -38,7 +43,6 @@ class AnnouncementController extends Controller
             }
             $attachment = implode(',', $paths);
         }
-
         Announcement::create([
             'posted_by'  => Auth::guard('staff')->id(),
             'title'      => $request->title,
@@ -48,64 +52,68 @@ class AnnouncementController extends Controller
             'attachment' => $attachment,
             'posted_at'  => now(),
         ]);
-
-        return redirect()->route('announcements.index')
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)
             ->with('success', 'Announcement posted successfully.');
     }
 
     public function update(Request $request, $id)
     {
         $announcement = Announcement::findOrFail($id);
-
         $request->validate([
             'title'    => 'required|string|max:255',
             'content'  => 'required|string',
             'priority' => 'nullable|in:low,moderate,high',
             'status'   => 'nullable|in:active,closed',
         ]);
-
         $announcement->update([
             'title'    => $request->title,
             'content'  => $request->content,
             'priority' => $request->priority ?? 'low',
             'status'   => $request->status ?? 'active',
         ]);
-
-        return redirect()->route('announcements.index')
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)
             ->with('success', 'Announcement updated successfully.');
     }
 
-    public function archive($id)
+    public function archive(Request $request, $id)
     {
-        $announcement = Announcement::findOrFail($id);
-        $announcement->update(['status' => 'closed']);
-
-        return redirect()->route('announcements.index')
+        Announcement::findOrFail($id)->update(['status' => 'closed']);
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)
             ->with('success', 'Announcement archived.');
     }
 
-    public function restore($id)
+    public function restore(Request $request, $id)
     {
-        $announcement = Announcement::findOrFail($id);
-        $announcement->update(['status' => 'active']);
-
-        return redirect()->route('announcements.index')
+        Announcement::findOrFail($id)->update(['status' => 'active']);
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)
             ->with('success', 'Announcement restored.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $announcement = Announcement::findOrFail($id);
-
         if ($announcement->attachment) {
             foreach (explode(',', $announcement->attachment) as $path) {
-                Storage::disk('public')->delete($path);
+                Storage::disk('public')->delete(trim($path));
             }
         }
-
         $announcement->delete();
-
-        return redirect()->route('announcements.index')
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)
             ->with('success', 'Announcement deleted.');
     }
 }

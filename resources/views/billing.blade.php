@@ -177,7 +177,7 @@
     }
 
     .floor-name {
-        font-size: .8rem;
+        font-size: .85rem;
         font-weight: 800;
         color: var(--bright-pink);
         text-transform: uppercase;
@@ -189,15 +189,22 @@
         align-items: center;
         padding: .15rem .55rem;
         border-radius: 999px;
-        font-size: .7rem;
+        font-size: .75rem;
         font-weight: 700;
         background: rgba(255,255,255,.6);
         color: var(--black);
         border: 1px solid rgba(255,105,155,.2);
     }
 
+    .floor-summary-chip {
+        background: #fff0f6;
+        color: #191617;
+        border-color: #ffc7dc;
+        box-shadow: 0 3px 10px rgba(255,79,147,.08);
+    }
+
     .floor-due {
-        font-size: .72rem;
+        font-size: .75rem;
         font-weight: 700;
         color: var(--black);
         margin-left: auto;
@@ -205,7 +212,7 @@
 
     .rooms-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 0;
         background: var(--border-pink-mid);
         border-top: 2px solid #ff8fbc;
@@ -213,7 +220,7 @@
 
     .room-card {
         background: var(--white);
-        padding: 1rem;
+        padding: 1.15rem;
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -250,7 +257,7 @@
         border-radius: 10px;
         background: var(--gradient-pink);
         color: var(--white);
-        font-size: .72rem;
+        font-size: .82rem;
         font-weight: 800;
         letter-spacing: .01em;
         flex-shrink: 0;
@@ -259,14 +266,14 @@
     .room-meta-stack { display: flex; flex-direction: column; gap: 0; }
 
     .room-meta-label {
-        font-size: .8rem;
+        font-size: .95rem;
         font-weight: 700;
         color: var(--bright-pink);
         line-height: 1.2;
     }
 
     .room-meta-occ {
-        font-size: .68rem;
+        font-size: .8rem;
         font-weight: 500;
         color: var(--ink-soft);
     }
@@ -310,7 +317,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .38rem 0;
+        padding: .5rem 0;
         gap: .5rem;
     }
 
@@ -355,7 +362,7 @@
     }
 
     .t-amount {
-        font-size: .78rem;
+        font-size: .85rem;
         font-weight: 700;
         color: var(--hot-pink);
         white-space: nowrap;
@@ -365,9 +372,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: .12rem .45rem;
+        padding: .18rem .55rem;
         border-radius: 999px;
-        font-size: .6rem;
+        font-size: .72rem;
         font-weight: 700;
         white-space: nowrap;
     }
@@ -382,7 +389,7 @@
         padding: 1.5rem;
         text-align: center;
         color: var(--ink-soft);
-        font-size: .88rem;
+        font-size: 1rem;
         grid-column: 1 / -1;
     }
 
@@ -760,7 +767,7 @@
         border-radius: 10px;
         border: 1.5px solid var(--border-pink);
         background: var(--white);
-        font-size: .82rem;
+        font-size: .79rem;
         color: var(--ink-deep);
         outline: none;
         transition: border-color .18s;
@@ -927,9 +934,9 @@
 
             <div class="floor-header">
                 <span class="floor-name">{{ $group['submeter_label'] }}</span>
-                <span class="floor-chip">{{ $group['floor_consumption_m3'] }} m³</span>
-                <span class="floor-chip">₱{{ number_format($group['total_floor_bill'], 2) }}</span>
-                <span class="floor-chip">{{ $group['room_count'] }} rooms</span>
+                <span class="floor-chip floor-summary-chip">{{ $group['floor_consumption_m3'] }} m³</span>
+                <span class="floor-chip floor-summary-chip">₱{{ number_format($group['total_floor_bill'], 2) }}</span>
+                <span class="floor-chip floor-summary-chip">{{ $group['room_count'] }} rooms</span>
                 @if($group['past_due_count'] > 0)
                     <span class="floor-chip" style="background:#ffe9ee;color:#e04867;border-color:#ffb3c1;">{{ $group['past_due_count'] }} past due</span>
                 @endif
@@ -1089,6 +1096,8 @@ const tenantsByFloor = @json(
 
 const activeFloors   = @json($activeFloors->values());
 const unloggedFloors = @json($unloggedFloors->values());
+const billingExportGroups = @json($billingGroups);
+const selectedBillingMonth = @json($selectedMonth);
 
 function recalcRate() {
     const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value)     || 0;
@@ -1508,7 +1517,62 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function exportBilling() {
-    showToast('Billing data exported!', 'success');
+    const rows = [[
+        'Billing Month',
+        'Floor',
+        'Due Date',
+        'Floor Consumption (m3)',
+        'Total Floor Bill',
+        'Room Number',
+        'Occupants',
+        'Tenant',
+        'Tenant Share',
+        'Payment Status',
+        'Reference Code',
+        'Payment Submitted At'
+    ]];
+
+    billingExportGroups.forEach(group => {
+        group.rooms.forEach(room => {
+            room.tenants.forEach(tenant => {
+                rows.push([
+                    selectedBillingMonth,
+                    group.floor,
+                    group.due_date,
+                    group.floor_consumption_m3,
+                    Number(group.total_floor_bill || 0).toFixed(2),
+                    room.room_number,
+                    room.occupants_in_room,
+                    tenant.name,
+                    Number(tenant.room_share || 0).toFixed(2),
+                    tenant.payment_status,
+                    tenant.payment_reference_code || '',
+                    tenant.payment_submitted_at || ''
+                ]);
+            });
+        });
+    });
+
+    if (rows.length === 1) {
+        showToast('No billing data to export.', 'error');
+        return;
+    }
+
+    const csv = rows
+        .map(row => row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    const monthLabel = String(selectedBillingMonth || new Date().toISOString().slice(0, 10)).slice(0, 7);
+
+    a.href = URL.createObjectURL(blob);
+    a.download = `water-billing-${monthLabel}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+
+    showToast('Billing data exported as CSV!', 'success');
 }
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
