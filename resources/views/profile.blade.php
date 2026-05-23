@@ -16,7 +16,7 @@
     /* ── PAGE HEADER ── */
     .page-header h1 {
         font-size: 1.6rem; font-weight: 700;
-        color: var(--hot-pink); letter-spacing: -.02em; line-height: 1.2;
+        color: var(--ink); letter-spacing: -.02em; line-height: 1.2;
     }
     .page-header .dorm-name {
         font-size: .8rem;   color: var(--hot-pink) ; margin-top: .1rem;
@@ -169,9 +169,6 @@
         box-shadow: 0 0 0 3px rgba(232,23,93,.08);
     }
     .readonly-field {
-        padding: .5rem .8rem; border-radius: 9px;
-        border: 1.5px solid var(--gray-light);
-        background: var(--pink-bg);
         display: flex; align-items: center; gap: .45rem; min-height: 35px;
     }
 
