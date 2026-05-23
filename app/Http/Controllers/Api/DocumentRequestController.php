@@ -31,7 +31,7 @@ class DocumentRequestController extends Controller
             'purpose'       => $request->purpose,
             'delivery_type' => $deliveryType,
             'date_needed'   => $request->date_needed,
-            'attachment'    => $attachmentPath,   // ← saved here
+            'attachment'    => $attachmentPath,  
             'status'        => 'pending',
             'submitted_at'  => now(),
         ]);
@@ -40,5 +40,10 @@ class DocumentRequestController extends Controller
             'message' => 'Request submitted successfully.',
             'data'    => $documentRequest,
         ], 201);
+        
+        $records = DocumentRequest::where('tenant_id', $request->user()->tenant_id)
+                    ->orderBy('submitted_at', 'desc')
+                    ->get();
+    return response()->json($records);
     }
 }
