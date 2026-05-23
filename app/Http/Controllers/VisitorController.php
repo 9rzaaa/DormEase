@@ -73,17 +73,51 @@ class VisitorController extends Controller
             ->with('success', 'Visitor logged successfully.');
     }
 
-    public function checkout($id)
+    public function checkout(Request $request, $id)
     {
+        $request->validate([
+            'departure_time' => 'nullable|date',
+        ]);
+
         $visitor = VisitorLog::findOrFail($id);
         if ($visitor->departure_time) {
             return back()->with('error', 'Visitor has already checked out.');
         }
+
         $visitor->update([
-            'departure_time' => now(),
+            'departure_time' => $request->departure_time ?? now(),
             'status'         => 'completed',
         ]);
-        return redirect()->route('visitors.index')
-            ->with('success', 'Visitor checked out successfully.');
+
+        return back()->with('success', 'Visitor checked out successfully.');
+    }
+
+    public function timein(Request $request, $id)
+    {
+        $request->validate([
+            'arrival_time' => 'required|date',
+        ]);
+
+        $visitor = VisitorLog::findOrFail($id);
+
+        $visitor->update([
+            'arrival_time' => $request->arrival_time,
+            'status'       => 'inside',
+        ]);
+
+        return back()->with('success', 'Visitor time in logged successfully.');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:pending,approved,rejected,inside,completed',
+        ]);
+
+        VisitorLog::findOrFail($id)->update([
+            'status' => $request->status,
+        ]);
+
+        return back()->with('success', 'Visitor status updated successfully.');
     }
 }
