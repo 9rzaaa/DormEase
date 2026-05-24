@@ -533,9 +533,10 @@
 
     .attachment-card img{
         width:100%;
-        height:150px;
-        object-fit:cover;
+        max-height:360px;
+        object-fit:contain;
         display:block;
+        background:var(--gray-light);
     }
 
     .attachment-link{
@@ -574,6 +575,70 @@
         line-height:1.5;
     }
 
+    .action-loading-overlay{
+        position:fixed;
+        inset:0;
+        z-index:1200;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        background:rgba(255,255,255,.72);
+        backdrop-filter:blur(2px);
+    }
+
+    .action-loading-overlay.open{
+        display:flex;
+    }
+
+    .action-loading-box{
+        display:flex;
+        align-items:center;
+        flex-direction:column;
+        gap:.75rem;
+        padding:1.25rem 1.6rem;
+        border:1px solid var(--border);
+        border-radius:12px;
+        background:var(--white);
+        box-shadow:0 12px 32px rgba(26,26,46,.14);
+        color:var(--ink);
+        font-size:.9rem;
+        font-weight:700;
+    }
+
+    .loading-logo-wrap{
+        width:86px;
+        height:86px;
+        border:3px solid var(--pink-50);
+        border-radius:50%;
+        background:var(--gradient-pink);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 10px 24px rgba(232,23,93,.25);
+        animation:pulseLogo 1s ease-in-out infinite;
+        flex-shrink:0;
+    }
+
+    .loading-logo-wrap img{
+        width:62px;
+        height:62px;
+        object-fit:contain;
+    }
+
+    .loading-spinner{
+        width:18px;
+        height:18px;
+        border:3px solid var(--pink-50);
+        border-top-color:var(--hot-pink);
+        border-radius:50%;
+        animation:spin .75s linear infinite;
+    }
+
+    .is-loading{
+        opacity:.75;
+        pointer-events:none;
+    }
+
     .delete-warning{
         background:#fff0f0;
         border:1px solid #ffd6d6;
@@ -607,6 +672,27 @@
         to{
             opacity:1;
             transform:translateY(0);
+        }
+    }
+
+    @keyframes spin{
+        to{
+            transform:rotate(360deg);
+        }
+    }
+
+    @keyframes counterSpin{
+        to{
+            transform:rotate(-360deg);
+        }
+    }
+
+    @keyframes pulseLogo{
+        0%, 100%{
+            transform:scale(1);
+        }
+        50%{
+            transform:scale(1.06);
         }
     }
 
@@ -900,13 +986,22 @@
 
 @section('modals')
 
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
 <div class="modal-overlay" id="post-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post New Announcement</div>
             <button class="modal-close" onclick="closeModal('post-modal')">✕</button>
         </div>
-        <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             <div class="modal-field">
                 <label>Title *</label>
@@ -951,7 +1046,7 @@
             <div class="modal-title">Edit Announcement</div>
             <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
         </div>
-        <form method="POST" id="edit-form" enctype="multipart/form-data">
+        <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -1005,7 +1100,7 @@
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
         <div id="view-modal-content"></div>
-        <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data">
+        <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -1066,7 +1161,7 @@
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form method="POST" id="delete-form" style="display:inline;">
+            <form method="POST" id="delete-form" style="display:inline;" data-loading-message="Please wait...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
@@ -1086,6 +1181,11 @@
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', () => {
+            setFormLoading(form, form.dataset.loadingMessage || 'Processing...');
+        });
     });
 
     function toggleMenu(e, id) {
@@ -1168,7 +1268,38 @@
 
     function submitForm(formId, e) {
         e.stopPropagation();
-        document.getElementById(formId).submit();
+        const form = document.getElementById(formId);
+        const isRestore = formId.startsWith('restore-');
+        showActionLoading('Please wait...');
+        form.submit();
+    }
+
+    function setFormLoading(form, message) {
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.dataset.originalText = submitButton.textContent.trim();
+            submitButton.textContent = loadingButtonText(message);
+            submitButton.disabled = true;
+            submitButton.classList.add('is-loading');
+        }
+
+        form.querySelectorAll('button:not([type="submit"])').forEach(button => {
+            button.disabled = true;
+            button.classList.add('is-loading');
+        });
+
+        showActionLoading(message);
+    }
+
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message;
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function loadingButtonText(message) {
+        return 'Please wait...';
     }
 
     function openViewModal(id) {
