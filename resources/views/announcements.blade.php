@@ -204,7 +204,7 @@
         border:1px solid var(--border);
         border-radius:16px;
         box-shadow:var(--shadow);
-        overflow:hidden;
+        overflow:visible;
     }
 
     .kanban-col-header{
@@ -296,16 +296,32 @@
     }
 
     .ann-menu-btn{
-        background:none;
-        border:none;
+        width:30px;
+        height:30px;
+        border:1px solid transparent;
+        border-radius:8px;
+        background:var(--white);
         cursor:pointer;
-        color:var(--gray);
-        font-size:1.1rem;
+        color:var(--ink-muted);
+        font-size:1.25rem;
+        font-weight:800;
+        line-height:1;
         transition:.2s;
+        display:flex;
+        align-items:center;
+        justify-content:center;
     }
 
-    .ann-menu-btn:hover{
+    .ann-menu-btn:hover,
+    .ann-menu-btn.active{
         color:var(--hot-pink);
+        border-color:var(--hot-pink);
+        background:var(--pink-bg);
+    }
+
+    .ann-menu-wrap{
+        position:relative;
+        flex-shrink:0;
     }
 
     .ann-title{
@@ -342,12 +358,12 @@
     .ann-dropdown{
         position:absolute;
         right:0;
-        top:100%;
+        top:calc(100% + .35rem);
         background:var(--white);
         border:1px solid var(--border);
         border-radius:10px;
         box-shadow:0 8px 24px rgba(26,26,46,.12);
-        z-index:200;
+        z-index:500;
         min-width:150px;
         display:none;
         flex-direction:column;
@@ -392,6 +408,10 @@
     .modal-field textarea:focus{
         border-color:var(--hot-pink);
         outline:none;
+    }
+
+    #edit-modal .modal-close{
+        display:none;
     }
 
     .modal-field textarea{
@@ -479,6 +499,79 @@
         font-weight:600;
         color:var(--ink);
         text-align:right;
+    }
+
+    .view-title{
+        font-size:1.35rem;
+        font-weight:800;
+        color:var(--ink);
+        line-height:1.25;
+        margin-bottom:.65rem;
+    }
+
+    .view-content{
+        margin-top:1rem;
+        white-space:pre-wrap;
+        font-size:.92rem;
+        color:var(--ink-muted);
+        line-height:1.75;
+    }
+
+    .attachment-grid{
+        margin-top:1rem;
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+        gap:.8rem;
+    }
+
+    .attachment-card{
+        border:1px solid var(--border);
+        border-radius:10px;
+        overflow:hidden;
+        background:var(--white);
+    }
+
+    .attachment-card img{
+        width:100%;
+        height:150px;
+        object-fit:cover;
+        display:block;
+    }
+
+    .attachment-link{
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        padding:.7rem .85rem;
+        color:var(--hot-pink);
+        font-size:.82rem;
+        font-weight:700;
+        text-decoration:none;
+        word-break:break-word;
+    }
+
+    .attachment-link img{
+        width:16px;
+        height:16px;
+        flex-shrink:0;
+    }
+
+    .inline-edit-form{
+        display:none;
+        margin-top:1rem;
+        border-top:1px solid var(--border);
+        padding-top:1rem;
+    }
+
+    .inline-edit-form.open{
+        display:block;
+    }
+
+    .current-files-note{
+        margin-top:.35rem;
+        font-size:.76rem;
+        color:var(--ink-muted);
+        line-height:1.5;
     }
 
     .delete-warning{
@@ -654,7 +747,7 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-all-{{ $ann->announcement_id }}">
                                     <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
@@ -715,7 +808,7 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-act-{{ $ann->announcement_id }}">
                                     <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
@@ -766,8 +859,11 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-cls-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
+                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
+                                    </button>
                                     <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
                                         <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
                                     </button>
@@ -855,7 +951,7 @@
             <div class="modal-title">Edit Announcement</div>
             <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
         </div>
-        <form method="POST" id="edit-form">
+        <form method="POST" id="edit-form" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -883,6 +979,17 @@
                     </select>
                 </div>
             </div>
+            <div class="modal-field">
+                <label>Add Image / Files (optional)</label>
+                <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
+                <div class="current-files-note" id="edit-current-files"></div>
+            </div>
+            <div class="modal-field">
+                <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;">
+                    <input type="checkbox" name="replace_attachments" value="1" style="width:auto;">
+                    Replace existing files with the new upload
+                </label>
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -898,8 +1005,52 @@
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
         <div id="view-modal-content"></div>
+        <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="modal-field">
+                <label>Title *</label>
+                <input type="text" name="title" id="view-edit-title" required>
+            </div>
+            <div class="modal-field">
+                <label>Content *</label>
+                <textarea name="content" id="view-edit-content" required></textarea>
+            </div>
+            <div class="modal-grid-2">
+                <div class="modal-field">
+                    <label>Priority</label>
+                    <select name="priority" id="view-edit-priority">
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select name="status" id="view-edit-status">
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Add Image / Files (optional)</label>
+                <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
+                <div class="current-files-note" id="view-current-files"></div>
+            </div>
+            <div class="modal-field">
+                <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;">
+                    <input type="checkbox" name="replace_attachments" value="1" style="width:auto;">
+                    Replace existing files with the new upload
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('view-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-cancel" id="view-close-btn" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" id="view-edit-btn">Edit</button>
         </div>
     </div>
@@ -929,6 +1080,7 @@
 @section('scripts')
 <script>
     const annData = @json($announcements->keyBy('announcement_id'));
+    const storageBaseUrl = "{{ asset('storage') }}";
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -940,10 +1092,15 @@
         e.stopPropagation();
         const menu   = document.getElementById(id);
         const isOpen = menu.classList.contains('open');
+        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
-        if (!isOpen) menu.classList.add('open');
+        if (!isOpen) {
+            menu.classList.add('open');
+            e.currentTarget.classList.add('active');
+        }
     }
     document.addEventListener('click', () => {
+        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
     });
 
@@ -1018,13 +1175,17 @@
         const ann = annData[id];
         if (!ann) return;
         document.getElementById('view-modal-title').textContent = ann.title;
+        hideInlineEdit();
+        fillInlineEditForm(ann, id);
         document.getElementById('view-modal-content').innerHTML = `
+            <div class="view-title">${escapeHtml(ann.title || '')}</div>
             <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
             <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
-            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${ann.posted_at||''}</span></div>
-            <div style="margin-top:1rem;font-size:.9rem;color:var(--ink-muted);line-height:1.7;">${ann.content}</div>
+            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>
+            <div class="view-content">${escapeHtml(ann.content || '')}</div>
+            ${renderAttachments(ann.attachment)}
         `;
-        document.getElementById('view-edit-btn').onclick = () => { closeModal('view-modal'); openEditModal(id, new Event('click')); };
+        document.getElementById('view-edit-btn').onclick = () => showInlineEdit();
         openModal('view-modal');
     }
 
@@ -1032,11 +1193,13 @@
         e.stopPropagation();
         const ann = annData[id];
         if (!ann) return;
+        document.getElementById('edit-form').reset();
         document.getElementById('edit-form').action  = `/announcements/${id}`;
         document.getElementById('edit-title').value   = ann.title;
         document.getElementById('edit-content').value = ann.content;
         document.getElementById('edit-priority').value = ann.priority || 'low';
         document.getElementById('edit-status').value   = ann.status   || 'active';
+        document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
         openModal('edit-modal');
     }
 
@@ -1049,6 +1212,74 @@
 
     function ucFirst(str) {
         return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+
+    function fillInlineEditForm(ann, id) {
+        document.getElementById('view-edit-form').action = `/announcements/${id}`;
+        document.getElementById('view-edit-title').value = ann.title || '';
+        document.getElementById('view-edit-content').value = ann.content || '';
+        document.getElementById('view-edit-priority').value = ann.priority || 'low';
+        document.getElementById('view-edit-status').value = ann.status || 'active';
+        document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
+    }
+
+    function showInlineEdit() {
+        document.getElementById('view-edit-form').classList.add('open');
+        document.getElementById('view-edit-btn').style.display = 'none';
+        document.getElementById('view-close-btn').style.display = 'none';
+    }
+
+    function hideInlineEdit() {
+        const form = document.getElementById('view-edit-form');
+        if (!form) return;
+        form.classList.remove('open');
+        form.reset();
+        document.getElementById('view-edit-btn').style.display = '';
+        document.getElementById('view-close-btn').style.display = '';
+    }
+
+    function getAttachments(attachment) {
+        if (!attachment) return [];
+        return String(attachment).split(',').map(path => path.trim()).filter(Boolean);
+    }
+
+    function filesNote(attachment) {
+        const total = getAttachments(attachment).length;
+        return total ? `${total} existing file(s). Upload new files to add more, or tick replace to change them.` : 'No image or file attached yet.';
+    }
+
+    function renderAttachments(attachment) {
+        const files = getAttachments(attachment);
+        if (!files.length) return '<div class="current-files-note">No image or file attached.</div>';
+
+        return `<div class="attachment-grid">${files.map(path => {
+            const url = `${storageBaseUrl}/${encodeURI(path)}`;
+            const name = path.split('/').pop();
+            if (isImage(path)) {
+                return `<div class="attachment-card"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(name)}"></a></div>`;
+            }
+            return `<div class="attachment-card"><a class="attachment-link" href="${url}" target="_blank" rel="noopener"><img src="{{ asset('icons/attach.png') }}" alt=""> ${escapeHtml(name)}</a></div>`;
+        }).join('')}</div>`;
+    }
+
+    function isImage(path) {
+        return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(path || '');
+    }
+
+    function formatDate(value) {
+        if (!value) return '';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString([], { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit' });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     @if(session('success'))

@@ -67,12 +67,37 @@ class AnnouncementController extends Controller
             'content'  => 'required|string',
             'priority' => 'nullable|in:low,moderate,high',
             'status'   => 'nullable|in:active,closed',
+            'files.*'  => 'nullable|file|max:5120',
         ]);
+
+        $attachment = $announcement->attachment;
+        if ($request->hasFile('files')) {
+            $paths = [];
+            foreach ($request->file('files') as $file) {
+                $paths[] = $file->store('announcements', 'public');
+            }
+
+            if ($request->boolean('replace_attachments')) {
+                if ($announcement->attachment) {
+                    foreach (explode(',', $announcement->attachment) as $path) {
+                        Storage::disk('public')->delete(trim($path));
+                    }
+                }
+                $attachment = implode(',', $paths);
+            } else {
+                $existing = $announcement->attachment
+                    ? array_filter(array_map('trim', explode(',', $announcement->attachment)))
+                    : [];
+                $attachment = implode(',', array_merge($existing, $paths));
+            }
+        }
+
         $announcement->update([
-            'title'    => $request->title,
-            'content'  => $request->content,
-            'priority' => $request->priority ?? 'low',
-            'status'   => $request->status ?? 'active',
+            'title'      => $request->title,
+            'content'    => $request->content,
+            'priority'   => $request->priority ?? 'low',
+            'status'     => $request->status ?? 'active',
+            'attachment' => $attachment,
         ]);
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
