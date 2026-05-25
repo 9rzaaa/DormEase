@@ -61,7 +61,7 @@
         --badge-guard-border:    #c4b5fd;
         --shift-day:             #f59e0b;
         --shift-night:           #6366f1;
-        
+
         --shadow-pink-card: 0 4px 10px rgba(0,0,0,.04), 0 14px 30px rgba(232,23,93,.18), 0 24px 50px rgba(232,23,93,.12);
         --shadow-pink-btn: 0 6px 18px rgba(255,79,147,.22);
         --shadow-pink-modal: 0 20px 60px rgba(255,79,147,.2);
@@ -152,7 +152,7 @@
     .nav-divider { height: 1.5px; background: var(--baby-pink); margin: .6rem 0; }
 
     .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--baby-pink); }
-    
+
     .logout-btn {
         display: flex;
         align-items: center;
@@ -160,32 +160,18 @@
         gap: .5rem;
         width: 100%;
         padding: .55rem .8rem;
-
         border: none;
         border-radius: 10px;
-
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         color: var(--white);
-
         font-size: .8rem;
         font-weight: 700;
-
         cursor: pointer;
         transition: var(--ease);
-
         box-shadow: 0 3px 10px rgba(232,23,93,.22);
     }
-
-    .logout-btn:hover {
-        transform: translateY(-1px);
-        opacity: .95;
-    }
-
-    .logout-btn img {
-        width: 15px;
-        height: 15px;
-        filter: brightness(0) invert(1);
-    }
+    .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
+    .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
 
     .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -201,6 +187,7 @@
     .breadcrumb span { color: var(--hot-pink); font-weight: 700; }
 
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
     .notif-bell {
         width: 36px; height: 36px; border-radius: 50%;
         background: var(--petal); border: 1.5px solid var(--baby-pink);
@@ -215,6 +202,117 @@
         border-radius: 50%; font-size: 9px; color: var(--white); font-weight: 800;
         display: flex; align-items: center; justify-content: center;
         border: 2px solid var(--white);
+    }
+
+    .notif-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 320px;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(232,23,93,.14);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(8px) scale(.97);
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        overflow: hidden;
+    }
+    .notif-dropdown.open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    .notif-dropdown-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .85rem 1rem .7rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .notif-dropdown-title {
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+    .notif-mark-all {
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+    .notif-mark-all:hover { opacity: .7; }
+    .notif-dropdown-list { max-height: 340px; overflow-y: auto; }
+    .notif-dd-item {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid var(--petal);
+        cursor: pointer;
+        transition: background .15s;
+        text-decoration: none;
+        color: inherit;
+    }
+    .notif-dd-item:last-child { border-bottom: none; }
+    .notif-dd-item:hover { background: var(--blush); }
+    .notif-dd-item.unread { background: var(--pink-50); }
+    .notif-dd-item.unread:hover { background: var(--pink-100); }
+    .notif-unread-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--hot-pink);
+        flex-shrink: 0;
+        margin-top: .35rem;
+    }
+    .notif-dd-icon {
+        width: 30px; height: 30px;
+        border-radius: 8px;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .notif-dd-icon img {
+        width: 14px; height: 14px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .notif-dd-body { flex: 1; min-width: 0; }
+    .notif-dd-msg {
+        font-size: .81rem;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
+    .notif-dropdown-footer {
+        padding: .6rem 1rem;
+        border-top: 1.5px solid var(--petal);
+        text-align: center;
+    }
+    .notif-see-all {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .notif-see-all:hover { opacity: .7; }
+    .notif-empty {
+        padding: 1.5rem 1rem;
+        text-align: center;
+        font-size: .83rem;
+        color: var(--ink-muted);
     }
 
     .avatar-wrap { position: relative; }
@@ -232,26 +330,23 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-dropdown {
-    position: absolute; top: calc(100% + 10px); right: 0;
-    background: var(--white);
-    border: 1.5px solid var(--baby-pink);
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(232,23,93,.14);
-    width: 210px;
-    overflow: hidden;
-    opacity: 0; transform: translateY(8px) scale(.97);
-    pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
-    z-index: 200;
+        position: absolute; top: calc(100% + 10px); right: 0;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(232,23,93,.14);
+        width: 210px;
+        overflow: hidden;
+        opacity: 0; transform: translateY(8px) scale(.97);
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        z-index: 200;
     }
-
     .avatar-dropdown.open,
     .avatar-wrap:hover .avatar-dropdown {
-    opacity: 1; transform: translateY(0) scale(1);
-    pointer-events: auto;
+        opacity: 1; transform: translateY(0) scale(1);
+        pointer-events: auto;
     }
-
-    /* Add to the CSS */
     .avatar-wrap { padding-bottom: 0px; }
     .avatar-dropdown { top: 100%; margin-top: 0px; }
 
@@ -379,7 +474,7 @@
         .sidebar.open { transform: translateX(0); }
         .main { margin-left: 0; }
     }
-</style>
+    </style>
 
     @yield('styles')
 </head>
@@ -399,41 +494,31 @@
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
         </a>
-
         <a href="{{ route('tenants.index') }}" class="nav-item {{ request()->routeIs('tenants.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Manage Tenants
         </a>
-
         <a href="{{ route('documents.index') }}" class="nav-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-docu.png') }}" alt=""></span> Document Management
         </a>
-
         <a href="{{ route('emergency.index') }}" class="nav-item {{ request()->routeIs('emergency.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
-
         <a href="{{ route('maintenance.index') }}" class="nav-item {{ request()->routeIs('maintenance.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-maint.png') }}" alt=""></span> Maintenance Requests
         </a>
-
         <a href="{{ route('billing.index') }}" class="nav-item {{ request()->routeIs('billing.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-bill.png') }}" alt=""></span> Water Billing
         </a>
-
         <a href="{{ route('visitors.index') }}" class="nav-item {{ request()->routeIs('visitors.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-
         <a href="{{ route('announcements.index') }}" class="nav-item {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
-
         <div class="nav-divider"></div>
-
         <a href="{{ route('staff.index') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
         </a>
-
         <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>
@@ -455,11 +540,69 @@
     <header class="topbar">
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
-            <div class="notif-bell" title="Notifications">
-                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
-                @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                    <span class="notif-badge">{{ $unreadNotifCount }}</span>
-                @endif
+
+            <div style="position:relative;" id="notif-wrap">
+                <div class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
+                    <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
+                    @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                        <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
+                    @endif
+                </div>
+
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <div class="notif-dropdown-title">
+                            Notifications
+                            @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                                <span style="color:var(--ink-muted);font-weight:500;font-size:.78rem;">({{ $unreadNotifCount }} unread)</span>
+                            @endif
+                        </div>
+                        @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
+                        @endif
+                    </div>
+
+                    <div class="notif-dropdown-list">
+                        @if(isset($notifications) && $notifications->count())
+                            @foreach($notifications as $notif)
+                                @php
+                                    $notifIcon = match($notif->type) {
+                                        'maintenance_new'  => 'maintenance',
+                                        'emergency_new'    => 'warn',
+                                        'billing_overdue'  => 'billing',
+                                        'document_request' => 'nav-docu',
+                                        'announcement_new' => 'nav-announ',
+                                        default            => 'nav-visit',
+                                    };
+                                @endphp
+                                <a href="{{ $notif->url ?? '#' }}"
+                                   class="notif-dd-item {{ $notif->read_at ? '' : 'unread' }}"
+                                   onclick="markNotifRead(event, {{ $notif->id }}, '{{ $notif->url ?? '' }}')">
+                                    @if(!$notif->read_at)
+                                        <div class="notif-unread-dot"></div>
+                                    @else
+                                        <div style="width:7px;flex-shrink:0;"></div>
+                                    @endif
+                                    <div class="notif-dd-icon">
+                                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
+                                             alt=""
+                                             onerror="this.src='{{ asset('icons/bell.png') }}'">
+                                    </div>
+                                    <div class="notif-dd-body">
+                                        <div class="notif-dd-msg">{{ $notif->message }}</div>
+                                        <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            <div class="notif-empty">No notifications yet.</div>
+                        @endif
+                    </div>
+
+                    <div class="notif-dropdown-footer">
+                        <button class="notif-see-all" onclick="closeNotifDropdown()">Close</button>
+                    </div>
+                </div>
             </div>
 
             <div class="avatar-wrap" id="avatar-wrap">
@@ -499,6 +642,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </header>
 
@@ -510,7 +654,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Out</div>
-            <button class="modal-close" onclick="closeModal('logout-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('logout-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">Are you sure you want to log out of DormEase?</p>
         <div class="modal-actions">
@@ -553,6 +697,42 @@
     document.querySelectorAll('.dropdown-item[href]').forEach(el => {
         el.addEventListener('click', () => closeAvatarDropdown());
     });
+
+    function toggleNotifDropdown() {
+        document.getElementById('notif-dropdown').classList.toggle('open');
+        closeAvatarDropdown();
+    }
+    function closeNotifDropdown() {
+        document.getElementById('notif-dropdown').classList.remove('open');
+    }
+    document.addEventListener('click', function(e) {
+        const wrap = document.getElementById('notif-wrap');
+        if (wrap && !wrap.contains(e.target)) closeNotifDropdown();
+    });
+
+    function markNotifRead(e, id, url) {
+        e.preventDefault();
+        fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => {
+            if (url) window.location.href = url;
+            else location.reload();
+        });
+    }
+
+    function markAllRead() {
+        fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => location.reload());
+    }
 </script>
 
 @yield('scripts')

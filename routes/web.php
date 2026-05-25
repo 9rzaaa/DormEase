@@ -17,6 +17,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\FDProfileController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\NotificationController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -154,15 +155,20 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
 
     // settings
-    Route::get('/settings',                   [SettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings/email',             [SettingsController::class, 'updateEmail'])->name('settings.updateEmail');
-    Route::put('/settings/password',          [SettingsController::class, 'updatePassword'])->name('settings.updatePassword');
-    Route::put('/settings/notifications',     [SettingsController::class, 'updateNotifications'])->name('settings.updateNotifications');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings/email', [SettingsController::class, 'updateEmail'])->name('settings.updateEmail');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.updatePassword');
+    Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.updateNotifications');
+
+    // notifications
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     //front desk profile
-    Route::get('/frontdesk/profile',            [FDProfileController::class, 'index'])->name('fdprofile.index');
-    Route::put('/frontdesk/profile/info',       [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
-    Route::put('/frontdesk/profile/password',   [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
+    Route::get('/frontdesk/profile', [FDProfileController::class, 'index'])->name('fdprofile.index');
+    Route::put('/frontdesk/profile/info', [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
+    Route::put('/frontdesk/profile/password', [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
     Route::put('/frontdesk/profile/deactivate', [FDProfileController::class, 'deactivate'])->name('frontdesk.profile.deactivate');
 
 });
