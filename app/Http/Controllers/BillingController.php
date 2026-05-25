@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Helpers\NotificationHelper;
 
 class BillingController extends Controller
 {
@@ -58,28 +59,16 @@ class BillingController extends Controller
 
         $activeFloors = $floors;
 
-        $loggedFloors = WaterBilling::whereYear(
-            'billing_month',
-            Carbon::parse($selectedMonth)->year
-        )
-            ->whereMonth(
-                'billing_month',
-                Carbon::parse($selectedMonth)->month
-            )
+        $loggedFloors = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
+            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
             ->distinct()
             ->pluck('floor');
 
         $unloggedFloors = $activeFloors->diff($loggedFloors)->values();
 
         $billings = WaterBilling::with('tenant')
-            ->whereYear(
-                'billing_month',
-                Carbon::parse($selectedMonth)->year
-            )
-            ->whereMonth(
-                'billing_month',
-                Carbon::parse($selectedMonth)->month
-            )
+            ->whereYear('billing_month', Carbon::parse($selectedMonth)->year)
+            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
             ->get()
             ->keyBy('tenant_id');
 
@@ -96,12 +85,10 @@ class BillingController extends Controller
                 continue;
             }
 
-            $rooms = [];
+            $rooms   = [];
             $pastDue = 0;
 
-            $floorBilling = $billings->first(
-                fn($b) => $b->floor == $floor
-            );
+            $floorBilling = $billings->first(fn($b) => $b->floor == $floor);
 
             $isDueDatePassed = $floorBilling?->due_date
                 ? Carbon::parse($floorBilling->due_date)->lt(now()->startOfDay())
@@ -118,22 +105,20 @@ class BillingController extends Controller
                         : 'not billed';
 
                     return [
-                        'billing_id'     => $billing?->billing_id,
-                        'tenant_id'      => $tenant->tenant_id,
-                        'name'           => trim(
-                            $tenant->first_name . ' ' . $tenant->last_name
-                        ),
-                        'room_share'     => $billing?->room_share ?? 0,
-                        'payment_status' => $paymentStatus,
-                        'proof_of_payment' => $billing?->proof_of_payment,
-                        'proof_of_payment_url' => $billing?->proof_of_payment
+                        'billing_id'             => $billing?->billing_id,
+                        'tenant_id'              => $tenant->tenant_id,
+                        'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
+                        'room_share'             => $billing?->room_share ?? 0,
+                        'payment_status'         => $paymentStatus,
+                        'proof_of_payment'       => $billing?->proof_of_payment,
+                        'proof_of_payment_url'   => $billing?->proof_of_payment
                             ? Storage::disk('public')->url($billing->proof_of_payment)
                             : null,
                         'payment_reference_code' => $billing?->payment_reference_code,
-                        'payment_submitted_at' => $billing?->payment_submitted_at
+                        'payment_submitted_at'   => $billing?->payment_submitted_at
                             ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
                             : null,
-                        'dot_class'      => match ($paymentStatus) {
+                        'dot_class' => match ($paymentStatus) {
                             'paid'       => 'dot-green',
                             'overdue'    => 'dot-red',
                             'not billed' => 'dot-gray',
@@ -145,10 +130,7 @@ class BillingController extends Controller
                 if (
                     $isDueDatePassed
                     && collect($tenantRows)->contains(
-                        fn($t) => in_array(
-                            $t['payment_status'],
-                            ['unpaid', 'overdue']
-                        )
+                        fn($t) => in_array($t['payment_status'], ['unpaid', 'overdue'])
                     )
                 ) {
                     $pastDue++;
@@ -166,7 +148,7 @@ class BillingController extends Controller
                     'due_date'             => $floorBilling?->due_date
                         ? Carbon::parse($floorBilling->due_date)->format('M d, Y')
                         : '—',
-                    'tenants'              => $tenantRows,
+                    'tenants' => $tenantRows,
                 ];
             }
 
@@ -179,12 +161,12 @@ class BillingController extends Controller
                 'total_floor_bill'     => collect($rooms)->sum(
                     fn($r) => collect($r['tenants'])->sum('room_share')
                 ),
-                'room_count'           => count($rooms),
-                'past_due_count'       => $pastDue,
-                'due_date'             => $floorBilling?->due_date
+                'room_count'     => count($rooms),
+                'past_due_count' => $pastDue,
+                'due_date'       => $floorBilling?->due_date
                     ? Carbon::parse($floorBilling->due_date)->format('M d, Y')
                     : '—',
-                'rooms'                => $rooms,
+                'rooms' => $rooms,
             ];
         }
 
@@ -225,35 +207,23 @@ class BillingController extends Controller
                 'floor_readings.*.curr'  => 'required|numeric|min:0',
             ]);
 
-            $billingMonthDate = Carbon::parse(
-                $request->billing_month
-            )->startOfMonth();
-
-            $ratePerM3 = $request->maynilad_total_amount
-                / $request->maynilad_total_m3;
-            $staffId = Auth::guard('staff')->id();
-            $readings = collect($request->floor_readings)
-                ->map(function ($entry) {
-                    return [
-                        'floor' => (int) $entry['floor'],
-                        'prev'  => (float) $entry['prev'],
-                        'curr'  => (float) $entry['curr'],
-                    ];
-                });
+            $billingMonthDate = Carbon::parse($request->billing_month)->startOfMonth();
+            $ratePerM3        = $request->maynilad_total_amount / $request->maynilad_total_m3;
+            $staffId          = Auth::guard('staff')->id();
+            $readings         = collect($request->floor_readings)->map(function ($entry) {
+                return [
+                    'floor' => (int) $entry['floor'],
+                    'prev'  => (float) $entry['prev'],
+                    'curr'  => (float) $entry['curr'],
+                ];
+            });
             $floors = $readings->pluck('floor')->unique()->values();
 
-            DB::transaction(function () use (
-                $readings,
-                $floors,
-                $billingMonthDate,
-                $ratePerM3,
-                $staffId,
-                $request
-            ) {
+            DB::transaction(function () use ($readings, $floors, $billingMonthDate, $ratePerM3, $staffId, $request) {
 
                 $rate = WaterRate::updateOrCreate(
                     ['effective_month' => $billingMonthDate->format('Y-m-01')],
-                    ['rate_per_m3' => round($ratePerM3, 4)]
+                    ['rate_per_m3'     => round($ratePerM3, 4)]
                 );
 
                 $tenantsByFloor = Tenant::where('is_active', true)
@@ -268,7 +238,6 @@ class BillingController extends Controller
                 $billingRows = [];
 
                 foreach ($readings as $entry) {
-
                     $floor = $entry['floor'];
                     $prev  = $entry['prev'];
                     $curr  = $entry['curr'];
@@ -279,30 +248,17 @@ class BillingController extends Controller
                         );
                     }
 
-                    $consumption = max(0, $curr - $prev);
-
-                    $totalFloorBill = round(
-                        $consumption * $ratePerM3,
-                        2
-                    );
-
-                    $tenants = $tenantsByFloor->get($floor, collect());
+                    $consumption    = max(0, $curr - $prev);
+                    $totalFloorBill = round($consumption * $ratePerM3, 2);
+                    $tenants        = $tenantsByFloor->get($floor, collect());
 
                     if ($tenants->isEmpty()) {
                         continue;
                     }
 
-                    $roomsSharing = $tenants
-                        ->pluck('room_number')
-                        ->filter()
-                        ->unique()
-                        ->count();
+                    $roomsSharing    = $tenants->pluck('room_number')->filter()->unique()->count();
                     $occupantsByRoom = $tenants->groupBy('room_number')->map->count();
-
-                    $perTenantShare = round(
-                        $totalFloorBill / $tenants->count(),
-                        2
-                    );
+                    $perTenantShare  = round($totalFloorBill / $tenants->count(), 2);
 
                     foreach ($tenants as $tenant) {
                         $billingRows[] = [
@@ -329,10 +285,18 @@ class BillingController extends Controller
                 }
             });
 
+            // Notify all admin staff that billing has been logged
+            $monthLabel = $billingMonthDate->format('F Y');
+            NotificationHelper::sendToAll(
+                type: 'billing_overdue',
+                message: "Water billing for {$monthLabel} has been logged.",
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Water billing logged successfully.'
             ]);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -340,7 +304,6 @@ class BillingController extends Controller
                 'message' => collect($e->errors())->flatten()->first(),
             ], 422);
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -356,71 +319,43 @@ class BillingController extends Controller
         ]);
 
         foreach ($request->billing_ids as $i => $id) {
-
             WaterBilling::where('billing_id', $id)
-                ->update([
-                    'payment_status' => $request->statuses[$i]
-                ]);
+                ->update(['payment_status' => $request->statuses[$i]]);
         }
 
-        return response()->json([
-            'success' => true
-        ]);
+        return response()->json(['success' => true]);
     }
 
     public function updateFull(Request $request)
     {
         $request->validate([
-            'billing_id'     => 'required|integer',
-            'prev_reading'   => 'required|numeric|min:0',
-            'curr_reading'   => 'required|numeric|min:0|gte:prev_reading',
-            'due_date'       => 'required|date',
-            'payment_status' => 'required|string',
-            'status_updates' => 'nullable|array',
-            'status_updates.*.billing_id' => 'required_with:status_updates|integer',
+            'billing_id'                      => 'required|integer',
+            'prev_reading'                    => 'required|numeric|min:0',
+            'curr_reading'                    => 'required|numeric|min:0|gte:prev_reading',
+            'due_date'                        => 'required|date',
+            'payment_status'                  => 'required|string',
+            'status_updates'                  => 'nullable|array',
+            'status_updates.*.billing_id'     => 'required_with:status_updates|integer',
             'status_updates.*.payment_status' => 'required_with:status_updates|string|in:unpaid,pending,paid,overdue',
         ]);
 
-        $billing = WaterBilling::findOrFail($request->billing_id);
-
-        $rate = WaterRate::where(
-            'effective_month',
-            Carbon::parse($billing->billing_month)->format('Y-m-01')
-        )->first();
-
+        $billing   = WaterBilling::findOrFail($request->billing_id);
+        $rate      = WaterRate::where('effective_month', Carbon::parse($billing->billing_month)->format('Y-m-01'))->first();
         $ratePerM3 = $rate?->rate_per_m3 ?? 0;
 
-        $consumption = max(
-            0,
-            $request->curr_reading - $request->prev_reading
-        );
-
-        $total = round($consumption * $ratePerM3, 2);
+        $consumption = max(0, $request->curr_reading - $request->prev_reading);
+        $total       = round($consumption * $ratePerM3, 2);
 
         $count = WaterBilling::where('floor', $billing->floor)
-            ->whereYear(
-                'billing_month',
-                Carbon::parse($billing->billing_month)->year
-            )
-            ->whereMonth(
-                'billing_month',
-                Carbon::parse($billing->billing_month)->month
-            )
+            ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
+            ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
             ->count();
 
-        $share = $count
-            ? round($total / $count, 2)
-            : 0;
+        $share = $count ? round($total / $count, 2) : 0;
 
         WaterBilling::where('floor', $billing->floor)
-            ->whereYear(
-                'billing_month',
-                Carbon::parse($billing->billing_month)->year
-            )
-            ->whereMonth(
-                'billing_month',
-                Carbon::parse($billing->billing_month)->month
-            )
+            ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
+            ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
             ->update([
                 'prev_reading'         => $request->prev_reading,
                 'curr_reading'         => $request->curr_reading,
@@ -434,19 +369,23 @@ class BillingController extends Controller
             foreach ($request->status_updates as $statusUpdate) {
                 $billingToUpdate = WaterBilling::findOrFail($statusUpdate['billing_id']);
 
-                if (
-                    $statusUpdate['payment_status'] === 'paid'
-                    && empty($billingToUpdate->proof_of_payment)
-                ) {
+                if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment)) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Proof of payment is required before marking a tenant as paid.'
                     ], 422);
                 }
 
-                $billingToUpdate->update([
-                    'payment_status' => $statusUpdate['payment_status']
-                ]);
+                $billingToUpdate->update(['payment_status' => $statusUpdate['payment_status']]);
+
+                if ($statusUpdate['payment_status'] === 'paid') {
+                    $tenant = Tenant::find($billingToUpdate->tenant_id);
+                    NotificationHelper::sendToAll(
+                        type: 'billing_overdue',
+                        message: "Tenant {$tenant->first_name} {$tenant->last_name} has paid their water bill.",
+                        ref_id: $billingToUpdate->billing_id,
+                    );
+                }
             }
         } else {
             if ($request->payment_status === 'paid' && empty($billing->proof_of_payment)) {
@@ -456,13 +395,20 @@ class BillingController extends Controller
                 ], 422);
             }
 
-            $billing->update([
-                'payment_status' => $request->payment_status
-            ]);
+            $billing->update(['payment_status' => $request->payment_status]);
+
+            if ($request->payment_status === 'paid') {
+                $tenant = Tenant::find($billing->tenant_id);
+                NotificationHelper::sendToAll(
+                    type: 'billing_overdue',
+                    message: "Tenant {$tenant->first_name} {$tenant->last_name} has paid their water bill.",
+                    ref_id: $billing->billing_id,
+                );
+            }
         }
 
         return response()->json([
-            'success'   => true,
+            'success'    => true,
             'room_share' => $share
         ]);
     }

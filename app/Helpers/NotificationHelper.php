@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 use App\Models\Notification;
+use App\Models\Staff;
 
 class NotificationHelper
 {
@@ -14,5 +15,25 @@ class NotificationHelper
             'is_read'    => 0,
             'created_at' => now(),
         ]);
+    }
+
+    public static function sendToAll(string $type, string $message, int $ref_id = null)
+    {
+        $allStaff = Staff::where('is_active', 1)->where('role', 'admin')->get();
+
+        foreach ($allStaff as $staff) {
+            $prefs = [];
+            if (!empty($staff->notification_preferences)) {
+                $prefs = is_array($staff->notification_preferences)
+                    ? $staff->notification_preferences
+                    : json_decode($staff->notification_preferences, true);
+            }
+
+            $enabled = $prefs[$type] ?? true;
+
+            if ($enabled) {
+                self::send($staff->staff_id, $type, $message, $ref_id);
+            }
+        }
     }
 }

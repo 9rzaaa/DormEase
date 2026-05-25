@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificationHelper;
 
 class TenantController extends Controller
 {
@@ -53,6 +54,11 @@ class TenantController extends Controller
             'is_active'        => true,
         ]);
 
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "New tenant {$tenant->first_name} {$tenant->last_name} has been added.",
+            ref_id: $tenant->tenant_id,
+        );
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant account created successfully.')
             ->with('new_account_id',    $accountId)
@@ -90,7 +96,11 @@ class TenantController extends Controller
             'status'         => $request->status,
             'is_active'      => $request->status !== 'inactive',
         ]);
-
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "Tenant {$tenant->first_name} {$tenant->last_name} information has been updated.",
+            ref_id: $tenant->tenant_id,
+        );
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant information updated successfully.');
     }
