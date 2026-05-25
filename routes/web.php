@@ -156,8 +156,6 @@ Route::middleware('auth:staff')->group(function () {
 
     // settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings/email', [SettingsController::class, 'updateEmail'])->name('settings.updateEmail');
-    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.updatePassword');
     Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.updateNotifications');
 
     // notifications
