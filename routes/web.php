@@ -22,6 +22,7 @@ Route::get('/', fn() => view('public.home'))->name('home');
 Route::get('/safety-features', fn() => view('public.safety-features'))->name('safety.features');
 Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 Route::get('/features', fn() => view('public.features'))->name('features');
+Route::get('/gallery', fn() => view('public.gallery'))->name('gallery');
 Route::redirect('/register', '/login')->name('register');
 
 // auth
@@ -159,4 +160,5 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/profile/info',       [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
     Route::put('/frontdesk/profile/password',   [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
     Route::put('/frontdesk/profile/deactivate', [FDProfileController::class, 'deactivate'])->name('frontdesk.profile.deactivate');
+
 });
