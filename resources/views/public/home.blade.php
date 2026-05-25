@@ -748,10 +748,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 
   <ul class="nav-links">
     <li><a href="{{ route('gallery') }}">Gallery</a></li>
-    <li><a href="{{ route('home') }}#how">How it Works</a></li>
-    <li><a href="{{ route('home') }}#about">About</a></li>
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#about">About</a></li>
     <li><a href="{{ route('faqs') }}">FAQs</a></li>
-    <li><a href="{{ route('home') }}#contact" class="nav-cta">Contact Us</a></li>
+    <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
 </nav>
 
