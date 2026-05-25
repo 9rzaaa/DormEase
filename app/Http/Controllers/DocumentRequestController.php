@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DocumentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificationHelper;
 
 class DocumentRequestController extends Controller
 {
@@ -41,6 +42,11 @@ class DocumentRequestController extends Controller
 
             $documentRequest->update($validated);
             $documentRequest->load('tenant');
+            NotificationHelper::sendToAll(
+                type: 'document_request',
+                message: "Document request from {$documentRequest->tenant->first_name} {$documentRequest->tenant->last_name} is now {$documentRequest->status}.",
+                ref_id: $documentRequest->id,
+            );
             return response()->json($documentRequest);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

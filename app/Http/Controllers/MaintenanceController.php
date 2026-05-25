@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MaintenanceRequest;
+use App\Helpers\NotificationHelper;
 
 class MaintenanceController extends Controller
 {
@@ -61,6 +62,12 @@ class MaintenanceController extends Controller
 
         $maintenance->update($updates);
 
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "Maintenance request #{$maintenance->request_id} status updated to {$request->status}.",
+            ref_id: $maintenance->request_id,
+        );
+        
         return redirect()->route('maintenance.index')
             ->with('success', 'Maintenance request updated successfully.');
     }

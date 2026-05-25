@@ -576,9 +576,9 @@
                                     };
                                 @endphp
                                 <a href="{{ $notif->url ?? '#' }}"
-                                   class="notif-dd-item {{ $notif->read_at ? '' : 'unread' }}"
-                                   onclick="markNotifRead(event, {{ $notif->id }}, '{{ $notif->url ?? '' }}')">
-                                    @if(!$notif->read_at)
+                                class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
+                                    @if(!$notif->is_read)
                                         <div class="notif-unread-dot"></div>
                                     @else
                                         <div style="width:7px;flex-shrink:0;"></div>

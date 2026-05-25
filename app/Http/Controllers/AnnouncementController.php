@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Announcement;
 use App\Helpers\NotificationHelper;
-use App\Models\Staff;
 
 class AnnouncementController extends Controller
 {
@@ -38,6 +37,7 @@ class AnnouncementController extends Controller
             'status'   => 'nullable|in:active,closed',
             'files.*'  => 'nullable|file|max:5120',
         ]);
+
         $attachment = null;
         if ($request->hasFile('files')) {
             $paths = [];
@@ -46,6 +46,7 @@ class AnnouncementController extends Controller
             }
             $attachment = implode(',', $paths);
         }
+
         Announcement::create([
             'posted_by'  => Auth::guard('staff')->id(),
             'title'      => $request->title,
@@ -55,21 +56,19 @@ class AnnouncementController extends Controller
             'attachment' => $attachment,
             'posted_at'  => now(),
         ]);
+
+        NotificationHelper::sendToAll(
+            type: 'announcement_new',
+            message: 'New announcement posted: ' . $request->title,
+        );
+
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';
-        $allStaff = Staff::where('is_active', 1)->get();
-            foreach ($allStaff as $member) {
-                NotificationHelper::send(
-                    staff_id: $member->staff_id,
-                    type: 'announcement',
-                    message: 'New announcement posted: ' . $request->title,
-                    ref_id: null,
-                );
-            }
-            return redirect()->route($route)
-                ->with('success', 'Announcement posted successfully.');
-        }
+
+        return redirect()->route($route)
+            ->with('success', 'Announcement posted successfully.');
+    }
 
     public function update(Request $request, $id)
     {
@@ -111,9 +110,11 @@ class AnnouncementController extends Controller
             'status'     => $request->status ?? 'active',
             'attachment' => $attachment,
         ]);
+
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';
+
         return redirect()->route($route)
             ->with('success', 'Announcement updated successfully.');
     }

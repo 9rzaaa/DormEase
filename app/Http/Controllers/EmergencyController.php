@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
+use App\Helpers\NotificationHelper;
 use Carbon\Carbon;
+
 class EmergencyController extends Controller
 {
     public function adminIndex()
@@ -122,6 +124,10 @@ class EmergencyController extends Controller
             'status'         => 'pending',
             'reported_at'    => now(),
         ]);
+        NotificationHelper::sendToAll(
+            type: 'emergency_new',
+            message: "Emergency reported: {$request->emergency_type} at {$request->location}.",
+        );
         return redirect()->route('frontdesk.emergency')
             ->with('success', 'Emergency report filed successfully.');
     }
@@ -149,6 +155,13 @@ class EmergencyController extends Controller
             'location'    => $request->location ?? $report->location,
             'resolved_at' => $resolvedAt,
         ]);
+        if ($request->status === 'resolved') {
+            NotificationHelper::sendToAll(
+                type: 'emergency_new',
+                message: "Emergency report #{$report->report_id} has been resolved.",
+                ref_id: $report->report_id,
+            );
+        }
         return response()->json(['success' => true]);
     }
 

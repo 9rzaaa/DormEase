@@ -6,6 +6,7 @@ use App\Models\Document;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\NotificationHelper;
 
 class DocumentController extends Controller
 {
@@ -69,6 +70,11 @@ class DocumentController extends Controller
         ]);
 
         $doc->load('tenant');
+        NotificationHelper::sendToAll(
+        type: 'document_request',
+        message: "New document uploaded: {$doc->title}",
+        ref_id: $doc->id,
+    );
         return response()->json($doc, 201);
     }
 

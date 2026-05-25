@@ -4,7 +4,9 @@ use App\Models\VisitorLog;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\NotificationHelper;
 use Carbon\Carbon;
+
 class VisitorController extends Controller
 {
     public function index()
@@ -77,6 +79,11 @@ class VisitorController extends Controller
             'status'        => $request->status ?? 'inside',
         ]);
 
+        $tenant = Tenant::find($request->tenant_id);
+            NotificationHelper::sendToAll(
+                type: 'visitor_checkin',
+                message: "{$request->visitor_name} checked in to visit {$tenant->first_name} {$tenant->last_name}.",
+            );
         return redirect()->back()
             ->with('success', 'Visitor logged successfully.');
     }
@@ -98,6 +105,11 @@ class VisitorController extends Controller
             'status'         => 'completed',
         ]);
 
+        NotificationHelper::sendToAll(
+            type: 'visitor_checkout',
+            message: "{$visitor->visitor_name} has checked out.",
+            ref_id: $visitor->visitor_id,
+        );
         return back()->with('success', 'Visitor checked out successfully.');
     }
 
