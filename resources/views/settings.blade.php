@@ -288,129 +288,15 @@
         </div>
     @endif
     <div class="settings-tabs fade-up d2" id="settings-tabs">
-        <button class="tab-btn {{ session('open_tab', 'account') === 'account' ? 'active' : '' }}"
-                onclick="switchTab('account')">
-            <img src="{{ asset('icons/nav-settings.png') }}" alt="">
-            Account &amp; Security
-        </button>
-        <button class="tab-btn {{ session('open_tab') === 'notifications' ? 'active' : '' }}"
-                onclick="switchTab('notifications')">
+        <button class="tab-btn active"
+            onclick="switchTab('notifications')">
             <img src="{{ asset('icons/bell.png') }}" alt="">
             Notifications
         </button>
     </div>
 
-    <div class="tab-panel {{ session('open_tab', 'account') === 'account' ? 'active' : '' }} fade-up d3"
-         id="tab-account">
-        <div class="settings-card">
-            <div class="settings-card-header">
-                <div class="settings-card-icon">
-                    <img src="{{ asset('icons/staff-2.png') }}" alt="">
-                </div>
-                <div>
-                    <div class="settings-card-title">Email Address</div>
-                    <div class="settings-card-sub">Update the email used to log into DormEase.</div>
-                </div>
-            </div>
-
-            <div class="current-chip">
-                Current: <span>{{ $staff->email }}</span>
-            </div>
-
-            <form method="POST" action="{{ route('settings.updateEmail') }}">
-                @csrf
-                @method('PUT')
-
-                <div class="field-grid">
-                    <div class="field">
-                        <label>New Email Address</label>
-                        <input type="email" name="email"
-                               value="{{ old('email') }}"
-                               placeholder="new@example.com"
-                               class="{{ $errors->has('email') ? 'is-error' : '' }}">
-                        @error('email')
-                            <span class="field-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="field">
-                        <label>Current Password</label>
-                        <input type="password" name="current_password"
-                               placeholder="Enter your password to confirm"
-                               class="{{ $errors->has('current_password') && old('_form') === 'email' ? 'is-error' : '' }}">
-                        @if($errors->has('current_password') && old('_form') === 'email')
-                            <span class="field-error">{{ $errors->first('current_password') }}</span>
-                        @endif
-                    </div>
-                </div>
-
-                <input type="hidden" name="_form" value="email">
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">Update Email</button>
-                </div>
-            </form>
-        </div>
-        <div class="settings-card">
-            <div class="settings-card-header">
-                <div class="settings-card-icon">
-                    <img src="{{ asset('icons/nav-settings.png') }}" alt="">
-                </div>
-                <div>
-                    <div class="settings-card-title">Change Password</div>
-                    <div class="settings-card-sub">Use a strong password you don't use elsewhere.</div>
-                </div>
-            </div>
-
-            <form method="POST" action="{{ route('settings.updatePassword') }}">
-                @csrf
-                @method('PUT')
-
-                <div class="field-grid">
-                    <div class="field" style="grid-column: 1 / -1; max-width: 440px;">
-                        <label>Current Password</label>
-                        <input type="password" name="current_password"
-                               id="cur-pw"
-                               placeholder="Your current password"
-                               class="{{ $errors->has('current_password') && old('_form') === 'password' ? 'is-error' : '' }}">
-                        @if($errors->has('current_password') && old('_form') === 'password')
-                            <span class="field-error">{{ $errors->first('current_password') }}</span>
-                        @endif
-                    </div>
-                    <div class="field">
-                        <label>New Password</label>
-                        <input type="password" name="new_password"
-                               id="new-pw"
-                               placeholder="Min. 8 characters"
-                               oninput="checkStrength(this.value)"
-                               class="{{ $errors->has('new_password') ? 'is-error' : '' }}">
-                        <div class="pw-strength-bar">
-                            <div class="pw-strength-fill" id="pw-fill"></div>
-                        </div>
-                        <div class="pw-strength-label" id="pw-label"></div>
-                        @error('new_password')
-                            <span class="field-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div class="field">
-                        <label>Confirm New Password</label>
-                        <input type="password" name="new_password_confirmation"
-                               placeholder="Repeat new password">
-                        <div class="field-hint">Must match the new password above.</div>
-                    </div>
-                </div>
-
-                <input type="hidden" name="_form" value="password">
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">Update Password</button>
-                </div>
-            </form>
-        </div>
-
-    </div>
-
-    <div class="tab-panel {{ session('open_tab') === 'notifications' ? 'active' : '' }} fade-up d3"
-         id="tab-notifications">
+    <div class="tab-panel active fade-up d3"
+        id="tab-notifications">
 
         <div class="settings-card">
             <div class="settings-card-header">

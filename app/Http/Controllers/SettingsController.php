@@ -33,65 +33,6 @@ class SettingsController extends Controller
         return view('settings', compact('staff', 'notifPrefs'));
     }
 
-    public function updateEmail(Request $request)
-    {
-        $request->validate([
-            'email'            => 'required|email|max:255',
-            'current_password' => 'required|string',
-        ]);
-
-        $staff = Auth::guard('staff')->user();
-
-        if (!Hash::check($request->current_password, $staff->password_hash)) {
-            return back()
-                ->withErrors(['current_password' => 'Current password is incorrect.'])
-                ->with('open_tab', 'account')
-                ->withInput();
-        }
-
-        $exists = \App\Models\Staff::where('email', $request->email)
-            ->where('staff_id', '!=', $staff->staff_id)
-            ->exists();
-
-        if ($exists) {
-            return back()
-                ->withErrors(['email' => 'That email is already in use.'])
-                ->with('open_tab', 'account')
-                ->withInput();
-        }
-
-        $staff->email = $request->email;
-        $staff->save();
-
-        return back()
-            ->with('success', 'Email updated successfully.')
-            ->with('open_tab', 'account');
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'current_password' => 'required|string',
-            'new_password'     => 'required|string|min:8|confirmed',
-        ]);
-
-        $staff = Auth::guard('staff')->user();
-
-        if (!Hash::check($request->current_password, $staff->password_hash)) {
-            return back()
-                ->withErrors(['current_password' => 'Current password is incorrect.'])
-                ->with('open_tab', 'account')
-                ->withInput();
-        }
-
-        $staff->password_hash = Hash::make($request->new_password);
-        $staff->save();
-
-        return back()
-            ->with('success', 'Password updated successfully.')
-            ->with('open_tab', 'account');
-    }
-
     public function updateNotifications(Request $request)
     {
         $staff = Auth::guard('staff')->user();
