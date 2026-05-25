@@ -68,6 +68,12 @@
       position: relative; height: 100svh; min-height: 560px;
       overflow: hidden; background: var(--brown);
     }
+    .carousel-overlay {
+    pointer-events: none;
+    }
+  .carousel-cta {
+    pointer-events: auto;
+  }
     .carousel-track {
       display: flex; height: 100%;
       transition: transform .7s cubic-bezier(.77,0,.18,1);
@@ -432,7 +438,7 @@
     </div>
 
     <div class="carousel-slide" id="slide-2">
-      <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="carousel-slide-img"
+      <img src="{{ asset('images/roomfor2.jpg') }}" alt="Triple Room" class="carousel-slide-img"
            onerror="this.parentElement.innerHTML='<div class=carousel-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg><span>Add three.jpg</span></div>'">
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Triple Room · 3 Occupants</span></div>
@@ -483,7 +489,7 @@
       <img src="{{ asset('images/pic1.jpg') }}" alt="Double" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
     </div>
     <div class="carousel-thumb" data-index="2">
-      <img src="{{ asset('images/roomfor32.jpg') }}" alt="Triple" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
+      <img src="{{ asset('images/roomfor2.jpg') }}" alt="Triple" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
     </div>
     <div class="carousel-thumb" data-index="3">
       <img src="{{ asset('images/main.jpg') }}" alt="Building" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
