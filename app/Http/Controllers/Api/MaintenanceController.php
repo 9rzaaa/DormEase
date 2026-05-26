@@ -15,6 +15,8 @@ class MaintenanceController extends Controller
             'keywords' => [
                 'leak',
                 'leaking',
+                'drip',
+                'dripping',
                 'water',
                 'faucet',
                 'sink',
@@ -26,6 +28,18 @@ class MaintenanceController extends Controller
                 'clog',
                 'clogged',
                 'overflow',
+                'tagas',
+                'tumatagas',
+                'tumutulo',
+                'tulo',
+                'gripo',
+                'lababo',
+                'inidoro',
+                'kubeta',
+                'tubo',
+                'barado',
+                'bara',
+                'baha',
             ],
         ],
         'electrical' => [
@@ -46,6 +60,14 @@ class MaintenanceController extends Controller
                 'lights',
                 'flicker',
                 'flickering',
+                'kuryente',
+                'ilaw',
+                'saksakan',
+                'kawad',
+                'pundi',
+                'kumukutitap',
+                'walang kuryente',
+                'walang ilaw',
             ],
         ],
         'hvac' => [
@@ -60,6 +82,14 @@ class MaintenanceController extends Controller
                 'fan',
                 'ventilation',
                 'hot room',
+                'air con',
+                'electric fan',
+                'mainit',
+                'mainit kwarto',
+                'hindi malamig',
+                'hindi lumalamig',
+                'mahina aircon',
+                'bentilador',
             ],
         ],
         'appliance' => [
@@ -73,6 +103,11 @@ class MaintenanceController extends Controller
                 'washer',
                 'washing machine',
                 'kettle',
+                'ref',
+                'kalan',
+                'takure',
+                'plantsa',
+                'rice cooker',
             ],
         ],
         'carpentry' => [
@@ -89,6 +124,16 @@ class MaintenanceController extends Controller
                 'furniture',
                 'hinge',
                 'wood',
+                'pinto',
+                'aparador',
+                'upuan',
+                'mesa',
+                'kama',
+                'kandado',
+                'bintana',
+                'bisagra',
+                'kahoy',
+                'sira pinto',
             ],
         ],
         'pest' => [
@@ -107,6 +152,13 @@ class MaintenanceController extends Controller
                 'insect',
                 'bug',
                 'mosquito',
+                'ipis',
+                'langgam',
+                'daga',
+                'anay',
+                'lamok',
+                'insekto',
+                'surot',
             ],
         ],
         'cleaning' => [
@@ -122,6 +174,14 @@ class MaintenanceController extends Controller
                 'stain',
                 'mold',
                 'mould',
+                'marumi',
+                'basura',
+                'mabaho',
+                'amoy',
+                'mantsa',
+                'amag',
+                'linis',
+                'kalat',
             ],
         ],
         'internet' => [
@@ -136,7 +196,61 @@ class MaintenanceController extends Controller
                 'connection',
                 'signal',
                 'network',
+                'mahina signal',
+                'walang internet',
+                'walang wifi',
+                'walang wi fi',
+                'mabagal internet',
+                'mabagal wifi',
+                'putol internet',
             ],
+        ],
+    ];
+
+    private const PRIORITY_RULES = [
+        'urgent' => [
+            'spark',
+            'sparking',
+            'short circuit',
+            'exposed wire',
+            'smoke',
+            'burning',
+            'fire',
+            'flood',
+            'flooding',
+            'overflow',
+            'overflowing',
+            'no power',
+            'no electricity',
+            'gas leak',
+            'sunog',
+            'nasusunog',
+            'usok',
+            'amoy sunog',
+            'baha',
+            'umaapaw',
+            'walang kuryente',
+            'may kuryente',
+            'kumukuryente',
+            'grounded',
+        ],
+        'moderate' => [
+            'leak',
+            'leaking',
+            'clog',
+            'clogged',
+            'broken',
+            'not working',
+            'cannot use',
+            'tagas',
+            'tumatagas',
+            'tumutulo',
+            'barado',
+            'sira',
+            'hindi gumagana',
+            'di gumagana',
+            'hindi magamit',
+            'di magamit',
         ],
     ];
 
@@ -171,6 +285,7 @@ class MaintenanceController extends Controller
         $validated = $request->validate([
             'description' => 'required|string|max:5000',
             'input_type' => 'nullable|in:voice,text',
+            'language' => 'nullable|in:en,tl',
         ]);
 
         $tenant = $request->user();
@@ -214,7 +329,7 @@ class MaintenanceController extends Controller
     private function cleanText(string $text): string
     {
         $text = Str::lower($text);
-        $text = preg_replace('/[^a-z0-9\s\-]/', ' ', $text);
+        $text = preg_replace('/[^\p{L}\p{N}\s\-]/u', ' ', $text);
         $text = preg_replace('/\s+/', ' ', $text);
 
         return trim($text ?? '');
@@ -242,7 +357,20 @@ class MaintenanceController extends Controller
 
         return [
             'issue_type' => $bestIssue,
-            'urgency_level' => self::ISSUE_RULES[$bestIssue]['priority'] ?? 'low',
+            'urgency_level' => $this->classifyPriority($text, $bestIssue),
         ];
+    }
+
+    private function classifyPriority(string $text, string $issue): string
+    {
+        foreach (self::PRIORITY_RULES as $priority => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (str_contains($text, $keyword)) {
+                    return $priority;
+                }
+            }
+        }
+
+        return self::ISSUE_RULES[$issue]['priority'] ?? 'low';
     }
 }
