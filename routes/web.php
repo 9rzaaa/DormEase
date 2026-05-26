@@ -153,6 +153,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
+    Route::put('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 
     // settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

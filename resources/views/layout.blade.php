@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -662,8 +664,8 @@
 
             <div class="avatar-wrap" id="avatar-wrap">
                 <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'Account' }}">
-                    @if(isset($staff->profile_photo) && $staff->profile_photo)
-                        <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="Avatar">
+                    @if($staff->profile_picture ?? null)
+                        <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar">
                     @else
                         {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
                     @endif
@@ -672,12 +674,12 @@
                 <div class="avatar-dropdown" id="avatar-dropdown">
                     <div class="dropdown-header">
                         <div class="dropdown-avatar">
-                            @if(isset($staff->profile_photo) && $staff->profile_photo)
-                                <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="">
-                            @else
-                                {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
-                            @endif
-                        </div>
+                                @if($staff->profile_picture ?? null)
+                                    <img src="{{ Storage::url($staff->profile_picture) }}" alt="">
+                                @else
+                                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                                @endif
+                            </div>
                         <div>
                             <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
                             <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>

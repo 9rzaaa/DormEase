@@ -82,6 +82,7 @@
         flex-shrink: 0;
         margin-top: -36px;
         position: relative;
+        cursor: pointer;
     }
 
     .hero-avatar {
@@ -99,7 +100,55 @@
         box-shadow: 0 4px 18px rgba(232,23,93,.30);
         font-family: var(--ff-display);
         letter-spacing: -.02em;
+        overflow: hidden;
+        position: relative;
+        transition: box-shadow .2s;
     }
+
+    .hero-avatar img.avatar-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: rgba(0,0,0,.42);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        opacity: 0;
+        transition: opacity .2s;
+        pointer-events: none;
+    }
+
+    .avatar-overlay svg {
+        width: 18px;
+        height: 18px;
+        stroke: #fff;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .avatar-overlay span {
+        font-size: .6rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .hero-avatar-wrap:hover .avatar-overlay { opacity: 1; }
+    .hero-avatar-wrap:hover .hero-avatar { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
 
     .hero-info {
         flex: 1;
@@ -141,13 +190,6 @@
         letter-spacing: .02em;
     }
 
-    .hchip-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        flex-shrink: 0;
-    }
-
     .forms-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -166,9 +208,7 @@
         transition: box-shadow .2s;
     }
 
-    .section-card:hover {
-        box-shadow: 0 8px 28px rgba(255,45,120,.12);
-    }
+    .section-card:hover { box-shadow: 0 8px 28px rgba(255,45,120,.12); }
 
     .section-head {
         padding: 1rem 1.4rem;
@@ -231,9 +271,7 @@
         gap: .8rem;
     }
 
-    .field-grid.cols-1 {
-        grid-template-columns: 1fr;
-    }
+    .field-grid.cols-1 { grid-template-columns: 1fr; }
 
     .form-field {
         display: flex;
@@ -241,9 +279,7 @@
         gap: .3rem;
     }
 
-    .form-field.full {
-        grid-column: 1 / -1;
-    }
+    .form-field.full { grid-column: 1 / -1; }
 
     .form-field label {
         font-size: .68rem;
@@ -284,13 +320,8 @@
         align-items: center;
     }
 
-    .input-wrap {
-        position: relative;
-    }
-
-    .input-wrap input {
-        padding-right: 2.5rem;
-    }
+    .input-wrap { position: relative; }
+    .input-wrap input { padding-right: 2.5rem; }
 
     .toggle-pw {
         position: absolute;
@@ -387,10 +418,7 @@
         gap: .4rem;
     }
 
-    .btn-save:hover {
-        opacity: .88;
-        transform: translateY(-1px);
-    }
+    .btn-save:hover { opacity: .88; transform: translateY(-1px); }
 
     .btn-save img {
         width: 13px;
@@ -437,23 +465,30 @@
             'staff'     => ['bg'=>'#f0fdf8','color'=>'#166534','border'=>'#86efac'],
         ];
         $rc = $roleMap[strtolower($staff->role ?? '')] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc'];
-
-        $dutyMap = [
-            'on_duty'  => ['bg'=>'#e8faf5','color'=>'#29BD9B','border'=>'#29BD9B','dot'=>'#29BD9B'],
-            'off_duty' => ['bg'=>'#fff0f0','color'=>'#DF0404','border'=>'#FFC5C5','dot'=>'#DF0404'],
-            'on_leave' => ['bg'=>'#fff9e6','color'=>'#c8960c','border'=>'#f0c040','dot'=>'#c8960c'],
-        ];
-        $dc = $dutyMap[$staff->duty_status ?? ''] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc','dot'=>'#999'];
     @endphp
 
     <div class="hero-card fade-up d2">
         <div class="hero-banner"></div>
         <div class="hero-body">
-            <div class="hero-avatar-wrap">
-                <div class="hero-avatar">
-                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+            <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" id="avatar-form">
+                @csrf
+                @method('PUT')
+                <input type="file" name="avatar" id="avatar-input" accept="image/*" style="display:none;">
+                <div class="hero-avatar-wrap" onclick="document.getElementById('avatar-input').click()">
+                    <div class="hero-avatar">
+                        @if($staff->profile_picture)
+                            <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar" class="avatar-photo" id="avatar-preview">
+                        @else
+                            <span id="avatar-initials">{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}</span>
+                            <img src="" alt="Avatar" class="avatar-photo" id="avatar-preview" style="display:none;">
+                        @endif
+                        <div class="avatar-overlay">
+                            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <span>Change</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
             <div class="hero-info">
                 <div class="hero-name" id="hero-display-name">
                     {{ $staff->first_name }} {{ $staff->last_name }}
@@ -607,6 +642,24 @@
 
 @section('scripts')
 <script>
+    document.getElementById('avatar-input').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const preview = document.getElementById('avatar-preview');
+        const initials = document.getElementById('avatar-initials');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            if (initials) initials.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+
+        document.getElementById('avatar-form').submit();
+    });
+
     function updateDisplayName() {
         const fn = document.querySelector('[name="first_name"]').value;
         const ln = document.querySelector('[name="last_name"]').value;

@@ -477,7 +477,7 @@
     <div class="visitor-modal-card">
         <button type="button" class="visitor-modal-close" onclick="closeModal()">&times;</button>
         <div class="visitor-modal-header">
-            <span style="font-size:1.7rem">👤</span>
+            <span style="font-size:1.7rem"></span>
             <h2>Visitor Details</h2>
         </div>
         <div id="modalContent"></div>
