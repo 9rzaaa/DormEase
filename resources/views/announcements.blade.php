@@ -777,7 +777,13 @@
 
     <div class="compose-card fade-up d2">
         <div class="compose-top">
-            <div class="compose-avatar">{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}</div>
+            <div class="compose-avatar">
+                @if($staff->profile_picture)
+                    <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                @else
+                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                @endif
+            </div>
             <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openModal('post-modal')" readonly>
             <button class="compose-close" onclick="openModal('post-modal')">
                 <img src="{{ asset('icons/edit.png') }}" style="width:16px;height:16px;opacity:.5;" alt="">

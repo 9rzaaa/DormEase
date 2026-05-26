@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     public function index()
     {
         $staff = auth('staff')->user();
-
         return view('profile', compact('staff'));
     }
 
@@ -53,13 +52,30 @@ class ProfileController extends Controller
         return back()->with('success', 'Password updated successfully.');
     }
 
+    public function updateAvatar(Request $request)
+    {
+        $staff = auth('staff')->user();
+
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($staff->profile_picture) {
+            Storage::disk('public')->delete($staff->profile_picture);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        $staff->update(['profile_picture' => $path]);
+
+        return back()->with('success', 'Profile picture updated.');
+    }
+
     public function deactivate()
     {
         $staff = auth('staff')->user();
 
-        $staff->update([
-            'status' => 'inactive',
-        ]);
+        $staff->update(['status' => 'inactive']);
 
         auth('staff')->logout();
 
