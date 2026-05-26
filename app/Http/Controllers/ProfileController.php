@@ -44,13 +44,11 @@ class ProfileController extends Controller
             'password'         => 'required|min:8|confirmed',
         ]);
 
-        if (!Hash::check($request->current_password, $staff->password)) {
+        if (!Hash::check($request->current_password, $staff->password_hash)) {
             return back()->with('error', 'Current password is incorrect.');
         }
 
-        $staff->update([
-            'password' => Hash::make($request->password),
-        ]);
+        $staff->update(['password_hash' => Hash::make($request->password)]);
 
         return back()->with('success', 'Password updated successfully.');
     }
