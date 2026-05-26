@@ -468,17 +468,64 @@
     .toast.success { background: var(--green); }
     .toast.error   { background: var(--red); }
 
+    .sidebar-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: var(--petal);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 9px;
+    cursor: pointer;
+    padding: 7px;
+    flex-shrink: 0;
+    }
+    .sidebar-toggle span {
+        display: block;
+        height: 2px;
+        background: var(--hot-pink);
+        border-radius: 2px;
+        transition: .2s;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(45,10,26,.4);
+        z-index: 99;
+    }
+    .sidebar-backdrop.open { display: block; }
+
+    @media (max-width: 1024px) {
+        :root { --sidebar-w: 0px; }
+        .sidebar { transform: translateX(-260px); width: 260px; }
+        .sidebar.open { transform: translateX(0); }
+        .main { margin-left: 0 !important; width: 100% !important; }
+        .topbar { padding: .85rem 1.2rem; }
+    }
+
     @media (max-width: 820px) {
         :root { --sidebar-w: 0px; }
         .sidebar { transform: translateX(-260px); width: 260px; }
         .sidebar.open { transform: translateX(0); }
         .main { margin-left: 0; }
     }
+
+    @media (max-width: 480px) {
+        .topbar { padding: .7rem .9rem; gap: .5rem; }
+        .breadcrumb { font-size: .72rem; }
+        .topbar-right { gap: .6rem; }
+    }
     </style>
 
     @yield('styles')
 </head>
 <body>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -538,6 +585,9 @@
 <div class="main">
 
     <header class="topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
 
@@ -732,6 +782,11 @@
                 'Accept': 'application/json',
             }
         }).then(() => location.reload());
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-backdrop').classList.toggle('open');
     }
 </script>
 
