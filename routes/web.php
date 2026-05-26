@@ -171,5 +171,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/profile/info', [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
     Route::put('/frontdesk/profile/password', [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
     Route::put('/frontdesk/profile/deactivate', [FDProfileController::class, 'deactivate'])->name('frontdesk.profile.deactivate');
+    Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
+Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
 
 });

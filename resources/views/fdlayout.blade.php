@@ -29,7 +29,7 @@
             --green:      #29BD9B;
             --peach:      #FFD7C7;
             --salmon:     #EB9C7D;
-            --blush:      #FFC5C5;
+            --blush:      #FFF0F6;
             --red:        #DF0404;
 
             --white:      #ffffff;
@@ -442,7 +442,7 @@
 
         <div class="nav-divider"></div>
 
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.settings.index') }}" class="nav-item {{ request()->routeIs('frontdesk.settings*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>
     </nav>
@@ -496,7 +496,7 @@
                         <a href="{{ route('fdprofile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
                             <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
                         </a>
-                        <a href="#" class="dropdown-item">
+                        <a href="{{ route('frontdesk.settings.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
                             <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
                         </a>
                         <div class="dropdown-divider"></div>
