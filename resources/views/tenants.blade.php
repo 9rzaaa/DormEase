@@ -13,7 +13,9 @@
     gap: 1.8rem;
     background: var(--soft-bg);
     box-sizing: border-box;
+    max-width: 100%;
     min-width: 0;
+    
 }
 
 .page-header {
@@ -45,6 +47,7 @@
     align-items: center;
     gap: .75rem;
     flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 .btn-primary {
@@ -163,6 +166,7 @@
         0 10px 20px rgba(0,0,0,.05),
         0 18px 45px rgba(232,23,93,.15);
     box-sizing: border-box;
+    min-width: 0;
 }
 
 .table-header {
@@ -238,12 +242,17 @@
     box-shadow: 0 0 0 2px rgba(232,23,93,.25);
 }
 
-.table-wrap { overflow-x: auto; background: var(--white); }
+.table-wrap {
+    overflow-x: auto;
+    background: var(--white);
+    -webkit-overflow-scrolling: touch;
+}
 
 table {
     width: 100%;
     border-collapse: collapse;
     background: var(--white);
+    min-width: 700px;
 }
 
 thead tr {
@@ -292,6 +301,7 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     gap: .4rem;
+    flex-wrap: nowrap;
 }
 
 .act-btn {
@@ -306,6 +316,7 @@ tbody tr:hover {
     align-items: center;
     justify-content: center;
     font-size: .85rem;
+    flex-shrink: 0;
 }
 
 .act-btn:hover {
@@ -332,6 +343,7 @@ tbody tr:hover {
     display: flex;
     align-items: center;
     gap: .3rem;
+    flex-wrap: wrap;
 }
 
 .page-btn {
@@ -391,6 +403,10 @@ tbody tr:hover {
     gap: .35rem;
 }
 
+.modal-field.full {
+    grid-column: 1 / -1;
+}
+
 .modal-field label {
     font-size: .78rem;
     font-weight: 700;
@@ -434,6 +450,7 @@ tbody tr:hover {
     align-items: center;
     padding: .6rem 0;
     border-bottom: 1px solid var(--pink-100);
+    gap: .5rem;
 }
 
 .view-row:last-child { border-bottom: none; }
@@ -444,12 +461,15 @@ tbody tr:hover {
     color: var(--hot-pink);
     text-transform: uppercase;
     letter-spacing: .03em;
+    flex-shrink: 0;
 }
 
 .view-val {
     font-size: .875rem;
     color: #5a1e38;
     font-weight: 500;
+    text-align: right;
+    word-break: break-word;
 }
 
 .credentials-box {
@@ -475,6 +495,8 @@ tbody tr:hover {
     justify-content: space-between;
     padding: .5rem 0;
     border-bottom: 1px solid var(--pink-100);
+    gap: .5rem;
+    flex-wrap: wrap;
 }
 
 .credential-row:last-child { border-bottom: none; }
@@ -491,6 +513,7 @@ tbody tr:hover {
     font-weight: 700;
     color: var(--ink);
     font-family: monospace;
+    word-break: break-all;
 }
 
 .copy-btn {
@@ -503,6 +526,7 @@ tbody tr:hover {
     font-weight: 700;
     cursor: pointer;
     transition: .2s;
+    flex-shrink: 0;
 }
 
 .copy-btn:hover {
@@ -542,15 +566,72 @@ table td {
 .td-id  { text-align: left; }
 .td-name { text-align: center; }
 
-@media (max-width: 900px) {
-    .stats-row { grid-template-columns: 1fr; }
-    .modal-grid { grid-template-columns: 1fr; }
-    .page-body { padding: 1.2rem 1rem; }
+
+@media (max-width: 1100px) {
+    .stats-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .stat-num { font-size: 1.6rem; }
 }
 
-@media (max-width: 600px) {
-    .table-card { margin: 0; }
-    .search-wrap input { width: 140px; }
+@media (max-width: 900px) {
+    .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .modal-grid { grid-template-columns: 1fr; }
+    .stat-box { padding: 1rem 1.1rem; gap: .9rem; }
+    .stat-icon-circle { width: 44px; height: 44px; }
+    .stat-icon-circle img { width: 22px; height: 22px; }
+    .stat-num { font-size: 1.5rem; }
+}
+
+@media (max-width: 680px) {
+    .page-body { padding: 1rem; gap: 1rem; }
+    .page-header h1 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: 1fr; }
+    .stat-box { padding: 1rem 1.2rem; }
+    .stat-num { font-size: 1.75rem; }
+    .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; }
+    .table-controls { width: 100%; }
+    .search-wrap { flex: 1; }
+    .search-wrap input { width: 100%; }
+    .sort-select { flex: 1; min-width: 0; }
+    .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; }
+    .pagination { width: 100%; justify-content: center; }
+    .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; }
+}
+
+@media (max-width: 480px) {
+    .page-body { padding: .8rem; gap: .9rem; }
+    .page-header { gap: .6rem; }
+    .page-header h1 { font-size: 1.3rem; }
+    .header-actions { width: 100%; }
+    .header-actions .btn-primary,
+    .header-actions .btn-outline { flex: 1; justify-content: center; }
+    .stat-box { gap: .75rem; padding: .9rem 1rem; }
+    .stat-label { font-size: .72rem; }
+    .stat-sub   { font-size: .67rem; }
+    .credentials-box { padding: .75rem .9rem; }
+    .table-controls { flex-direction: column; align-items: stretch; }
+    .search-wrap input { width: 100%; }
+    .sort-select { width: 100%; }
+}
+
+@media (max-width: 360px) {
+    .stat-icon-circle { display: none; }
+    .act-btn { width: 28px; height: 28px; }
+    .stat-num { font-size: 1.4rem; }   /* ADD */
+    .stat-box { padding: .75rem; }      /* ADD */
+}
+
+@media (max-width: 768px) {
+    .action-group {
+        flex-direction: column;
+        gap: .25rem;
+    }
+    .act-btn {
+        width: 28px;
+        height: 28px;
+    }
 }
 </style>
 @endsection
@@ -987,9 +1068,11 @@ table td {
             tbody.innerHTML = pageData.map(t => `
                 <tr>
                     <td class="td-id">${t.account_id ?? '—'}</td>
-                    <td class="td-name" style="${t.is_temp_password ? '' : 'text-align:center;'}">
-                        ${t.first_name} ${t.last_name}
-                        ${tempBadge(t.is_temp_password)}
+                    <td class="td-name">
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;">
+                            <span>${t.first_name} ${t.last_name}</span>
+                            ${t.is_temp_password ? tempBadge(true) : ''}
+                        </div>
                     </td>
                     <td>
                         ${t.floor && t.room_number
