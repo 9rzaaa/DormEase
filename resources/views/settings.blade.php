@@ -324,7 +324,7 @@
                             ],
                             'emergency_new'    => [
                                 'label' => 'Emergency Report Filed',
-                                'desc'  => 'When a front desk staff logs a new emergency alert.',
+                                'desc'  => 'When a front desk staff or tenant logs a new emergency alert.',
                                 'icon'  => 'warn',
                             ],
                             'visitor_checkin'  => [
@@ -349,7 +349,7 @@
                             ],
                             'announcement_new' => [
                                 'label' => 'New Announcement Posted',
-                                'desc'  => 'When any staff member publishes an announcement.',
+                                'desc'  => 'When an announcement has been succesfully posted.',
                                 'icon'  => 'nav-announ',
                             ],
                         ];
