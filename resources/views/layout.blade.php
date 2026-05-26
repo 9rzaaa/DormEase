@@ -469,19 +469,24 @@
     .toast.error   { background: var(--red); }
 
     .sidebar-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 36px;
-    height: 36px;
-    background: var(--petal);
-    border: 1.5px solid var(--baby-pink);
-    border-radius: 9px;
-    cursor: pointer;
-    padding: 7px;
-    flex-shrink: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 9px;
+        cursor: pointer;
+        padding: 7px;
+        flex-shrink: 0;
     }
+
+    @media (max-width: 1024px) {
+        .sidebar-toggle { display: flex; }
+    }
+
     .sidebar-toggle span {
         display: block;
         height: 2px;

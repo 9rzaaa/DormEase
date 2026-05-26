@@ -619,8 +619,8 @@ table td {
 @media (max-width: 360px) {
     .stat-icon-circle { display: none; }
     .act-btn { width: 28px; height: 28px; }
-    .stat-num { font-size: 1.4rem; }   /* ADD */
-    .stat-box { padding: .75rem; }      /* ADD */
+    .stat-num { font-size: 1.4rem; }
+    .stat-box { padding: .75rem; }
 }
 
 @media (max-width: 768px) {
