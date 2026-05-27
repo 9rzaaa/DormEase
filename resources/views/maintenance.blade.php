@@ -701,7 +701,7 @@
                 <thead>
                     <tr>
                         <th>Request ID</th>
-                        <th>Date</th>
+                        <th>Date & Time</th>
                         <th>Room No.</th>
                         <th>Tenant Name</th>
                         <th>Issue Type</th>
@@ -851,7 +851,10 @@
 
     function fmtDate(d) {
         if (!d) return '—';
-        return new Date(d).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const dt = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date}<br><span style="font-size:.75rem;color:var(--ink-muted);font-weight:400;">${time}</span>`;
     }
 
     function escHtml(str) {
@@ -868,7 +871,7 @@
         const safeR = escHtml(JSON.stringify(r));
         return `<tr>
             <td><span class="req-id">#REQ-${String(r.id).padStart(3,'0')}</span></td>
-            <td><span class="req-date">${fmtDate(r.created_at)}</span></td>
+            <td><div class="req-date">${fmtDate(r.created_at)}</div></td>
             <td><span class="room-badge">${escHtml(r.room_number ?? '—')}</span></td>
             <td><span class="tenant-name">${escHtml(r.tenant_name ?? '—')}</span></td>
             <td><span class="issue-type ${cls}">${escHtml(r.issue_type ?? '—')}</span></td>

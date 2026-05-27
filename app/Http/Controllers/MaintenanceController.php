@@ -25,7 +25,7 @@ class MaintenanceController extends Controller
                     'urgency'       => $r->urgency_level,
                     'status'        => $r->status,
                     'admin_remarks' => $r->admin_notes,
-                    'created_at'    => $r->submitted_at,
+                    'created_at' => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
                 ];
             });
 
