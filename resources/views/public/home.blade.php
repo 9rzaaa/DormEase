@@ -1066,8 +1066,12 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
   </div>
 
-  <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
-  <p style="font-size:.76rem;color:var(--brown-light);margin-top:4px;font-weight:600;">— Room 3B Tenant</p>
+<p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
+  Dorm life, <em style="color:var(--pink);font-style:italic;">simplified.</em>
+</p>
+<p style="font-size:.82rem;color:var(--brown-light);margin-top:6px;font-weight:600;letter-spacing:0.02em;">
+  Everything your tenants need is in one place.
+</p>
 
   <a href="{{ route('features') }}" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;">
     More Features
