@@ -222,9 +222,8 @@
         transition: opacity .2s ease, transform .2s ease;
         overflow: hidden;
     }
-    .notif-dropdown.open {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    #notif-wrap:hover .notif-dropdown {
+        opacity: 1; transform: translateY(0) scale(1);
         pointer-events: auto;
     }
     .notif-dropdown-header {
@@ -332,7 +331,7 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
+        position: absolute; top: 100%; right: 0;
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 14px;
@@ -344,13 +343,10 @@
         transition: opacity .2s ease, transform .2s ease;
         z-index: 200;
     }
-    .avatar-dropdown.open,
     .avatar-wrap:hover .avatar-dropdown {
         opacity: 1; transform: translateY(0) scale(1);
         pointer-events: auto;
     }
-    .avatar-wrap { padding-bottom: 0px; }
-    .avatar-dropdown { top: 100%; margin-top: 0px; }
 
     .dropdown-header {
         padding: .9rem 1rem .75rem;
@@ -598,8 +594,9 @@
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
 
+            {{-- Notifications --}}
             <div style="position:relative;" id="notif-wrap">
-                <div class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
+                <div class="notif-bell" id="notif-bell" title="Notifications">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
                     @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
                         <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
@@ -633,8 +630,8 @@
                                     };
                                 @endphp
                                 <a href="{{ $notif->url ?? '#' }}"
-                                class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
-                                onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
+                                   class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                   onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
                                     @if(!$notif->is_read)
                                         <div class="notif-unread-dot"></div>
                                     @else
@@ -662,43 +659,46 @@
                 </div>
             </div>
 
-            <div class="avatar-wrap" id="avatar-wrap">
-                <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'Account' }}">
-                    @if($staff->profile_picture ?? null)
-                        <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar">
-                    @else
-                        {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
-                    @endif
-                </div>
+            {{-- Avatar / Profile --}}
+<div class="avatar-wrap" id="avatar-wrap">
+    <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'Account' }}">
+        @if($staff->profile_picture ?? null)
+            <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar"
+                 onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
+        @else
+            {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+        @endif
+    </div>
 
-                <div class="avatar-dropdown" id="avatar-dropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-avatar">
-                                @if($staff->profile_picture ?? null)
-                                    <img src="{{ Storage::url($staff->profile_picture) }}" alt="">
-                                @else
-                                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
-                                @endif
-                            </div>
-                        <div>
-                            <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
-                            <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>
-                        </div>
-                    </div>
-                    <div class="dropdown-menu">
-                        <a href="{{ route('profile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
-                            <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
-                        </a>
-                        <a href="{{ route('settings.index') }}" class="dropdown-item">
-                            <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item danger" onclick="closeAvatarDropdown(); openModal('logout-modal');">
-                            <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
-                        </button>
-                    </div>
-                </div>
+    <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dropdown-header">
+            <div class="dropdown-avatar">
+                @if($staff->profile_picture ?? null)
+                    <img src="{{ Storage::url($staff->profile_picture) }}" alt=""
+                         onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
+                @else
+                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                @endif
             </div>
+            <div>
+                <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
+                <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>
+            </div>
+        </div>
+        <div class="dropdown-menu">
+            <a href="{{ route('profile.index') }}" class="dropdown-item">
+                <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
+            </a>
+            <a href="{{ route('settings.index') }}" class="dropdown-item">
+                <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" onclick="openModal('logout-modal')">
+                <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
+            </button>
+        </div>
+    </div>
+</div>
 
         </div>
     </header>
@@ -741,31 +741,9 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    function toggleAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.toggle('open');
-    }
-    function closeAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.remove('open');
-    }
-    document.addEventListener('click', e => {
-        const wrap = document.getElementById('avatar-wrap');
-        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
-    });
-    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
-        el.addEventListener('click', () => closeAvatarDropdown());
-    });
-
-    function toggleNotifDropdown() {
-        document.getElementById('notif-dropdown').classList.toggle('open');
-        closeAvatarDropdown();
-    }
     function closeNotifDropdown() {
         document.getElementById('notif-dropdown').classList.remove('open');
     }
-    document.addEventListener('click', function(e) {
-        const wrap = document.getElementById('notif-wrap');
-        if (wrap && !wrap.contains(e.target)) closeNotifDropdown();
-    });
 
     function markNotifRead(e, id, url) {
         e.preventDefault();
