@@ -67,4 +67,18 @@ class FDProfileController extends Controller
 
         return redirect('/')->with('success', 'Account deactivated successfully.');
     }
+
+    public function updateAvatar(Request $request)
+    {
+        $staff = auth('staff')->user();
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+        if ($staff->profile_picture) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($staff->profile_picture);
+        }
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $staff->update(['profile_picture' => $path]);
+        return back()->with('success', 'Profile picture updated.');
+    }
 }

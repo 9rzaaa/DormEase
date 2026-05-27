@@ -594,7 +594,6 @@
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
 
-            {{-- Notifications --}}
             <div style="position:relative;" id="notif-wrap">
                 <div class="notif-bell" id="notif-bell" title="Notifications">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
@@ -659,7 +658,6 @@
                 </div>
             </div>
 
-            {{-- Avatar / Profile --}}
 <div class="avatar-wrap" id="avatar-wrap">
     <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'Account' }}">
         @if($staff->profile_picture ?? null)
