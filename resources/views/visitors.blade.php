@@ -22,7 +22,7 @@
     .page-header h1 {
         font-size: 2rem;
         font-weight: 700;
-        color: #E8175D;
+        color: var(--black);
         letter-spacing: -.02em;
         line-height: 1.15;
     }
@@ -30,7 +30,7 @@
     .page-header .dorm-name {
         font-size: 1rem;
         font-weight: 600;
-        color: #E8175D;
+        color: var(--hot-pink);
         margin-top: .2rem;
     }
 
@@ -56,9 +56,8 @@
         cursor: pointer;
     }
 
-    .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
+    .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
 
-    /* ───────── STATS ───────── */
     .stats-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -66,10 +65,10 @@
     }
 
     .stat-box {
-        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        background: var(--gradient-pink);
         border-radius: 20px;
         border: none;
-        box-shadow: 0 10px 30px rgba(255,79,147,.25);
+        box-shadow: var(--shadow-stats);
         padding: 1.6rem 1.8rem;
         display: flex;
         align-items: center;
@@ -79,14 +78,11 @@
         overflow: hidden;
     }
 
-    .stat-box:hover { box-shadow: 0 4px 20px rgba(220,80,120,.1); }
-
     .stat-icon-circle {
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: rgba(255,255,255,.18);
-        backdrop-filter: blur(8px);
+        background: var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -98,27 +94,28 @@
         width: 34px;
         height: 34px;
         object-fit: contain;
-        filter: brightness(0) invert(1);
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
     }
+
 
     .stat-num {
         font-size: 2.2rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--white);
         line-height: 1;
         letter-spacing: -.03em;
     }
 
     .stat-label {
         font-size: .85rem;
-        color: white;
+        color: var(--white);
         font-weight: 700;
         margin-top: .2rem;
     }
 
     .stat-sub {
         font-size: .76rem;
-        color: white;
+        color: var(--white);
         font-weight: 500;
         margin-top: .15rem;
     }
@@ -127,172 +124,167 @@
         .stats-row { grid-template-columns: 1fr; }
     }
 
-    /* ───────── TABLE CARD ───────── */
     .table-card {
         background: var(--white);
         border-radius: 16px;
-        border: 1px solid var(--border);
+        border: 2px solid var(--bright-pink);
         box-shadow: var(--shadow);
         overflow: hidden;
     }
 
-    /* ───────── TABLE HEADER ───────── */
     .table-header {
         padding: 1.1rem 1.5rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        background: var(--white);
         flex-wrap: wrap;
         gap: .8rem;
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     .table-title {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #fff;
+        color: var(--bright-pink);
         line-height: 1.2;
     }
 
     .table-date {
         font-size: .78rem;
-        color: rgba(255,255,255,.75);
+        color: var(--black);
         margin-top: .1rem;
     }
 
-    /* ───────── TABLE CONTROLS (inside header) ───────── */
-.table-controls {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    flex-wrap: nowrap;
-}
+    .table-controls {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        flex-wrap: nowrap;
+    }
 
-.table-controls .search-wrap {
-    position: relative;
-    flex-shrink: 0;
-}
+    .table-controls .search-wrap {
+        position: relative;
+        flex-shrink: 0;
+    }
 
-.table-controls .search-wrap .search-icon {
-    position: absolute;
-    left: 9px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 13px;
-    color: #e8175d;
-    pointer-events: none;
-}
+    .table-controls .search-wrap input {
+        padding: .45rem .9rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--border-pink);
+        font-size: .83rem;
+        width: 190px;
+        background: var(--white);
+        color: var(--black);
+        outline: none;
+        transition: box-shadow .2s;
+    }
 
-.table-controls .search-wrap input {
-    padding: .45rem .9rem;
-    border-radius: 9px;
-    border: none;
-    font-size: .83rem;
-    width: 190px;
-    background: #ffffff;
-    color: #e8175d;
-    outline: none;
-    transition: box-shadow .2s;
-}
+    .table-controls .search-wrap input:focus {
+        box-shadow: 0 0 0 2px var(--border-pink);
+    }
 
-.table-controls .search-wrap input:focus {
-    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
-}
+    .table-controls .search-wrap input::placeholder {
+        color: var(--gray);
+    }
 
-.table-controls .search-wrap input::placeholder {
-    color: #f0a0b8;
-}
+    .table-controls .date-range-wrap {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        flex-shrink: 0;
+    }
 
-.table-controls .date-range-wrap {
-    display: flex;
-    align-items: center;
-    gap: .35rem;
-    flex-shrink: 0;
-}
+    .table-controls .date-range-wrap .range-label {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+    }
 
-.table-controls .date-range-wrap .range-label {
-    font-size: .8rem;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-}
+    .table-controls .date-range-wrap .range-sep {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--gray);
+        white-space: nowrap;
+    }
 
-.table-controls .date-range-wrap .range-sep {
-    font-size: .8rem;
-    font-weight: 700;
-    color: rgba(255,255,255,.75);
-    white-space: nowrap;
-}
+    .table-controls .date-input {
+        padding: .42rem .7rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        font-size: .82rem;
+        color: var(--black);
+        cursor: pointer;
+        outline: none;
+        transition: box-shadow .2s;
+        white-space: nowrap;
+    }
 
-.table-controls .date-input {
-    padding: .42rem .7rem;
-    border-radius: 9px;
-    border: none;
-    background: #ffffff;
-    font-size: .82rem;
-    color: #e8175d;
-    cursor: pointer;
-    outline: none;
-    transition: box-shadow .2s;
-    white-space: nowrap;
-}
+    .table-controls .date-input:focus {
+        box-shadow: 0 0 0 2px var(--border-pink);
+    }
 
-.table-controls .date-input:focus {
-    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
-}
+    .table-controls .filter-label {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+    }
 
-.table-controls .filter-label {
-    font-size: .8rem;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-}
+    .table-controls .sort-select {
+        padding: .42rem .7rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        font-size: .82rem;
+        color: var(--black);
+        cursor: pointer;
+        outline: none;
+        transition: box-shadow .2s;
+        white-space: nowrap;
+    }
 
-.table-controls .sort-select,
-.table-controls .date-input {
-    padding: .42rem .7rem;
-    border-radius: 9px;
-    border: none;
-    background: #ffffff;
-    font-size: .82rem;
-    color: #e8175d;
-    cursor: pointer;
-    outline: none;
-    transition: box-shadow .2s;
-    white-space: nowrap;
-}
+    .table-controls .sort-select:focus {
+        box-shadow: 0 0 0 2px var(--border-pink);
+    }
 
-.table-controls .sort-select:focus,
-.table-controls .date-input:focus {
-    box-shadow: 0 0 0 2px rgba(255,255,255,.6);
-}
+    .table-controls .sort-select option {
+        color: var(--black);
+        background: var(--white);
+        font-weight: 700;
+    }
 
-.table-controls .sort-select option {
-    color: #e8175d;
-    background: #fff;
-    font-weight: 700;
-}
+    .table-controls .filter-divider {
+        width: 1px;
+        height: 20px;
+        background: var(--border-pink);
+        flex-shrink: 0;
+    }
 
-.table-controls .filter-divider {
-    width: 1px;
-    height: 20px;
-    background: rgba(255,255,255,.45);
-    flex-shrink: 0;
-}
-    /* ───────── TABLE ───────── */
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { 
+        overflow-x: auto;
+        border-top: 2px solid var(--bright-pink);
+    }
 
-    table { width: 100%; border-collapse: collapse; min-width: 980px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 980px;
+    }
 
     th {
         padding: .75rem 1rem;
         font-size: .75rem;
         text-transform: uppercase;
-        color: #e8175d;
+        color: var(--bright-pink);
         background: var(--pink-bg);
         text-align: center;
         font-weight: 700;
         white-space: nowrap;
+        border-bottom: 2px solid var(--bright-pink);
     }
 
     td {
@@ -304,31 +296,78 @@
     }
 
     tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: var(--pink-bg); }
+    tbody tr:hover { background: #fff7fb; }
 
-    /* ───────── BADGES ───────── */
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
     .badge-completed { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
     .badge-pending   { background: #fff9e6; color: #c8960c;      border: 1.5px solid #f0c040;      }
-    .badge-denied    { background: #fff0f0; color: var(--red);   border: 1.5px solid var(--blush); }
-    .badge-inside    { background: var(--pink-card); color: var(--pink); border: 1.5px solid var(--pink-light); }
+    .badge-denied    { background: #fff0f0; color: var(--red);   border: 1.5px solid var(--baby-pink); }
+    .badge-inside    { background: var(--petal); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
 
-    .time-pending { color: #bbb; font-style: italic; font-size: .78rem; }
+    .time-pending { color: var(--gray); font-style: italic; font-size: .78rem; }
 
-    /* ───────── ACTION BUTTON ───────── */
     .act-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 7px;
-        border: 1.5px solid var(--gray-light);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--baby-pink);
         background: var(--white);
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s;
+        font-family: var(--ff-body);
     }
 
-    .act-btn:hover { border-color: var(--pink); background: var(--pink-bg); }
+    .act-btn:hover {
+        border-color: var(--bright-pink);
+        box-shadow: 0 6px 14px rgba(232,23,93,.15);
+    }
 
-    /* ───────── VISITOR MODAL ───────── */
+    .act-btn img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    .id-photo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .55rem;
+        margin-top: .8rem;
+    }
+
+    .id-photo-wrap img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: min(320px, 45vh);
+        object-fit: contain;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-pink-mid);
+        background: var(--white);
+    }
+
+    .id-photo-wrap a {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        text-decoration: none;
+    }
+
+    .id-photo-wrap a:hover { text-decoration: underline; }
+
+    .no-id-photo {
+        margin: 0;
+        color: var(--ink-muted);
+        font-size: .82rem;
+        font-style: italic;
+    }
+
     .visitor-modal {
         display: none;
         position: fixed;
@@ -348,7 +387,7 @@
         overflow-y: auto;
         border-radius: 28px;
         padding: 2.2rem 2.5rem;
-        box-shadow: 0 15px 40px rgba(0,0,0,.18);
+        box-shadow: var(--shadow-pink-modal);
         position: relative;
         animation: modalFade .25s ease;
     }
@@ -365,13 +404,13 @@
         border: none;
         background: none;
         font-size: 2rem;
-        color: #8d7480;
+        color: var(--ink-muted);
         cursor: pointer;
         line-height: 1;
         transition: color .2s;
     }
 
-    .visitor-modal-close:hover { color: var(--pink); }
+    .visitor-modal-close:hover { color: var(--hot-pink); }
 
     .visitor-modal-header {
         display: flex;
@@ -393,7 +432,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: .06em;
-        color: var(--pink);
+        color: var(--hot-pink);
         margin: 1.1rem 0 .3rem;
     }
 
@@ -403,11 +442,11 @@
         align-items: center;
         gap: 1.2rem;
         padding-bottom: .95rem;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border-pink-mid);
     }
 
     .modal-label {
-        color: #8d7480;
+        color: var(--ink-muted);
         font-size: .82rem;
         font-weight: 500;
     }
@@ -419,7 +458,6 @@
         text-align: right;
     }
 
-    /* ───────── ANIMATIONS ───────── */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(12px); }
         to   { opacity: 1; transform: translateY(0);    }
@@ -439,7 +477,7 @@
     <div class="visitor-modal-card">
         <button type="button" class="visitor-modal-close" onclick="closeModal()">&times;</button>
         <div class="visitor-modal-header">
-            <span style="font-size:1.7rem">👤</span>
+            <span style="font-size:1.7rem"></span>
             <h2>Visitor Details</h2>
         </div>
         <div id="modalContent"></div>
@@ -464,7 +502,7 @@
     <div class="stats-row fade-up d2">
         <div class="stat-box">
             <div class="stat-icon-circle">
-                <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Visitors">
+                <img src="{{ asset('icons/visitor.png') }}" alt="Visitors">
             </div>
             <div>
                 <div class="stat-num">{{ $visitorsToday }}</div>
@@ -492,36 +530,35 @@
             </div>
 
             <div class="table-controls">
-    <div class="search-wrap">
-        <input
-            type="text"
-            id="search-input"
-            placeholder="Search visitor..."
-            onkeyup="applyFilters()"
-        >
-    </div>
+                <div class="search-wrap">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Search visitor..."
+                        onkeyup="applyFilters()"
+                    >
+                </div>
 
-    <div class="filter-divider"></div>
+                <div class="filter-divider"></div>
 
-    <div class="filter-group">
-        <span class="filter-label">Sort:</span>
-        <select id="sort-select" class="sort-select" onchange="applyFilters()">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="name">Name</option>
-        </select>
-    </div>
+                <div class="filter-group">
+                    <span class="filter-label">Sort:</span>
+                    <select id="sort-select" class="sort-select" onchange="applyFilters()">
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
 
-    <div class="filter-divider"></div>
+                <div class="filter-divider"></div>
 
-    {{-- Single date range --}}
-    <div class="date-range-wrap">
-        <span class="range-label">Date:</span>
-        <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
-        <span class="range-sep">—</span>
-        <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
-    </div>
-</div>
+                <div class="date-range-wrap">
+                    <span class="range-label">Date:</span>
+                    <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
+                    <span class="range-sep">—</span>
+                    <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
+                </div>
+            </div>
         </div>
 
         <div class="table-wrap">
@@ -553,6 +590,7 @@
 
     const logs = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     let filtered = Array.isArray(logs) ? [...logs] : [];
+    const eyeIcon = "{{ asset('icons/eye.png') }}";
 
     function fmtDateTime(dt) {
         if (!dt) return '—';
@@ -635,7 +673,7 @@
 
             return `
                 <tr>
-                    <td style="font-weight:600;text-align:left">${v.visitor_name ?? '—'}</td>
+                    <td style="font-weight:600">${v.visitor_name ?? '—'}</td>
                     <td>${expectedVisit}</td>
                     <td>${timeIn}</td>
                     <td>${timeOut}</td>
@@ -644,7 +682,9 @@
                     <td>${v.staff?.name  ?? '—'}</td>
                     <td>${getStatusBadge(v.status)}</td>
                     <td>
-                        <button class="act-btn" title="View details" onclick="viewVisitor(${v.id})">👁</button>
+                        <button class="act-btn" title="View details" onclick="viewVisitor(${v.id})">
+                            <img src="${eyeIcon}" alt="View">
+                        </button>
                     </td>
                 </tr>`;
         }).join('');
@@ -716,7 +756,6 @@
         }
 
         document.getElementById('modalContent').innerHTML = `
-
             <div class="modal-section-title">Visitor Info</div>
             ${row('Visitor ID',     'VST-' + String(v.id).padStart(3, '0'))}
             ${row('Full Name',      v.visitor_name ?? '—')}

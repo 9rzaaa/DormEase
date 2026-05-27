@@ -1,7 +1,6 @@
 @extends('fdlayout')
 
-@section('title', 'DormEase — Front Desk Dashboard')
-
+@section('title', 'DormEase: Front Desk Dashboard')
 @section('page-title', 'Dashboard')
 
 @section('styles')
@@ -13,63 +12,90 @@
         gap: 1.5rem;
         padding: 1.8rem 2rem;
         flex: 1;
+        background: var(--pink-bg);
     }
 
     .content-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
 
-    .page-header { margin-bottom: .25rem; }
-    .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
-    .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--pink); margin-top: .2rem; }
+    .dorm-name { font-size: 1rem; font-weight: 600; color: var(--bright-pink); margin-top: .2rem; }
 
     .export-btn {
         display: flex; align-items: center; gap: .4rem;
         padding: .45rem 1rem; border-radius: 8px;
-        border: 1.5px solid var(--gray-light); background: var(--white);
-        font-size: .82rem; font-weight: 600; color: var(--ink-muted);
-        transition: border-color .2s, color .2s;
+        border: 1.5px solid var(--bright-pink);
+        background: var(--pink-card);
+        font-size: .82rem; font-weight: 700; color: var(--hot-pink);
+        transition: background .2s; cursor: pointer;
     }
-    .export-btn:hover { border-color: var(--pink); color: var(--pink); }
+    .export-btn:hover { background: var(--pink-100); }
 
     .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
+
     .stat-box {
-        background: var(--pink-card); border-radius: 12px; padding: 1.1rem;
-        border: 1px solid rgba(202,93,134,.1);
+        border-radius: 14px; padding: 1.1rem; border: none;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         transition: transform .2s, box-shadow .2s;
     }
-    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(202,93,134,.14); }
-    .stat-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--pink); display: flex; align-items: center; justify-content: center; margin-bottom: .8rem; }
-    .stat-num   { font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -.02em; }
-    .stat-label { font-size: .85rem; font-weight: 600; color: var(--ink); margin-top: .3rem; }
-    .stat-sub   { font-size: .75rem; color: var(--pink); font-weight: 500; margin-top: .15rem; }
+    .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
+
+    .stat-icon {
+        width: 40px; height: 40px; border-radius: 10px;
+        background: var(--white);
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: .8rem;
+    }
+    .stat-icon img { filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
+    .stat-num   { font-size: 1.9rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -.03em; }
+    .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
+    .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
 
     .bottom-row { display: grid; grid-template-columns: 1fr 260px; gap: 1.2rem; }
 
     .activity-row {
         display: flex; align-items: center;
-        padding: .95rem .5rem; border-bottom: 1px solid var(--border);
+        padding: .95rem .5rem; border-bottom: 1px solid var(--pink-card);
         cursor: pointer; transition: background .15s; border-radius: 8px;
     }
     .activity-row:last-child { border-bottom: none; }
-    .activity-row:hover { background: var(--pink-bg); }
+    .activity-row:hover { background: var(--pink-card); }
     .activity-text  { flex: 1; }
     .activity-title { font-size: .88rem; font-weight: 600; color: var(--ink); }
     .activity-time  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
-    .activity-arrow { color: var(--gray); font-size: .9rem; flex-shrink: 0; }
+    .activity-arrow { color: var(--hot-pink); font-size: .9rem; flex-shrink: 0; }
 
     .emergency-card {
-        background: var(--pink-card); border: 1.5px solid var(--pink-light);
+        background: var(--white);
+        border: 1.5px solid var(--bright-pink);
         border-radius: 16px; padding: 1.4rem;
         display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6rem;
     }
-    .emergency-title     { font-size: 1rem; font-weight: 700; color: var(--ink); }
-    .emergency-icon-wrap { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--ink); background: var(--white); display: flex; align-items: center; justify-content: center; margin: .4rem 0; }
-    .emergency-room      { font-size: .9rem; font-weight: 700; color: var(--ink); }
-    .emergency-type      { font-size: .82rem; font-weight: 600; color: var(--pink); }
-    .emergency-status    { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
-    .emergency-btn { margin-top: .5rem; width: 100%; background: var(--pink); color: var(--white); border: none; border-radius: 10px; padding: .65rem; font-size: .85rem; font-weight: 700; cursor: pointer; transition: background .2s, transform .15s; }
-    .emergency-btn:hover { background: #a8446c; transform: translateY(-1px); }
+    .emergency-title { font-size: 1rem; font-weight: 800; color: var(--ink); }
+    .emergency-icon-wrap {
+        width: 78px; height: 78px; border-radius: 50%;
+        border: 3px solid var(--pink-100);
+        background: var(--pink-card);
+        display: flex; align-items: center; justify-content: center;
+        margin: .5rem 0;
+        box-shadow: 0 4px 14px rgba(232,23,93,.12);
+    }
+    .emergency-icon-wrap img {
+        width: 28px; height: 28px; object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .check-icon { width: 42px !important; height: 42px !important; object-fit: contain; filter: none !important; }
+    .emergency-room   { font-size: .9rem; font-weight: 700; color: var(--ink); }
+    .emergency-type   { font-size: .82rem; font-weight: 600; color: var(--bright-pink); }
+    .emergency-status { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
+    .emergency-btn {
+        margin-top: .5rem; width: 100%;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        color: var(--white); border: none; border-radius: 10px;
+        padding: .65rem; font-size: .85rem; font-weight: 800;
+        cursor: pointer; transition: opacity .2s;
+    }
+    .emergency-btn:hover { opacity: .88; }
 
-    .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--border); }
+    .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--pink-card); }
     .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
     .announce-title { font-size: .9rem; font-weight: 600; color: var(--ink); }
     .announce-date  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
@@ -77,15 +103,13 @@
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
-    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--pink-card); cursor: pointer; }
     .notif-item:last-child { border-bottom: none; }
     .notif-ico  { flex-shrink: 0; margin-top: .1rem; }
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
     .empty-state { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: .88rem; }
-
-    .alert-resolve-btn { margin-top: .6rem; font-size: .78rem; font-weight: 600; padding: .3rem .8rem; border-radius: 7px; border: none; background: var(--green); color: var(--white); cursor: pointer; }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -109,8 +133,10 @@
     <div class="content-col">
 
         <div class="page-header fade-up d1">
-            <h1>Welcome, {{ $staff->first_name }}!</h1>
-            <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+            <div>
+                <h1>Welcome, {{ $staff->first_name }}!</h1>
+                <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+            </div>
         </div>
 
         <div class="card fade-up d2">
@@ -191,7 +217,7 @@
                 <div class="emergency-card">
                     <div class="emergency-title">Emergency Report</div>
                     <div class="emergency-icon-wrap">
-                        <img src="{{ asset('icons/emergency.png') }}" class="icon-lg" alt="">
+                        <img src="{{ asset('icons/panic.png') }}" class="icon-lg" alt="">
                     </div>
                     <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}:</div>
                     <div class="emergency-type">{{ $latestEmergency->emergency_type }}</div>
@@ -199,14 +225,14 @@
                     <button class="emergency-btn" onclick="openModal('emergency-modal')">View All Alerts</button>
                 </div>
             @else
-                <div class="emergency-card" style="opacity:.65;">
+                <div class="emergency-card">
                     <div class="emergency-title">Emergency Reports</div>
                     <div class="emergency-icon-wrap">
-                        <img src="{{ asset('icons/check.png') }}" class="icon-lg" alt="">
+                        <img src="{{ asset('icons/check.png') }}" alt="" class="check-icon">
                     </div>
-                    <div class="emergency-type" style="color:var(--pink);">All Clear</div>
+                    <div class="emergency-type">All Clear</div>
                     <div class="emergency-status">No active emergencies</div>
-                    <button class="emergency-btn" style="background:var(--pink);" onclick="openModal('emergency-modal')">View History</button>
+                    <button class="emergency-btn" onclick="openModal('emergency-modal')">View History</button>
                 </div>
             @endif
 

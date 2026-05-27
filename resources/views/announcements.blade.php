@@ -24,7 +24,7 @@
     .page-header-left h1{
         font-size:2rem;
         font-weight:700;
-        color:#E8175D;
+        color:var(--black);
         letter-spacing:-.02em;
         line-height:1.15;
     }
@@ -32,7 +32,7 @@
     .page-header-left .dorm-name{
         font-size:1rem;
         font-weight:600;
-        color:#E8175D;
+        color:var(--hot-pink);
         margin-top:.2rem;
     }
 
@@ -41,8 +41,8 @@
         align-items:center;
         gap:.5rem;
         padding:.55rem 1.2rem;
-        background:#E8175D;
-        color:#fff;
+        background:var(--hot-pink);
+        color:var(--white);
         border:none;
         border-radius:10px;
         font-size:.87rem;
@@ -53,7 +53,7 @@
     }
 
     .btn-post:hover{
-        background:#d41455;
+        background:var(--bright-pink);
         transform:translateY(-1px);
     }
 
@@ -88,13 +88,13 @@
         width:36px;
         height:36px;
         border-radius:50%;
-        background:linear-gradient(135deg,#E8175D,#ff4d8d);
+        background:var(--gradient-pink);
         display:flex;
         align-items:center;
         justify-content:center;
         font-size:14px;
         font-weight:700;
-        color:#fff;
+        color:var(--white);
         flex-shrink:0;
     }
 
@@ -104,7 +104,7 @@
         outline:none;
         background:transparent;
         font-size:.95rem;
-        font-weight:600;
+        font-weight:550;
         color:var(--ink);
     }
 
@@ -149,7 +149,7 @@
         width:32px;
         height:32px;
         border-radius:8px;
-        background:#fff;
+        background:var(--white);
         border:1px solid var(--border);
         display:flex;
         align-items:center;
@@ -159,8 +159,8 @@
     }
 
     .compose-tool-btn:hover{
-        border-color:#E8175D;
-        background:#fff5f8;
+        border-color:var(--hot-pink);
+        background:var(--pink-bg);
     }
 
     .filters-row{
@@ -177,7 +177,7 @@
         padding:.42rem .9rem;
         border-radius:8px;
         border:1.5px solid var(--border);
-        background:#fff;
+        background:var(--white);
         font-size:.82rem;
         font-weight:600;
         color:var(--ink-muted);
@@ -187,9 +187,9 @@
 
     .filter-btn:hover,
     .filter-btn.active{
-        border-color:#E8175D;
-        color:#E8175D;
-        background:#fff5f8;
+        border-color:var(--hot-pink);
+        color:var(--hot-pink);
+        background:var(--pink-bg);
     }
 
     .columns-wrapper{
@@ -200,11 +200,11 @@
     }
 
     .kanban-col{
-        background:#fff;
+        background:var(--white);
         border:1px solid var(--border);
         border-radius:16px;
         box-shadow:var(--shadow);
-        overflow:hidden;
+        overflow:visible;
     }
 
     .kanban-col-header{
@@ -212,14 +212,14 @@
         display:flex;
         align-items:center;
         gap:.6rem;
-        border-bottom:2px solid #E8175D;
+        border-bottom:2px solid var(--hot-pink);
     }
 
     .col-dot{
         width:9px;
         height:9px;
         border-radius:50%;
-        background:#E8175D;
+        background:var(--hot-pink);
         flex-shrink:0;
     }
 
@@ -233,8 +233,8 @@
     .col-count{
         font-size:.78rem;
         font-weight:700;
-        color:#E8175D;
-        background:#fff0f5;
+        color:var(--hot-pink);
+        background:var(--pink-50);
         border-radius:20px;
         padding:.1rem .55rem;
     }
@@ -247,7 +247,7 @@
     }
 
     .ann-card{
-        background:#fff;
+        background:var(--white);
         border:1px solid var(--border);
         border-radius:12px;
         padding:1rem;
@@ -296,16 +296,32 @@
     }
 
     .ann-menu-btn{
-        background:none;
-        border:none;
+        width:30px;
+        height:30px;
+        border:1px solid transparent;
+        border-radius:8px;
+        background:var(--white);
         cursor:pointer;
-        color:var(--gray);
-        font-size:1.1rem;
+        color:var(--ink-muted);
+        font-size:1.25rem;
+        font-weight:800;
+        line-height:1;
         transition:.2s;
+        display:flex;
+        align-items:center;
+        justify-content:center;
     }
 
-    .ann-menu-btn:hover{
-        color:#E8175D;
+    .ann-menu-btn:hover,
+    .ann-menu-btn.active{
+        color:var(--hot-pink);
+        border-color:var(--hot-pink);
+        background:var(--pink-bg);
+    }
+
+    .ann-menu-wrap{
+        position:relative;
+        flex-shrink:0;
     }
 
     .ann-title{
@@ -342,12 +358,12 @@
     .ann-dropdown{
         position:absolute;
         right:0;
-        top:100%;
-        background:#fff;
+        top:calc(100% + .35rem);
+        background:var(--white);
         border:1px solid var(--border);
         border-radius:10px;
         box-shadow:0 8px 24px rgba(26,26,46,.12);
-        z-index:200;
+        z-index:500;
         min-width:150px;
         display:none;
         flex-direction:column;
@@ -375,8 +391,8 @@
     }
 
     .ann-dropdown-item:hover{
-        background:#fff5f8;
-        color:#E8175D;
+        background:var(--pink-bg);
+        color:var(--hot-pink);
     }
 
     .ann-dropdown-item.danger{
@@ -390,8 +406,12 @@
     .modal-field input:focus,
     .modal-field select:focus,
     .modal-field textarea:focus{
-        border-color:#E8175D;
+        border-color:var(--hot-pink);
         outline:none;
+    }
+
+    #edit-modal .modal-close{
+        display:none;
     }
 
     .modal-field textarea{
@@ -416,26 +436,26 @@
         padding:.6rem 1.2rem;
         border-radius:9px;
         border:1.5px solid var(--border);
-        background:#fff;
+        background:var(--white);
         font-size:.87rem;
         font-weight:600;
-        color:#E8175D;
+        color:var(--hot-pink);
         cursor:pointer;
         transition:.2s;
     }
 
     .btn-cancel:hover{
-        border-color:#E8175D;
-        color:#E8175D;
-        background:#fff5f8;
+        border-color:var(--hot-pink);
+        color:var(--hot-pink);
+        background:var(--pink-bg);
     }
 
     .btn-submit{
         padding:.6rem 1.4rem;
         border-radius:9px;
         border:none;
-        background:#E8175D;
-        color:#fff;
+        background:var(--hot-pink);
+        color:var(--white);
         font-size:.87rem;
         font-weight:700;
         cursor:pointer;
@@ -443,7 +463,7 @@
     }
 
     .btn-submit:hover{
-        background:#d41455;
+        background:var(--bright-pink);
     }
 
     .btn-danger{
@@ -451,7 +471,7 @@
         border-radius:9px;
         border:none;
         background:var(--red);
-        color:#fff;
+        color:var(--white);
         font-size:.87rem;
         font-weight:700;
         cursor:pointer;
@@ -479,6 +499,144 @@
         font-weight:600;
         color:var(--ink);
         text-align:right;
+    }
+
+    .view-title{
+        font-size:1.35rem;
+        font-weight:800;
+        color:var(--ink);
+        line-height:1.25;
+        margin-bottom:.65rem;
+    }
+
+    .view-content{
+        margin-top:1rem;
+        white-space:pre-wrap;
+        font-size:.92rem;
+        color:var(--ink-muted);
+        line-height:1.75;
+    }
+
+    .attachment-grid{
+        margin-top:1rem;
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+        gap:.8rem;
+    }
+
+    .attachment-card{
+        border:1px solid var(--border);
+        border-radius:10px;
+        overflow:hidden;
+        background:var(--white);
+    }
+
+    .attachment-card img{
+        width:100%;
+        max-height:360px;
+        object-fit:contain;
+        display:block;
+        background:var(--gray-light);
+    }
+
+    .attachment-link{
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        padding:.7rem .85rem;
+        color:var(--hot-pink);
+        font-size:.82rem;
+        font-weight:700;
+        text-decoration:none;
+        word-break:break-word;
+    }
+
+    .attachment-link img{
+        width:16px;
+        height:16px;
+        flex-shrink:0;
+    }
+
+    .inline-edit-form{
+        display:none;
+        margin-top:1rem;
+        border-top:1px solid var(--border);
+        padding-top:1rem;
+    }
+
+    .inline-edit-form.open{
+        display:block;
+    }
+
+    .current-files-note{
+        margin-top:.35rem;
+        font-size:.76rem;
+        color:var(--ink-muted);
+        line-height:1.5;
+    }
+
+    .action-loading-overlay{
+        position:fixed;
+        inset:0;
+        z-index:1200;
+        display:none;
+        align-items:center;
+        justify-content:center;
+        background:rgba(255,255,255,.72);
+        backdrop-filter:blur(2px);
+    }
+
+    .action-loading-overlay.open{
+        display:flex;
+    }
+
+    .action-loading-box{
+        display:flex;
+        align-items:center;
+        flex-direction:column;
+        gap:.75rem;
+        padding:1.25rem 1.6rem;
+        border:1px solid var(--border);
+        border-radius:12px;
+        background:var(--white);
+        box-shadow:0 12px 32px rgba(26,26,46,.14);
+        color:var(--ink);
+        font-size:.9rem;
+        font-weight:700;
+    }
+
+    .loading-logo-wrap{
+        width:86px;
+        height:86px;
+        border:3px solid var(--pink-50);
+        border-radius:50%;
+        background:var(--gradient-pink);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 10px 24px rgba(232,23,93,.25);
+        animation:pulseLogo 1s ease-in-out infinite;
+        flex-shrink:0;
+    }
+
+    .loading-logo-wrap img{
+        width:62px;
+        height:62px;
+        object-fit:contain;
+    }
+
+    .loading-spinner{
+        width:18px;
+        height:18px;
+        border:3px solid var(--pink-50);
+        border-top-color:var(--hot-pink);
+        border-radius:50%;
+        animation:spin .75s linear infinite;
+    }
+
+    .is-loading{
+        opacity:.75;
+        pointer-events:none;
     }
 
     .delete-warning{
@@ -517,44 +675,65 @@
         }
     }
 
+    @keyframes spin{
+        to{
+            transform:rotate(360deg);
+        }
+    }
+
+    @keyframes counterSpin{
+        to{
+            transform:rotate(-360deg);
+        }
+    }
+
+    @keyframes pulseLogo{
+        0%, 100%{
+            transform:scale(1);
+        }
+        50%{
+            transform:scale(1.06);
+        }
+    }
+
     .fade-up{
         animation:fadeUp .45s ease both;
     }
 
-    .modal-field select {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1.5px solid var(--border);
-    border-radius: 9px;
-    padding: .55rem .85rem;
-    font-size: .88rem;
-    color: var(--ink);
-    background: #fff;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right .85rem center;
-    padding-right: 2.2rem;
-    cursor: pointer;
-    transition: border-color .15s;
-}
+    .modal-field select{
+        width:100%;
+        box-sizing:border-box;
+        border:1.5px solid var(--border);
+        border-radius:9px;
+        padding:.55rem .85rem;
+        font-size:.88rem;
+        color:var(--ink);
+        background:var(--white);
+        appearance:none;
+        -webkit-appearance:none;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat:no-repeat;
+        background-position:right .85rem center;
+        padding-right:2.2rem;
+        cursor:pointer;
+        transition:border-color .15s;
+    }
 
-.modal-field select:focus {
-    border-color: #E8175D;
-    outline: none;
-}
+    .modal-field select:focus{
+        border-color:var(--hot-pink);
+        outline:none;
+    }
 
-.modal-field select:hover {
-    border-color: #E8175D;
-}
+    .modal-field select:hover{
+        border-color:var(--hot-pink);
+    }
 
-.modal-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: .9rem;
-}
+    .modal-grid-2{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:1rem;
+        margin-bottom:.9rem;
+    }
 
     .d1{animation-delay:.05s;}
     .d2{animation-delay:.12s;}
@@ -598,7 +777,13 @@
 
     <div class="compose-card fade-up d2">
         <div class="compose-top">
-            <div class="compose-avatar">{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}</div>
+            <div class="compose-avatar">
+                @if($staff->profile_picture)
+                    <img src="{{ $staff->profile_picture }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                @else
+                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                @endif
+            </div>
             <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openModal('post-modal')" readonly>
             <button class="compose-close" onclick="openModal('post-modal')">
                 <img src="{{ asset('icons/edit.png') }}" style="width:16px;height:16px;opacity:.5;" alt="">
@@ -654,7 +839,7 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-all-{{ $ann->announcement_id }}">
                                     <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
@@ -715,7 +900,7 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-act-{{ $ann->announcement_id }}">
                                     <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
@@ -766,8 +951,11 @@
                                 {{ ucfirst($ann->priority ?? 'Low') }}
                             </span>
                             <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')">•••</button>
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-cls-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
+                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
+                                    </button>
                                     <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
                                         <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
                                     </button>
@@ -804,13 +992,22 @@
 
 @section('modals')
 
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
 <div class="modal-overlay" id="post-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post New Announcement</div>
             <button class="modal-close" onclick="closeModal('post-modal')">✕</button>
         </div>
-        <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             <div class="modal-field">
                 <label>Title *</label>
@@ -855,7 +1052,7 @@
             <div class="modal-title">Edit Announcement</div>
             <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
         </div>
-        <form method="POST" id="edit-form">
+        <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -883,6 +1080,17 @@
                     </select>
                 </div>
             </div>
+            <div class="modal-field">
+                <label>Add Image / Files (optional)</label>
+                <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
+                <div class="current-files-note" id="edit-current-files"></div>
+            </div>
+            <div class="modal-field">
+                <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;">
+                    <input type="checkbox" name="replace_attachments" value="1" style="width:auto;">
+                    Replace existing files with the new upload
+                </label>
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -898,8 +1106,52 @@
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
         <div id="view-modal-content"></div>
+        <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
+            @csrf
+            @method('PUT')
+            <div class="modal-field">
+                <label>Title *</label>
+                <input type="text" name="title" id="view-edit-title" required>
+            </div>
+            <div class="modal-field">
+                <label>Content *</label>
+                <textarea name="content" id="view-edit-content" required></textarea>
+            </div>
+            <div class="modal-grid-2">
+                <div class="modal-field">
+                    <label>Priority</label>
+                    <select name="priority" id="view-edit-priority">
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select name="status" id="view-edit-status">
+                        <option value="active">Active</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Add Image / Files (optional)</label>
+                <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
+                <div class="current-files-note" id="view-current-files"></div>
+            </div>
+            <div class="modal-field">
+                <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;">
+                    <input type="checkbox" name="replace_attachments" value="1" style="width:auto;">
+                    Replace existing files with the new upload
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal('view-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-cancel" id="view-close-btn" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" id="view-edit-btn">Edit</button>
         </div>
     </div>
@@ -915,7 +1167,7 @@
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form method="POST" id="delete-form" style="display:inline;">
+            <form method="POST" id="delete-form" style="display:inline;" data-loading-message="Please wait...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
@@ -929,45 +1181,148 @@
 @section('scripts')
 <script>
     const annData = @json($announcements->keyBy('announcement_id'));
+    const storageBaseUrl = "{{ asset('storage') }}";
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', () => {
+            setFormLoading(form, form.dataset.loadingMessage || 'Processing...');
+        });
+    });
 
     function toggleMenu(e, id) {
         e.stopPropagation();
         const menu   = document.getElementById(id);
         const isOpen = menu.classList.contains('open');
+        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
-        if (!isOpen) menu.classList.add('open');
+        if (!isOpen) {
+            menu.classList.add('open');
+            e.currentTarget.classList.add('active');
+        }
     }
     document.addEventListener('click', () => {
+        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
     });
 
     function setFilter(btn, type) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const now   = new Date();
+    const cards = document.querySelectorAll('.ann-card');
+
+    cards.forEach(card => {
+        const id       = getCardId(card);
+        const ann      = annData[id];
+        if (!ann) return;
+
+        const postedAt = new Date(ann.posted_at);
+        let show       = false;
+
+        if (type === 'all') {
+            show = true;
+        } else if (type === 'week') {
+            const weekAgo = new Date(now);
+            weekAgo.setDate(now.getDate() - 7);
+            show = postedAt >= weekAgo;
+        } else if (type === 'month') {
+            show = postedAt.getMonth() === now.getMonth() &&
+                   postedAt.getFullYear() === now.getFullYear();
+        } else if (type === 'high') {
+            show = (ann.priority || '').toLowerCase() === 'high';
+        } else if (type === 'low') {
+            show = (ann.priority || '').toLowerCase() === 'low';
+        }
+
+        card.style.display = show ? '' : 'none';
+    });
+
+    // Update column counts after filtering
+    document.querySelectorAll('.kanban-col').forEach(col => {
+        const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
+        const countEl = col.querySelector('.col-count');
+        if (countEl) countEl.textContent = visible;
+
+        // Show/hide empty state
+        let emptyEl = col.querySelector('.empty-col');
+        const body  = col.querySelector('.kanban-col-body');
+        if (visible === 0) {
+            if (!emptyEl) {
+                emptyEl = document.createElement('div');
+                emptyEl.className   = 'empty-col filter-empty';
+                emptyEl.innerHTML   = '<div>No announcements match this filter.</div>';
+                body.appendChild(emptyEl);
+            }
+            emptyEl.style.display = '';
+        } else if (emptyEl) {
+            emptyEl.style.display = 'none';
+        }
+    });
+        }
+
+        function getCardId(card) {
+        // Extract ID from the onclick attribute
+        const match = card.getAttribute('onclick')?.match(/openViewModal\((\d+)\)/);
+        return match ? match[1] : null;
+        }
 
     function submitForm(formId, e) {
         e.stopPropagation();
-        document.getElementById(formId).submit();
+        const form = document.getElementById(formId);
+        const isRestore = formId.startsWith('restore-');
+        showActionLoading('Please wait...');
+        form.submit();
+    }
+
+    function setFormLoading(form, message) {
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.dataset.originalText = submitButton.textContent.trim();
+            submitButton.textContent = loadingButtonText(message);
+            submitButton.disabled = true;
+            submitButton.classList.add('is-loading');
+        }
+
+        form.querySelectorAll('button:not([type="submit"])').forEach(button => {
+            button.disabled = true;
+            button.classList.add('is-loading');
+        });
+
+        showActionLoading(message);
+    }
+
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message;
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function loadingButtonText(message) {
+        return 'Please wait...';
     }
 
     function openViewModal(id) {
         const ann = annData[id];
         if (!ann) return;
         document.getElementById('view-modal-title').textContent = ann.title;
+        hideInlineEdit();
+        fillInlineEditForm(ann, id);
         document.getElementById('view-modal-content').innerHTML = `
+            <div class="view-title">${escapeHtml(ann.title || '')}</div>
             <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
             <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
-            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${ann.posted_at||''}</span></div>
-            <div style="margin-top:1rem;font-size:.9rem;color:var(--ink-muted);line-height:1.7;">${ann.content}</div>
+            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>
+            <div class="view-content">${escapeHtml(ann.content || '')}</div>
+            ${renderAttachments(ann.attachment)}
         `;
-        document.getElementById('view-edit-btn').onclick = () => { closeModal('view-modal'); openEditModal(id, new Event('click')); };
+        document.getElementById('view-edit-btn').onclick = () => showInlineEdit();
         openModal('view-modal');
     }
 
@@ -975,11 +1330,13 @@
         e.stopPropagation();
         const ann = annData[id];
         if (!ann) return;
+        document.getElementById('edit-form').reset();
         document.getElementById('edit-form').action  = `/announcements/${id}`;
         document.getElementById('edit-title').value   = ann.title;
         document.getElementById('edit-content').value = ann.content;
         document.getElementById('edit-priority').value = ann.priority || 'low';
         document.getElementById('edit-status').value   = ann.status   || 'active';
+        document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
         openModal('edit-modal');
     }
 
@@ -992,6 +1349,74 @@
 
     function ucFirst(str) {
         return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+
+    function fillInlineEditForm(ann, id) {
+        document.getElementById('view-edit-form').action = `/announcements/${id}`;
+        document.getElementById('view-edit-title').value = ann.title || '';
+        document.getElementById('view-edit-content').value = ann.content || '';
+        document.getElementById('view-edit-priority').value = ann.priority || 'low';
+        document.getElementById('view-edit-status').value = ann.status || 'active';
+        document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
+    }
+
+    function showInlineEdit() {
+        document.getElementById('view-edit-form').classList.add('open');
+        document.getElementById('view-edit-btn').style.display = 'none';
+        document.getElementById('view-close-btn').style.display = 'none';
+    }
+
+    function hideInlineEdit() {
+        const form = document.getElementById('view-edit-form');
+        if (!form) return;
+        form.classList.remove('open');
+        form.reset();
+        document.getElementById('view-edit-btn').style.display = '';
+        document.getElementById('view-close-btn').style.display = '';
+    }
+
+    function getAttachments(attachment) {
+        if (!attachment) return [];
+        return String(attachment).split(',').map(path => path.trim()).filter(Boolean);
+    }
+
+    function filesNote(attachment) {
+        const total = getAttachments(attachment).length;
+        return total ? `${total} existing file(s). Upload new files to add more, or tick replace to change them.` : 'No image or file attached yet.';
+    }
+
+    function renderAttachments(attachment) {
+        const files = getAttachments(attachment);
+        if (!files.length) return '<div class="current-files-note">No image or file attached.</div>';
+
+        return `<div class="attachment-grid">${files.map(path => {
+            const url = `${storageBaseUrl}/${encodeURI(path)}`;
+            const name = path.split('/').pop();
+            if (isImage(path)) {
+                return `<div class="attachment-card"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(name)}"></a></div>`;
+            }
+            return `<div class="attachment-card"><a class="attachment-link" href="${url}" target="_blank" rel="noopener"><img src="{{ asset('icons/attach.png') }}" alt=""> ${escapeHtml(name)}</a></div>`;
+        }).join('')}</div>`;
+    }
+
+    function isImage(path) {
+        return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(path || '');
+    }
+
+    function formatDate(value) {
+        if (!value) return '';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString([], { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit' });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     @if(session('success'))

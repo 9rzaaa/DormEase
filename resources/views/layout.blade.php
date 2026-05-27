@@ -1,8 +1,11 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DormEase')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
@@ -14,23 +17,29 @@
     <style>
     :root {
         --hot-pink:   #E8175D;
-        --bright-pink:#FF2D78;
+        --bright-pink: #d63375;
         --mid-pink:   #FF6BA8;
         --baby-pink:  #FFD6E7;
         --blush:      #FFF0F6;
         --petal:      #FFE4F0;
 
-        --pink:       #E8175D;
-        --pink-light: #FFB3D0;
-        --pink-soft:  #FF2D78;
-        --pink-bg:    #FFF0F6;
-        --pink-card:  #FFE4F0;
         --pink-50:    #FFF0F6;
         --pink-100:   #FFD6E7;
         --pink-200:   #FFB3D0;
         --pink-400:   #FF2D78;
         --pink-500:   #E8175D;
-        --pink-600:   #E8175D;
+
+        --pink: var(--hot-pink);
+        --pink-light: var(--baby-pink);
+        --pink-card:  var(--petal);
+
+        --soft-bg:    #fff7fb;
+        --pink-bg:    var(--petal);
+        --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
+        --pink-bg-soft: #fffafd;
+        --pink-bg-page: #fff7fb;
+        --border-pink: #ffd3e3;
+        --border-pink-mid: #ffe0eb;
 
         --gray:       #B5B7C0;
         --gray-light: #E5ECF6;
@@ -38,11 +47,27 @@
         --green:      #29BD9B;
         --peach:      #FFD7C7;
         --salmon:     #EB9C7D;
-        --blush-alt:  #FFC5C5;
         --red:        #DF0404;
         --white:      #ffffff;
         --ink:        #2D0A1A;
         --ink-muted:  #7A3A55;
+        --black:      #1A1A1A;
+        --ink-deep:   #7a2d4f;
+        --ink-soft:   #b03060;
+
+        --badge-leave-text:      #c8960c;
+        --badge-leave-border:    #f0c040;
+        --badge-frontdesk-text:  #1a6fbd;
+        --badge-frontdesk-border: #90c4f8;
+        --badge-guard-text:      #6d4fc4;
+        --badge-guard-border:    #c4b5fd;
+        --shift-day:             #f59e0b;
+        --shift-night:           #6366f1;
+
+        --shadow-pink-card: 0 4px 10px rgba(0,0,0,.04), 0 14px 30px rgba(232,23,93,.18), 0 24px 50px rgba(232,23,93,.12);
+        --shadow-pink-btn: 0 6px 18px rgba(255,79,147,.22);
+        --shadow-pink-modal: 0 20px 60px rgba(255,79,147,.2);
+        --shadow-stats: 0 10px 30px rgba(255,79,147,.25);
 
         --ease:   all .2s cubic-bezier(.4,0,.2,1);
         --border: rgba(255,45,120,.15);
@@ -64,7 +89,6 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: var(--ff-body); cursor: pointer; }
 
-    /* ── SIDEBAR ── */
     .sidebar {
         width: var(--sidebar-w);
         background: var(--white);
@@ -82,7 +106,7 @@
     }
     .sidebar-logo-icon {
         width: 38px; height: 38px; border-radius: 10px;
-        background: linear-gradient(135deg, #FF2D78 0%, #E8175D 100%);
+        background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; flex-shrink: 0;
     }
@@ -106,37 +130,53 @@
     .nav-item {
         display: flex; align-items: center; gap: .75rem;
         padding: .68rem .85rem; border-radius: 10px;
-        font-size: .87rem; font-weight: 500; color: #E8175D;
+        font-size: .87rem; font-weight: 500; color: var(--black);
         cursor: pointer; margin-bottom: .15rem;
         transition: background .2s, color .2s;
         border: none; background: none; width: 100%; text-align: left;
     }
     .nav-item:hover  { background: var(--petal); color: var(--hot-pink); }
+    .nav-item:hover .nav-icon img {
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
     .nav-item.active {
-        background: linear-gradient(135deg, #FF2D78 0%, #E8175D 100%);
-        color: #fff; font-weight: 700;
+        background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
+        color: var(--white); font-weight: 700;
         box-shadow: 0 4px 14px rgba(232,23,93,.30);
     }
-    .nav-item.active img { filter: brightness(0) invert(1); }
+    .nav-item.active .nav-icon img { filter: brightness(0) invert(1); }
     .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
-    .nav-icon img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
-}
+    .nav-icon img {
+        width: 18px; height: 18px; object-fit: contain; vertical-align: middle;
+        filter: brightness(0);
+    }
 
     .nav-divider { height: 1.5px; background: var(--baby-pink); margin: .6rem 0; }
 
     .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--baby-pink); }
-    .logout-btn {
-        display: flex; align-items: center; gap: .65rem;
-        font-size: .87rem; font-weight: 500; color: var(--ink-muted);
-        background: none; border: none; cursor: pointer;
-        padding: .5rem .3rem; width: 100%; transition: color .2s;
-    }
-    .logout-btn:hover { color: var(--red); }
 
-    /* ── MAIN ── */
+    .logout-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+        padding: .55rem .8rem;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--ease);
+        box-shadow: 0 3px 10px rgba(232,23,93,.22);
+    }
+    .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
+    .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
+
     .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* ── TOPBAR ── */
     .topbar {
         position: sticky; top: 0; z-index: 50;
         background: var(--white);
@@ -149,6 +189,7 @@
     .breadcrumb span { color: var(--hot-pink); font-weight: 700; }
 
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
     .notif-bell {
         width: 36px; height: 36px; border-radius: 50%;
         background: var(--petal); border: 1.5px solid var(--baby-pink);
@@ -160,19 +201,128 @@
         position: absolute; top: -3px; right: -3px;
         width: 16px; height: 16px;
         background: var(--bright-pink);
-        border-radius: 50%; font-size: 9px; color: #fff; font-weight: 800;
+        border-radius: 50%; font-size: 9px; color: var(--white); font-weight: 800;
         display: flex; align-items: center; justify-content: center;
-        border: 2px solid #fff;
+        border: 2px solid var(--white);
     }
 
-    /* ── AVATAR + DROPDOWN ── */
+    .notif-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 320px;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 8px 32px rgba(232,23,93,.14);
+        z-index: 200;
+        opacity: 0;
+        transform: translateY(8px) scale(.97);
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        overflow: hidden;
+    }
+    #notif-wrap:hover .notif-dropdown {
+        opacity: 1; transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    .notif-dropdown-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .85rem 1rem .7rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .notif-dropdown-title {
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+    .notif-mark-all {
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+    .notif-mark-all:hover { opacity: .7; }
+    .notif-dropdown-list { max-height: 340px; overflow-y: auto; }
+    .notif-dd-item {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid var(--petal);
+        cursor: pointer;
+        transition: background .15s;
+        text-decoration: none;
+        color: inherit;
+    }
+    .notif-dd-item:last-child { border-bottom: none; }
+    .notif-dd-item:hover { background: var(--blush); }
+    .notif-dd-item.unread { background: var(--pink-50); }
+    .notif-dd-item.unread:hover { background: var(--pink-100); }
+    .notif-unread-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--hot-pink);
+        flex-shrink: 0;
+        margin-top: .35rem;
+    }
+    .notif-dd-icon {
+        width: 30px; height: 30px;
+        border-radius: 8px;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .notif-dd-icon img {
+        width: 14px; height: 14px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .notif-dd-body { flex: 1; min-width: 0; }
+    .notif-dd-msg {
+        font-size: .81rem;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
+    .notif-dropdown-footer {
+        padding: .6rem 1rem;
+        border-top: 1.5px solid var(--petal);
+        text-align: center;
+    }
+    .notif-see-all {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+    .notif-see-all:hover { opacity: .7; }
+    .notif-empty {
+        padding: 1.5rem 1rem;
+        text-align: center;
+        font-size: .83rem;
+        color: var(--ink-muted);
+    }
+
     .avatar-wrap { position: relative; }
     .avatar {
         width: 36px; height: 36px; border-radius: 50%;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         border: 2px solid var(--baby-pink);
         display: flex; align-items: center; justify-content: center;
-        font-size: 14px; font-weight: 800; color: #fff;
+        font-size: 14px; font-weight: 800; color: var(--white);
         cursor: pointer; overflow: hidden;
         transition: box-shadow .2s;
         flex-shrink: 0;
@@ -181,7 +331,7 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
+        position: absolute; top: 100%; right: 0;
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 14px;
@@ -193,7 +343,7 @@
         transition: opacity .2s ease, transform .2s ease;
         z-index: 200;
     }
-    .avatar-dropdown.open {
+    .avatar-wrap:hover .avatar-dropdown {
         opacity: 1; transform: translateY(0) scale(1);
         pointer-events: auto;
     }
@@ -205,9 +355,9 @@
     }
     .dropdown-avatar {
         width: 38px; height: 38px; border-radius: 50%;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         display: flex; align-items: center; justify-content: center;
-        font-size: 13px; font-weight: 800; color: #fff;
+        font-size: 13px; font-weight: 800; color: var(--white);
         flex-shrink: 0; overflow: hidden;
     }
     .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -229,7 +379,6 @@
     .dropdown-item.danger { color: var(--red); }
     .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
-    /* ── CARDS ── */
     .card {
         background: var(--white);
         border-radius: 16px;
@@ -244,14 +393,12 @@
     .see-all:hover { opacity: .7; }
     .icon-sm { width: 18px; height: 18px; object-fit: contain; }
 
-    /* ── ANIMATIONS ── */
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .fade-up { opacity:0; animation: fadeUp .5s ease forwards; }
     .d1 { animation-delay:.05s; } .d2 { animation-delay:.12s; }
     .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
     .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-    /* ── MODALS ── */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(45,10,26,.50);
@@ -261,7 +408,7 @@
     .modal-overlay.open { display: flex; }
     .modal {
         background: var(--white); border-radius: 20px;
-        padding: 2rem; width: 90%; max-width: 440px;
+        padding: 2rem; width: 90%; max-width: 480px;
         box-shadow: 0 20px 60px rgba(232,23,93,.18);
         animation: fadeUp .3s ease;
         max-height: 90vh; overflow-y: auto;
@@ -293,23 +440,21 @@
     .btn-cancel:hover { border-color: var(--mid-pink); color: var(--hot-pink); }
     .btn-submit {
         padding: .6rem 1.4rem; border-radius: 9px; border: none;
-        background: linear-gradient(135deg, #FF2D78, #E8175D);
-        color: #fff; font-size: .87rem; font-weight: 800; cursor: pointer;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white); font-size: .87rem; font-weight: 800; cursor: pointer;
         transition: opacity .2s, transform .15s;
     }
     .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-    /* ── ALERT ITEMS ── */
     .alert-item { border-radius: 12px; padding: 1rem; border: 1.5px solid; margin-bottom: .8rem; }
     .alert-item.active   { background: #fff0f5; border-color: var(--baby-pink); }
     .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
     .alert-room   { font-weight: 700; font-size: .9rem; color: var(--ink); }
     .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
-    /* ── TOAST ── */
     .toast {
         position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
-        background: var(--ink); color: #fff;
+        background: var(--ink); color: var(--white);
         padding: .85rem 1.4rem; border-radius: 12px;
         font-size: .87rem; font-weight: 600;
         box-shadow: 0 8px 24px rgba(232,23,93,.20);
@@ -321,18 +466,69 @@
     .toast.success { background: var(--green); }
     .toast.error   { background: var(--red); }
 
-    /* ── RESPONSIVE ── */
+    .sidebar-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 9px;
+        cursor: pointer;
+        padding: 7px;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 1024px) {
+        .sidebar-toggle { display: flex; }
+    }
+
+    .sidebar-toggle span {
+        display: block;
+        height: 2px;
+        background: var(--hot-pink);
+        border-radius: 2px;
+        transition: .2s;
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(45,10,26,.4);
+        z-index: 99;
+    }
+    .sidebar-backdrop.open { display: block; }
+
+    @media (max-width: 1024px) {
+        :root { --sidebar-w: 0px; }
+        .sidebar { transform: translateX(-260px); width: 260px; }
+        .sidebar.open { transform: translateX(0); }
+        .main { margin-left: 0 !important; width: 100% !important; }
+        .topbar { padding: .85rem 1.2rem; }
+    }
+
     @media (max-width: 820px) {
         :root { --sidebar-w: 0px; }
         .sidebar { transform: translateX(-260px); width: 260px; }
         .sidebar.open { transform: translateX(0); }
         .main { margin-left: 0; }
     }
-</style>
+
+    @media (max-width: 480px) {
+        .topbar { padding: .7rem .9rem; gap: .5rem; }
+        .breadcrumb { font-size: .72rem; }
+        .topbar-right { gap: .6rem; }
+    }
+    </style>
 
     @yield('styles')
 </head>
 <body>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -342,47 +538,37 @@
         <div class="sidebar-logo-text">Dorm<em>Ease</em></div>
     </div>
 
-    <div class="sidebar-role">👤 Admin</div>
+    <div class="sidebar-role">Admin</div>
 
     <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
         </a>
-
         <a href="{{ route('tenants.index') }}" class="nav-item {{ request()->routeIs('tenants.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Manage Tenants
         </a>
-
         <a href="{{ route('documents.index') }}" class="nav-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-docu.png') }}" alt=""></span> Document Management
         </a>
-
         <a href="{{ route('emergency.index') }}" class="nav-item {{ request()->routeIs('emergency.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
-
         <a href="{{ route('maintenance.index') }}" class="nav-item {{ request()->routeIs('maintenance.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-maint.png') }}" alt=""></span> Maintenance Requests
         </a>
-
         <a href="{{ route('billing.index') }}" class="nav-item {{ request()->routeIs('billing.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-bill.png') }}" alt=""></span> Water Billing
         </a>
-
         <a href="{{ route('visitors.index') }}" class="nav-item {{ request()->routeIs('visitors.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-
         <a href="{{ route('announcements.index') }}" class="nav-item {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
-
         <div class="nav-divider"></div>
-
         <a href="{{ route('staff.index') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
         </a>
-
         <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>
@@ -394,6 +580,7 @@
             <span class="nav-icon">
                 <img src="{{ asset('icons/logout.png') }}" alt="Logout">
             </span>
+            Log Out
         </button>
     </div>
 </aside>
@@ -401,54 +588,115 @@
 <div class="main">
 
     <header class="topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
-            <div class="notif-bell" title="Notifications">
-                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
-                @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                    <span class="notif-badge">{{ $unreadNotifCount }}</span>
-                @endif
-            </div>
 
-            {{-- Avatar with dropdown --}}
-            <div class="avatar-wrap" id="avatar-wrap">
-                <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'Account' }}">
-                    @if(isset($staff->profile_photo) && $staff->profile_photo)
-                        <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="Avatar">
-                    @else
-                        {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+            <div style="position:relative;" id="notif-wrap">
+                <div class="notif-bell" id="notif-bell" title="Notifications">
+                    <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
+                    @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                        <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
                     @endif
                 </div>
 
-                <div class="avatar-dropdown" id="avatar-dropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-avatar">
-                            @if(isset($staff->profile_photo) && $staff->profile_photo)
-                                <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="">
-                            @else
-                                {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <div class="notif-dropdown-title">
+                            Notifications
+                            @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                                <span style="color:var(--ink-muted);font-weight:500;font-size:.78rem;">({{ $unreadNotifCount }} unread)</span>
                             @endif
                         </div>
-                        <div>
-                            <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
-                            <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>
-                        </div>
+                        @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
+                        @endif
                     </div>
-                    <div class="dropdown-menu">
-                        <a href="{{ route('profile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
-                            <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
-                        </a>
-                        <a href="{{ route('settings.index') }}" class="dropdown-item">
-                            <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item danger" onclick="closeAvatarDropdown(); openModal('logout-modal');">
-                            <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
-                        </button>
+
+                    <div class="notif-dropdown-list">
+                        @if(isset($notifications) && $notifications->count())
+                            @foreach($notifications as $notif)
+                                @php
+                                    $notifIcon = match($notif->type) {
+                                        'maintenance_new'  => 'maintenance',
+                                        'emergency_new'    => 'warn',
+                                        'billing_overdue'  => 'billing',
+                                        'document_request' => 'nav-docu',
+                                        'announcement_new' => 'nav-announ',
+                                        default            => 'nav-visit',
+                                    };
+                                @endphp
+                                <a href="{{ $notif->url ?? '#' }}"
+                                   class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                   onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
+                                    @if(!$notif->is_read)
+                                        <div class="notif-unread-dot"></div>
+                                    @else
+                                        <div style="width:7px;flex-shrink:0;"></div>
+                                    @endif
+                                    <div class="notif-dd-icon">
+                                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
+                                             alt=""
+                                             onerror="this.src='{{ asset('icons/bell.png') }}'">
+                                    </div>
+                                    <div class="notif-dd-body">
+                                        <div class="notif-dd-msg">{{ $notif->message }}</div>
+                                        <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            <div class="notif-empty">No notifications yet.</div>
+                        @endif
+                    </div>
+
+                    <div class="notif-dropdown-footer">
+                        <button class="notif-see-all" onclick="closeNotifDropdown()">Close</button>
                     </div>
                 </div>
             </div>
-            {{-- end avatar dropdown --}}
+
+<div class="avatar-wrap" id="avatar-wrap">
+    <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'Account' }}">
+        @if($staff->profile_picture ?? null)
+            <img src="{{ $staff->profile_picture }}" alt="Avatar"
+                 onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
+        @else
+            {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+        @endif
+    </div>
+
+    <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="dropdown-header">
+            <div class="dropdown-avatar">
+                @if($staff->profile_picture ?? null)
+                    <img src="{{ $staff->profile_picture }}" alt=""
+                         onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
+                @else
+                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+                @endif
+            </div>
+            <div>
+                <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
+                <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Staff') }}</div>
+            </div>
+        </div>
+        <div class="dropdown-menu">
+            <a href="{{ route('profile.index') }}" class="dropdown-item">
+                <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
+            </a>
+            <a href="{{ route('settings.index') }}" class="dropdown-item">
+                <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" onclick="openModal('logout-modal')">
+                <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
+            </button>
+        </div>
+    </div>
+</div>
 
         </div>
     </header>
@@ -461,7 +709,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Out</div>
-            <button class="modal-close" onclick="closeModal('logout-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('logout-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">Are you sure you want to log out of DormEase?</p>
         <div class="modal-actions">
@@ -491,22 +739,38 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    /* ── AVATAR DROPDOWN ── */
-    function toggleAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.toggle('open');
+    function closeNotifDropdown() {
+        document.getElementById('notif-dropdown').classList.remove('open');
     }
-    function closeAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.remove('open');
+
+    function markNotifRead(e, id, url) {
+        e.preventDefault();
+        fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => {
+            if (url) window.location.href = url;
+            else location.reload();
+        });
     }
-    document.addEventListener('click', e => {
-        const wrap = document.getElementById('avatar-wrap');
-        /* Only close when clicking truly outside the wrap */
-        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
-    });
-    /* Close dropdown AFTER navigation links are followed, not before */
-    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
-        el.addEventListener('click', () => closeAvatarDropdown());
-    });
+
+    function markAllRead() {
+        fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => location.reload());
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-backdrop').classList.toggle('open');
+    }
 </script>
 
 @yield('scripts')

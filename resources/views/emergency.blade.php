@@ -1,0 +1,952 @@
+@extends('layout')
+
+@section('title', 'DormEase: Emergency Reports')
+@section('page-title', 'Emergency Reports')
+
+@section('styles')
+<style>
+    .page-body {
+        padding: 1.8rem 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background: var(--pink-bg);
+        box-sizing: border-box;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-header-text h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -.02em;
+        line-height: 1.15;
+        margin: 0;
+    }
+
+    .page-header-text .dorm-sub {
+        font-size: .95rem;
+        font-weight: 600;
+        color: var(--bright-pink);
+        margin-top: .2rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        box-sizing: border-box;
+    }
+
+    .stat-card {
+        background: var(--gradient-pink);
+        border-radius: 18px;
+        border: none;
+        box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
+        padding: 1.4rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(0,0,0,.15);
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .stat-icon img {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+
+    .stat-num {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--white);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: .8rem;
+        color: rgba(247,245,245,.967);
+        font-weight: 700;
+        margin-bottom: .15rem;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .table-card {
+        background: var(--white);
+        border-radius: 18px;
+        border: 2px solid var(--bright-pink);
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(255,45,120,.1);
+    }
+
+    .table-topbar {
+        padding: 1rem 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: .8rem;
+        border-bottom: 2px solid var(--bright-pink);
+        background: var(--white);
+    }
+
+    .table-heading {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .table-sub {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
+    }
+
+    .table-controls {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-box input {
+        padding: .45rem .85rem .45rem 2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--pink-50);
+        font-size: .82rem;
+        color: var(--ink);
+        outline: none;
+        width: 170px;
+        font-family: var(--ff-body);
+        transition: border-color .2s, width .3s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--bright-pink);
+        background: var(--white);
+        width: 210px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: .6rem;
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+        opacity: .4;
+        pointer-events: none;
+    }
+
+    .filter-select {
+        padding: .45rem 1.8rem .45rem .75rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--pink-50);
+        color: var(--ink);
+        font-size: .81rem;
+        font-weight: 600;
+        font-family: var(--ff-body);
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right .6rem center;
+        transition: border-color .2s;
+    }
+
+    .filter-select:focus {
+        border-color: var(--bright-pink);
+        background-color: var(--white);
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead tr { background: var(--pink-100); }
+
+    th {
+        padding: .65rem 1rem;
+        font-size: .71rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        white-space: nowrap;
+        text-align: left;
+        border-bottom: 1.5px solid var(--bright-pink);
+    }
+
+    td {
+        padding: .85rem 1rem;
+        font-size: .855rem;
+        border-bottom: 1px solid var(--pink-100);
+        color: var(--ink);
+        vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background: var(--pink-50); }
+
+    .type-cell {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .panic-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--bright-pink);
+        flex-shrink: 0;
+        box-shadow: 0 0 0 3px rgba(255,45,120,.2);
+        animation: pulseDot 1.5s infinite;
+    }
+
+    @keyframes pulseDot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50%       { transform: scale(1.4); opacity: .7; }
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: .22rem .65rem;
+        border-radius: 999px;
+        font-size: .71rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .badge-pending  { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .badge-active   { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+    .badge-ongoing  { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+    .badge-resolved { background: #e8faf5; color: #1a9d6e; border: 1px solid #8cdebb; }
+    .badge-panic    { background: var(--bright-pink); color: var(--white); border: none; }
+
+    .source-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: .15rem .5rem;
+        border-radius: 6px;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .03em;
+    }
+
+    .source-frontdesk { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
+    .source-mobile    { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .source-manual    { background: #fafafa; color: #666; border: 1px solid #e0e0e0; }
+
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+    }
+
+    .act-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s;
+        font-family: var(--ff-body);
+    }
+
+    .act-btn:hover {
+        border-color: var(--bright-pink);
+        box-shadow: 0 3px 10px rgba(255,45,120,.15);
+    }
+
+    .act-btn img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    .act-btn.danger:hover { border-color: #e04867; }
+
+    .table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .8rem 1.2rem;
+        flex-wrap: wrap;
+        gap: .5rem;
+        border-top: 1.5px solid var(--pink-100);
+    }
+
+    .showing-label {
+        font-size: .78rem;
+        color: var(--ink-muted);
+    }
+
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+    }
+
+    .page-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 .5rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        color: var(--hot-pink);
+        font-size: .81rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: .2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        border-color: transparent;
+    }
+
+    .page-btn.active {
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(255,45,120,.25);
+    }
+
+    .page-btn:disabled { opacity: .35; cursor: default; }
+
+    .empty-row td {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--ink-muted);
+        font-size: .9rem;
+    }
+
+    .modal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .9rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .modal-field-full { grid-column: 1 / -1; }
+
+    .em-modal-field {
+        display: flex;
+        flex-direction: column;
+        gap: .35rem;
+    }
+
+    .em-modal-field label {
+        font-size: .76rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .em-modal-field input,
+    .em-modal-field select,
+    .em-modal-field textarea {
+        width: 100%;
+        padding: .6rem .9rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--pink-50);
+        font-size: .875rem;
+        color: var(--ink);
+        font-family: var(--ff-body);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .2s, background .2s;
+    }
+
+    .em-modal-field textarea { min-height: 90px; resize: vertical; }
+
+    .em-modal-field input:focus,
+    .em-modal-field select:focus,
+    .em-modal-field textarea:focus {
+        border-color: var(--bright-pink);
+        background: var(--white);
+    }
+
+    .view-detail-row {
+        display: flex;
+        flex-direction: column;
+        gap: .18rem;
+        padding: .7rem 0;
+        border-bottom: 1px solid var(--pink-100);
+    }
+
+    .view-detail-row:last-child { border-bottom: none; }
+
+    .view-detail-label {
+        font-size: .7rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .view-detail-val {
+        font-size: .875rem;
+        color: var(--ink);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+
+    .delete-warn {
+        background: #fff0f0;
+        border: 1.5px solid #ffc8d0;
+        border-radius: 10px;
+        padding: .7rem 1rem;
+        font-size: .83rem;
+        color: #c0303a;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .panic-banner {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .75rem 1rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        font-size: .84rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .panic-banner img {
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        flex-shrink: 0;
+    }
+
+    .fade-up { animation: fdFadeUp .45s ease both; }
+    @keyframes fdFadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .d1 { animation-delay: .05s; }
+    .d2 { animation-delay: .12s; }
+    .d3 { animation-delay: .2s; }
+
+    @media (max-width: 900px) {
+        .stats-row { grid-template-columns: 1fr 1fr; }
+        .page-body { padding: 1.2rem 1rem; }
+        .modal-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 580px) {
+        .stats-row { grid-template-columns: 1fr; }
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="page-body">
+
+    <div class="page-header fade-up d1">
+        <div class="page-header-text">
+            <h1>Emergency Reports</h1>
+            <div class="dorm-sub">Sanctissimo Rosario Ladies Dormitory</div>
+        </div>
+    </div>
+
+    <div class="stats-row fade-up d2">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
+            </div>
+            <div>
+                <div class="stat-label">Total Emergencies</div>
+                <div class="stat-num">{{ $totalCount }}</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="{{ asset('icons/warn.png') }}" alt="">
+            </div>
+            <div>
+                <div class="stat-label">Critical Emergencies</div>
+                <div class="stat-num">{{ $criticalCount }}</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <img src="{{ asset('icons/resolved.png') }}" alt="">
+            </div>
+            <div>
+                <div class="stat-label">Resolved Emergencies</div>
+                <div class="stat-num">{{ $resolvedCount }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card fade-up d3">
+        <div class="table-topbar">
+            <div>
+                <div class="table-heading">All Emergencies</div>
+                <div class="table-sub" id="table-date"></div>
+            </div>
+            <div class="table-controls">
+                <div class="search-box">
+                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                </div>
+                <select class="filter-select" id="status-filter" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <select class="filter-select" id="type-filter" onchange="applyFilters()">
+                    <option value="">All Types</option>
+                    <option value="Medical">Medical</option>
+                    <option value="Fire">Fire</option>
+                    <option value="Lockout">Lockout</option>
+                    <option value="Security">Security</option>
+                    <option value="Structural">Structural</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select class="filter-select" id="sort-select" onchange="applyFilters()">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Staff / Tenant</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="em-tbody"></tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <div class="showing-label" id="showing-label"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+</div>
+@endsection
+
+@section('modals')
+
+<div class="modal-overlay" id="view-modal">
+    <div class="modal" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Emergency Details</div>
+            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+        </div>
+        <div id="view-content"></div>
+        <div class="modal-actions" style="margin-top:1rem;">
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal" style="max-width:500px;">
+        <div class="modal-header">
+            <div class="modal-title">Update Emergency Report</div>
+            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+        </div>
+        <div class="modal-grid">
+            <div class="em-modal-field">
+                <label>Status</label>
+                <select id="edit-status">
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="em-modal-field">
+                <label>Location</label>
+                <input type="text" id="edit-location" placeholder="e.g. Room 301">
+            </div>
+            <div class="em-modal-field modal-field-full">
+                <label>Admin Notes</label>
+                <textarea id="edit-notes" placeholder="Add notes or action taken..."></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+            <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-modal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">Delete Report</div>
+            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+        </div>
+        <div class="delete-warn">This action cannot be undone. The emergency report will be permanently deleted.</div>
+        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
+            Delete report for <strong id="delete-label" style="color:var(--ink);"></strong>?
+        </p>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+            <button type="button" class="btn-submit" style="background:var(--red);" onclick="submitDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+    const reports  = @json($reports);
+    const PER_PAGE = 8;
+    let currentPage = 1;
+    let filtered    = [...reports];
+    let currentRep  = null;
+    let deleteId    = null;
+
+    document.getElementById('table-date').textContent =
+        'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    function statusBadge(s) {
+        const map = {
+            pending:  '<span class="badge badge-pending">Pending</span>',
+            active:   '<span class="badge badge-active">Active</span>',
+            ongoing:  '<span class="badge badge-ongoing">Ongoing</span>',
+            resolved: '<span class="badge badge-resolved">Resolved</span>',
+        };
+        return map[s] ?? `<span class="badge badge-pending">${s}</span>`;
+    }
+
+    function sourceBadge(t) {
+        if (t === 'frontdesk') return '<span class="source-tag source-frontdesk">Front Desk</span>';
+        if (t === 'mobile')    return '<span class="source-tag source-mobile">Mobile App</span>';
+        return '<span class="source-tag source-manual">Manual</span>';
+    }
+
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    function fmtDateShort(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+    }
+
+    function truncate(str, n) {
+        if (!str || str === '—') return '—';
+        return str.length > n ? str.slice(0, n) + '…' : str;
+    }
+
+    function escHtml(str) {
+        return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    function renderTable() {
+        const start    = (currentPage - 1) * PER_PAGE;
+        const pageData = filtered.slice(start, start + PER_PAGE);
+        const tbody    = document.getElementById('em-tbody');
+
+        if (pageData.length === 0) {
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
+        } else {
+            tbody.innerHTML = pageData.map(r => `
+                <tr>
+                    <td>
+                        <div class="type-cell">
+                            ${r.is_panic_alert ? '<span class="panic-dot"></span>' : ''}
+                            <span style="font-weight:600;">${escHtml(r.emergency_type)}</span>
+                            ${r.is_panic_alert ? '<span class="badge badge-panic" style="font-size:.65rem;padding:.15rem .5rem;">PANIC</span>' : ''}
+                        </div>
+                    </td>
+                    <td style="font-size:.83rem;">${escHtml(r.location)}</td>
+                    <td style="font-size:.82rem;white-space:nowrap;">${fmtDateShort(r.reported_at)}</td>
+                    <td style="font-size:.82rem;color:var(--ink-muted);max-width:160px;">${truncate(r.description, 45)}</td>
+                    <td>
+                        <div style="font-weight:600;font-size:.85rem;">${escHtml(r.tenant_name)}</div>
+                        ${r.room_number && r.room_number !== '—' ? `<div style="font-size:.76rem;color:var(--ink-muted);">Room ${escHtml(String(r.room_number))}</div>` : ''}
+                    </td>
+                    <td>${sourceBadge(r.input_type)}</td>
+                    <td>${statusBadge(r.status)}</td>
+                    <td>
+                        <div class="action-group" style="justify-content:center;">
+                            <button class="act-btn" title="View" onclick='viewReport(${JSON.stringify(r)})'>
+                                <img src="{{ asset('icons/eye.png') }}" alt="View">
+                            </button>
+                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
+                                <img src="{{ asset('icons/edit.png') }}" alt="Edit">
+                            </button>
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, '${escHtml(r.emergency_type)}')">
+                                <img src="{{ asset('icons/delete.png') }}" alt="Delete">
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        const total = filtered.length;
+        const from  = total === 0 ? 0 : start + 1;
+        const to    = Math.min(start + PER_PAGE, total);
+        document.getElementById('showing-label').textContent = `Showing data ${from} to ${to} of ${total} entries`;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const totalPages = Math.ceil(filtered.length / PER_PAGE);
+        const pg = document.getElementById('pagination');
+        let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span style="color:var(--ink-muted);padding:0 .2rem;">…</span>`;
+            }
+        }
+        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>›</button>`;
+        pg.innerHTML = html;
+    }
+
+    function goPage(p) {
+        const totalPages = Math.ceil(filtered.length / PER_PAGE);
+        if (p < 1 || p > totalPages) return;
+        currentPage = p;
+        renderTable();
+    }
+
+    function applyFilters() {
+        const q      = document.getElementById('search-input').value.toLowerCase();
+        const status = document.getElementById('status-filter').value;
+        const type   = document.getElementById('type-filter').value;
+        const sort   = document.getElementById('sort-select').value;
+
+        filtered = reports.filter(r => {
+            const matchSearch =
+                (r.emergency_type ?? '').toLowerCase().includes(q) ||
+                (r.location       ?? '').toLowerCase().includes(q) ||
+                (r.tenant_name    ?? '').toLowerCase().includes(q) ||
+                (r.description    ?? '').toLowerCase().includes(q);
+            const matchStatus = !status || r.status === status;
+            const matchType   = !type   || r.emergency_type === type;
+            return matchSearch && matchStatus && matchType;
+        });
+
+        if (sort === 'newest') filtered.sort((a, b) => new Date(b.reported_at) - new Date(a.reported_at));
+        if (sort === 'oldest') filtered.sort((a, b) => new Date(a.reported_at) - new Date(b.reported_at));
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    function viewReport(r) {
+        currentRep = r;
+        document.getElementById('view-content').innerHTML = `
+            ${r.is_panic_alert ? `<div class="panic-banner"><img src="{{ asset('icons/warning.png') }}" alt=""> This is a Panic Alert</div>` : ''}
+            <div class="view-detail-row">
+                <div class="view-detail-label">Emergency Type</div>
+                <div class="view-detail-val">${escHtml(r.emergency_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Location</div>
+                <div class="view-detail-val">${escHtml(r.location)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Reported By</div>
+                <div class="view-detail-val">
+                    ${escHtml(r.tenant_name)}
+                    ${r.room_number && r.room_number !== '—' ? ' — Room ' + escHtml(String(r.room_number)) : ''}
+                    &nbsp;${sourceBadge(r.input_type)}
+                </div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Description</div>
+                <div class="view-detail-val" style="white-space:pre-wrap;">${escHtml(r.description)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Status</div>
+                <div class="view-detail-val">${statusBadge(r.status)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Date Reported</div>
+                <div class="view-detail-val">${fmtDate(r.reported_at)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Date Resolved</div>
+                <div class="view-detail-val">${r.resolved_at ? fmtDate(r.resolved_at) : '—'}</div>
+            </div>
+            ${r.admin_notes ? `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Admin Notes</div>
+                <div class="view-detail-val" style="white-space:pre-wrap;">${escHtml(r.admin_notes)}</div>
+            </div>` : ''}
+        `;
+        openModal('view-modal');
+    }
+
+    function switchToEdit() {
+        if (currentRep) {
+            closeModal('view-modal');
+            setTimeout(() => openEditModal(currentRep), 200);
+        }
+    }
+
+    function openEditModal(r) {
+        currentRep = r;
+        document.getElementById('edit-status').value   = r.status      ?? 'pending';
+        document.getElementById('edit-location').value = r.location    ?? '';
+        document.getElementById('edit-notes').value    = r.admin_notes ?? '';
+        openModal('edit-modal');
+    }
+
+    async function submitUpdate() {
+        if (!currentRep) return;
+        const btn = document.querySelector('#edit-modal .btn-submit');
+        btn.disabled    = true;
+        btn.textContent = 'Saving...';
+
+        try {
+            const res = await fetch(`/emergency/${currentRep.report_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    status:      document.getElementById('edit-status').value,
+                    location:    document.getElementById('edit-location').value,
+                    admin_notes: document.getElementById('edit-notes').value,
+                }),
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Report updated successfully!', 'success');
+                closeModal('edit-modal');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast('Failed to update report.', 'error');
+            }
+        } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+        console.error(err);
+        }
+
+        btn.disabled    = false;
+        btn.textContent = 'Save Changes';
+    }
+
+    function openDeleteModal(id, type) {
+        deleteId = id;
+        document.getElementById('delete-label').textContent = type;
+        openModal('delete-modal');
+    }
+
+    async function submitDelete() {
+        if (!deleteId) return;
+        const btn = document.querySelector('#delete-modal .btn-submit');
+        btn.disabled    = true;
+        btn.textContent = 'Deleting...';
+
+        try {
+            const res = await fetch(`/emergency/${deleteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Report deleted.', 'success');
+                closeModal('delete-modal');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast('Failed to delete.', 'error');
+            }
+        } catch {
+            showToast('Network error.');
+        }
+
+        btn.disabled    = false;
+        btn.textContent = 'Delete';
+    }
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () =>
+            showToast('{{ session("success") }}', 'success')
+        );
+    @endif
+
+    applyFilters();
+</script>
+@endsection

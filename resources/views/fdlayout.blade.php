@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'DormEase — Front Desk')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'DormEase: Front Desk')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
 
@@ -13,30 +14,36 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
+            --hot-pink:   #E8175D;
+            --bright-pink: #d63375;
             --pink:       #CA5D86;
             --pink-light: #FFB0CE;
             --pink-soft:  #FF7E86;
             --pink-bg:    #fdf0f5;
             --pink-card:  #fce8f1;
+
             --gray:       #B5B7C0;
             --gray-light: #E5ECF6;
             --mint:       #A6E7D8;
             --green:      #29BD9B;
             --peach:      #FFD7C7;
             --salmon:     #EB9C7D;
-            --blush:      #FFC5C5;
+            --blush:      #FFF0F6;
             --red:        #DF0404;
+
             --white:      #ffffff;
             --ink:        #1a1a2e;
             --ink-muted:  #7a5f6e;
+
             --pink-50:    #fdf2f6;
             --pink-100:   #fce4ec;
             --pink-200:   #f8bbd0;
             --pink-400:   #f06292;
             --pink-500:   #ec407a;
             --pink-600:   #d81b60;
+            --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
+
             --ease:       all .2s cubic-bezier(.4,0,.2,1);
             --border:     rgba(202,93,134,.12);
             --shadow:     0 2px 16px rgba(202,93,134,.08);
@@ -57,20 +64,20 @@
             display: flex; flex-direction: column;
             position: fixed; top: 0; left: 0; bottom: 0;
             z-index: 100;
-            border-right: 1px solid var(--border);
-            box-shadow: 2px 0 20px rgba(202,93,134,.06);
+            border-right: 1.5px solid var(--pink-light);
+            box-shadow: 2px 0 20px rgba(202,93,134,.08);
             transition: transform .3s ease;
         }
 
         .sidebar-logo {
             padding: 1.4rem 1.5rem 1rem;
             display: flex; align-items: center; gap: .65rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1.5px solid var(--pink-light);
         }
 
         .sidebar-logo-icon {
             width: 38px; height: 38px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--pink) 0%, #a8446c 100%);
+            background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
@@ -82,14 +89,14 @@
             font-weight: 700; color: var(--ink); letter-spacing: -.01em;
         }
 
-        .sidebar-logo-text em { font-style: italic; color: var(--pink); }
+        .sidebar-logo-text em { font-style: italic; color: var(--hot-pink); }
 
         .sidebar-role {
             margin: .8rem 1.5rem;
             display: inline-flex; align-items: center; gap: .4rem;
-            background: var(--pink-card); border: 1px solid var(--pink-light);
+            background: var(--pink-card); border: 1.5px solid var(--pink-light);
             border-radius: 6px; padding: .28rem .7rem;
-            font-size: .72rem; font-weight: 700; color: var(--pink);
+            font-size: .72rem; font-weight: 800; color: var(--hot-pink);
             letter-spacing: .06em; text-transform: uppercase;
         }
 
@@ -98,82 +105,144 @@
         .nav-item {
             display: flex; align-items: center; gap: .75rem;
             padding: .68rem .85rem; border-radius: 10px;
-            font-size: .87rem; font-weight: 500; color: var(--ink-muted);
+            font-size: .87rem; font-weight: 500; color: var(--ink);
             cursor: pointer; margin-bottom: .15rem;
             transition: background .2s, color .2s;
             border: none; background: none; width: 100%; text-align: left;
         }
 
-        .nav-item:hover  { background: var(--pink-bg); color: var(--pink); }
-        .nav-item.active { background: var(--pink-card); color: var(--pink); font-weight: 600; }
+        .nav-item:hover { background: var(--pink-card); color: var(--hot-pink); }
+        .nav-item:hover .nav-icon img {
+            filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        }
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
+            color: var(--white); font-weight: 700;
+            box-shadow: 0 4px 14px rgba(232,23,93,.30);
+        }
+        .nav-item.active .nav-icon img { filter: brightness(0) invert(1); }
 
         .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
-        .nav-icon img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
-
-        .nav-divider { height: 1px; background: var(--border); margin: .6rem 0; }
-
-        .sidebar-logout { padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
-
-        .logout-btn {
-            display: flex; align-items: center; gap: .65rem;
-            font-size: .87rem; font-weight: 500; color: var(--ink-muted);
-            background: none; border: none; cursor: pointer;
-            padding: .5rem .3rem; width: 100%; transition: color .2s;
+        .nav-icon img {
+            width: 18px; height: 18px; object-fit: contain; vertical-align: middle;
+            filter: brightness(0);
         }
 
-        .logout-btn:hover { color: var(--red); }
+        .nav-divider { height: 1.5px; background: var(--pink-light); margin: .6rem 0; }
+
+        .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--pink-light); }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            width: 100%;
+            padding: .55rem .8rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            color: var(--white);
+            font-size: .8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--ease);
+            box-shadow: 0 3px 10px rgba(232,23,93,.22);
+        }
+
+        .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
+        .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
 
         .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
         .topbar {
             position: sticky; top: 0; z-index: 50;
-            background: var(--white); border-bottom: 1px solid var(--border);
+            background: var(--white);
+            border-bottom: 1.5px solid var(--pink-light);
             padding: .85rem 2rem;
             display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(202,93,134,.07);
         }
 
         .breadcrumb { font-size: .8rem; color: var(--ink-muted); }
-        .breadcrumb span { color: var(--pink); font-weight: 600; }
+        .breadcrumb span { color: var(--hot-pink); font-weight: 700; }
 
         .topbar-right { display: flex; align-items: center; gap: 1rem; }
 
         .notif-bell {
             width: 36px; height: 36px; border-radius: 50%;
-            background: var(--pink-50); border: 1.5px solid var(--pink-100);
+            background: var(--pink-card); border: 1.5px solid var(--pink-light);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; position: relative; transition: var(--ease);
         }
 
-        .notif-bell:hover { background: var(--pink-100); }
+        .notif-bell:hover { background: var(--pink-light); }
 
         .notif-badge {
             position: absolute; top: -3px; right: -3px;
-            width: 16px; height: 16px; background: var(--pink-500);
-            border-radius: 50%; font-size: 9px; color: #fff; font-weight: 700;
+            width: 16px; height: 16px; background: var(--bright-pink);
+            border-radius: 50%; font-size: 9px; color: var(--white); font-weight: 800;
             display: flex; align-items: center; justify-content: center;
-            border: 2px solid #fff;
+            border: 2px solid var(--white);
         }
 
         .avatar {
             width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--pink-400), var(--pink-600));
-            border: 2px solid var(--pink-200);
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            border: 2px solid var(--pink-light);
             display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 700; color: #fff; cursor: pointer;
+            font-size: 14px; font-weight: 800; color: var(--white); cursor: pointer;
+            transition: box-shadow .2s;
+            overflow: hidden;
         }
 
-        .card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow); padding: 1.5rem; }
+        .avatar:hover { box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .card {
+            background: var(--white); border-radius: 16px;
+            border: 1.5px solid var(--pink-light);
+            box-shadow: var(--shadow); padding: 1.5rem;
+        }
         .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
         .card-title { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
         .card-sub   { font-size: .78rem; color: var(--ink-muted); margin-top: .15rem; }
 
-        .see-all { font-size: .8rem; font-weight: 600; color: var(--pink); background: none; border: none; cursor: pointer; transition: opacity .2s; }
+        .see-all { font-size: .8rem; font-weight: 700; color: var(--hot-pink); background: none; border: none; cursor: pointer; transition: opacity .2s; }
         .see-all:hover { opacity: .7; }
 
         .icon-sm { width: 18px; height: 18px; object-fit: contain; }
         .icon-md { width: 24px; height: 24px; object-fit: contain; }
         .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
+        .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+        .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
+        .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+
+        .btn-outline {
+            display: flex; align-items: center; gap: .45rem;
+            padding: .55rem 1.2rem; border-radius: 10px;
+            background: var(--white); color: var(--ink-muted);
+            border: 1.5px solid var(--gray-light); font-size: .87rem; font-weight: 600;
+            transition: border-color .2s, color .2s; cursor: pointer;
+        }
+        .btn-outline:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+        .btn-outline img { width: 16px; height: 16px; opacity: .6; }
+
+        .view-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
+        .view-row:last-child { border-bottom: none; }
+        .view-label { color: var(--ink-muted); font-weight: 500; }
+        .view-val { font-weight: 600; color: var(--ink); text-align: right; }
+
+        .modal-field select {
+            width: 100%; padding: .6rem .85rem; border-radius: 9px;
+            border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
+            font-size: .87rem; color: var(--ink); outline: none; transition: border-color .2s;
+            background: var(--pink-bg);
+        }
+        .modal-field select:focus { border-color: var(--bright-pink); background: var(--white); }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -185,7 +254,6 @@
         .d5 { animation-delay: .33s; }
         .d6 { animation-delay: .40s; }
 
-
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(26,26,46,.45);
             backdrop-filter: blur(4px); z-index: 300;
@@ -196,9 +264,10 @@
         .modal {
             background: var(--white); border-radius: 20px;
             padding: 2rem; width: 90%; max-width: 440px;
-            box-shadow: 0 20px 60px rgba(26,26,46,.2);
+            box-shadow: 0 20px 60px rgba(202,93,134,.18);
             animation: fadeUp .3s ease;
             max-height: 90vh; overflow-y: auto;
+            border: 1.5px solid var(--pink-light);
         }
 
         .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
@@ -207,44 +276,48 @@
         .modal-close:hover { color: var(--red); }
 
         .modal-field { margin-bottom: 1rem; }
-        .modal-field label { display: block; font-size: .82rem; font-weight: 600; color: var(--ink-muted); margin-bottom: .4rem; }
+        .modal-field label { display: block; font-size: .82rem; font-weight: 700; color: var(--ink-muted); margin-bottom: .4rem; }
         .modal-field input,
         .modal-field textarea {
             width: 100%; padding: .6rem .85rem; border-radius: 9px;
-            border: 1.5px solid var(--gray-light); font-family: var(--ff-body);
+            border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
             font-size: .87rem; color: var(--ink); outline: none; transition: border-color .2s;
+            background: var(--pink-bg);
         }
         .modal-field textarea { min-height: 100px; resize: vertical; }
         .modal-field input:focus,
-        .modal-field textarea:focus { border-color: var(--pink); }
+        .modal-field textarea:focus { border-color: var(--bright-pink); background: var(--white); }
 
         .modal-actions { display: flex; gap: .7rem; margin-top: 1.4rem; justify-content: flex-end; }
 
         .btn-cancel {
             padding: .6rem 1.2rem; border-radius: 9px;
-            border: 1.5px solid var(--gray-light); background: none;
+            border: 1.5px solid var(--pink-light); background: var(--pink-card);
             font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer;
         }
+        .btn-cancel:hover { border-color: var(--pink); color: var(--hot-pink); }
 
         .btn-submit {
             padding: .6rem 1.4rem; border-radius: 9px; border: none;
-            background: var(--pink); color: var(--white);
-            font-size: .87rem; font-weight: 700; cursor: pointer; transition: background .2s;
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            color: var(--white);
+            font-size: .87rem; font-weight: 800; cursor: pointer;
+            transition: opacity .2s, transform .15s;
         }
-        .btn-submit:hover { background: #a8446c; }
+        .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-        .alert-item { border-radius: 12px; padding: 1rem; border: 1px solid; margin-bottom: .8rem; }
-        .alert-item.active   { background: #fff0f0; border-color: var(--blush); }
+        .alert-item { border-radius: 12px; padding: 1rem; border: 1.5px solid; margin-bottom: .8rem; }
+        .alert-item.active   { background: var(--pink-bg); border-color: var(--pink-light); }
         .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
-        .alert-room   { font-weight: 700; font-size: .9rem; }
+        .alert-room   { font-weight: 700; font-size: .9rem; color: var(--ink); }
         .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
         .toast {
             position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
             background: var(--ink); color: var(--white);
             padding: .85rem 1.4rem; border-radius: 12px;
-            font-size: .87rem; font-weight: 500;
-            box-shadow: 0 8px 24px rgba(26,26,46,.25);
+            font-size: .87rem; font-weight: 600;
+            box-shadow: 0 8px 24px rgba(202,93,134,.20);
             transform: translateY(80px); opacity: 0;
             transition: transform .35s ease, opacity .35s ease;
             display: flex; align-items: center; gap: .6rem;
@@ -253,7 +326,63 @@
         .toast.success { background: var(--green); }
         .toast.error   { background: var(--red); }
 
-        /* ══════════ RESPONSIVE ══════════ */
+        .avatar-wrap { position: relative; padding-bottom: 0; }
+        .avatar-wrap::after { content: ''; position: absolute; bottom: -10px; left: 0; right: 0; height: 10px; }
+
+        .avatar-dropdown {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--pink-light);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(232,23,93,.14);
+            width: 210px;
+            overflow: hidden;
+            opacity: 0; transform: translateY(8px) scale(.97);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+            z-index: 200;
+        }
+
+        .avatar-dropdown.open,
+        .avatar-wrap:hover .avatar-dropdown {
+            opacity: 1; transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .dropdown-header {
+            padding: .9rem 1rem .75rem;
+            border-bottom: 1px solid var(--pink-light);
+            display: flex; align-items: center; gap: .7rem;
+        }
+
+        .dropdown-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800; color: var(--white);
+            flex-shrink: 0; overflow: hidden;
+        }
+
+        .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .dropdown-name { font-size: .85rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+        .dropdown-role { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
+
+        .dropdown-menu { padding: .4rem; }
+
+        .dropdown-item {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .55rem .75rem; border-radius: 9px;
+            font-size: .84rem; font-weight: 500; color: var(--ink-muted);
+            cursor: pointer; transition: background .15s, color .15s;
+            text-decoration: none; border: none; background: none; width: 100%;
+        }
+
+        .dropdown-item:hover { background: var(--pink-card); color: var(--hot-pink); }
+        .dropdown-item img { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; opacity: .7; }
+        .dropdown-item:hover img { opacity: 1; }
+        .dropdown-divider { height: 1px; background: var(--pink-light); margin: .3rem .4rem; }
+        .dropdown-item.danger { color: var(--red); }
+        .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
         @media (max-width: 820px) {
             :root { --sidebar-w: 0px; }
@@ -262,6 +391,116 @@
             .main { margin-left: 0; }
         }
 
+        .notif-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 320px;
+            background: var(--white);
+            border: 1.5px solid var(--pink-light);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(202,93,134,.14);
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(8px) scale(.97);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+            overflow: hidden;
+        }
+        .notif-dropdown.open {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .notif-dropdown-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .85rem 1rem .7rem;
+            border-bottom: 1.5px solid var(--pink-card);
+        }
+        .notif-dropdown-title {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .notif-mark-all {
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--hot-pink);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .notif-mark-all:hover { opacity: .7; }
+        .notif-dropdown-list { max-height: 340px; overflow-y: auto; }
+        .notif-dd-item {
+            display: flex;
+            align-items: flex-start;
+            gap: .7rem;
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--pink-card);
+            cursor: pointer;
+            transition: background .15s;
+            text-decoration: none;
+            color: inherit;
+        }
+        .notif-dd-item:last-child { border-bottom: none; }
+        .notif-dd-item:hover { background: var(--pink-bg); }
+        .notif-dd-item.unread { background: var(--pink-50); }
+        .notif-dd-item.unread:hover { background: var(--pink-100); }
+        .notif-unread-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--hot-pink);
+            flex-shrink: 0;
+            margin-top: .35rem;
+        }
+        .notif-dd-icon {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            background: var(--pink-card);
+            border: 1.5px solid var(--pink-light);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .notif-dd-icon img {
+            width: 14px; height: 14px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        }
+        .notif-dd-body { flex: 1; min-width: 0; }
+        .notif-dd-msg {
+            font-size: .81rem;
+            font-weight: 500;
+            color: var(--ink);
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
+        .notif-dropdown-footer {
+            padding: .6rem 1rem;
+            border-top: 1.5px solid var(--pink-card);
+            text-align: center;
+        }
+        .notif-see-all {
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--hot-pink);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .notif-see-all:hover { opacity: .7; }
+        .notif-empty {
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: .83rem;
+            color: var(--ink-muted);
+        }
     </style>
 
     @yield('styles')
@@ -270,7 +509,6 @@
 <body>
 
 <aside class="sidebar" id="sidebar">
-
     <div class="sidebar-logo">
         <div class="sidebar-logo-icon">
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
@@ -278,10 +516,7 @@
         <div class="sidebar-logo-text">Dorm<em>Ease</em></div>
     </div>
 
-    <div class="sidebar-role">
-        <img src="{{ asset('icons/staff.png') }}" alt="" class="icon-sm">
-        Front Desk
-    </div>
+    <div class="sidebar-role">Front Desk</div>
 
     <nav class="sidebar-nav">
         <a href="{{ route('frontdesk.dashboard') }}" class="nav-item {{ request()->routeIs('frontdesk.dashboard') ? 'active' : '' }}">
@@ -290,19 +525,19 @@
         <a href="{{ route('frontdesk.tenants') }}" class="nav-item {{ request()->routeIs('frontdesk.tenants') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-tenants.png') }}" alt=""></span> Tenant Directory
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.emergency') }}" class="nav-item {{ request()->routeIs('frontdesk.emergency') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></span> Emergency Reports
         </a>
         <a href="{{ route('frontdesk.visitors') }}" class="nav-item {{ request()->routeIs('frontdesk.visitors') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-visit.png') }}" alt=""></span> Visitor Logs
         </a>
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.announcements') }}" class="nav-item {{ request()->routeIs('frontdesk.announcements*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
 
         <div class="nav-divider"></div>
 
-        <a href="#" class="nav-item">
+        <a href="{{ route('frontdesk.settings.index') }}" class="nav-item {{ request()->routeIs('frontdesk.settings*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>
     </nav>
@@ -316,28 +551,111 @@
             Log Out
         </button>
     </div>
-
 </aside>
 
 <div class="main">
-
     <header class="topbar">
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
-            <div class="notif-bell" title="Notifications">
-                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
-                @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                    <span class="notif-badge">{{ $unreadNotifCount }}</span>
-                @endif
+            <div style="position:relative;" id="notif-wrap">
+                <div class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
+                    <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
+                    @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                        <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
+                    @endif
+                </div>
+
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <div class="notif-dropdown-title">
+                            Notifications
+                            @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                                <span style="color:var(--ink-muted);font-weight:500;font-size:.78rem;">({{ $unreadNotifCount }} unread)</span>
+                            @endif
+                        </div>
+                        @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
+                        @endif
+                    </div>
+                    <div class="notif-dropdown-list">
+                        @if(isset($notifications) && $notifications->count())
+                            @foreach($notifications as $notif)
+                                @php
+                                    $notifIcon = match($notif->type) {
+                                        'emergency_new'    => 'warn',
+                                        'visitor_checkin'  => 'nav-visit',
+                                        'visitor_checkout' => 'nav-visit',
+                                        'announcement_new' => 'nav-announ',
+                                        default            => 'bell',
+                                    };
+                                @endphp
+                                <a href="{{ $notif->url ?? '#' }}"
+                                    class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                    onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
+                                    @if(!$notif->is_read)
+                                        <div class="notif-unread-dot"></div>
+                                    @else
+                                        <div style="width:7px;flex-shrink:0;"></div>
+                                    @endif
+                                    <div class="notif-dd-icon">
+                                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
+                                            onerror="this.src='{{ asset('icons/bell.png') }}'">
+                                    </div>
+                                    <div class="notif-dd-body">
+                                        <div class="notif-dd-msg">{{ $notif->message }}</div>
+                                        <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            <div class="notif-empty">No notifications yet.</div>
+                        @endif
+                    </div>
+                    <div class="notif-dropdown-footer">
+                        <button class="notif-see-all" onclick="closeNotifDropdown()">Close</button>
+                    </div>
+                </div>
             </div>
-            <div class="avatar" title="{{ $staff->first_name ?? 'F' }}">
-                {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
+            <div class="avatar-wrap" id="avatar-wrap">
+                <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'F' }}">
+                    @if($staff->profile_picture ?? null)
+                        <img src="{{ $staff->profile_picture }}" alt="Avatar">
+                    @else
+                        {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
+                    @endif
+                </div>
+                <div class="avatar-dropdown" id="avatar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">
+                            @if($staff->profile_picture ?? null)
+                                <img src="{{ $staff->profile_picture }}" alt="">
+                            @else
+                                {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
+                            @endif
+                        </div>
+                        <div>
+                            <div class="dropdown-name">{{ ($staff->first_name ?? '') . ' ' . ($staff->last_name ?? '') }}</div>
+                            <div class="dropdown-role">{{ ucfirst($staff->role ?? 'Front Desk') }}</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('fdprofile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
+                            <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
+                        </a>
+                        <a href="{{ route('frontdesk.settings.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
+                            <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item danger" onclick="closeAvatarDropdown(); openModal('logout-modal');">
+                            <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     @yield('content')
-
 </div>
 
 <div class="modal-overlay" id="logout-modal">
@@ -353,6 +671,82 @@
         </div>
     </div>
 </div>
+
+@if(session('prompt_temp_password'))
+<div class="modal-overlay open" id="temp-pw-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:38px;height:38px;border-radius:10px;background:var(--pink-card);border:1.5px solid var(--pink-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img src="{{ asset('icons/nav-settings.png') }}" style="width:18px;height:18px;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
+                </div>
+                <div>
+                    <div class="modal-title">Change Your Password</div>
+                    <div style="font-size:.75rem;color:var(--ink-muted);margin-top:.1rem;">You are using a temporary password</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:var(--pink-card);border:1.5px solid var(--pink-light);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.83rem;color:var(--hot-pink);line-height:1.55;">
+            For your account security, please set a new personal password. You can change it later but will be reminded on your next login.
+        </div>
+
+        <form method="POST" action="{{ route('fdprofile.updatePassword') }}" id="temp-pw-form">
+            @csrf
+            @method('PUT')
+
+            <div class="modal-field">
+                <label>Current (Temporary) Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="current_password" id="tmp-cur-pw"
+                        placeholder="Enter temporary password" required autocomplete="current-password"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-cur-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label>New Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="password" id="tmp-new-pw"
+                        placeholder="Min. 8 characters" required autocomplete="new-password"
+                        oninput="checkTmpStrength(this.value)"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-new-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+                <div style="height:3px;border-radius:2px;background:var(--pink-100);overflow:hidden;margin-top:.5rem;">
+                    <div id="tmp-strength-fill" style="height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;"></div>
+                </div>
+                <div id="tmp-strength-label" style="font-size:.67rem;color:var(--ink-muted);margin-top:.2rem;"></div>
+            </div>
+
+            <div class="modal-field">
+                <label>Confirm New Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="password_confirmation" id="tmp-conf-pw"
+                        placeholder="Repeat new password" required autocomplete="new-password"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-conf-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeTempPwModal()">Change Later</button>
+                <button type="submit" class="btn-submit">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 @yield('modals')
 
@@ -372,6 +766,108 @@
         t.className   = 'toast ' + type;
         setTimeout(() => t.classList.add('show'),    10);
         setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    function toggleAvatarDropdown() {
+        document.getElementById('avatar-dropdown').classList.toggle('open');
+    }
+
+    function closeAvatarDropdown() {
+        document.getElementById('avatar-dropdown').classList.remove('open');
+    }
+
+    document.addEventListener('click', e => {
+        const wrap = document.getElementById('avatar-wrap');
+        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
+    });
+
+    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
+        el.addEventListener('click', () => closeAvatarDropdown());
+    });
+
+    function closeTempPwModal() {
+        const m = document.getElementById('temp-pw-modal');
+        if (m) m.classList.remove('open');
+    }
+
+    function toggleTmpPw(inputId, btn) {
+        const inp = document.getElementById(inputId);
+        inp.type = inp.type === 'text' ? 'password' : 'text';
+        btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
+    }
+
+    function checkTmpStrength(val) {
+        const fill  = document.getElementById('tmp-strength-fill');
+        const label = document.getElementById('tmp-strength-label');
+        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        let score = 0;
+        if (val.length >= 8)          score++;
+        if (/[A-Z]/.test(val))        score++;
+        if (/[0-9]/.test(val))        score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const levels = [
+            { w: '20%',  color: '#DF0404', text: 'Weak' },
+            { w: '50%',  color: '#f59e0b', text: 'Fair' },
+            { w: '75%',  color: '#29BD9B', text: 'Good' },
+            { w: '100%', color: '#16a34a', text: 'Strong' },
+        ];
+        const lvl = levels[score - 1] ?? levels[0];
+        fill.style.width      = lvl.w;
+        fill.style.background = lvl.color;
+        label.textContent     = lvl.text;
+        label.style.color     = lvl.color;
+    }
+
+    @if(session('error') && session('prompt_temp_password'))
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('{{ session("error") }}', 'error');
+            const m = document.getElementById('temp-pw-modal');
+            if (m) m.classList.add('open');
+        });
+    @endif
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('{{ session("success") }}', 'success');
+        });
+    @endif
+
+    function toggleNotifDropdown() {
+        document.getElementById('notif-dropdown').classList.toggle('open');
+        closeAvatarDropdown();
+    }
+
+    function closeNotifDropdown() {
+        document.getElementById('notif-dropdown').classList.remove('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrap = document.getElementById('notif-wrap');
+        if (wrap && !wrap.contains(e.target)) closeNotifDropdown();
+    });
+
+    function markNotifRead(e, id, url) {
+        e.preventDefault();
+        fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => {
+            if (url) window.location.href = url;
+            else location.reload();
+        });
+    }
+
+    function markAllRead() {
+        fetch('/notifications/read-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(() => location.reload());
     }
 </script>
 

@@ -4,7 +4,7 @@
   <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Safety Features | DormEase</title>
+  <title>Safety Features: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -80,7 +80,7 @@
     .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
     .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
     .footer-social-fallback { font-family:var(--font-head); font-size:1rem; font-weight:900; letter-spacing:.02em; }
-    /* Scroll-to-top button */
+
     #scrollTopBtn {
       position:fixed; bottom:32px; right:32px; z-index:999;
       width:50px; height:50px; border:none; border-radius:50%;
@@ -209,7 +209,6 @@
   </div>
 </footer>
 
-<!-- Scroll to Top Button -->
 <button id="scrollTopBtn" aria-label="Scroll to top">
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </button>
@@ -218,7 +217,6 @@
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
 
-  // Scroll-to-top logic
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => {
     scrollTopBtn.classList.toggle('visible', scrollY > 300);
