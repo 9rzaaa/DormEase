@@ -899,7 +899,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       Sanctissimo Rosario Ladies Dormitory: a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
     </p>
     <div class="hero-actions">
-      <a href="#features" class="btn-primary">Explore Rooms</a>
+      <a href="{{ route('gallery') }}" class="btn-primary">Explore Rooms</a>
       <a href="{{ route('safety.features') }}" class="btn-outline">Safety Features</a>
     </div>
 
