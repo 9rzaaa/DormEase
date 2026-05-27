@@ -661,7 +661,7 @@
 <div class="avatar-wrap" id="avatar-wrap">
     <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'Account' }}">
         @if($staff->profile_picture ?? null)
-            <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar"
+            <img src="{{ $staff->profile_picture }}" alt="Avatar"
                  onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
         @else
             {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
@@ -672,7 +672,7 @@
         <div class="dropdown-header">
             <div class="dropdown-avatar">
                 @if($staff->profile_picture ?? null)
-                    <img src="{{ Storage::url($staff->profile_picture) }}" alt=""
+                    <img src="{{ $staff->profile_picture }}" alt=""
                          onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}'">
                 @else
                     {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}

@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-
         :root {
             --hot-pink:   #E8175D;
             --bright-pink: #d63375;
@@ -43,7 +42,7 @@
             --pink-500:   #ec407a;
             --pink-600:   #d81b60;
             --gradient-pink: linear-gradient(135deg, #cd215a 0%, #d63375 100%);
-            
+
             --ease:       all .2s cubic-bezier(.4,0,.2,1);
             --border:     rgba(202,93,134,.12);
             --shadow:     0 2px 16px rgba(202,93,134,.08);
@@ -151,12 +150,7 @@
         }
 
         .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
-
-        .logout-btn img {
-            width: 15px;
-            height: 15px;
-            filter: brightness(0) invert(1);
-        }
+        .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
 
         .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -198,9 +192,11 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 14px; font-weight: 800; color: var(--white); cursor: pointer;
             transition: box-shadow .2s;
+            overflow: hidden;
         }
 
         .avatar:hover { box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
         .card {
             background: var(--white); border-radius: 16px;
@@ -219,11 +215,11 @@
         .icon-lg { width: 30px; height: 30px; object-fit: contain; }
 
         .page-body { padding: 1.8rem 2rem; flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
- 
+
         .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
         .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--ink); letter-spacing: -.02em; line-height: 1.15; }
         .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
-        
+
         .btn-outline {
             display: flex; align-items: center; gap: .45rem;
             padding: .55rem 1.2rem; border-radius: 10px;
@@ -233,12 +229,12 @@
         }
         .btn-outline:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
         .btn-outline img { width: 16px; height: 16px; opacity: .6; }
-        
+
         .view-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
         .view-row:last-child { border-bottom: none; }
         .view-label { color: var(--ink-muted); font-weight: 500; }
         .view-val { font-weight: 600; color: var(--ink); text-align: right; }
-        
+
         .modal-field select {
             width: 100%; padding: .6rem .85rem; border-radius: 9px;
             border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
@@ -329,52 +325,41 @@
         .toast.success { background: var(--green); }
         .toast.error   { background: var(--red); }
 
-        .avatar-wrap {
-        position: relative;
-        padding-bottom: 0;
-        }
-
-        .avatar-wrap::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-        right: 0;
-        height: 10px;
-        }
+        .avatar-wrap { position: relative; padding-bottom: 0; }
+        .avatar-wrap::after { content: ''; position: absolute; bottom: -10px; left: 0; right: 0; height: 10px; }
 
         .avatar-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
-        background: var(--white);
-        border: 1.5px solid var(--pink-light);
-        border-radius: 14px;
-        box-shadow: 0 8px 32px rgba(232,23,93,.14);
-        width: 210px;
-        overflow: hidden;
-        opacity: 0; transform: translateY(8px) scale(.97);
-        pointer-events: none;
-        transition: opacity .2s ease, transform .2s ease;
-        z-index: 200;
+            position: absolute; top: calc(100% + 10px); right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--pink-light);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(232,23,93,.14);
+            width: 210px;
+            overflow: hidden;
+            opacity: 0; transform: translateY(8px) scale(.97);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+            z-index: 200;
         }
 
         .avatar-dropdown.open,
         .avatar-wrap:hover .avatar-dropdown {
-        opacity: 1; transform: translateY(0) scale(1);
-        pointer-events: auto;
+            opacity: 1; transform: translateY(0) scale(1);
+            pointer-events: auto;
         }
 
         .dropdown-header {
-        padding: .9rem 1rem .75rem;
-        border-bottom: 1px solid var(--pink-light);
-        display: flex; align-items: center; gap: .7rem;
+            padding: .9rem 1rem .75rem;
+            border-bottom: 1px solid var(--pink-light);
+            display: flex; align-items: center; gap: .7rem;
         }
 
         .dropdown-avatar {
-        width: 38px; height: 38px; border-radius: 50%;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        display: flex; align-items: center; justify-content: center;
-        font-size: 13px; font-weight: 800; color: var(--white);
-        flex-shrink: 0; overflow: hidden;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800; color: var(--white);
+            flex-shrink: 0; overflow: hidden;
         }
 
         .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -384,19 +369,19 @@
         .dropdown-menu { padding: .4rem; }
 
         .dropdown-item {
-        display: flex; align-items: center; gap: .6rem;
-        padding: .55rem .75rem; border-radius: 9px;
-        font-size: .84rem; font-weight: 500; color: var(--ink-muted);
-        cursor: pointer; transition: background .15s, color .15s;
-        text-decoration: none; border: none; background: none; width: 100%;
+            display: flex; align-items: center; gap: .6rem;
+            padding: .55rem .75rem; border-radius: 9px;
+            font-size: .84rem; font-weight: 500; color: var(--ink-muted);
+            cursor: pointer; transition: background .15s, color .15s;
+            text-decoration: none; border: none; background: none; width: 100%;
         }
 
-    .dropdown-item:hover { background: var(--pink-card); color: var(--hot-pink); }
-    .dropdown-item img { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; opacity: .7; }
-    .dropdown-item:hover img { opacity: 1; }
-    .dropdown-divider { height: 1px; background: var(--pink-light); margin: .3rem .4rem; }
-    .dropdown-item.danger { color: var(--red); }
-    .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
+        .dropdown-item:hover { background: var(--pink-card); color: var(--hot-pink); }
+        .dropdown-item img { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; opacity: .7; }
+        .dropdown-item:hover img { opacity: 1; }
+        .dropdown-divider { height: 1px; background: var(--pink-light); margin: .3rem .4rem; }
+        .dropdown-item.danger { color: var(--red); }
+        .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
         @media (max-width: 820px) {
             :root { --sidebar-w: 0px; }
@@ -404,7 +389,6 @@
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
         }
-
     </style>
 
     @yield('styles')
@@ -413,7 +397,6 @@
 <body>
 
 <aside class="sidebar" id="sidebar">
-
     <div class="sidebar-logo">
         <div class="sidebar-logo-icon">
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
@@ -456,11 +439,9 @@
             Log Out
         </button>
     </div>
-
 </aside>
 
 <div class="main">
-
     <header class="topbar">
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
@@ -472,8 +453,8 @@
             </div>
             <div class="avatar-wrap" id="avatar-wrap">
                 <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'F' }}">
-                    @if(isset($staff->profile_photo) && $staff->profile_photo)
-                        <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="Avatar">
+                    @if($staff->profile_picture ?? null)
+                        <img src="{{ $staff->profile_picture }}" alt="Avatar">
                     @else
                         {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
                     @endif
@@ -481,8 +462,8 @@
                 <div class="avatar-dropdown" id="avatar-dropdown">
                     <div class="dropdown-header">
                         <div class="dropdown-avatar">
-                            @if(isset($staff->profile_photo) && $staff->profile_photo)
-                                <img src="{{ asset('storage/' . $staff->profile_photo) }}" alt="">
+                            @if($staff->profile_picture ?? null)
+                                <img src="{{ $staff->profile_picture }}" alt="">
                             @else
                                 {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
                             @endif
@@ -510,7 +491,6 @@
     </header>
 
     @yield('content')
-
 </div>
 
 <div class="modal-overlay" id="logout-modal">
@@ -624,65 +604,68 @@
     }
 
     function toggleAvatarDropdown() {
-    document.getElementById('avatar-dropdown').classList.toggle('open');
-}
-function closeAvatarDropdown() {
-    document.getElementById('avatar-dropdown').classList.remove('open');
-}
-document.addEventListener('click', e => {
-    const wrap = document.getElementById('avatar-wrap');
-    if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
-});
-document.querySelectorAll('.dropdown-item[href]').forEach(el => {
-    el.addEventListener('click', () => closeAvatarDropdown());
-});
+        document.getElementById('avatar-dropdown').classList.toggle('open');
+    }
 
-function closeTempPwModal() {
-    const m = document.getElementById('temp-pw-modal');
-    if (m) m.classList.remove('open');
-}
+    function closeAvatarDropdown() {
+        document.getElementById('avatar-dropdown').classList.remove('open');
+    }
 
-function toggleTmpPw(inputId, btn) {
-    const inp = document.getElementById(inputId);
-    inp.type = inp.type === 'text' ? 'password' : 'text';
-    btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
-}
+    document.addEventListener('click', e => {
+        const wrap = document.getElementById('avatar-wrap');
+        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
+    });
 
-function checkTmpStrength(val) {
-    const fill  = document.getElementById('tmp-strength-fill');
-    const label = document.getElementById('tmp-strength-label');
-    if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
-    let score = 0;
-    if (val.length >= 8)          score++;
-    if (/[A-Z]/.test(val))        score++;
-    if (/[0-9]/.test(val))        score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-    const levels = [
-        { w: '20%',  color: '#DF0404', text: 'Weak' },
-        { w: '50%',  color: '#f59e0b', text: 'Fair' },
-        { w: '75%',  color: '#29BD9B', text: 'Good' },
-        { w: '100%', color: '#16a34a', text: 'Strong' },
-    ];
-    const lvl = levels[score - 1] ?? levels[0];
-    fill.style.width      = lvl.w;
-    fill.style.background = lvl.color;
-    label.textContent     = lvl.text;
-    label.style.color     = lvl.color;
-}
+    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
+        el.addEventListener('click', () => closeAvatarDropdown());
+    });
 
-@if(session('error') && session('prompt_temp_password'))
-    document.addEventListener('DOMContentLoaded', () => {
-        showToast('{{ session("error") }}', 'error');
+    function closeTempPwModal() {
         const m = document.getElementById('temp-pw-modal');
-        if (m) m.classList.add('open');
-    });
-@endif
+        if (m) m.classList.remove('open');
+    }
 
-@if(session('success'))
-    document.addEventListener('DOMContentLoaded', () => {
-        showToast('{{ session("success") }}', 'success');
-    });
-@endif
+    function toggleTmpPw(inputId, btn) {
+        const inp = document.getElementById(inputId);
+        inp.type = inp.type === 'text' ? 'password' : 'text';
+        btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
+    }
+
+    function checkTmpStrength(val) {
+        const fill  = document.getElementById('tmp-strength-fill');
+        const label = document.getElementById('tmp-strength-label');
+        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        let score = 0;
+        if (val.length >= 8)          score++;
+        if (/[A-Z]/.test(val))        score++;
+        if (/[0-9]/.test(val))        score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const levels = [
+            { w: '20%',  color: '#DF0404', text: 'Weak' },
+            { w: '50%',  color: '#f59e0b', text: 'Fair' },
+            { w: '75%',  color: '#29BD9B', text: 'Good' },
+            { w: '100%', color: '#16a34a', text: 'Strong' },
+        ];
+        const lvl = levels[score - 1] ?? levels[0];
+        fill.style.width      = lvl.w;
+        fill.style.background = lvl.color;
+        label.textContent     = lvl.text;
+        label.style.color     = lvl.color;
+    }
+
+    @if(session('error') && session('prompt_temp_password'))
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('{{ session("error") }}', 'error');
+            const m = document.getElementById('temp-pw-modal');
+            if (m) m.classList.add('open');
+        });
+    @endif
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('{{ session("success") }}', 'success');
+        });
+    @endif
 </script>
 
 @yield('scripts')

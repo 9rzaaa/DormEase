@@ -506,7 +506,7 @@
                 <div class="hero-avatar-wrap" onclick="document.getElementById('avatar-input').click()">
                     <div class="hero-avatar">
                         @if($staff->profile_picture)
-                            <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar" class="avatar-photo" id="avatar-preview">
+                            <img src="{{ $staff->profile_picture }}" alt="Avatar" class="avatar-photo" id="avatar-preview">
                         @else
                             <span id="avatar-initials">{{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}</span>
                             <img src="" alt="Avatar" class="avatar-photo" id="avatar-preview" style="display:none;">
