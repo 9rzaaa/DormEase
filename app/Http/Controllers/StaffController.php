@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Staff;
+use App\Models\ArchivedStaff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,7 @@ class StaffController extends Controller
         $staffList = $staff->map(function ($s) {
             return [
                 'staff_id'       => $s->staff_id,
+                'account_id'     => $s->account_id,
                 'first_name'     => $s->first_name,
                 'last_name'      => $s->last_name,
                 'email'          => $s->email,
@@ -28,11 +30,29 @@ class StaffController extends Controller
             ];
         });
 
+        $deletedArchive = ArchivedStaff::orderByDesc('archived_at')->get()->map(function ($r) {
+            return [
+                'original_staff_id' => $r->original_staff_id,
+                'account_id'        => $r->account_id,
+                'staff_code'        => $r->staff_code,
+                'first_name'        => $r->first_name,
+                'last_name'         => $r->last_name,
+                'email'             => $r->email,
+                'role'              => $r->role,
+                'contact_number'    => $r->contact_number,
+                'shift_schedule'    => $r->shift_schedule,
+                'duty_status'       => $r->duty_status,
+                'is_active'         => $r->is_active,
+                'archived_at'       => $r->archived_at,
+            ];
+        });
+
         return view('staff', [
-            'staffList'    => $staffList,
-            'totalStaff'   => $staff->count(),
-            'onDutyCount'  => $staff->where('duty_status', 'on_duty')->count(),
-            'offDutyCount' => $staff->where('duty_status', 'off_duty')->count(),
+            'staffList'      => $staffList,
+            'totalStaff'     => $staff->count(),
+            'onDutyCount'    => $staff->where('duty_status', 'on_duty')->count(),
+            'offDutyCount'   => $staff->where('duty_status', 'off_duty')->count(),
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
@@ -130,6 +150,21 @@ class StaffController extends Controller
         $staff = Staff::findOrFail($id);
 
         $name = "{$staff->first_name} {$staff->last_name}";
+
+        ArchivedStaff::create([
+            'original_staff_id' => $staff->staff_id,
+            'account_id'        => $staff->account_id,
+            'staff_code'        => $staff->staff_code,
+            'first_name'        => $staff->first_name,
+            'last_name'         => $staff->last_name,
+            'email'             => $staff->email,
+            'role'              => $staff->role,
+            'contact_number'    => $staff->contact_number,
+            'shift_schedule'    => $staff->shift_schedule,
+            'duty_status'       => $staff->duty_status,
+            'is_active'         => $staff->is_active,
+            'archived_at'       => now(),
+        ]);
 
         $staff->delete();
 

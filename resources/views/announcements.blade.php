@@ -1268,7 +1268,7 @@
     <div class="aad-header">
         <div>
             <div class="aad-title">Archive / History</div>
-            <div class="aad-sub">Read-only record of deleted announcements</div>
+            <div class="aad-sub">Record of deleted announcements</div>
         </div>
         <button class="aad-close" onclick="closeAnnArchive()">&#x2715;</button>
     </div>
