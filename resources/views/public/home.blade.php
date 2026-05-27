@@ -950,8 +950,8 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:var(--pink-deep)"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
         <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">WATER BILL</div></div><div class="mini-bdy"><div style="background:white;border-radius:4px;height:26px;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;font-weight:800;color:var(--pink);font-family:var(--font-head)">₱248.50</span></div><div class="mini-row" style="width:75%"></div><div class="mini-row"></div><div class="mini-row" style="width:55%"></div></div></div></div>
       </div>
-      <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
-      <p style="font-size:.76rem;color:var(--brown-light);margin-top:4px;font-weight:600;">— Room 3B Tenant</p>
+      <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app, finally."</p>
+      <p style="font-size:.76rem;color:var(--brown-light);margin-top:4px;font-weight:600;">- Room 3B Tenant</p>
       
       <a href="{{ route('features') }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;">
         More Features
