@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\MaintenanceController;
+use App\Http\Controllers\Api\EmergencyController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,6 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
 
+    Route::get('/emergency', [EmergencyController::class, 'index']);
+    Route::post('/emergency', [EmergencyController::class, 'store']);
+
     // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
@@ -82,3 +86,4 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 });
+
