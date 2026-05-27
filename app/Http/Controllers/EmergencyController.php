@@ -1,52 +1,25 @@
 <?php
+
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
+use App\Helpers\NotificationHelper;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
-use App\Helpers\NotificationHelper;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EmergencyController extends Controller
 {
     public function adminIndex()
     {
-        $reports = EmergencyReport::orderBy('reported_at', 'desc')->get();
-        $tenantIds = $reports->pluck('tenant_id')->filter()->unique();
-        $tenantMap = Tenant::whereIn('tenant_id', $tenantIds)
-            ->get()
-            ->keyBy('tenant_id');
-        $reports = $reports->map(function ($r) use ($tenantMap) {
-            $tenant = $tenantMap->get($r->tenant_id);
-            if ($tenant) {
-                $tenantName = trim($tenant->first_name . ' ' . $tenant->last_name);
-                $roomNumber = $tenant->room_number ?? '—';
-            } elseif ($r->input_type === 'frontdesk') {
-                $tenantName = 'Front Desk';
-                $roomNumber = '—';
-            } else {
-                $tenantName = '—';
-                $roomNumber = '—';
-            }
-            return [
-                'report_id'      => $r->report_id,
-                'tenant_id'      => $r->tenant_id,
-                'tenant_name'    => $tenantName,
-                'room_number'    => $roomNumber,
-                'is_panic_alert' => $r->is_panic_alert,
-                'emergency_type' => $r->emergency_type ?? '—',
-                'input_type'     => $r->input_type ?? 'manual',
-                'description'    => $r->description ?? '—',
-                'location'       => $r->location ?? '—',
-                'status'         => $r->status ?? 'pending',
-                'admin_notes'    => $r->admin_notes ?? '',
-                'reported_at'    => $r->reported_at,
-                'resolved_at'    => $r->resolved_at,
-            ];
-        })->values();
-        $totalCount    = $reports->count();
-        $criticalCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
+        $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
+        $totalCount = $reports->count();
+        $criticalCount = $reports
+            ->whereIn('status', ['pending', 'active', 'ongoing'])
+            ->whereIn('urgency_level', ['critical', 'urgent'])
+            ->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
+
         return view('emergency', compact(
             'reports',
             'totalCount',
@@ -58,43 +31,12 @@ class EmergencyController extends Controller
     public function frontdeskIndex()
     {
         $staff = Auth::guard('staff')->user();
-        $reports = EmergencyReport::orderBy('reported_at', 'desc')->get();
-        $tenantIds = $reports->pluck('tenant_id')->filter()->unique();
-        $tenantMap = Tenant::whereIn('tenant_id', $tenantIds)
-            ->get()
-            ->keyBy('tenant_id');
-        $reports = $reports->map(function ($r) use ($tenantMap) {
-            $tenant = $tenantMap->get($r->tenant_id);
-            if ($tenant) {
-                $tenantName = trim($tenant->first_name . ' ' . $tenant->last_name);
-                $roomNumber = $tenant->room_number ?? '—';
-            } elseif ($r->input_type === 'frontdesk') {
-                $tenantName = 'Front Desk';
-                $roomNumber = '—';
-            } else {
-                $tenantName = '—';
-                $roomNumber = '—';
-            }
-            return [
-                'report_id'      => $r->report_id,
-                'tenant_id'      => $r->tenant_id,
-                'tenant_name'    => $tenantName,
-                'room_number'    => $roomNumber,
-                'is_panic_alert' => $r->is_panic_alert,
-                'emergency_type' => $r->emergency_type ?? '—',
-                'input_type'     => $r->input_type ?? '—',
-                'description'    => $r->description ?? '—',
-                'location'       => $r->location ?? '—',
-                'status'         => $r->status ?? 'pending',
-                'admin_notes'    => $r->admin_notes ?? '',
-                'reported_at'    => $r->reported_at,
-                'resolved_at'    => $r->resolved_at,
-            ];
-        })->values();
-        $totalCount    = $reports->count();
-        $activeCount   = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
+        $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
+        $totalCount = $reports->count();
+        $activeCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
-        $panicCount    = $reports->where('is_panic_alert', true)->count();
+        $panicCount = $reports->where('is_panic_alert', true)->count();
+
         return view('fdemergency', compact(
             'staff',
             'reports',
@@ -107,61 +49,68 @@ class EmergencyController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'emergency_type' => 'required|string|max:255',
-            'location'       => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'tenant_id'      => 'nullable|integer|exists:tenants,tenant_id',
+            'location' => 'required|string|max:255',
+            'description' => 'nullable|string|max:5000',
+            'tenant_id' => 'nullable|integer|exists:tenants,tenant_id',
             'is_panic_alert' => 'nullable|boolean',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
-        EmergencyReport::create([
-            'tenant_id'      => $request->tenant_id,
+
+        $report = EmergencyReport::create([
+            'tenant_id' => $validated['tenant_id'] ?? null,
             'is_panic_alert' => $request->boolean('is_panic_alert'),
-            'emergency_type' => $request->emergency_type,
-            'input_type'     => 'frontdesk',
-            'description'    => $request->description,
-            'location'       => $request->location,
-            'status'         => 'pending',
-            'reported_at'    => now(),
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'input_type' => 'frontdesk',
+            'description' => $validated['description'] ?? null,
+            'location' => $validated['location'],
+            'status' => 'pending',
+            'reported_at' => now(),
         ]);
+
         NotificationHelper::sendToAll(
             type: 'emergency_new',
-            message: "Emergency reported: {$request->emergency_type} at {$request->location}.",
+            message: "Emergency reported: {$report->emergency_type} at {$report->location}.",
+            ref_id: $report->report_id,
         );
+
         return redirect()->route('frontdesk.emergency')
             ->with('success', 'Emergency report filed successfully.');
     }
 
     public function update(Request $request, $id)
     {
-        \Log::info('Method: ' . $request->method());
-        \Log::info('Input: ' . json_encode($request->all()));
-
         $report = EmergencyReport::findOrFail($id);
-        $request->validate([
-            'status'      => 'required|string',
+        $validated = $request->validate([
+            'status' => 'required|string',
             'admin_notes' => 'nullable|string',
-            'location'    => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
         ]);
+
         $resolvedAt = $report->resolved_at;
-        if ($request->status === 'resolved' && !$resolvedAt) {
+        if ($validated['status'] === 'resolved' && !$resolvedAt) {
             $resolvedAt = now();
-        } elseif ($request->status !== 'resolved') {
+        } elseif ($validated['status'] !== 'resolved') {
             $resolvedAt = null;
         }
+
         $report->update([
-            'status'      => $request->status,
-            'admin_notes' => $request->admin_notes,
-            'location'    => $request->location ?? $report->location,
+            'status' => $validated['status'],
+            'admin_notes' => $validated['admin_notes'] ?? null,
+            'location' => $validated['location'] ?? $report->location,
             'resolved_at' => $resolvedAt,
         ]);
-        if ($request->status === 'resolved') {
+
+        if ($validated['status'] === 'resolved') {
             NotificationHelper::sendToAll(
                 type: 'emergency_new',
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
         }
+
         return response()->json(['success' => true]);
     }
 
@@ -169,5 +118,43 @@ class EmergencyController extends Controller
     {
         EmergencyReport::findOrFail($id)->delete();
         return response()->json(['success' => true]);
+    }
+
+    private function mapReports($reports)
+    {
+        $tenantIds = $reports->pluck('tenant_id')->filter()->unique();
+        $tenantMap = Tenant::whereIn('tenant_id', $tenantIds)->get()->keyBy('tenant_id');
+
+        return $reports->map(function ($report) use ($tenantMap) {
+            $tenant = $tenantMap->get($report->tenant_id);
+
+            if ($tenant) {
+                $tenantName = trim($tenant->first_name . ' ' . $tenant->last_name);
+                $roomNumber = $tenant->room_number ?? '-';
+            } elseif ($report->input_type === 'frontdesk') {
+                $tenantName = 'Front Desk';
+                $roomNumber = '-';
+            } else {
+                $tenantName = '-';
+                $roomNumber = '-';
+            }
+
+            return [
+                'report_id' => $report->report_id,
+                'tenant_id' => $report->tenant_id,
+                'tenant_name' => $tenantName,
+                'room_number' => $roomNumber,
+                'is_panic_alert' => $report->is_panic_alert,
+                'emergency_type' => $report->emergency_type ?? '-',
+                'urgency_level' => $report->urgency_level ?? 'moderate',
+                'input_type' => $report->input_type ?? 'manual',
+                'description' => $report->description ?? '-',
+                'location' => $report->location ?? '-',
+                'status' => $report->status ?? 'pending',
+                'admin_notes' => $report->admin_notes ?? '',
+                'reported_at' => $report->reported_at,
+                'resolved_at' => $report->resolved_at,
+            ];
+        })->values();
     }
 }
