@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Announcement extends Model
 {
+    use SoftDeletes;
+
     protected $table      = 'announcements';
     protected $primaryKey = 'announcement_id';
     public $timestamps    = false;
@@ -18,10 +19,12 @@ class Announcement extends Model
         'status',
         'attachment',
         'posted_at',
+        'deleted_at',
     ];
 
     protected $casts = [
-        'posted_at' => 'datetime',
+        'posted_at'  => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     public function getIdAttribute()

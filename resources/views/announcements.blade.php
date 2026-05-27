@@ -36,6 +36,14 @@
         margin-top:.2rem;
     }
 
+    .header-actions{
+        display:flex;
+        align-items:center;
+        gap:.75rem;
+        flex-wrap:wrap;
+        flex-shrink:0;
+    }
+
     .btn-post{
         display:flex;
         align-items:center;
@@ -64,6 +72,35 @@
     .ann-files img{
         width:16px;
         height:16px;
+        object-fit:contain;
+    }
+
+    .btn-archive-open{
+        display:inline-flex;
+        align-items:center;
+        gap:.45rem;
+        padding:.6rem 1.2rem;
+        border-radius:12px;
+        background:var(--white);
+        color:var(--hot-pink);
+        border:1.5px solid var(--pink-100);
+        font-size:.87rem;
+        font-weight:600;
+        cursor:pointer;
+        transition:.2s;
+        white-space:nowrap;
+        font-family:var(--ff-body);
+        letter-spacing:.01em;
+    }
+
+    .btn-archive-open:hover{
+        border-color:var(--bright-pink);
+        color:var(--bright-pink);
+    }
+
+    .btn-archive-open img{
+        width:14px;
+        height:14px;
         object-fit:contain;
     }
 
@@ -664,41 +701,280 @@
         margin:0 auto .5rem;
     }
 
+    .ann-archive-drawer{
+        position:fixed;
+        top:0;right:0;bottom:0;
+        width:min(660px,100vw);
+        background:var(--soft-bg);
+        z-index:500;
+        display:flex;
+        flex-direction:column;
+        transform:translateX(100%);
+        transition:transform .38s cubic-bezier(.4,0,.2,1);
+        box-shadow:-8px 0 40px rgba(214,51,117,.15);
+    }
+
+    .ann-archive-drawer.open{transform:translateX(0);}
+
+    .ann-archive-backdrop{
+        position:fixed;inset:0;
+        background:rgba(232,23,93,.18);
+        backdrop-filter:blur(3px);
+        z-index:499;
+        opacity:0;pointer-events:none;
+        transition:opacity .38s ease;
+    }
+
+    .ann-archive-backdrop.open{opacity:1;pointer-events:auto;}
+
+    .aad-header{
+        padding:1.6rem 1.8rem 1.2rem;
+        border-bottom:1px solid var(--pink-100);
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:1rem;
+        flex-shrink:0;
+    }
+
+    .aad-title{
+        font-size:1.3rem;
+        font-weight:800;
+        color:var(--ink);
+        letter-spacing:-.02em;
+        line-height:1.2;
+    }
+
+    .aad-sub{
+        font-size:.78rem;
+        color:var(--ink-muted);
+        margin-top:.25rem;
+        font-weight:500;
+    }
+
+    .aad-close{
+        width:34px;height:34px;
+        border-radius:8px;
+        border:1px solid var(--pink-100);
+        background:var(--petal);
+        color:var(--bright-pink);
+        font-size:1rem;
+        cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        transition:background .2s,color .2s;
+        flex-shrink:0;
+    }
+
+    .aad-close:hover{background:var(--pink-100);color:var(--hot-pink);}
+
+    .aad-search-bar{
+        padding:1rem 1.8rem .8rem;
+        flex-shrink:0;
+    }
+
+    .aad-search-inner{
+        position:relative;
+        display:flex;
+        align-items:center;
+    }
+
+    .aad-search-inner input{
+        width:100%;
+        padding:.55rem .9rem .55rem 2.2rem;
+        border-radius:10px;
+        border:1px solid var(--pink-100);
+        background:var(--white);
+        color:var(--ink);
+        font-size:.83rem;
+        font-family:var(--ff-body);
+        outline:none;
+        transition:border-color .2s,background .2s;
+        box-sizing:border-box;
+    }
+
+    .aad-search-inner input::placeholder{color:var(--ink-muted);}
+    .aad-search-inner input:focus{border-color:var(--bright-pink);background:var(--blush);}
+
+    .aad-search-icon{
+        position:absolute;left:.75rem;
+        width:13px;height:13px;
+        opacity:.5;pointer-events:none;
+    }
+
+    .aad-list{
+        flex:1;
+        overflow-y:auto;
+        padding:0 1.8rem 1.8rem;
+        display:flex;
+        flex-direction:column;
+        gap:.75rem;
+    }
+
+    .aad-list::-webkit-scrollbar{width:4px;}
+    .aad-list::-webkit-scrollbar-track{background:transparent;}
+    .aad-list::-webkit-scrollbar-thumb{background:var(--pink-200);border-radius:99px;}
+
+    .aad-card{
+        background:var(--white);
+        border:1px solid var(--pink-100);
+        border-radius:14px;
+        padding:1rem 1.1rem;
+        transition:background .2s,border-color .2s;
+        animation:aadSlideIn .3s ease both;
+    }
+
+    @keyframes aadSlideIn{
+        from{opacity:0;transform:translateX(12px);}
+        to{opacity:1;transform:translateX(0);}
+    }
+
+    .aad-card:hover{background:var(--blush);border-color:var(--bright-pink);}
+
+    .aad-card-top{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:.8rem;
+        margin-bottom:.5rem;
+    }
+
+    .aad-card-id{
+        font-size:.75rem;
+        font-weight:800;
+        color:var(--bright-pink);
+        letter-spacing:.02em;
+        font-family:monospace;
+    }
+
+    .aad-card-time{
+        font-size:.7rem;
+        color:var(--ink-muted);
+        font-weight:500;
+        white-space:nowrap;
+        flex-shrink:0;
+    }
+
+    .aad-card-title{
+        font-size:.9rem;
+        font-weight:700;
+        color:var(--ink);
+        line-height:1.3;
+        margin-bottom:.2rem;
+    }
+
+    .aad-card-desc{
+        font-size:.75rem;
+        color:var(--ink-muted);
+        line-height:1.5;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+    }
+
+    .aad-card-meta{
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        margin-top:.6rem;
+        flex-wrap:wrap;
+    }
+
+    .aad-pill{
+        font-size:.68rem;
+        font-weight:700;
+        padding:.18rem .55rem;
+        border-radius:99px;
+        letter-spacing:.03em;
+        text-transform:uppercase;
+    }
+
+    .aad-pill-low     {background:#f0fdf8;color:var(--green);border:1px solid #8ce0bb;}
+    .aad-pill-moderate{background:#fff8eb;color:#c8960c;border:1px solid #f0c040;}
+    .aad-pill-high    {background:#fff0f0;color:var(--red);border:1px solid #ffd6d6;}
+    .aad-pill-active  {background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
+    .aad-pill-closed  {background:var(--blush);color:var(--ink-muted);border:1px solid var(--pink-100);}
+
+    .aad-card-deleted{
+        display:flex;
+        align-items:center;
+        gap:.4rem;
+        margin-top:.75rem;
+        padding-top:.6rem;
+        border-top:1px solid var(--pink-100);
+        font-size:.7rem;
+        color:var(--ink-muted);
+        font-weight:500;
+    }
+
+    .aad-card-deleted span{color:var(--bright-pink);font-weight:600;}
+
+    .aad-empty{
+        text-align:center;
+        padding:3rem 1rem;
+        color:var(--ink-muted);
+        font-size:.85rem;
+    }
+
+    .aad-empty-icon{
+        width:40px;height:40px;
+        margin:0 auto .75rem;
+        opacity:.3;
+        display:block;
+    }
+
+    .aad-footer{
+        padding:.9rem 1.8rem;
+        border-top:1px solid var(--pink-100);
+        background:var(--white);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-shrink:0;
+        flex-wrap:wrap;
+        gap:.5rem;
+    }
+
+    .aad-count-label{
+        font-size:.75rem;
+        color:var(--ink-muted);
+        font-weight:600;
+    }
+
+    .aad-export-btn{
+        display:inline-flex;
+        align-items:center;
+        gap:.4rem;
+        font-size:.75rem;
+        font-weight:700;
+        color:var(--bright-pink);
+        background:var(--petal);
+        border:1px solid var(--pink-100);
+        border-radius:8px;
+        padding:.35rem .85rem;
+        cursor:pointer;
+        transition:background .2s,color .2s,border-color .2s;
+        font-family:var(--ff-body);
+    }
+
+    .aad-export-btn:hover{background:var(--gradient-pink);color:var(--white);border-color:transparent;}
+    .aad-export-btn img{width:12px;height:12px;object-fit:contain;opacity:.7;}
+
     @keyframes fadeUp{
-        from{
-            opacity:0;
-            transform:translateY(15px);
-        }
-        to{
-            opacity:1;
-            transform:translateY(0);
-        }
+        from{opacity:0;transform:translateY(15px);}
+        to{opacity:1;transform:translateY(0);}
     }
 
     @keyframes spin{
-        to{
-            transform:rotate(360deg);
-        }
-    }
-
-    @keyframes counterSpin{
-        to{
-            transform:rotate(-360deg);
-        }
+        to{transform:rotate(360deg);}
     }
 
     @keyframes pulseLogo{
-        0%, 100%{
-            transform:scale(1);
-        }
-        50%{
-            transform:scale(1.06);
-        }
+        0%,100%{transform:scale(1);}
+        50%{transform:scale(1.06);}
     }
 
-    .fade-up{
-        animation:fadeUp .45s ease both;
-    }
+    .fade-up{animation:fadeUp .45s ease both;}
 
     .modal-field select{
         width:100%;
@@ -719,14 +995,8 @@
         transition:border-color .15s;
     }
 
-    .modal-field select:focus{
-        border-color:var(--hot-pink);
-        outline:none;
-    }
-
-    .modal-field select:hover{
-        border-color:var(--hot-pink);
-    }
+    .modal-field select:focus{border-color:var(--hot-pink);outline:none;}
+    .modal-field select:hover{border-color:var(--hot-pink);}
 
     .modal-grid-2{
         display:grid;
@@ -740,24 +1010,18 @@
     .d3{animation-delay:.2s;}
     .d4{animation-delay:.28s;}
 
-    @media (max-width:1100px){
-        .columns-wrapper{
-            grid-template-columns:1fr 1fr;
-        }
+    @media(max-width:1100px){
+        .columns-wrapper{grid-template-columns:1fr 1fr;}
     }
 
-    @media (max-width:700px){
-        .columns-wrapper{
-            grid-template-columns:1fr;
-        }
-
-        .page-body{
-            padding:1rem;
-        }
-
-        .modal-grid-2{
-            grid-template-columns:1fr;
-        }
+    @media(max-width:700px){
+        .columns-wrapper{grid-template-columns:1fr;}
+        .page-body{padding:1rem;}
+        .modal-grid-2{grid-template-columns:1fr;}
+        .aad-header{padding:1.2rem 1rem .9rem;}
+        .aad-list{padding:0 1rem 1.2rem;}
+        .aad-search-bar{padding:.8rem 1rem .6rem;}
+        .aad-footer{padding:.75rem 1rem;}
     }
 </style>
 @endsection
@@ -770,9 +1034,15 @@
             <h1>Announcements</h1>
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
-        <button class="btn-post" onclick="openModal('post-modal')">
-            <img src="{{ asset('icons/announce.png') }}" alt=""> Post New Announcement
-        </button>
+        <div class="header-actions">
+            <button class="btn-archive-open" onclick="openAnnArchive()">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+                Archive / History
+            </button>
+            <button class="btn-post" onclick="openModal('post-modal')">
+                <img src="{{ asset('icons/announce.png') }}" alt=""> Post New Announcement
+            </button>
+        </div>
     </div>
 
     <div class="compose-card fade-up d2">
@@ -845,8 +1115,8 @@
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
                                     </button>
                                     @if($ann->status !== 'closed')
-                                        <button class="ann-dropdown-item" onclick="submitForm('archive-{{ $ann->announcement_id }}', event)">
-                                            <img src="{{ asset('icons/archive.png') }}" alt=""> Archive
+                                        <button class="ann-dropdown-item" onclick="submitForm('close-{{ $ann->announcement_id }}', event)">
+                                            <img src="{{ asset('icons/archive.png') }}" alt=""> Close
                                         </button>
                                     @else
                                         <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
@@ -872,7 +1142,7 @@
                         </div>
                     </div>
 
-                    <form id="archive-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.archive', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+                    <form id="close-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.archive', $ann->announcement_id) }}" style="display:none;">@csrf</form>
                     <form id="restore-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.restore', $ann->announcement_id) }}" style="display:none;">@csrf</form>
 
                 @empty
@@ -905,8 +1175,8 @@
                                     <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
                                     </button>
-                                    <button class="ann-dropdown-item" onclick="submitForm('archive-{{ $ann->announcement_id }}', event)">
-                                        <img src="{{ asset('icons/archive.png') }}" alt=""> Archive
+                                    <button class="ann-dropdown-item" onclick="submitForm('close-{{ $ann->announcement_id }}', event)">
+                                        <img src="{{ asset('icons/archive.png') }}" alt=""> Close
                                     </button>
                                     <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
                                         <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
@@ -991,6 +1261,35 @@
 @endsection
 
 @section('modals')
+
+<div class="ann-archive-backdrop" id="aad-backdrop" onclick="closeAnnArchive()"></div>
+
+<div class="ann-archive-drawer" id="aad-drawer">
+    <div class="aad-header">
+        <div>
+            <div class="aad-title">Archive / History</div>
+            <div class="aad-sub">Read-only record of deleted announcements</div>
+        </div>
+        <button class="aad-close" onclick="closeAnnArchive()">&#x2715;</button>
+    </div>
+
+    <div class="aad-search-bar">
+        <div class="aad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="aad-search-icon" alt="">
+            <input type="text" id="aad-search" placeholder="Search archived announcements..." oninput="renderAnnArchive()">
+        </div>
+    </div>
+
+    <div class="aad-list" id="aad-list"></div>
+
+    <div class="aad-footer">
+        <div class="aad-count-label" id="aad-count-label">0 records</div>
+        <button class="aad-export-btn" onclick="exportAnnArchive()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
 
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
@@ -1180,14 +1479,17 @@
 
 @section('scripts')
 <script>
-    const annData = @json($announcements->keyBy('announcement_id'));
+    const annData        = @json($announcements->keyBy('announcement_id'));
+    const deletedAnnArchive = @json($deletedArchive);
     const storageBaseUrl = "{{ asset('storage') }}";
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
+
     document.querySelectorAll('form[data-loading-message]').forEach(form => {
         form.addEventListener('submit', () => {
             setFormLoading(form, form.dataset.loadingMessage || 'Processing...');
@@ -1205,95 +1507,88 @@
             e.currentTarget.classList.add('active');
         }
     }
+
     document.addEventListener('click', () => {
         document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
     });
 
     function setFilter(btn, type) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-    const now   = new Date();
-    const cards = document.querySelectorAll('.ann-card');
+        const now   = new Date();
+        const cards = document.querySelectorAll('.ann-card');
 
-    cards.forEach(card => {
-        const id       = getCardId(card);
-        const ann      = annData[id];
-        if (!ann) return;
+        cards.forEach(card => {
+            const id  = getCardId(card);
+            const ann = annData[id];
+            if (!ann) return;
 
-        const postedAt = new Date(ann.posted_at);
-        let show       = false;
+            const postedAt = new Date(ann.posted_at);
+            let show = false;
 
-        if (type === 'all') {
-            show = true;
-        } else if (type === 'week') {
-            const weekAgo = new Date(now);
-            weekAgo.setDate(now.getDate() - 7);
-            show = postedAt >= weekAgo;
-        } else if (type === 'month') {
-            show = postedAt.getMonth() === now.getMonth() &&
-                   postedAt.getFullYear() === now.getFullYear();
-        } else if (type === 'high') {
-            show = (ann.priority || '').toLowerCase() === 'high';
-        } else if (type === 'low') {
-            show = (ann.priority || '').toLowerCase() === 'low';
-        }
-
-        card.style.display = show ? '' : 'none';
-    });
-
-    // Update column counts after filtering
-    document.querySelectorAll('.kanban-col').forEach(col => {
-        const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
-        const countEl = col.querySelector('.col-count');
-        if (countEl) countEl.textContent = visible;
-
-        // Show/hide empty state
-        let emptyEl = col.querySelector('.empty-col');
-        const body  = col.querySelector('.kanban-col-body');
-        if (visible === 0) {
-            if (!emptyEl) {
-                emptyEl = document.createElement('div');
-                emptyEl.className   = 'empty-col filter-empty';
-                emptyEl.innerHTML   = '<div>No announcements match this filter.</div>';
-                body.appendChild(emptyEl);
+            if (type === 'all') {
+                show = true;
+            } else if (type === 'week') {
+                const weekAgo = new Date(now);
+                weekAgo.setDate(now.getDate() - 7);
+                show = postedAt >= weekAgo;
+            } else if (type === 'month') {
+                show = postedAt.getMonth() === now.getMonth() &&
+                       postedAt.getFullYear() === now.getFullYear();
+            } else if (type === 'high') {
+                show = (ann.priority || '').toLowerCase() === 'high';
+            } else if (type === 'low') {
+                show = (ann.priority || '').toLowerCase() === 'low';
             }
-            emptyEl.style.display = '';
-        } else if (emptyEl) {
-            emptyEl.style.display = 'none';
-        }
-    });
-        }
 
-        function getCardId(card) {
-        // Extract ID from the onclick attribute
+            card.style.display = show ? '' : 'none';
+        });
+
+        document.querySelectorAll('.kanban-col').forEach(col => {
+            const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
+            const countEl = col.querySelector('.col-count');
+            if (countEl) countEl.textContent = visible;
+
+            let emptyEl = col.querySelector('.empty-col');
+            const body  = col.querySelector('.kanban-col-body');
+            if (visible === 0) {
+                if (!emptyEl) {
+                    emptyEl = document.createElement('div');
+                    emptyEl.className = 'empty-col filter-empty';
+                    emptyEl.innerHTML = '<div>No announcements match this filter.</div>';
+                    body.appendChild(emptyEl);
+                }
+                emptyEl.style.display = '';
+            } else if (emptyEl) {
+                emptyEl.style.display = 'none';
+            }
+        });
+    }
+
+    function getCardId(card) {
         const match = card.getAttribute('onclick')?.match(/openViewModal\((\d+)\)/);
         return match ? match[1] : null;
-        }
+    }
 
     function submitForm(formId, e) {
         e.stopPropagation();
-        const form = document.getElementById(formId);
-        const isRestore = formId.startsWith('restore-');
         showActionLoading('Please wait...');
-        form.submit();
+        document.getElementById(formId).submit();
     }
 
     function setFormLoading(form, message) {
         const submitButton = form.querySelector('button[type="submit"]');
         if (submitButton) {
-            submitButton.dataset.originalText = submitButton.textContent.trim();
-            submitButton.textContent = loadingButtonText(message);
+            submitButton.textContent = 'Please wait...';
             submitButton.disabled = true;
             submitButton.classList.add('is-loading');
         }
-
         form.querySelectorAll('button:not([type="submit"])').forEach(button => {
             button.disabled = true;
             button.classList.add('is-loading');
         });
-
         showActionLoading(message);
     }
 
@@ -1302,10 +1597,6 @@
         document.getElementById('action-loading-text').textContent = message;
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
-    }
-
-    function loadingButtonText(message) {
-        return 'Please wait...';
     }
 
     function openViewModal(id) {
@@ -1331,7 +1622,7 @@
         const ann = annData[id];
         if (!ann) return;
         document.getElementById('edit-form').reset();
-        document.getElementById('edit-form').action  = `/announcements/${id}`;
+        document.getElementById('edit-form').action   = `/announcements/${id}`;
         document.getElementById('edit-title').value   = ann.title;
         document.getElementById('edit-content').value = ann.content;
         document.getElementById('edit-priority').value = ann.priority || 'low';
@@ -1352,17 +1643,17 @@
     }
 
     function fillInlineEditForm(ann, id) {
-        document.getElementById('view-edit-form').action = `/announcements/${id}`;
-        document.getElementById('view-edit-title').value = ann.title || '';
-        document.getElementById('view-edit-content').value = ann.content || '';
-        document.getElementById('view-edit-priority').value = ann.priority || 'low';
-        document.getElementById('view-edit-status').value = ann.status || 'active';
+        document.getElementById('view-edit-form').action       = `/announcements/${id}`;
+        document.getElementById('view-edit-title').value       = ann.title   || '';
+        document.getElementById('view-edit-content').value     = ann.content || '';
+        document.getElementById('view-edit-priority').value    = ann.priority || 'low';
+        document.getElementById('view-edit-status').value      = ann.status   || 'active';
         document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
     }
 
     function showInlineEdit() {
         document.getElementById('view-edit-form').classList.add('open');
-        document.getElementById('view-edit-btn').style.display = 'none';
+        document.getElementById('view-edit-btn').style.display  = 'none';
         document.getElementById('view-close-btn').style.display = 'none';
     }
 
@@ -1371,7 +1662,7 @@
         if (!form) return;
         form.classList.remove('open');
         form.reset();
-        document.getElementById('view-edit-btn').style.display = '';
+        document.getElementById('view-edit-btn').style.display  = '';
         document.getElementById('view-close-btn').style.display = '';
     }
 
@@ -1382,7 +1673,9 @@
 
     function filesNote(attachment) {
         const total = getAttachments(attachment).length;
-        return total ? `${total} existing file(s). Upload new files to add more, or tick replace to change them.` : 'No image or file attached yet.';
+        return total
+            ? `${total} existing file(s). Upload new files to add more, or tick replace to change them.`
+            : 'No image or file attached yet.';
     }
 
     function renderAttachments(attachment) {
@@ -1390,7 +1683,7 @@
         if (!files.length) return '<div class="current-files-note">No image or file attached.</div>';
 
         return `<div class="attachment-grid">${files.map(path => {
-            const url = `${storageBaseUrl}/${encodeURI(path)}`;
+            const url  = `${storageBaseUrl}/${encodeURI(path)}`;
             const name = path.split('/').pop();
             if (isImage(path)) {
                 return `<div class="attachment-card"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(name)}"></a></div>`;
@@ -1417,6 +1710,95 @@
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    function fmtDate(d) {
+        if (!d) return '—';
+        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function fmtDatePlain(d) {
+        if (!d) return '—';
+        const dt   = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date} ${time}`;
+    }
+
+    function openAnnArchive() {
+        document.getElementById('aad-drawer').classList.add('open');
+        document.getElementById('aad-backdrop').classList.add('open');
+        document.getElementById('aad-search').value = '';
+        renderAnnArchive();
+    }
+
+    function closeAnnArchive() {
+        document.getElementById('aad-drawer').classList.remove('open');
+        document.getElementById('aad-backdrop').classList.remove('open');
+    }
+
+    function renderAnnArchive() {
+        const q = document.getElementById('aad-search').value.toLowerCase();
+
+        const data = deletedAnnArchive.filter(r =>
+            (r.title   || '').toLowerCase().includes(q) ||
+            (r.content || '').toLowerCase().includes(q) ||
+            (r.priority|| '').toLowerCase().includes(q) ||
+            (r.status  || '').toLowerCase().includes(q)
+        );
+
+        const list = document.getElementById('aad-list');
+        document.getElementById('aad-count-label').textContent =
+            `${data.length} record${data.length !== 1 ? 's' : ''}`;
+
+        if (data.length === 0) {
+            list.innerHTML = `<div class="aad-empty">
+                <img class="aad-empty-icon" src="{{ asset('icons/announce.png') }}" alt="">
+                No archived announcements found.
+            </div>`;
+            return;
+        }
+
+        list.innerHTML = data.map((r, i) => `
+            <div class="aad-card" style="animation-delay:${i * 0.04}s;">
+                <div class="aad-card-top">
+                    <div class="aad-card-id">#${r.announcement_id}</div>
+                    <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : '—'}</div>
+                </div>
+                <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
+                <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
+                <div class="aad-card-meta">
+                    <span class="aad-pill aad-pill-${(r.priority || 'low').toLowerCase()}">${ucFirst(r.priority || 'low')}</span>
+                    <span class="aad-pill aad-pill-${(r.status || 'active').toLowerCase()}">${ucFirst(r.status || 'active')}</span>
+                    ${r.attachment
+                        ? `<span class="aad-pill aad-pill-closed">${r.attachment.split(',').length} file(s)</span>`
+                        : ''}
+                </div>
+                <div class="aad-card-deleted">
+                    Deleted on: <span>${fmtDatePlain(r.deleted_at)}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function exportAnnArchive() {
+        const rows = [['ID', 'Title', 'Content', 'Priority', 'Status', 'Posted At', 'Deleted On']];
+        deletedAnnArchive.forEach(r => {
+            rows.push([
+                r.announcement_id,
+                r.title        || '',
+                r.content      || '',
+                r.priority     || '',
+                r.status       || '',
+                r.posted_at    || '',
+                r.deleted_at   || '',
+            ]);
+        });
+        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const a   = document.createElement('a');
+        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        a.download = 'announcements_deleted_archive.csv';
+        a.click();
     }
 
     @if(session('success'))
