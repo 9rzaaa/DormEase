@@ -263,6 +263,9 @@
     .badge-ongoing  { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
     .badge-resolved { background: #e8faf5; color: #1a9d6e; border: 1px solid #8cdebb; }
     .badge-panic    { background: var(--bright-pink); color: var(--white); border: none; }
+    .badge-critical { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .badge-urgent   { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .badge-moderate { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
 
     .source-tag {
         display: inline-flex;
@@ -575,6 +578,7 @@
                 <thead>
                     <tr>
                         <th>Type</th>
+                        <th>Urgency</th>
                         <th>Location</th>
                         <th>Date</th>
                         <th>Description</th>
@@ -676,6 +680,13 @@
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+    function urgencyBadge(u) {
+        const level = (u ?? 'moderate').toLowerCase();
+        const label = level.charAt(0).toUpperCase() + level.slice(1);
+        const cls = { critical: 'badge-critical', urgent: 'badge-urgent', moderate: 'badge-moderate' }[level] ?? 'badge-moderate';
+        return `<span class="badge ${cls}">${label}</span>`;
+    }
+
     function statusBadge(s) {
         const map = {
             pending:  '<span class="badge badge-pending">Pending</span>',
@@ -717,7 +728,7 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No emergency reports found.</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -728,6 +739,7 @@
                             ${r.is_panic_alert ? '<span class="badge badge-panic" style="font-size:.65rem;padding:.15rem .5rem;">PANIC</span>' : ''}
                         </div>
                     </td>
+                    <td>${urgencyBadge(r.urgency_level)}</td>
                     <td style="font-size:.83rem;">${escHtml(r.location)}</td>
                     <td style="font-size:.82rem;white-space:nowrap;">${fmtDateShort(r.reported_at)}</td>
                     <td style="font-size:.82rem;color:var(--ink-muted);max-width:160px;">${truncate(r.description, 45)}</td>
@@ -814,6 +826,10 @@
             <div class="view-detail-row">
                 <div class="view-detail-label">Emergency Type</div>
                 <div class="view-detail-val">${escHtml(r.emergency_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Urgency Level</div>
+                <div class="view-detail-val">${urgencyBadge(r.urgency_level)}</div>
             </div>
             <div class="view-detail-row">
                 <div class="view-detail-label">Location</div>

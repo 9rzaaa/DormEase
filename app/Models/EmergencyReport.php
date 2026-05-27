@@ -11,7 +11,7 @@ class EmergencyReport extends Model
 
     protected $fillable = [
         'tenant_id', 'is_panic_alert', 'emergency_type', 'input_type',
-        'description', 'location', 'status',
+        'description', 'location', 'status', 'urgency_level',
         'admin_notes', 'reported_at', 'resolved_at',
     ];
 
