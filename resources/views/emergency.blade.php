@@ -194,6 +194,32 @@
         background-color: var(--white);
     }
 
+    .date-filter {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .35rem .65rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--pink-50);
+    }
+
+    .date-filter input {
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--ink);
+        font-size: .81rem;
+        font-weight: 600;
+        font-family: var(--ff-body);
+    }
+
+    .date-filter span {
+        color: var(--ink-muted);
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
     .table-wrap { overflow-x: auto; }
 
     table {
@@ -577,17 +603,22 @@
                 </select>
                 <select class="filter-select" id="type-filter" onchange="applyFilters()">
                     <option value="">All Types</option>
-                    <option value="Medical">Medical</option>
-                    <option value="Fire">Fire</option>
-                    <option value="Lockout">Lockout</option>
-                    <option value="Security">Security</option>
-                    <option value="Structural">Structural</option>
-                    <option value="Other">Other</option>
+                </select>
+                <select class="filter-select" id="urgency-filter" onchange="applyFilters()">
+                    <option value="">All Urgency</option>
+                    <option value="critical">Critical</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="moderate">Moderate</option>
                 </select>
                 <select class="filter-select" id="sort-select" onchange="applyFilters()">
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
                 </select>
+                <div class="date-filter">
+                    <input type="date" id="date-from" onchange="applyFilters()">
+                    <span>to</span>
+                    <input type="date" id="date-to" onchange="applyFilters()">
+                </div>
             </div>
         </div>
 
@@ -598,7 +629,7 @@
                         <th>Type</th>
                         <th>Urgency</th>
                         <th>Location</th>
-                        <th>Date</th>
+                        <th>Date &amp; Time</th>
                         <th>Description</th>
                         <th>Staff / Tenant</th>
                         <th>Status</th>
@@ -697,6 +728,20 @@
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+    const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
+
+    function populateTypeFilter() {
+        const select = document.getElementById('type-filter');
+        const types = [...new Set(
+            reports
+                .map(r => String(r.emergency_type ?? '').trim())
+                .filter(type => type && type !== 'â€”')
+        )].sort((a, b) => a.localeCompare(b));
+
+        select.innerHTML = '<option value="">All Types</option>' +
+            types.map(type => `<option value="${escHtml(type)}">${escHtml(type)}</option>`).join('');
+    }
+
     function urgencyBadge(u) {
         const level = (u ?? 'moderate').toLowerCase();
         const label = level.charAt(0).toUpperCase() + level.slice(1);
@@ -721,7 +766,10 @@
 
     function fmtDateShort(d) {
         if (!d) return '—';
-        return new Date(d).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' });
+        const dt = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date}<br><span style="font-size:.75rem;color:var(--ink-muted);font-weight:400;">${time}</span>`;
     }
 
     function truncate(str, n) {
@@ -808,24 +856,47 @@
     }
 
     function applyFilters() {
-        const q      = document.getElementById('search-input').value.toLowerCase();
-        const status = document.getElementById('status-filter').value;
-        const type   = document.getElementById('type-filter').value;
-        const sort   = document.getElementById('sort-select').value;
+        const q       = normalizeFilterValue(document.getElementById('search-input').value);
+        const status  = normalizeFilterValue(document.getElementById('status-filter').value);
+        const type    = normalizeFilterValue(document.getElementById('type-filter').value);
+        const urgency = normalizeFilterValue(document.getElementById('urgency-filter').value);
+        const sort    = document.getElementById('sort-select').value;
+        const from    = document.getElementById('date-from').value;
+        const to      = document.getElementById('date-to').value;
 
         filtered = reports.filter(r => {
             const matchSearch =
-                (r.emergency_type ?? '').toLowerCase().includes(q) ||
-                (r.location       ?? '').toLowerCase().includes(q) ||
-                (r.tenant_name    ?? '').toLowerCase().includes(q) ||
-                (r.description    ?? '').toLowerCase().includes(q);
-            const matchStatus = !status || r.status === status;
-            const matchType   = !type   || r.emergency_type === type;
-            return matchSearch && matchStatus && matchType;
+                normalizeFilterValue(r.emergency_type).includes(q) ||
+                normalizeFilterValue(r.urgency_level).includes(q) ||
+                normalizeFilterValue(r.location).includes(q) ||
+                normalizeFilterValue(r.tenant_name).includes(q) ||
+                normalizeFilterValue(r.room_number).includes(q) ||
+                normalizeFilterValue(r.description).includes(q) ||
+                normalizeFilterValue(r.status).includes(q);
+
+            const matchStatus  = !status || normalizeFilterValue(r.status) === status;
+            const matchType    = !type || normalizeFilterValue(r.emergency_type) === type;
+            const matchUrgency = !urgency || normalizeFilterValue(r.urgency_level) === urgency;
+
+            let matchDate = true;
+            if (from || to) {
+                const reportedAt = r.reported_at ? new Date(r.reported_at) : null;
+                if (!reportedAt || Number.isNaN(reportedAt.getTime())) {
+                    matchDate = false;
+                } else {
+                    if (from && reportedAt < new Date(from + 'T00:00:00')) matchDate = false;
+                    if (to && reportedAt > new Date(to + 'T23:59:59')) matchDate = false;
+                }
+            }
+
+            return matchSearch && matchStatus && matchType && matchUrgency && matchDate;
         });
 
-        if (sort === 'newest') filtered.sort((a, b) => new Date(b.reported_at) - new Date(a.reported_at));
-        if (sort === 'oldest') filtered.sort((a, b) => new Date(a.reported_at) - new Date(b.reported_at));
+        filtered.sort((a, b) => {
+            const dateA = a.reported_at ? new Date(a.reported_at).getTime() : 0;
+            const dateB = b.reported_at ? new Date(b.reported_at).getTime() : 0;
+            return sort === 'oldest' ? dateA - dateB : dateB - dateA;
+        });
 
         currentPage = 1;
         renderTable();
@@ -974,6 +1045,7 @@
         );
     @endif
 
+    populateTypeFilter();
     applyFilters();
 </script>
 @endsection
