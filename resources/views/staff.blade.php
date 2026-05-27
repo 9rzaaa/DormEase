@@ -220,8 +220,8 @@
     .reset-staff-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--baby-pink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--hot-pink); flex-shrink: 0; border: 2px solid var(--baby-pink); }
     .reset-staff-name { font-size: .9rem; font-weight: 600; color: var(--ink); }
     .reset-staff-meta { font-size: .78rem; color: var(--ink-muted); }
-    .reset-warning-box { background: var(--peach); border: 1px solid var(--badge-leave-border); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
-    .reset-warning-box p { font-size: .82rem; color: var(--badge-leave-text); margin: 0; line-height: 1.55; }
+    .reset-warning-box { background: var(--petal) ; border: 1px solid var(--bright-pink); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
+    .reset-warning-box p { font-size: .82rem; color: var(--bright-pink); margin: 0; line-height: 1.55; }
 
     .shift-dot { display: inline-flex; align-items: center; gap: .4rem; }
     .shift-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -787,7 +787,7 @@
                 <div class="modal" style="max-width:420px;">
                     <div class="modal-header">
                         <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:38px;height:38px;border-radius:10px;background:var(--peach);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <div style="width:38px;height:38px;border-radius:10px;background:var(--petal);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                                 <img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">
                             </div>
                             <div>
@@ -813,7 +813,7 @@
 
                     <div class="modal-actions">
                         <button class="btn-cancel" onclick="closeModal('reset-confirm-modal')">Cancel</button>
-                        <button class="btn-submit" style="background:var(--salmon);" onclick="confirmReset(${s.staff_id})">Reset password</button>
+                        <button class="btn-submit" style="background:var(--bright-pink);" onclick="confirmReset(${s.staff_id})">Reset password</button>
                     </div>
                 </div>
             </div>

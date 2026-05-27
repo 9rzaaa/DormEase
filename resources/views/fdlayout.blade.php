@@ -527,6 +527,82 @@
     </div>
 </div>
 
+@if(session('prompt_temp_password'))
+<div class="modal-overlay open" id="temp-pw-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:38px;height:38px;border-radius:10px;background:var(--pink-card);border:1.5px solid var(--pink-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img src="{{ asset('icons/nav-settings.png') }}" style="width:18px;height:18px;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
+                </div>
+                <div>
+                    <div class="modal-title">Change Your Password</div>
+                    <div style="font-size:.75rem;color:var(--ink-muted);margin-top:.1rem;">You are using a temporary password</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:var(--pink-card);border:1.5px solid var(--pink-light);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.83rem;color:var(--hot-pink);line-height:1.55;">
+            For your account security, please set a new personal password. You can change it later but will be reminded on your next login.
+        </div>
+
+        <form method="POST" action="{{ route('fdprofile.updatePassword') }}" id="temp-pw-form">
+            @csrf
+            @method('PUT')
+
+            <div class="modal-field">
+                <label>Current (Temporary) Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="current_password" id="tmp-cur-pw"
+                        placeholder="Enter temporary password" required autocomplete="current-password"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-cur-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label>New Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="password" id="tmp-new-pw"
+                        placeholder="Min. 8 characters" required autocomplete="new-password"
+                        oninput="checkTmpStrength(this.value)"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-new-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+                <div style="height:3px;border-radius:2px;background:var(--pink-100);overflow:hidden;margin-top:.5rem;">
+                    <div id="tmp-strength-fill" style="height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;"></div>
+                </div>
+                <div id="tmp-strength-label" style="font-size:.67rem;color:var(--ink-muted);margin-top:.2rem;"></div>
+            </div>
+
+            <div class="modal-field">
+                <label>Confirm New Password</label>
+                <div style="position:relative;">
+                    <input type="password" name="password_confirmation" id="tmp-conf-pw"
+                        placeholder="Repeat new password" required autocomplete="new-password"
+                        style="padding-right:2.5rem;">
+                    <button type="button" onclick="toggleTmpPw('tmp-conf-pw', this)"
+                        style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0;">
+                        <img src="{{ asset('icons/eye.png') }}" style="width:15px;height:15px;opacity:.35;transition:opacity .2s;" alt="">
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeTempPwModal()">Change Later</button>
+                <button type="submit" class="btn-submit">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
 @yield('modals')
 
 <div class="toast" id="toast"></div>
@@ -560,6 +636,53 @@ document.addEventListener('click', e => {
 document.querySelectorAll('.dropdown-item[href]').forEach(el => {
     el.addEventListener('click', () => closeAvatarDropdown());
 });
+
+function closeTempPwModal() {
+    const m = document.getElementById('temp-pw-modal');
+    if (m) m.classList.remove('open');
+}
+
+function toggleTmpPw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    inp.type = inp.type === 'text' ? 'password' : 'text';
+    btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
+}
+
+function checkTmpStrength(val) {
+    const fill  = document.getElementById('tmp-strength-fill');
+    const label = document.getElementById('tmp-strength-label');
+    if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+    let score = 0;
+    if (val.length >= 8)          score++;
+    if (/[A-Z]/.test(val))        score++;
+    if (/[0-9]/.test(val))        score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const levels = [
+        { w: '20%',  color: '#DF0404', text: 'Weak' },
+        { w: '50%',  color: '#f59e0b', text: 'Fair' },
+        { w: '75%',  color: '#29BD9B', text: 'Good' },
+        { w: '100%', color: '#16a34a', text: 'Strong' },
+    ];
+    const lvl = levels[score - 1] ?? levels[0];
+    fill.style.width      = lvl.w;
+    fill.style.background = lvl.color;
+    label.textContent     = lvl.text;
+    label.style.color     = lvl.color;
+}
+
+@if(session('error') && session('prompt_temp_password'))
+    document.addEventListener('DOMContentLoaded', () => {
+        showToast('{{ session("error") }}', 'error');
+        const m = document.getElementById('temp-pw-modal');
+        if (m) m.classList.add('open');
+    });
+@endif
+
+@if(session('success'))
+    document.addEventListener('DOMContentLoaded', () => {
+        showToast('{{ session("success") }}', 'success');
+    });
+@endif
 </script>
 
 @yield('scripts')
