@@ -63,7 +63,6 @@ class EmergencyController extends Controller
             'is_panic_alert' => $request->boolean('is_panic_alert'),
             'emergency_type' => $validated['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? null,
-            'input_type' => 'frontdesk',
             'description' => $validated['description'] ?? null,
             'location' => $validated['location'],
             'status' => 'pending',
@@ -131,7 +130,7 @@ class EmergencyController extends Controller
             if ($tenant) {
                 $tenantName = trim($tenant->first_name . ' ' . $tenant->last_name);
                 $roomNumber = $tenant->room_number ?? '-';
-            } elseif ($report->input_type === 'frontdesk') {
+            } elseif (!$report->tenant_id) {
                 $tenantName = 'Front Desk';
                 $roomNumber = '-';
             } else {
@@ -147,7 +146,6 @@ class EmergencyController extends Controller
                 'is_panic_alert' => $report->is_panic_alert,
                 'emergency_type' => $report->emergency_type ?? '-',
                 'urgency_level' => $report->urgency_level ?? 'moderate',
-                'input_type' => $report->input_type ?? 'manual',
                 'description' => $report->description ?? '-',
                 'location' => $report->location ?? '-',
                 'status' => $report->status ?? 'pending',
