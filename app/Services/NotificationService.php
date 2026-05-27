@@ -9,13 +9,14 @@ class NotificationService
 {
     public static function send(string $type, string $message, string $url = null): void
     {
-        $staff = Staff::where('is_active', true)->get();
+        $staff = Staff::where('is_active', true)
+            ->whereIn('role', ['admin', 'frontdesk'])
+            ->get();
 
         foreach ($staff as $member) {
             if (!self::wantsNotification($member, $type)) {
                 continue;
             }
-
             Notification::create([
                 'staff_id' => $member->staff_id,
                 'type'     => $type,
@@ -39,13 +40,7 @@ class NotificationService
     {
         $prefs = $member->notification_preferences;
 
-        if (empty($prefs)) {
-            return true;
-        }
-
-        $map = is_array($prefs) ? $prefs : json_decode($prefs, true);
-
-        $defaults = [
+        $adminDefaults = [
             'maintenance_new'  => true,
             'emergency_new'    => true,
             'visitor_checkin'  => false,
@@ -55,6 +50,20 @@ class NotificationService
             'announcement_new' => false,
         ];
 
+        $frontdeskDefaults = [
+            'emergency_new'    => true,
+            'visitor_checkin'  => true,
+            'visitor_checkout' => true,
+            'announcement_new' => true,
+        ];
+
+        $defaults = $member->role === 'frontdesk' ? $frontdeskDefaults : $adminDefaults;
+
+        if (empty($prefs)) {
+            return $defaults[$type] ?? false;
+        }
+
+        $map    = is_array($prefs) ? $prefs : json_decode($prefs, true);
         $merged = array_merge($defaults, $map ?? []);
 
         return !empty($merged[$type]);
