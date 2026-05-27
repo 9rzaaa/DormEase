@@ -633,6 +633,268 @@ table td {
         height: 28px;
     }
 }
+
+.tenant-archive-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(660px, 100vw);
+    background: var(--soft-bg);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .38s cubic-bezier(.4,0,.2,1);
+    box-shadow: -8px 0 40px rgba(214,51,117,.15);
+}
+
+.tenant-archive-drawer.open { transform: translateX(0); }
+
+.tenant-archive-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(232,23,93,.18);
+    backdrop-filter: blur(3px);
+    z-index: 499;
+    opacity: 0; pointer-events: none;
+    transition: opacity .38s ease;
+}
+
+.tenant-archive-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.tad-header {
+    padding: 1.6rem 1.8rem 1.2rem;
+    border-bottom: 1px solid var(--pink-100);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.tad-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -.02em;
+    line-height: 1.2;
+}
+
+.tad-sub {
+    font-size: .78rem;
+    color: var(--ink-muted);
+    margin-top: .25rem;
+    font-weight: 500;
+}
+
+.tad-close {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--pink-100);
+    background: var(--petal);
+    color: var(--bright-pink);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s;
+    flex-shrink: 0;
+}
+
+.tad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
+
+.tad-search-bar {
+    padding: 1rem 1.8rem .8rem;
+    flex-shrink: 0;
+}
+
+.tad-search-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.tad-search-inner input {
+    width: 100%;
+    padding: .55rem .9rem .55rem 2.2rem;
+    border-radius: 10px;
+    border: 1px solid var(--pink-100);
+    background: var(--white);
+    color: var(--ink);
+    font-size: .83rem;
+    font-family: var(--ff-body);
+    outline: none;
+    transition: border-color .2s, background .2s;
+    box-sizing: border-box;
+}
+
+.tad-search-inner input::placeholder { color: var(--ink-muted); }
+.tad-search-inner input:focus { border-color: var(--bright-pink); background: var(--blush); }
+
+.tad-search-icon {
+    position: absolute; left: .75rem;
+    width: 13px; height: 13px;
+    opacity: .5; pointer-events: none;
+}
+
+.tad-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1.8rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.tad-list::-webkit-scrollbar { width: 4px; }
+.tad-list::-webkit-scrollbar-track { background: transparent; }
+.tad-list::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+.tad-card {
+    background: var(--white);
+    border: 1px solid var(--pink-100);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    transition: background .2s, border-color .2s;
+    animation: tadSlideIn .3s ease both;
+}
+
+@keyframes tadSlideIn {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.tad-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+
+.tad-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .8rem;
+    margin-bottom: .5rem;
+}
+
+.tad-card-id {
+    font-size: .75rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    letter-spacing: .02em;
+    font-family: monospace;
+}
+
+.tad-card-time {
+    font-size: .7rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tad-card-name {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+}
+
+.tad-card-email {
+    font-size: .73rem;
+    color: var(--ink-muted);
+    margin-top: .1rem;
+}
+
+.tad-card-meta {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin-top: .6rem;
+    flex-wrap: wrap;
+}
+
+.tad-pill {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .18rem .55rem;
+    border-radius: 99px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.tad-pill-room    { background: var(--petal);   color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-stay    { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-active  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.tad-pill-moveout { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-inactive{ background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+
+.tad-card-archived {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .75rem;
+    padding-top: .6rem;
+    border-top: 1px solid var(--pink-100);
+    font-size: .7rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+.tad-card-archived span { color: var(--bright-pink); font-weight: 600; }
+
+.tad-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--ink-muted);
+    font-size: .85rem;
+}
+
+.tad-empty-icon {
+    width: 40px; height: 40px;
+    margin: 0 auto .75rem;
+    opacity: .3;
+    display: block;
+}
+
+.tad-footer {
+    padding: .9rem 1.8rem;
+    border-top: 1px solid var(--pink-100);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.tad-count-label {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 600;
+}
+
+.tad-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--bright-pink);
+    background: var(--petal);
+    border: 1px solid var(--pink-100);
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s;
+    font-family: var(--ff-body);
+}
+
+.tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
+.tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
+
+@media (max-width: 700px) {
+    .tad-header { padding: 1.2rem 1rem .9rem; }
+    .tad-list { padding: 0 1rem 1.2rem; }
+    .tad-search-bar { padding: .8rem 1rem .6rem; }
+    .tad-footer { padding: .75rem 1rem; }
+}
 </style>
 @endsection
 
@@ -645,13 +907,17 @@ table td {
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <div class="header-actions">
-            <button class="btn-primary" onclick="openModal('add-modal')">＋ Add Tenant</button>
+            <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
+            <button class="btn-outline" onclick="openTenantArchive()">
+                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
+                Archive / History
+            </button>
             <button class="btn-outline" onclick="exportTenants()">
                 <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
                 Export
             </button>
         </div>
-    </div>
+    </div> 
 
     <div class="stats-row fade-up d2">
         <div class="stat-box">
@@ -740,6 +1006,35 @@ table td {
 @endsection
 
 @section('modals')
+
+<div class="tenant-archive-backdrop" id="tad-backdrop" onclick="closeTenantArchive()"></div>
+
+<div class="tenant-archive-drawer" id="tad-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Archive / History</div>
+            <div class="tad-sub">Read-only record of deleted tenant accounts</div>
+        </div>
+        <button class="tad-close" onclick="closeTenantArchive()">&#x2715;</button>
+    </div>
+
+    <div class="tad-search-bar">
+        <div class="tad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="tad-search" placeholder="Search archived tenants..." oninput="renderTenantArchive()">
+        </div>
+    </div>
+
+    <div class="tad-list" id="tad-list"></div>
+
+    <div class="tad-footer">
+        <div class="tad-count-label" id="tad-count-label">0 records</div>
+        <button class="tad-export-btn" onclick="exportTenantArchive()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
 
 @if(session('new_account_id'))
 <div class="modal-overlay open" id="credentials-modal">
@@ -1264,5 +1559,109 @@ table td {
 
     filtered = [...tenants];
     renderTable();
+
+    const deletedTenantArchive = @json($deletedArchive);
+
+    function fmtDatePlain(d) {
+        if (!d) return '—';
+        const dt   = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date} ${time}`;
+    }
+
+    function openTenantArchive() {
+        document.getElementById('tad-drawer').classList.add('open');
+        document.getElementById('tad-backdrop').classList.add('open');
+        document.getElementById('tad-search').value = '';
+        renderTenantArchive();
+    }
+
+    function closeTenantArchive() {
+        document.getElementById('tad-drawer').classList.remove('open');
+        document.getElementById('tad-backdrop').classList.remove('open');
+    }
+
+    function statusPillClass(status) {
+        const map = {
+            active:   'tad-pill-active',
+            pending:  'tad-pill-pending',
+            move_out: 'tad-pill-moveout',
+            inactive: 'tad-pill-inactive',
+        };
+        return map[status] ?? 'tad-pill-inactive';
+    }
+
+    function renderTenantArchive() {
+        const q = document.getElementById('tad-search').value.toLowerCase();
+
+        const data = deletedTenantArchive.filter(r =>
+            (r.account_id    ?? '').toLowerCase().includes(q) ||
+            (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
+            (r.email         ?? '').toLowerCase().includes(q) ||
+            (r.room_number   ?? '').toLowerCase().includes(q) ||
+            (r.stay_type     ?? '').toLowerCase().includes(q)
+        );
+
+        const list = document.getElementById('tad-list');
+        document.getElementById('tad-count-label').textContent =
+            `${data.length} record${data.length !== 1 ? 's' : ''}`;
+
+        if (data.length === 0) {
+            list.innerHTML = `<div class="tad-empty">
+                <img class="tad-empty-icon" src="{{ asset('icons/tenants.png') }}" alt="">
+                No archived tenants found.
+            </div>`;
+            return;
+        }
+
+        list.innerHTML = data.map((r, i) => `
+            <div class="tad-card" style="animation-delay:${i * 0.04}s;">
+                <div class="tad-card-top">
+                    <div class="tad-card-id">${r.account_id ?? '—'}</div>
+                    <div class="tad-card-time">${r.move_in_date ? fmtDate(r.move_in_date) : '—'}</div>
+                </div>
+                <div class="tad-card-name">${r.first_name} ${r.last_name}</div>
+                <div class="tad-card-email">${r.email ?? '—'}</div>
+                <div class="tad-card-meta">
+                    ${r.floor && r.room_number
+                        ? `<span class="tad-pill tad-pill-room">${r.floor}-${r.room_number}</span>`
+                        : (r.room_number ? `<span class="tad-pill tad-pill-room">${r.room_number}</span>` : '')}
+                    ${r.stay_type
+                        ? `<span class="tad-pill tad-pill-stay">${r.stay_type}</span>`
+                        : ''}
+                    <span class="tad-pill ${statusPillClass(r.status)}">${r.status ?? '—'}</span>
+                </div>
+                <div class="tad-card-archived">
+                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function exportTenantArchive() {
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', 'Deleted On']];
+        deletedTenantArchive.forEach(r => {
+            rows.push([
+                r.account_id     ?? '',
+                r.first_name,
+                r.last_name,
+                r.email          ?? '',
+                r.contact_number ?? '',
+                r.floor          ?? '',
+                r.room_number    ?? '',
+                r.stay_type      ?? '',
+                r.move_in_date   ?? '',
+                r.move_out_date  ?? '',
+                r.status         ?? '',
+                r.archived_at    ?? '',
+            ]);
+        });
+        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const a   = document.createElement('a');
+        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        a.download = 'tenants_deleted_archive.csv';
+        a.click();
+    }
 </script>
 @endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tenant;
+use App\Models\ArchivedTenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -14,11 +15,57 @@ class TenantController extends Controller
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
 
+        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
         return view('tenants', [
-            'tenants'      => $tenants,
-            'totalTenants' => $tenants->count(),
-            'activeCount'  => $tenants->where('status', 'active')->count(),
-            'pendingCount' => $tenants->where('status', 'pending')->count(),
+            'tenants'        => $tenants,
+            'totalTenants'   => $tenants->count(),
+            'activeCount'    => $tenants->where('status', 'active')->count(),
+            'pendingCount'   => $tenants->where('status', 'pending')->count(),
+            'deletedArchive' => $deletedArchive,
+        ]);
+    }
+
+    private function formatArchive(ArchivedTenant $r): array
+    {
+        return [
+            'id'             => $r->original_id,
+            'archive_id'     => $r->id,
+            'account_id'     => $r->account_id,
+            'first_name'     => $r->first_name,
+            'last_name'      => $r->last_name,
+            'email'          => $r->email,
+            'contact_number' => $r->contact_number,
+            'room_number'    => $r->room_number,
+            'floor'          => $r->floor,
+            'stay_type'      => $r->stay_type,
+            'move_in_date'   => $r->move_in_date?->format('Y-m-d'),
+            'move_out_date'  => $r->move_out_date?->format('Y-m-d'),
+            'status'         => $r->status,
+            'archived_at'    => $r->archived_at?->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    private function archiveTenant(Tenant $t, string $type): void
+    {
+        ArchivedTenant::create([
+            'original_id'    => $t->tenant_id,
+            'archive_type'   => $type,
+            'account_id'     => $t->account_id,
+            'first_name'     => $t->first_name,
+            'last_name'      => $t->last_name,
+            'email'          => $t->email,
+            'contact_number' => $t->contact_number,
+            'room_number'    => $t->room_number,
+            'floor'          => $t->floor,
+            'stay_type'      => $t->stay_type,
+            'move_in_date'   => $t->move_in_date,
+            'move_out_date'  => $t->move_out_date,
+            'status'         => $t->status,
+            'archived_at'    => now(),
         ]);
     }
 
@@ -59,6 +106,7 @@ class TenantController extends Controller
             message: "New tenant {$tenant->first_name} {$tenant->last_name} has been added.",
             ref_id: $tenant->tenant_id,
         );
+
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant account created successfully.')
             ->with('new_account_id',    $accountId)
@@ -96,18 +144,19 @@ class TenantController extends Controller
             'status'         => $request->status,
             'is_active'      => $request->status !== 'inactive',
         ]);
+
         NotificationHelper::sendToAll(
             type: 'maintenance_new',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} information has been updated.",
             ref_id: $tenant->tenant_id,
         );
+
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant information updated successfully.');
     }
 
     public function apiUpdateProfile(Request $request)
     {
-        /** @var Tenant $tenant */
         $tenant = $request->user();
 
         $request->validate([
@@ -129,7 +178,6 @@ class TenantController extends Controller
 
     public function apiUpdatePhoto(Request $request)
     {
-        /** @var Tenant $tenant */
         $tenant = $request->user();
 
         $request->validate([
@@ -141,7 +189,6 @@ class TenantController extends Controller
         }
 
         $path = $request->file('profile_photo')->store('profile_photos', 'public');
-
         $tenant->update(['profile_photo' => $path]);
 
         return response()->json([
@@ -170,41 +217,43 @@ class TenantController extends Controller
     public function destroy($id)
     {
         $tenant = Tenant::findOrFail($id);
+        $this->archiveTenant($tenant, 'deleted');
         $tenant->delete();
 
         return redirect()->route('tenants.index')
-            ->with('success', 'Tenant account deleted successfully.');
+            ->with('success', 'Tenant account deleted and archived.');
     }
+
     public function frontdeskIndex()
     {
-    $tenants = Tenant::where('is_active', true)
-        ->orderBy('first_name')
-        ->get();
+        $tenants = Tenant::where('is_active', true)
+            ->orderBy('first_name')
+            ->get();
 
-    $totalUnits    = 25;
-    $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
-    $vacantUnits   = $totalUnits - $occupiedUnits;
+        $totalUnits    = 25;
+        $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
+        $vacantUnits   = $totalUnits - $occupiedUnits;
 
-    return view('fdtenant', [
-        'tenants'       => $tenants,
-        'totalTenants'  => $tenants->count(),
-        'activeCount'   => $tenants->where('status', 'active')->count(),
-        'pendingCount'  => $tenants->where('status', 'pending')->count(),
-        'occupiedUnits' => $occupiedUnits,
-        'vacantUnits'   => $vacantUnits,
-        'totalUnits'    => $totalUnits,
-    ]);
+        return view('fdtenant', [
+            'tenants'       => $tenants,
+            'totalTenants'  => $tenants->count(),
+            'activeCount'   => $tenants->where('status', 'active')->count(),
+            'pendingCount'  => $tenants->where('status', 'pending')->count(),
+            'occupiedUnits' => $occupiedUnits,
+            'vacantUnits'   => $vacantUnits,
+            'totalUnits'    => $totalUnits,
+        ]);
     }
 
     public function updateNotes(Request $request, $id)
     {
-    $request->validate([
-        'notes' => 'nullable|string|max:1000',
-    ]);
+        $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
 
-    $tenant = Tenant::findOrFail($id);
-    $tenant->update(['notes' => $request->notes]);
+        $tenant = Tenant::findOrFail($id);
+        $tenant->update(['notes' => $request->notes]);
 
-    return redirect()->back()->with('success', 'Note saved successfully.');
+        return redirect()->back()->with('success', 'Note saved successfully.');
     }
 }
