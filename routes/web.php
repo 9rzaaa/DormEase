@@ -62,6 +62,10 @@ Route::post('/login', function () {
     Auth::guard('staff')->login($user, request()->boolean('remember'));
     request()->session()->regenerate();
 
+    if ($role === 'frontdesk' && $user->is_temp_password) {
+        session(['prompt_temp_password' => true]);
+    }
+
     return $role === 'frontdesk'
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
@@ -170,7 +174,6 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/profile', [FDProfileController::class, 'index'])->name('fdprofile.index');
     Route::put('/frontdesk/profile/info', [FDProfileController::class, 'updateInfo'])->name('fdprofile.updateInfo');
     Route::put('/frontdesk/profile/password', [FDProfileController::class, 'updatePassword'])->name('fdprofile.updatePassword');
-    Route::put('/frontdesk/profile/deactivate', [FDProfileController::class, 'deactivate'])->name('frontdesk.profile.deactivate');
     Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
     Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
