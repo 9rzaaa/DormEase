@@ -779,7 +779,7 @@
         <div class="compose-top">
             <div class="compose-avatar">
                 @if($staff->profile_picture)
-                    <img src="{{ Storage::url($staff->profile_picture) }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                    <img src="{{ $staff->profile_picture }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                 @else
                     {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
                 @endif

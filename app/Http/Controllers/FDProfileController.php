@@ -58,11 +58,11 @@ class FDProfileController extends Controller
         $request->validate([
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
-        if ($staff->profile_picture) {
-            Storage::disk('public')->delete($staff->profile_picture);
-        }
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $staff->update(['profile_picture' => $path]);
+        $file     = $request->file('avatar');
+        $mime     = $file->getMimeType();
+        $base64   = base64_encode(file_get_contents($file->getRealPath()));
+        $dataUrl  = "data:{$mime};base64,{$base64}";
+        $staff->update(['profile_picture' => $dataUrl]);
         return back()->with('success', 'Profile picture updated.');
     }
 }
