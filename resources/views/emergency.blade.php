@@ -199,38 +199,45 @@
     table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed;
+        font-size: .88rem;
     }
 
-    thead tr { background: var(--pink-100); }
-
-    th {
-        padding: .65rem 1rem;
-        font-size: .71rem;
+    thead th {
+        padding: .75rem .85rem;
+        text-align: center;
+        font-size: .78rem;
         font-weight: 800;
-        color: var(--hot-pink);
+        color: var(--ink-muted);
         text-transform: uppercase;
         letter-spacing: .05em;
+        background: var(--pink-100);
+        border-bottom: 2px solid var(--bright-pink);
         white-space: nowrap;
-        text-align: left;
-        border-bottom: 1.5px solid var(--bright-pink);
     }
 
-    td {
-        padding: .85rem 1rem;
-        font-size: .855rem;
-        border-bottom: 1px solid var(--pink-100);
+    tbody tr {
+        border-bottom: 2px solid var(--pink-100);
+        transition: background .15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--pink-50); }
+
+    tbody td {
+        padding: .8rem .85rem;
         color: var(--ink);
         vertical-align: middle;
+        text-align: center;
+        font-weight: 500;
     }
-
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr { transition: background .15s; }
-    tbody tr:hover { background: var(--pink-50); }
 
     .type-cell {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: .5rem;
+        flex-wrap: wrap;
     }
 
     .panic-dot {
@@ -251,6 +258,7 @@
     .badge {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         padding: .22rem .65rem;
         border-radius: 999px;
         font-size: .71rem;
@@ -267,23 +275,33 @@
     .badge-urgent   { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
     .badge-moderate { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
 
-    .source-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: .15rem .5rem;
-        border-radius: 6px;
-        font-size: .68rem;
-        font-weight: 700;
-        letter-spacing: .03em;
+    .location-cell,
+    .date-cell,
+    .reporter-cell,
+    .desc-cell {
+        font-size: .84rem;
     }
 
-    .source-frontdesk { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
-    .source-mobile    { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-    .source-manual    { background: #fafafa; color: #666; border: 1px solid #e0e0e0; }
+    .date-cell { white-space: nowrap; color: var(--ink-muted); }
+
+    .reporter-name { font-weight: 600; color: var(--ink); }
+
+    .reporter-room {
+        font-size: .76rem;
+        color: var(--ink-muted);
+        margin-top: .08rem;
+    }
+
+    .desc-cell {
+        color: var(--ink-muted);
+        line-height: 1.35;
+        overflow-wrap: break-word;
+    }
 
     .action-group {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: .35rem;
     }
 
@@ -583,9 +601,8 @@
                         <th>Date</th>
                         <th>Description</th>
                         <th>Staff / Tenant</th>
-                        <th>Source</th>
                         <th>Status</th>
-                        <th style="text-align:center;">Action</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="em-tbody"></tbody>
@@ -697,12 +714,6 @@
         return map[s] ?? `<span class="badge badge-pending">${s}</span>`;
     }
 
-    function sourceBadge(t) {
-        if (t === 'frontdesk') return '<span class="source-tag source-frontdesk">Front Desk</span>';
-        if (t === 'mobile')    return '<span class="source-tag source-mobile">Mobile App</span>';
-        return '<span class="source-tag source-manual">Manual</span>';
-    }
-
     function fmtDate(d) {
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -728,7 +739,7 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="9">No emergency reports found.</td></tr>`;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -740,17 +751,18 @@
                         </div>
                     </td>
                     <td>${urgencyBadge(r.urgency_level)}</td>
-                    <td style="font-size:.83rem;">${escHtml(r.location)}</td>
-                    <td style="font-size:.82rem;white-space:nowrap;">${fmtDateShort(r.reported_at)}</td>
-                    <td style="font-size:.82rem;color:var(--ink-muted);max-width:160px;">${truncate(r.description, 45)}</td>
+                    <td class="location-cell">${escHtml(r.location)}</td>
+                    <td class="date-cell">${fmtDateShort(r.reported_at)}</td>
+                    <td><div class="desc-cell" title="${escHtml(r.description)}">${truncate(r.description, 45)}</div></td>
                     <td>
-                        <div style="font-weight:600;font-size:.85rem;">${escHtml(r.tenant_name)}</div>
-                        ${r.room_number && r.room_number !== '—' ? `<div style="font-size:.76rem;color:var(--ink-muted);">Room ${escHtml(String(r.room_number))}</div>` : ''}
+                        <div class="reporter-cell">
+                            <div class="reporter-name">${escHtml(r.tenant_name)}</div>
+                            ${r.room_number && r.room_number !== '—' ? `<div class="reporter-room">Room ${escHtml(String(r.room_number))}</div>` : ''}
+                        </div>
                     </td>
-                    <td>${sourceBadge(r.input_type)}</td>
                     <td>${statusBadge(r.status)}</td>
                     <td>
-                        <div class="action-group" style="justify-content:center;">
+                        <div class="action-group">
                             <button class="act-btn" title="View" onclick='viewReport(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/eye.png') }}" alt="View">
                             </button>
@@ -840,7 +852,6 @@
                 <div class="view-detail-val">
                     ${escHtml(r.tenant_name)}
                     ${r.room_number && r.room_number !== '—' ? ' — Room ' + escHtml(String(r.room_number)) : ''}
-                    &nbsp;${sourceBadge(r.input_type)}
                 </div>
             </div>
             <div class="view-detail-row">
