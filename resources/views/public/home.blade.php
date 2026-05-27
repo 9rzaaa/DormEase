@@ -1025,7 +1025,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   <div class="app-screenshots">
     <div class="app-screenshot-item">
       <div class="app-screenshot-frame">
-        <img src="{{ asset('images/screen1.png') }}"
+        <img src="{{ asset('images/app_dashboard.png') }}"
              alt="DormEase App - Home Screen"
              class="app-screenshot-img"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -1039,7 +1039,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 
     <div class="app-screenshot-item center">
       <div class="app-screenshot-frame featured">
-        <img src="{{ asset('images/screen2.png') }}"
+        <img src="{{ asset('images/app_announcements.png') }}"
              alt="DormEase App - Announcements"
              class="app-screenshot-img"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -1053,7 +1053,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 
     <div class="app-screenshot-item">
       <div class="app-screenshot-frame">
-        <img src="{{ asset('images/screen3.png') }}"
+        <img src="{{ asset('images/app_waterbilling.png') }}"
              alt="DormEase App - Water Bill"
              class="app-screenshot-img"
              onerror="this.style.display:'none';this.nextElementSibling.style.display='flex'">
