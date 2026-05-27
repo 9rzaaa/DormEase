@@ -53,7 +53,7 @@
         padding: .55rem 1.2rem;
         border-radius: 10px;
         background: var(--white);
-        color: var(--ink-muted);
+        color: var(--hot-pink);
         border: 1.5px solid var(--baby-pink);
         font-size: .85rem;
         font-weight: 600;
@@ -70,21 +70,30 @@
         display: inline-flex;
         align-items: center;
         gap: .45rem;
-        padding: .55rem 1.2rem;
-        border-radius: 10px;
-        background: var(--bright-pink);
-        color: var(--white);
-        border: 1.5px solid var(--blush);
-        font-size: .85rem;
-        font-weight: 700;
+        padding: .6rem 1.2rem;
+        border-radius: 12px;
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--pink-100);
+        font-size: .87rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: background .2s, transform .15s;
+        transition: .2s;
+        white-space: nowrap;
         font-family: var(--ff-body);
         letter-spacing: .01em;
     }
 
-    .btn-archive-open:hover { background: var(--bright-pink); transform: translateY(-1px); }
-    .btn-archive-open img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+    .btn-archive-open:hover {
+        border-color: var(--bright-pink);
+        color: var(--bright-pink);
+    }
+
+    .btn-archive-open img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
 
     .stats-grid {
         display: grid;
@@ -740,7 +749,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-archive-open" onclick="openArchive()">
-                <img src="{{ asset('icons/nav-docu.png') }}" alt="">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
             <button class="btn-export" onclick="exportTable()">
