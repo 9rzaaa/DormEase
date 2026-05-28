@@ -10,7 +10,7 @@
     .page-header { display: flex; align-items: flex-start; justify-content: space-between; }
     .page-header h1 { font-size: 2rem; font-weight: 700; color: var(--black); letter-spacing: -.02em; line-height: 1.15; }
     .page-header .dorm-name { font-size: 1rem; font-weight: 600; color: var(--hot-pink); margin-top: .2rem; }
-    .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; }
+    .header-actions { display: flex; gap: .75rem; align-items: center; margin-top: .5rem; flex-wrap: wrap; }
 
     .btn-primary {
         display: flex; align-items: center; gap: .45rem;
@@ -19,6 +19,7 @@
         border: none; font-size: .87rem; font-weight: 600;
         box-shadow: var(--shadow-pink-btn);
         transition: opacity .2s, transform .15s; cursor: pointer;
+        white-space: nowrap;
     }
     .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
     .btn-outline {
@@ -27,6 +28,7 @@
         background: var(--white); color: var(--ink-muted);
         border: 1.5px solid var(--gray-light); font-size: .87rem; font-weight: 600;
         transition: border-color .2s, color .2s; cursor: pointer;
+        white-space: nowrap;
     }
     .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
 
@@ -190,7 +192,7 @@
         width: 100%; padding: .65rem .9rem; border-radius: 10px;
         border: 1.5px solid var(--gray-light); font-family: var(--ff-body);
         font-size: .88rem; color: var(--ink); background: var(--soft-bg); outline: none;
-        transition: border-color .2s;
+        transition: border-color .2s; box-sizing: border-box;
     }
     .modal-field input:focus, .modal-field select:focus { border-color: var(--hot-pink); background: var(--white); }
     .modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
@@ -220,13 +222,267 @@
     .reset-staff-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--baby-pink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--hot-pink); flex-shrink: 0; border: 2px solid var(--baby-pink); }
     .reset-staff-name { font-size: .9rem; font-weight: 600; color: var(--ink); }
     .reset-staff-meta { font-size: .78rem; color: var(--ink-muted); }
-    .reset-warning-box { background: var(--petal) ; border: 1px solid var(--bright-pink); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
+    .reset-warning-box { background: var(--petal); border: 1px solid var(--bright-pink); border-radius: 10px; padding: .75rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
     .reset-warning-box p { font-size: .82rem; color: var(--bright-pink); margin: 0; line-height: 1.55; }
 
     .shift-dot { display: inline-flex; align-items: center; gap: .4rem; }
     .shift-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .shift-dot.day::before   { background: var(--shift-day); }
     .shift-dot.night::before { background: var(--shift-night); }
+
+    .staff-archive-drawer {
+        position: fixed;
+        top: 0; right: 0; bottom: 0;
+        width: min(660px, 100vw);
+        background: var(--soft-bg);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform .38s cubic-bezier(.4,0,.2,1);
+        box-shadow: -8px 0 40px rgba(214,51,117,.15);
+    }
+
+    .staff-archive-drawer.open { transform: translateX(0); }
+
+    .staff-archive-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(232,23,93,.18);
+        backdrop-filter: blur(3px);
+        z-index: 499;
+        opacity: 0; pointer-events: none;
+        transition: opacity .38s ease;
+    }
+
+    .staff-archive-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .sad-header {
+        padding: 1.6rem 1.8rem 1.2rem;
+        border-bottom: 1px solid var(--pink-100);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .sad-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -.02em;
+        line-height: 1.2;
+    }
+
+    .sad-sub {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        margin-top: .25rem;
+        font-weight: 500;
+    }
+
+    .sad-close {
+        width: 34px; height: 34px;
+        border-radius: 8px;
+        border: 1px solid var(--pink-100);
+        background: var(--petal);
+        color: var(--bright-pink);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background .2s, color .2s;
+        flex-shrink: 0;
+    }
+
+    .sad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
+
+    .sad-search-bar {
+        padding: 1rem 1.8rem .8rem;
+        flex-shrink: 0;
+    }
+
+    .sad-search-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .sad-search-inner input {
+        width: 100%;
+        padding: .55rem .9rem .55rem 2.2rem;
+        border-radius: 10px;
+        border: 1px solid var(--pink-100);
+        background: var(--white);
+        color: var(--ink);
+        font-size: .83rem;
+        font-family: var(--ff-body);
+        outline: none;
+        transition: border-color .2s, background .2s;
+        box-sizing: border-box;
+    }
+
+    .sad-search-inner input::placeholder { color: var(--ink-muted); }
+    .sad-search-inner input:focus { border-color: var(--bright-pink); background: var(--blush); }
+
+    .sad-search-icon {
+        position: absolute; left: .75rem;
+        width: 13px; height: 13px;
+        opacity: .5; pointer-events: none;
+    }
+
+    .sad-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 1.8rem 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+
+    .sad-list::-webkit-scrollbar { width: 4px; }
+    .sad-list::-webkit-scrollbar-track { background: transparent; }
+    .sad-list::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+    .sad-card {
+        background: var(--white);
+        border: 1px solid var(--pink-100);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        transition: background .2s, border-color .2s;
+        animation: sadSlideIn .3s ease both;
+    }
+
+    @keyframes sadSlideIn {
+        from { opacity: 0; transform: translateX(12px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .sad-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+
+    .sad-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .8rem;
+        margin-bottom: .5rem;
+    }
+
+    .sad-card-id {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        letter-spacing: .02em;
+        font-family: monospace;
+    }
+
+    .sad-card-time {
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .sad-card-name {
+        font-size: .9rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.3;
+    }
+
+    .sad-card-email {
+        font-size: .73rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
+    }
+
+    .sad-card-meta {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        margin-top: .6rem;
+        flex-wrap: wrap;
+    }
+
+    .sad-pill {
+        font-size: .68rem;
+        font-weight: 700;
+        padding: .18rem .55rem;
+        border-radius: 99px;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+
+    .sad-pill-role     { background: var(--petal);   color: var(--hot-pink);  border: 1px solid var(--baby-pink); }
+    .sad-pill-shift    { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+    .sad-pill-onduty   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+    .sad-pill-offduty  { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
+    .sad-pill-onleave  { background: var(--peach); color: var(--badge-leave-text); border: 1px solid var(--badge-leave-border); }
+
+    .sad-card-archived {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .75rem;
+        padding-top: .6rem;
+        border-top: 1px solid var(--pink-100);
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .sad-card-archived span { color: var(--bright-pink); font-weight: 600; }
+
+    .sad-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
+
+    .sad-empty-icon {
+        width: 40px; height: 40px;
+        margin: 0 auto .75rem;
+        opacity: .3;
+        display: block;
+    }
+
+    .sad-footer {
+        padding: .9rem 1.8rem;
+        border-top: 1px solid var(--pink-100);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .sad-count-label {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+    }
+
+    .sad-export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--bright-pink);
+        background: var(--petal);
+        border: 1px solid var(--pink-100);
+        border-radius: 8px;
+        padding: .35rem .85rem;
+        cursor: pointer;
+        transition: background .2s, color .2s, border-color .2s;
+        font-family: var(--ff-body);
+    }
+
+    .sad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
+    .sad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
 
     @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
     .fade-up { animation: fadeIn .45s ease both; }
@@ -239,9 +495,20 @@
         .table-header { flex-direction: column; align-items: flex-start; }
         .table-controls { flex-wrap: wrap; }
         .search-wrap input { width: 150px; }
+        .sad-header { padding: 1.2rem 1rem .9rem; }
+        .sad-list { padding: 0 1rem 1.2rem; }
+        .sad-search-bar { padding: .8rem 1rem .6rem; }
+        .sad-footer { padding: .75rem 1rem; }
     }
     @media(max-width:600px) {
         .stats-row { grid-template-columns: 1fr; }
+        .header-actions { width: 100%; }
+        .header-actions .btn-primary,
+        .header-actions .btn-outline { flex: 1; justify-content: center; }
+        .table-controls { flex-direction: column; align-items: stretch; }
+        .search-wrap { width: 100%; }
+        .search-wrap input { width: 100%; }
+        .sort-select { width: 100%; }
     }
 </style>
 @endsection
@@ -254,7 +521,7 @@
         <div class="modal" style="max-width:440px;">
             <div class="modal-header">
                 <div class="modal-title">Staff Account Created Successfully</div>
-                <button class="modal-close" onclick="closeModal('staff-credentials-modal')">✕</button>
+                <button class="modal-close" onclick="closeModal('staff-credentials-modal')">&#x2715;</button>
             </div>
             <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
                 Please provide these temporary login credentials to the staff member.
@@ -300,7 +567,11 @@
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <div class="header-actions">
-            <button class="btn-primary" onclick="openModal('add-modal')">＋ Add Staff</button>
+            <button class="btn-primary" onclick="openModal('add-modal')">+ Add Staff</button>
+            <button class="btn-outline" onclick="openStaffArchive()">
+                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
+                Archive / History
+            </button>
             <button class="btn-outline" onclick="exportStaff()">
                 <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
                 Export
@@ -390,11 +661,40 @@
 
 @section('modals')
 
+<div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
+
+<div class="staff-archive-drawer" id="sad-drawer">
+    <div class="sad-header">
+        <div>
+            <div class="sad-title">Archive / History</div>
+            <div class="sad-sub">Record of deleted staff accounts</div>
+        </div>
+        <button class="sad-close" onclick="closeStaffArchive()">&#x2715;</button>
+    </div>
+
+    <div class="sad-search-bar">
+        <div class="sad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="sad-search-icon" alt="">
+            <input type="text" id="sad-search" placeholder="Search archived staff..." oninput="renderStaffArchive()">
+        </div>
+    </div>
+
+    <div class="sad-list" id="sad-list"></div>
+
+    <div class="sad-footer">
+        <div class="sad-count-label" id="sad-count-label">0 records</div>
+        <button class="sad-export-btn" onclick="exportStaffArchive()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
+
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Add New Staff</div>
-            <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
         <form method="POST" action="{{ route('staff.store') }}">
             @csrf
@@ -445,8 +745,8 @@
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">👤 Staff Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+            <div class="modal-title">Staff Details</div>
+            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div id="view-content"></div>
         <div class="modal-actions">
@@ -463,7 +763,7 @@
                 <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
                 Edit Staff
             </div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
         <form method="POST" id="edit-form" action="">
             @csrf
@@ -532,7 +832,7 @@
                 <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
                 Delete Staff
             </div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
         <div class="delete-warning">
             This action cannot be undone. The staff record will be permanently removed.
@@ -643,15 +943,15 @@
         const totalPages = Math.ceil(filtered.length / PER_PAGE);
         const pg = document.getElementById('pagination');
         let html = '';
-        html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+        html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&#8249;</button>`;
         for (let i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                 html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
             } else if (i === currentPage - 2 || i === currentPage + 2) {
-                html += `<span style="color:var(--ink-muted);padding:0 .2rem">…</span>`;
+                html += `<span style="color:var(--ink-muted);padding:0 .2rem">&#8230;</span>`;
             }
         }
-        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>›</button>`;
+        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>&#8250;</button>`;
         pg.innerHTML = html;
     }
 
@@ -695,7 +995,7 @@
             <div class="view-row"><span class="view-label">Role</span><span class="view-val">${roleBadge(s.role)}</span></div>
             <div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">${shiftLabel(s.shift_schedule)}</span></div>
             <div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">${dutyBadge(s.duty_status)}</span></div>
-            <div class="view-row"><span class="view-label">Account Status</span><span class="view-val">${s.is_active ? '✅ Active' : '🚫 Inactive'}</span></div>
+            <div class="view-row"><span class="view-label">Account Status</span><span class="view-val">${s.is_active ? 'Active' : 'Inactive'}</span></div>
         `;
         openModal('view-modal');
     }
@@ -795,19 +1095,18 @@
                                 <div style="font-size:.78rem;color:var(--ink-muted);">This will generate new credentials</div>
                             </div>
                         </div>
-                        <button class="modal-close" onclick="closeModal('reset-confirm-modal')">✕</button>
+                        <button class="modal-close" onclick="closeModal('reset-confirm-modal')">&#x2715;</button>
                     </div>
 
                     <div class="reset-staff-card">
                         <div class="reset-staff-avatar">${initials}</div>
                         <div>
                             <div class="reset-staff-name">${s.first_name} ${s.last_name}</div>
-                            <div class="reset-staff-meta">${fmtStaffId(s.staff_id)} · ${s.role ?? '—'}</div>
+                            <div class="reset-staff-meta">${fmtStaffId(s.staff_id)} &middot; ${s.role ?? '—'}</div>
                         </div>
                     </div>
 
                     <div class="reset-warning-box">
-                        <span style="font-size:1rem;flex-shrink:0;"></span>
                         <p>A new temporary password will be generated. Share it with the staff member immediately as it will not be shown again.</p>
                     </div>
 
@@ -846,7 +1145,7 @@
                     <div class="modal" style="max-width:460px;">
                         <div class="modal-header">
                             <div class="modal-title">Password Reset Successful</div>
-                            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">✕</button>
+                            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
                         </div>
                         <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
                             Share these credentials with the staff member immediately.
@@ -893,6 +1192,108 @@
             showToast('Password reset successfully!', 'success');
         })
         .catch(() => showToast('Failed to reset password.', 'error'));
+    }
+
+    const deletedStaffArchive = @json($deletedArchive);
+
+    function fmtDatePlain(d) {
+        if (!d) return '—';
+        const dt   = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date} ${time}`;
+    }
+
+    function openStaffArchive() {
+        document.getElementById('sad-drawer').classList.add('open');
+        document.getElementById('sad-backdrop').classList.add('open');
+        document.getElementById('sad-search').value = '';
+        renderStaffArchive();
+    }
+
+    function closeStaffArchive() {
+        document.getElementById('sad-drawer').classList.remove('open');
+        document.getElementById('sad-backdrop').classList.remove('open');
+    }
+
+    function dutyPillClass(status) {
+        const map = {
+            on_duty:  'sad-pill-onduty',
+            off_duty: 'sad-pill-offduty',
+            on_leave: 'sad-pill-onleave',
+        };
+        return map[status] ?? 'sad-pill-offduty';
+    }
+
+    function renderStaffArchive() {
+        const q = document.getElementById('sad-search').value.toLowerCase();
+
+        const data = deletedStaffArchive.filter(r =>
+            (r.account_id    ?? '').toLowerCase().includes(q) ||
+            (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
+            (r.email         ?? '').toLowerCase().includes(q) ||
+            (r.role          ?? '').toLowerCase().includes(q) ||
+            (r.shift_schedule ?? '').toLowerCase().includes(q)
+        );
+
+        const list = document.getElementById('sad-list');
+        document.getElementById('sad-count-label').textContent =
+            `${data.length} record${data.length !== 1 ? 's' : ''}`;
+
+        if (data.length === 0) {
+            list.innerHTML = `<div class="sad-empty">
+                <img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">
+                No archived staff found.
+            </div>`;
+            return;
+        }
+
+        list.innerHTML = data.map((r, i) => `
+            <div class="sad-card" style="animation-delay:${i * 0.04}s;">
+                <div class="sad-card-top">
+                    <div class="sad-card-id">${r.account_id ?? (r.staff_code ?? '—')}</div>
+                    <div class="sad-card-time">${r.archived_at ? fmtDatePlain(r.archived_at) : '—'}</div>
+                </div>
+                <div class="sad-card-name">${r.first_name} ${r.last_name}</div>
+                <div class="sad-card-email">${r.email ?? '—'}</div>
+                <div class="sad-card-meta">
+                    ${r.role
+                        ? `<span class="sad-pill sad-pill-role">${r.role}</span>`
+                        : ''}
+                    ${r.shift_schedule
+                        ? `<span class="sad-pill sad-pill-shift">${r.shift_schedule}</span>`
+                        : ''}
+                    ${r.duty_status
+                        ? `<span class="sad-pill ${dutyPillClass(r.duty_status)}">${r.duty_status.replace('_', ' ')}</span>`
+                        : ''}
+                </div>
+                <div class="sad-card-archived">
+                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function exportStaffArchive() {
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', 'Deleted On']];
+        deletedStaffArchive.forEach(r => {
+            rows.push([
+                r.account_id      ?? '',
+                r.first_name,
+                r.last_name,
+                r.email           ?? '',
+                r.contact_number  ?? '',
+                r.role            ?? '',
+                r.shift_schedule  ?? '',
+                r.duty_status     ?? '',
+                r.archived_at     ?? '',
+            ]);
+        });
+        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const a   = document.createElement('a');
+        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        a.download = 'staff_deleted_archive.csv';
+        a.click();
     }
 
     @if($errors->any())

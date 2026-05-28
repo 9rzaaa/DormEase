@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ArchiveDocu;
 use App\Models\Document;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
@@ -26,12 +27,19 @@ class DocumentController extends Controller
     {
         $fromDb   = Document::distinct()->pluck('document_type')->filter()->values()->toArray();
         $docTypes = collect(array_unique(array_merge(self::TYPES, $fromDb)))->values();
-
-        $tenants = Tenant::select('tenant_id', 'first_name', 'last_name', 'room_number')
+        $tenants  = Tenant::select('tenant_id', 'first_name', 'last_name', 'room_number')
                         ->orderBy('first_name')
                         ->get();
 
-        return view('documents', compact('docTypes', 'tenants'));
+        $archivedDocuments = ArchiveDocu::where('archivable_type', 'document')
+                                ->orderBy('archived_at', 'desc')
+                                ->get();
+
+        $archivedRequests  = ArchiveDocu::where('archivable_type', 'document_request')
+                                ->orderBy('archived_at', 'desc')
+                                ->get();
+
+        return view('documents', compact('docTypes', 'tenants', 'archivedDocuments', 'archivedRequests'));
     }
 
     public function index(Request $request)
@@ -70,11 +78,13 @@ class DocumentController extends Controller
         ]);
 
         $doc->load('tenant');
+
         NotificationHelper::sendToAll(
-        type: 'document_request',
-        message: "New document uploaded: {$doc->title}",
-        ref_id: $doc->id,
-    );
+            type: 'document_request',
+            message: "New document uploaded: {$doc->title}",
+            ref_id: $doc->id,
+        );
+
         return response()->json($doc, 201);
     }
 
@@ -95,15 +105,59 @@ class DocumentController extends Controller
 
         $document->update($validated);
         $document->load('tenant');
+
         return response()->json($document);
     }
 
     public function destroy(Document $document)
     {
+        $document->load('tenant');
+
+        ArchiveDocu::create([
+            'archivable_type' => 'document',
+            'original_id'     => $document->document_id,
+            'archived_by'     => auth('staff')->id(),
+            'archived_at'     => now(),
+            'data'            => [
+                'document_id'   => $document->document_id,
+                'title'         => $document->title,
+                'document_type' => $document->document_type,
+                'visibility'    => $document->visibility,
+                'tenant_id'     => $document->tenant_id,
+                'tenant_name'   => $document->tenant_name,
+                'file_path'     => $document->file_path,
+                'date_posted'   => $document->date_posted,
+            ],
+        ]);
+
         if ($document->file_path) {
             Storage::disk('public')->delete($document->file_path);
         }
+
         $document->delete();
+
         return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    public function archiveIndex(Request $request)
+    {
+        try {
+            $type  = $request->query('type');
+            $query = ArchiveDocu::orderBy('archived_at', 'desc');
+
+            if ($type && in_array($type, ['document', 'document_request'])) {
+                $query->where('archivable_type', $type);
+            }
+
+            return response()->json($query->get());
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function archiveDestroy(ArchiveDocu $archiveDocu)
+    {
+        $archiveDocu->delete();
+        return response()->json(['message' => 'Archive record removed.']);
     }
 }

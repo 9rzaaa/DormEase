@@ -39,6 +39,43 @@
         margin-top: .2rem;
     }
 
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-archive-open {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.2rem;
+        border-radius: 12px;
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--pink-100);
+        font-size: .87rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+        white-space: nowrap;
+        font-family: var(--ff-body);
+        letter-spacing: .01em;
+    }
+
+    .btn-archive-open:hover {
+        border-color: var(--bright-pink);
+        color: var(--bright-pink);
+        box-shadow: 0 6px 16px rgba(232,23,93,.12);
+    }
+
+    .btn-archive-open img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
     .btn-report {
         display: inline-flex;
         align-items: center;
@@ -301,6 +338,9 @@
     .badge-ongoing  { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
     .badge-resolved { background: #e8faf5; color: #1a9d6e; border: 1px solid #8cdebb; }
     .badge-panic    { background: var(--bright-pink); color: var(--white); border: none; }
+    .badge-critical { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .badge-urgent   { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .badge-moderate { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
 
     .action-group {
         display: flex;
@@ -508,10 +548,292 @@
     .d2 { animation-delay: .12s; }
     .d3 { animation-delay: .2s; }
 
+    .archive-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(232, 23, 93, 0.15);
+        backdrop-filter: blur(3px);
+        z-index: 499;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .38s ease;
+    }
+
+    .archive-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .archive-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(680px, 100vw);
+        background: var(--pink-bg);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform .38s cubic-bezier(.4,0,.2,1);
+        box-shadow: -8px 0 40px rgba(0,0,0,.25);
+    }
+
+    .archive-drawer.open { transform: translateX(0); }
+
+    .archive-drawer-header {
+        padding: 1.6rem 1.8rem 1.2rem;
+        border-bottom: 2px solid var(--bright-pink);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        background: var(--white);
+        flex-shrink: 0;
+    }
+
+    .archive-drawer-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -.02em;
+        line-height: 1.2;
+    }
+
+    .archive-drawer-sub {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        margin-top: .25rem;
+        font-weight: 500;
+    }
+
+    .archive-close-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        color: var(--hot-pink);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s;
+        flex-shrink: 0;
+    }
+
+    .archive-close-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+
+    .archive-search-bar {
+        padding: 1rem 1.8rem .8rem;
+        flex-shrink: 0;
+    }
+
+    .archive-search-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .archive-search-inner input {
+        width: 100%;
+        padding: .55rem .9rem .55rem 2.2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        color: var(--ink);
+        font-size: .83rem;
+        font-family: var(--ff-body);
+        outline: none;
+        transition: border-color .2s, background .2s;
+    }
+
+    .archive-search-inner input:focus { border-color: var(--bright-pink); }
+
+    .archive-search-icon {
+        position: absolute;
+        left: .75rem;
+        width: 13px;
+        height: 13px;
+        opacity: .35;
+        pointer-events: none;
+    }
+
+    .archive-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 1.8rem 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+
+    .archive-card {
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        transition: background .2s, border-color .2s, transform .2s;
+        animation: archiveSlideIn .3s ease both;
+    }
+
+    @keyframes archiveSlideIn {
+        from { opacity: 0; transform: translateX(12px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .archive-card:hover {
+        background: var(--pink-50);
+        border-color: var(--bright-pink);
+        box-shadow: 0 6px 18px rgba(232, 23, 93, .12);
+        transform: translateY(-1px);
+    }
+
+    .archive-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .8rem;
+        margin-bottom: .65rem;
+    }
+
+    .archive-card-id {
+        font-size: .78rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        letter-spacing: .02em;
+    }
+
+    .archive-card-time {
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .archive-card-title {
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.3;
+    }
+
+    .archive-card-room {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
+    }
+
+    .archive-card-meta {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-top: .65rem;
+        flex-wrap: wrap;
+    }
+
+    .archive-pill {
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .18rem .55rem;
+        border-radius: 99px;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+
+    .archive-pill-type { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+    .archive-pill-critical { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .archive-pill-urgent { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .archive-pill-moderate { background: #eef2ff; color: #4f6ef7; border: 1px solid #c7d2fe; }
+
+    .archive-card-desc {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        margin-top: .5rem;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .archive-card-archived {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .75rem;
+        padding-top: .6rem;
+        border-top: 1px solid var(--pink-100);
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .archive-card-archived span { color: var(--bright-pink); font-weight: 700; }
+
+    .archive-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
+
+    .archive-empty-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto .75rem;
+        opacity: .25;
+        display: block;
+    }
+
+    .archive-footer {
+        padding: .9rem 1.8rem;
+        border-top: 2px solid var(--pink-100);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .archive-count-label {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+    }
+
+    .archive-export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 8px;
+        padding: .35rem .85rem;
+        cursor: pointer;
+        transition: .2s;
+        font-family: var(--ff-body);
+    }
+
+    .archive-export-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+    .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .65; }
+
     @media (max-width: 900px) {
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
         .modal-grid { grid-template-columns: 1fr; }
+        .archive-drawer-header { padding: 1.2rem 1rem .9rem; }
+        .archive-list { padding: 0 1rem 1.2rem; }
+        .archive-search-bar { padding: .8rem 1rem .6rem; }
+        .archive-footer { padding: .75rem 1rem; }
     }
 
     @media (max-width: 580px) {
@@ -528,10 +850,16 @@
             <h1>Emergency Reports</h1>
             <div class="dorm-sub">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
-        <button class="btn-report" onclick="openModal('report-modal')">
-            <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
-            Report Emergency
-        </button>
+        <div class="header-actions">
+            <button class="btn-archive-open" onclick="openArchive()">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+                Archive / History
+            </button>
+            <button class="btn-report" onclick="openModal('report-modal')">
+                <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
+                Report Emergency
+            </button>
+        </div>
     </div>
 
     <div class="stats-row fade-up d2">
@@ -612,6 +940,7 @@
                 <thead>
                     <tr>
                         <th>Type</th>
+                        <th>Urgency</th>
                         <th>Location</th>
                         <th>Tenant / Reporter</th>
                         <th>Date Reported</th>
@@ -634,6 +963,35 @@
 @endsection
 
 @section('modals')
+
+<div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
+
+<div class="archive-drawer" id="archive-drawer">
+    <div class="archive-drawer-header">
+        <div>
+            <div class="archive-drawer-title">Archive / History</div>
+            <div class="archive-drawer-sub">Record of deleted emergency reports</div>
+        </div>
+        <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
+    </div>
+
+    <div class="archive-search-bar">
+        <div class="archive-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="archive-search-icon" alt="">
+            <input type="text" id="archive-search" placeholder="Search archived emergencies..." oninput="renderArchive()">
+        </div>
+    </div>
+
+    <div class="archive-list" id="archive-list"></div>
+
+    <div class="archive-footer">
+        <div class="archive-count-label" id="archive-count-label">0 records</div>
+        <button class="archive-export-btn" onclick="exportArchive()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
 
 <div class="modal-overlay" id="report-modal">
     <div class="modal" style="max-width:520px;">
@@ -729,7 +1087,7 @@
             <div class="modal-title">Delete Report</div>
             <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
         </div>
-        <div class="delete-warn">This action cannot be undone. The emergency report will be permanently deleted.</div>
+        <div class="delete-warn">This emergency report will be removed from the active list and saved to archive history.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
             Delete report for <strong id="delete-label" style="color:var(--ink);"></strong>?
         </p>
@@ -744,7 +1102,8 @@
 
 @section('scripts')
 <script>
-    const reports  = @json($reports);
+    const reports        = @json($reports);
+    const deletedArchive = @json($deletedArchive);
     const PER_PAGE = 10;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -753,6 +1112,15 @@
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
+
+    function urgencyBadge(u) {
+        const level = (u ?? 'moderate').toLowerCase();
+        const label = level.charAt(0).toUpperCase() + level.slice(1);
+        const cls = { critical: 'badge-critical', urgent: 'badge-urgent', moderate: 'badge-moderate' }[level] ?? 'badge-moderate';
+        return `<span class="badge ${cls}">${label}</span>`;
+    }
 
     function statusBadge(s) {
         const map = {
@@ -768,7 +1136,13 @@
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
     }
-
+    function fmtDatePlain(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return `${date} ${time}`;
+    }
     function truncate(str, n) {
         if (!str || str === '—') return '—';
         return str.length > n ? str.slice(0, n) + '…' : str;
@@ -784,7 +1158,7 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No emergency reports found.</td></tr>`;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -795,6 +1169,7 @@
                             ${r.is_panic_alert ? '<span class="badge badge-panic" style="font-size:.65rem;padding:.15rem .5rem;">PANIC</span>' : ''}
                         </div>
                     </td>
+                    <td>${urgencyBadge(r.urgency_level)}</td>
                     <td style="font-size:.83rem;">${escHtml(r.location)}</td>
                     <td>
                         <div style="font-weight:600;font-size:.85rem;">${escHtml(r.tenant_name)}</div>
@@ -880,6 +1255,10 @@
             <div class="view-detail-row">
                 <div class="view-detail-label">Emergency Type</div>
                 <div class="view-detail-val">${escHtml(r.emergency_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Urgency Level</div>
+                <div class="view-detail-val">${urgencyBadge(r.urgency_level)}</div>
             </div>
             <div class="view-detail-row">
                 <div class="view-detail-label">Location</div>
@@ -990,7 +1369,7 @@
 
             const data = await res.json();
             if (res.ok && data.success) {
-                showToast('Report deleted.', 'success');
+                showToast('Report moved to archive.', 'success');
                 closeModal('delete-modal');
                 setTimeout(() => location.reload(), 800);
             } else {
@@ -1002,6 +1381,114 @@
 
         btn.disabled    = false;
         btn.textContent = 'Delete';
+    }
+
+    function openArchive() {
+        document.getElementById('archive-drawer').classList.add('open');
+        document.getElementById('archive-backdrop').classList.add('open');
+        renderArchive();
+    }
+
+    function closeArchive() {
+        document.getElementById('archive-drawer').classList.remove('open');
+        document.getElementById('archive-backdrop').classList.remove('open');
+    }
+
+    function renderArchive() {
+        const q = normalizeFilterValue(document.getElementById('archive-search').value);
+        const list = document.getElementById('archive-list');
+        const filteredArchive = deletedArchive.filter(r =>
+            normalizeFilterValue(r.emergency_type).includes(q) ||
+            normalizeFilterValue(r.urgency_level).includes(q) ||
+            normalizeFilterValue(r.location).includes(q) ||
+            normalizeFilterValue(r.tenant_name).includes(q) ||
+            normalizeFilterValue(r.room_number).includes(q) ||
+            normalizeFilterValue(r.description).includes(q) ||
+            normalizeFilterValue(r.status).includes(q)
+        );
+
+        document.getElementById('archive-count-label').textContent =
+            `${filteredArchive.length} record${filteredArchive.length !== 1 ? 's' : ''}`;
+
+        if (filteredArchive.length === 0) {
+            list.innerHTML = `<div class="archive-empty">
+                <img class="archive-empty-icon" src="{{ asset('icons/nav-emerg.png') }}" alt="">
+                No archived emergency reports found.
+            </div>`;
+            return;
+        }
+
+        const urgencyPillClass = {
+            critical: 'archive-pill-critical',
+            urgent: 'archive-pill-urgent',
+            moderate: 'archive-pill-moderate',
+        };
+
+        list.innerHTML = filteredArchive.map((r, i) => `
+            <div class="archive-card" style="animation-delay:${i * 0.04}s;">
+                <div class="archive-card-top">
+                    <div class="archive-card-id">#EM-${String(r.id).padStart(3,'0')}</div>
+                    <div class="archive-card-time">${fmtDatePlain(r.reported_at)}</div>
+                </div>
+                <div class="archive-card-title">${escHtml(r.emergency_type ?? 'â€”')}</div>
+                <div class="archive-card-room">
+                    ${escHtml(r.location ?? 'â€”')}
+                    ${r.tenant_name ? ` - ${escHtml(r.tenant_name)}` : ''}
+                    ${r.room_number && r.room_number !== 'â€”' ? ` - Room ${escHtml(String(r.room_number))}` : ''}
+                </div>
+                <div class="archive-card-meta">
+                    <span class="archive-pill archive-pill-type">${escHtml(r.status ?? 'pending')}</span>
+                    <span class="archive-pill ${urgencyPillClass[normalizeFilterValue(r.urgency_level)] ?? 'archive-pill-moderate'}">${escHtml(r.urgency_level ?? 'moderate')}</span>
+                    ${r.is_panic_alert ? '<span class="archive-pill archive-pill-critical">Panic</span>' : ''}
+                </div>
+                ${r.description ? `<div class="archive-card-desc">${escHtml(r.description)}</div>` : ''}
+                <div class="archive-card-archived">
+                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function exportArchive() {
+        const rows = [[
+            'Report ID',
+            'Reported At',
+            'Type',
+            'Urgency',
+            'Location',
+            'Tenant / Reporter',
+            'Room',
+            'Status',
+            'Description',
+            'Deleted On',
+        ]];
+
+        deletedArchive.forEach(r => {
+            rows.push([
+                `#EM-${String(r.id).padStart(3,'0')}`,
+                fmtDatePlain(r.reported_at),
+                r.emergency_type ?? '',
+                r.urgency_level ?? '',
+                r.location ?? '',
+                r.tenant_name ?? '',
+                r.room_number ?? '',
+                r.status ?? '',
+                r.description ?? '',
+                fmtDatePlain(r.archived_at),
+            ]);
+        });
+
+        const csv = rows.map(row =>
+            row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',')
+        ).join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'frontdesk_emergency_deleted_archive.csv';
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     @if(session('success'))

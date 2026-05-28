@@ -18,6 +18,7 @@ use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\FDProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BillingHistoryController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -71,12 +72,22 @@ Route::post('/login', function () {
         : redirect()->route('dashboard');
 });
 
+//billing hist
+
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect()->route('login');
 })->name('logout');
+
+Route::prefix('billing')->name('billing.')->group(function () {
+    Route::get('/', [BillingController::class, 'index'])->name('index');
+    Route::post('/log', [BillingController::class, 'log'])->name('log');
+    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+
+});
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
@@ -114,13 +125,15 @@ Route::middleware('auth:staff')->group(function () {
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
-        Route::get('/', [BillingController::class, 'index'])->name('index');
-        Route::post('/log', [BillingController::class, 'log'])->name('log');
-        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+    Route::get('/', [BillingController::class, 'index'])->name('index');
+    Route::post('/log', [BillingController::class, 'log'])->name('log');
+    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+    Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+    Route::post('/history/update-status', [BillingHistoryController::class, 'updateStatus'])->name('history.updateStatus');
     });
 
-    // documents (admin ui)
+    // documents
     Route::get('/documents', [DocumentController::class, 'page'])->name('documents.index');
     Route::get('/admin/documents', [DocumentController::class, 'index'])->name('admin.documents.index');
     Route::post('/admin/documents', [DocumentController::class, 'store'])->name('admin.documents.store');
@@ -128,9 +141,14 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/admin/documents/{document}', [DocumentController::class, 'update'])->name('admin.documents.update');
     Route::delete('/admin/documents/{document}', [DocumentController::class, 'destroy'])->name('admin.documents.destroy');
 
-    // document requests (admin)
+    // document requests
     Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
     Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])->name('admin.document-requests.update');
+    Route::delete('/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'destroy'])->name('admin.document-requests.destroy');
+    
+    // document archive 
+    Route::get('/admin/archive-docus', [DocumentController::class, 'archiveIndex'])->name('admin.archive-docus.index');
+    Route::delete('/admin/archive-docus/{archiveDocu}', [DocumentController::class, 'archiveDestroy'])->name('admin.archive-docus.destroy');
 
     // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
@@ -177,5 +195,4 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
     Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
-
 });

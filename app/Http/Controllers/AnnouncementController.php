@@ -10,21 +10,27 @@ class AnnouncementController extends Controller
 {
     public function index()
     {
-        $staff         = Auth::guard('staff')->user();
-        $announcements = Announcement::latest('posted_at')->get();
+        $staff           = Auth::guard('staff')->user();
+        $announcements   = Announcement::latest('posted_at')->get();
+        $deletedArchive  = Announcement::onlyTrashed()->latest('deleted_at')->get();
+
         return view('announcements', [
-            'staff'         => $staff,
-            'announcements' => $announcements,
+            'staff'          => $staff,
+            'announcements'  => $announcements,
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
     public function frontdeskIndex()
     {
-        $staff         = Auth::guard('staff')->user();
-        $announcements = Announcement::latest('posted_at')->get();
+        $staff           = Auth::guard('staff')->user();
+        $announcements   = Announcement::latest('posted_at')->get();
+        $deletedArchive  = Announcement::onlyTrashed()->latest('deleted_at')->get();
+
         return view('fdannouncement', [
-            'staff'         => $staff,
-            'announcements' => $announcements,
+            'staff'          => $staff,
+            'announcements'  => $announcements,
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
@@ -126,7 +132,7 @@ class AnnouncementController extends Controller
             ? 'frontdesk.announcements'
             : 'announcements.index';
         return redirect()->route($route)
-            ->with('success', 'Announcement archived.');
+            ->with('success', 'Announcement closed.');
     }
 
     public function restore(Request $request, $id)
@@ -142,12 +148,8 @@ class AnnouncementController extends Controller
     public function destroy(Request $request, $id)
     {
         $announcement = Announcement::findOrFail($id);
-        if ($announcement->attachment) {
-            foreach (explode(',', $announcement->attachment) as $path) {
-                Storage::disk('public')->delete(trim($path));
-            }
-        }
         $announcement->delete();
+
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';

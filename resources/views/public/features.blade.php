@@ -223,7 +223,7 @@
       <span class="nav-logo-fb">Dorm<span>Ease</span></span>
     </a>
     <ul class="nav-links">
-      <li><a href="{{ route('home') }}#gallery">Gallery</a></li>
+      <li><a href="{{ route('gallery') }}">Gallery</a></li>
       <li><a href="{{ route('home') }}#how">How it Works</a></li>
       <li><a href="{{ route('home') }}#about">About</a></li>
       <li><a href="{{ route('faqs') }}">FAQs</a></li>

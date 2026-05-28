@@ -922,6 +922,10 @@
         </select>
         <button class="btn-filter" onclick="applyMonthFilter()">≡ Filter</button>
         <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
+        <a href="{{ route('billing.history') }}" class="btn-outline">
+            <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
+            History
+        </a>
         <button class="btn-outline" onclick="exportBilling()">
             <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
             Export
