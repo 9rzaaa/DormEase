@@ -18,6 +18,7 @@ use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\FDProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BillingHistoryController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -71,12 +72,22 @@ Route::post('/login', function () {
         : redirect()->route('dashboard');
 });
 
+//billing hist
+
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
     return redirect()->route('login');
 })->name('logout');
+
+Route::prefix('billing')->name('billing.')->group(function () {
+    Route::get('/', [BillingController::class, 'index'])->name('index');
+    Route::post('/log', [BillingController::class, 'log'])->name('log');
+    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+
+});
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
@@ -114,10 +125,12 @@ Route::middleware('auth:staff')->group(function () {
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
-        Route::get('/', [BillingController::class, 'index'])->name('index');
-        Route::post('/log', [BillingController::class, 'log'])->name('log');
-        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+    Route::get('/', [BillingController::class, 'index'])->name('index');
+    Route::post('/log', [BillingController::class, 'log'])->name('log');
+    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+    Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+    Route::post('/history/update-status', [BillingHistoryController::class, 'updateStatus'])->name('history.updateStatus');
     });
 
     // documents
@@ -182,5 +195,4 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
     Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
-
 });
