@@ -230,18 +230,24 @@ class TenantController extends Controller
             ->orderBy('first_name')
             ->get();
 
+        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
         $totalUnits    = 25;
         $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
         $vacantUnits   = $totalUnits - $occupiedUnits;
 
         return view('fdtenant', [
-            'tenants'       => $tenants,
-            'totalTenants'  => $tenants->count(),
-            'activeCount'   => $tenants->where('status', 'active')->count(),
-            'pendingCount'  => $tenants->where('status', 'pending')->count(),
-            'occupiedUnits' => $occupiedUnits,
-            'vacantUnits'   => $vacantUnits,
-            'totalUnits'    => $totalUnits,
+            'tenants'        => $tenants,
+            'totalTenants'   => $tenants->count(),
+            'activeCount'    => $tenants->where('status', 'active')->count(),
+            'pendingCount'   => $tenants->where('status', 'pending')->count(),
+            'occupiedUnits'  => $occupiedUnits,
+            'vacantUnits'    => $vacantUnits,
+            'totalUnits'     => $totalUnits,
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
