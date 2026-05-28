@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class DocumentRequest extends Model
 {
-    public $timestamps = false;
-
     protected $primaryKey = 'doc_request_id';
 
     protected $fillable = [
@@ -24,7 +22,11 @@ class DocumentRequest extends Model
         'processed_at',
     ];
 
-    protected $appends = ['tenant_name'];
+    protected $casts = [
+        'submitted_at' => 'datetime',
+        'processed_at' => 'datetime',
+        'date_needed'  => 'date',
+    ];
 
     public function tenant()
     {
@@ -33,12 +35,11 @@ class DocumentRequest extends Model
 
     public function getTenantNameAttribute()
     {
-        try {
-            return $this->tenant
-                ? $this->tenant->first_name . ' ' . $this->tenant->last_name
-                : null;
-        } catch (\Exception $e) {
-            return null;
+        if ($this->tenant) {
+            return $this->tenant->first_name . ' ' . $this->tenant->last_name;
         }
+        return null;
     }
+
+    protected $appends = ['tenant_name'];
 }
