@@ -42,6 +42,10 @@ class EmergencyController extends Controller
         $activeCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
         $panicCount = $reports->where('is_panic_alert', true)->count();
+        $deletedArchive = ArchivedEmergencyReport::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchive($report));
 
         return view('fdemergency', compact(
             'staff',
@@ -49,7 +53,8 @@ class EmergencyController extends Controller
             'totalCount',
             'activeCount',
             'resolvedCount',
-            'panicCount'
+            'panicCount',
+            'deletedArchive'
         ));
     }
 
