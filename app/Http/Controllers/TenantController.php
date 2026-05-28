@@ -15,17 +15,29 @@ class TenantController extends Controller
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
 
-        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+        $deletedArchive  = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $inactiveArchive = ArchivedTenant::where('archive_type', 'inactive')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $moveoutArchive  = ArchivedTenant::where('archive_type', 'move_out')
             ->orderByDesc('archived_at')
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
         return view('tenants', [
-            'tenants'        => $tenants,
-            'totalTenants'   => $tenants->count(),
-            'activeCount'    => $tenants->where('status', 'active')->count(),
-            'pendingCount'   => $tenants->where('status', 'pending')->count(),
-            'deletedArchive' => $deletedArchive,
+            'tenants'         => $tenants,
+            'totalTenants'    => $tenants->count(),
+            'activeCount'     => $tenants->where('status', 'active')->count(),
+            'pendingCount'    => $tenants->where('status', 'pending')->count(),
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
+            'moveoutArchive'  => $moveoutArchive,
         ]);
     }
 
@@ -131,6 +143,8 @@ class TenantController extends Controller
             'status'         => 'required|in:active,pending,move_out,inactive',
         ]);
 
+        $previousStatus = $tenant->status;
+
         $tenant->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -144,6 +158,16 @@ class TenantController extends Controller
             'status'         => $request->status,
             'is_active'      => $request->status !== 'inactive',
         ]);
+
+        $fresh = $tenant->fresh();
+
+        if ($previousStatus !== 'inactive' && $request->status === 'inactive') {
+            $this->archiveTenant($fresh, 'inactive');
+        }
+
+        if ($previousStatus !== 'move_out' && $request->status === 'move_out') {
+            $this->archiveTenant($fresh, 'move_out');
+        }
 
         NotificationHelper::sendToAll(
             type: 'maintenance_new',
@@ -230,7 +254,17 @@ class TenantController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+        $deletedArchive  = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $inactiveArchive = ArchivedTenant::where('archive_type', 'inactive')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $moveoutArchive  = ArchivedTenant::where('archive_type', 'move_out')
             ->orderByDesc('archived_at')
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
@@ -240,14 +274,16 @@ class TenantController extends Controller
         $vacantUnits   = $totalUnits - $occupiedUnits;
 
         return view('fdtenant', [
-            'tenants'        => $tenants,
-            'totalTenants'   => $tenants->count(),
-            'activeCount'    => $tenants->where('status', 'active')->count(),
-            'pendingCount'   => $tenants->where('status', 'pending')->count(),
-            'occupiedUnits'  => $occupiedUnits,
-            'vacantUnits'    => $vacantUnits,
-            'totalUnits'     => $totalUnits,
-            'deletedArchive' => $deletedArchive,
+            'tenants'         => $tenants,
+            'totalTenants'    => $tenants->count(),
+            'activeCount'     => $tenants->where('status', 'active')->count(),
+            'pendingCount'    => $tenants->where('status', 'pending')->count(),
+            'occupiedUnits'   => $occupiedUnits,
+            'vacantUnits'     => $vacantUnits,
+            'totalUnits'      => $totalUnits,
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
+            'moveoutArchive'  => $moveoutArchive,
         ]);
     }
 
