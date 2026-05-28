@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
+use App\Models\ArchivedEmergencyReport;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
@@ -19,12 +20,17 @@ class EmergencyController extends Controller
             ->whereIn('urgency_level', ['critical', 'urgent'])
             ->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
+        $deletedArchive = ArchivedEmergencyReport::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchive($report));
 
         return view('emergency', compact(
             'reports',
             'totalCount',
             'criticalCount',
-            'resolvedCount'
+            'resolvedCount',
+            'deletedArchive'
         ));
     }
 
@@ -115,8 +121,57 @@ class EmergencyController extends Controller
 
     public function destroy($id)
     {
-        EmergencyReport::findOrFail($id)->delete();
+        $report = EmergencyReport::findOrFail($id);
+        $this->archiveReport($report, 'deleted');
+        $report->delete();
+
         return response()->json(['success' => true]);
+    }
+
+    private function formatArchive(ArchivedEmergencyReport $report): array
+    {
+        return [
+            'id' => $report->original_id,
+            'archive_id' => $report->id,
+            'tenant_name' => $report->tenant_name,
+            'room_number' => $report->room_number,
+            'is_panic_alert' => $report->is_panic_alert,
+            'emergency_type' => $report->emergency_type ?? '-',
+            'urgency_level' => $report->urgency_level ?? 'moderate',
+            'description' => $report->description ?? '-',
+            'location' => $report->location ?? '-',
+            'status' => $report->status ?? 'pending',
+            'admin_notes' => $report->admin_notes ?? '',
+            'reported_at' => $report->reported_at ? $report->reported_at->format('Y-m-d H:i:s') : null,
+            'resolved_at' => $report->resolved_at ? $report->resolved_at->format('Y-m-d H:i:s') : null,
+            'archived_at' => $report->archived_at ? $report->archived_at->format('Y-m-d H:i:s') : null,
+        ];
+    }
+
+    private function archiveReport(EmergencyReport $report, string $type): void
+    {
+        $tenant = $report->tenant;
+        $tenantName = $tenant
+            ? trim($tenant->first_name . ' ' . $tenant->last_name)
+            : 'Front Desk';
+
+        ArchivedEmergencyReport::create([
+            'original_id' => $report->report_id,
+            'archive_type' => $type,
+            'tenant_id' => $report->tenant_id,
+            'tenant_name' => $tenantName,
+            'room_number' => $tenant->room_number ?? '-',
+            'is_panic_alert' => $report->is_panic_alert,
+            'emergency_type' => $report->emergency_type,
+            'urgency_level' => $report->urgency_level,
+            'description' => $report->description,
+            'location' => $report->location,
+            'status' => $report->status,
+            'admin_notes' => $report->admin_notes,
+            'reported_at' => $report->reported_at,
+            'resolved_at' => $report->resolved_at,
+            'archived_at' => now(),
+        ]);
     }
 
     private function mapReports($reports)
