@@ -15,7 +15,6 @@
     box-sizing: border-box;
     max-width: 100%;
     min-width: 0;
-    
 }
 
 .page-header {
@@ -377,19 +376,6 @@ tbody tr:hover {
     cursor: default;
 }
 
-.page-ellipsis {
-    color: #b06080;
-    font-size: .85rem;
-    padding: 0 .2rem;
-}
-
-.empty-state {
-    text-align: center;
-    color: #b06080;
-    padding: 2rem 1rem;
-    font-size: .9rem;
-}
-
 .modal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -566,74 +552,6 @@ table td {
 .td-id  { text-align: left; }
 .td-name { text-align: center; }
 
-
-@media (max-width: 1100px) {
-    .stats-row {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .stat-num { font-size: 1.6rem; }
-}
-
-@media (max-width: 900px) {
-    .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; }
-    .stats-row { grid-template-columns: 1fr 1fr; }
-    .modal-grid { grid-template-columns: 1fr; }
-    .stat-box { padding: 1rem 1.1rem; gap: .9rem; }
-    .stat-icon-circle { width: 44px; height: 44px; }
-    .stat-icon-circle img { width: 22px; height: 22px; }
-    .stat-num { font-size: 1.5rem; }
-}
-
-@media (max-width: 680px) {
-    .page-body { padding: 1rem; gap: 1rem; }
-    .page-header h1 { font-size: 1.5rem; }
-    .stats-row { grid-template-columns: 1fr; }
-    .stat-box { padding: 1rem 1.2rem; }
-    .stat-num { font-size: 1.75rem; }
-    .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; }
-    .table-controls { width: 100%; }
-    .search-wrap { flex: 1; }
-    .search-wrap input { width: 100%; }
-    .sort-select { flex: 1; min-width: 0; }
-    .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; }
-    .pagination { width: 100%; justify-content: center; }
-    .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; }
-}
-
-@media (max-width: 480px) {
-    .page-body { padding: .8rem; gap: .9rem; }
-    .page-header { gap: .6rem; }
-    .page-header h1 { font-size: 1.3rem; }
-    .header-actions { width: 100%; }
-    .header-actions .btn-primary,
-    .header-actions .btn-outline { flex: 1; justify-content: center; }
-    .stat-box { gap: .75rem; padding: .9rem 1rem; }
-    .stat-label { font-size: .72rem; }
-    .stat-sub   { font-size: .67rem; }
-    .credentials-box { padding: .75rem .9rem; }
-    .table-controls { flex-direction: column; align-items: stretch; }
-    .search-wrap input { width: 100%; }
-    .sort-select { width: 100%; }
-}
-
-@media (max-width: 360px) {
-    .stat-icon-circle { display: none; }
-    .act-btn { width: 28px; height: 28px; }
-    .stat-num { font-size: 1.4rem; }
-    .stat-box { padding: .75rem; }
-}
-
-@media (max-width: 768px) {
-    .action-group {
-        flex-direction: column;
-        gap: .25rem;
-    }
-    .act-btn {
-        width: 28px;
-        height: 28px;
-    }
-}
-
 .tenant-archive-drawer {
     position: fixed;
     top: 0; right: 0; bottom: 0;
@@ -699,6 +617,54 @@ table td {
 }
 
 .tad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
+
+.tad-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1.8rem;
+    border-bottom: 1px solid var(--pink-100);
+    flex-shrink: 0;
+    background: var(--white);
+}
+
+.tad-tab {
+    padding: .85rem 1.1rem;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    letter-spacing: .01em;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+
+.tad-tab:hover { color: var(--hot-pink); }
+.tad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+.tad-tab-count {
+    font-size: .68rem;
+    font-weight: 800;
+    padding: .1rem .45rem;
+    border-radius: 99px;
+    background: var(--petal);
+    color: var(--ink-muted);
+    letter-spacing: .02em;
+    min-width: 18px;
+    text-align: center;
+}
+
+.tad-tab.active .tad-tab-count {
+    background: var(--bright-pink);
+    color: var(--white);
+}
 
 .tad-search-bar {
     padding: 1rem 1.8rem .8rem;
@@ -817,12 +783,12 @@ table td {
     text-transform: uppercase;
 }
 
-.tad-pill-room    { background: var(--petal);   color: var(--ink-muted); border: 1px solid var(--pink-100); }
-.tad-pill-stay    { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
-.tad-pill-active  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
-.tad-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
-.tad-pill-moveout { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
-.tad-pill-inactive{ background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-room     { background: var(--petal);   color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-stay     { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.tad-pill-moveout  { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-inactive { background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
 
 .tad-card-archived {
     display: flex;
@@ -889,6 +855,67 @@ table td {
 .tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
 
+@media (max-width: 1100px) {
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    .stat-num { font-size: 1.6rem; }
+}
+
+@media (max-width: 900px) {
+    .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .modal-grid { grid-template-columns: 1fr; }
+    .stat-box { padding: 1rem 1.1rem; gap: .9rem; }
+    .stat-icon-circle { width: 44px; height: 44px; }
+    .stat-icon-circle img { width: 22px; height: 22px; }
+    .stat-num { font-size: 1.5rem; }
+}
+
+@media (max-width: 680px) {
+    .page-body { padding: 1rem; gap: 1rem; }
+    .page-header h1 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: 1fr; }
+    .stat-box { padding: 1rem 1.2rem; }
+    .stat-num { font-size: 1.75rem; }
+    .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; }
+    .table-controls { width: 100%; }
+    .search-wrap { flex: 1; }
+    .search-wrap input { width: 100%; }
+    .sort-select { flex: 1; min-width: 0; }
+    .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; }
+    .pagination { width: 100%; justify-content: center; }
+    .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; }
+}
+
+@media (max-width: 480px) {
+    .page-body { padding: .8rem; gap: .9rem; }
+    .page-header { gap: .6rem; }
+    .page-header h1 { font-size: 1.3rem; }
+    .header-actions { width: 100%; }
+    .header-actions .btn-primary,
+    .header-actions .btn-outline { flex: 1; justify-content: center; }
+    .stat-box { gap: .75rem; padding: .9rem 1rem; }
+    .stat-label { font-size: .72rem; }
+    .stat-sub   { font-size: .67rem; }
+    .credentials-box { padding: .75rem .9rem; }
+    .table-controls { flex-direction: column; align-items: stretch; }
+    .search-wrap input { width: 100%; }
+    .sort-select { width: 100%; }
+    .tad-tabs { padding: 0 1rem; }
+    .tad-tab { padding: .75rem .75rem; font-size: .76rem; }
+}
+
+@media (max-width: 360px) {
+    .stat-icon-circle { display: none; }
+    .act-btn { width: 28px; height: 28px; }
+    .stat-num { font-size: 1.4rem; }
+    .stat-box { padding: .75rem; }
+}
+
+@media (max-width: 768px) {
+    .action-group { flex-direction: column; gap: .25rem; }
+    .act-btn { width: 28px; height: 28px; }
+}
+
 @media (max-width: 700px) {
     .tad-header { padding: 1.2rem 1rem .9rem; }
     .tad-list { padding: 0 1rem 1.2rem; }
@@ -917,7 +944,7 @@ table td {
                 Export
             </button>
         </div>
-    </div> 
+    </div>
 
     <div class="stats-row fade-up d2">
         <div class="stat-box">
@@ -1013,9 +1040,24 @@ table td {
     <div class="tad-header">
         <div>
             <div class="tad-title">Archive / History</div>
-            <div class="tad-sub">Read-only record of deleted tenant accounts</div>
+            <div class="tad-sub">Records of deleted, inactive, and moved-out tenants</div>
         </div>
         <button class="tad-close" onclick="closeTenantArchive()">&#x2715;</button>
+    </div>
+
+    <div class="tad-tabs">
+        <button class="tad-tab active" id="ttab-deleted" onclick="switchTenantArchiveTab('deleted')">
+            Deleted
+            <span class="tad-tab-count" id="tcount-deleted">0</span>
+        </button>
+        <button class="tad-tab" id="ttab-inactive" onclick="switchTenantArchiveTab('inactive')">
+            Inactive
+            <span class="tad-tab-count" id="tcount-inactive">0</span>
+        </button>
+        <button class="tad-tab" id="ttab-moveout" onclick="switchTenantArchiveTab('move_out')">
+            Move Out
+            <span class="tad-tab-count" id="tcount-moveout">0</span>
+        </button>
     </div>
 
     <div class="tad-search-bar">
@@ -1041,7 +1083,7 @@ table td {
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
             <div class="modal-title">Tenant Account Created</div>
-            <button class="modal-close" onclick="closeModal('credentials-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('credentials-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
             The account for <strong style="color:var(--ink);">{{ session('new_tenant_name') }}</strong>
@@ -1083,7 +1125,7 @@ table td {
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
             <div class="modal-title">Password Reset Successfully</div>
-            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
             The password for <strong style="color:var(--ink);">{{ session('reset_tenant_name') }}</strong>
@@ -1123,7 +1165,7 @@ table td {
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Add New Tenant</div>
-            <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--petal);padding:.7rem 1rem;border-radius:10px;">
             Account ID and temporary password will be <strong>auto-generated</strong>
@@ -1187,7 +1229,7 @@ table td {
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Tenant Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div id="view-content"></div>
         <div class="modal-actions" style="margin-top:1rem;">
@@ -1204,7 +1246,7 @@ table td {
                 <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
                 Edit Tenant
             </div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
         <form method="POST" id="edit-form" action="">
             @csrf
@@ -1266,6 +1308,9 @@ table td {
                     </select>
                 </div>
             </div>
+            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;margin-bottom:.9rem;line-height:1.5;">
+                Setting status to <strong>Inactive</strong> or <strong>Move Out</strong> will save a record to the archive history.
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -1281,7 +1326,7 @@ table td {
                 <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">
                 Reset Password
             </div>
-            <button class="modal-close" onclick="closeModal('reset-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('reset-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
             Are you sure you want to reset the password for
@@ -1305,7 +1350,7 @@ table td {
                 <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
                 Delete Tenant
             </div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
         <div class="delete-warning">Warning: This action cannot be undone. The tenant record will be permanently removed.</div>
         <p style="font-size:.9rem;color:#b06080;">Are you sure you want to delete <strong id="delete-name" style="color:#5a1e38;"></strong>?</p>
@@ -1330,6 +1375,7 @@ table td {
     let currentPage  = 1;
     let filtered     = [...tenants];
     let currentTenant = null;
+
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -1435,8 +1481,8 @@ table td {
     }
 
     function applyFilters() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        const sort = document.getElementById('sort-select').value;
+        const q     = document.getElementById('search-input').value.toLowerCase();
+        const sort  = document.getElementById('sort-select').value;
         const floor = document.getElementById('floor-filter').value;
 
         filtered = tenants.filter(t => {
@@ -1447,7 +1493,7 @@ table td {
                 (t.email ?? '').toLowerCase().includes(q) ||
                 (t.contact_number ?? '').toLowerCase().includes(q);
 
-            const matchesFloor = floor === "" || String(t.floor) === floor;
+            const matchesFloor = floor === '' || String(t.floor) === floor;
 
             return matchesSearch && matchesFloor;
         });
@@ -1560,7 +1606,11 @@ table td {
     filtered = [...tenants];
     renderTable();
 
-    const deletedTenantArchive = @json($deletedArchive);
+    const deletedTenantArchive  = @json($deletedArchive);
+    const inactiveTenantArchive = @json($inactiveArchive);
+    const moveoutTenantArchive  = @json($moveoutArchive);
+
+    let tenantArchiveTab = 'deleted';
 
     function fmtDatePlain(d) {
         if (!d) return '—';
@@ -1574,12 +1624,24 @@ table td {
         document.getElementById('tad-drawer').classList.add('open');
         document.getElementById('tad-backdrop').classList.add('open');
         document.getElementById('tad-search').value = '';
+        document.getElementById('tcount-deleted').textContent  = deletedTenantArchive.length;
+        document.getElementById('tcount-inactive').textContent = inactiveTenantArchive.length;
+        document.getElementById('tcount-moveout').textContent  = moveoutTenantArchive.length;
         renderTenantArchive();
     }
 
     function closeTenantArchive() {
         document.getElementById('tad-drawer').classList.remove('open');
         document.getElementById('tad-backdrop').classList.remove('open');
+    }
+
+    function switchTenantArchiveTab(tab) {
+        tenantArchiveTab = tab;
+        document.getElementById('ttab-deleted').classList.toggle('active',  tab === 'deleted');
+        document.getElementById('ttab-inactive').classList.toggle('active', tab === 'inactive');
+        document.getElementById('ttab-moveout').classList.toggle('active',  tab === 'move_out');
+        document.getElementById('tad-search').value = '';
+        renderTenantArchive();
     }
 
     function statusPillClass(status) {
@@ -1595,8 +1657,13 @@ table td {
     function renderTenantArchive() {
         const q = document.getElementById('tad-search').value.toLowerCase();
 
-        const data = deletedTenantArchive.filter(r =>
-            (r.account_id    ?? '').toLowerCase().includes(q) ||
+        let source;
+        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+        const data = source.filter(r =>
+            (r.account_id ?? '').toLowerCase().includes(q) ||
             (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
             (r.email         ?? '').toLowerCase().includes(q) ||
             (r.room_number   ?? '').toLowerCase().includes(q) ||
@@ -1608,12 +1675,21 @@ table td {
             `${data.length} record${data.length !== 1 ? 's' : ''}`;
 
         if (data.length === 0) {
+            const labelMap = { deleted: 'deleted', inactive: 'inactive', move_out: 'move out' };
             list.innerHTML = `<div class="tad-empty">
                 <img class="tad-empty-icon" src="{{ asset('icons/tenants.png') }}" alt="">
-                No archived tenants found.
+                No ${labelMap[tenantArchiveTab]} records found.
             </div>`;
             return;
         }
+
+        const archiveLabelMap = {
+            deleted:  'Deleted on',
+            inactive: 'Marked inactive on',
+            move_out: 'Moved out on',
+        };
+
+        const archiveLabel = archiveLabelMap[tenantArchiveTab];
 
         list.innerHTML = data.map((r, i) => `
             <div class="tad-card" style="animation-delay:${i * 0.04}s;">
@@ -1633,15 +1709,22 @@ table td {
                     <span class="tad-pill ${statusPillClass(r.status)}">${r.status ?? '—'}</span>
                 </div>
                 <div class="tad-card-archived">
-                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                    ${archiveLabel}: <span>${fmtDatePlain(r.archived_at)}</span>
                 </div>
             </div>
         `).join('');
     }
 
     function exportTenantArchive() {
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', 'Deleted On']];
-        deletedTenantArchive.forEach(r => {
+        let source;
+        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+        const labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', labelMap[tenantArchiveTab]]];
+
+        source.forEach(r => {
             rows.push([
                 r.account_id     ?? '',
                 r.first_name,
@@ -1657,10 +1740,11 @@ table td {
                 r.archived_at    ?? '',
             ]);
         });
+
         const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
         const a   = document.createElement('a');
         a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'tenants_deleted_archive.csv';
+        a.download = `tenants_${tenantArchiveTab}_archive.csv`;
         a.click();
     }
 </script>
