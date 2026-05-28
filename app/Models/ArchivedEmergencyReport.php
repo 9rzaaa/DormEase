@@ -13,6 +13,9 @@ class ArchivedEmergencyReport extends Model
     protected $fillable = [
         'original_id',
         'archive_type',
+        'archived_by_staff_id',
+        'archived_by_name',
+        'archived_by_role',
         'tenant_id',
         'tenant_name',
         'room_number',

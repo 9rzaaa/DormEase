@@ -1024,15 +1024,15 @@
     <div class="archive-drawer-header">
         <div>
             <div class="archive-drawer-title">Archive / History</div>
-            <div class="archive-drawer-sub">Record of resolved and deleted emergency reports</div>
+            <div class="archive-drawer-sub">Record of closed and deleted emergency reports</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
 
     <div class="archive-tabs">
-        <button class="archive-tab active" id="atab-resolved" onclick="switchArchiveTab('resolved')">
-            Resolved
-            <span class="archive-tab-count" id="acount-resolved">0</span>
+        <button class="archive-tab active" id="atab-closed" onclick="switchArchiveTab('closed')">
+            Closed
+            <span class="archive-tab-count" id="acount-closed">0</span>
         </button>
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
@@ -1086,6 +1086,7 @@
                     <option value="active">Active</option>
                     <option value="ongoing">Ongoing</option>
                     <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
                 </select>
             </div>
             <div class="em-modal-field">
@@ -1096,6 +1097,9 @@
                 <label>Admin Notes</label>
                 <textarea id="edit-notes" placeholder="Add notes or action taken..."></textarea>
             </div>
+        </div>
+        <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#c07800;margin-bottom:.5rem;line-height:1.5;">
+            Setting status to <strong>Closed</strong> will move this emergency report to the closed archive history.
         </div>
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
@@ -1125,15 +1129,15 @@
 
 @section('scripts')
 <script>
-    const reports         = @json($reports);
-    const resolvedArchive = @json($resolvedArchive);
-    const deletedArchive  = @json($deletedArchive);
+    const reports        = @json($reports);
+    const closedArchive  = @json($closedArchive);
+    const deletedArchive = @json($deletedArchive);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
     let currentRep  = null;
     let deleteId    = null;
-    let archiveTab  = 'resolved';
+    let archiveTab  = 'closed';
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -1460,8 +1464,8 @@
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
-        document.getElementById('acount-resolved').textContent = resolvedArchive.length;
-        document.getElementById('acount-deleted').textContent  = deletedArchive.length;
+        document.getElementById('acount-closed').textContent  = closedArchive.length;
+        document.getElementById('acount-deleted').textContent = deletedArchive.length;
         renderArchive();
     }
 
@@ -1472,7 +1476,7 @@
 
     function switchArchiveTab(tab) {
         archiveTab = tab;
-        document.getElementById('atab-resolved').classList.toggle('active', tab === 'resolved');
+        document.getElementById('atab-closed').classList.toggle('active', tab === 'closed');
         document.getElementById('atab-deleted').classList.toggle('active', tab === 'deleted');
         document.getElementById('archive-search').value = '';
         renderArchive();
@@ -1481,7 +1485,7 @@
     function renderArchive() {
         const q = normalizeFilterValue(document.getElementById('archive-search').value);
         const list = document.getElementById('archive-list');
-        const data = archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+        const data = archiveTab === 'closed' ? closedArchive : deletedArchive;
         const filteredArchive = data.filter(r =>
             normalizeFilterValue(r.emergency_type).includes(q) ||
             normalizeFilterValue(r.urgency_level).includes(q) ||
@@ -1508,7 +1512,7 @@
             urgent: 'archive-pill-urgent',
             moderate: 'archive-pill-moderate',
         };
-        const archiveLabel = archiveTab === 'resolved' ? 'Resolved on' : 'Deleted on';
+        const archiveLabel = archiveTab === 'closed' ? 'Closed on' : 'Deleted on';
 
         list.innerHTML = filteredArchive.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
@@ -1531,13 +1535,16 @@
                 <div class="archive-card-archived">
                     ${archiveLabel}: <span>${fmtDatePlain(r.archived_at)}</span>
                 </div>
+                <div class="archive-card-archived">
+                    ${archiveTab === 'closed' ? 'Closed by' : 'Deleted by'}: <span>${escHtml(r.archived_by_label ?? 'Unknown')}</span>
+                </div>
             </div>
         `).join('');
     }
 
     function exportArchive() {
-        const data  = archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
-        const label = archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
+        const data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
+        const label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
         const rows = [[
             'Report ID',
             'Reported At',
@@ -1549,6 +1556,7 @@
             'Status',
             'Description',
             label,
+            archiveTab === 'closed' ? 'Closed By' : 'Deleted By',
         ]];
 
         data.forEach(r => {
@@ -1563,6 +1571,7 @@
                 r.status ?? '',
                 r.description ?? '',
                 fmtDatePlain(r.archived_at),
+                r.archived_by_label ?? '',
             ]);
         });
 
