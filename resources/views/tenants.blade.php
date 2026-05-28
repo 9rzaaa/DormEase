@@ -1002,6 +1002,11 @@ table td {
                     <option value="{{ $i }}">Floor {{ $i }}</option>
                     @endfor
                 </select>
+                <select class="sort-select" id="status-filter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
             </div>
         </div>
 
@@ -1481,9 +1486,10 @@ table td {
     }
 
     function applyFilters() {
-        const q     = document.getElementById('search-input').value.toLowerCase();
-        const sort  = document.getElementById('sort-select').value;
-        const floor = document.getElementById('floor-filter').value;
+        const q      = document.getElementById('search-input').value.toLowerCase();
+        const sort   = document.getElementById('sort-select').value;
+        const floor  = document.getElementById('floor-filter').value;
+        const status = document.getElementById('status-filter').value;
 
         filtered = tenants.filter(t => {
             const matchesSearch =
@@ -1493,9 +1499,10 @@ table td {
                 (t.email ?? '').toLowerCase().includes(q) ||
                 (t.contact_number ?? '').toLowerCase().includes(q);
 
-            const matchesFloor = floor === '' || String(t.floor) === floor;
+            const matchesFloor  = floor  === '' || String(t.floor) === floor;
+            const matchesStatus = status === '' || t.status === status;
 
-            return matchesSearch && matchesFloor;
+            return matchesSearch && matchesFloor && matchesStatus;
         });
 
         if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
