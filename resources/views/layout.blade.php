@@ -188,7 +188,7 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; font-size: 16px; position: relative; transition: var(--ease);
     }
-    .notif-bell:hover { background: var(--baby-pink); }
+    .notif-bell:hover { background: var(--baby-pink); box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
     .notif-badge {
         position: absolute; top: -3px; right: -3px;
         width: 16px; height: 16px;
@@ -198,17 +198,15 @@
         border: 2px solid var(--white);
     }
 
-    /* ── Notification dropdown ──
-       Key trick: padding-top bridges the gap between bell and panel,
-       so moving the cursor downward never leaves the hover zone.        */
+    /* ── Notification dropdown ──   */
     #notif-wrap {
         position: relative;
     }
     .notif-dropdown {
         position: absolute;
-        top: 100%;          /* sits right below the bell */
+        top: 100%;          
         right: 0;
-        padding-top: 8px;   /* invisible bridge – keeps hover alive */
+        padding-top: 8px;   
         width: 320px;
         z-index: 200;
         opacity: 0;
@@ -216,13 +214,11 @@
         pointer-events: none;
         transition: opacity .2s ease, transform .2s ease;
     }
-    /* Hover on the WRAP (bell + dropdown together) keeps it open */
     #notif-wrap:hover .notif-dropdown {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
     }
-    /* force-open class used when we need to lock it open (e.g. detail modal open) */
     .notif-dropdown.locked {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -291,7 +287,6 @@
         font-size: .83rem; color: var(--ink-muted);
     }
 
-    /* ── Avatar dropdown (hover stays as-is) ── */
     .avatar-wrap { position: relative; }
     .avatar {
         width: 36px; height: 36px; border-radius: 50%;
@@ -594,7 +589,6 @@
                     @endif
                 </div>
 
-                {{-- padding-top on .notif-dropdown bridges the gap so hover stays alive --}}
                 <div class="notif-dropdown" id="notif-dropdown">
                     <div class="notif-dropdown-inner">
                         <div class="notif-dropdown-header">
@@ -630,7 +624,7 @@
                                             default            => 'general',
                                         };
                                     @endphp
-                                    {{-- Each item opens the detail modal instead of navigating directly --}}
+
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
                                          onclick="openNotifDetail({
                                              id:      {{ $notif->notif_id }},
@@ -787,7 +781,6 @@
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    /* Close modal only when clicking the dark overlay, not the modal itself */
     function handleOverlayClick(e, id) {
         if (e.target === document.getElementById(id)) closeModal(id);
     }
@@ -850,7 +843,6 @@
             viewBtn.style.display = 'none';
         }
 
-        /* Mark as read via API (fire-and-forget) */
         if (!notif.isRead) {
             fetch('/notifications/' + notif.id + '/read', {
                 method: 'POST',
