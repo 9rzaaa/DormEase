@@ -87,7 +87,6 @@
     a { text-decoration: none; color: inherit; }
     button { font-family: var(--ff-body); cursor: pointer; }
 
-    /* ── Sidebar ── */
     .sidebar {
         width: var(--sidebar-w);
         background: var(--white);
@@ -165,10 +164,8 @@
     .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
     .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
 
-    /* ── Main layout ── */
     .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
-    /* ── Topbar ── */
     .topbar {
         position: sticky; top: 0; z-index: 50;
         background: var(--white);
@@ -181,7 +178,6 @@
     .breadcrumb span { color: var(--hot-pink); font-weight: 700; }
     .topbar-right { display: flex; align-items: center; gap: 1rem; }
 
-    /* ── Notification bell ── */
     .notif-bell {
         width: 36px; height: 36px; border-radius: 50%;
         background: var(--petal); border: 1.5px solid var(--baby-pink);
@@ -198,17 +194,14 @@
         border: 2px solid var(--white);
     }
 
-    /* ── Notification dropdown ──
-       Key trick: padding-top bridges the gap between bell and panel,
-       so moving the cursor downward never leaves the hover zone.        */
     #notif-wrap {
         position: relative;
     }
     .notif-dropdown {
         position: absolute;
-        top: 100%;          /* sits right below the bell */
+        top: 100%;
         right: 0;
-        padding-top: 8px;   /* invisible bridge – keeps hover alive */
+        padding-top: 8px;
         width: 320px;
         z-index: 200;
         opacity: 0;
@@ -216,13 +209,11 @@
         pointer-events: none;
         transition: opacity .2s ease, transform .2s ease;
     }
-    /* Hover on the WRAP (bell + dropdown together) keeps it open */
     #notif-wrap:hover .notif-dropdown {
         opacity: 1;
         transform: translateY(0) scale(1);
         pointer-events: auto;
     }
-    /* force-open class used when we need to lock it open (e.g. detail modal open) */
     .notif-dropdown.locked {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -291,7 +282,6 @@
         font-size: .83rem; color: var(--ink-muted);
     }
 
-    /* ── Avatar dropdown (hover stays as-is) ── */
     .avatar-wrap { position: relative; }
     .avatar {
         width: 36px; height: 36px; border-radius: 50%;
@@ -342,7 +332,6 @@
     .dropdown-item.danger { color: var(--red); }
     .dropdown-item.danger:hover { background: #fff0f0; color: var(--red); }
 
-    /* ── Cards ── */
     .card {
         background: var(--white); border-radius: 16px;
         border: 1.5px solid var(--baby-pink); box-shadow: var(--shadow); padding: 1.5rem;
@@ -354,14 +343,12 @@
     .see-all:hover { opacity: .7; }
     .icon-sm { width: 18px; height: 18px; object-fit: contain; }
 
-    /* ── Animations ── */
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .fade-up { opacity:0; animation: fadeUp .5s ease forwards; }
     .d1 { animation-delay:.05s; } .d2 { animation-delay:.12s; }
     .d3 { animation-delay:.19s; } .d4 { animation-delay:.26s; }
     .d5 { animation-delay:.33s; } .d6 { animation-delay:.40s; }
 
-    /* ── Modals ── */
     .modal-overlay {
         position: fixed; inset: 0;
         background: rgba(45,10,26,.50);
@@ -406,7 +393,6 @@
     }
     .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-    /* ── Notification detail modal ── */
     .notif-detail-modal {
         max-width: 520px;
     }
@@ -458,7 +444,6 @@
     }
     .notif-view-btn:hover { opacity: .9; transform: translateY(-1px); }
 
-    /* ── Misc ── */
     .alert-item { border-radius: 12px; padding: 1rem; border: 1.5px solid; margin-bottom: .8rem; }
     .alert-item.active   { background: #fff0f5; border-color: var(--baby-pink); }
     .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
@@ -479,7 +464,6 @@
     .toast.success { background: var(--green); }
     .toast.error   { background: var(--red); }
 
-    /* ── Sidebar toggle (mobile) ── */
     .sidebar-toggle {
         display: none; flex-direction: column; justify-content: center; gap: 5px;
         width: 36px; height: 36px;
@@ -585,7 +569,6 @@
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
 
-            {{-- ── Notification Bell ── --}}
             <div id="notif-wrap">
                 <div class="notif-bell" id="notif-bell" title="Notifications">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
@@ -594,7 +577,6 @@
                     @endif
                 </div>
 
-                {{-- padding-top on .notif-dropdown bridges the gap so hover stays alive --}}
                 <div class="notif-dropdown" id="notif-dropdown">
                     <div class="notif-dropdown-inner">
                         <div class="notif-dropdown-header">
@@ -630,7 +612,6 @@
                                             default            => 'general',
                                         };
                                     @endphp
-                                    {{-- Each item opens the detail modal instead of navigating directly --}}
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
                                          onclick="openNotifDetail({
                                              id:      {{ $notif->notif_id }},
@@ -670,7 +651,6 @@
                 </div>
             </div>
 
-            {{-- ── Avatar ── --}}
             <div class="avatar-wrap" id="avatar-wrap">
                 <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'Account' }}">
                     @if($staff->profile_picture ?? null)
@@ -718,7 +698,6 @@
 
 </div>
 
-{{-- ── Logout Modal ── --}}
 <div class="modal-overlay" id="logout-modal" onclick="handleOverlayClick(event, 'logout-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -733,7 +712,6 @@
     </div>
 </div>
 
-{{-- ── Notification Detail Modal ── --}}
 <div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
     <div class="modal notif-detail-modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -741,10 +719,8 @@
             <button class="modal-close" onclick="closeNotifDetail()">&#x2715;</button>
         </div>
 
-        {{-- Type badge --}}
         <div id="notif-detail-badge" class="notif-detail-type-badge general">General</div>
 
-        {{-- Icon + message --}}
         <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;">
             <div class="notif-detail-icon-wrap">
                 <img id="notif-detail-icon" src="" alt="">
@@ -752,7 +728,6 @@
             <div id="notif-detail-message" class="notif-detail-message" style="padding-top:.3rem;"></div>
         </div>
 
-        {{-- Meta info --}}
         <div class="notif-detail-meta">
             <div class="notif-detail-meta-row">
                 <strong>When</strong>
@@ -768,7 +743,6 @@
             </div>
         </div>
 
-        {{-- Actions --}}
         <div class="notif-detail-actions">
             <button class="btn-cancel" onclick="closeNotifDetail()">Close</button>
             <a id="notif-detail-view-btn" href="#" class="notif-view-btn" style="display:none;">
@@ -783,16 +757,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    /* ── Modal helpers ── */
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    /* Close modal only when clicking the dark overlay, not the modal itself */
     function handleOverlayClick(e, id) {
         if (e.target === document.getElementById(id)) closeModal(id);
     }
 
-    /* ── Toast ── */
     function showToast(msg, type = '') {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -801,7 +772,6 @@
         setTimeout(() => t.classList.remove('show'), 3200);
     }
 
-    /* ── Notification detail modal ── */
     const typeLabels = {
         maintenance:  'Maintenance',
         emergency:    'Emergency',
@@ -812,24 +782,19 @@
     };
 
     function openNotifDetail(notif) {
-        /* Populate badge */
         const badge = document.getElementById('notif-detail-badge');
         badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
         badge.textContent = typeLabels[notif.type] || 'General';
 
-        /* Icon */
         const icon = document.getElementById('notif-detail-icon');
         icon.src = notif.icon;
         icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
 
-        /* Message */
         document.getElementById('notif-detail-message').textContent = notif.message;
 
-        /* Time */
         document.getElementById('notif-detail-time').textContent =
             notif.time + ' (' + notif.ago + ')';
 
-        /* Status */
         const statusEl = document.getElementById('notif-detail-status');
         if (notif.isRead) {
             statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">&#10003; Read</span>';
@@ -837,7 +802,6 @@
             statusEl.innerHTML = '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
         }
 
-        /* URL row */
         const urlRow = document.getElementById('notif-detail-url-row');
         const viewBtn = document.getElementById('notif-detail-view-btn');
         if (notif.url) {
@@ -850,7 +814,6 @@
             viewBtn.style.display = 'none';
         }
 
-        /* Mark as read via API (fire-and-forget) */
         if (!notif.isRead) {
             fetch('/notifications/' + notif.id + '/read', {
                 method: 'POST',
@@ -859,7 +822,6 @@
                     'Accept': 'application/json',
                 }
             }).then(() => {
-                /* Update the dot in the dropdown list without a full reload */
                 const badge = document.getElementById('notif-badge');
                 if (badge) {
                     const current = parseInt(badge.textContent) || 0;
@@ -876,7 +838,6 @@
         closeModal('notif-detail-modal');
     }
 
-    /* ── Mark all read ── */
     function markAllRead() {
         fetch('/notifications/read-all', {
             method: 'POST',
@@ -887,7 +848,6 @@
         }).then(() => location.reload());
     }
 
-    /* ── Sidebar toggle ── */
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('sidebar-backdrop').classList.toggle('open');
