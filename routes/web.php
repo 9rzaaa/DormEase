@@ -120,7 +120,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
     });
 
-    // documents (admin ui)
+    // documents
     Route::get('/documents', [DocumentController::class, 'page'])->name('documents.index');
     Route::get('/admin/documents', [DocumentController::class, 'index'])->name('admin.documents.index');
     Route::post('/admin/documents', [DocumentController::class, 'store'])->name('admin.documents.store');
@@ -128,9 +128,14 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/admin/documents/{document}', [DocumentController::class, 'update'])->name('admin.documents.update');
     Route::delete('/admin/documents/{document}', [DocumentController::class, 'destroy'])->name('admin.documents.destroy');
 
-    // document requests (admin)
+    // document requests
     Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
     Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])->name('admin.document-requests.update');
+    Route::delete('/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'destroy'])->name('admin.document-requests.destroy');
+    
+    // document archive 
+    Route::get('/admin/archive-docus', [DocumentController::class, 'archiveIndex'])->name('admin.archive-docus.index');
+    Route::delete('/admin/archive-docus/{archiveDocu}', [DocumentController::class, 'archiveDestroy'])->name('admin.archive-docus.destroy');
 
     // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
