@@ -20,16 +20,15 @@ class EmergencyController extends Controller
             ->whereIn('urgency_level', ['critical', 'urgent'])
             ->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
-        $deletedArchive = ArchivedEmergencyReport::where('archive_type', 'deleted')
-            ->orderByDesc('archived_at')
-            ->get()
-            ->map(fn($report) => $this->formatArchive($report));
+        $resolvedArchive = $this->archiveCollection('resolved');
+        $deletedArchive = $this->archiveCollection('deleted');
 
         return view('emergency', compact(
             'reports',
             'totalCount',
             'criticalCount',
             'resolvedCount',
+            'resolvedArchive',
             'deletedArchive'
         ));
     }
@@ -42,10 +41,8 @@ class EmergencyController extends Controller
         $activeCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
         $panicCount = $reports->where('is_panic_alert', true)->count();
-        $deletedArchive = ArchivedEmergencyReport::where('archive_type', 'deleted')
-            ->orderByDesc('archived_at')
-            ->get()
-            ->map(fn($report) => $this->formatArchive($report));
+        $resolvedArchive = $this->archiveCollection('resolved');
+        $deletedArchive = $this->archiveCollection('deleted');
 
         return view('fdemergency', compact(
             'staff',
@@ -54,6 +51,7 @@ class EmergencyController extends Controller
             'activeCount',
             'resolvedCount',
             'panicCount',
+            'resolvedArchive',
             'deletedArchive'
         ));
     }
@@ -94,7 +92,7 @@ class EmergencyController extends Controller
     {
         $report = EmergencyReport::findOrFail($id);
         $validated = $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|in:pending,active,ongoing,resolved',
             'admin_notes' => 'nullable|string',
             'location' => 'nullable|string|max:255',
         ]);
@@ -119,6 +117,11 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
+
+            $this->archiveReport($report, 'resolved');
+            $report->delete();
+
+            return response()->json(['success' => true, 'archived' => true]);
         }
 
         return response()->json(['success' => true]);
@@ -151,6 +154,14 @@ class EmergencyController extends Controller
             'resolved_at' => $report->resolved_at ? $report->resolved_at->format('Y-m-d H:i:s') : null,
             'archived_at' => $report->archived_at ? $report->archived_at->format('Y-m-d H:i:s') : null,
         ];
+    }
+
+    private function archiveCollection(string $type)
+    {
+        return ArchivedEmergencyReport::where('archive_type', $type)
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchive($report));
     }
 
     private function archiveReport(EmergencyReport $report, string $type): void

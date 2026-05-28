@@ -642,6 +642,47 @@
 
     .archive-close-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
 
+    .archive-tabs {
+        display: flex;
+        gap: 0;
+        padding: 0 1.8rem;
+        border-bottom: 1.5px solid var(--pink-100);
+        background: var(--white);
+        flex-shrink: 0;
+    }
+
+    .archive-tab {
+        padding: .85rem 1.2rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-family: var(--ff-body);
+    }
+
+    .archive-tab:hover,
+    .archive-tab.active {
+        color: var(--hot-pink);
+        border-bottom-color: var(--hot-pink);
+    }
+
+    .archive-tab-count {
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .1rem .45rem;
+        border-radius: 99px;
+        background: var(--pink-100);
+        color: var(--hot-pink);
+    }
+
     .archive-search-bar {
         padding: 1rem 1.8rem .8rem;
         flex-shrink: 0;
@@ -850,6 +891,7 @@
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
         .modal-grid { grid-template-columns: 1fr; }
+        .archive-tabs { padding: 0 1rem; }
         .archive-drawer-header { padding: 1.2rem 1rem .9rem; }
         .archive-list { padding: 0 1rem 1.2rem; }
         .archive-search-bar { padding: .8rem 1rem .6rem; }
@@ -982,9 +1024,20 @@
     <div class="archive-drawer-header">
         <div>
             <div class="archive-drawer-title">Archive / History</div>
-            <div class="archive-drawer-sub">Record of deleted emergency reports</div>
+            <div class="archive-drawer-sub">Record of resolved and deleted emergency reports</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
+    </div>
+
+    <div class="archive-tabs">
+        <button class="archive-tab active" id="atab-resolved" onclick="switchArchiveTab('resolved')">
+            Resolved
+            <span class="archive-tab-count" id="acount-resolved">0</span>
+        </button>
+        <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
+            Deleted
+            <span class="archive-tab-count" id="acount-deleted">0</span>
+        </button>
     </div>
 
     <div class="archive-search-bar">
@@ -1072,13 +1125,15 @@
 
 @section('scripts')
 <script>
-    const reports        = @json($reports);
-    const deletedArchive = @json($deletedArchive);
+    const reports         = @json($reports);
+    const resolvedArchive = @json($resolvedArchive);
+    const deletedArchive  = @json($deletedArchive);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
     let currentRep  = null;
     let deleteId    = null;
+    let archiveTab  = 'resolved';
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -1405,6 +1460,8 @@
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
+        document.getElementById('acount-resolved').textContent = resolvedArchive.length;
+        document.getElementById('acount-deleted').textContent  = deletedArchive.length;
         renderArchive();
     }
 
@@ -1413,10 +1470,19 @@
         document.getElementById('archive-backdrop').classList.remove('open');
     }
 
+    function switchArchiveTab(tab) {
+        archiveTab = tab;
+        document.getElementById('atab-resolved').classList.toggle('active', tab === 'resolved');
+        document.getElementById('atab-deleted').classList.toggle('active', tab === 'deleted');
+        document.getElementById('archive-search').value = '';
+        renderArchive();
+    }
+
     function renderArchive() {
         const q = normalizeFilterValue(document.getElementById('archive-search').value);
         const list = document.getElementById('archive-list');
-        const filteredArchive = deletedArchive.filter(r =>
+        const data = archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+        const filteredArchive = data.filter(r =>
             normalizeFilterValue(r.emergency_type).includes(q) ||
             normalizeFilterValue(r.urgency_level).includes(q) ||
             normalizeFilterValue(r.location).includes(q) ||
@@ -1432,7 +1498,7 @@
         if (filteredArchive.length === 0) {
             list.innerHTML = `<div class="archive-empty">
                 <img class="archive-empty-icon" src="{{ asset('icons/nav-emerg.png') }}" alt="">
-                No archived emergency reports found.
+                No ${archiveTab} emergency reports found.
             </div>`;
             return;
         }
@@ -1442,6 +1508,7 @@
             urgent: 'archive-pill-urgent',
             moderate: 'archive-pill-moderate',
         };
+        const archiveLabel = archiveTab === 'resolved' ? 'Resolved on' : 'Deleted on';
 
         list.innerHTML = filteredArchive.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
@@ -1462,13 +1529,15 @@
                 </div>
                 ${r.description ? `<div class="archive-card-desc">${escHtml(r.description)}</div>` : ''}
                 <div class="archive-card-archived">
-                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                    ${archiveLabel}: <span>${fmtDatePlain(r.archived_at)}</span>
                 </div>
             </div>
         `).join('');
     }
 
     function exportArchive() {
+        const data  = archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+        const label = archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
         const rows = [[
             'Report ID',
             'Reported At',
@@ -1479,10 +1548,10 @@
             'Room',
             'Status',
             'Description',
-            'Deleted On',
+            label,
         ]];
 
-        deletedArchive.forEach(r => {
+        data.forEach(r => {
             rows.push([
                 `#EM-${String(r.id).padStart(3,'0')}`,
                 fmtDatePlain(r.reported_at),
@@ -1505,7 +1574,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'emergency_deleted_archive.csv';
+        a.download = `emergency_${archiveTab}_archive.csv`;
         a.click();
         URL.revokeObjectURL(url);
     }
