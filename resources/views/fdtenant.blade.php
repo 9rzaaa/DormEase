@@ -81,17 +81,21 @@
     background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
     transition: transform .2s, box-shadow .2s;
 }
+
 .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
+
 .stat-icon-circle {
     width: 40px; height: 40px; border-radius: 10px;
     background: var(--white);
     display: flex; align-items: center; justify-content: center;
     margin-bottom: .8rem;
 }
+
 .stat-icon-circle img {
     width: 22px; height: 22px; object-fit: contain;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
+
 .stat-num   { font-size: 1.9rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -.03em; }
 .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
 .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
@@ -303,18 +307,23 @@ table th, table td { text-align: center; vertical-align: middle; }
     padding: .6rem 0;
     border-bottom: 1px solid var(--pink-100);
 }
+
 .view-row:last-child { border-bottom: none; }
+
 .view-label {
     font-size: .78rem; font-weight: 700; color: var(--hot-pink);
     text-transform: uppercase; letter-spacing: .03em;
 }
+
 .view-val { font-size: .875rem; color: #5a1e38; font-weight: 500; }
 
 .fade-up { animation: fadeIn .45s ease both; }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s; }
@@ -323,7 +332,7 @@ table th, table td { text-align: center; vertical-align: middle; }
     position: fixed;
     top: 0; right: 0; bottom: 0;
     width: min(660px, 100vw);
-    background: var(--blush);
+    background: var(--pink-bg);
     z-index: 500;
     display: flex;
     flex-direction: column;
@@ -384,6 +393,54 @@ table th, table td { text-align: center; vertical-align: middle; }
 }
 
 .tad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
+
+.tad-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1.8rem;
+    border-bottom: 1px solid var(--pink-100);
+    flex-shrink: 0;
+    background: var(--white);
+}
+
+.tad-tab {
+    padding: .85rem 1.1rem;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    letter-spacing: .01em;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+
+.tad-tab:hover { color: var(--hot-pink); }
+.tad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+.tad-tab-count {
+    font-size: .68rem;
+    font-weight: 800;
+    padding: .1rem .45rem;
+    border-radius: 99px;
+    background: var(--petal);
+    color: var(--ink-muted);
+    letter-spacing: .02em;
+    min-width: 18px;
+    text-align: center;
+}
+
+.tad-tab.active .tad-tab-count {
+    background: var(--bright-pink);
+    color: var(--white);
+}
 
 .tad-search-bar {
     padding: 1rem 1.8rem .8rem;
@@ -502,12 +559,12 @@ table th, table td { text-align: center; vertical-align: middle; }
     text-transform: uppercase;
 }
 
-.tad-pill-room    { background: var(--petal);   color: var(--ink-muted); border: 1px solid var(--pink-100); }
-.tad-pill-stay    { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
-.tad-pill-active  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
-.tad-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
-.tad-pill-moveout { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
-.tad-pill-inactive{ background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-room     { background: var(--petal);   color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-stay     { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.tad-pill-moveout  { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
+.tad-pill-inactive { background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
 
 .tad-card-archived {
     display: flex;
@@ -584,6 +641,8 @@ table th, table td { text-align: center; vertical-align: middle; }
     .tad-list { padding: 0 1rem 1.2rem; }
     .tad-search-bar { padding: .8rem 1rem .6rem; }
     .tad-footer { padding: .75rem 1rem; }
+    .tad-tabs { padding: 0 1rem; }
+    .tad-tab { padding: .75rem .75rem; font-size: .76rem; }
 }
 
 @media (max-width: 600px) {
@@ -663,6 +722,11 @@ table th, table td { text-align: center; vertical-align: middle; }
                         <option value="{{ $i }}">Floor {{ $i }}</option>
                     @endfor
                 </select>
+                <select class="sort-select" id="status-filter" onchange="applyFilters()">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
             </div>
         </div>
 
@@ -700,9 +764,24 @@ table th, table td { text-align: center; vertical-align: middle; }
     <div class="tad-header">
         <div>
             <div class="tad-title">Archive / History</div>
-            <div class="tad-sub">Read-only record of deleted tenant accounts</div>
+            <div class="tad-sub">Records of deleted, inactive, and moved-out tenants</div>
         </div>
         <button class="tad-close" onclick="closeTenantArchive()">&#x2715;</button>
+    </div>
+
+    <div class="tad-tabs">
+        <button class="tad-tab active" id="ttab-deleted" onclick="switchTenantArchiveTab('deleted')">
+            Deleted
+            <span class="tad-tab-count" id="tcount-deleted">0</span>
+        </button>
+        <button class="tad-tab" id="ttab-inactive" onclick="switchTenantArchiveTab('inactive')">
+            Inactive
+            <span class="tad-tab-count" id="tcount-inactive">0</span>
+        </button>
+        <button class="tad-tab" id="ttab-moveout" onclick="switchTenantArchiveTab('move_out')">
+            Move Out
+            <span class="tad-tab-count" id="tcount-moveout">0</span>
+        </button>
     </div>
 
     <div class="tad-search-bar">
@@ -727,7 +806,7 @@ table th, table td { text-align: center; vertical-align: middle; }
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Tenant Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div id="view-content"></div>
         <div class="modal-actions" style="margin-top:1rem;">
@@ -740,7 +819,7 @@ table th, table td { text-align: center; vertical-align: middle; }
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
             <div class="modal-title">Add / Edit Note</div>
-            <button class="modal-close" onclick="closeModal('notes-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('notes-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;">
             Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
@@ -765,11 +844,15 @@ table th, table td { text-align: center; vertical-align: middle; }
 @section('scripts')
 <script>
     const tenants = @json($tenants);
-    const deletedTenantArchive = @json($deletedArchive);
 
-    const PER_PAGE   = 8;
-    let currentPage  = 1;
-    let filtered     = [...tenants];
+    const deletedTenantArchive  = @json($deletedArchive);
+    const inactiveTenantArchive = @json($inactiveArchive);
+    const moveoutTenantArchive  = @json($moveoutArchive);
+
+    const PER_PAGE  = 8;
+    let currentPage = 1;
+    let filtered    = [...tenants];
+    let tenantArchiveTab = 'deleted';
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -799,6 +882,16 @@ table th, table td { text-align: center; vertical-align: middle; }
             inactive: '<span class="badge badge-inactive">Inactive</span>',
         };
         return map[status] ?? `<span class="badge badge-inactive">${status}</span>`;
+    }
+
+    function statusPillClass(status) {
+        const map = {
+            active:   'tad-pill-active',
+            pending:  'tad-pill-pending',
+            move_out: 'tad-pill-moveout',
+            inactive: 'tad-pill-inactive',
+        };
+        return map[status] ?? 'tad-pill-inactive';
     }
 
     function renderTable() {
@@ -875,9 +968,10 @@ table th, table td { text-align: center; vertical-align: middle; }
     }
 
     function applyFilters() {
-        const q     = document.getElementById('search-input').value.toLowerCase();
-        const sort  = document.getElementById('sort-select').value;
-        const floor = document.getElementById('floor-filter').value;
+        const q      = document.getElementById('search-input').value.toLowerCase();
+        const sort   = document.getElementById('sort-select').value;
+        const floor  = document.getElementById('floor-filter').value;
+        const status = document.getElementById('status-filter').value;
 
         filtered = tenants.filter(t => {
             const matchesSearch =
@@ -886,8 +980,10 @@ table th, table td { text-align: center; vertical-align: middle; }
                 (t.contact_number ?? '').toLowerCase().includes(q) ||
                 String(t.floor ?? '').includes(q);
 
-            const matchesFloor = floor === '' || String(t.floor) === floor;
-            return matchesSearch && matchesFloor;
+            const matchesFloor  = floor  === '' || String(t.floor) === floor;
+            const matchesStatus = status === '' || t.status === status;
+
+            return matchesSearch && matchesFloor && matchesStatus;
         });
 
         if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -944,20 +1040,13 @@ table th, table td { text-align: center; vertical-align: middle; }
         showToast('Tenants exported as CSV!', 'success');
     }
 
-    function statusPillClass(status) {
-        const map = {
-            active:   'tad-pill-active',
-            pending:  'tad-pill-pending',
-            move_out: 'tad-pill-moveout',
-            inactive: 'tad-pill-inactive',
-        };
-        return map[status] ?? 'tad-pill-inactive';
-    }
-
     function openTenantArchive() {
         document.getElementById('tad-drawer').classList.add('open');
         document.getElementById('tad-backdrop').classList.add('open');
         document.getElementById('tad-search').value = '';
+        document.getElementById('tcount-deleted').textContent  = deletedTenantArchive.length;
+        document.getElementById('tcount-inactive').textContent = inactiveTenantArchive.length;
+        document.getElementById('tcount-moveout').textContent  = moveoutTenantArchive.length;
         renderTenantArchive();
     }
 
@@ -966,11 +1055,25 @@ table th, table td { text-align: center; vertical-align: middle; }
         document.getElementById('tad-backdrop').classList.remove('open');
     }
 
+    function switchTenantArchiveTab(tab) {
+        tenantArchiveTab = tab;
+        document.getElementById('ttab-deleted').classList.toggle('active',  tab === 'deleted');
+        document.getElementById('ttab-inactive').classList.toggle('active', tab === 'inactive');
+        document.getElementById('ttab-moveout').classList.toggle('active',  tab === 'move_out');
+        document.getElementById('tad-search').value = '';
+        renderTenantArchive();
+    }
+
     function renderTenantArchive() {
         const q = document.getElementById('tad-search').value.toLowerCase();
 
-        const data = deletedTenantArchive.filter(r =>
-            (r.account_id    ?? '').toLowerCase().includes(q) ||
+        let source;
+        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+        const data = source.filter(r =>
+            (r.account_id ?? '').toLowerCase().includes(q) ||
             (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
             (r.email         ?? '').toLowerCase().includes(q) ||
             (r.room_number   ?? '').toLowerCase().includes(q) ||
@@ -982,12 +1085,21 @@ table th, table td { text-align: center; vertical-align: middle; }
             `${data.length} record${data.length !== 1 ? 's' : ''}`;
 
         if (data.length === 0) {
+            const labelMap = { deleted: 'deleted', inactive: 'inactive', move_out: 'move out' };
             list.innerHTML = `<div class="tad-empty">
                 <img class="tad-empty-icon" src="{{ asset('icons/tenants.png') }}" alt="">
-                No archived tenants found.
+                No ${labelMap[tenantArchiveTab]} records found.
             </div>`;
             return;
         }
+
+        const archiveLabelMap = {
+            deleted:  'Deleted on',
+            inactive: 'Marked inactive on',
+            move_out: 'Moved out on',
+        };
+
+        const archiveLabel = archiveLabelMap[tenantArchiveTab];
 
         list.innerHTML = data.map((r, i) => `
             <div class="tad-card" style="animation-delay:${i * 0.04}s;">
@@ -1007,15 +1119,22 @@ table th, table td { text-align: center; vertical-align: middle; }
                     <span class="tad-pill ${statusPillClass(r.status)}">${r.status ?? '—'}</span>
                 </div>
                 <div class="tad-card-archived">
-                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
+                    ${archiveLabel}: <span>${fmtDatePlain(r.archived_at)}</span>
                 </div>
             </div>
         `).join('');
     }
 
     function exportTenantArchive() {
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', 'Deleted On']];
-        deletedTenantArchive.forEach(r => {
+        let source;
+        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+        const labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
+        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', labelMap[tenantArchiveTab]]];
+
+        source.forEach(r => {
             rows.push([
                 r.account_id     ?? '',
                 r.first_name,
@@ -1031,10 +1150,11 @@ table th, table td { text-align: center; vertical-align: middle; }
                 r.archived_at    ?? '',
             ]);
         });
+
         const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
         const a   = document.createElement('a');
         a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'tenants_deleted_archive.csv';
+        a.download = `tenants_${tenantArchiveTab}_archive.csv`;
         a.click();
     }
 
