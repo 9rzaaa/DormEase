@@ -20,6 +20,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BillingHistoryController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ReceiptController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -86,14 +87,6 @@ Route::post('/logout', function () {
     Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
     Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
 
-Route::prefix('billing')->name('billing.')->group(function () {
-    Route::get('/', [BillingController::class, 'index'])->name('index');
-    Route::post('/log', [BillingController::class, 'log'])->name('log');
-    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-
-});
-
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
 
@@ -136,6 +129,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
     Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
     Route::post('/history/update-status', [BillingHistoryController::class, 'updateStatus'])->name('history.updateStatus');
+    Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
 
     // documents
