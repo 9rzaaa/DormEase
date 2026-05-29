@@ -858,6 +858,30 @@
 
     #log-modal .btn-submit { padding: .62rem 1.6rem; border-radius: 12px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .86rem; font-weight: 800; cursor: pointer; transition: var(--ease); box-shadow: 0 6px 18px rgba(232,23,93,.28); }
     #log-modal .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(232,23,93,.35); }
+
+    .btn-receipt {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .85rem;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        color: #fff;
+        font-size: .82rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity .18s, transform .15s;
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .btn-receipt:hover {
+        opacity: .9;
+        transform: translateY(-1px);
+    }
 </style>
 @endsection
 
@@ -1312,6 +1336,14 @@ function openUpdateModal(room) {
                </a>`
             : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
 
+        const isPaid = t.payment_status === 'paid';
+        const receiptBtn = isPaid && t.billing_id
+            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" rel="noopener" class="btn-receipt">
+                   <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
+                   Download Receipt
+               </a>`
+            : '';
+
         html += `
             <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
                 <div class="view-row">
@@ -1348,6 +1380,7 @@ function openUpdateModal(room) {
                         <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
                     </select>
                 </div>
+                ${receiptBtn}
             </div>
         `;
     });
