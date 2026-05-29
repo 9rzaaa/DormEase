@@ -873,5 +873,101 @@
 
 @yield('scripts')
 
+<script>
+    (function() {
+        var __panicLastId = null;
+        var __panicBeepInterval = null;
+
+        function __escHtml(str) {
+            return (str == null ? '' : String(str))
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function __buildPanicAudio() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function beep(freq, start, dur) {
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    o.frequency.value = freq;
+                    o.type = 'sine';
+                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
+                }
+                beep(880, 0, 0.18);
+                beep(880, 0.22, 0.18);
+                beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __showPanicBanner(type, location) {
+            var existing = document.getElementById('__panic-alert-banner');
+            if (existing) existing.remove();
+            if (__panicBeepInterval) clearInterval(__panicBeepInterval);
+            __panicBeepInterval = setInterval(__buildPanicAudio, 3000);
+            var banner = document.createElement('div');
+            banner.id = '__panic-alert-banner';
+            banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            banner.innerHTML = '<style>@keyframes __pp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
+                + '<div style="background:linear-gradient(135deg,#ff2d78,#c0303a);color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__pp 1.5s infinite;">'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">Panic Alert</div>'
+                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:2rem;">' + __escHtml(location) + '</div>'
+                + '<button onclick="__dismissPanic()" style="background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
+                + '</div>';
+            document.body.appendChild(banner);
+        }
+
+        window.__dismissPanic = function() {
+            var banner = document.getElementById('__panic-alert-banner');
+            if (banner) banner.remove();
+            if (__panicBeepInterval) {
+                clearInterval(__panicBeepInterval);
+                __panicBeepInterval = null;
+            }
+        };
+
+        function __fireBrowserNotification(type, location) {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                try {
+                    new Notification('Panic Alert', { body: type + ' \u2014 ' + location });
+                } catch (e) {}
+            }
+        }
+
+        function __pollPanic() {
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            var csrfToken = csrfMeta ? csrfMeta.content : '';
+            fetch('{{ url("/emergency/poll-panic") }}', {
+                headers: { 'X-CSRF-TOKEN': csrfToken }
+            }).then(function(res) {
+                return res.json();
+            }).then(function(data) {
+                if (data.has_panic && data.report_id !== __panicLastId) {
+                    __panicLastId = data.report_id;
+                    __buildPanicAudio();
+                    __showPanicBanner(data.type, data.location);
+                    __fireBrowserNotification(data.type, data.location);
+                }
+            }).catch(function() {});
+        }
+
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        __pollPanic();
+        setInterval(__pollPanic, 15000);
+    })();
+</script>
 </body>
 </html>
