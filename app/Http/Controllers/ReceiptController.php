@@ -74,7 +74,7 @@ class ReceiptController extends Controller
 
         return response($pdfContent, 200, [
             'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             'Content-Length'      => strlen($pdfContent),
         ]);
     }
