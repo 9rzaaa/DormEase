@@ -247,4 +247,20 @@ class EmergencyController extends Controller
             ];
         })->values();
     }
+
+    public function pollPanic()
+    {
+        $latest = EmergencyReport::where('is_panic_alert', true)
+            ->whereIn('status', ['pending', 'active', 'ongoing'])
+            ->orderByDesc('reported_at')
+            ->first();
+
+        return response()->json([
+            'has_panic' => (bool) $latest,
+            'report_id' => $latest?->report_id,
+            'type'      => $latest?->emergency_type,
+            'location'  => $latest?->location,
+            'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
+        ]);
+    }
 }
