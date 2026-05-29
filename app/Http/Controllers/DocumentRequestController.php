@@ -71,6 +71,7 @@ class DocumentRequestController extends Controller
                     'tenant_id'      => $documentRequest->tenant_id,
                     'tenant_name'    => $documentRequest->tenant_name,
                     'document_type'  => $documentRequest->document_type,
+                    'category'       => $documentRequest->category, 
                     'purpose'        => $documentRequest->purpose,
                     'delivery_type'  => $documentRequest->delivery_type,
                     'date_needed'    => $documentRequest->date_needed,
