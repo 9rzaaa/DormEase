@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentRequest extends Model
 {
     protected $primaryKey = 'doc_request_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'tenant_id',
         'document_type',
+        'category',
         'purpose',
         'delivery_type',
         'date_needed',

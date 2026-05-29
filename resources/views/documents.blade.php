@@ -1392,7 +1392,6 @@
 </div>
 
 @endsection
-
 @section('scripts')
 <script>
     const CSRF     = document.querySelector('meta[name="csrf-token"]').content;
@@ -1414,7 +1413,7 @@
     const editIcon   = "{{ asset('icons/edit.png') }}";
     const deleteIcon = "{{ asset('icons/delete.png') }}";
 
-    let docState  = { type: '', vis: '', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+    let docState  = { type: '', vis: '', search: '', page: 1, perPage: 10, data: [], filtered: [], _base: [] };
     let reqState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
     let adocState = { filterType: '', filterVis: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
     let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -1426,8 +1425,8 @@
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         document.getElementById('tab-' + tab + '-btn').classList.add('active');
         document.getElementById('panel-' + tab).classList.add('active');
-        if (tab === 'docs') fetchDocs();
-        if (tab === 'reqs') fetchReqs();
+        if (tab === 'docs') fetchAll();
+        if (tab === 'reqs') fetchAll();
     }
 
     function switchDrawerTab(tab) {
@@ -1515,6 +1514,12 @@
         pg.innerHTML = html;
     }
 
+    // ── Fetch both together so merging is always safe ─────────────────────────
+    async function fetchAll() {
+        await fetchDocs();
+        await fetchReqs();
+    }
+
     async function fetchDocs() {
         document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
         try {
@@ -1524,7 +1529,8 @@
                 document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
                 return;
             }
-            docState.data = data.data ?? data;
+            docState._base = data.data ?? data;
+            docState.data  = [...docState._base];
             docApplyFilters();
             updateDocCounts();
             document.getElementById('tab-docs-count').textContent = docState.data.length;
@@ -1533,6 +1539,53 @@
         }
     }
 
+    async function fetchReqs() {
+        document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state">Loading...</div></td></tr>`;
+        try {
+            const res  = await fetch('/admin/document-requests', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            const data = await res.json();
+            if (data.error) {
+                document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
+                return;
+            }
+            const allReqs = data.data ?? data;
+
+            // category === 'form'  →  Documents tab (tenant uploaded a filled form)
+            const formSubmissions = allReqs
+                .filter(r => r.category === 'form')
+                .map(r => ({
+                    _is_form_submission: true,
+                    doc_request_id:  r.doc_request_id,
+                    document_id:     r.doc_request_id,
+                    title:           r.document_type,
+                    document_type:   r.document_type,
+                    visibility:      'specific',
+                    tenant_name:     r.tenant_name ?? r.full_name ?? '—',
+                    file_path:       r.attachment,
+                    date_posted:     r.submitted_at,
+                    status:          r.status,
+                    admin_remarks:   r.admin_remarks,
+                    fulfilled_file:  r.fulfilled_file,
+                }));
+
+            // merge form submissions on top of admin-uploaded docs
+            docState.data = [...(docState._base ?? []), ...formSubmissions];
+            docApplyFilters();
+            updateDocCounts();
+            document.getElementById('tab-docs-count').textContent = docState.data.length;
+
+            // category === 'certificate'  →  Document Requests tab
+            reqState.data = allReqs.filter(r => r.category === 'certificate');
+            const pending = reqState.data.filter(r => r.status === 'pending').length;
+            document.getElementById('tab-reqs-count').textContent = pending;
+            reqApplyFilters();
+
+        } catch (e) {
+            document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+        }
+    }
+
+    // ── Documents tab ─────────────────────────────────────────────────────────
     function docApplyFilters() {
         const q   = document.getElementById('doc-search').value.toLowerCase();
         const vis = document.getElementById('doc-filter-vis').value;
@@ -1582,20 +1635,15 @@
         } else {
             tbody.innerHTML = page.map(d => {
                 const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
-                return `<tr>
-                    <td>
-                        <div class="doc-title-cell">
-                            <span class="doc-dot" style="background:${color}"></span>
-                            ${escHtml(d.title)}
-                        </div>
-                    </td>
-                    <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
-                    <td>${visBadge(d.visibility)}</td>
-                    <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
-                    <td>${fileTypeBadge(d.file_path)}</td>
-                    <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
-                    <td>
-                        <div class="action-group">
+
+                // tenant form submission — show only a view button that opens the review modal
+                const actions = d._is_form_submission
+                    ? `<div class="action-group">
+                            <button class="act-btn" title="Review" onclick='viewFormSubmission(${JSON.stringify(d)})'>
+                                <img src="${eyeIcon}" alt="Review">
+                            </button>
+                       </div>`
+                    : `<div class="action-group">
                             <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(d)})'>
                                 <img src="${eyeIcon}" alt="View">
                             </button>
@@ -1605,8 +1653,21 @@
                             <button class="act-btn danger" title="Delete" onclick="promptDeleteDoc(${d.document_id}, '${escHtml(d.title)}')">
                                 <img src="${deleteIcon}" alt="Delete">
                             </button>
+                       </div>`;
+
+                return `<tr>
+                    <td>
+                        <div class="doc-title-cell">
+                            <span class="doc-dot" style="background:${color}"></span>
+                            ${escHtml(d.title)}
                         </div>
                     </td>
+                    <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
+                    <td>${d._is_form_submission ? reqStatusBadge(d.status) : visBadge(d.visibility)}</td>
+                    <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
+                    <td>${fileTypeBadge(d.file_path)}</td>
+                    <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
+                    <td>${actions}</td>
                 </tr>`;
             }).join('');
         }
@@ -1617,6 +1678,7 @@
         renderPagination('doc-pagination', docState.page, Math.ceil(total / docState.perPage), p => { docState.page = p; renderDocTable(); });
     }
 
+    // view modal for admin-uploaded docs
     function viewDoc(d) {
         currentDoc = d;
         document.getElementById('view-doc-content').innerHTML = `
@@ -1648,7 +1710,52 @@
                 ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>`
                 : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
         `;
+        document.getElementById('view-doc-modal').querySelector('.modal-actions').innerHTML = `
+            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEditDoc()">Edit</button>
+        `;
         openModal('view-doc-modal');
+    }
+
+    // view + review modal for tenant form submissions
+    function viewFormSubmission(d) {
+        currentReq = d;
+        const fileHtml = d.file_path
+            ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">View Uploaded Form</a>`
+            : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
+
+        document.getElementById('view-req-content').innerHTML = `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Tenant</div>
+                <div class="view-detail-val">${escHtml(d.tenant_name)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Form Type</div>
+                <div class="view-detail-val">${escHtml(d.document_type)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Submitted</div>
+                <div class="view-detail-val">${fmtDate(d.date_posted)}</div>
+            </div>
+            <div class="view-detail-row">
+                <div class="view-detail-label">Status</div>
+                <div class="view-detail-val">${reqStatusBadge(d.status)}</div>
+            </div>
+            ${d.admin_remarks ? `
+            <div class="view-detail-row">
+                <div class="view-detail-label">Admin Remarks</div>
+                <div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div>
+            </div>` : ''}
+            <div class="view-detail-row">
+                <div class="view-detail-label">Uploaded File</div>
+                <div class="view-detail-val">${fileHtml}</div>
+            </div>
+        `;
+        document.getElementById('view-req-actions').innerHTML = `
+            <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
+            <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Review / Add Remarks</button>
+        `;
+        openModal('view-req-modal');
     }
 
     function switchToEditDoc() {
@@ -1682,7 +1789,7 @@
             if (!res.ok) throw new Error();
             closeModal('edit-doc-modal');
             showToast('Document updated successfully.', 'success');
-            fetchDocs();
+            fetchAll();
         } catch { showToast('Update failed.', 'error'); }
     }
 
@@ -1702,7 +1809,7 @@
             if (!res.ok) throw new Error();
             closeModal('delete-doc-modal');
             showToast('Document deleted and archived.', 'success');
-            fetchDocs();
+            fetchAll();
         } catch { showToast('Delete failed.', 'error'); }
     }
 
@@ -1737,28 +1844,11 @@
             document.getElementById('up-title').value = '';
             document.getElementById('up-file').value  = '';
             showToast('Document uploaded successfully.', 'success');
-            fetchDocs();
+            fetchAll();
         } catch { showToast('Upload failed.', 'error'); }
     }
 
-    async function fetchReqs() {
-        document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state">Loading...</div></td></tr>`;
-        try {
-            const res  = await fetch('/admin/document-requests', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
-            const data = await res.json();
-            if (data.error) {
-                document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
-                return;
-            }
-            reqState.data = data.data ?? data;
-            const pending = reqState.data.filter(r => r.status === 'pending').length;
-            document.getElementById('tab-reqs-count').textContent = pending;
-            reqApplyFilters();
-        } catch (e) {
-            document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
-        }
-    }
-
+    // ── Document Requests tab ─────────────────────────────────────────────────
     function reqApplyFilters() {
         const q      = document.getElementById('req-search').value.toLowerCase();
         const status = document.getElementById('req-filter-status').value;
@@ -1928,7 +2018,7 @@
             }
             closeModal('update-req-modal');
             showToast('Request updated successfully.', 'success');
-            fetchReqs();
+            fetchAll();
         } catch (e) {
             showToast(e.message ?? 'Update failed.', 'error');
         }
@@ -1950,18 +2040,24 @@
             if (!res.ok) throw new Error();
             closeModal('delete-req-modal');
             showToast('Request archived.', 'success');
-            fetchReqs();
+            fetchAll();
         } catch { showToast('Archive failed.', 'error'); }
     }
 
+    // ── Archive drawer ────────────────────────────────────────────────────────
     async function fetchArchive() {
         try {
             const res  = await fetch('/admin/archive-docus', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
             const data = await res.json();
             if (data.error) return;
 
-            adocState.data = data.filter(r => r.archivable_type === 'document');
-            areqState.data = data.filter(r => r.archivable_type === 'document_request');
+            adocState.data = data.filter(r =>
+                r.archivable_type === 'document' ||
+                (r.archivable_type === 'document_request' && r.data?.category === 'form')
+            );
+            areqState.data = data.filter(r =>
+                r.archivable_type === 'document_request' && r.data?.category !== 'form'
+            );
 
             document.getElementById('dtab-docs-count').textContent = adocState.data.length;
             document.getElementById('dtab-reqs-count').textContent = areqState.data.length;
@@ -2248,7 +2344,6 @@
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
 
-    fetchDocs();
-    fetchReqs();
+    fetchAll();
 </script>
 @endsection
