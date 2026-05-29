@@ -300,18 +300,28 @@
         text-transform: uppercase;
         color: var(--bright-pink);
         background: var(--pink-bg);
-        text-align: center;
+        text-align: left;
         font-weight: 700;
         white-space: nowrap;
         border-bottom: 2px solid var(--bright-pink);
+    }
+
+    th:nth-child(8),
+    th:nth-child(9) {
+        text-align: center;
     }
 
     td {
         padding: .9rem 1rem;
         font-size: .875rem;
         border-bottom: 1px solid var(--border);
-        text-align: center;
+        text-align: left;
         vertical-align: middle;
+    }
+
+    td:nth-child(8),
+    td:nth-child(9) {
+        text-align: center;
     }
 
     tbody tr:last-child td { border-bottom: none; }
@@ -917,6 +927,17 @@
 
         <div class="table-wrap">
             <table>
+                <colgroup>
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:13%;">
+                    <col style="width:14%;">
+                    <col style="width:10%;">
+                    <col style="width:8%;">
+                    <col style="width:7%;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -1019,7 +1040,7 @@
         tbody.innerHTML = filtered.map(function(v) {
 
             const expectedVisit = (v.date_of_visit || v.time_of_visit)
-                ? fmtDate(v.date_of_visit) + '<br><small style="color:#aaa">' + fmtTime(v.time_of_visit) + '</small>'
+                ? fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit)
                 : '—';
 
             const timeIn = v.arrival_time

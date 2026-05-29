@@ -227,12 +227,17 @@
 
     thead th {
         padding: .75rem .85rem;
-        text-align: center;
+        text-align: left;
         font-size: .78rem; font-weight: 800;
         color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em;
         background: var(--blush);
         border-bottom: 2px solid var(--bright-pink);
         white-space: nowrap;
+    }
+
+    thead th:nth-child(8),
+    thead th:nth-child(9) {
+        text-align: center;
     }
 
     tbody tr { border-bottom: 2px solid var(--baby-pink); transition: background .15s; }
@@ -241,7 +246,34 @@
 
     tbody td {
         padding: .8rem .85rem; color: var(--ink);
-        vertical-align: middle; text-align: center; font-weight: 500;
+        vertical-align: middle; text-align: left; font-weight: 500;
+    }
+
+    tbody td:nth-child(8),
+    tbody td:nth-child(9) {
+        text-align: center;
+    }
+
+    thead th:nth-child(3),
+    tbody td:nth-child(3),
+    thead th:nth-child(6),
+    tbody td:nth-child(6) {
+        padding-left: .55rem;
+    }
+
+    thead th:nth-child(6),
+    tbody td:nth-child(6) {
+        padding-right: 1.50rem;
+    }
+
+    thead th:nth-child(4),
+    tbody td:nth-child(4) {
+        padding-left: 1.15rem;
+    }
+
+    thead th:nth-child(7),
+    tbody td:nth-child(7) {
+        padding-left: 1.25rem;
     }
 
     .req-id { font-weight: 700; color: var(--hot-pink); font-size: .86rem; white-space: nowrap; }
@@ -273,7 +305,7 @@
     .desc-cell {
         max-width: 100%; overflow: visible; text-overflow: clip;
         white-space: normal; overflow-wrap: break-word;
-        color: var(--ink-muted); font-size: .86rem; text-align: center; line-height: 1.35;
+        color: var(--ink-muted); font-size: .86rem; text-align: left; line-height: 1.35;
     }
 
     .urgency-badge {
@@ -833,6 +865,17 @@
         </div>
         <div class="table-wrap">
             <table id="main-table">
+                <colgroup>
+                    <col style="width:10%;">
+                    <col style="width:12%;">
+                    <col style="width:7%;">
+                    <col style="width:13%;">
+                    <col style="width:12%;">
+                    <col style="width:8%;">
+                    <col style="width:19%;">
+                    <col style="width:9%;">
+                    <col style="width:10%;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Request ID</th>
@@ -840,8 +883,8 @@
                         <th>Room No.</th>
                         <th>Tenant Name</th>
                         <th>Issue Type</th>
-                        <th>Description</th>
                         <th>Urgency</th>
+                        <th>Description</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -1066,8 +1109,8 @@
             <td><span class="room-badge">${escHtml(r.room_number ?? '—')}</span></td>
             <td><span class="tenant-name">${escHtml(r.tenant_name ?? '—')}</span></td>
             <td><span class="issue-type ${cls}">${escHtml(r.issue_type ?? '—')}</span></td>
-            <td><div class="desc-cell" title="${escHtml(r.description)}">${escHtml(r.description ?? '—')}</div></td>
             <td>${urgencyBadge(r.urgency)}</td>
+            <td><div class="desc-cell" title="${escHtml(r.description)}">${escHtml(r.description ?? '—')}</div></td>
             <td>${statusBadge(r.status)}</td>
             <td>
                 <div class="action-cell">

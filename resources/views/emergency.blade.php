@@ -268,7 +268,7 @@
 
     thead th {
         padding: .75rem .85rem;
-        text-align: center;
+        text-align: left;
         font-size: .78rem;
         font-weight: 800;
         color: var(--ink-muted);
@@ -277,6 +277,11 @@
         background: var(--pink-100);
         border-bottom: 2px solid var(--bright-pink);
         white-space: nowrap;
+    }
+
+    thead th:nth-child(7),
+    thead th:nth-child(8) {
+        text-align: center;
     }
 
     tbody tr {
@@ -291,14 +296,19 @@
         padding: .8rem .85rem;
         color: var(--ink);
         vertical-align: middle;
-        text-align: center;
+        text-align: left;
         font-weight: 500;
+    }
+
+    tbody td:nth-child(7),
+    tbody td:nth-child(8) {
+        text-align: center;
     }
 
     .type-cell {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: .5rem;
         flex-wrap: wrap;
     }
