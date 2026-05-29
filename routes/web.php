@@ -158,6 +158,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
     Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
     Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
+    Route::get('/emergency/poll-panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
 
     // frontdesk
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
