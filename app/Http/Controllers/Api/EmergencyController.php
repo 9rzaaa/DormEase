@@ -105,7 +105,7 @@ class EmergencyController extends Controller
                 'fight',
                 'threat',
                 'stranger',
-                'harassment',
+                'harass',
                 'assault',
                 'magnanakaw',
                 'nanakaw',
@@ -198,7 +198,7 @@ class EmergencyController extends Controller
         $reports = EmergencyReport::where('tenant_id', $tenantId)
             ->latest('reported_at')
             ->get()
-            ->map(fn ($report) => $this->formatReport($report));
+            ->map(fn($report) => $this->formatReport($report));
 
         return response()->json([
             'reports' => $reports,
@@ -283,6 +283,72 @@ class EmergencyController extends Controller
         return trim($text ?? '');
     }
 
+    /**
+     * Strips common -ing suffixes from a word to produce candidate stems.
+     * Returns an array of the original word plus any derived stems.
+     *
+     * Examples:
+     *   "bleeding"  → ["bleeding", "bleed"]
+     *   "sparking"  → ["sparking", "spark"]
+     *   "burning"   → ["burning", "burn"]
+     *   "flooding"  → ["flooding", "flood"]
+     *   "overflowing" → ["overflowing", "overflow"]
+     *   "sparring"  → ["sparring", "spar"]   (double-consonant: rr → r)
+     */
+    private function expandIngForms(string $word): array
+    {
+        $forms = [$word];
+
+        if (!str_ends_with($word, 'ing') || strlen($word) <= 5) {
+            return $forms;
+        }
+
+        $base = substr($word, 0, -3);
+
+        if (preg_match('/([b-df-hj-np-tv-z])\1$/', $base, $m)) {
+            $forms[] = substr($base, 0, -1);
+        }
+
+        $forms[] = $base . 'e';
+
+        $forms[] = $base;
+
+        return array_unique($forms);
+    }
+
+    /**
+     * Checks whether a keyword appears anywhere in the text,
+     * also testing -ing-stripped stems of each word in the text against the keyword.
+     */
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        if (str_contains($text, $keyword)) {
+            return true;
+        }
+
+        $words = explode(' ', $text);
+        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
+
+        $candidates = [''];
+        foreach ($expandedWords as $forms) {
+            $next = [];
+            foreach ($candidates as $prefix) {
+                foreach ($forms as $form) {
+                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
+                }
+            }
+            $candidates = array_slice($next, 0, 512);
+        }
+
+        foreach ($candidates as $candidate) {
+            if (str_contains($candidate, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function classify(string $text, ?string $requestedType, bool $isPanicAlert): array
     {
         if ($isPanicAlert) {
@@ -294,13 +360,13 @@ class EmergencyController extends Controller
 
         $normalizedType = $this->normalizeEmergencyType($requestedType);
         $bestType = $normalizedType ?? 'Other';
-        $bestScore = $normalizedType ? 1 : 0;
+        $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1 : 0;
 
         foreach (self::EMERGENCY_RULES as $type => $rule) {
             $score = 0;
 
             foreach ($rule['keywords'] as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     $score++;
                 }
             }
@@ -321,7 +387,7 @@ class EmergencyController extends Controller
     {
         foreach (self::URGENCY_RULES as $urgency => $keywords) {
             foreach ($keywords as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     return $urgency;
                 }
             }
@@ -353,8 +419,8 @@ class EmergencyController extends Controller
     private function isPanicAlert(?string $requestedType, string $text): bool
     {
         return $this->normalizeEmergencyType($requestedType) === 'Panic Alert'
-            || str_contains($text, 'panic alert')
-            || str_contains($text, 'panic');
+            || $this->matchesKeyword($text, 'panic alert')
+            || $this->matchesKeyword($text, 'panic');
     }
 
     private function detectLocation(string $text): ?string
