@@ -21,6 +21,7 @@ class DocumentRequestController extends Controller
     {
         $request->validate([
             'document_type'   => 'required|string|max:255',
+            'category'      => 'nullable|in:form,certificate', 
             'purpose'         => 'nullable|string',
             'delivery_type'   => 'nullable|in:digital,printed',
             'date_needed'     => 'nullable|date',
@@ -37,6 +38,7 @@ class DocumentRequestController extends Controller
         $documentRequest = DocumentRequest::create([
             'tenant_id'     => $request->user()->tenant_id,
             'document_type' => $request->document_type,
+            'category'      => $request->category, 
             'purpose'       => $request->purpose,
             'delivery_type' => $deliveryType,
             'date_needed'   => $request->date_needed,
