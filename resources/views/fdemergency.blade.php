@@ -1576,5 +1576,97 @@
     @endif
 
     applyFilters();
+
+    let lastSeenPanicId = null;
+    let panicAudio = null;
+
+    function buildPanicAudio() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(freq, start, dur) {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.frequency.value = freq;
+            o.type = 'sine';
+            g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+            o.start(ctx.currentTime + start);
+            o.stop(ctx.currentTime + start + dur + 0.05);
+        }
+        beep(880, 0, 0.18);
+        beep(880, 0.22, 0.18);
+        beep(1100, 0.44, 0.28);
+    }
+
+    function showPanicBanner(type, location) {
+        const existing = document.getElementById('panic-alert-banner');
+        if (existing) existing.remove();
+
+        const banner = document.createElement('div');
+        banner.id = 'panic-alert-banner';
+        banner.style.cssText = `
+            position:fixed;top:1.2rem;left:50%;transform:translateX(-50%);
+            z-index:9999;background:linear-gradient(135deg,#ff2d78,#c0303a);
+            color:#fff;padding:1rem 1.6rem;border-radius:16px;
+            box-shadow:0 12px 40px rgba(255,45,120,.5);
+            display:flex;align-items:center;gap:1rem;
+            font-family:var(--ff-body);font-weight:700;font-size:.95rem;
+            animation:panicSlideIn .35s cubic-bezier(.4,0,.2,1) both;
+            max-width:90vw;
+        `;
+        banner.innerHTML = `
+            <style>
+                @keyframes panicSlideIn {
+                    from { opacity:0; transform:translateX(-50%) translateY(-18px); }
+                    to   { opacity:1; transform:translateX(-50%) translateY(0); }
+                }
+            </style>
+            <span style="font-size:1.3rem;">&#9888;</span>
+            <div>
+                <div style="font-size:.78rem;opacity:.85;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Panic Alert</div>
+                <div>${escHtml(type)} &mdash; ${escHtml(location)}</div>
+            </div>
+            <button onclick="this.parentElement.remove()" style="
+                margin-left:auto;background:rgba(255,255,255,.2);border:none;
+                color:#fff;width:28px;height:28px;border-radius:8px;
+                cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
+            ">&#x2715;</button>
+        `;
+        document.body.appendChild(banner);
+        setTimeout(() => { if (banner.isConnected) banner.remove(); }, 8000);
+    }
+
+    function fireBrowserNotification(type, location) {
+        if (Notification.permission === 'granted') {
+            new Notification('Panic Alert', {
+                body: `${type} — ${location}`,
+                icon: '{{ asset("icons/panic.png") }}',
+            });
+        }
+    }
+
+    async function pollPanic() {
+        try {
+            const res = await fetch('/frontdesk/emergency/poll-panic', {
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            });
+            const data = await res.json();
+
+            if (data.has_panic && data.report_id !== lastSeenPanicId) {
+                lastSeenPanicId = data.report_id;
+                buildPanicAudio();
+                showPanicBanner(data.type, data.location);
+                fireBrowserNotification(data.type, data.location);
+            }
+        } catch {}
+    }
+
+    if (Notification.permission === 'default') {
+        Notification.requestPermission();
+    }
+
+    pollPanic();
+    setInterval(pollPanic, 15000);
 </script>
 @endsection
