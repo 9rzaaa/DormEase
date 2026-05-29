@@ -953,7 +953,109 @@
         __pollPanic();
         setInterval(__pollPanic, 15000);
     })();
-</script>
 
+    (function() {
+        var __criticalSeen = new Set();
+        var __criticalQueue = [];
+        var __criticalActive = false;
+
+        function __criticalEscHtml(str) {
+            return (str == null ? '' : String(str))
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function __showNextCritical() {
+            if (__criticalActive || __criticalQueue.length === 0) return;
+            __criticalActive = true;
+
+            var report = __criticalQueue.shift();
+            var isCritical = report.urgency_level === 'critical';
+
+            var banner = document.createElement('div');
+            banner.id = '__critical-banner-' + report.report_id;
+            banner.style.cssText = [
+                'position:fixed',
+                'bottom:2rem',
+                'right:2rem',
+                'z-index:9000',
+                'width:340px',
+                'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
+                'border:2px solid ' + (isCritical ? '#ffc8d0' : '#ffd54f'),
+                'border-radius:14px',
+                'padding:1rem 1.1rem',
+                'box-shadow:0 8px 28px rgba(0,0,0,.18)',
+                'transform:translateX(380px)',
+                'transition:transform .35s cubic-bezier(.4,0,.2,1)',
+                'font-family:inherit',
+            ].join(';');
+
+            banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.7rem;">'
+                + '<div style="flex-shrink:0;width:36px;height:36px;border-radius:8px;background:'
+                + (isCritical ? '#ffc8d0' : '#ffd54f')
+                + ';display:flex;align-items:center;justify-content:center;">'
+                + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'
+                + (isCritical ? '#c0303a' : '#c07800')
+                + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
+                + '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>'
+                + '<line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+                + '</svg></div>'
+                + '<div style="flex:1;min-width:0;">'
+                + '<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:'
+                + (isCritical ? '#c0303a' : '#c07800')
+                + ';margin-bottom:.2rem;">' + (isCritical ? 'Critical' : 'Urgent') + ' Emergency</div>'
+                + '<div style="font-size:.85rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.15rem;">'
+                + __criticalEscHtml(report.emergency_type) + '</div>'
+                + '<div style="font-size:.78rem;color:#7A3A55;">' + __criticalEscHtml(report.location) + '</div>'
+                + '</div>'
+                + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#7A3A55;font-size:1rem;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;">&#x2715;</button>'
+                + '</div>';
+
+            document.body.appendChild(banner);
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    banner.style.transform = 'translateX(0)';
+                });
+            });
+
+            var timer = setTimeout(function() { __dismissCritical(banner.id); }, 8000);
+            banner.__dismissTimer = timer;
+        }
+
+        window.__dismissCritical = function(id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            clearTimeout(el.__dismissTimer);
+            el.style.transform = 'translateX(380px)';
+            setTimeout(function() {
+                if (el.parentNode) el.parentNode.removeChild(el);
+                __criticalActive = false;
+                __showNextCritical();
+            }, 380);
+        };
+
+        function __pollCritical() {
+            fetch('{{ url("/emergency/poll-critical") }}', {
+                headers: { 'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                (data.reports || []).forEach(function(r) {
+                    if (!__criticalSeen.has(r.report_id)) {
+                        __criticalSeen.add(r.report_id);
+                        if (__criticalSeen.size > 1) {
+                            __criticalQueue.push(r);
+                            __showNextCritical();
+                        }
+                    }
+                });
+            })
+            .catch(function() {});
+        }
+
+        __pollCritical();
+        setInterval(__pollCritical, 15000);
+    })();
+</script>
 </body>
 </html>

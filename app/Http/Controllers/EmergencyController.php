@@ -263,4 +263,22 @@ class EmergencyController extends Controller
             'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
         ]);
     }
+
+    public function pollCritical()
+    {
+        $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
+            ->whereIn('status', ['pending', 'active', 'ongoing'])
+            ->orderByDesc('reported_at')
+            ->take(5)
+            ->get()
+            ->map(fn($r) => [
+                'report_id'     => $r->report_id,
+                'urgency_level' => $r->urgency_level,
+                'emergency_type' => $r->emergency_type,
+                'location'      => $r->location,
+                'reported_at'   => $r->reported_at?->format('Y-m-d H:i:s'),
+            ]);
+
+        return response()->json(['reports' => $reports]);
+    }
 }
