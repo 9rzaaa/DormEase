@@ -184,7 +184,7 @@
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; font-size: 16px; position: relative; transition: var(--ease);
     }
-    .notif-bell:hover { background: var(--baby-pink); }
+    .notif-bell:hover { background: var(--baby-pink); box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
     .notif-badge {
         position: absolute; top: -3px; right: -3px;
         width: 16px; height: 16px;
@@ -194,14 +194,15 @@
         border: 2px solid var(--white);
     }
 
+    /* ── Notification dropdown ──   */
     #notif-wrap {
         position: relative;
     }
     .notif-dropdown {
         position: absolute;
-        top: 100%;
+        top: 100%;          
         right: 0;
-        padding-top: 8px;
+        padding-top: 8px;   
         width: 320px;
         z-index: 200;
         opacity: 0;
@@ -612,6 +613,7 @@
                                             default            => 'general',
                                         };
                                     @endphp
+
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
                                          onclick="openNotifDetail({
                                              id:      {{ $notif->notif_id }},

@@ -20,16 +20,15 @@ class EmergencyController extends Controller
             ->whereIn('urgency_level', ['critical', 'urgent'])
             ->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
-        $deletedArchive = ArchivedEmergencyReport::where('archive_type', 'deleted')
-            ->orderByDesc('archived_at')
-            ->get()
-            ->map(fn($report) => $this->formatArchive($report));
+        $closedArchive = $this->archiveCollection('closed');
+        $deletedArchive = $this->archiveCollection('deleted');
 
         return view('emergency', compact(
             'reports',
             'totalCount',
             'criticalCount',
             'resolvedCount',
+            'closedArchive',
             'deletedArchive'
         ));
     }
@@ -42,6 +41,8 @@ class EmergencyController extends Controller
         $activeCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
         $panicCount = $reports->where('is_panic_alert', true)->count();
+        $closedArchive = $this->archiveCollection('closed');
+        $deletedArchive = $this->archiveCollection('deleted');
 
         return view('fdemergency', compact(
             'staff',
@@ -49,7 +50,9 @@ class EmergencyController extends Controller
             'totalCount',
             'activeCount',
             'resolvedCount',
-            'panicCount'
+            'panicCount',
+            'closedArchive',
+            'deletedArchive'
         ));
     }
 
@@ -89,15 +92,15 @@ class EmergencyController extends Controller
     {
         $report = EmergencyReport::findOrFail($id);
         $validated = $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|in:pending,active,ongoing,resolved,closed',
             'admin_notes' => 'nullable|string',
             'location' => 'nullable|string|max:255',
         ]);
 
         $resolvedAt = $report->resolved_at;
-        if ($validated['status'] === 'resolved' && !$resolvedAt) {
+        if (in_array($validated['status'], ['resolved', 'closed'], true) && !$resolvedAt) {
             $resolvedAt = now();
-        } elseif ($validated['status'] !== 'resolved') {
+        } elseif (!in_array($validated['status'], ['resolved', 'closed'], true)) {
             $resolvedAt = null;
         }
 
@@ -107,6 +110,13 @@ class EmergencyController extends Controller
             'location' => $validated['location'] ?? $report->location,
             'resolved_at' => $resolvedAt,
         ]);
+
+        if ($validated['status'] === 'closed') {
+            $this->archiveReport($report, 'closed');
+            $report->delete();
+
+            return response()->json(['success' => true, 'archived' => true]);
+        }
 
         if ($validated['status'] === 'resolved') {
             NotificationHelper::sendToAll(
@@ -133,6 +143,10 @@ class EmergencyController extends Controller
         return [
             'id' => $report->original_id,
             'archive_id' => $report->id,
+            'archived_by_staff_id' => $report->archived_by_staff_id,
+            'archived_by_name' => $report->archived_by_name,
+            'archived_by_role' => $report->archived_by_role,
+            'archived_by_label' => $this->archivedByLabel($report->archived_by_role, $report->archived_by_name),
             'tenant_name' => $report->tenant_name,
             'room_number' => $report->room_number,
             'is_panic_alert' => $report->is_panic_alert,
@@ -148,16 +162,28 @@ class EmergencyController extends Controller
         ];
     }
 
+    private function archiveCollection(string $type)
+    {
+        return ArchivedEmergencyReport::where('archive_type', $type)
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchive($report));
+    }
+
     private function archiveReport(EmergencyReport $report, string $type): void
     {
         $tenant = $report->tenant;
         $tenantName = $tenant
             ? trim($tenant->first_name . ' ' . $tenant->last_name)
             : 'Front Desk';
+        $staff = Auth::guard('staff')->user();
 
         ArchivedEmergencyReport::create([
             'original_id' => $report->report_id,
             'archive_type' => $type,
+            'archived_by_staff_id' => $staff?->staff_id,
+            'archived_by_name' => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : null,
+            'archived_by_role' => $staff?->role,
             'tenant_id' => $report->tenant_id,
             'tenant_name' => $tenantName,
             'room_number' => $tenant->room_number ?? '-',
@@ -172,6 +198,17 @@ class EmergencyController extends Controller
             'resolved_at' => $report->resolved_at,
             'archived_at' => now(),
         ]);
+    }
+
+    private function archivedByLabel(?string $role, ?string $name): string
+    {
+        $roleLabel = match ($role) {
+            'admin' => 'Admin',
+            'frontdesk' => 'Front Desk',
+            default => $role ? ucfirst($role) : 'Unknown',
+        };
+
+        return $name ? "{$roleLabel} - {$name}" : $roleLabel;
     }
 
     private function mapReports($reports)
