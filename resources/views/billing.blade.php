@@ -1385,7 +1385,9 @@ function openUpdateModal(room) {
         `;
     });
 
-    document.getElementById('update-form').dataset.billingId = room.tenants[0]?.billing_id ?? '';
+    const primaryBilling = room.tenants.find(t => t.billing_id);
+
+    document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     document.getElementById('update-content').innerHTML = html;
     openModal('update-modal');
 }

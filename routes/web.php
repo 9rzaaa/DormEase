@@ -74,8 +74,6 @@ Route::post('/login', function () {
         : redirect()->route('dashboard');
 });
 
-//billing hist
-
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
@@ -84,8 +82,8 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // forgot pass
-    Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
-    Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
+Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
@@ -123,13 +121,12 @@ Route::middleware('auth:staff')->group(function () {
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
-    Route::get('/', [BillingController::class, 'index'])->name('index');
-    Route::post('/log', [BillingController::class, 'log'])->name('log');
-    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-    Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
-    Route::post('/history/update-status', [BillingHistoryController::class, 'updateStatus'])->name('history.updateStatus');
-    Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
+        Route::get('/', [BillingController::class, 'index'])->name('index');
+        Route::post('/log', [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+        Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+        Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
 
     // documents
@@ -144,7 +141,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
     Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])->name('admin.document-requests.update');
     Route::delete('/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'destroy'])->name('admin.document-requests.destroy');
-    
+
     // document archive 
     Route::get('/admin/archive-docus', [DocumentController::class, 'archiveIndex'])->name('admin.archive-docus.index');
     Route::delete('/admin/archive-docus/{archiveDocu}', [DocumentController::class, 'archiveDestroy'])->name('admin.archive-docus.destroy');

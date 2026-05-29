@@ -26,34 +26,6 @@ class BillingHistoryController extends Controller
 
         $floors = $allTenants->pluck('floor')->unique()->sort()->values();
 
-        $billingQuery = WaterBilling::with('tenant')
-            ->select(
-                'billing_month',
-                'floor',
-                'prev_reading',
-                'curr_reading',
-                'floor_consumption_m3',
-                'total_floor_bill',
-                'rooms_sharing',
-                'due_date'
-            )
-            ->groupBy(
-                'billing_month',
-                'floor',
-                'prev_reading',
-                'curr_reading',
-                'floor_consumption_m3',
-                'total_floor_bill',
-                'rooms_sharing',
-                'due_date'
-            )
-            ->orderByDesc('billing_month')
-            ->orderBy('floor');
-
-        if ($selectedFloor !== '') {
-            $billingQuery->where('floor', $selectedFloor);
-        }
-
         $distinctMonths = WaterBilling::selectRaw('DATE_FORMAT(billing_month, "%Y-%m-01") as month_val')
             ->groupByRaw('DATE_FORMAT(billing_month, "%Y-%m-01")')
             ->orderByDesc('month_val')
@@ -66,6 +38,10 @@ class BillingHistoryController extends Controller
 
         if ($selectedFloor !== '') {
             $detailQuery->where('floor', $selectedFloor);
+        }
+
+        if ($selectedStatus !== '') {
+            $detailQuery->where('payment_status', $selectedStatus);
         }
 
         if ($selectedMonth !== '') {
