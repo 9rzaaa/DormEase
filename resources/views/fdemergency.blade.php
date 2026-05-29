@@ -1124,7 +1124,7 @@
                 <input type="text" id="edit-location" placeholder="e.g. Room 301">
             </div>
             <div class="em-modal-field modal-field-full">
-                <label>Admin Notes</label>
+                <label> Frontdesk Notes</label>
                 <textarea id="edit-notes" placeholder="Add notes or action taken..."></textarea>
             </div>
         </div>
@@ -1345,7 +1345,7 @@
             </div>
             ${r.admin_notes ? `
             <div class="view-detail-row">
-                <div class="view-detail-label">Admin Notes</div>
+                <div class="view-detail-label">Frontdesk Notes</div>
                 <div class="view-detail-val" style="white-space:pre-wrap;">${escHtml(r.admin_notes)}</div>
             </div>` : ''}
         `;
