@@ -1401,7 +1401,7 @@
 
             <div class="fp-fd-card">
                 <div class="fp-fd-icon-wrap">
-                    <img src="{{ asset('icons/reset.png') }}" alt="">
+                    <img src="{{ asset('icons/lock.png') }}" alt="">
                 </div>
                 <div class="fp-fd-card-body">
                     <div class="fp-fd-card-title">Request a temporary password</div>
@@ -1628,6 +1628,8 @@
             if (data.success) {
                 document.getElementById('fp-admin-pw-step').style.display = 'none';
                 document.getElementById('fp-admin-done').style.display    = '';
+            } else if (data.same_password) {
+                fpShowErr('fp-pw-err', 'This is your current password. Please choose a different one.');
             } else {
                 fpShowErr('fp-pw-err', data.message || 'Could not update password. Please try again.');
             }
