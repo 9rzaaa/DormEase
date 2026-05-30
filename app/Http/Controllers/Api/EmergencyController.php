@@ -212,7 +212,7 @@ class EmergencyController extends Controller
             'emergency_type' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:5000',
             'location' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:50',
+            'status' => 'nullable|in:active,resolved,closed',
             'input_type' => 'nullable|in:voice,text',
             'language' => 'nullable|in:en,tl',
         ]);
@@ -233,7 +233,7 @@ class EmergencyController extends Controller
             'input_type' => $validated['input_type'] ?? 'text',
             'description' => $cleanedDescription ?: $rawDescription,
             'location' => $location,
-            'status' => $validated['status'] ?? 'pending',
+            'status' => 'active',
             'reported_at' => now(),
         ]);
 
