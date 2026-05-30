@@ -1073,7 +1073,6 @@
 @endsection
 
 @section('modals')
-{{ action }}
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1625,12 +1624,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     : 'Failed to log billing. Please check your inputs.';
                 showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
+                hideActionLoading(); 
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
             showToast('Network error — please try again.', 'error');
             resetButton(submitBtn, 'Log & Distribute');
+            hideActionLoading(); 
         }
     });
 });
