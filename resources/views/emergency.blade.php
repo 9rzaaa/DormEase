@@ -339,10 +339,9 @@
         white-space: nowrap;
     }
 
-    .badge-pending  { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
     .badge-active   { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
-    .badge-ongoing  { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
     .badge-resolved { background: #e8faf5; color: #1a9d6e; border: 1px solid #8cdebb; }
+    .badge-closed   { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
     .badge-panic    { background: var(--bright-pink); color: var(--white); border: none; }
     .badge-critical { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
     .badge-urgent   { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
@@ -973,10 +972,9 @@
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
-                    <option value="pending">Pending</option>
                     <option value="active">Active</option>
-                    <option value="ongoing">Ongoing</option>
                     <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
                 </select>
                 <select class="filter-select" id="type-filter" onchange="applyFilters()">
                     <option value="">All Types</option>
@@ -1092,9 +1090,7 @@
             <div class="em-modal-field">
                 <label>Status</label>
                 <select id="edit-status">
-                    <option value="pending">Pending</option>
                     <option value="active">Active</option>
-                    <option value="ongoing">Ongoing</option>
                     <option value="resolved">Resolved</option>
                     <option value="closed">Closed</option>
                 </select>
@@ -1175,12 +1171,11 @@
 
     function statusBadge(s) {
         const map = {
-            pending:  '<span class="badge badge-pending">Pending</span>',
             active:   '<span class="badge badge-active">Active</span>',
-            ongoing:  '<span class="badge badge-ongoing">Ongoing</span>',
             resolved: '<span class="badge badge-resolved">Resolved</span>',
+            closed:   '<span class="badge badge-closed">Closed</span>',
         };
-        return map[s] ?? `<span class="badge badge-pending">${s}</span>`;
+        return map[s] ?? '<span class="badge badge-active">Active</span>';
     }
 
     function fmtDate(d) {
@@ -1391,7 +1386,7 @@
 
     function openEditModal(r) {
         currentRep = r;
-        document.getElementById('edit-status').value   = r.status      ?? 'pending';
+        document.getElementById('edit-status').value   = r.status ?? 'active';
         document.getElementById('edit-location').value = r.location    ?? '';
         document.getElementById('edit-notes').value    = r.admin_notes ?? '';
         openModal('edit-modal');
@@ -1537,7 +1532,7 @@
                     ${r.room_number && r.room_number !== 'â€”' ? ` - Room ${escHtml(String(r.room_number))}` : ''}
                 </div>
                 <div class="archive-card-meta">
-                    <span class="archive-pill archive-pill-type">${escHtml(r.status ?? 'pending')}</span>
+                    <span class="archive-pill archive-pill-type">${escHtml(r.status ?? 'active')}</span>
                     <span class="archive-pill ${urgencyPillClass[normalizeFilterValue(r.urgency_level)] ?? 'archive-pill-moderate'}">${escHtml(r.urgency_level ?? 'moderate')}</span>
                     ${r.is_panic_alert ? '<span class="archive-pill archive-pill-critical">Panic</span>' : ''}
                 </div>
