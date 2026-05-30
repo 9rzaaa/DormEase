@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class TenantPushNotificationService
 {
     private const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+    private const EXPO_RECEIPT_URL = 'https://exp.host/--/api/v2/push/getReceipts';
 
     private const ROUTES = [
         'announcement' => '/tenant/announcements',
@@ -168,16 +169,80 @@ class TenantPushNotificationService
                     return;
                 }
 
+                $ticketTokenMap = collect($tickets)
+                    ->mapWithKeys(function ($ticket, $index) use ($messages) {
+                        $ticketId = $ticket['id'] ?? null;
+
+                        if (!$ticketId || empty($messages[$index]['to'])) {
+                            return [];
+                        }
+
+                        return [$ticketId => $messages[$index]['to']];
+                    })
+                    ->all();
+
                 Log::info('Expo push notification request accepted.', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                     'message_count' => count($messages),
+                    'ticket_ids' => array_keys($ticketTokenMap),
                 ]);
+
+                $this->logExpoReceipts($ticketTokenMap);
             }
         } catch (\Throwable $error) {
             Log::warning('Expo push notification failed.', [
                 'message' => $error->getMessage(),
                 'message_count' => count($messages),
+            ]);
+        }
+    }
+
+    private function logExpoReceipts(array $ticketTokenMap): void
+    {
+        $ticketIds = array_keys($ticketTokenMap);
+
+        if (empty($ticketIds)) {
+            return;
+        }
+
+        try {
+            sleep(2);
+
+            $response = Http::withOptions([
+                'verify' => (bool) config('services.expo.verify_ssl', true),
+            ])
+                ->timeout(5)
+                ->acceptJson()
+                ->post(self::EXPO_RECEIPT_URL, [
+                    'ids' => $ticketIds,
+                ]);
+
+            $receipts = $response->json('data', []);
+            $deadTokens = [];
+
+            foreach ($receipts as $ticketId => $receipt) {
+                if (($receipt['details']['error'] ?? null) === 'DeviceNotRegistered') {
+                    $deadTokens[] = $ticketTokenMap[$ticketId] ?? null;
+                }
+            }
+
+            $deadTokens = array_values(array_filter($deadTokens));
+
+            if (!empty($deadTokens)) {
+                DeviceToken::whereIn('expo_push_token', $deadTokens)->delete();
+            }
+
+            Log::info('Expo push notification receipts checked.', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'ticket_count' => count($ticketIds),
+                'deleted_stale_token_count' => count($deadTokens),
+            ]);
+        } catch (\Throwable $error) {
+            Log::warning('Expo push notification receipt check failed.', [
+                'message' => $error->getMessage(),
+                'ticket_count' => count($ticketIds),
             ]);
         }
     }
