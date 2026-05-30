@@ -31,7 +31,6 @@ class NotificationComposer
 
         $notifications = Notification::whereIn('type', self::FRONTDESK_TYPES)
             ->orderByDesc('created_at')
-            ->take(20)
             ->get();
 
         $unreadNotifCount = Notification::whereIn('type', self::FRONTDESK_TYPES)
