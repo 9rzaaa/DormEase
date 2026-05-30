@@ -768,6 +768,38 @@
         .archive-search-bar { padding: .8rem 1rem .6rem; }
         .archive-footer { padding: .75rem 1rem; }
     }
+    /* ── Action Loading Overlay ── */
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--baby-pink); border-radius: 12px;
+    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--baby-pink); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+}
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+
+.is-loading { opacity: .75; pointer-events: none; }
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+}
 </style>
 @endsection
 
@@ -902,6 +934,14 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
@@ -963,7 +1003,7 @@
             <div class="modal-title">Update Request</div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form id="edit-form" method="POST">
+        <form id="edit-form" method="POST" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
             <div class="modal-two-col">
@@ -1014,7 +1054,7 @@
         </p>
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form id="delete-form" method="POST">
+            <form id="delete-form" method="POST" data-loading-message="Deleting request...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
@@ -1027,10 +1067,34 @@
 
 @section('scripts')
 <script>
-    const requests       = @json($requests);
-    const closedArchive  = @json($closedArchive);
-    const deletedArchive = @json($deletedArchive);
+    function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
 
+function setFormLoading(form, message) {
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.textContent = 'Please wait...';
+        btn.disabled    = true;
+        btn.classList.add('is-loading');
+    });
+    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+    });
+    showActionLoading(message);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', function () {
+            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+        });
+    });
+});
+    const requests = @json($requests);
     const perPage  = 10;
     let filtered    = [...requests];
     let currentPage = 1;
