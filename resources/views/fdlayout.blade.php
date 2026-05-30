@@ -169,15 +169,14 @@
 
         .topbar-right { display: flex; align-items: center; gap: 1rem; }
 
+        /* ── Notification bell ── */
         .notif-bell {
             width: 36px; height: 36px; border-radius: 50%;
             background: var(--pink-card); border: 1.5px solid var(--pink-light);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; transition: var(--ease);
+            cursor: pointer; font-size: 16px; position: relative; transition: var(--ease);
         }
-
-        .notif-bell:hover { background: var(--pink-light); }
-
+        .notif-bell:hover { background: var(--pink-light); box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
         .notif-badge {
             position: absolute; top: -3px; right: -3px;
             width: 16px; height: 16px; background: var(--bright-pink);
@@ -186,6 +185,95 @@
             border: 2px solid var(--white);
         }
 
+        /* ── Notification hover wrap (matches admin layout) ── */
+        #notif-wrap { position: relative; }
+
+        .notif-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            padding-top: 8px;
+            width: 320px;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(4px) scale(.97);
+            pointer-events: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        #notif-wrap:hover .notif-dropdown {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .notif-dropdown.locked {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .notif-dropdown-inner {
+            background: var(--white);
+            border: 1.5px solid var(--pink-light);
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(202,93,134,.14);
+            overflow: hidden;
+        }
+        .notif-dropdown-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: .85rem 1rem .7rem;
+            border-bottom: 1.5px solid var(--pink-card);
+        }
+        .notif-dropdown-title { font-size: .88rem; font-weight: 700; color: var(--ink); }
+        .notif-mark-all {
+            font-size: .75rem; font-weight: 700; color: var(--hot-pink);
+            background: none; border: none; cursor: pointer; padding: 0;
+        }
+        .notif-mark-all:hover { opacity: .7; }
+        .notif-dropdown-list { max-height: 340px; overflow-y: auto; }
+        .notif-dd-item {
+            display: flex; align-items: flex-start; gap: .7rem;
+            padding: .75rem 1rem;
+            border-bottom: 1px solid var(--pink-card);
+            cursor: pointer;
+            transition: background .15s;
+            text-decoration: none; color: inherit;
+        }
+        .notif-dd-item:last-child { border-bottom: none; }
+        .notif-dd-item:hover { background: var(--blush); }
+        .notif-dd-item.unread { background: var(--pink-50); }
+        .notif-dd-item.unread:hover { background: var(--pink-100); }
+        .notif-unread-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--hot-pink); flex-shrink: 0; margin-top: .35rem;
+        }
+        .notif-dd-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: var(--pink-card); border: 1.5px solid var(--pink-light);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .notif-dd-icon img {
+            width: 14px; height: 14px; object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        }
+        .notif-dd-body { flex: 1; min-width: 0; }
+        .notif-dd-msg {
+            font-size: .81rem; font-weight: 500; color: var(--ink); line-height: 1.4;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
+        .notif-dropdown-footer {
+            padding: .6rem 1rem; border-top: 1.5px solid var(--pink-card); text-align: center;
+        }
+        .notif-see-all {
+            font-size: .78rem; font-weight: 700; color: var(--hot-pink);
+            background: none; border: none; cursor: pointer;
+        }
+        .notif-see-all:hover { opacity: .7; }
+        .notif-empty {
+            padding: 1.5rem 1rem; text-align: center;
+            font-size: .83rem; color: var(--ink-muted);
+        }
+
+        /* ── Avatar ── */
         .avatar {
             width: 36px; height: 36px; border-radius: 50%;
             background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
@@ -195,7 +283,6 @@
             transition: box-shadow .2s;
             overflow: hidden;
         }
-
         .avatar:hover { box-shadow: 0 0 0 3px rgba(232,23,93,.25); }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -254,6 +341,7 @@
         .d5 { animation-delay: .33s; }
         .d6 { animation-delay: .40s; }
 
+        /* ── Modals ── */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(26,26,46,.45);
             backdrop-filter: blur(4px); z-index: 300;
@@ -306,6 +394,58 @@
         }
         .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
+        /* ── Notification detail modal ── */
+        .notif-detail-modal { max-width: 520px; }
+
+        .notif-detail-type-badge {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .3rem .75rem; border-radius: 20px;
+            font-size: .72rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+            margin-bottom: 1.2rem;
+        }
+        .notif-detail-type-badge.maintenance  { background: #fff7e6; color: #b45309; border: 1.5px solid #fde68a; }
+        .notif-detail-type-badge.emergency    { background: #fff0f0; color: var(--red);   border: 1.5px solid #fca5a5; }
+        .notif-detail-type-badge.billing      { background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; }
+        .notif-detail-type-badge.document     { background: var(--blush); color: var(--hot-pink); border: 1.5px solid var(--pink-light); }
+        .notif-detail-type-badge.announcement { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
+        .notif-detail-type-badge.visitor      { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
+        .notif-detail-type-badge.general      { background: var(--pink-card); color: var(--ink-muted); border: 1.5px solid var(--pink-light); }
+
+        .notif-detail-icon-wrap {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: var(--pink-card); border: 1.5px solid var(--pink-light);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem; flex-shrink: 0;
+        }
+        .notif-detail-icon-wrap img {
+            width: 26px; height: 26px; object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        }
+        .notif-detail-message {
+            font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.55;
+            margin-bottom: .9rem;
+        }
+        .notif-detail-meta {
+            display: flex; flex-direction: column; gap: .5rem;
+            background: var(--blush); border-radius: 10px;
+            padding: .85rem 1rem; margin-bottom: 1.2rem;
+            border: 1.5px solid var(--pink-light);
+        }
+        .notif-detail-meta-row {
+            display: flex; align-items: center; gap: .6rem;
+            font-size: .82rem; color: var(--ink-muted);
+        }
+        .notif-detail-meta-row strong { color: var(--ink); font-weight: 700; min-width: 60px; }
+        .notif-detail-actions { display: flex; gap: .7rem; justify-content: flex-end; flex-wrap: wrap; }
+        .notif-view-btn {
+            padding: .6rem 1.4rem; border-radius: 9px; border: none;
+            background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+            color: var(--white); font-size: .87rem; font-weight: 800; cursor: pointer;
+            transition: opacity .2s, transform .15s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: .4rem;
+        }
+        .notif-view-btn:hover { opacity: .9; transform: translateY(-1px); }
+
         .alert-item { border-radius: 12px; padding: 1rem; border: 1.5px solid; margin-bottom: .8rem; }
         .alert-item.active   { background: var(--pink-bg); border-color: var(--pink-light); }
         .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
@@ -326,11 +466,9 @@
         .toast.success { background: var(--green); }
         .toast.error   { background: var(--red); }
 
-        .avatar-wrap { position: relative; padding-bottom: 0; }
-        .avatar-wrap::after { content: ''; position: absolute; bottom: -10px; left: 0; right: 0; height: 10px; }
-
+        .avatar-wrap { position: relative; }
         .avatar-dropdown {
-            position: absolute; top: calc(100% + 10px); right: 0;
+            position: absolute; top: 100%; right: 0;
             background: var(--white);
             border: 1.5px solid var(--pink-light);
             border-radius: 14px;
@@ -342,19 +480,15 @@
             transition: opacity .2s ease, transform .2s ease;
             z-index: 200;
         }
-
-        .avatar-dropdown.open,
         .avatar-wrap:hover .avatar-dropdown {
             opacity: 1; transform: translateY(0) scale(1);
             pointer-events: auto;
         }
-
         .dropdown-header {
             padding: .9rem 1rem .75rem;
             border-bottom: 1px solid var(--pink-light);
             display: flex; align-items: center; gap: .7rem;
         }
-
         .dropdown-avatar {
             width: 38px; height: 38px; border-radius: 50%;
             background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
@@ -362,13 +496,10 @@
             font-size: 13px; font-weight: 800; color: var(--white);
             flex-shrink: 0; overflow: hidden;
         }
-
         .dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .dropdown-name { font-size: .85rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
         .dropdown-role { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
-
         .dropdown-menu { padding: .4rem; }
-
         .dropdown-item {
             display: flex; align-items: center; gap: .6rem;
             padding: .55rem .75rem; border-radius: 9px;
@@ -376,7 +507,6 @@
             cursor: pointer; transition: background .15s, color .15s;
             text-decoration: none; border: none; background: none; width: 100%;
         }
-
         .dropdown-item:hover { background: var(--pink-card); color: var(--hot-pink); }
         .dropdown-item img { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; opacity: .7; }
         .dropdown-item:hover img { opacity: 1; }
@@ -389,117 +519,6 @@
             .sidebar { transform: translateX(-260px); width: 260px; }
             .sidebar.open { transform: translateX(0); }
             .main { margin-left: 0; }
-        }
-
-        .notif-dropdown {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: 320px;
-            background: var(--white);
-            border: 1.5px solid var(--pink-light);
-            border-radius: 14px;
-            box-shadow: 0 8px 32px rgba(202,93,134,.14);
-            z-index: 200;
-            opacity: 0;
-            transform: translateY(8px) scale(.97);
-            pointer-events: none;
-            transition: opacity .2s ease, transform .2s ease;
-            overflow: hidden;
-        }
-        .notif-dropdown.open {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-        .notif-dropdown-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: .85rem 1rem .7rem;
-            border-bottom: 1.5px solid var(--pink-card);
-        }
-        .notif-dropdown-title {
-            font-size: .88rem;
-            font-weight: 700;
-            color: var(--ink);
-        }
-        .notif-mark-all {
-            font-size: .75rem;
-            font-weight: 700;
-            color: var(--hot-pink);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-        .notif-mark-all:hover { opacity: .7; }
-        .notif-dropdown-list { max-height: 340px; overflow-y: auto; }
-        .notif-dd-item {
-            display: flex;
-            align-items: flex-start;
-            gap: .7rem;
-            padding: .75rem 1rem;
-            border-bottom: 1px solid var(--pink-card);
-            cursor: pointer;
-            transition: background .15s;
-            text-decoration: none;
-            color: inherit;
-        }
-        .notif-dd-item:last-child { border-bottom: none; }
-        .notif-dd-item:hover { background: var(--pink-bg); }
-        .notif-dd-item.unread { background: var(--pink-50); }
-        .notif-dd-item.unread:hover { background: var(--pink-100); }
-        .notif-unread-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: var(--hot-pink);
-            flex-shrink: 0;
-            margin-top: .35rem;
-        }
-        .notif-dd-icon {
-            width: 30px; height: 30px;
-            border-radius: 8px;
-            background: var(--pink-card);
-            border: 1.5px solid var(--pink-light);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .notif-dd-icon img {
-            width: 14px; height: 14px;
-            object-fit: contain;
-            filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
-        }
-        .notif-dd-body { flex: 1; min-width: 0; }
-        .notif-dd-msg {
-            font-size: .81rem;
-            font-weight: 500;
-            color: var(--ink);
-            line-height: 1.4;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
-        .notif-dropdown-footer {
-            padding: .6rem 1rem;
-            border-top: 1.5px solid var(--pink-card);
-            text-align: center;
-        }
-        .notif-see-all {
-            font-size: .78rem;
-            font-weight: 700;
-            color: var(--hot-pink);
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .notif-see-all:hover { opacity: .7; }
-        .notif-empty {
-            padding: 1.5rem 1rem;
-            text-align: center;
-            font-size: .83rem;
-            color: var(--ink-muted);
         }
     </style>
 
@@ -557,8 +576,10 @@
     <header class="topbar">
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
-            <div style="position:relative;" id="notif-wrap">
-                <div class="notif-bell" id="notif-bell" onclick="toggleNotifDropdown()" title="Notifications">
+
+            {{-- ═══ NOTIFICATION BELL + HOVER DROPDOWN ═══ --}}
+            <div id="notif-wrap">
+                <div class="notif-bell" id="notif-bell" title="Notifications">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
                     @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
                         <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
@@ -566,69 +587,95 @@
                 </div>
 
                 <div class="notif-dropdown" id="notif-dropdown">
-                    <div class="notif-dropdown-header">
-                        <div class="notif-dropdown-title">
-                            Notifications
+                    <div class="notif-dropdown-inner">
+                        <div class="notif-dropdown-header">
+                            <div class="notif-dropdown-title">
+                                Notifications
+                                @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+                                    <span style="color:var(--ink-muted);font-weight:500;font-size:.78rem;">({{ $unreadNotifCount }} unread)</span>
+                                @endif
+                            </div>
                             @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                                <span style="color:var(--ink-muted);font-weight:500;font-size:.78rem;">({{ $unreadNotifCount }} unread)</span>
+                                <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
                             @endif
                         </div>
-                        @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                            <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
-                        @endif
-                    </div>
-                    <div class="notif-dropdown-list">
-                        @if(isset($notifications) && $notifications->count())
-                            @foreach($notifications as $notif)
-                                @php
-                                    $notifIcon = match($notif->type) {
-                                        'emergency_new'    => 'warn',
-                                        'visitor_checkin'  => 'nav-visit',
-                                        'visitor_checkout' => 'nav-visit',
-                                        'announcement_new' => 'nav-announ',
-                                        default            => 'bell',
-                                    };
-                                @endphp
-                                <a href="{{ $notif->url ?? '#' }}"
-                                    class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
-                                    onclick="markNotifRead(event, {{ $notif->notif_id }}, '{{ $notif->url ?? '' }}')">
-                                    @if(!$notif->is_read)
-                                        <div class="notif-unread-dot"></div>
-                                    @else
-                                        <div style="width:7px;flex-shrink:0;"></div>
-                                    @endif
-                                    <div class="notif-dd-icon">
-                                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
-                                            onerror="this.src='{{ asset('icons/bell.png') }}'">
+
+                        <div class="notif-dropdown-list">
+                            @if(isset($notifications) && $notifications->count())
+                                @foreach($notifications as $notif)
+                                    @php
+                                        $notifIcon = match($notif->type) {
+                                            'emergency_new'    => 'warn',
+                                            'visitor_checkin'  => 'nav-visit',
+                                            'visitor_checkout' => 'nav-visit',
+                                            'announcement_new' => 'nav-announ',
+                                            default            => 'bell',
+                                        };
+                                        $notifTypeLabel = match($notif->type) {
+                                            'emergency_new'    => 'emergency',
+                                            'visitor_checkin'  => 'visitor',
+                                            'visitor_checkout' => 'visitor',
+                                            'announcement_new' => 'announcement',
+                                            default            => 'general',
+                                        };
+                                    @endphp
+
+                                    <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                         onclick="openNotifDetail({
+                                             id:      {{ $notif->notif_id }},
+                                             type:    '{{ $notifTypeLabel }}',
+                                             icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
+                                             message: {{ json_encode($notif->message) }},
+                                             time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
+                                             ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
+                                             url:     '{{ $notif->url ?? '' }}',
+                                             isRead:  {{ $notif->is_read ? 'true' : 'false' }}
+                                         })">
+                                        @if(!$notif->is_read)
+                                            <div class="notif-unread-dot"></div>
+                                        @else
+                                            <div style="width:7px;flex-shrink:0;"></div>
+                                        @endif
+                                        <div class="notif-dd-icon">
+                                            <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
+                                                 alt=""
+                                                 onerror="this.src='{{ asset('icons/bell.png') }}'">
+                                        </div>
+                                        <div class="notif-dd-body">
+                                            <div class="notif-dd-msg">{{ $notif->message }}</div>
+                                            <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
+                                        </div>
                                     </div>
-                                    <div class="notif-dd-body">
-                                        <div class="notif-dd-msg">{{ $notif->message }}</div>
-                                        <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
-                                    </div>
-                                </a>
-                            @endforeach
-                        @else
-                            <div class="notif-empty">No notifications yet.</div>
-                        @endif
-                    </div>
-                    <div class="notif-dropdown-footer">
-                        <button class="notif-see-all" onclick="closeNotifDropdown()">Close</button>
+                                @endforeach
+                            @else
+                                <div class="notif-empty">No notifications yet.</div>
+                            @endif
+                        </div>
+
+                        <div class="notif-dropdown-footer">
+                            <span style="font-size:.75rem;color:var(--ink-muted);">Click a notification to view details</span>
+                        </div>
                     </div>
                 </div>
             </div>
+            {{-- ═══ END NOTIFICATION ═══ --}}
+
             <div class="avatar-wrap" id="avatar-wrap">
-                <div class="avatar" id="topbar-avatar" onclick="toggleAvatarDropdown()" title="{{ $staff->first_name ?? 'F' }}">
+                <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'F' }}">
                     @if($staff->profile_picture ?? null)
-                        <img src="{{ $staff->profile_picture }}" alt="Avatar">
+                        <img src="{{ $staff->profile_picture }}" alt="Avatar"
+                             onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}'">
                     @else
                         {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
                     @endif
                 </div>
+
                 <div class="avatar-dropdown" id="avatar-dropdown">
                     <div class="dropdown-header">
                         <div class="dropdown-avatar">
                             @if($staff->profile_picture ?? null)
-                                <img src="{{ $staff->profile_picture }}" alt="">
+                                <img src="{{ $staff->profile_picture }}" alt=""
+                                     onerror="this.style.display='none'; this.parentElement.innerText='{{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}'">
                             @else
                                 {{ strtoupper(substr($staff->first_name ?? 'F', 0, 1)) }}
                             @endif
@@ -639,14 +686,14 @@
                         </div>
                     </div>
                     <div class="dropdown-menu">
-                        <a href="{{ route('fdprofile.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
+                        <a href="{{ route('fdprofile.index') }}" class="dropdown-item">
                             <img src="{{ asset('icons/staff-2.png') }}" alt=""> My Profile
                         </a>
-                        <a href="{{ route('frontdesk.settings.index') }}" class="dropdown-item" onclick="event.stopPropagation();">
+                        <a href="{{ route('frontdesk.settings.index') }}" class="dropdown-item">
                             <img src="{{ asset('icons/nav-settings.png') }}" alt=""> Settings
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item danger" onclick="closeAvatarDropdown(); openModal('logout-modal');">
+                        <button class="dropdown-item danger" onclick="openModal('logout-modal')">
                             <img src="{{ asset('icons/logout.png') }}" alt=""> Log Out
                         </button>
                     </div>
@@ -658,11 +705,12 @@
     @yield('content')
 </div>
 
-<div class="modal-overlay" id="logout-modal">
-    <div class="modal">
+{{-- ═══ LOGOUT MODAL ═══ --}}
+<div class="modal-overlay" id="logout-modal" onclick="handleOverlayClick(event, 'logout-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Log Out</div>
-            <button class="modal-close" onclick="closeModal('logout-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('logout-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">Are you sure you want to log out of DormEase?</p>
         <div class="modal-actions">
@@ -672,6 +720,48 @@
     </div>
 </div>
 
+{{-- ═══ NOTIFICATION DETAIL MODAL ═══ --}}
+<div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
+    <div class="modal notif-detail-modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">Notification Detail</div>
+            <button class="modal-close" onclick="closeNotifDetail()">&#x2715;</button>
+        </div>
+
+        <div id="notif-detail-badge" class="notif-detail-type-badge general">General</div>
+
+        <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;">
+            <div class="notif-detail-icon-wrap">
+                <img id="notif-detail-icon" src="" alt="">
+            </div>
+            <div id="notif-detail-message" class="notif-detail-message" style="padding-top:.3rem;"></div>
+        </div>
+
+        <div class="notif-detail-meta">
+            <div class="notif-detail-meta-row">
+                <strong>When</strong>
+                <span id="notif-detail-time"></span>
+            </div>
+            <div class="notif-detail-meta-row">
+                <strong>Status</strong>
+                <span id="notif-detail-status"></span>
+            </div>
+            <div class="notif-detail-meta-row" id="notif-detail-url-row" style="display:none;">
+                <strong>Link</strong>
+                <span id="notif-detail-url-text" style="color:var(--hot-pink);font-size:.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+            </div>
+        </div>
+
+        <div class="notif-detail-actions">
+            <button class="btn-cancel" onclick="closeNotifDetail()">Close</button>
+            <a id="notif-detail-view-btn" href="#" class="notif-view-btn" style="display:none;">
+                View Details &#8594;
+            </a>
+        </div>
+    </div>
+</div>
+
+{{-- ═══ TEMPORARY PASSWORD MODAL ═══ --}}
 @if(session('prompt_temp_password'))
 <div class="modal-overlay open" id="temp-pw-modal">
     <div class="modal" style="max-width:420px;">
@@ -753,111 +843,90 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    /* ── Core modal helpers ── */
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-    });
+    function handleOverlayClick(e, id) {
+        if (e.target === document.getElementById(id)) closeModal(id);
+    }
 
-    function showToast(msg, type = '') {
-        const t = document.getElementById('toast');
+    function showToast(msg, type) {
+        type = type || '';
+        var t = document.getElementById('toast');
         t.textContent = msg;
         t.className   = 'toast ' + type;
-        setTimeout(() => t.classList.add('show'),    10);
-        setTimeout(() => t.classList.remove('show'), 3200);
+        setTimeout(function() { t.classList.add('show'); },    10);
+        setTimeout(function() { t.classList.remove('show'); }, 3200);
     }
 
-    function toggleAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.toggle('open');
+    /* ── Notification detail modal (ported from admin layout) ── */
+    var typeLabels = {
+        maintenance:  'Maintenance',
+        emergency:    'Emergency',
+        billing:      'Billing',
+        document:     'Document',
+        announcement: 'Announcement',
+        visitor:      'Visitor',
+        general:      'General',
+    };
+
+    function openNotifDetail(notif) {
+        var badge = document.getElementById('notif-detail-badge');
+        badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
+        badge.textContent = typeLabels[notif.type] || 'General';
+
+        var icon = document.getElementById('notif-detail-icon');
+        icon.src = notif.icon;
+        icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
+
+        document.getElementById('notif-detail-message').textContent = notif.message;
+
+        document.getElementById('notif-detail-time').textContent =
+            notif.time + ' (' + notif.ago + ')';
+
+        var statusEl = document.getElementById('notif-detail-status');
+        if (notif.isRead) {
+            statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">&#10003; Read</span>';
+        } else {
+            statusEl.innerHTML = '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
+        }
+
+        var urlRow  = document.getElementById('notif-detail-url-row');
+        var viewBtn = document.getElementById('notif-detail-view-btn');
+        if (notif.url) {
+            urlRow.style.display = 'flex';
+            document.getElementById('notif-detail-url-text').textContent = notif.url;
+            viewBtn.style.display = 'inline-flex';
+            viewBtn.href = notif.url;
+        } else {
+            urlRow.style.display = 'none';
+            viewBtn.style.display = 'none';
+        }
+
+        /* Mark as read via API if currently unread */
+        if (!notif.isRead) {
+            fetch('/notifications/' + notif.id + '/read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                }
+            }).then(function() {
+                var badge = document.getElementById('notif-badge');
+                if (badge) {
+                    var current = parseInt(badge.textContent) || 0;
+                    if (current <= 1) badge.remove();
+                    else badge.textContent = current - 1;
+                }
+            });
+        }
+
+        openModal('notif-detail-modal');
     }
 
-    function closeAvatarDropdown() {
-        document.getElementById('avatar-dropdown').classList.remove('open');
-    }
-
-    document.addEventListener('click', e => {
-        const wrap = document.getElementById('avatar-wrap');
-        if (wrap && !wrap.contains(e.target)) closeAvatarDropdown();
-    });
-
-    document.querySelectorAll('.dropdown-item[href]').forEach(el => {
-        el.addEventListener('click', () => closeAvatarDropdown());
-    });
-
-    function closeTempPwModal() {
-        const m = document.getElementById('temp-pw-modal');
-        if (m) m.classList.remove('open');
-    }
-
-    function toggleTmpPw(inputId, btn) {
-        const inp = document.getElementById(inputId);
-        inp.type = inp.type === 'text' ? 'password' : 'text';
-        btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
-    }
-
-    function checkTmpStrength(val) {
-        const fill  = document.getElementById('tmp-strength-fill');
-        const label = document.getElementById('tmp-strength-label');
-        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
-        let score = 0;
-        if (val.length >= 8)          score++;
-        if (/[A-Z]/.test(val))        score++;
-        if (/[0-9]/.test(val))        score++;
-        if (/[^A-Za-z0-9]/.test(val)) score++;
-        const levels = [
-            { w: '20%',  color: '#DF0404', text: 'Weak' },
-            { w: '50%',  color: '#f59e0b', text: 'Fair' },
-            { w: '75%',  color: '#29BD9B', text: 'Good' },
-            { w: '100%', color: '#16a34a', text: 'Strong' },
-        ];
-        const lvl = levels[score - 1] ?? levels[0];
-        fill.style.width      = lvl.w;
-        fill.style.background = lvl.color;
-        label.textContent     = lvl.text;
-        label.style.color     = lvl.color;
-    }
-
-    @if(session('error') && session('prompt_temp_password'))
-        document.addEventListener('DOMContentLoaded', () => {
-            showToast('{{ session("error") }}', 'error');
-            const m = document.getElementById('temp-pw-modal');
-            if (m) m.classList.add('open');
-        });
-    @endif
-
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () => {
-            showToast('{{ session("success") }}', 'success');
-        });
-    @endif
-
-    function toggleNotifDropdown() {
-        document.getElementById('notif-dropdown').classList.toggle('open');
-        closeAvatarDropdown();
-    }
-
-    function closeNotifDropdown() {
-        document.getElementById('notif-dropdown').classList.remove('open');
-    }
-
-    document.addEventListener('click', function(e) {
-        const wrap = document.getElementById('notif-wrap');
-        if (wrap && !wrap.contains(e.target)) closeNotifDropdown();
-    });
-
-    function markNotifRead(e, id, url) {
-        e.preventDefault();
-        fetch('/notifications/' + id + '/read', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
-        }).then(() => {
-            if (url) window.location.href = url;
-            else location.reload();
-        });
+    function closeNotifDetail() {
+        closeModal('notif-detail-modal');
     }
 
     function markAllRead() {
@@ -867,24 +936,71 @@
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Accept': 'application/json',
             }
-        }).then(() => location.reload());
+        }).then(function() { location.reload(); });
     }
+
+    /* ── Temp password modal helpers ── */
+    function closeTempPwModal() {
+        var m = document.getElementById('temp-pw-modal');
+        if (m) m.classList.remove('open');
+    }
+
+    function toggleTmpPw(inputId, btn) {
+        var inp = document.getElementById(inputId);
+        inp.type = inp.type === 'text' ? 'password' : 'text';
+        btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
+    }
+
+    function checkTmpStrength(val) {
+        var fill  = document.getElementById('tmp-strength-fill');
+        var label = document.getElementById('tmp-strength-label');
+        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        var score = 0;
+        if (val.length >= 8)          score++;
+        if (/[A-Z]/.test(val))        score++;
+        if (/[0-9]/.test(val))        score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        var levels = [
+            { w: '20%',  color: '#DF0404', text: 'Weak' },
+            { w: '50%',  color: '#f59e0b', text: 'Fair' },
+            { w: '75%',  color: '#29BD9B', text: 'Good' },
+            { w: '100%', color: '#16a34a', text: 'Strong' },
+        ];
+        var lvl = levels[score - 1] || levels[0];
+        fill.style.width      = lvl.w;
+        fill.style.background = lvl.color;
+        label.textContent     = lvl.text;
+        label.style.color     = lvl.color;
+    }
+
+    /* ── Session toasts ── */
+    @if(session('error') && session('prompt_temp_password'))
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ session("error") }}', 'error');
+            var m = document.getElementById('temp-pw-modal');
+            if (m) m.classList.add('open');
+        });
+    @endif
+
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ session("success") }}', 'success');
+        });
+    @endif
 </script>
 
 @yield('scripts')
 
 <script>
+    /* ── Panic alert polling ── */
     (function() {
         var __panicLastId = null;
         var __panicBeepInterval = null;
 
         function __escHtml(str) {
             return (str == null ? '' : String(str))
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
         function __buildPanicAudio() {
@@ -893,19 +1009,15 @@
                 function beep(freq, start, dur) {
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
-                    o.connect(g);
-                    g.connect(ctx.destination);
-                    o.frequency.value = freq;
-                    o.type = 'sine';
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
                     g.gain.setValueAtTime(0.4, ctx.currentTime + start);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
                     o.start(ctx.currentTime + start);
                     o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18);
-                beep(880, 0.22, 0.18);
-                beep(1100, 0.44, 0.28);
-            } catch (e) {}
+                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+            } catch(e) {}
         }
 
         function __showPanicBanner(type, location) {
@@ -930,28 +1042,20 @@
         window.__dismissPanic = function() {
             var banner = document.getElementById('__panic-alert-banner');
             if (banner) banner.remove();
-            if (__panicBeepInterval) {
-                clearInterval(__panicBeepInterval);
-                __panicBeepInterval = null;
-            }
+            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
         };
 
         function __fireBrowserNotification(type, location) {
             if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try {
-                    new Notification('Panic Alert', { body: type + ' \u2014 ' + location });
-                } catch (e) {}
+                try { new Notification('Panic Alert', { body: type + ' \u2014 ' + location }); } catch(e) {}
             }
         }
 
         function __pollPanic() {
             var csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            var csrfToken = csrfMeta ? csrfMeta.content : '';
             fetch('{{ url("/emergency/poll-panic") }}', {
-                headers: { 'X-CSRF-TOKEN': csrfToken }
-            }).then(function(res) {
-                return res.json();
-            }).then(function(data) {
+                headers: { 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '' }
+            }).then(function(res) { return res.json(); }).then(function(data) {
                 if (data.has_panic && data.report_id !== __panicLastId) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
@@ -964,11 +1068,11 @@
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
             Notification.requestPermission();
         }
-
         __pollPanic();
         setInterval(__pollPanic, 15000);
     })();
 
+    /* ── Critical emergency toast polling ── */
     (function() {
         var __criticalSeen = new Set();
         var __criticalQueue = [];
@@ -983,32 +1087,23 @@
         function __showNextCritical() {
             if (__criticalActive || __criticalQueue.length === 0) return;
             __criticalActive = true;
-
             var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
-
             var banner = document.createElement('div');
             banner.id = '__critical-banner-' + report.report_id;
             banner.style.cssText = [
-                'position:fixed',
-                'bottom:2rem',
-                'right:2rem',
-                'z-index:9000',
-                'width:340px',
+                'position:fixed','bottom:2rem','right:2rem','z-index:9000','width:340px',
                 'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
                 'border:2px solid ' + (isCritical ? '#ffc8d0' : '#ffd54f'),
-                'border-radius:14px',
-                'padding:1rem 1.1rem',
+                'border-radius:14px','padding:1rem 1.1rem',
                 'box-shadow:0 8px 28px rgba(0,0,0,.18)',
                 'transform:translateX(380px)',
                 'transition:transform .35s cubic-bezier(.4,0,.2,1)',
                 'font-family:inherit',
             ].join(';');
-
             banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.7rem;">'
                 + '<div style="flex-shrink:0;width:36px;height:36px;border-radius:8px;background:'
-                + (isCritical ? '#ffc8d0' : '#ffd54f')
-                + ';display:flex;align-items:center;justify-content:center;">'
+                + (isCritical ? '#ffc8d0' : '#ffd54f') + ';display:flex;align-items:center;justify-content:center;">'
                 + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'
                 + (isCritical ? '#c0303a' : '#c07800')
                 + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
@@ -1017,22 +1112,18 @@
                 + '</svg></div>'
                 + '<div style="flex:1;min-width:0;">'
                 + '<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:'
-                + (isCritical ? '#c0303a' : '#c07800')
-                + ';margin-bottom:.2rem;">' + (isCritical ? 'Critical' : 'Urgent') + ' Emergency</div>'
+                + (isCritical ? '#c0303a' : '#c07800') + ';margin-bottom:.2rem;">'
+                + (isCritical ? 'Critical' : 'Urgent') + ' Emergency</div>'
                 + '<div style="font-size:.85rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.15rem;">'
                 + __criticalEscHtml(report.emergency_type) + '</div>'
                 + '<div style="font-size:.78rem;color:#7A3A55;">' + __criticalEscHtml(report.location) + '</div>'
                 + '</div>'
                 + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#7A3A55;font-size:1rem;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;">&#x2715;</button>'
                 + '</div>';
-
             document.body.appendChild(banner);
             requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    banner.style.transform = 'translateX(0)';
-                });
+                requestAnimationFrame(function() { banner.style.transform = 'translateX(0)'; });
             });
-
             var timer = setTimeout(function() { __dismissCritical(banner.id); }, 8000);
             banner.__dismissTimer = timer;
         }
@@ -1064,8 +1155,7 @@
                         }
                     }
                 });
-            })
-            .catch(function() {});
+            }).catch(function() {});
         }
 
         __pollCritical();

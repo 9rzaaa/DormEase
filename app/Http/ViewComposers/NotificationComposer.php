@@ -21,7 +21,7 @@ class NotificationComposer
 
         $notifications = Notification::where('staff_id', $staff->staff_id)
             ->orderByDesc('created_at')
-            ->take(10)
+            ->take(20)
             ->get();
 
         $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
