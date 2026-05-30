@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant;
@@ -57,8 +59,8 @@ class DashboardController extends Controller
                 ->take(3)
                 ->get(),
             'announcements'       => Announcement::latest('posted_at')->take(3)->get(),
-            'notifications'       => Notification::where('is_read', false)->latest('created_at')->take(4)->get(),
-            'unreadNotifCount'    => Notification::where('is_read', false)->count(),
+            'notifications'    => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->latest('created_at')->take(4)->get(),
+            'unreadNotifCount' => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'latestEmergency'     => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
             'allEmergencies'      => EmergencyReport::latest('reported_at')->get(),
             'recentActivities'    => VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
