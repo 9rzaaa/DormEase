@@ -607,20 +607,22 @@
                     {
                         label: 'Collected',
                         data: collected,
-                        backgroundColor: 'rgba(232,23,93,0.85)',
+                        backgroundColor: collected.map(v => v === 0 ? 'rgba(232,23,93,0.12)' : 'rgba(232,23,93,0.85)'),
                         borderRadius: 6,
                         borderSkipped: false,
                         barPercentage: 0.55,
                         categoryPercentage: 0.7,
+                        minBarLength: 6,
                     },
                     {
                         label: 'Unpaid',
                         data: unpaid,
-                        backgroundColor: 'rgba(245,162,75,0.85)',
+                        backgroundColor: unpaid.map(v => v === 0 ? 'rgba(245,162,75,0.12)' : 'rgba(245,162,75,0.85)'),
                         borderRadius: 6,
                         borderSkipped: false,
                         barPercentage: 0.55,
                         categoryPercentage: 0.7,
+                        minBarLength: 6,
                     },
                 ],
             },
@@ -639,6 +641,7 @@
                         padding: 12,
                         callbacks: {
                             label: function (ctx) {
+                                if (ctx.parsed.y === 0) return ' ' + ctx.dataset.label + ': No data';
                                 return ' ' + ctx.dataset.label + ': PHP ' + Number(ctx.parsed.y).toLocaleString('en-PH', { minimumFractionDigits: 2 });
                             },
                         },
@@ -648,7 +651,17 @@
                     x: {
                         grid: { display: false },
                         border: { display: false },
-                        ticks: { font: { size: 11, weight: '600' }, color: '#999' },
+                        ticks: {
+                            font: { size: 11, weight: '600' },
+                            color: function(context) {
+                                const val = collected[context.index] + unpaid[context.index];
+                                return val === 0 ? 'rgba(153,153,153,0.35)' : '#999';
+                            },
+                            maxRotation: 45,
+                            minRotation: 45,
+                            autoSkip: false,
+                            padding: 8,
+                        },
                     },
                     y: {
                         grid: { color: 'rgba(0,0,0,0.05)' },
