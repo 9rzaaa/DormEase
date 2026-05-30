@@ -687,7 +687,7 @@
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time out for <strong id="timeout-name" style="color:var(--ink);"></strong>
         </p>
-        <form method="POST" id="timeout-form" action="">
+        <form method="POST" id="timeout-form" action="" data-loading-message="Logging time out...">
             @csrf
             <div class="modal-field">
                 <label>Time Out</label>
@@ -734,6 +734,33 @@
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function setFormLoading(form, message) {
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.textContent = 'Please wait...';
+        btn.disabled    = true;
+        btn.classList.add('is-loading');
+    });
+    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+    });
+    showActionLoading(message);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', function () {
+            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+        });
+    });
+});
 
     const visitors          = @json($visitors);
     const completedVisitors = @json($completedVisitors);
@@ -905,16 +932,17 @@
     }
 
     function quickStatus(id, status, name) {
-        if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/visitors/' + id + '/status';
-        form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
-                       + '<input type="hidden" name="_method" value="PUT">'
-                       + '<input type="hidden" name="status" value="' + status + '">';
-        document.body.appendChild(form);
-        form.submit();
-    }
+    if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
+    showActionLoading('Updating status...');
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/visitors/' + id + '/status';
+    form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                   + '<input type="hidden" name="_method" value="PUT">'
+                   + '<input type="hidden" name="status" value="' + status + '">';
+    document.body.appendChild(form);
+    form.submit();
+}
 
     function openTimein(id, name) {
         document.getElementById('timein-name').textContent = name;
