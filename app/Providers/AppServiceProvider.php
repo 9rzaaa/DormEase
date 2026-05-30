@@ -12,6 +12,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        View::composer(['layout', 'fdlayout'], NotificationComposer::class);
+        View::composer(
+            ['layout', 'fdlayout', 'frontdeskdb'],
+            NotificationComposer::class
+        );
     }
 }
