@@ -1075,7 +1075,7 @@ table td {
                 <thead>
                     <tr>
                         <th>Account ID</th>
-      u7                  <th>Tenant Name</th>
+                        <th>Tenant Name</th>
                         <th>Floor & Room No.</th>
                         <th>Move-In Date</th>
                         <th>Move-Out Date</th>
