@@ -9,7 +9,7 @@ use Illuminate\View\View;
 class NotificationComposer
 {
     const FRONTDESK_TYPES = [
-        'announcement',
+        'announcement_new',
         'visitor_checkin',
         'visitor_checkout',
         'emergency_new',
@@ -29,11 +29,13 @@ class NotificationComposer
             return;
         }
 
-        $notifications = Notification::whereIn('type', self::FRONTDESK_TYPES)
+        $notifications = Notification::where('staff_id', $staff->staff_id)
+            ->whereIn('type', self::FRONTDESK_TYPES)
             ->orderByDesc('created_at')
             ->get();
 
-        $unreadNotifCount = Notification::whereIn('type', self::FRONTDESK_TYPES)
+        $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
+            ->whereIn('type', self::FRONTDESK_TYPES)
             ->where('is_read', 0)
             ->count();
 

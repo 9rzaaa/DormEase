@@ -2,9 +2,11 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Announcement;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class AnnouncementController extends Controller
 {
@@ -53,7 +55,7 @@ class AnnouncementController extends Controller
             $attachment = implode(',', $paths);
         }
 
-        Announcement::create([
+        $announcement = Announcement::create([
             'posted_by'  => Auth::guard('staff')->id(),
             'title'      => $request->title,
             'content'    => $request->content,
@@ -63,10 +65,28 @@ class AnnouncementController extends Controller
             'posted_at'  => now(),
         ]);
 
-        NotificationHelper::sendToAll(
-            type: 'announcement_new',
-            message: 'New announcement posted: ' . $request->title,
-        );
+        app()->terminating(function () use ($announcement, $request) {
+            try {
+                NotificationHelper::sendToAll(
+                    type: 'announcement_new',
+                    message: 'New announcement posted: ' . $request->title,
+                    ref_id: $announcement->announcement_id,
+                );
+
+                app(TenantPushNotificationService::class)->sendToAllTenants(
+                    type: 'announcement',
+                    title: 'New announcement posted',
+                    body: $request->title,
+                    refId: $announcement->announcement_id,
+                    route: '/tenant/announcements',
+                );
+            } catch (\Throwable $error) {
+                Log::error('Announcement notifications failed after posting.', [
+                    'announcement_id' => $announcement->announcement_id,
+                    'message' => $error->getMessage(),
+                ]);
+            }
+        });
 
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
