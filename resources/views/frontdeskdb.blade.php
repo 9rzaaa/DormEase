@@ -101,13 +101,28 @@
     .announce-date  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
 
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
-    .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
+    .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: 0; }
 
-    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--pink-card); cursor: pointer; }
+    .notif-item {
+        display: flex; align-items: flex-start; gap: .7rem;
+        padding: .6rem 0; border-bottom: 1px solid var(--pink-card);
+        cursor: pointer; border-radius: 8px; transition: background .15s;
+        margin: 0 -.4rem; padding-left: .4rem; padding-right: .4rem;
+    }
     .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: var(--pink-card); }
     .notif-ico  { flex-shrink: 0; margin-top: .1rem; }
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
+
+    .notif-ico img {
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+
+    .notif-unread-indicator {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--hot-pink); flex-shrink: 0; margin-top: .4rem;
+    }
 
     .empty-state { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: .88rem; }
 
@@ -192,7 +207,6 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Recent Activity</div>
-                    <a href="/visitors" class="see-all">See All</a>
                 </div>
 
                 @if($recentActivities->isEmpty())
@@ -241,7 +255,6 @@
         <div class="card fade-up d4">
             <div class="card-header">
                 <div class="card-title">Latest Announcements</div>
-                <a href="/announcements" class="see-all">See All</a>
             </div>
 
             @if($announcements->isEmpty())
@@ -258,25 +271,54 @@
 
     </div>
 
+    {{-- ═══ RIGHT COLUMN ═══ --}}
     <div class="right-col fade-up d5">
 
         <div class="card">
-            <h3>Notifications</h3>
-            @if($notifications->isEmpty())
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;">
+                <h3>Notifications</h3>
+            </div>
+
+            @php $recentNotifs = $notifications->take(8); @endphp
+
+            @if($recentNotifs->isEmpty())
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
-                @foreach($notifications as $notif)
-                    <div class="notif-item">
+                @foreach($recentNotifs as $notif)
+                    @php
+                        $icon = match(true) {
+                            in_array($notif->type, ['emergency_new', 'emergency_updated']) => 'warn.png',
+                            in_array($notif->type, ['visitor_checkin', 'visitor_checkout']) => 'nav-visit.png',
+                            in_array($notif->type, ['maintenance_new', 'maintenance_updated']) => 'nav-settings.png',
+                            $notif->type === 'announcement' => 'nav-announ.png',
+                            default => 'bell.png',
+                        };
+                        $typeLabel = match(true) {
+                            in_array($notif->type, ['emergency_new', 'emergency_updated']) => 'emergency',
+                            in_array($notif->type, ['visitor_checkin', 'visitor_checkout']) => 'visitor',
+                            in_array($notif->type, ['maintenance_new', 'maintenance_updated']) => 'maintenance',
+                            $notif->type === 'announcement' => 'announcement',
+                            default => 'general',
+                        };
+                    @endphp
+                    <div class="notif-item"
+                         onclick="openNotifDetail({
+                             id:      {{ $notif->notif_id }},
+                             type:    '{{ $typeLabel }}',
+                             icon:    '{{ asset('icons/' . $icon) }}',
+                             message: {{ json_encode($notif->message) }},
+                             time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
+                             ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
+                             url:     '{{ $notif->url ?? '' }}',
+                             isRead:  {{ $notif->is_read ? 'true' : 'false' }}
+                         })">
+                        @if(!$notif->is_read)
+                            <div class="notif-unread-indicator"></div>
+                        @else
+                            <div style="width:7px;flex-shrink:0;"></div>
+                        @endif
                         <div class="notif-ico">
-                            @if($notif->type === 'emergency')
-                                <img src="{{ asset('icons/warn.png') }}" class="icon-sm" alt="">
-                            @elseif($notif->type === 'visitor')
-                                <img src="{{ asset('icons/visitor.png') }}" class="icon-sm" alt="">
-                            @elseif($notif->type === 'tenant')
-                                <img src="{{ asset('icons/tenants.png') }}" class="icon-sm" alt="">
-                            @else
-                                <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="">
-                            @endif
+                            <img src="{{ asset('icons/' . $icon) }}" class="icon-sm" alt="">
                         </div>
                         <div>
                             <div class="notif-text">{{ $notif->message }}</div>
@@ -296,8 +338,9 @@
 
 @section('modals')
 
-<div class="modal-overlay" id="emergency-modal">
-    <div class="modal">
+{{-- ═══ EMERGENCY MODAL ═══ --}}
+<div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">✕</button>
