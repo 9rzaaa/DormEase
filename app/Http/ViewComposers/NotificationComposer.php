@@ -8,6 +8,16 @@ use Illuminate\View\View;
 
 class NotificationComposer
 {
+    const FRONTDESK_TYPES = [
+        'announcement',
+        'visitor_checkin',
+        'visitor_checkout',
+        'emergency_new',
+        'emergency_updated',
+        'maintenance_new',
+        'maintenance_updated',
+    ];
+
     public function compose(View $view): void
     {
         $staff = Auth::guard('staff')->user();
@@ -19,12 +29,12 @@ class NotificationComposer
             return;
         }
 
-        $notifications = Notification::where('staff_id', $staff->staff_id)
+        $notifications = Notification::whereIn('type', self::FRONTDESK_TYPES)
             ->orderByDesc('created_at')
             ->take(20)
             ->get();
 
-        $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
+        $unreadNotifCount = Notification::whereIn('type', self::FRONTDESK_TYPES)
             ->where('is_read', 0)
             ->count();
 
