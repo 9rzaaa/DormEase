@@ -1505,6 +1505,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             setButtonLoading(saveBtn, 'Saving...');
+            showActionLoading('Saving billing changes...');
 
             try {
                 const response = await fetch("{{ route('billing.updateFull') }}", {
@@ -1528,14 +1529,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
                     showToast('Billing updated successfully!', 'success');
                     closeModal('update-modal');
+                    hideActionLoading();
                     setTimeout(() => location.reload(), 800);
                 } else {
                     showToast(data.message || 'Failed to update.', 'error');
                     resetButton(saveBtn, 'Save Changes');
+                    hideActionLoading();
                 }
             } catch (err) {
                 showToast('Network error.', 'error');
                 resetButton(saveBtn, 'Save Changes');
+                hideActionLoading();
             }
         });
     }
