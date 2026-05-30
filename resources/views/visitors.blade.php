@@ -54,9 +54,29 @@
         font-weight: 600;
         transition: border-color .2s, color .2s;
         cursor: pointer;
+        font-family: var(--ff-body);
     }
 
     .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
+
+    .btn-archive-open {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .55rem 1.2rem;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--gray-light);
+        font-size: .87rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color .2s, color .2s;
+        font-family: var(--ff-body);
+    }
+    .btn-archive-open:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
+    .btn-archive-open img { width: 14px; height: 14px; object-fit: contain; opacity: .55; }
+    .btn-archive-open:hover img { opacity: 1; }
 
     .stats-row {
         display: grid;
@@ -96,7 +116,6 @@
         object-fit: contain;
         filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
     }
-
 
     .stat-num {
         font-size: 2.2rem;
@@ -263,7 +282,7 @@
         flex-shrink: 0;
     }
 
-    .table-wrap { 
+    .table-wrap {
         overflow-x: auto;
         border-top: 2px solid var(--bright-pink);
     }
@@ -281,18 +300,28 @@
         text-transform: uppercase;
         color: var(--bright-pink);
         background: var(--pink-bg);
-        text-align: center;
+        text-align: left;
         font-weight: 700;
         white-space: nowrap;
         border-bottom: 2px solid var(--bright-pink);
+    }
+
+    th:nth-child(8),
+    th:nth-child(9) {
+        text-align: center;
     }
 
     td {
         padding: .9rem 1rem;
         font-size: .875rem;
         border-bottom: 1px solid var(--border);
-        text-align: center;
+        text-align: left;
         vertical-align: middle;
+    }
+
+    td:nth-child(8),
+    td:nth-child(9) {
+        text-align: center;
     }
 
     tbody tr:last-child td { border-bottom: none; }
@@ -458,6 +487,297 @@
         text-align: right;
     }
 
+    .archive-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(232, 23, 93, 0.15);
+        backdrop-filter: blur(3px);
+        z-index: 499;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .38s ease;
+    }
+    .archive-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .archive-drawer {
+        position: fixed;
+        top: 0; right: 0; bottom: 0;
+        width: min(680px, 100vw);
+        background: #fff5f8;
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform .38s cubic-bezier(.4,0,.2,1);
+        box-shadow: -8px 0 40px rgba(0,0,0,.18);
+    }
+    .archive-drawer.open { transform: translateX(0); }
+
+    .archive-drawer-header {
+        padding: 1.6rem 1.8rem 1.2rem;
+        border-bottom: 1.5px solid var(--gray-light);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+        background: var(--white);
+    }
+    .archive-drawer-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--black);
+        letter-spacing: -.02em;
+        line-height: 1.2;
+    }
+    .archive-drawer-sub {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        margin-top: .25rem;
+        font-weight: 500;
+    }
+
+    .archive-close-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--white);
+        border: 1.5px solid var(--gray-light);
+        color: var(--hot-pink);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color .2s, background .2s;
+        flex-shrink: 0;
+    }
+    .archive-close-btn:hover { border-color: var(--hot-pink); background: #fff7fb; }
+
+    .archive-tabs {
+        display: flex;
+        gap: 0;
+        padding: 0 1.8rem;
+        border-bottom: 1.5px solid var(--gray-light);
+        flex-shrink: 0;
+        background: var(--white);
+    }
+    .archive-tab {
+        padding: .85rem 1.2rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1.5px;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        letter-spacing: .02em;
+        font-family: var(--ff-body);
+    }
+    .archive-tab:hover { color: var(--hot-pink); }
+    .archive-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+    .archive-tab-count {
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .1rem .45rem;
+        border-radius: 99px;
+        background: var(--gray-light);
+        color: var(--ink-muted);
+        letter-spacing: .02em;
+    }
+    .archive-tab.active .archive-tab-count {
+        background: var(--hot-pink);
+        color: var(--white);
+    }
+
+    .archive-search-bar {
+        padding: 1rem 1.8rem .8rem;
+        flex-shrink: 0;
+    }
+    .archive-search-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .archive-search-inner input {
+        width: 100%;
+        padding: .55rem .9rem .55rem 2.2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--gray-light);
+        background: var(--white);
+        color: var(--black);
+        font-size: .83rem;
+        font-family: var(--ff-body);
+        outline: none;
+        transition: border-color .2s;
+    }
+    .archive-search-inner input::placeholder { color: var(--gray); }
+    .archive-search-inner input:focus { border-color: var(--hot-pink); }
+    .archive-search-icon {
+        position: absolute;
+        left: .75rem;
+        width: 13px;
+        height: 13px;
+        opacity: .4;
+        pointer-events: none;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+    }
+
+    .archive-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 1.8rem 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+    .archive-list::-webkit-scrollbar { width: 4px; }
+    .archive-list::-webkit-scrollbar-track { background: transparent; }
+    .archive-list::-webkit-scrollbar-thumb { background: var(--gray-light); border-radius: 99px; }
+
+    .archive-card {
+        background: var(--white);
+        border: 1.5px solid var(--gray-light);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        transition: background .2s, border-color .2s, transform .2s;
+        animation: archiveSlideIn .3s ease both;
+    }
+    @keyframes archiveSlideIn {
+        from { opacity: 0; transform: translateX(12px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    .archive-card:hover {
+        background: #fff7fb;
+        border-color: var(--bright-pink);
+        box-shadow: 0 6px 18px rgba(232,23,93,.12);
+        transform: translateY(-1px);
+    }
+
+    .archive-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .8rem;
+        margin-bottom: .5rem;
+    }
+    .archive-card-id {
+        font-size: .78rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        letter-spacing: .02em;
+    }
+    .archive-card-time {
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .archive-card-visitor {
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--black);
+        line-height: 1.3;
+    }
+    .archive-card-tenant {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
+    }
+
+    .archive-card-meta {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-top: .6rem;
+        flex-wrap: wrap;
+    }
+    .archive-pill {
+        font-size: .68rem;
+        font-weight: 700;
+        padding: .18rem .55rem;
+        border-radius: 99px;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+    .archive-pill-purpose  { background: #fff0f7; color: var(--hot-pink); border: 1px solid var(--baby-pink); }
+    .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
+    .archive-pill-deleted  { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+
+    .archive-card-footer {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .7rem;
+        padding-top: .6rem;
+        border-top: 1px solid var(--gray-light);
+        font-size: .7rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+    .archive-card-footer span { color: var(--black); font-weight: 600; }
+
+    .archive-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
+    .archive-empty-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto .75rem;
+        opacity: .25;
+        display: block;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+    }
+
+    .archive-footer {
+        padding: .9rem 1.8rem;
+        border-top: 1.5px solid var(--gray-light);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+    .archive-count-label {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+    }
+    .archive-export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: var(--white);
+        border: 1.5px solid var(--gray-light);
+        border-radius: 8px;
+        padding: .35rem .85rem;
+        cursor: pointer;
+        transition: border-color .2s, color .2s;
+        font-family: var(--ff-body);
+    }
+    .archive-export-btn:hover { border-color: var(--hot-pink); }
+    .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .6; }
+
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(12px); }
         to   { opacity: 1; transform: translateY(0);    }
@@ -473,11 +793,51 @@
 
 @section('content')
 
+<div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
+
+<div class="archive-drawer" id="archive-drawer">
+    <div class="archive-drawer-header">
+        <div>
+            <div class="archive-drawer-title">Archive &amp; History</div>
+            <div class="archive-drawer-sub">Record of completed and deleted visitor logs</div>
+        </div>
+        <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
+    </div>
+
+    <div class="archive-tabs">
+        <button class="archive-tab active" id="atab-completed" onclick="switchArchiveTab('completed')">
+            Completed
+            <span class="archive-tab-count" id="acount-completed">0</span>
+        </button>
+        <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
+            Deleted
+            <span class="archive-tab-count" id="acount-deleted">0</span>
+        </button>
+    </div>
+
+    <div class="archive-search-bar">
+        <div class="archive-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="archive-search-icon" alt="">
+            <input type="text" id="archive-search" placeholder="Search archived visitor logs..." oninput="renderArchive()">
+        </div>
+    </div>
+
+    <div class="archive-list" id="archive-list"></div>
+
+    <div class="archive-footer">
+        <div class="archive-count-label" id="archive-count-label">0 records</div>
+        <button class="archive-export-btn" onclick="exportArchive()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
+
 <div id="visitorModal" class="visitor-modal">
     <div class="visitor-modal-card">
         <button type="button" class="visitor-modal-close" onclick="closeModal()">&times;</button>
         <div class="visitor-modal-header">
-            <span style="font-size:1.7rem">👤</span>
+            <span style="font-size:1.7rem"></span>
             <h2>Visitor Details</h2>
         </div>
         <div id="modalContent"></div>
@@ -492,6 +852,10 @@
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <div class="header-actions">
+            <button class="btn-archive-open" onclick="openArchive()">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+                Archive / History
+            </button>
             <button class="btn-outline" onclick="exportLogs()">
                 <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
                 Export
@@ -563,6 +927,17 @@
 
         <div class="table-wrap">
             <table>
+                <colgroup>
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:13%;">
+                    <col style="width:14%;">
+                    <col style="width:10%;">
+                    <col style="width:8%;">
+                    <col style="width:7%;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -588,8 +963,13 @@
 @section('scripts')
 <script>
 
-    const logs = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-    let filtered = Array.isArray(logs) ? [...logs] : [];
+    const logs               = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const completedVisitors  = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const deletedVisitors    = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+
+    let filtered    = Array.isArray(logs) ? [...logs] : [];
+    let archiveTab  = 'completed';
+
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
     function fmtDateTime(dt) {
@@ -612,13 +992,20 @@
         return `${hour % 12 || 12}:${m} ${hour >= 12 ? 'PM' : 'AM'}`;
     }
 
+    function fmtDatePlain(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        return dt.toLocaleDateString('en-US', { month:'2-digit', day:'2-digit', year:'numeric' })
+             + ' ' + dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
+    }
+
     function applyFilters() {
         const q    = document.getElementById('search-input').value.toLowerCase().trim();
         const from = document.getElementById('date-from').value;
         const to   = document.getElementById('date-to').value;
         const sort = document.getElementById('sort-select').value;
 
-        filtered = logs.filter(v => {
+        filtered = logs.filter(function(v) {
             const matchesSearch = !q
                 || (v.visitor_name ?? '').toLowerCase().includes(q)
                 || (v.tenant?.name ?? '').toLowerCase().includes(q)
@@ -632,7 +1019,7 @@
             return matchesSearch && matchesFrom && matchesTo;
         });
 
-        filtered.sort((a, b) => {
+        filtered.sort(function(a, b) {
             if (sort === 'newest') return (b.date_of_visit ?? '').localeCompare(a.date_of_visit ?? '') || (b.id - a.id);
             if (sort === 'oldest') return (a.date_of_visit ?? '').localeCompare(b.date_of_visit ?? '') || (a.id - b.id);
             if (sort === 'name')   return (a.visitor_name  ?? '').localeCompare(b.visitor_name  ?? '');
@@ -646,47 +1033,41 @@
         const tbody = document.getElementById('logs-tbody');
 
         if (!filtered.length) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" style="text-align:center;padding:2.5rem;color:#bbb;font-size:.9rem;">
-                        No visitor logs found.
-                    </td>
-                </tr>`;
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:#bbb;font-size:.9rem;">No visitor logs found.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = filtered.map(v => {
+        tbody.innerHTML = filtered.map(function(v) {
 
             const expectedVisit = (v.date_of_visit || v.time_of_visit)
-                ? `${fmtDate(v.date_of_visit)}<br><small style="color:#aaa">${fmtTime(v.time_of_visit)}</small>`
+                ? fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit)
                 : '—';
 
             const timeIn = v.arrival_time
                 ? fmtDateTime(v.arrival_time)
-                : `<span class="time-pending">Not yet</span>`;
+                : '<span class="time-pending">Not yet</span>';
 
             const timeOut = v.departure_time
                 ? fmtDateTime(v.departure_time)
                 : (v.arrival_time
-                    ? `<span style="color:#c8960c;font-size:.8rem;font-weight:600">Still Inside</span>`
+                    ? '<span style="color:#c8960c;font-size:.8rem;font-weight:600">Still Inside</span>'
                     : '—');
 
-            return `
-                <tr>
-                    <td style="font-weight:600">${v.visitor_name ?? '—'}</td>
-                    <td>${expectedVisit}</td>
-                    <td>${timeIn}</td>
-                    <td>${timeOut}</td>
-                    <td>${v.purpose ?? '—'}</td>
-                    <td>${v.tenant?.full_name ?? '—'}</td>
-                    <td>${v.staff?.name  ?? '—'}</td>
-                    <td>${getStatusBadge(v.status)}</td>
-                    <td>
-                        <button class="act-btn" title="View details" onclick="viewVisitor(${v.id})">
-                            <img src="${eyeIcon}" alt="View">
-                        </button>
-                    </td>
-                </tr>`;
+            return '<tr>'
+                + '<td style="font-weight:600">' + (v.visitor_name ?? '—') + '</td>'
+                + '<td>' + expectedVisit + '</td>'
+                + '<td>' + timeIn + '</td>'
+                + '<td>' + timeOut + '</td>'
+                + '<td>' + (v.purpose ?? '—') + '</td>'
+                + '<td>' + (v.tenant?.full_name ?? '—') + '</td>'
+                + '<td>' + (v.staff?.name ?? '—') + '</td>'
+                + '<td>' + getStatusBadge(v.status) + '</td>'
+                + '<td>'
+                    + '<button class="act-btn" title="View details" onclick="viewVisitor(' + v.id + ')">'
+                        + '<img src="' + eyeIcon + '" alt="View">'
+                    + '</button>'
+                + '</td>'
+                + '</tr>';
         }).join('');
     }
 
@@ -702,37 +1083,37 @@
             'currently inside': 'badge-inside',
         };
         const cls   = map[status.toLowerCase()] ?? '';
-        const label = status.replace(/\b\w/g, c => c.toUpperCase());
-        return `<span class="badge ${cls}">${label}</span>`;
+        const label = status.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        return '<span class="badge ' + cls + '">' + label + '</span>';
     }
 
     function exportLogs() {
         if (!filtered.length) { alert('No data to export.'); return; }
 
         let csv = 'Name,Expected Date,Expected Time,Time In,Time Out,Purpose,Tenant Visited,Logged By,Status\n';
-        filtered.forEach(v => {
+        filtered.forEach(function(v) {
             csv += [
-                `"${v.visitor_name     ?? ''}"`,
-                `"${fmtDate(v.date_of_visit)}"`,
-                `"${fmtTime(v.time_of_visit)}"`,
-                `"${v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet'}"`,
-                `"${v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside'}"`,
-                `"${v.purpose        ?? ''}"`,
-                `"${v.tenant?.full_name ?? ''}"`,
-                `"${v.staff?.name    ?? ''}"`,
-                `"${v.status         ?? ''}"`,
+                '"' + (v.visitor_name ?? '') + '"',
+                '"' + fmtDate(v.date_of_visit) + '"',
+                '"' + fmtTime(v.time_of_visit) + '"',
+                '"' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '"',
+                '"' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '"',
+                '"' + (v.purpose        ?? '') + '"',
+                '"' + (v.tenant?.full_name ?? '') + '"',
+                '"' + (v.staff?.name    ?? '') + '"',
+                '"' + (v.status         ?? '') + '"',
             ].join(',') + '\n';
         });
 
         const a    = document.createElement('a');
         a.href     = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = `visitor_logs_${new Date().toISOString().slice(0,10)}.csv`;
+        a.download = 'visitor_logs_' + new Date().toISOString().slice(0,10) + '.csv';
         a.click();
         URL.revokeObjectURL(a.href);
     }
 
     function viewVisitor(id) {
-        const v = logs.find(item => item.id === id);
+        const v = logs.find(function(item) { return item.id === id; });
         if (!v) return;
 
         const timeInDisplay = v.arrival_time
@@ -745,57 +1126,170 @@
 
         let idPhotoHtml = '';
         if (v.id_photo) {
-            const src = v.id_photo.startsWith('http') ? v.id_photo : `/storage/${v.id_photo}`;
-            idPhotoHtml = `
-                <div class="id-photo-wrap">
-                    <img src="${src}" alt="ID Photo" onerror="this.style.display='none'">
-                    <a href="${src}" target="_blank" rel="noopener">Open full image ↗</a>
-                </div>`;
+            const src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
+            idPhotoHtml = '<div class="id-photo-wrap">'
+                + '<img src="' + src + '" alt="ID Photo" onerror="this.style.display=\'none\'">'
+                + '<a href="' + src + '" target="_blank" rel="noopener">Open full image &#x2197;</a>'
+                + '</div>';
         } else {
-            idPhotoHtml = `<div class="id-photo-wrap"><p class="no-id-photo">No ID photo uploaded.</p></div>`;
+            idPhotoHtml = '<div class="id-photo-wrap"><p class="no-id-photo">No ID photo uploaded.</p></div>';
         }
 
-        document.getElementById('modalContent').innerHTML = `
-            <div class="modal-section-title">Visitor Info</div>
-            ${row('Visitor ID',     'VST-' + String(v.id).padStart(3, '0'))}
-            ${row('Full Name',      v.visitor_name ?? '—')}
-            ${row('Contact No.',    v.contact_no   ?? '—')}
-            ${row('Purpose',        v.purpose      ?? '—')}
-            ${row('Tenant Visited', v.tenant?.full_name ?? '—')}
-
-            <div class="modal-section-title">Schedule</div>
-            ${row('Expected Date',  fmtDate(v.date_of_visit))}
-            ${row('Expected Time',  fmtTime(v.time_of_visit))}
-            ${row('Time In',        timeInDisplay)}
-            ${row('Time Out',       timeOutDisplay)}
-
-            <div class="modal-section-title">Log Info</div>
-            ${row('Status',    getStatusBadge(v.status))}
-            ${row('Logged By', v.staff?.name ?? '—')}
-
-            <div class="modal-section-title">ID Verification</div>
-            ${row('ID Type', v.id_type ?? '—')}
-            ${idPhotoHtml}
-        `;
+        document.getElementById('modalContent').innerHTML =
+            '<div class="modal-section-title">Visitor Info</div>'
+            + row('Visitor ID',     'VST-' + String(v.id).padStart(3, '0'))
+            + row('Full Name',      v.visitor_name ?? '—')
+            + row('Contact No.',    v.contact_no   ?? '—')
+            + row('Purpose',        v.purpose      ?? '—')
+            + row('Tenant Visited', v.tenant?.full_name ?? '—')
+            + '<div class="modal-section-title">Schedule</div>'
+            + row('Expected Date',  fmtDate(v.date_of_visit))
+            + row('Expected Time',  fmtTime(v.time_of_visit))
+            + row('Time In',        timeInDisplay)
+            + row('Time Out',       timeOutDisplay)
+            + '<div class="modal-section-title">Log Info</div>'
+            + row('Status',    getStatusBadge(v.status))
+            + row('Logged By', v.staff?.name ?? '—')
+            + '<div class="modal-section-title">ID Verification</div>'
+            + row('ID Type', v.id_type ?? '—')
+            + idPhotoHtml;
 
         document.getElementById('visitorModal').style.display = 'flex';
     }
 
     function row(label, value) {
-        return `
-            <div class="modal-row">
-                <span class="modal-label">${label}</span>
-                <span class="modal-value">${value}</span>
-            </div>`;
+        return '<div class="modal-row">'
+            + '<span class="modal-label">' + label + '</span>'
+            + '<span class="modal-value">' + value + '</span>'
+            + '</div>';
     }
 
     function closeModal() {
         document.getElementById('visitorModal').style.display = 'none';
     }
 
-    window.onclick = e => {
+    window.onclick = function(e) {
         if (e.target === document.getElementById('visitorModal')) closeModal();
     };
+
+    function openArchive() {
+        document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors) ? completedVisitors.length : 0;
+        document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)   ? deletedVisitors.length   : 0;
+        document.getElementById('archive-search').value = '';
+        archiveTab = 'completed';
+        document.getElementById('atab-completed').classList.add('active');
+        document.getElementById('atab-deleted').classList.remove('active');
+        renderArchive();
+        document.getElementById('archive-drawer').classList.add('open');
+        document.getElementById('archive-backdrop').classList.add('open');
+    }
+
+    function closeArchive() {
+        document.getElementById('archive-drawer').classList.remove('open');
+        document.getElementById('archive-backdrop').classList.remove('open');
+    }
+
+    function switchArchiveTab(tab) {
+        archiveTab = tab;
+        document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
+        document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
+        document.getElementById('archive-search').value = '';
+        renderArchive();
+    }
+
+    function renderArchive() {
+        const q    = document.getElementById('archive-search').value.toLowerCase();
+        const data = archiveTab === 'completed'
+            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
+            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+
+        const result = data.filter(function(v) {
+            return (v.visitor_name ?? '').toLowerCase().includes(q)
+                || (v.purpose      ?? '').toLowerCase().includes(q)
+                || (v.tenant?.name ?? v.tenant?.full_name ?? '').toLowerCase().includes(q);
+        });
+
+        const list = document.getElementById('archive-list');
+        document.getElementById('archive-count-label').textContent = result.length + ' record' + (result.length !== 1 ? 's' : '');
+
+        if (result.length === 0) {
+            list.innerHTML = '<div class="archive-empty">'
+                + '<img class="archive-empty-icon" src="{{ asset('icons/visitor.png') }}" alt="">'
+                + 'No ' + archiveTab + ' visitor logs found.'
+                + '</div>';
+            return;
+        }
+
+        const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
+
+        list.innerHTML = result.map(function(v, i) {
+            const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? null;
+            const roomNum    = v.tenant?.room_number ?? null;
+            const logId      = v.visitor_id ?? v.id ?? 0;
+            const footerDate = archiveTab === 'completed'
+                ? fmtDatePlain(v.departure_time ?? v.arrival_time)
+                : fmtDatePlain(v.arrival_time);
+
+            return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
+                + '<div class="archive-card-top">'
+                    + '<div class="archive-card-id">VST-' + String(logId).padStart(3, '0') + '</div>'
+                    + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
+                + '</div>'
+                + '<div class="archive-card-visitor">' + (v.visitor_name ?? '—') + '</div>'
+                + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' — Rm ' + roomNum : '') + '</div>' : '')
+                + '<div class="archive-card-meta">'
+                    + '<span class="archive-pill archive-pill-purpose">' + (v.purpose ?? 'Other') + '</span>'
+                    + '<span class="archive-pill ' + pillClass + '">' + pillLabel + '</span>'
+                + '</div>'
+                + '<div class="archive-card-footer">'
+                    + footerLabel + ': <span>' + footerDate + '</span>'
+                + '</div>'
+                + '</div>';
+        }).join('');
+    }
+
+    function exportArchive() {
+        const data  = archiveTab === 'completed'
+            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
+            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+
+        if (!data.length) { alert('No archive data to export.'); return; }
+
+        const label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        const rows  = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
+
+        data.forEach(function(v) {
+            const logId      = v.visitor_id ?? v.id ?? 0;
+            const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const footerDate = archiveTab === 'completed'
+                ? fmtDatePlain(v.departure_time ?? v.arrival_time)
+                : fmtDatePlain(v.arrival_time);
+
+            rows.push([
+                'VST-' + String(logId).padStart(3, '0'),
+                v.visitor_name  ?? '',
+                v.contact_no    ?? '',
+                v.purpose       ?? '',
+                tenantName,
+                v.arrival_time  ?? '',
+                v.departure_time ?? '',
+                v.status        ?? '',
+                footerDate,
+            ]);
+        });
+
+        const csv = rows.map(function(r) {
+            return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
+        }).join('\n');
+
+        const a    = document.createElement('a');
+        a.href     = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'visitor_logs_' + archiveTab + '_archive_' + new Date().toISOString().slice(0,10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
 
     applyFilters();
 

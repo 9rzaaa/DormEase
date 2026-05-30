@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\VisitorController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\MaintenanceController;
+use App\Http\Controllers\Api\EmergencyController;
+use App\Http\Controllers\Api\DeviceTokenController;
+use App\Http\Controllers\Api\NotificationController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,6 +26,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+    Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
     // ── Announcements ─────────────────────────────────────────────────────────
     Route::get('/announcements', [AnnouncementController::class, 'index']);
@@ -46,6 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
+
+    Route::get('/emergency', [EmergencyController::class, 'index']);
+    Route::post('/emergency', [EmergencyController::class, 'store']);
 
     // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {

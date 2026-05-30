@@ -598,6 +598,83 @@ section { padding: 100px 6%; }
   color: inherit;
   text-decoration: none;
 }
+.app-screenshots {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0 4px;
+}
+
+.app-screenshot-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-screenshot-item.center {
+  transform: translateY(-16px);
+}
+
+.app-screenshot-frame {
+  width: 100px;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 3px solid var(--brown);
+  box-shadow: 0 10px 28px rgba(36,16,24,0.18);
+  background: var(--pink-pale);
+  position: relative;
+}
+
+.app-screenshot-frame.featured {
+  width: 118px;
+  border-color: var(--pink);
+  box-shadow: 0 16px 36px rgba(232,23,93,0.28);
+}
+
+.app-screenshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.app-screenshot-fallback {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--brown-light);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 12px;
+}
+
+.app-screenshot-fallback svg {
+  width: 28px;
+  height: 28px;
+  stroke: var(--pink-light);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.app-screenshot-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brown-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-head);
+}
 
 footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 40px; }
 .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
@@ -822,7 +899,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       Sanctissimo Rosario Ladies Dormitory: a safe, study-friendly home for female students in the heart of Sampaloc, Manila.
     </p>
     <div class="hero-actions">
-      <a href="#features" class="btn-primary">Explore Rooms</a>
+      <a href="{{ route('gallery') }}" class="btn-primary">Explore Rooms</a>
       <a href="{{ route('safety.features') }}" class="btn-outline">Safety Features</a>
     </div>
 
@@ -944,24 +1021,65 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       </div>
     </div>
 
-    <div class="how-img-main reveal">
-      <div class="mini-phones">
-        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">DORMEASE</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:70%"></div><div class="mini-row"></div><div class="mini-row" style="width:80%"></div><div class="mini-row"></div></div></div></div>
-        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr" style="background:var(--pink-deep)"><div class="mini-hdr-txt">ANNOUNCEMENTS</div></div><div class="mini-bdy"><div class="mini-row"></div><div class="mini-row" style="width:60%"></div><div class="mini-row"></div><div class="mini-row" style="width:85%"></div></div></div></div>
-        <div class="mini-ph"><div class="mini-scr"><div class="mini-hdr"><div class="mini-hdr-txt">WATER BILL</div></div><div class="mini-bdy"><div style="background:white;border-radius:4px;height:26px;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;font-weight:800;color:var(--pink);font-family:var(--font-head)">₱248.50</span></div><div class="mini-row" style="width:75%"></div><div class="mini-row"></div><div class="mini-row" style="width:55%"></div></div></div></div>
+   <div class="how-img-main reveal">
+  <div class="app-screenshots">
+    <div class="app-screenshot-item">
+      <div class="app-screenshot-frame">
+        <img src="{{ asset('images/app_dashboard.png') }}"
+             alt="DormEase App - Home Screen"
+             class="app-screenshot-img"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="app-screenshot-fallback" style="display:none">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+          <span>screen1.png</span>
+        </div>
       </div>
-      <p style="font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--brown);margin-top:24px;font-style:italic;">"Everything in one app — finally."</p>
-      <p style="font-size:.76rem;color:var(--brown-light);margin-top:4px;font-weight:600;">— Room 3B Tenant</p>
-      
-      <a href="{{ route('features') }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;">
-        More Features
-        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;">
-          <path d="M5 12h14"></path>
-          <path d="M12 5l7 7-7 7"></path>
-        </svg>
-      </a>
+      <p class="app-screenshot-label">Home</p>
+    </div>
+
+    <div class="app-screenshot-item center">
+      <div class="app-screenshot-frame featured">
+        <img src="{{ asset('images/app_announcements.png') }}"
+             alt="DormEase App - Announcements"
+             class="app-screenshot-img"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="app-screenshot-fallback" style="display:none">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+          <span>screen2.png</span>
+        </div>
+      </div>
+      <p class="app-screenshot-label">Announcements</p>
+    </div>
+
+    <div class="app-screenshot-item">
+      <div class="app-screenshot-frame">
+        <img src="{{ asset('images/app_waterbilling.png') }}"
+             alt="DormEase App - Water Bill"
+             class="app-screenshot-img"
+             onerror="this.style.display:'none';this.nextElementSibling.style.display='flex'">
+        <div class="app-screenshot-fallback" style="display:none">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
+          <span>screen3.png</span>
+        </div>
+      </div>
+      <p class="app-screenshot-label">Water Bill</p>
     </div>
   </div>
+
+<p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
+  Dorm life, <em style="color:var(--pink);font-style:italic;">simplified.</em>
+</p>
+<p style="font-size:.82rem;color:var(--brown-light);margin-top:6px;font-weight:600;letter-spacing:0.02em;">
+  Everything your tenants need is in one place.
+</p>
+
+  <a href="{{ route('features') }}" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;">
+    More Features
+    <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:white;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;">
+      <path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path>
+    </svg>
+  </a>
+</div>
 
 </section>
 

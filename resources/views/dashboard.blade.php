@@ -1,7 +1,6 @@
 @extends('layout')
 
 @section('title', 'DormEase: Dashboard')
-
 @section('page-title', 'Dashboard')
 
 @section('styles')
@@ -13,6 +12,7 @@
         padding: 1.8rem 2rem;
         flex: 1;
         background: var(--blush);
+        align-items: start;
     }
 
     .content-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
@@ -26,19 +26,23 @@
         border: 1.5px solid var(--bright-pink);
         background: var(--petal);
         font-size: .82rem; font-weight: 700; color: var(--hot-pink);
-        transition: background .2s, color .2s;
+        transition: background .2s;
+        cursor: pointer;
     }
     .export-btn:hover { background: var(--baby-pink); }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
     .stat-box {
-        border-radius: 14px; padding: 1.1rem;
-        border: none;
+        border-radius: 14px; padding: 1.1rem; border: none;
         background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         transition: transform .2s, box-shadow .2s;
     }
     .stat-box:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(232,23,93,.25); }
-
     .stat-icon {
         width: 40px; height: 40px; border-radius: 10px;
         background: var(--white);
@@ -46,13 +50,80 @@
         margin-bottom: .8rem;
     }
     .stat-icon img {
+        width: 20px; height: 20px; object-fit: contain;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
     .stat-num   { font-size: 1.9rem; font-weight: 800; color: var(--white); line-height: 1; letter-spacing: -.03em; }
     .stat-label { font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .3rem; }
     .stat-sub   { font-size: .75rem; color: rgba(255,255,255,.72); margin-top: .15rem; }
 
-    .bottom-row { display: grid; grid-template-columns: 1fr 260px; gap: 1.2rem; }
+    .mid-row {
+        display: grid;
+        grid-template-columns: 1fr 230px;
+        gap: 1.2rem;
+        align-items: stretch;
+    }
+
+    .chart-card {
+        background: var(--white);
+        border-radius: 16px;
+        border: 1.5px solid var(--baby-pink);
+        box-shadow: var(--shadow);
+        padding: 1.4rem 1.6rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .chart-card-header {
+        display: flex; align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap; gap: .8rem; margin-bottom: 1.2rem;
+    }
+    .chart-card-title { font-size: 1rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+    .chart-card-sub   { font-size: .78rem; color: var(--ink-muted); margin-top: .15rem; }
+    .chart-legend { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+    .chart-legend-item { display: flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 600; color: var(--ink-muted); }
+    .chart-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .chart-legend-dot.collected { background: var(--hot-pink); }
+    .chart-legend-dot.unpaid    { background: #f5a24b; }
+    .chart-wrap { position: relative; width: 100%; flex: 1; min-height: 200px; }
+
+    .emergency-card {
+        background: var(--white);
+        border: 1.5px solid var(--bright-pink);
+        border-radius: 16px;
+        padding: 1.4rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: .55rem;
+    }
+    .emergency-title { font-size: .95rem; font-weight: 800; color: var(--black); }
+    .emergency-icon-wrap {
+        width: 72px; height: 72px; border-radius: 50%;
+        border: 3px solid var(--baby-pink);
+        background: var(--petal);
+        display: flex; align-items: center; justify-content: center;
+        margin: .4rem 0;
+        box-shadow: 0 4px 14px rgba(232,23,93,.12);
+    }
+    .emergency-icon-wrap img {
+        width: 28px; height: 28px; object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .check-icon { width: 38px !important; height: 38px !important; filter: none !important; }
+    .emergency-room   { font-size: .88rem; font-weight: 700; color: var(--ink); }
+    .emergency-type   { font-size: .8rem; font-weight: 600; color: var(--bright-pink); }
+    .emergency-status { font-size: .75rem; color: var(--ink-muted); font-style: italic; }
+    .emergency-btn {
+        margin-top: .4rem; width: 100%;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        color: var(--white); border: none; border-radius: 10px;
+        padding: .6rem; font-size: .82rem; font-weight: 800;
+        cursor: pointer; transition: opacity .2s;
+    }
+    .emergency-btn:hover { opacity: .88; }
 
     .maint-row {
         display: flex; align-items: center; gap: 1rem;
@@ -61,49 +132,33 @@
     }
     .maint-row:last-child { border-bottom: none; }
     .maint-row:hover { background: var(--petal); }
-    .maint-type-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--blush); border: 1.5px solid var(--baby-pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .maint-title     { font-size: .88rem; font-weight: 700; color: var(--ink); }
-    .maint-id        { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; }
-    .maint-desc      { font-size: .83rem; color: var(--ink); font-weight: 500; }
-    .maint-tags      { display: flex; gap: .35rem; margin-top: .3rem; flex-wrap: wrap; }
+    .maint-type-icon {
+        width: 38px; height: 38px; border-radius: 10px;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .maint-type-icon img {
+        width: 18px; height: 18px; object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .maint-title { font-size: .88rem; font-weight: 700; color: var(--ink); }
+    .maint-id    { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; }
+    .maint-desc  { font-size: .83rem; color: var(--ink); font-weight: 500; }
+    .maint-tags  { display: flex; gap: .35rem; margin-top: .3rem; flex-wrap: wrap; }
 
     .tag          { font-size: .7rem; font-weight: 700; padding: .18rem .55rem; border-radius: 5px; border: 1.5px solid; }
-    .tag-urgent   { color: #C4003A;    border-color: var(--bright-pink);  background: var(--baby-pink); }
-    .tag-moderate { color: #a84c00;    border-color: #f5a24b;             background: #fff6ed; }
-    .tag-low      { color: #1a7a4a;    border-color: #5bcb8a;             background: #eafbf0; }
-    .tag-progress { color: #A0005C;    border-color: var(--mid-pink);     background: var(--petal); }
-    .tag-pending  { color: #8A1040;    border-color: var(--pink-200);     background: var(--baby-pink); }
+    .tag-urgent   { color: #C4003A; border-color: var(--bright-pink); background: var(--baby-pink); }
+    .tag-moderate { color: #a84c00; border-color: #f5a24b;            background: #fff6ed; }
+    .tag-low      { color: #1a7a4a; border-color: #5bcb8a;            background: #eafbf0; }
+    .tag-progress { color: #A0005C; border-color: var(--mid-pink);    background: var(--petal); }
+    .tag-pending  { color: #8A1040; border-color: var(--pink-200);    background: var(--baby-pink); }
 
     .maint-assign { font-size: .82rem; color: var(--ink-muted); white-space: nowrap; flex-shrink: 0; }
     .maint-arrow  { color: var(--hot-pink); font-size: .9rem; flex-shrink: 0; }
 
     .empty-state { text-align: center; padding: 2rem; color: var(--ink-muted); font-size: .88rem; }
-
-    .emergency-card { background: var(--white); border: 1.5px solid var(--bright-pink); border-radius: 16px; padding: 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: .6rem; }
-    .emergency-clear { opacity: 1; }
-    .emergency-clear .emergency-title { color: #000 !important; }
-    .emergency-clear .emergency-btn { background: var(--bright-pink) !important; color: #fff !important; opacity: 1 !important; }
-    .emergency-clear .emergency-btn:hover { background: var(--hot-pink) !important; }
-    
-    .emergency-title { font-size: 1rem;font-weight: 800; color: var(--black); }
-
-    .emergency-icon-wrap {width: 78px;height: 78px; border-radius: 50%; border: 3px solid var(--baby-pink); background: var(--petal); display: flex; align-items: center; justify-content: center; margin: .5rem 0; box-shadow: 0 4px 14px rgba(232,23,93,.12); }
-
-    .emergency-icon-wrap img { width: 28px; height: 28px; object-fit: contain; display: block; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
-
-    .check-icon {width: 42px !important; height: 42px !important; object-fit: contain; display: block; filter: none !important; }
-
-    .emergency-room      { font-size: .9rem; font-weight: 700; color: var(--ink); }
-    .emergency-type      { font-size: .82rem; font-weight: 600; color: var(--bright-pink); }
-    .emergency-status    { font-size: .78rem; color: var(--ink-muted); font-style: italic; }
-    .emergency-btn {
-        margin-top: .5rem; width: 100%;
-        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
-        color: var(--white); border: none; border-radius: 10px;
-        padding: .65rem; font-size: .85rem; font-weight: 800;
-        cursor: pointer; transition: opacity .2s;
-    }
-    .emergency-btn:hover { opacity: .88; }
 
     .announce-item { padding: .9rem 0; border-bottom: 1px solid var(--petal); }
     .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
@@ -118,9 +173,9 @@
     .post-announce-btn:hover { background: var(--baby-pink); }
 
     .priority-badge { display: inline-block; font-size: .68rem; font-weight: 800; padding: .15rem .5rem; border-radius: 5px; border: 1.5px solid; margin-left: .4rem; vertical-align: middle; }
-    .priority-low      { color: #1a7a4a; border-color: #5bcb8a;           background: #eafbf0; }
-    .priority-moderate { color: #a84c00; border-color: #f5a24b;           background: #fff6ed; }
-    .priority-high     { color: #C4003A; border-color: var(--bright-pink); background: var(--baby-pink); }
+    .priority-low      { color: #1a7a4a; border-color: #5bcb8a;            background: #eafbf0; }
+    .priority-moderate { color: #a84c00; border-color: #f5a24b;            background: #fff6ed; }
+    .priority-high     { color: #C4003A; border-color: var(--bright-pink);  background: var(--baby-pink); }
 
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
@@ -137,8 +192,8 @@
     .activity-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 
     .icon-sm { width: 16px; height: 16px; object-fit: contain; }
-    .icon-md { width: 24px; height: 24px; object-fit: contain; }
-    .icon-lg { width: 30px; height: 30px; object-fit: contain; }
+    .icon-md { width: 20px; height: 20px; object-fit: contain; }
+    .icon-lg { width: 28px; height: 28px; object-fit: contain; }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -146,8 +201,15 @@
         .right-col  { display: grid; grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 820px) {
-        .bottom-row { grid-template-columns: 1fr; }
+        .mid-row    { grid-template-columns: 1fr; }
         .right-col  { grid-template-columns: 1fr; }
+        .chart-wrap { min-height: 180px; }
+    }
+    @media (max-width: 540px) {
+        .page-body  { padding: 1rem; gap: 1rem; }
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .chart-card-header { flex-direction: column; align-items: flex-start; }
+        .chart-wrap { min-height: 160px; }
     }
 </style>
 @endsection
@@ -174,7 +236,6 @@
                     Export
                 </button>
             </div>
-
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants"></div>
@@ -185,7 +246,7 @@
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/billing.png') }}" class="icon-md" alt="payments"></div>
                     <div class="stat-num">{{ $pendingPayments ?? 0 }}</div>
-                    <div class="stat-label">Pending Payments</div>
+                    <div class="stat-label">Unpaid Bills</div>
                     <div class="stat-sub">Unsettled water charges</div>
                 </div>
                 <div class="stat-box">
@@ -203,56 +264,28 @@
             </div>
         </div>
 
-        <div class="bottom-row fade-up d3">
+        <div class="mid-row fade-up d3">
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">Maintenance Requests</div>
-                    <a href="{{ route('maintenance.index') }}" class="see-all">See All</a>
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-card-title">Monthly Payment Overview</div>
+                        <div class="chart-card-sub">Collected vs Unpaid water billing for the last 6 months</div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="chart-legend-item">
+                            <div class="chart-legend-dot collected"></div>
+                            Collected
+                        </div>
+                        <div class="chart-legend-item">
+                            <div class="chart-legend-dot unpaid"></div>
+                            Unpaid
+                        </div>
+                    </div>
                 </div>
-
-                @if($maintenanceRequests->isEmpty())
-                    <div class="empty-state">No pending maintenance requests.</div>
-                @else
-                    @foreach($maintenanceRequests as $req)
-                        <div class="maint-row">
-                            <div class="maint-type-icon">
-                                @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb')) 🔧
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec')) ⚡
-                                @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac')) ❄️
-                                @else 🛠
-                                @endif
-                        </div>
-                            <div class="maint-info">
-                                <div class="maint-title">
-                                    {{ $req->issue_type }}
-                                    @if($req->tenant) | {{ $req->tenant->room_number }} @endif
-                                </div>
-                                <div class="maint-id">Request ID: REQ-{{ str_pad($req->request_id, 3, '0', STR_PAD_LEFT) }}</div>
-                            </div>
-                            <div class="maint-desc-col">
-                                <div class="maint-desc">{{ $req->description }}</div>
-                                <div class="maint-tags">
-                                    @php
-                                        $urgencyClass = match(strtolower($req->urgency_level ?? '')) {
-                                            'urgent'   => 'tag-urgent',
-                                            'moderate' => 'tag-moderate',
-                                            default    => 'tag-low',
-                                        };
-                                        $statusClass = match(strtolower($req->status ?? '')) {
-                                            'in_progress' => 'tag-progress',
-                                            default       => 'tag-pending',
-                                        };
-                                    @endphp
-                                    <span class="tag {{ $urgencyClass }}">{{ ucfirst($req->urgency_level) }}</span>
-                                    <span class="tag {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $req->status)) }}</span>
-                                </div>
-                            </div>
-                            <div class="maint-assign">{{ $req->assigned_to ?? 'Unassigned' }}</div>
-                            <div class="maint-arrow">›</div>
-                        </div>
-                    @endforeach
-                @endif
+                <div class="chart-wrap">
+                    <canvas id="paymentChart"></canvas>
+                </div>
             </div>
 
             @if($latestEmergency)
@@ -261,29 +294,81 @@
                     <div class="emergency-icon-wrap">
                         <img src="{{ asset('icons/panic.png') }}" class="icon-lg" alt="">
                     </div>
-                    <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}:</div>
+                    <div class="emergency-room">{{ $latestEmergency->location ?? 'Unknown Location' }}</div>
                     <div class="emergency-type">{{ $latestEmergency->emergency_type }}</div>
                     <div class="emergency-status">{{ $latestEmergency->status }}</div>
                     <button class="emergency-btn" onclick="openModal('emergency-modal')">View All Alerts</button>
                 </div>
             @else
-                <div class="emergency-card emergency-clear">
+                <div class="emergency-card">
                     <div class="emergency-title">Emergency Reports</div>
                     <div class="emergency-icon-wrap">
                         <img src="{{ asset('icons/check.png') }}" alt="" class="check-icon">
                     </div>
-                    <div class="emergency-type" style="color:#D63375;">All Clear</div>
+                    <div class="emergency-type" style="color:#1a7a4a;">All Clear</div>
                     <div class="emergency-status">No active emergencies</div>
-                    <button class="emergency-btn" style="background: var(--bright-pink); color: white;"
-                    onclick="openModal('emergency-modal')">
-                    View History
-                </button>
+                    <button class="emergency-btn" style="background:linear-gradient(135deg,#1a7a4a,#2ecc71);" onclick="openModal('emergency-modal')">
+                        View History
+                    </button>
                 </div>
             @endif
 
         </div>
 
         <div class="card fade-up d4">
+            <div class="card-header">
+                <div class="card-title">Maintenance Requests</div>
+                <a href="{{ route('maintenance.index') }}" class="see-all">See All</a>
+            </div>
+            @if($maintenanceRequests->isEmpty())
+                <div class="empty-state">No pending maintenance requests.</div>
+            @else
+                @foreach($maintenanceRequests as $req)
+                    <div class="maint-row">
+                        <div class="maint-type-icon">
+                            @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
+                                <img src="{{ asset('icons/plumbing.png') }}" alt="Plumbing" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
+                            @elseif(str_contains(strtolower($req->issue_type ?? ''), 'elec'))
+                                <img src="{{ asset('icons/electrical.png') }}" alt="Electrical" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
+                            @elseif(str_contains(strtolower($req->issue_type ?? ''), 'hvac'))
+                                <img src="{{ asset('icons/hvac.png') }}" alt="HVAC" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
+                            @else
+                                <img src="{{ asset('icons/maintenance.png') }}" alt="Maintenance">
+                            @endif
+                        </div>
+                        <div class="maint-info">
+                            <div class="maint-title">
+                                {{ $req->issue_type }}
+                                @if($req->tenant) | {{ $req->tenant->room_number }} @endif
+                            </div>
+                            <div class="maint-id">Request ID: REQ-{{ str_pad($req->request_id, 3, '0', STR_PAD_LEFT) }}</div>
+                        </div>
+                        <div class="maint-desc-col">
+                            <div class="maint-desc">{{ $req->description }}</div>
+                            <div class="maint-tags">
+                                @php
+                                    $urgencyClass = match(strtolower($req->urgency_level ?? '')) {
+                                        'urgent'   => 'tag-urgent',
+                                        'moderate' => 'tag-moderate',
+                                        default    => 'tag-low',
+                                    };
+                                    $statusClass = match(strtolower($req->status ?? '')) {
+                                        'in_progress' => 'tag-progress',
+                                        default       => 'tag-pending',
+                                    };
+                                @endphp
+                                <span class="tag {{ $urgencyClass }}">{{ ucfirst($req->urgency_level) }}</span>
+                                <span class="tag {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $req->status)) }}</span>
+                            </div>
+                        </div>
+                        <div class="maint-assign">{{ $req->assigned_to ?? 'Unassigned' }}</div>
+                        <div class="maint-arrow">›</div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
+        <div class="card fade-up d5">
             <div class="card-header">
                 <div class="card-title">Latest Announcements</div>
                 <div style="display:flex;gap:.8rem;align-items:center;">
@@ -292,7 +377,6 @@
                     <a href="{{ route('announcements.index') }}" class="see-all">See All</a>
                 </div>
             </div>
-
             @if($announcements->isEmpty())
                 <div class="empty-state" id="ann-empty">No announcements yet.</div>
             @else
@@ -379,7 +463,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post Announcement</div>
-            <button class="modal-close" onclick="closeModal('announce-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('announce-modal')">&#x2715;</button>
         </div>
         <form method="POST" action="{{ route('announcements.store') }}" id="post-ann-form">
             @csrf
@@ -420,7 +504,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Edit Announcement</div>
-            <button class="modal-close" onclick="closeModal('edit-ann-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('edit-ann-modal')">&#x2715;</button>
         </div>
         <form method="POST" id="edit-ann-form">
             @csrf
@@ -462,7 +546,7 @@
     <div class="modal" style="max-width:380px;">
         <div class="modal-header">
             <div class="modal-title">Delete Announcement</div>
-            <button class="modal-close" onclick="closeModal('delete-ann-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('delete-ann-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">
             Are you sure you want to delete this announcement? This cannot be undone.
@@ -482,7 +566,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Emergency Alerts</div>
-            <button class="modal-close" onclick="closeModal('emergency-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
         <div style="display:flex;flex-direction:column;gap:.8rem;">
             @if($allEmergencies->isEmpty())
@@ -506,7 +590,84 @@
 
 
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
+    (function () {
+        const labels    = @json($chartLabels);
+        const collected = @json($chartCollected);
+        const unpaid    = @json($chartUnpaid);
+
+        const ctx = document.getElementById('paymentChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Collected',
+                        data: collected,
+                        backgroundColor: 'rgba(232,23,93,0.85)',
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                        categoryPercentage: 0.7,
+                    },
+                    {
+                        label: 'Unpaid',
+                        data: unpaid,
+                        backgroundColor: 'rgba(245,162,75,0.85)',
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.55,
+                        categoryPercentage: 0.7,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        borderColor: 'rgba(232,23,93,0.2)',
+                        borderWidth: 1,
+                        titleColor: '#1a1a2e',
+                        bodyColor: '#555',
+                        padding: 12,
+                        callbacks: {
+                            label: function (ctx) {
+                                return ' ' + ctx.dataset.label + ': PHP ' + Number(ctx.parsed.y).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        border: { display: false },
+                        ticks: { font: { size: 11, weight: '600' }, color: '#999' },
+                    },
+                    y: {
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        border: { display: false, dash: [4, 4] },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#bbb',
+                            callback: function (val) {
+                                if (val >= 1000) return 'PHP ' + (val / 1000).toFixed(0) + 'k';
+                                return 'PHP ' + val;
+                            },
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
+    })();
+
     function openPostModal() {
         document.getElementById('ann-title').value = '';
         document.getElementById('ann-body').value  = '';
@@ -531,11 +692,11 @@
         const rows = [
             ['Metric', 'Value'],
             ['Total Tenants',        '{{ $totalTenants }}'],
-            ['Pending Payments',     '{{ $pendingPayments }}'],
+            ['Unpaid Bills',         '{{ $pendingPayments }}'],
             ['Maintenance Requests', '{{ $pendingMaintenance }}'],
             ['Unresolved Reports',   '{{ $unresolvedReports }}'],
         ];
-        const csv  = rows.map(r => r.join(',')).join('\n');
+        const csv  = rows.map(function (r) { return r.join(','); }).join('\n');
         const blob = new Blob([csv], { type: 'text/csv' });
         const a    = document.createElement('a');
         a.href     = URL.createObjectURL(blob);

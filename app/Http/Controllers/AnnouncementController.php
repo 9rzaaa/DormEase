@@ -2,29 +2,37 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Announcement;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class AnnouncementController extends Controller
 {
     public function index()
     {
-        $staff         = Auth::guard('staff')->user();
-        $announcements = Announcement::latest('posted_at')->get();
+        $staff           = Auth::guard('staff')->user();
+        $announcements   = Announcement::latest('posted_at')->get();
+        $deletedArchive  = Announcement::onlyTrashed()->latest('deleted_at')->get();
+
         return view('announcements', [
-            'staff'         => $staff,
-            'announcements' => $announcements,
+            'staff'          => $staff,
+            'announcements'  => $announcements,
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
     public function frontdeskIndex()
     {
-        $staff         = Auth::guard('staff')->user();
-        $announcements = Announcement::latest('posted_at')->get();
+        $staff           = Auth::guard('staff')->user();
+        $announcements   = Announcement::latest('posted_at')->get();
+        $deletedArchive  = Announcement::onlyTrashed()->latest('deleted_at')->get();
+
         return view('fdannouncement', [
-            'staff'         => $staff,
-            'announcements' => $announcements,
+            'staff'          => $staff,
+            'announcements'  => $announcements,
+            'deletedArchive' => $deletedArchive,
         ]);
     }
 
@@ -47,7 +55,7 @@ class AnnouncementController extends Controller
             $attachment = implode(',', $paths);
         }
 
-        Announcement::create([
+        $announcement = Announcement::create([
             'posted_by'  => Auth::guard('staff')->id(),
             'title'      => $request->title,
             'content'    => $request->content,
@@ -57,10 +65,28 @@ class AnnouncementController extends Controller
             'posted_at'  => now(),
         ]);
 
-        NotificationHelper::sendToAll(
-            type: 'announcement_new',
-            message: 'New announcement posted: ' . $request->title,
-        );
+        app()->terminating(function () use ($announcement, $request) {
+            try {
+                NotificationHelper::sendToAll(
+                    type: 'announcement_new',
+                    message: 'New announcement posted: ' . $request->title,
+                    ref_id: $announcement->announcement_id,
+                );
+
+                app(TenantPushNotificationService::class)->sendToAllTenants(
+                    type: 'announcement',
+                    title: 'New announcement posted',
+                    body: $request->title,
+                    refId: $announcement->announcement_id,
+                    route: '/tenant/announcements',
+                );
+            } catch (\Throwable $error) {
+                Log::error('Announcement notifications failed after posting.', [
+                    'announcement_id' => $announcement->announcement_id,
+                    'message' => $error->getMessage(),
+                ]);
+            }
+        });
 
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
@@ -126,7 +152,7 @@ class AnnouncementController extends Controller
             ? 'frontdesk.announcements'
             : 'announcements.index';
         return redirect()->route($route)
-            ->with('success', 'Announcement archived.');
+            ->with('success', 'Announcement closed.');
     }
 
     public function restore(Request $request, $id)
@@ -142,12 +168,8 @@ class AnnouncementController extends Controller
     public function destroy(Request $request, $id)
     {
         $announcement = Announcement::findOrFail($id);
-        if ($announcement->attachment) {
-            foreach (explode(',', $announcement->attachment) as $path) {
-                Storage::disk('public')->delete(trim($path));
-            }
-        }
         $announcement->delete();
+
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';

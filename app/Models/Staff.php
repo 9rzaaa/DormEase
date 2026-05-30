@@ -28,6 +28,7 @@ class Staff extends Authenticatable
         'shift_schedule',
         'duty_status',
         'attachment',
+        'profile_picture',
         'is_active',
     ];
 

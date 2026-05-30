@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class BillingController extends Controller
 {
@@ -292,6 +293,21 @@ class BillingController extends Controller
                 message: "Water billing for {$monthLabel} has been logged.",
             );
 
+            $pushService = app(TenantPushNotificationService::class);
+            WaterBilling::whereIn('floor', $floors->all())
+                ->whereDate('billing_month', $billingMonthDate->format('Y-m-d'))
+                ->get()
+                ->each(function (WaterBilling $billing) use ($pushService, $monthLabel) {
+                    $pushService->sendToTenant(
+                        tenant: $billing->tenant_id,
+                        type: 'bill',
+                        title: 'Water bill ready',
+                        body: "Your water bill for {$monthLabel} is ready to view.",
+                        refId: $billing->billing_id,
+                        route: '/tenant/water-bill',
+                    );
+                });
+
             return response()->json([
                 'success' => true,
                 'message' => 'Water billing logged successfully.'
@@ -385,6 +401,15 @@ class BillingController extends Controller
                         message: "Tenant {$tenant->first_name} {$tenant->last_name} has paid their water bill.",
                         ref_id: $billingToUpdate->billing_id,
                     );
+
+                    app(TenantPushNotificationService::class)->sendToTenant(
+                        tenant: $billingToUpdate->tenant_id,
+                        type: 'payment',
+                        title: 'Payment verified',
+                        body: 'Your water bill payment has been verified.',
+                        refId: $billingToUpdate->billing_id,
+                        route: '/tenant/water-bill',
+                    );
                 }
             }
         } else {
@@ -403,6 +428,15 @@ class BillingController extends Controller
                     type: 'billing_overdue',
                     message: "Tenant {$tenant->first_name} {$tenant->last_name} has paid their water bill.",
                     ref_id: $billing->billing_id,
+                );
+
+                app(TenantPushNotificationService::class)->sendToTenant(
+                    tenant: $billing->tenant_id,
+                    type: 'payment',
+                    title: 'Payment verified',
+                    body: 'Your water bill payment has been verified.',
+                    refId: $billing->billing_id,
+                    route: '/tenant/water-bill',
                 );
             }
         }

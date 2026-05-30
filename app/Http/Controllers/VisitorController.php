@@ -5,24 +5,42 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 use Carbon\Carbon;
 
 class VisitorController extends Controller
 {
     public function index()
     {
-        $visitors = $this->formatVisitorLogs(VisitorLog::with(['tenant', 'staff'])
+        $allVisitors = VisitorLog::with(['tenant', 'staff'])
             ->orderByDesc('arrival_time')
-            ->get());
+            ->get();
+
+        $visitors = $this->formatVisitorLogs(
+            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+        );
+
+        $completedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'completed')
+        );
+
+        $deletedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'deleted')
+        );
+
         $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
+            ->where('status', 'inside')
             ->count();
         $tenants = Tenant::where('is_active', true)
             ->orderBy('first_name')
             ->get();
+
         return view('fdvisitors', compact(
             'visitors',
+            'completedVisitors',
+            'deletedVisitors',
             'visitorsToday',
             'currentlyInside',
             'tenants'
@@ -31,23 +49,40 @@ class VisitorController extends Controller
 
     public function adminIndex()
     {
-        $visitors = $this->formatVisitorLogs(VisitorLog::with(['tenant', 'staff'])
+        $allVisitors = VisitorLog::with(['tenant', 'staff'])
             ->orderByDesc('arrival_time')
-            ->get());
+            ->get();
+
+        $visitors = $this->formatVisitorLogs(
+            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+        );
+
+        $completedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'completed')
+        );
+
+        $deletedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'deleted')
+        );
+
         $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
+            ->where('status', 'inside')
             ->count();
         $tenants = Tenant::where('is_active', true)
             ->orderBy('first_name')
             ->get();
+
         return view('visitors', [
-            'visitors'        => $visitors,
-            'logs'            => $visitors,
-            'visitorsToday'   => $visitorsToday,
-            'currentlyInside' => $currentlyInside,
-            'tenants'         => $tenants,
-            ]);
+            'visitors'          => $visitors,
+            'logs'              => $visitors,
+            'completedVisitors' => $completedVisitors,
+            'deletedVisitors'   => $deletedVisitors,
+            'visitorsToday'     => $visitorsToday,
+            'currentlyInside'   => $currentlyInside,
+            'tenants'           => $tenants,
+        ]);
     }
 
     public function store(Request $request)
@@ -66,7 +101,7 @@ class VisitorController extends Controller
             ? Carbon::parse($request->arrival_time)
             : now();
 
-        VisitorLog::create([
+        $visitor = VisitorLog::create([
             'visitor_name'  => $request->visitor_name,
             'tenant_id'     => $request->tenant_id,
             'confirmed_by'  => Auth::guard('staff')->id(),
@@ -80,10 +115,20 @@ class VisitorController extends Controller
         ]);
 
         $tenant = Tenant::find($request->tenant_id);
-            NotificationHelper::sendToAll(
-                type: 'visitor_checkin',
-                message: "{$request->visitor_name} checked in to visit {$tenant->first_name} {$tenant->last_name}.",
-            );
+        NotificationHelper::sendToAll(
+            type: 'visitor_checkin',
+            message: "{$request->visitor_name} checked in to visit {$tenant->first_name} {$tenant->last_name}.",
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $request->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked in',
+            body: "{$request->visitor_name} has checked in.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
         return redirect()->back()
             ->with('success', 'Visitor logged successfully.');
     }
@@ -110,6 +155,16 @@ class VisitorController extends Controller
             message: "{$visitor->visitor_name} has checked out.",
             ref_id: $visitor->visitor_id,
         );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked out',
+            body: "{$visitor->visitor_name} has checked out.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
         return back()->with('success', 'Visitor checked out successfully.');
     }
 
@@ -135,7 +190,7 @@ class VisitorController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected,inside,completed',
+            'status' => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
         ]);
 
         VisitorLog::findOrFail($id)->update([
@@ -147,7 +202,7 @@ class VisitorController extends Controller
 
     private function formatVisitorLogs($visitors)
     {
-        return $visitors->map(function (VisitorLog $visitor) {
+        return collect($visitors)->map(function (VisitorLog $visitor) {
             $data = $visitor->toArray();
 
             $data['id'] = $visitor->visitor_id;

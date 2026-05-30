@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Helpers;
+
 use App\Models\Notification;
 use App\Models\Staff;
 
 class NotificationHelper
 {
-    public static function send(int $staff_id, string $type, string $message, int $ref_id = null)
+    public static function send(int $staff_id, string $type, string $message, ?int $ref_id = null): void
     {
         Notification::create([
             'staff_id'   => $staff_id,
@@ -17,12 +19,15 @@ class NotificationHelper
         ]);
     }
 
-    public static function sendToAll(string $type, string $message, int $ref_id = null)
+    public static function sendToAll(string $type, string $message, ?int $ref_id = null): void
     {
-        $allStaff = Staff::where('is_active', 1)->where('role', 'admin')->get();
+        $allStaff = Staff::where('is_active', 1)
+            ->whereIn('role', ['admin', 'frontdesk'])
+            ->get();
 
         foreach ($allStaff as $staff) {
             $prefs = [];
+
             if (!empty($staff->notification_preferences)) {
                 $prefs = is_array($staff->notification_preferences)
                     ? $staff->notification_preferences

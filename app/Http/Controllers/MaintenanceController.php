@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MaintenanceRequest;
+use App\Models\ArchivedMaintReq;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class MaintenanceController extends Controller
 {
@@ -18,14 +21,14 @@ class MaintenanceController extends Controller
             ->map(function ($r) {
                 return [
                     'id'            => $r->request_id,
-                    'tenant_name'   => optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name,
+                    'tenant_name'   => trim(optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name),
                     'room_number'   => $r->room_number,
                     'issue_type'    => $r->issue_type,
                     'description'   => $r->description,
                     'urgency'       => $r->urgency_level,
                     'status'        => $r->status,
                     'admin_remarks' => $r->admin_notes,
-                    'created_at'    => $r->submitted_at,
+                    'created_at'    => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
                 ];
             });
 
@@ -36,7 +39,34 @@ class MaintenanceController extends Controller
             'resolved'    => MaintenanceRequest::where('status', 'resolved')->count(),
         ];
 
-        return view('maintenance', compact('staff', 'requests', 'stats'));
+        $closedArchive = ArchivedMaintReq::where('archive_type', 'closed')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $deletedArchive = ArchivedMaintReq::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'deletedArchive'));
+    }
+
+    private function formatArchive(ArchivedMaintReq $r): array
+    {
+        return [
+            'id'            => $r->original_id,
+            'archive_id'    => $r->id,
+            'tenant_name'   => $r->tenant_name,
+            'room_number'   => $r->room_number,
+            'issue_type'    => $r->issue_type,
+            'description'   => $r->description,
+            'urgency'       => $r->urgency_level,
+            'status'        => $r->status,
+            'admin_remarks' => $r->admin_notes,
+            'created_at'    => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
+            'archived_at'   => $r->archived_at ? $r->archived_at->format('Y-m-d H:i:s') : null,
+        ];
     }
 
     public function update(Request $request, $id)
@@ -50,6 +80,7 @@ class MaintenanceController extends Controller
         ]);
 
         $adminNotes = $request->admin_remarks;
+
         $updates = [
             'status'        => $request->status,
             'urgency_level' => $request->urgency,
@@ -62,21 +93,75 @@ class MaintenanceController extends Controller
 
         $maintenance->update($updates);
 
+        if ($request->status === 'closed') {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $maintenance->tenant_id,
+                type: 'maintenance',
+                title: 'Maintenance request closed',
+                body: "Your maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been closed.",
+                refId: $maintenance->request_id,
+                route: '/tenant/maintenancehistory',
+            );
+
+            $this->archiveRequest($maintenance, 'closed');
+            $maintenance->delete();
+
+            return redirect()->route('maintenance.index')
+                ->with('success', 'Request closed and moved to archive.');
+        }
+
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
-            message: "Maintenance request #{$maintenance->request_id} status updated to {$request->status}.",
-            ref_id: $maintenance->request_id,
+            'maintenance_update',
+            "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " status updated to {$request->status}.",
+            $maintenance->request_id
         );
-        
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $maintenance->tenant_id,
+            type: 'maintenance',
+            title: 'Maintenance request updated',
+            body: "Your maintenance request is now {$request->status}.",
+            refId: $maintenance->request_id,
+            route: '/tenant/maintenancehistory',
+        );
+
         return redirect()->route('maintenance.index')
             ->with('success', 'Maintenance request updated successfully.');
     }
 
     public function destroy($id)
     {
-        MaintenanceRequest::findOrFail($id)->delete();
+        $maintenance = MaintenanceRequest::findOrFail($id);
+        $this->archiveRequest($maintenance, 'deleted');
+        $maintenance->delete();
+
+        NotificationHelper::sendToAll(
+            'maintenance_deleted',
+            "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been deleted and archived.",
+            $maintenance->request_id
+        );
 
         return redirect()->route('maintenance.index')
-            ->with('success', 'Maintenance request deleted.');
+            ->with('success', 'Maintenance request deleted and archived.');
+    }
+
+    private function archiveRequest(MaintenanceRequest $r, string $type): void
+    {
+        ArchivedMaintReq::create([
+            'original_id'   => $r->request_id,
+            'archive_type'  => $type,
+            'tenant_id'     => $r->tenant_id,
+            'tenant_name'   => trim(optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name),
+            'room_number'   => $r->room_number,
+            'issue_type'    => $r->issue_type,
+            'description'   => $r->description,
+            'urgency_level' => $r->urgency_level,
+            'status'        => $r->status,
+            'admin_notes'   => $r->admin_notes,
+            'assigned_to'   => $r->assigned_to,
+            'submitted_at'  => $r->submitted_at,
+            'resolved_at'   => $r->resolved_at,
+            'archived_at'   => now(),
+        ]);
     }
 }
