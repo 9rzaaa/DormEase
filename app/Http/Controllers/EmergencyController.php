@@ -6,6 +6,7 @@ use App\Helpers\NotificationHelper;
 use App\Models\ArchivedEmergencyReport;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
+use App\Services\TenantPushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -112,6 +113,17 @@ class EmergencyController extends Controller
         ]);
 
         if ($validated['status'] === 'closed') {
+            if ($report->tenant_id) {
+                app(TenantPushNotificationService::class)->sendToTenant(
+                    tenant: $report->tenant_id,
+                    type: 'emergency',
+                    title: 'Emergency report closed',
+                    body: "Your emergency report #{$report->report_id} has been closed.",
+                    refId: $report->report_id,
+                    route: '/tenant/emergency',
+                );
+            }
+
             $this->archiveReport($report, 'closed');
             $report->delete();
 
@@ -124,6 +136,17 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
+
+            if ($report->tenant_id) {
+                app(TenantPushNotificationService::class)->sendToTenant(
+                    tenant: $report->tenant_id,
+                    type: 'emergency',
+                    title: 'Emergency report resolved',
+                    body: "Your emergency report #{$report->report_id} has been resolved.",
+                    refId: $report->report_id,
+                    route: '/tenant/emergency',
+                );
+            }
         }
 
         return response()->json(['success' => true]);

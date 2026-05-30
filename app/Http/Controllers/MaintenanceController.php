@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\MaintenanceRequest;
 use App\Models\ArchivedMaintReq;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class MaintenanceController extends Controller
 {
@@ -93,6 +94,15 @@ class MaintenanceController extends Controller
         $maintenance->update($updates);
 
         if ($request->status === 'closed') {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $maintenance->tenant_id,
+                type: 'maintenance',
+                title: 'Maintenance request closed',
+                body: "Your maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been closed.",
+                refId: $maintenance->request_id,
+                route: '/tenant/maintenancehistory',
+            );
+
             $this->archiveRequest($maintenance, 'closed');
             $maintenance->delete();
 
@@ -104,6 +114,15 @@ class MaintenanceController extends Controller
             'maintenance_update',
             "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " status updated to {$request->status}.",
             $maintenance->request_id
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $maintenance->tenant_id,
+            type: 'maintenance',
+            title: 'Maintenance request updated',
+            body: "Your maintenance request is now {$request->status}.",
+            refId: $maintenance->request_id,
+            route: '/tenant/maintenancehistory',
         );
 
         return redirect()->route('maintenance.index')

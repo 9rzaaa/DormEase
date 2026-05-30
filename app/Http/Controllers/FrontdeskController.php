@@ -26,7 +26,7 @@ class FrontdeskController extends Controller
             'latestEmergency'   => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
             'allEmergencies'    => EmergencyReport::latest('reported_at')->take(10)->get(),
             'announcements'     => Announcement::latest('posted_at')->take(3)->get(),
-            'unreadNotifCount'  => Notification::where('is_read', false)->count(),
+            'unreadNotifCount'  => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'recentActivities'  => VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
         ]);
     }
