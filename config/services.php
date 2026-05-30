@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'expo' => [
+        'verify_ssl' => env('EXPO_VERIFY_SSL', true),
+    ],
+
 ];
