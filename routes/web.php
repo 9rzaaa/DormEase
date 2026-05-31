@@ -66,7 +66,7 @@ Route::post('/login', function () {
     request()->session()->regenerate();
 
     if ($role === 'frontdesk' && $user->is_temp_password) {
-        session(['prompt_temp_password' => true]);
+        session()->flash('prompt_temp_password', true);
     }
 
     return $role === 'frontdesk'
@@ -80,6 +80,10 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect()->route('login');
 })->name('logout');
+
+Route::post('/frontdesk/profile/dismiss-temp-password', function () {
+    return response()->json(['ok' => true]);
+})->name('fdprofile.dismissTempPassword')->middleware('auth:staff');
 
 // forgot pass
 Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
