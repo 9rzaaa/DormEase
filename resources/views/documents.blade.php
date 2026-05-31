@@ -824,6 +824,37 @@
         .page-body { padding: 1.2rem 1rem; }
         .archive-drawer { width: 100vw; }
     }
+    /* ── Action Loading Overlay ── */
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--baby-pink); border-radius: 12px;
+    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--baby-pink); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+}
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+.is-loading { opacity: .75; pointer-events: none; }
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+}
 </style>
 @endsection
 
@@ -1133,7 +1164,14 @@
 @endsection
 
 @section('modals')
-
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 <div class="modal-overlay" id="upload-modal">
     <div class="modal" style="max-width:560px;">
         <div class="modal-header">
@@ -1393,7 +1431,36 @@
 
 @endsection
 @section('scripts')
+@section('scripts')
 <script>
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        const overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function setButtonLoading(btn, text) {
+        if (!btn) return;
+        btn.disabled = true;
+        btn.dataset.originalText = btn.textContent;
+        btn.textContent = text;
+        btn.classList.add('is-loading');
+    }
+
+    function resetButton(btn) {
+        if (!btn) return;
+        btn.disabled = false;
+        btn.textContent = btn.dataset.originalText || btn.textContent;
+        btn.classList.remove('is-loading');
+    }
+
     const CSRF     = document.querySelector('meta[name="csrf-token"]').content;
     const docTypes = @json($docTypes);
 
@@ -1514,7 +1581,6 @@
         pg.innerHTML = html;
     }
 
-    // ── Fetch both together so merging is always safe ─────────────────────────
     async function fetchAll() {
         await fetchDocs();
         await fetchReqs();
@@ -1550,7 +1616,6 @@
             }
             const allReqs = data.data ?? data;
 
-            // category === 'form'  →  Documents tab (tenant uploaded a filled form)
             const formSubmissions = allReqs
                 .filter(r => r.category === 'form')
                 .map(r => ({
@@ -1568,13 +1633,11 @@
                     fulfilled_file:  r.fulfilled_file,
                 }));
 
-            // merge form submissions on top of admin-uploaded docs
             docState.data = [...(docState._base ?? []), ...formSubmissions];
             docApplyFilters();
             updateDocCounts();
             document.getElementById('tab-docs-count').textContent = docState.data.length;
 
-            // category === 'certificate'  →  Document Requests tab
             reqState.data = allReqs.filter(r => r.category === 'certificate');
             const pending = reqState.data.filter(r => r.status === 'pending').length;
             document.getElementById('tab-reqs-count').textContent = pending;
@@ -1585,7 +1648,6 @@
         }
     }
 
-    // ── Documents tab ─────────────────────────────────────────────────────────
     function docApplyFilters() {
         const q   = document.getElementById('doc-search').value.toLowerCase();
         const vis = document.getElementById('doc-filter-vis').value;
@@ -1635,8 +1697,6 @@
         } else {
             tbody.innerHTML = page.map(d => {
                 const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
-
-                // tenant form submission — show only a view button that opens the review modal
                 const actions = d._is_form_submission
                     ? `<div class="action-group">
                             <button class="act-btn" title="Review" onclick='viewFormSubmission(${JSON.stringify(d)})'>
@@ -1656,12 +1716,7 @@
                        </div>`;
 
                 return `<tr>
-                    <td>
-                        <div class="doc-title-cell">
-                            <span class="doc-dot" style="background:${color}"></span>
-                            ${escHtml(d.title)}
-                        </div>
-                    </td>
+                    <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.title)}</div></td>
                     <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
                     <td>${d._is_form_submission ? reqStatusBadge(d.status) : visBadge(d.visibility)}</td>
                     <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
@@ -1678,34 +1733,15 @@
         renderPagination('doc-pagination', docState.page, Math.ceil(total / docState.perPage), p => { docState.page = p; renderDocTable(); });
     }
 
-    // view modal for admin-uploaded docs
     function viewDoc(d) {
         currentDoc = d;
         document.getElementById('view-doc-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Title</div>
-                <div class="view-detail-val">${escHtml(d.title)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Category</div>
-                <div class="view-detail-val">${escHtml(d.document_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Visibility</div>
-                <div class="view-detail-val">${visBadge(d.visibility)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">File Type</div>
-                <div class="view-detail-val">${fileTypeBadge(d.file_path)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Date Uploaded</div>
-                <div class="view-detail-val">${fmtDate(d.created_at)}</div>
-            </div>
+            <div class="view-detail-row"><div class="view-detail-label">Title</div><div class="view-detail-val">${escHtml(d.title)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Category</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Visibility</div><div class="view-detail-val">${visBadge(d.visibility)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">File Type</div><div class="view-detail-val">${fileTypeBadge(d.file_path)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Date Uploaded</div><div class="view-detail-val">${fmtDate(d.created_at)}</div></div>
             ${d.file_path
                 ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>`
                 : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
@@ -1717,7 +1753,6 @@
         openModal('view-doc-modal');
     }
 
-    // view + review modal for tenant form submissions
     function viewFormSubmission(d) {
         currentReq = d;
         const fileHtml = d.file_path
@@ -1725,31 +1760,12 @@
             : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
 
         document.getElementById('view-req-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(d.tenant_name)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Form Type</div>
-                <div class="view-detail-val">${escHtml(d.document_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Submitted</div>
-                <div class="view-detail-val">${fmtDate(d.date_posted)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Status</div>
-                <div class="view-detail-val">${reqStatusBadge(d.status)}</div>
-            </div>
-            ${d.admin_remarks ? `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Admin Remarks</div>
-                <div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div>
-            </div>` : ''}
-            <div class="view-detail-row">
-                <div class="view-detail-label">Uploaded File</div>
-                <div class="view-detail-val">${fileHtml}</div>
-            </div>
+            <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.date_posted)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
+            ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
+            <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
         `;
         document.getElementById('view-req-actions').innerHTML = `
             <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
@@ -1780,6 +1796,11 @@
         const vis   = document.getElementById('edit-doc-vis').value;
         const tid   = document.getElementById('edit-doc-tenant').value;
         if (!title) { showToast('Title is required', 'error'); return; }
+
+        const editBtn = document.querySelector('#edit-doc-modal .btn-submit');
+        setButtonLoading(editBtn, 'Saving...');
+        showActionLoading('Saving changes...');
+
         try {
             const res = await fetch(`/admin/documents/${id}`, {
                 method: 'PUT',
@@ -1790,7 +1811,12 @@
             closeModal('edit-doc-modal');
             showToast('Document updated successfully.', 'success');
             fetchAll();
-        } catch { showToast('Update failed.', 'error'); }
+        } catch {
+            showToast('Update failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(editBtn);
+        }
     }
 
     function promptDeleteDoc(id, title) {
@@ -1800,7 +1826,11 @@
     }
 
     async function confirmDeleteDoc() {
-        const id = document.getElementById('delete-doc-id').value;
+        const id        = document.getElementById('delete-doc-id').value;
+        const deleteBtn = document.querySelector('#delete-doc-modal .btn-submit[style*="red"]');
+        setButtonLoading(deleteBtn, 'Deleting...');
+        showActionLoading('Deleting document...');
+
         try {
             const res = await fetch(`/admin/documents/${id}`, {
                 method: 'DELETE',
@@ -1810,7 +1840,12 @@
             closeModal('delete-doc-modal');
             showToast('Document deleted and archived.', 'success');
             fetchAll();
-        } catch { showToast('Delete failed.', 'error'); }
+        } catch {
+            showToast('Delete failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(deleteBtn);
+        }
     }
 
     async function submitUpload() {
@@ -1833,6 +1868,10 @@
         if (vis === 'specific' && tid) fd.append('tenant_id', tid);
         if (file) fd.append('file', file);
 
+        const uploadBtn = document.querySelector('#upload-modal .btn-submit');
+        setButtonLoading(uploadBtn, 'Uploading...');
+        showActionLoading('Uploading document...');
+
         try {
             const res = await fetch('/admin/documents', {
                 method: 'POST',
@@ -1845,10 +1884,14 @@
             document.getElementById('up-file').value  = '';
             showToast('Document uploaded successfully.', 'success');
             fetchAll();
-        } catch { showToast('Upload failed.', 'error'); }
+        } catch {
+            showToast('Upload failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(uploadBtn);
+        }
     }
 
-    // ── Document Requests tab ─────────────────────────────────────────────────
     function reqApplyFilters() {
         const q      = document.getElementById('req-search').value.toLowerCase();
         const status = document.getElementById('req-filter-status').value;
@@ -1921,51 +1964,17 @@
             : '<span style="font-size:.82rem;color:var(--ink-muted);">No document sent yet.</span>';
 
         document.getElementById('view-req-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Request ID</div>
-                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(r.tenant_name ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Document Type</div>
-                <div class="view-detail-val">${escHtml(r.document_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Purpose</div>
-                <div class="view-detail-val">${escHtml(r.purpose ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Delivery Type</div>
-                <div class="view-detail-val">${escHtml(r.delivery_type ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Date Needed</div>
-                <div class="view-detail-val">${fmtDate(r.date_needed)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Submitted</div>
-                <div class="view-detail-val">${fmtDate(r.submitted_at)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Status</div>
-                <div class="view-detail-val">${reqStatusBadge(r.status)}</div>
-            </div>
-            ${r.admin_remarks ? `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Admin Remarks</div>
-                <div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div>
-            </div>` : ''}
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant Attachment</div>
-                <div class="view-detail-val">${attachmentHtml}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Fulfilled Document</div>
-                <div class="view-detail-val">${fulfilledHtml}</div>
-            </div>
+            <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Document Type</div><div class="view-detail-val">${escHtml(r.document_type)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Purpose</div><div class="view-detail-val">${escHtml(r.purpose ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Delivery Type</div><div class="view-detail-val">${escHtml(r.delivery_type ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Date Needed</div><div class="view-detail-val">${fmtDate(r.date_needed)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(r.submitted_at)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
+            ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
+            <div class="view-detail-row"><div class="view-detail-label">Tenant Attachment</div><div class="view-detail-val">${attachmentHtml}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Fulfilled Document</div><div class="view-detail-val">${fulfilledHtml}</div></div>
         `;
         document.getElementById('view-req-actions').innerHTML = `
             <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
@@ -1990,14 +1999,8 @@
         const file    = document.getElementById('upd-req-file').files[0];
 
         if (file) {
-            if (file.type !== 'application/pdf') {
-                showToast('Only PDF files are allowed.', 'error');
-                return;
-            }
-            if (file.size > 20 * 1024 * 1024) {
-                showToast('File must be under 20MB.', 'error');
-                return;
-            }
+            if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
+            if (file.size > 20 * 1024 * 1024)   { showToast('File must be under 20MB.', 'error'); return; }
         }
 
         const fd = new FormData();
@@ -2005,6 +2008,10 @@
         fd.append('status', status);
         fd.append('admin_remarks', remarks);
         if (file) fd.append('fulfilled_file', file);
+
+        const updateBtn = document.querySelector('#update-req-modal .btn-submit');
+        setButtonLoading(updateBtn, 'Saving...');
+        showActionLoading('Updating request...');
 
         try {
             const res = await fetch(`/admin/document-requests/${id}`, {
@@ -2021,6 +2028,9 @@
             fetchAll();
         } catch (e) {
             showToast(e.message ?? 'Update failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(updateBtn);
         }
     }
 
@@ -2031,7 +2041,11 @@
     }
 
     async function confirmDeleteReq() {
-        const id = document.getElementById('delete-req-id').value;
+        const id         = document.getElementById('delete-req-id').value;
+        const archiveBtn = document.querySelector('#delete-req-modal .btn-submit[style*="red"]');
+        setButtonLoading(archiveBtn, 'Archiving...');
+        showActionLoading('Archiving request...');
+
         try {
             const res = await fetch(`/admin/document-requests/${id}`, {
                 method: 'DELETE',
@@ -2041,10 +2055,14 @@
             closeModal('delete-req-modal');
             showToast('Request archived.', 'success');
             fetchAll();
-        } catch { showToast('Archive failed.', 'error'); }
+        } catch {
+            showToast('Archive failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(archiveBtn);
+        }
     }
 
-    // ── Archive drawer ────────────────────────────────────────────────────────
     async function fetchArchive() {
         try {
             const res  = await fetch('/admin/archive-docus', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
@@ -2120,20 +2138,13 @@
                 const d     = r.data ?? {};
                 const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
                 return `<tr>
-                    <td>
-                        <div class="doc-title-cell">
-                            <span class="doc-dot" style="background:${color}"></span>
-                            ${escHtml(d.title)}
-                        </div>
-                    </td>
+                    <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.title)}</div></td>
                     <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
                     <td>${visBadge(d.visibility)}</td>
                     <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
                     <td>${fileTypeBadge(d.file_path)}</td>
                     <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
-                    <td style="font-size:.8rem;white-space:nowrap;">
-                        <span class="archive-badge">${fmtDate(r.archived_at)}</span>
-                    </td>
+                    <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
                     <td>
                         <div class="action-group">
                             <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
@@ -2157,34 +2168,13 @@
     function viewAdoc(r) {
         const d = r.data ?? {};
         document.getElementById('view-adoc-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Title</div>
-                <div class="view-detail-val">${escHtml(d.title)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Category</div>
-                <div class="view-detail-val">${escHtml(d.document_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Visibility</div>
-                <div class="view-detail-val">${visBadge(d.visibility)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">File Type</div>
-                <div class="view-detail-val">${fileTypeBadge(d.file_path)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Date Uploaded</div>
-                <div class="view-detail-val">${fmtDate(d.date_posted)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Archived On</div>
-                <div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div>
-            </div>
+            <div class="view-detail-row"><div class="view-detail-label">Title</div><div class="view-detail-val">${escHtml(d.title)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Category</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Visibility</div><div class="view-detail-val">${visBadge(d.visibility)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">File Type</div><div class="view-detail-val">${fileTypeBadge(d.file_path)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Date Uploaded</div><div class="view-detail-val">${fmtDate(d.date_posted)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Archived On</div><div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div></div>
         `;
         openModal('view-adoc-modal');
     }
@@ -2196,7 +2186,11 @@
     }
 
     async function confirmRemoveAdoc() {
-        const id = document.getElementById('remove-adoc-id').value;
+        const id        = document.getElementById('remove-adoc-id').value;
+        const removeBtn = document.querySelector('#remove-adoc-modal .btn-submit[style*="red"]');
+        setButtonLoading(removeBtn, 'Removing...');
+        showActionLoading('Removing archive record...');
+
         try {
             const res = await fetch(`/admin/archive-docus/${id}`, {
                 method: 'DELETE',
@@ -2206,7 +2200,12 @@
             closeModal('remove-adoc-modal');
             showToast('Archive record removed.', 'success');
             fetchArchive();
-        } catch { showToast('Remove failed.', 'error'); }
+        } catch {
+            showToast('Remove failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(removeBtn);
+        }
     }
 
     function areqApplyFilters() {
@@ -2249,9 +2248,7 @@
                     <td style="font-size:.8rem;">${escHtml(d.delivery_type ?? '—')}</td>
                     <td>${reqStatusBadge(d.status)}</td>
                     <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
-                    <td style="font-size:.8rem;white-space:nowrap;">
-                        <span class="archive-badge">${fmtDate(r.archived_at)}</span>
-                    </td>
+                    <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
                     <td>
                         <div class="action-group">
                             <button class="act-btn" title="View" onclick='viewAreq(${JSON.stringify(r)})'>
@@ -2275,47 +2272,16 @@
     function viewAreq(r) {
         const d = r.data ?? {};
         document.getElementById('view-areq-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Request ID</div>
-                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(d.doc_request_id ?? 0).padStart(3, '0')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(d.tenant_name ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Document Type</div>
-                <div class="view-detail-val">${escHtml(d.document_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Purpose</div>
-                <div class="view-detail-val">${escHtml(d.purpose ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Delivery Type</div>
-                <div class="view-detail-val">${escHtml(d.delivery_type ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Date Needed</div>
-                <div class="view-detail-val">${fmtDate(d.date_needed)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Submitted</div>
-                <div class="view-detail-val">${fmtDate(d.submitted_at)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Status at Archive</div>
-                <div class="view-detail-val">${reqStatusBadge(d.status)}</div>
-            </div>
-            ${d.admin_remarks ? `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Admin Remarks</div>
-                <div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div>
-            </div>` : ''}
-            <div class="view-detail-row">
-                <div class="view-detail-label">Archived On</div>
-                <div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div>
-            </div>
+            <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(d.doc_request_id ?? 0).padStart(3, '0')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Document Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Purpose</div><div class="view-detail-val">${escHtml(d.purpose ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Delivery Type</div><div class="view-detail-val">${escHtml(d.delivery_type ?? '—')}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Date Needed</div><div class="view-detail-val">${fmtDate(d.date_needed)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.submitted_at)}</div></div>
+            <div class="view-detail-row"><div class="view-detail-label">Status at Archive</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
+            ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
+            <div class="view-detail-row"><div class="view-detail-label">Archived On</div><div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div></div>
         `;
         openModal('view-areq-modal');
     }
@@ -2327,7 +2293,11 @@
     }
 
     async function confirmRemoveAreq() {
-        const id = document.getElementById('remove-areq-id').value;
+        const id        = document.getElementById('remove-areq-id').value;
+        const removeBtn = document.querySelector('#remove-areq-modal .btn-submit[style*="red"]');
+        setButtonLoading(removeBtn, 'Removing...');
+        showActionLoading('Removing archive record...');
+
         try {
             const res = await fetch(`/admin/archive-docus/${id}`, {
                 method: 'DELETE',
@@ -2337,7 +2307,12 @@
             closeModal('remove-areq-modal');
             showToast('Archive record removed.', 'success');
             fetchArchive();
-        } catch { showToast('Remove failed.', 'error'); }
+        } catch {
+            showToast('Remove failed.', 'error');
+        } finally {
+            hideActionLoading();
+            resetButton(removeBtn);
+        }
     }
 
     @if(session('success'))
