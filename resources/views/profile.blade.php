@@ -585,7 +585,11 @@
                                 <label>Contact Number</label>
                                 <input type="text" name="contact_number"
                                     value="{{ old('contact_number', $staff->contact_number) }}"
-                                    placeholder="e.g. 0912-345-6789">
+                                    placeholder="09XXXXXXXXX"
+                                    maxlength="11">
+                                @error('contact_number')
+                                    <span style="font-size:.7rem; color:#e8175d; margin-top:.2rem; display:block;">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="form-field full">
                                 <label>Role</label>
