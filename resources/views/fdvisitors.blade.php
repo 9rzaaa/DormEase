@@ -425,6 +425,12 @@
         0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+    .export-menu button:hover { background: var(--pink-bg); color: var(--bright-pink); }
 </style>
 @endsection
 
@@ -447,10 +453,15 @@
                 Archive / History
             </button>
 
-            <button class="btn-outline" onclick="exportVisitors()">
-                <img src="{{ asset('icons/export.png') }}" alt=""> Export
-            </button>
-
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" alt=""> Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportVisitorsCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportVisitorsPdf(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -570,10 +581,16 @@
 
     <div class="archive-footer">
         <div class="archive-count-label" id="archive-count-label">0 records</div>
-        <button class="archive-export-btn" onclick="exportArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-archive">
+            <button class="archive-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-archive">
+                <button onclick="exportArchiveCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportArchivePdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -735,32 +752,32 @@
 @section('scripts')
 <script>
     function showActionLoading(message) {
-    const overlay = document.getElementById('action-loading');
-    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-}
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
 
-function setFormLoading(form, message) {
-    form.querySelectorAll('button[type="submit"]').forEach(btn => {
-        btn.textContent = 'Please wait...';
-        btn.disabled    = true;
-        btn.classList.add('is-loading');
-    });
-    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('is-loading');
-    });
-    showActionLoading(message);
-}
+    function setFormLoading(form, message) {
+        form.querySelectorAll('button[type="submit"]').forEach(function(btn) {
+            btn.textContent = 'Please wait...';
+            btn.disabled    = true;
+            btn.classList.add('is-loading');
+        });
+        form.querySelectorAll('button:not([type="submit"])').forEach(function(btn) {
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+        });
+        showActionLoading(message);
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('form[data-loading-message]').forEach(form => {
-        form.addEventListener('submit', function () {
-            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+            });
         });
     });
-});
 
     const visitors          = @json($visitors);
     const completedVisitors = @json($completedVisitors);
@@ -854,7 +871,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const pg = document.getElementById('pagination');
         let html = '';
         html += '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>&#8249;</button>';
-        for (let i = 1; i <= totalPages; i++) {
+        for (var i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                 html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
             } else if (i === currentPage - 2 || i === currentPage + 2) {
@@ -922,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
             + '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + badge(v.status) + '</span></div>';
 
         const actions = document.getElementById('view-actions');
-        let btns = '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>';
+        var btns = '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>';
         if (v.status === 'pending') {
             btns += '<button class="btn-submit" style="background:var(--red);" onclick="quickStatus(' + v.visitor_id + ', \'rejected\', \'' + (v.visitor_name ?? '').replace(/'/g, "\\'") + '\')">Reject</button>'
                   + '<button class="btn-submit" onclick="quickStatus(' + v.visitor_id + ', \'approved\', \'' + (v.visitor_name ?? '').replace(/'/g, "\\'") + '\')">Approve</button>';
@@ -932,17 +949,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function quickStatus(id, status, name) {
-    if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
-    showActionLoading('Updating status...');
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/visitors/' + id + '/status';
-    form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
-                   + '<input type="hidden" name="_method" value="PUT">'
-                   + '<input type="hidden" name="status" value="' + status + '">';
-    document.body.appendChild(form);
-    form.submit();
-}
+        if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
+        showActionLoading('Updating status...');
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/visitors/' + id + '/status';
+        form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                       + '<input type="hidden" name="_method" value="PUT">'
+                       + '<input type="hidden" name="status" value="' + status + '">';
+        document.body.appendChild(form);
+        form.submit();
+    }
 
     function openTimein(id, name) {
         document.getElementById('timein-name').textContent = name;
@@ -960,27 +977,55 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal('timeout-modal');
     }
 
-    function exportVisitors() {
-        const rows = [['Visitor Name', 'Time In', 'Time Out', 'Purpose', 'Tenant', 'Room', 'Logged By', 'Status']];
+    function exportVisitorsCsv() {
+        var rows = [['Visitor Name', 'Time In', 'Time Out', 'Purpose', 'Tenant', 'Room', 'Logged By', 'Status']];
         visitors.forEach(function(v) {
             rows.push([
-                v.visitor_name ?? '',
-                v.arrival_time ?? '',
+                v.visitor_name   ?? '',
+                v.arrival_time   ?? '',
                 v.departure_time ?? '',
-                v.purpose ?? '',
+                v.purpose        ?? '',
                 v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : '',
                 (v.tenant && v.tenant.room_number) ? v.tenant.room_number : '',
                 v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '',
                 v.status ?? '',
             ]);
         });
-        const csv  = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(blob);
+        var csv  = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var blob = new Blob([csv], { type: 'text/csv' });
+        var a    = document.createElement('a');
+        a.href   = URL.createObjectURL(blob);
         a.download = 'dormease-visitors.csv';
         a.click();
+        URL.revokeObjectURL(a.href);
         showToast('Visitors exported as CSV!', 'success');
+    }
+
+    function exportVisitorsPdf() {
+        if (!visitors.length) { showToast('No data to export.', 'error'); return; }
+        var win  = window.open('', '_blank');
+        var rows = visitors.map(function(v) {
+            return '<tr>'
+                + '<td>' + (v.visitor_name ?? '') + '</td>'
+                + '<td>' + (v.arrival_time ? fmtDatePlain(v.arrival_time) : '') + '</td>'
+                + '<td>' + (v.departure_time ? fmtDatePlain(v.departure_time) : 'Still Inside') + '</td>'
+                + '<td>' + (v.purpose ?? '') + '</td>'
+                + '<td>' + (v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : '') + '</td>'
+                + '<td>' + ((v.tenant && v.tenant.room_number) ? v.tenant.room_number : '') + '</td>'
+                + '<td>' + (v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '') + '</td>'
+                + '<td>' + (v.status ?? '') + '</td>'
+                + '</tr>';
+        }).join('');
+        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Visitor Logs - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Visitor Name</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Tenant</th><th>Room</th><th>Logged By</th><th>Status</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
     }
 
     function openArchive() {
@@ -1026,9 +1071,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const pillClass    = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        const pillLabel    = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        const footerLabel  = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
+        const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
 
         list.innerHTML = result.map(function(v, i) {
             const tenantName = v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : null;
@@ -1043,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
                 + '</div>'
                 + '<div class="archive-card-visitor">' + (v.visitor_name ?? '&mdash;') + '</div>'
-                + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' &mdash; Rm ' + roomNum : '') + '</div>' : '')
+                + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' - Rm ' + roomNum : '') + '</div>' : '')
                 + '<div class="archive-card-meta">'
                     + '<span class="archive-pill archive-pill-purpose">' + (v.purpose ?? 'Other') + '</span>'
                     + '<span class="archive-pill ' + pillClass + '">' + pillLabel + '</span>'
@@ -1055,34 +1100,122 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    function exportArchive() {
+    function exportArchiveCsv() {
         const data  = archiveTab === 'completed' ? completedVisitors : deletedVisitors;
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
         const label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
-        const rows  = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
+        var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
         data.forEach(function(v) {
             const footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : fmtDatePlain(v.arrival_time);
             rows.push([
                 'LOG-' + String(v.visitor_id).padStart(4, '0'),
-                v.visitor_name ?? '',
-                v.contact_no ?? '',
-                v.purpose ?? '',
+                v.visitor_name   ?? '',
+                v.contact_no     ?? '',
+                v.purpose        ?? '',
                 v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : '',
                 (v.tenant && v.tenant.room_number) ? v.tenant.room_number : '',
-                v.arrival_time ?? '',
+                v.arrival_time   ?? '',
                 v.departure_time ?? '',
-                v.status ?? '',
+                v.status         ?? '',
                 footerDate,
             ]);
         });
-        const csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
-        const a   = document.createElement('a');
-        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
         a.download = 'dormease-visitors-' + archiveTab + '-archive.csv';
         a.click();
+        URL.revokeObjectURL(a.href);
         showToast('Archive exported as CSV!', 'success');
     }
+
+    function exportArchivePdf() {
+        const data = archiveTab === 'completed' ? completedVisitors : deletedVisitors;
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
+        const tabLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        var win  = window.open('', '_blank');
+        var rows = data.map(function(v) {
+            const footerDate = archiveTab === 'completed'
+                ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
+                : fmtDatePlain(v.arrival_time);
+            return '<tr>'
+                + '<td>LOG-' + String(v.visitor_id).padStart(4, '0') + '</td>'
+                + '<td>' + (v.visitor_name ?? '') + '</td>'
+                + '<td>' + (v.contact_no ?? '') + '</td>'
+                + '<td>' + (v.purpose ?? '') + '</td>'
+                + '<td>' + (v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : '') + '</td>'
+                + '<td>' + ((v.tenant && v.tenant.room_number) ? v.tenant.room_number : '') + '</td>'
+                + '<td>' + (v.arrival_time   ? fmtDatePlain(v.arrival_time)   : '') + '</td>'
+                + '<td>' + (v.departure_time ? fmtDatePlain(v.departure_time) : '') + '</td>'
+                + '<td>' + (v.status ?? '') + '</td>'
+                + '<td>' + footerDate + '</td>'
+                + '</tr>';
+        }).join('');
+        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs Archive - ' + tabLabel + '</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Visitor Logs Archive - ' + tabLabel + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Log ID</th><th>Visitor Name</th><th>Contact No.</th><th>Purpose</th><th>Tenant</th><th>Room</th><th>Time In</th><th>Time Out</th><th>Status</th><th>' + footerHead + '</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
+    }
+
+    function getMenuForDropdown(id) {
+        return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+            return m._sourceDropdownId === id;
+        }) || document.querySelector('#' + id + ' .export-menu');
+    }
+
+    function positionExportMenu(dropdown) {
+        var btn  = dropdown.querySelector('button');
+        var menu = getMenuForDropdown(dropdown.id);
+        var rect = btn.getBoundingClientRect();
+        if (!menu._movedToBody) {
+            menu._sourceDropdownId = dropdown.id;
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        var spaceBelow = window.innerHeight - rect.bottom;
+        if (spaceBelow >= (menu.offsetHeight || 80) + 6) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+    }
+
+    function toggleExportDropdown(id) {
+        var dropdown = document.getElementById(id);
+        var menu     = getMenuForDropdown(id);
+        var isOpen   = menu.classList.contains('open');
+        closeAllExportDropdowns();
+        if (!isOpen) {
+            positionExportMenu(dropdown);
+            getMenuForDropdown(id).classList.add('open');
+        }
+    }
+
+    function closeAllExportDropdowns() {
+        document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.export-dropdown')) {
+            closeAllExportDropdowns();
+        }
+    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
