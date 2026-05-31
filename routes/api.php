@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\EmergencyController;
+use App\Http\Controllers\Api\DeviceTokenController;
+use App\Http\Controllers\Api\NotificationController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,6 +26,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+    Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
     // ── Announcements ─────────────────────────────────────────────────────────
     Route::get('/announcements', [AnnouncementController::class, 'index']);
@@ -41,9 +51,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
     // ── Document Requests ─────────────────────────────────────────────────────
-    Route::get('/document-requests', [DocumentRequestController::class, 'index']); // ✅ FIXED (this was missing)
+    Route::get('/document-requests', [DocumentRequestController::class, 'index']); 
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
     Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+    
+    // ── Tenant Documents (admin-uploaded docs visible to this tenant) ──────────────
+    Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
 
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
@@ -86,4 +99,3 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 });
-

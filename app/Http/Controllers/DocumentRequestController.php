@@ -7,6 +7,7 @@ use App\Models\DocumentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class DocumentRequestController extends Controller
 {
@@ -48,6 +49,15 @@ class DocumentRequestController extends Controller
                 type: 'document_request',
                 message: "Document request from {$documentRequest->tenant->first_name} {$documentRequest->tenant->last_name} is now {$documentRequest->status}.",
                 ref_id: $documentRequest->id,
+            );
+
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $documentRequest->tenant_id,
+                type: 'document',
+                title: 'Document request updated',
+                body: "Your {$documentRequest->document_type} request is now {$documentRequest->status}.",
+                refId: $documentRequest->doc_request_id,
+                route: '/tenant/records',
             );
 
             return response()->json($documentRequest);

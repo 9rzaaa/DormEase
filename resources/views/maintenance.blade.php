@@ -437,7 +437,7 @@
         flex-direction: column;
         transform: translateX(100%);
         transition: transform .38s cubic-bezier(.4,0,.2,1);
-        box-shadow: -8px 0 40px rgba(0,0,0,.35);
+        box-shadow: -8px 0 40px rgba(0,0,0,.25);
     }
 
     .archive-drawer.open { transform: translateX(0); }
@@ -455,11 +455,12 @@
 
     .archive-drawer-header {
         padding: 1.6rem 1.8rem 1.2rem;
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        border-bottom: 2px solid var(--bright-pink);
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         gap: 1rem;
+        background: var(--white);
         flex-shrink: 0;
     }
 
@@ -482,22 +483,23 @@
         width: 34px; height: 34px;
         border-radius: 8px;
         background: var(--white);
-        border: 1.5px solid var(--baby-pink);
+        border: 1.5px solid var(--pink-100);
         color: var(--hot-pink);
         font-size: 1rem;
         cursor: pointer;
         display: flex; align-items: center; justify-content: center;
-        transition: background .2s, color .2s;
+        transition: .2s;
         flex-shrink: 0;
     }
 
-    .archive-close-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .archive-close-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
 
     .archive-tabs {
         display: flex;
         gap: 0;
         padding: 0 1.8rem;
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        border-bottom: 1.5px solid var(--pink-100);
+        background: var(--white);
         flex-shrink: 0;
     }
 
@@ -519,21 +521,21 @@
         font-family: var(--ff-body);
     }
 
-    .archive-tab:hover { color: var(--hot-pink); }
-
-    .archive-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+    .archive-tab:hover,
+    .archive-tab.active {
+        color: var(--hot-pink);
+        border-bottom-color: var(--hot-pink);
+    }
 
     .archive-tab-count {
         font-size: .68rem;
         font-weight: 800;
         padding: .1rem .45rem;
         border-radius: 99px;
-        background: rgba(255,255,255,.08);
-        color: rgba(255,255,255,.5);
+        background: var(--pink-100);
+        color: var(--hot-pink);
         letter-spacing: .02em;
     }
-
-    .archive-tab.active .archive-tab-count { background: var(--hot-pink); color: #fff; }
 
     .archive-search-bar {
         padding: 1rem 1.8rem .8rem;
@@ -550,7 +552,7 @@
         width: 100%;
         padding: .55rem .9rem .55rem 2.2rem;
         border-radius: 10px;
-        border: 1px solid rgba(255,255,255,.1);
+        border: 1.5px solid var(--pink-100);
         background: var(--white);
         color: var(--ink);
         font-size: .83rem;
@@ -560,13 +562,12 @@
     }
 
     .archive-search-inner input::placeholder { color: var(--ink-muted); }
-    .archive-search-inner input:focus { border-color: var(--hot-pink); background: rgba(255,255,255,.08); }
+    .archive-search-inner input:focus { border-color: var(--bright-pink); }
 
     .archive-search-icon {
         position: absolute; left: .75rem;
         width: 13px; height: 13px;
-        opacity: .3; pointer-events: none;
-        filter: brightness(0) invert(1);
+        opacity: .35; pointer-events: none;
     }
 
     .archive-list {
@@ -580,14 +581,14 @@
 
     .archive-list::-webkit-scrollbar { width: 4px; }
     .archive-list::-webkit-scrollbar-track { background: transparent; }
-    .archive-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 99px; }
+    .archive-list::-webkit-scrollbar-thumb { background: var(--pink-100); border-radius: 99px; }
 
     .archive-card {
         background: var(--white);
-        border: 1.5px solid var(--baby-pink);
+        border: 1.5px solid var(--pink-100);
         border-radius: 14px;
         padding: 1rem 1.1rem;
-        transition: background .2s, border-color .2s;
+        transition: background .2s, border-color .2s, transform .2s;
         animation: archiveSlideIn .3s ease both;
     }
 
@@ -597,7 +598,7 @@
     }
 
     .archive-card:hover {
-        background: var(--petal);
+        background: var(--pink-50);
         border-color: var(--bright-pink);
         box-shadow: 0 6px 18px rgba(232, 23, 93, .12);
         transform: translateY(-1px);
@@ -626,11 +627,17 @@
         flex-shrink: 0;
     }
 
-    .archive-card-tenant {
+    .archive-card-title {
         font-size: .88rem;
         font-weight: 700;
         color: var(--ink);
         line-height: 1.3;
+    }
+
+    .archive-card-tenant {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        margin-top: .1rem;
     }
 
     .archive-card-room {
@@ -649,7 +656,7 @@
 
     .archive-pill {
         font-size: .68rem;
-        font-weight: 700;
+        font-weight: 800;
         padding: .18rem .55rem;
         border-radius: 99px;
         letter-spacing: .03em;
@@ -662,9 +669,9 @@
     }
 
     .archive-pill-issue {
-        background: var(--petal);
+        background: var(--pink-100);
         color: var(--hot-pink);
-        border: 1px solid var(--baby-pink);
+        border: 1px solid var(--pink-100);
     }
     
     .archive-pill-urgent   { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
@@ -688,18 +695,18 @@
         gap: .4rem;
         margin-top: .75rem;
         padding-top: .6rem;
-        border-top: 1px solid rgba(255,255,255,.06);
+        border-top: 1px solid var(--pink-100);
         font-size: .7rem;
-        color: rgba(255,255,255,.25);
+        color: var(--ink-muted);
         font-weight: 500;
     }
 
-    .archive-card-archived span { color: rgba(255,255,255,.45); font-weight: 600; }
+    .archive-card-archived span { color: var(--bright-pink); font-weight: 700; }
 
     .archive-divider-label {
         font-size: .7rem;
         font-weight: 800;
-        color: rgba(255,255,255,.2);
+        color: var(--ink-muted);
         text-transform: uppercase;
         letter-spacing: .1em;
         padding: .5rem 0 .3rem;
@@ -708,21 +715,20 @@
     .archive-empty {
         text-align: center;
         padding: 3rem 1rem;
-        color: rgba(255,255,255,.2);
+        color: var(--ink-muted);
         font-size: .85rem;
     }
 
     .archive-empty-icon {
         width: 40px; height: 40px;
         margin: 0 auto .75rem;
-        opacity: .15;
-        filter: brightness(0) invert(1);
+        opacity: .25;
         display: block;
     }
 
     .archive-footer {
         padding: .9rem 1.8rem;
-        border-top: 2px solid var(--baby-pink);
+        border-top: 2px solid var(--pink-100);
         background: var(--white);
         display: flex;
         align-items: center;
@@ -744,18 +750,18 @@
         gap: .4rem;
         font-size: .75rem;
         font-weight: 700;
-        color: rgba(255,255,255,.5);
-        background: rgba(255,255,255,.06);
-        border: 1px solid rgba(255,255,255,.1);
+        color: var(--hot-pink);
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
         border-radius: 8px;
         padding: .35rem .85rem;
         cursor: pointer;
-        transition: background .2s, color .2s;
+        transition: .2s;
         font-family: var(--ff-body);
     }
 
-    .archive-export-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
-    .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) invert(1); opacity: .5; }
+    .archive-export-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+    .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .65; }
 
     @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) {
@@ -768,6 +774,38 @@
         .archive-search-bar { padding: .8rem 1rem .6rem; }
         .archive-footer { padding: .75rem 1rem; }
     }
+    /* ── Action Loading Overlay ── */
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--baby-pink); border-radius: 12px;
+    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--baby-pink); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+}
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+
+.is-loading { opacity: .75; pointer-events: none; }
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+}
 </style>
 @endsection
 
@@ -902,13 +940,21 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
     <div class="archive-drawer-header">
         <div>
-            <div class="archive-drawer-title">Archive & History</div>
+            <div class="archive-drawer-title">Archive / History</div>
             <div class="archive-drawer-sub">Record of closed and deleted requests</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
@@ -963,7 +1009,7 @@
             <div class="modal-title">Update Request</div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form id="edit-form" method="POST">
+        <form id="edit-form" method="POST" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
             <div class="modal-two-col">
@@ -1014,7 +1060,7 @@
         </p>
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form id="delete-form" method="POST">
+            <form id="delete-form" method="POST" data-loading-message="Deleting request...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
@@ -1027,10 +1073,36 @@
 
 @section('scripts')
 <script>
-    const requests       = @json($requests);
-    const closedArchive  = @json($closedArchive);
-    const deletedArchive = @json($deletedArchive);
+    function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
 
+function setFormLoading(form, message) {
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.textContent = 'Please wait...';
+        btn.disabled    = true;
+        btn.classList.add('is-loading');
+    });
+    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+    });
+    showActionLoading(message);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', function () {
+            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+        });
+    });
+});
+    const requests = @json($requests);
+    const closedArchive = @json($closedArchive);
+    const deletedArchive = @json($deletedArchive);
     const perPage  = 10;
     let filtered    = [...requests];
     let currentPage = 1;

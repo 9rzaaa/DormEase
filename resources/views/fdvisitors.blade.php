@@ -393,7 +393,38 @@
         .archive-search-bar { padding: .8rem 1rem .6rem; }
         .archive-footer { padding: .75rem 1rem; }
     }
+        /* ── Action Loading Overlay ── */
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
 
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--border); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--pink-light); border-radius: 50%;
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
 </style>
 @endsection
 
@@ -498,7 +529,14 @@
 @endsection
 
 @section('modals')
-
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
@@ -545,7 +583,7 @@
             <div class="modal-title">Add Walk-in Visitor</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('visitors.store') }}">
+        <form method="POST" action="{{ route('visitors.store') }}" data-loading-message="Logging visitor...">
             @csrf
             <div class="modal-grid">
                 <div class="modal-field">
@@ -624,7 +662,7 @@
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time in for <strong id="timein-name" style="color:var(--ink);"></strong>
         </p>
-        <form method="POST" id="timein-form" action="">
+        <form method="POST" id="timein-form" action="" data-loading-message="Logging time in...">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -649,7 +687,7 @@
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time out for <strong id="timeout-name" style="color:var(--ink);"></strong>
         </p>
-        <form method="POST" id="timeout-form" action="">
+        <form method="POST" id="timeout-form" action="" data-loading-message="Logging time out...">
             @csrf
             <div class="modal-field">
                 <label>Time Out</label>
@@ -696,6 +734,33 @@
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function setFormLoading(form, message) {
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.textContent = 'Please wait...';
+        btn.disabled    = true;
+        btn.classList.add('is-loading');
+    });
+    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+    });
+    showActionLoading(message);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', function () {
+            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+        });
+    });
+});
 
     const visitors          = @json($visitors);
     const completedVisitors = @json($completedVisitors);
@@ -867,16 +932,17 @@
     }
 
     function quickStatus(id, status, name) {
-        if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/visitors/' + id + '/status';
-        form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
-                       + '<input type="hidden" name="_method" value="PUT">'
-                       + '<input type="hidden" name="status" value="' + status + '">';
-        document.body.appendChild(form);
-        form.submit();
-    }
+    if (!confirm('Set status to "' + status + '" for ' + name + '?')) return;
+    showActionLoading('Updating status...');
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/visitors/' + id + '/status';
+    form.innerHTML = '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                   + '<input type="hidden" name="_method" value="PUT">'
+                   + '<input type="hidden" name="status" value="' + status + '">';
+    document.body.appendChild(form);
+    form.submit();
+}
 
     function openTimein(id, name) {
         document.getElementById('timein-name').textContent = name;

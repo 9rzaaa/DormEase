@@ -882,6 +882,63 @@
         opacity: .9;
         transform: translateY(-1px);
     }
+    /* action loading overlay */
+    .action-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,.72);
+        backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: .75rem;
+        padding: 1.25rem 1.6rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--white);
+        box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink);
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px;
+        height: 86px;
+        border: 3px solid var(--pink-50);
+        border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    .loading-logo-wrap img {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+    }
+
+    .is-loading {
+        opacity: .75;
+        pointer-events: none;
+    }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
 </style>
 @endsection
 
@@ -1016,7 +1073,14 @@
 @endsection
 
 @section('modals')
-
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 <div class="modal-overlay" id="log-modal">
     <div class="modal" style="max-width:640px;">
 
@@ -1101,16 +1165,30 @@
 @section('scripts')
 <script>
 
+function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideActionLoading() {
+    const overlay = document.getElementById('action-loading');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+}
+
 function setButtonLoading(btn, loadingText) {
     btn.disabled = true;
-    btn.classList.add('loading');
-    btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+    btn.classList.add('is-loading');
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = loadingText;
 }
 
 function resetButton(btn, originalText) {
     btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = originalText;
+    btn.classList.remove('is-loading');
+    btn.innerHTML = originalText || btn.dataset.originalText || originalText;
 }
 
 const tenantsByFloor = @json(
@@ -1427,6 +1505,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             setButtonLoading(saveBtn, 'Saving...');
+            showActionLoading('Saving billing changes...');
 
             try {
                 const response = await fetch("{{ route('billing.updateFull') }}", {
@@ -1450,14 +1529,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
                     showToast('Billing updated successfully!', 'success');
                     closeModal('update-modal');
+                    hideActionLoading();
                     setTimeout(() => location.reload(), 800);
                 } else {
                     showToast(data.message || 'Failed to update.', 'error');
                     resetButton(saveBtn, 'Save Changes');
+                    hideActionLoading();
                 }
             } catch (err) {
                 showToast('Network error.', 'error');
                 resetButton(saveBtn, 'Save Changes');
+                hideActionLoading();
             }
         });
     }
@@ -1504,6 +1586,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!valid) return;
 
         setButtonLoading(submitBtn, 'Logging...');
+        showActionLoading('Logging water consumption...');
 
         try {
             const response = await fetch("{{ route('billing.log') }}", {
@@ -1545,12 +1628,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     : 'Failed to log billing. Please check your inputs.';
                 showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
+                hideActionLoading(); 
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
             showToast('Network error — please try again.', 'error');
             resetButton(submitBtn, 'Log & Distribute');
+            hideActionLoading(); 
         }
     });
 });
