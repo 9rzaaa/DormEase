@@ -34,6 +34,8 @@ class TenantPushNotificationService
         $tenantId = $tenant instanceof Tenant ? $tenant->tenant_id : $tenant;
         $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
 
+        Notification::makeRoomFor();
+
         Notification::create([
             'tenant_id' => $tenantId,
             'type' => $type,
@@ -42,6 +44,8 @@ class TenantPushNotificationService
             'is_read' => 0,
             'created_at' => now(),
         ]);
+
+        Notification::pruneToLimit();
 
         $tokens = DeviceToken::where('tenant_id', $tenantId)
             ->pluck('expo_push_token')
@@ -98,7 +102,9 @@ class TenantPushNotificationService
                 ], $tenantIds);
 
                 foreach (array_chunk($notifications, 100) as $notificationChunk) {
+                    Notification::makeRoomFor(count($notificationChunk));
                     Notification::insert($notificationChunk);
+                    Notification::pruneToLimit();
                 }
 
                 $messages = DeviceToken::whereIn('tenant_id', $tenantIds)

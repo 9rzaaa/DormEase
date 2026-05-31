@@ -8,15 +8,34 @@ use Illuminate\View\View;
 
 class NotificationComposer
 {
-    const FRONTDESK_TYPES = [
+    const ADMIN_TYPES = [
         'announcement_new',
+        'visitor_registration',
         'visitor_checkin',
         'visitor_checkout',
         'emergency_new',
         'emergency_updated',
         'maintenance_new',
+        'maintenance_update',
         'maintenance_updated',
+        'maintenance_deleted',
+        'document_request',
+        'billing_overdue',
     ];
+
+    const FRONTDESK_TYPES = [
+        'announcement_new',
+        'visitor_registration',
+        'visitor_checkin',
+        'visitor_checkout',
+        'emergency_new',
+        'emergency_updated',
+    ];
+
+    public static function visibleTypesFor(?string $role): array
+    {
+        return $role === 'frontdesk' ? self::FRONTDESK_TYPES : self::ADMIN_TYPES;
+    }
 
     public function compose(View $view): void
     {
@@ -29,13 +48,15 @@ class NotificationComposer
             return;
         }
 
+        $types = self::visibleTypesFor($staff->role);
+
         $notifications = Notification::where('staff_id', $staff->staff_id)
-            ->whereIn('type', self::FRONTDESK_TYPES)
+            ->whereIn('type', $types)
             ->orderByDesc('created_at')
             ->get();
 
         $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
-            ->whereIn('type', self::FRONTDESK_TYPES)
+            ->whereIn('type', $types)
             ->where('is_read', 0)
             ->count();
 

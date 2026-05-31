@@ -7,8 +7,19 @@ use App\Models\Staff;
 
 class NotificationHelper
 {
+    private const FRONTDESK_ALLOWED_TYPES = [
+        'announcement_new',
+        'visitor_registration',
+        'visitor_checkin',
+        'visitor_checkout',
+        'emergency_new',
+        'emergency_updated',
+    ];
+
     public static function send(int $staff_id, string $type, string $message, ?int $ref_id = null): void
     {
+        Notification::makeRoomFor();
+
         Notification::create([
             'staff_id'   => $staff_id,
             'type'       => $type,
@@ -17,6 +28,8 @@ class NotificationHelper
             'is_read'    => 0,
             'created_at' => now(),
         ]);
+
+        Notification::pruneToLimit();
     }
 
     public static function sendToAll(string $type, string $message, ?int $ref_id = null): void
@@ -26,6 +39,10 @@ class NotificationHelper
             ->get();
 
         foreach ($allStaff as $staff) {
+            if (!self::roleAllowsNotification($staff, $type)) {
+                continue;
+            }
+
             $prefs = [];
 
             if (!empty($staff->notification_preferences)) {
@@ -40,5 +57,14 @@ class NotificationHelper
                 self::send($staff->staff_id, $type, $message, $ref_id);
             }
         }
+    }
+
+    private static function roleAllowsNotification(Staff $staff, string $type): bool
+    {
+        if ($staff->role !== 'frontdesk') {
+            return true;
+        }
+
+        return in_array($type, self::FRONTDESK_ALLOWED_TYPES, true);
     }
 }
