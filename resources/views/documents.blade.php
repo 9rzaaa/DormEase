@@ -421,7 +421,7 @@
     .ft-img  { background: #e8f8e8; color: #27ae60; border: 1px solid #a9dfbf; }
     .ft-word { background: #e8f0fe; color: #1a73e8; border: 1px solid #aecbfa; }
     .ft-xl   { background: #e6f4ea; color: #188038; border: 1px solid #a8d5b5; }
-    .ft-other{ background: #f5f5f5; color: #666; border: 1px solid #ddd; }
+    .ft-other{ background: #f5f5f5; color: #666;    border: 1px solid #ddd; }
 
     .req-status-badge {
         display: inline-flex;
@@ -665,9 +665,7 @@
         justify-content: flex-end;
     }
 
-    .archive-drawer-overlay.open {
-        display: flex;
-    }
+    .archive-drawer-overlay.open { display: flex; }
 
     .archive-drawer {
         width: min(780px, 100vw);
@@ -817,6 +815,37 @@
     .d2 { animation-delay: .12s; }
     .d3 { animation-delay: .2s; }
 
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--baby-pink); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--baby-pink); border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
     @media (max-width: 900px) {
         .doc-layout { flex-direction: column; }
         .type-sidebar { width: 100%; }
@@ -824,37 +853,6 @@
         .page-body { padding: 1.2rem 1rem; }
         .archive-drawer { width: 100vw; }
     }
-    /* ── Action Loading Overlay ── */
-.action-loading-overlay {
-    position: fixed; inset: 0; z-index: 1200;
-    display: none; align-items: center; justify-content: center;
-    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
-}
-.action-loading-overlay.open { display: flex; }
-
-.action-loading-box {
-    display: flex; align-items: center; flex-direction: column;
-    gap: .75rem; padding: 1.25rem 1.6rem;
-    border: 1px solid var(--baby-pink); border-radius: 12px;
-    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
-    color: var(--ink); font-size: .9rem; font-weight: 700;
-}
-
-.loading-logo-wrap {
-    width: 86px; height: 86px;
-    border: 3px solid var(--baby-pink); border-radius: 50%;
-    background: var(--gradient-pink);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 24px rgba(232,23,93,.25);
-    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
-}
-.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
-.is-loading { opacity: .75; pointer-events: none; }
-
-@keyframes pulseLogo {
-    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
-    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
-}
 </style>
 @endsection
 
@@ -893,6 +891,7 @@
         </div>
     </div>
 
+    {{-- Documents Tab --}}
     <div class="tab-panel active fade-up d3" id="panel-docs">
         <div class="toolbar">
             <span class="toolbar-label">Category:</span>
@@ -936,7 +935,7 @@
                 <div class="table-card-header">
                     <div>
                         <div class="table-card-title">Documents</div>
-                        <div class="table-card-sub" id="doc-date-label">as of {{ now()->format('F d, Y') }}</div>
+                        <div class="table-card-sub">as of {{ now()->format('F d, Y') }}</div>
                     </div>
                 </div>
                 <div class="table-wrap">
@@ -963,6 +962,7 @@
         </div>
     </div>
 
+    {{-- Requests Tab --}}
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
@@ -1021,6 +1021,7 @@
 
 </div>
 
+{{-- Archive Drawer --}}
 <div class="archive-drawer-overlay" id="archive-drawer-overlay" onclick="handleDrawerOverlayClick(event)">
     <div class="archive-drawer" id="archive-drawer">
         <div class="drawer-header">
@@ -1043,14 +1044,12 @@
         </div>
 
         <div class="drawer-body">
-
             <div class="drawer-panel active" id="dpanel-docs">
                 <div class="drawer-toolbar">
                     <span class="toolbar-label">Category:</span>
                     <select class="toolbar-select" id="adoc-filter-type" onchange="adocApplyFilters()">
                         <option value="">All Categories</option>
                     </select>
-
                     <span class="toolbar-label">Visibility:</span>
                     <select class="toolbar-select" id="adoc-filter-vis" onchange="adocApplyFilters()">
                         <option value="">All</option>
@@ -1058,19 +1057,16 @@
                         <option value="specific">Specific Tenant</option>
                         <option value="admin">Admin Only</option>
                     </select>
-
                     <span class="toolbar-label">Sort:</span>
                     <select class="toolbar-select" id="adoc-sort" onchange="adocApplyFilters()">
                         <option value="newest">Newest Archived</option>
                         <option value="oldest">Oldest Archived</option>
                     </select>
-
                     <div class="search-wrap" style="margin-left:auto;">
                         <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                         <input type="text" id="adoc-search" placeholder="Search title, tenant..." oninput="adocApplyFilters()">
                     </div>
                 </div>
-
                 <div class="table-card" style="flex:unset;">
                     <div class="table-card-header">
                         <div>
@@ -1113,19 +1109,16 @@
                         <option value="ready">Ready</option>
                         <option value="denied">Denied</option>
                     </select>
-
                     <span class="toolbar-label">Sort:</span>
                     <select class="toolbar-select" id="areq-sort" onchange="areqApplyFilters()">
                         <option value="newest">Newest Archived</option>
                         <option value="oldest">Oldest Archived</option>
                     </select>
-
                     <div class="search-wrap" style="margin-left:auto;">
                         <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                         <input type="text" id="areq-search" placeholder="Search tenant, document type..." oninput="areqApplyFilters()">
                     </div>
                 </div>
-
                 <div class="table-card" style="flex:unset;">
                     <div class="table-card-header">
                         <div>
@@ -1157,13 +1150,13 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 @endsection
 
 @section('modals')
+{{-- Action Loading Overlay --}}
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1172,6 +1165,8 @@
         <span id="action-loading-text">Please wait...</span>
     </div>
 </div>
+
+{{-- Upload Modal --}}
 <div class="modal-overlay" id="upload-modal">
     <div class="modal" style="max-width:560px;">
         <div class="modal-header">
@@ -1207,7 +1202,7 @@
             <div class="modal-field modal-full" id="tenant-select-field" style="display:none;">
                 <label>Select Tenant</label>
                 <select id="up-tenant">
-                    <option value="">Choose a tenant...</option>
+                    <option value="">— Choose a tenant —</option>
                     @foreach($tenants as $tenant)
                         <option value="{{ $tenant->tenant_id }}">
                             {{ $tenant->first_name }} {{ $tenant->last_name }}
@@ -1215,6 +1210,7 @@
                         </option>
                     @endforeach
                 </select>
+                <small style="color:var(--ink-muted);font-size:.75rem;margin-top:.2rem;">Only active tenants are shown.</small>
             </div>
             <div class="modal-field modal-full">
                 <label>File (PDF, PNG, JPG, DOCX, XLSX — max 20MB)</label>
@@ -1228,6 +1224,7 @@
     </div>
 </div>
 
+{{-- View Document Modal --}}
 <div class="modal-overlay" id="view-doc-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -1242,6 +1239,7 @@
     </div>
 </div>
 
+{{-- Edit Document Modal --}}
 <div class="modal-overlay" id="edit-doc-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -1270,9 +1268,9 @@
             </select>
         </div>
         <div class="modal-field" id="edit-tenant-field" style="display:none;">
-            <label>Tenant</label>
+            <label>Select Tenant</label>
             <select id="edit-doc-tenant">
-                <option value="">Choose a tenant...</option>
+                <option value="">— Choose a tenant —</option>
                 @foreach($tenants as $tenant)
                     <option value="{{ $tenant->tenant_id }}">
                         {{ $tenant->first_name }} {{ $tenant->last_name }}
@@ -1288,6 +1286,7 @@
     </div>
 </div>
 
+{{-- Delete Document Modal --}}
 <div class="modal-overlay" id="delete-doc-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1306,6 +1305,7 @@
     </div>
 </div>
 
+{{-- View Request Modal --}}
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1317,6 +1317,7 @@
     </div>
 </div>
 
+{{-- Update Request Modal --}}
 <div class="modal-overlay" id="update-req-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -1338,7 +1339,7 @@
             <label>Admin Remarks</label>
             <textarea id="upd-req-remarks" placeholder="Add remarks or reason for denial..."></textarea>
         </div>
-        <div class="modal-field" id="upd-doc-field">
+        <div class="modal-field">
             <label>Attach Fulfilled Document — PDF only (optional)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
         </div>
@@ -1349,6 +1350,7 @@
     </div>
 </div>
 
+{{-- Archive Request Modal --}}
 <div class="modal-overlay" id="delete-req-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1367,6 +1369,7 @@
     </div>
 </div>
 
+{{-- View Archived Document Modal --}}
 <div class="modal-overlay" id="view-adoc-modal">
     <div class="modal" style="max-width:500px;z-index:1100;">
         <div class="modal-header">
@@ -1380,6 +1383,7 @@
     </div>
 </div>
 
+{{-- View Archived Request Modal --}}
 <div class="modal-overlay" id="view-areq-modal">
     <div class="modal" style="max-width:520px;z-index:1100;">
         <div class="modal-header">
@@ -1393,6 +1397,7 @@
     </div>
 </div>
 
+{{-- Remove Archived Document Modal --}}
 <div class="modal-overlay" id="remove-adoc-modal">
     <div class="modal" style="max-width:400px;z-index:1100;">
         <div class="modal-header">
@@ -1411,6 +1416,7 @@
     </div>
 </div>
 
+{{-- Remove Archived Request Modal --}}
 <div class="modal-overlay" id="remove-areq-modal">
     <div class="modal" style="max-width:400px;z-index:1100;">
         <div class="modal-header">
@@ -1428,7 +1434,6 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
@@ -1487,6 +1492,7 @@
     let currentDoc = null;
     let currentReq = null;
 
+    // ── Tab switching ──────────────────────────────────────────────────────────
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1503,6 +1509,7 @@
         document.getElementById('dpanel-' + tab).classList.add('active');
     }
 
+    // ── Archive drawer ─────────────────────────────────────────────────────────
     function openArchiveDrawer() {
         document.getElementById('archive-drawer-overlay').classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -1520,20 +1527,29 @@
         }
     }
 
+    // ── Tenant select toggles ──────────────────────────────────────────────────
     function toggleTenantSelect() {
         const v = document.getElementById('up-visibility').value;
-        document.getElementById('tenant-select-field').style.display = v === 'specific' ? 'flex' : 'none';
+        document.getElementById('tenant-select-field').style.display =
+            v === 'specific' ? 'flex' : 'none';
     }
 
     function toggleEditTenantSelect() {
         const v = document.getElementById('edit-doc-vis').value;
-        document.getElementById('edit-tenant-field').style.display = v === 'specific' ? 'flex' : 'none';
+        document.getElementById('edit-tenant-field').style.display =
+            v === 'specific' ? 'flex' : 'none';
     }
 
+    // ── New category toggle ────────────────────────────────────────────────────
     document.getElementById('up-type').addEventListener('change', function () {
-        document.getElementById('new-category-field').style.display = this.value === '__new__' ? 'flex' : 'none';
+        document.getElementById('new-category-field').style.display =
+            this.value === '__new__' ? 'flex' : 'none';
+        if (this.value !== '__new__') {
+            document.getElementById('up-new-type').value = '';
+        }
     });
 
+    // ── Helpers ────────────────────────────────────────────────────────────────
     function fmtDate(d) {
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1581,6 +1597,7 @@
         pg.innerHTML = html;
     }
 
+    // ── Fetch ──────────────────────────────────────────────────────────────────
     async function fetchAll() {
         await fetchDocs();
         await fetchReqs();
@@ -1600,7 +1617,7 @@
             docApplyFilters();
             updateDocCounts();
             document.getElementById('tab-docs-count').textContent = docState.data.length;
-        } catch (e) {
+        } catch {
             document.getElementById('doc-tbody').innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load documents.</div></td></tr>`;
         }
     }
@@ -1643,11 +1660,12 @@
             document.getElementById('tab-reqs-count').textContent = pending;
             reqApplyFilters();
 
-        } catch (e) {
+        } catch {
             document.getElementById('req-tbody').innerHTML = `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
         }
     }
 
+    // ── Documents tab ──────────────────────────────────────────────────────────
     function docApplyFilters() {
         const q   = document.getElementById('doc-search').value.toLowerCase();
         const vis = document.getElementById('doc-filter-vis').value;
@@ -1745,10 +1763,6 @@
             ${d.file_path
                 ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>`
                 : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
-        `;
-        document.getElementById('view-doc-modal').querySelector('.modal-actions').innerHTML = `
-            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
-            <button class="btn-submit" onclick="switchToEditDoc()">Edit</button>
         `;
         openModal('view-doc-modal');
     }
@@ -1892,6 +1906,7 @@
         }
     }
 
+    // ── Requests tab ───────────────────────────────────────────────────────────
     function reqApplyFilters() {
         const q      = document.getElementById('req-search').value.toLowerCase();
         const status = document.getElementById('req-filter-status').value;
@@ -2063,6 +2078,7 @@
         }
     }
 
+    // ── Archive ────────────────────────────────────────────────────────────────
     async function fetchArchive() {
         try {
             const res  = await fetch('/admin/archive-docus', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
@@ -2083,7 +2099,7 @@
             populateAdocTypeFilter();
             adocApplyFilters();
             areqApplyFilters();
-        } catch (e) {
+        } catch {
             document.getElementById('adoc-tbody').innerHTML = `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load archive.</div></td></tr>`;
         }
     }

@@ -27,9 +27,10 @@ class DocumentController extends Controller
     {
         $fromDb   = Document::distinct()->pluck('document_type')->filter()->values()->toArray();
         $docTypes = collect(array_unique(array_merge(self::TYPES, $fromDb)))->values();
-        $tenants  = Tenant::select('tenant_id', 'first_name', 'last_name', 'room_number')
-                        ->orderBy('first_name')
-                        ->get();
+        $tenants = Tenant::select('tenant_id', 'first_name', 'last_name', 'room_number')
+                ->where('status', 'active')
+                ->orderBy('first_name')
+                ->get();
 
         $archivedDocuments = ArchiveDocu::where('archivable_type', 'document')
                                 ->orderBy('archived_at', 'desc')
@@ -82,7 +83,7 @@ class DocumentController extends Controller
         NotificationHelper::sendToAll(
             type: 'document_request',
             message: "New document uploaded: {$doc->title}",
-            ref_id: $doc->id,
+            ref_id: $doc->document_id,
         );
 
         return response()->json($doc, 201);
