@@ -668,6 +668,17 @@
         .btn-filter { font-size: .78rem; padding: .5rem .9rem; }
         .btn-outline { font-size: .78rem; padding: .5rem .9rem; }
     }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--border-pink); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-menu button:hover { background: var(--pink-bg-soft); color: var(--hot-pink); }
+
+    .export-month-menu { display: none; position: fixed; background: var(--white); border: 1.5px solid var(--border-pink); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.2); min-width: 155px; overflow: hidden; z-index: 99999; }
+    .export-month-menu.open { display: block; }
+    .export-month-menu button { display: block; width: 100%; padding: .6rem .9rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-month-menu button:hover { background: var(--pink-bg-soft); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -731,10 +742,16 @@
         @if($search || $selectedFloor || $selectedStatus)
         <a href="{{ route('billing.history') }}" class="btn-outline">Clear</a>
         @endif
-        <button class="ms-auto btn-outline" onclick="exportAllHistory()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export All
-        </button>
+        <div class="export-dropdown ms-auto" id="export-dropdown-all">
+            <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-all')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export All
+            </button>
+            <div class="export-menu" id="export-menu-all">
+                <button onclick="exportAllHistoryCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportAllHistoryPdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 
     <div id="history-content" class="fade-up d4">
@@ -748,10 +765,13 @@
                 @if($hg['unpaid_count'] > 0)
                 <span class="month-chip unpaid-chip">{{ $hg['unpaid_count'] }} unpaid</span>
                 @endif
-                <button class="export-month-btn" onclick="event.stopPropagation(); exportMonth('{{ $hg['month_key'] }}')" title="Export {{ $hg['month_label'] }}">
-                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Export
-                </button>
+                <div class="export-month-wrap" style="position:relative;display:inline-flex;flex-shrink:0;" data-month="{{ $hg['month_key'] }}">
+                    <button class="export-month-btn" onclick="event.stopPropagation(); toggleMonthExport(this)" title="Export {{ $hg['month_label'] }}">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export
+                    </button>
+                    <div class="export-month-menu" data-month-key="{{ $hg['month_key'] }}" data-month-label="{{ $hg['month_label'] }}"></div>
+                </div>
                 <div class="month-chevron">
                     <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
@@ -801,7 +821,6 @@
                                     <div class="tenant-proof">
                                         <button type="button" class="proof-detail-btn" onclick="openPaymentDetails({{ $monthIndex }}, {{ $floorIndex }}, {{ $roomIndex }}, {{ $loop->index }})">
                                             <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-                                            View Details
                                         </button>
                                     </div>
                                 </div>
@@ -884,9 +903,9 @@ function escapeHtml(value) {
 }
 
 function openPaymentDetails(monthIndex, floorIndex, roomIndex, tenantIndex) {
-    const group = historyData?.[monthIndex];
-    const floor = group?.floor_groups?.[floorIndex];
-    const room = floor?.rooms?.[roomIndex];
+    const group  = historyData?.[monthIndex];
+    const floor  = group?.floor_groups?.[floorIndex];
+    const room   = floor?.rooms?.[roomIndex];
     const tenant = room?.tenants?.[tenantIndex];
 
     if (!group || !floor || !room || !tenant) {
@@ -894,11 +913,11 @@ function openPaymentDetails(monthIndex, floorIndex, roomIndex, tenantIndex) {
         return;
     }
 
-    const status = String(tenant.payment_status || 'unpaid');
-    const referenceCode = tenant.payment_reference_code ? escapeHtml(tenant.payment_reference_code) : '&mdash;';
-    const submittedAt = tenant.payment_submitted_at ? escapeHtml(tenant.payment_submitted_at) : '&mdash;';
-    const proofUrl = tenant.proof_of_payment_url ? escapeHtml(tenant.proof_of_payment_url) : '';
-    const proofHtml = proofUrl
+    const status        = String(tenant.payment_status || 'unpaid');
+    const referenceCode = tenant.payment_reference_code ? escapeHtml(tenant.payment_reference_code) : '';
+    const submittedAt   = tenant.payment_submitted_at   ? escapeHtml(tenant.payment_submitted_at)   : '';
+    const proofUrl      = tenant.proof_of_payment_url   ? escapeHtml(tenant.proof_of_payment_url)   : '';
+    const proofHtml     = proofUrl
         ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
                <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(tenant.name)}" class="proof-image">
            </a>`
@@ -944,20 +963,19 @@ function openPaymentDetails(monthIndex, floorIndex, roomIndex, tenantIndex) {
 }
 
 function toggleMonth(header) {
-    const block = header.closest('.month-block');
-    block.classList.toggle('collapsed');
+    header.closest('.month-block').classList.toggle('collapsed');
 }
 
 function applyFilters() {
     const floor  = document.getElementById('filter-floor').value;
     const status = document.getElementById('filter-status').value;
     const search = document.getElementById('filter-search').value.trim();
-    const month = document.getElementById('filter-month').value;
+    const month  = document.getElementById('filter-month').value;
 
     const params = new URLSearchParams();
     if (floor)  params.set('floor',  floor);
     if (status) params.set('status', status);
-    if (month) params.set('month', month);
+    if (month)  params.set('month',  month);
     if (search) params.set('search', search);
     params.set('page', '1');
 
@@ -968,34 +986,70 @@ document.getElementById('filter-search').addEventListener('keydown', function(e)
     if (e.key === 'Enter') applyFilters();
 });
 
-function exportMonth(monthKey) {
-    const group = historyData.find(g => g.month_key === monthKey);
-    if (!group) {
-        showToast('No data for this month.', 'error');
+function downloadCsv(rows, filename) {
+    var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v ?? '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var a    = document.createElement('a');
+    a.href   = URL.createObjectURL(blob);
+    a.download = filename + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+}
+
+function exportMonth(monthKey, format) {
+    var group = historyData.find(function(g) { return g.month_key === monthKey; });
+    if (!group) { showToast('No data for this month.', 'error'); return; }
+
+    if (format === 'pdf') {
+        var win  = window.open('', '_blank');
+        var rows = '';
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
+                    rows += '<tr>'
+                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
+                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
+                        + '<td>' + escapeHtml(t.name) + '</td>'
+                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
+                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
+                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
+                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
+                        + '</tr>';
+                });
+            });
+        });
+        win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escapeHtml(group.month_label) + '</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Water Billing History ' + escapeHtml(group.month_label) + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
         return;
     }
 
-    const rows = [[
+    var csvRows = [[
         'Billing Month', 'Floor', 'Due Date',
         'Floor Consumption (m3)', 'Total Floor Bill',
         'Room Number', 'Occupants',
         'Tenant', 'Tenant Share', 'Payment Status',
         'Reference Code', 'Payment Submitted At'
     ]];
-
-    group.floor_groups.forEach(fg => {
-        fg.rooms.forEach(room => {
-            room.tenants.forEach(t => {
-                rows.push([
-                    group.month_label,
-                    fg.floor,
-                    fg.due_date,
+    group.floor_groups.forEach(function(fg) {
+        fg.rooms.forEach(function(room) {
+            room.tenants.forEach(function(t) {
+                csvRows.push([
+                    group.month_label, fg.floor, fg.due_date,
                     fg.floor_consumption_m3,
                     Number(fg.total_floor_bill || 0).toFixed(2),
-                    room.room_number,
-                    room.occupants_in_room,
-                    t.name,
-                    Number(t.room_share || 0).toFixed(2),
+                    room.room_number, room.occupants_in_room,
+                    t.name, Number(t.room_share || 0).toFixed(2),
                     t.payment_status,
                     t.payment_reference_code || '',
                     t.payment_submitted_at   || ''
@@ -1003,34 +1057,28 @@ function exportMonth(monthKey) {
             });
         });
     });
-
-    downloadCsv(rows, 'water-billing-' + monthKey.slice(0, 7));
+    downloadCsv(csvRows, 'water-billing-' + monthKey.slice(0, 7));
     showToast('Exported ' + group.month_label + ' billing data.', 'success');
 }
 
-function exportAllHistory() {
-    const rows = [[
+function exportAllHistoryCsv() {
+    var rows = [[
         'Billing Month', 'Floor', 'Due Date',
         'Floor Consumption (m3)', 'Total Floor Bill',
         'Room Number', 'Occupants',
         'Tenant', 'Tenant Share', 'Payment Status',
         'Reference Code', 'Payment Submitted At'
     ]];
-
-    historyData.forEach(group => {
-        group.floor_groups.forEach(fg => {
-            fg.rooms.forEach(room => {
-                room.tenants.forEach(t => {
+    historyData.forEach(function(group) {
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
                     rows.push([
-                        group.month_label,
-                        fg.floor,
-                        fg.due_date,
+                        group.month_label, fg.floor, fg.due_date,
                         fg.floor_consumption_m3,
                         Number(fg.total_floor_bill || 0).toFixed(2),
-                        room.room_number,
-                        room.occupants_in_room,
-                        t.name,
-                        Number(t.room_share || 0).toFixed(2),
+                        room.room_number, room.occupants_in_room,
+                        t.name, Number(t.room_share || 0).toFixed(2),
                         t.payment_status,
                         t.payment_reference_code || '',
                         t.payment_submitted_at   || ''
@@ -1039,26 +1087,137 @@ function exportAllHistory() {
             });
         });
     });
-
-    if (rows.length === 1) {
-        showToast('No billing data to export.', 'error');
-        return;
-    }
-
+    if (rows.length === 1) { showToast('No billing data to export.', 'error'); return; }
     downloadCsv(rows, 'water-billing-history-all');
     showToast('Full history exported as CSV.', 'success');
 }
 
-function downloadCsv(rows, filename) {
-    const csv  = rows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
-    a.download = filename + '.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(a.href);
+function exportAllHistoryPdf() {
+    if (!historyData || historyData.length === 0) { showToast('No billing data to export.', 'error'); return; }
+    var win  = window.open('', '_blank');
+    var rows = '';
+    historyData.forEach(function(group) {
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
+                    rows += '<tr>'
+                        + '<td>' + escapeHtml(group.month_label) + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
+                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
+                        + '<td>' + escapeHtml(t.name) + '</td>'
+                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
+                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
+                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
+                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
+                        + '</tr>';
+                });
+            });
+        });
+    });
+    win.document.write('<!DOCTYPE html><html><head><title>Water Billing History</title>'
+        + '<style>body{font-family:sans-serif;font-size:11px;padding:20px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:14px;font-size:10px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:7px;text-align:left;font-size:10px;text-transform:uppercase}td{padding:6px 7px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+        + '</head><body>'
+        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+        + '<p>Water Billing History - All Records exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<table><thead><tr><th>Month</th><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
+}
+
+function toggleMonthExport(btn) {
+    var wrap   = btn.closest('.export-month-wrap');
+    var menu   = wrap.querySelector('.export-month-menu');
+    var isOpen = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        var monthKey = wrap.dataset.month;
+        menu.innerHTML = '<button onclick="exportMonth(\'' + monthKey + '\', \'csv\'); closeAllExportDropdowns()">Export as CSV</button>'
+                       + '<button onclick="exportMonth(\'' + monthKey + '\', \'pdf\'); closeAllExportDropdowns()">Export as PDF</button>';
+
+        if (!menu._movedToBody) {
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+
+        var rect       = btn.getBoundingClientRect();
+        var spaceBelow = window.innerHeight - rect.bottom;
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        if (spaceBelow >= 86) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+        menu.classList.add('open');
+    }
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    var spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow >= (menu.offsetHeight || 80) + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu, .export-month-menu').forEach(function(m) {
+        m.classList.remove('open');
+    });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('.export-month-wrap')) {
+        closeAllExportDropdowns();
+    }
+});
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function handleOverlayClick(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
 }
 
 function showToast(msg, type) {
