@@ -825,7 +825,7 @@
             </div>
 
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeTempPwModal()">Change Later</button>
+                <button type="button" class="btn-cancel" onclick="dismissTempPassword()">Change Later</button>
                 <button type="submit" class="btn-submit">Update Password</button>
             </div>
         </form>
@@ -1148,9 +1148,22 @@
             }).catch(function() {});
         }
 
-        __pollCritical();
+    __pollCritical();
         setInterval(__pollCritical, 15000);
     })();
+
+    function dismissTempPassword() {
+        fetch('{{ route('fdprofile.dismissTempPassword') }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(function() {
+            var m = document.getElementById('temp-pw-modal');
+            if (m) m.classList.remove('open');
+        });
+    }
 </script>
 </body>
 </html>
