@@ -241,7 +241,9 @@
     .panel-inner { padding: .3rem .5rem .5rem; }
 
     .maint-row {
-        display: flex; align-items: center; gap: 1rem;
+        display: grid;
+        grid-template-columns: 38px 160px 1fr 120px 16px;
+        align-items: center; gap: 1rem;
         padding: .85rem .5rem; border-bottom: 1px solid var(--petal);
         cursor: pointer; transition: background .15s; border-radius: 8px;
     }
@@ -260,8 +262,8 @@
     }
 
     .maint-info { min-width: 0; }
-    .maint-title { font-size: .88rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .maint-id    { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; }
+    .maint-title { font-size: .88rem; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;}
+    .maint-id    { font-size: .75rem; color: var(--ink-muted); margin-top: .1rem; min-width: 0; }
 
     .maint-desc-col { flex: 1; min-width: 0; }
     .maint-desc  { font-size: .83rem; color: var(--ink); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -343,23 +345,23 @@
     <div class="content-col">
 
         <div class="page-header fade-up d1">
+        <div>
+            <h1>Welcome, {{ $staff->first_name }}!</h1>
+            <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+        </div>
+    </div>
+
+    <div class="card fade-up d2">
+        <div class="card-header">
             <div>
-                <h1>Welcome, {{ $staff->first_name }}!</h1>
-                <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
+                <div class="card-title">Quick Summary</div>
+                <div class="card-sub">As of {{ now()->format('F d, Y') }}</div>
             </div>
             <button class="export-btn" onclick="exportSummary()">
                 <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="">
                 Export
             </button>
         </div>
-
-        <div class="card fade-up d2">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">Quick Summary</div>
-                    <div class="card-sub">As of {{ now()->format('F d, Y') }}</div>
-                </div>
-            </div>
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants"></div>
@@ -515,7 +517,7 @@
                     Latest Announcements
                 </div>
                 <div class="panel-head-right">
-                    <span class="panel-badge">{{ $announcements->count() }}</span>
+                    <span class="panel-badge">{{ $announcements->count() }} posted</span>
                     <button class="post-announce-btn" onclick="event.stopPropagation(); openPostModal()">+ Post</button>
                     <a href="{{ route('announcements.index') }}" class="panel-link" onclick="event.stopPropagation()">See All</a>
                     <span class="panel-chevron open" id="chevron-ann">
