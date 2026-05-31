@@ -1429,6 +1429,47 @@
     </div>
 </div>
 
+{{-- CATEGORY SELECT --}}
+<div class="form-field">
+    <label for="up-type">Category</label>
+    <select id="up-type" name="document_type">
+        <option value="">Select a category</option>
+        @foreach($docTypes as $type)
+            <option value="{{ $type }}">{{ $type }}</option>
+        @endforeach
+        <option value="__new__">+ Add new category…</option>
+    </select>
+</div>
+
+<div class="form-field" id="new-category-field" style="display:none; flex-direction:column; gap:4px;">
+    <label for="up-new-type">New category name <span style="color:red">*</span></label>
+    <input type="text" id="up-new-type" placeholder="e.g. Incident Report">
+</div>
+
+{{-- VISIBILITY SELECT --}}
+<div class="form-field">
+    <label for="up-visibility">Visibility</label>
+    <select id="up-visibility" onchange="toggleTenantSelect()">
+        <option value="admin">Admin Only</option>
+        <option value="all">All Tenants</option>
+        <option value="specific">Specific Tenant</option>
+    </select>
+</div>
+
+
+<div class="form-field" id="tenant-select-field" style="display:none; flex-direction:column; gap:4px;">
+    <label for="up-tenant">Select tenant <span style="color:red">*</span></label>
+    <select id="up-tenant">
+        <option value="">— Select tenant —</option>
+        @foreach($tenants as $tenant)
+            <option value="{{ $tenant->tenant_id }}">
+                {{ $tenant->first_name }} {{ $tenant->last_name }} — Room {{ $tenant->room_number ?? '?' }}
+            </option>
+        @endforeach
+    </select>
+    <small style="color:var(--ink-muted)">Only active tenants are shown.</small>
+</div>
+
 @endsection
 
 @section('scripts')
