@@ -421,21 +421,27 @@
                     @if($recentActivities->isEmpty())
                         <div class="empty-state">No recent visitor activity.</div>
                     @else
-                        @foreach($recentActivities as $log)
-                            <div class="activity-row">
-                                <div class="activity-info">
-                                    <div class="activity-title">
-                                        {{ $log->visitor_name }} &mdash; {{ $log->departure_time ? 'Checked Out' : 'Checked In' }}
-                                        @if($log->tenant) for {{ $log->tenant->first_name }} {{ $log->tenant->last_name }} @endif
-                                    </div>
-                                    <div class="activity-time">{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}</div>
+                       @foreach($recentActivities as $log)
+                        <div class="activity-row" onclick="openVisitorModal(
+                            '{{ addslashes($log->visitor_name) }}',
+                            '{{ $log->departure_time ? 'Checked Out' : 'Checked In' }}',
+                            '{{ $log->tenant ? addslashes($log->tenant->first_name . ' ' . $log->tenant->last_name) : 'N/A' }}',
+                            '{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}',
+                            '{{ $log->departure_time ? \Carbon\Carbon::parse($log->departure_time)->format('F d, Y, g:i A') : '' }}'
+                        )">
+                            <div class="activity-info">
+                                <div class="activity-title">
+                                    {{ $log->visitor_name }} &mdash; {{ $log->departure_time ? 'Checked Out' : 'Checked In' }}
+                                    @if($log->tenant) for {{ $log->tenant->first_name }} {{ $log->tenant->last_name }} @endif
                                 </div>
-                                <div class="activity-arrow">&#8250;</div>
+                                <div class="activity-time">{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}</div>
                             </div>
-                        @endforeach
-                    @endif
-                </div>
+                            <div class="activity-arrow">&#8250;</div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
+        </div>
         </div>
 
         <div class="panel fade-up d5" id="panel-ann">
@@ -528,8 +534,37 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="visitor-detail-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title" id="vd-name"></div>
+            <button class="modal-close" onclick="closeModal('visitor-detail-modal')">&#x2715;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Status</span>
+                <div id="vd-status" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Visiting</span>
+                <div id="vd-tenant" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Arrival Time</span>
+                <div id="vd-arrival" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+            <div id="vd-departure-wrap">
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Departure Time</span>
+                <div id="vd-departure" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('visitor-detail-modal')">Close</button>
+            <button class="btn-submit" onclick="window.location='{{ route('frontdesk.visitors') }}'">View All Visitors</button>
+        </div>
+    </div>
+</div>
 @endsection
-
 
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -707,5 +742,22 @@ window.exportSummary = function() {
 @if(session('error'))
     showToast("{{ session('error') }}", 'error');
 @endif
+
+window.openVisitorModal = function(name, status, tenant, arrival, departure) {
+    document.getElementById('vd-name').textContent    = name;
+    document.getElementById('vd-status').textContent  = status;
+    document.getElementById('vd-tenant').textContent  = tenant;
+    document.getElementById('vd-arrival').textContent = arrival;
+
+    var depWrap = document.getElementById('vd-departure-wrap');
+    if (departure) {
+        document.getElementById('vd-departure').textContent = departure;
+        depWrap.style.display = 'block';
+    } else {
+        depWrap.style.display = 'none';
+    }
+
+    openModal('visitor-detail-modal');
+};
 </script>
 @endsection
