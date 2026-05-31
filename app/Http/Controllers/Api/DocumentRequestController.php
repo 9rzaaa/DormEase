@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\DocumentRequest;
 use App\Models\Document;
@@ -48,6 +49,13 @@ class DocumentRequestController extends Controller
             'status'        => 'pending',
             'submitted_at'  => now(),
         ]);
+
+        $tenant = $request->user();
+        NotificationHelper::sendToAll(
+            type: 'document_request',
+            message: "New {$documentRequest->document_type} request from {$tenant->first_name} {$tenant->last_name}.",
+            ref_id: $documentRequest->doc_request_id,
+        );
 
         return response()->json([
             'message' => 'Request submitted successfully.',
