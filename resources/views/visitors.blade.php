@@ -788,6 +788,12 @@
     .d2 { animation-delay: .12s; }
     .d3 { animation-delay: .2s;  }
     .d4 { animation-delay: .28s; }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+    .export-menu button:hover { background: #fff7fb; color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -826,10 +832,16 @@
 
     <div class="archive-footer">
         <div class="archive-count-label" id="archive-count-label">0 records</div>
-        <button class="archive-export-btn" onclick="exportArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-archive">
+            <button class="archive-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-archive">
+                <button onclick="exportArchiveCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportArchivePdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -856,10 +868,16 @@
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
-            <button class="btn-outline" onclick="exportLogs()">
-                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
-                Export
-            </button>
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportLogsCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportLogsPdf(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -963,12 +981,12 @@
 @section('scripts')
 <script>
 
-    const logs               = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-    const completedVisitors  = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-    const deletedVisitors    = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const logs              = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const completedVisitors = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const deletedVisitors   = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
-    let filtered    = Array.isArray(logs) ? [...logs] : [];
-    let archiveTab  = 'completed';
+    let filtered   = Array.isArray(logs) ? [...logs] : [];
+    let archiveTab = 'completed';
 
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
@@ -1038,7 +1056,6 @@
         }
 
         tbody.innerHTML = filtered.map(function(v) {
-
             const expectedVisit = (v.date_of_visit || v.time_of_visit)
                 ? fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit)
                 : '—';
@@ -1074,12 +1091,12 @@
     function getStatusBadge(status) {
         if (!status) return '—';
         const map = {
-            approved:  'badge-approved',
-            completed: 'badge-completed',
-            pending:   'badge-pending',
-            denied:    'badge-denied',
-            rejected:  'badge-denied',
-            inside:    'badge-inside',
+            approved:           'badge-approved',
+            completed:          'badge-completed',
+            pending:            'badge-pending',
+            denied:             'badge-denied',
+            rejected:           'badge-denied',
+            inside:             'badge-inside',
             'currently inside': 'badge-inside',
         };
         const cls   = map[status.toLowerCase()] ?? '';
@@ -1087,29 +1104,59 @@
         return '<span class="badge ' + cls + '">' + label + '</span>';
     }
 
-    function exportLogs() {
+    function exportLogsCsv() {
         if (!filtered.length) { alert('No data to export.'); return; }
 
-        let csv = 'Name,Expected Date,Expected Time,Time In,Time Out,Purpose,Tenant Visited,Logged By,Status\n';
+        var rows = [['Name', 'Expected Date', 'Expected Time', 'Time In', 'Time Out', 'Purpose', 'Tenant Visited', 'Logged By', 'Status']];
         filtered.forEach(function(v) {
-            csv += [
-                '"' + (v.visitor_name ?? '') + '"',
-                '"' + fmtDate(v.date_of_visit) + '"',
-                '"' + fmtTime(v.time_of_visit) + '"',
-                '"' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '"',
-                '"' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '"',
-                '"' + (v.purpose        ?? '') + '"',
-                '"' + (v.tenant?.full_name ?? '') + '"',
-                '"' + (v.staff?.name    ?? '') + '"',
-                '"' + (v.status         ?? '') + '"',
-            ].join(',') + '\n';
+            rows.push([
+                v.visitor_name     ?? '',
+                fmtDate(v.date_of_visit),
+                fmtTime(v.time_of_visit),
+                v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet',
+                v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside',
+                v.purpose        ?? '',
+                v.tenant?.full_name ?? '',
+                v.staff?.name    ?? '',
+                v.status         ?? '',
+            ]);
         });
 
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'visitor_logs_' + new Date().toISOString().slice(0,10) + '.csv';
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'visitor_logs_' + new Date().toISOString().slice(0, 10) + '.csv';
         a.click();
         URL.revokeObjectURL(a.href);
+    }
+
+    function exportLogsPdf() {
+        if (!filtered.length) { alert('No data to export.'); return; }
+
+        var win  = window.open('', '_blank');
+        var rows = filtered.map(function(v) {
+            return '<tr>'
+                + '<td>' + (v.visitor_name ?? '') + '</td>'
+                + '<td>' + fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit) + '</td>'
+                + '<td>' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '</td>'
+                + '<td>' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '</td>'
+                + '<td>' + (v.purpose ?? '') + '</td>'
+                + '<td>' + (v.tenant?.full_name ?? '') + '</td>'
+                + '<td>' + (v.staff?.name ?? '') + '</td>'
+                + '<td>' + (v.status ?? '') + '</td>'
+                + '</tr>';
+        }).join('');
+
+        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Visitor Logs - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Name</th><th>Expected Visit</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Tenant Visited</th><th>Logged By</th><th>Status</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
     }
 
     function viewVisitor(id) {
@@ -1124,9 +1171,9 @@
             ? fmtDateTime(v.departure_time)
             : (v.arrival_time ? '<span style="color:#c8960c">Still Inside</span>' : '—');
 
-        let idPhotoHtml = '';
+        var idPhotoHtml = '';
         if (v.id_photo) {
-            const src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
+            var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
             idPhotoHtml = '<div class="id-photo-wrap">'
                 + '<img src="' + src + '" alt="ID Photo" onerror="this.style.display=\'none\'">'
                 + '<a href="' + src + '" target="_blank" rel="noopener">Open full image &#x2197;</a>'
@@ -1238,7 +1285,7 @@
                     + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
                 + '</div>'
                 + '<div class="archive-card-visitor">' + (v.visitor_name ?? '—') + '</div>'
-                + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' — Rm ' + roomNum : '') + '</div>' : '')
+                + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' - Rm ' + roomNum : '') + '</div>' : '')
                 + '<div class="archive-card-meta">'
                     + '<span class="archive-pill archive-pill-purpose">' + (v.purpose ?? 'Other') + '</span>'
                     + '<span class="archive-pill ' + pillClass + '">' + pillLabel + '</span>'
@@ -1250,15 +1297,15 @@
         }).join('');
     }
 
-    function exportArchive() {
-        const data  = archiveTab === 'completed'
+    function exportArchiveCsv() {
+        const data = archiveTab === 'completed'
             ? (Array.isArray(completedVisitors) ? completedVisitors : [])
             : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
 
         if (!data.length) { alert('No archive data to export.'); return; }
 
         const label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
-        const rows  = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
+        var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
 
         data.forEach(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
@@ -1269,27 +1316,118 @@
 
             rows.push([
                 'VST-' + String(logId).padStart(3, '0'),
-                v.visitor_name  ?? '',
-                v.contact_no    ?? '',
-                v.purpose       ?? '',
+                v.visitor_name   ?? '',
+                v.contact_no     ?? '',
+                v.purpose        ?? '',
                 tenantName,
-                v.arrival_time  ?? '',
+                v.arrival_time   ?? '',
                 v.departure_time ?? '',
-                v.status        ?? '',
+                v.status         ?? '',
                 footerDate,
             ]);
         });
 
-        const csv = rows.map(function(r) {
-            return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
-        }).join('\n');
-
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'visitor_logs_' + archiveTab + '_archive_' + new Date().toISOString().slice(0,10) + '.csv';
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'visitor_logs_' + archiveTab + '_archive_' + new Date().toISOString().slice(0, 10) + '.csv';
         a.click();
         URL.revokeObjectURL(a.href);
     }
+
+    function exportArchivePdf() {
+        const data = archiveTab === 'completed'
+            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
+            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+
+        if (!data.length) { alert('No archive data to export.'); return; }
+
+        const tabLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+
+        var win  = window.open('', '_blank');
+        var rows = data.map(function(v) {
+            const logId      = v.visitor_id ?? v.id ?? 0;
+            const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const footerDate = archiveTab === 'completed'
+                ? fmtDatePlain(v.departure_time ?? v.arrival_time)
+                : fmtDatePlain(v.arrival_time);
+
+            return '<tr>'
+                + '<td>VST-' + String(logId).padStart(3, '0') + '</td>'
+                + '<td>' + (v.visitor_name ?? '') + '</td>'
+                + '<td>' + (v.contact_no ?? '') + '</td>'
+                + '<td>' + (v.purpose ?? '') + '</td>'
+                + '<td>' + tenantName + '</td>'
+                + '<td>' + (v.arrival_time   ? fmtDatePlain(v.arrival_time)   : '') + '</td>'
+                + '<td>' + (v.departure_time ? fmtDatePlain(v.departure_time) : '') + '</td>'
+                + '<td>' + (v.status ?? '') + '</td>'
+                + '<td>' + footerDate + '</td>'
+                + '</tr>';
+        }).join('');
+
+        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs Archive - ' + tabLabel + '</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Visitor Logs Archive - ' + tabLabel + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Log ID</th><th>Visitor Name</th><th>Contact No.</th><th>Purpose</th><th>Tenant Visited</th><th>Time In</th><th>Time Out</th><th>Status</th><th>' + footerHead + '</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
+    }
+
+    function getMenuForDropdown(id) {
+        return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+            return m._sourceDropdownId === id;
+        }) || document.querySelector('#' + id + ' .export-menu');
+    }
+
+    function positionExportMenu(dropdown) {
+        var btn  = dropdown.querySelector('button');
+        var menu = getMenuForDropdown(dropdown.id);
+        var rect = btn.getBoundingClientRect();
+        if (!menu._movedToBody) {
+            menu._sourceDropdownId = dropdown.id;
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        var spaceBelow = window.innerHeight - rect.bottom;
+        if (spaceBelow >= (menu.offsetHeight || 80) + 6) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+    }
+
+    function toggleExportDropdown(id) {
+        var dropdown = document.getElementById(id);
+        var menu     = getMenuForDropdown(id);
+        var isOpen   = menu.classList.contains('open');
+        closeAllExportDropdowns();
+        if (!isOpen) {
+            positionExportMenu(dropdown);
+            getMenuForDropdown(id).classList.add('open');
+        }
+    }
+
+    function closeAllExportDropdowns() {
+        document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.export-dropdown')) {
+            closeAllExportDropdowns();
+        }
+    });
 
     applyFilters();
 
