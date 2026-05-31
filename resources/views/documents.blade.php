@@ -1430,7 +1430,7 @@
 </div>
 
 @endsection
-@section('scripts')
+
 @section('scripts')
 <script>
     function showActionLoading(message) {
