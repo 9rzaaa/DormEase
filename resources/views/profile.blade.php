@@ -446,6 +446,38 @@
         .field-grid { grid-template-columns: 1fr; }
         .hero-body { flex-direction: column; align-items: flex-start; gap: .5rem; }
     }
+
+    /* action loading overly */
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--pink-200); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--pink-200); border-radius: 50%;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
 </style>
 @endsection
 
@@ -516,7 +548,7 @@
                 </div>
             </div>
             <div class="section-body">
-                <form method="POST" action="{{ route('profile.update') }}" id="info-form">
+                <form method="POST" action="{{ route('profile.update') }}" id="info-form" data-loading-message="Saving changes...">
                     @csrf
                     @method('PUT')
                     <div class="form-fields">
@@ -577,7 +609,7 @@
                 </div>
             </div>
             <div class="section-body">
-                <form method="POST" action="{{ route('profile.password') }}" id="pw-form">
+                <form method="POST" action="{{ route('profile.password') }}" id="pw-form" data-loading-message="Updating password...">
                     @csrf
                     @method('PUT')
                     <div class="form-fields">
@@ -638,15 +670,52 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function setFormLoading(form, message) {
+        form.querySelectorAll('button[type="submit"]').forEach(btn => {
+            btn.textContent = 'Please wait...';
+            btn.disabled    = true;
+            btn.classList.add('is-loading');
+        });
+        form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+        });
+        showActionLoading(message);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form[data-loading-message]').forEach(form => {
+            form.addEventListener('submit', function () {
+                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+            });
+        });
+    });
+
+    // avatar upload
     document.getElementById('avatar-input').addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
 
-        const preview = document.getElementById('avatar-preview');
+        const preview  = document.getElementById('avatar-preview');
         const initials = document.getElementById('avatar-initials');
 
         const reader = new FileReader();
@@ -657,21 +726,25 @@
         };
         reader.readAsDataURL(file);
 
+        showActionLoading('Uploading photo...');  
         document.getElementById('avatar-form').submit();
     });
 
-    function updateDisplayName() {
+        // display name live update
+        function updateDisplayName() {
         const fn = document.querySelector('[name="first_name"]').value;
         const ln = document.querySelector('[name="last_name"]').value;
         document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
     }
 
+    // password visibility toggle 
     function togglePw(inputId, btn) {
         const inp = document.getElementById(inputId);
         inp.type = inp.type === 'text' ? 'password' : 'text';
         btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
     }
 
+    // pass strength check
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
@@ -699,6 +772,7 @@
         document.getElementById('strength-label').textContent = '';
     }
 
+    // toast on page load
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
