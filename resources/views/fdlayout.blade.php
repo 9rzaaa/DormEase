@@ -22,6 +22,8 @@
             --pink-soft:  #FF7E86;
             --pink-bg:    #fdf0f5;
             --pink-card:  #fce8f1;
+            --petal:     #fce8f1;
+            --baby-pink: #fce4ec;
 
             --gray:       #B5B7C0;
             --gray-light: #E5ECF6;
@@ -35,6 +37,7 @@
             --white:      #ffffff;
             --ink:        #1a1a2e;
             --ink-muted:  #7a5f6e;
+            --black:     #1a1a2e;
 
             --pink-50:    #fdf2f6;
             --pink-100:   #fce4ec;
@@ -169,7 +172,6 @@
 
         .topbar-right { display: flex; align-items: center; gap: 1rem; }
 
-        /* ── Notification bell ── */
         .notif-bell {
             width: 36px; height: 36px; border-radius: 50%;
             background: var(--pink-card); border: 1.5px solid var(--pink-light);
@@ -185,7 +187,6 @@
             border: 2px solid var(--white);
         }
 
-        /* ── Notification hover wrap (matches admin layout) ── */
         #notif-wrap { position: relative; }
 
         .notif-dropdown {
@@ -273,7 +274,6 @@
             font-size: .83rem; color: var(--ink-muted);
         }
 
-        /* ── Avatar ── */
         .avatar {
             width: 36px; height: 36px; border-radius: 50%;
             background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
@@ -341,7 +341,6 @@
         .d5 { animation-delay: .33s; }
         .d6 { animation-delay: .40s; }
 
-        /* ── Modals ── */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(26,26,46,.45);
             backdrop-filter: blur(4px); z-index: 300;
@@ -394,7 +393,6 @@
         }
         .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-        /* ── Notification detail modal ── */
         .notif-detail-modal { max-width: 520px; }
 
         .notif-detail-type-badge {
@@ -577,7 +575,6 @@
         <div class="breadcrumb">Pages / <span>@yield('page-title', 'Dashboard')</span></div>
         <div class="topbar-right">
 
-            {{-- ═══ NOTIFICATION BELL + HOVER DROPDOWN ═══ --}}
             <div id="notif-wrap">
                 <div class="notif-bell" id="notif-bell" title="Notifications">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
@@ -658,7 +655,6 @@
                     </div>
                 </div>
             </div>
-            {{-- ═══ END NOTIFICATION ═══ --}}
 
             <div class="avatar-wrap" id="avatar-wrap">
                 <div class="avatar" id="topbar-avatar" title="{{ $staff->first_name ?? 'F' }}">
@@ -705,7 +701,6 @@
     @yield('content')
 </div>
 
-{{-- ═══ LOGOUT MODAL ═══ --}}
 <div class="modal-overlay" id="logout-modal" onclick="handleOverlayClick(event, 'logout-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -720,7 +715,6 @@
     </div>
 </div>
 
-{{-- ═══ NOTIFICATION DETAIL MODAL ═══ --}}
 <div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
     <div class="modal notif-detail-modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -761,7 +755,6 @@
     </div>
 </div>
 
-{{-- ═══ TEMPORARY PASSWORD MODAL ═══ --}}
 @if(session('prompt_temp_password'))
 <div class="modal-overlay open" id="temp-pw-modal">
     <div class="modal" style="max-width:420px;">
@@ -843,7 +836,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    /* ── Core modal helpers ── */
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -860,7 +852,6 @@
         setTimeout(function() { t.classList.remove('show'); }, 3200);
     }
 
-    /* ── Notification detail modal (ported from admin layout) ── */
     var typeLabels = {
         maintenance:  'Maintenance',
         emergency:    'Emergency',
@@ -904,7 +895,6 @@
             viewBtn.style.display = 'none';
         }
 
-        /* Mark as read via API if currently unread */
         if (!notif.isRead) {
             fetch('/notifications/' + notif.id + '/read', {
                 method: 'POST',
@@ -939,7 +929,6 @@
         }).then(function() { location.reload(); });
     }
 
-    /* ── Temp password modal helpers ── */
     function closeTempPwModal() {
         var m = document.getElementById('temp-pw-modal');
         if (m) m.classList.remove('open');
@@ -973,7 +962,6 @@
         label.style.color     = lvl.color;
     }
 
-    /* ── Session toasts ── */
     @if(session('error') && session('prompt_temp_password'))
         document.addEventListener('DOMContentLoaded', function() {
             showToast('{{ session("error") }}', 'error');
@@ -992,7 +980,6 @@
 @yield('scripts')
 
 <script>
-    /* ── Panic alert polling ── */
     (function() {
         var __panicLastId = null;
         var __panicBeepInterval = null;
@@ -1072,7 +1059,6 @@
         setInterval(__pollPanic, 15000);
     })();
 
-    /* ── Critical emergency toast polling ── */
     (function() {
         var __criticalSeen = new Set();
         var __criticalQueue = [];
