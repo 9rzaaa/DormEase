@@ -510,6 +510,37 @@
         .search-wrap input { width: 100%; }
         .sort-select { width: 100%; }
     }
+    /* ── Action Loading Overlay ── */
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--baby-pink); border-radius: 12px;
+    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--baby-pink); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+}
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+.is-loading { opacity: .75; pointer-events: none; }
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+}
 </style>
 @endsection
 
@@ -660,7 +691,14 @@
 @endsection
 
 @section('modals')
-
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 <div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
 
 <div class="staff-archive-drawer" id="sad-drawer">
@@ -696,7 +734,7 @@
             <div class="modal-title">Add New Staff</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('staff.store') }}">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff...">
             @csrf
             <div class="modal-grid">
                 <div class="modal-field">
@@ -765,7 +803,7 @@
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
             <div class="modal-grid">
@@ -841,7 +879,7 @@
             Are you sure you want to delete
             <strong id="delete-name" style="color:var(--ink);"></strong>?
         </p>
-        <form method="POST" id="delete-form" action="">
+        <form method="POST" id="delete-form" action="" data-loading-message="Deleting staff...">
             @csrf
             @method('DELETE')
             <div class="modal-actions">
@@ -856,6 +894,39 @@
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideActionLoading() {
+    const overlay = document.getElementById('action-loading');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+}
+
+function setFormLoading(form, message) {
+    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+        btn.textContent = 'Please wait...';
+        btn.disabled    = true;
+        btn.classList.add('is-loading');
+    });
+    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('is-loading');
+    });
+    showActionLoading(message);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('form[data-loading-message]').forEach(form => {
+        form.addEventListener('submit', function () {
+            setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+        });
+    });
+});
     const staffList  = @json($staffList);
     const PER_PAGE   = 8;
     let currentPage  = 1;
@@ -1124,75 +1195,81 @@
         });
     }
 
-    function confirmReset(id) {
-        closeModal('reset-confirm-modal');
+function confirmReset(id) {
+    closeModal('reset-confirm-modal');
+    showActionLoading('Resetting password...');
 
-        fetch(`/staff/${id}/reset-password`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            const existing = document.getElementById('reset-credentials-modal');
-            if (existing) existing.remove();
+    fetch(`/staff/${id}/reset-password`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideActionLoading();
 
-            document.body.insertAdjacentHTML('beforeend', `
-                <div class="modal-overlay open" id="reset-credentials-modal">
-                    <div class="modal" style="max-width:460px;">
-                        <div class="modal-header">
-                            <div class="modal-title">Password Reset Successful</div>
-                            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
-                        </div>
-                        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
-                            Share these credentials with the staff member immediately.
-                        </p>
-                        <div class="credentials-box">
-                            <h4>New Temporary Credentials</h4>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Email</div>
-                                    <div class="credential-value" id="reset-email">${data.reset_email}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-email', this)">Copy</button>
+        const existing = document.getElementById('reset-credentials-modal');
+        if (existing) existing.remove();
+
+        document.body.insertAdjacentHTML('beforeend', `
+            <div class="modal-overlay open" id="reset-credentials-modal">
+                <div class="modal" style="max-width:460px;">
+                    <div class="modal-header">
+                        <div class="modal-title">Password Reset Successful</div>
+                        <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
+                    </div>
+                    <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                        Share these credentials with the staff member immediately.
+                    </p>
+                    <div class="credentials-box">
+                        <h4>New Temporary Credentials</h4>
+                        <div class="credential-row">
+                            <div>
+                                <div class="credential-label">Email</div>
+                                <div class="credential-value" id="reset-email">${data.reset_email}</div>
                             </div>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Staff ID</div>
-                                    <div class="credential-value" id="reset-staff-id">${data.reset_staff_id}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-staff-id', this)">Copy</button>
-                            </div>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Temporary Password</div>
-                                    <div class="credential-value" id="reset-temp-password">${data.reset_temp_password}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-temp-password', this)">Copy</button>
-                            </div>
+                            <button class="copy-btn" onclick="copyResetText('reset-email', this)">Copy</button>
                         </div>
-                        <div class="credentials-warning">
-                            This password will <strong>not be shown again</strong>.
+                        <div class="credential-row">
+                            <div>
+                                <div class="credential-label">Staff ID</div>
+                                <div class="credential-value" id="reset-staff-id">${data.reset_staff_id}</div>
+                            </div>
+                            <button class="copy-btn" onclick="copyResetText('reset-staff-id', this)">Copy</button>
                         </div>
-                        <div class="modal-actions">
-                            <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it</button>
+                        <div class="credential-row">
+                            <div>
+                                <div class="credential-label">Temporary Password</div>
+                                <div class="credential-value" id="reset-temp-password">${data.reset_temp_password}</div>
+                            </div>
+                            <button class="copy-btn" onclick="copyResetText('reset-temp-password', this)">Copy</button>
                         </div>
                     </div>
+                    <div class="credentials-warning">
+                        This password will <strong>not be shown again</strong>.
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it</button>
+                    </div>
                 </div>
-            `);
+            </div>
+        `);
 
-            document.getElementById('reset-credentials-modal').addEventListener('click', e => {
-                if (e.target === document.getElementById('reset-credentials-modal'))
-                    closeModal('reset-credentials-modal');
-            });
+        document.getElementById('reset-credentials-modal').addEventListener('click', e => {
+            if (e.target === document.getElementById('reset-credentials-modal'))
+                closeModal('reset-credentials-modal');
+        });
 
-            showToast('Password reset successfully!', 'success');
-        })
-        .catch(() => showToast('Failed to reset password.', 'error'));
-    }
+        showToast('Password reset successfully!', 'success');
+    })
+    .catch(() => {
+        hideActionLoading();
+        showToast('Failed to reset password.', 'error');
+    });
+}
 
     const deletedStaffArchive = @json($deletedArchive);
 
