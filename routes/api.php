@@ -41,9 +41,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
     // ── Document Requests ─────────────────────────────────────────────────────
-    Route::get('/document-requests', [DocumentRequestController::class, 'index']); // ✅ FIXED (this was missing)
+    Route::get('/document-requests', [DocumentRequestController::class, 'index']); 
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
     Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+    
+    // ── Tenant Documents (admin-uploaded docs visible to this tenant) ──────────────
+    Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
 
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
