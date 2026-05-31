@@ -464,7 +464,7 @@
                         <div class="empty-state">No pending maintenance requests.</div>
                     @else
                         @foreach($maintenanceRequests as $req)
-                            <div class="maint-row">
+                            <div class="maint-row" onclick="openMaintenanceModal({{ $req->request_id }}, '{{ addslashes($req->issue_type) }}', '{{ addslashes($req->description) }}', '{{ $req->urgency_level }}', '{{ $req->status }}', '{{ $req->assigned_to ?? 'Unassigned' }}', '{{ $req->tenant->room_number ?? 'N/A' }}')">
                                 <div class="maint-type-icon">
                                     @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
                                         <img src="{{ asset('icons/plumbing.png') }}" alt="Plumbing" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
@@ -738,6 +738,34 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="maint-detail-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="md-title"></div>
+            <button class="modal-close" onclick="closeModal('maint-detail-modal')">&#x2715;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Room</span>
+                <div id="md-room" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Description</span>
+                <div id="md-desc" style="font-size:.9rem;color:var(--ink);margin-top:.2rem;line-height:1.5;"></div>
+            </div>
+            <div>
+                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Assigned To</span>
+                <div id="md-assign" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+            </div>
+            <div style="display:flex;gap:.5rem;" id="md-tags"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('maint-detail-modal')">Close</button>
+            <button class="btn-submit" id="md-view-btn">View Full Request</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 
@@ -969,5 +997,25 @@ window.exportSummary = function() {
 @if(session('error'))
     showToast("{{ session('error') }}", 'error');
 @endif
+
+window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned, room) {
+    document.getElementById('md-title').textContent = type;
+    document.getElementById('md-room').textContent = room;
+    document.getElementById('md-desc').textContent = desc;
+    document.getElementById('md-assign').textContent = assigned;
+
+    var urgencyClass = { urgent: 'tag-urgent', moderate: 'tag-moderate' }[urgency.toLowerCase()] || 'tag-low';
+    var statusClass  = status.toLowerCase() === 'in_progress' ? 'tag-progress' : 'tag-pending';
+
+    document.getElementById('md-tags').innerHTML =
+        '<span class="tag ' + urgencyClass + '">' + urgency + '</span>' +
+        '<span class="tag ' + statusClass  + '">' + status.replace('_', ' ') + '</span>';
+
+    document.getElementById('md-view-btn').onclick = function() {
+        window.location = '{{ route('maintenance.index') }}';
+    };
+
+    openModal('maint-detail-modal');
+};
 </script>
 @endsection
