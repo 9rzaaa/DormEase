@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\VisitorLog;
 use Illuminate\Http\Request;
@@ -100,6 +101,12 @@ class VisitorController extends Controller
             'tenant_id'     => $tenantId,
         ]);
 
+        NotificationHelper::sendToAll(
+            type: 'visitor_registration',
+            message: "{$tenantName} registered visitor {$request->visitor_name}.",
+            ref_id: $visitor->visitor_id,
+        );
+
         return response()->json([
             'message' => 'Visitor registered successfully.',
             'visitor' => [
@@ -143,6 +150,12 @@ class VisitorController extends Controller
             'departure_time' => now(),
             'status'         => 'completed',
         ]);
+
+        NotificationHelper::sendToAll(
+            type: 'visitor_checkout',
+            message: "{$visitor->visitor_name} has checked out.",
+            ref_id: $visitor->visitor_id,
+        );
 
         return response()->json([
             'message' => 'Visitor checked out successfully.',

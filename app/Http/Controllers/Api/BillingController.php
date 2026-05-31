@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\WaterBilling;
 use App\Models\WaterRate;
@@ -147,6 +148,12 @@ class BillingController extends Controller
             'payment_reference_code' => $request->reference_code,
             'payment_submitted_at' => now(),
         ]);
+
+        NotificationHelper::sendToAll(
+            type: 'billing_overdue',
+            message: "{$tenant->first_name} {$tenant->last_name} submitted payment proof for water billing.",
+            ref_id: $billing->billing_id,
+        );
 
         return response()->json([
             'success' => true,

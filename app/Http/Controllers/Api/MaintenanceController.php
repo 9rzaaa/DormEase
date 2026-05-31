@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRequest;
 use Illuminate\Http\Request;
@@ -298,6 +299,12 @@ class MaintenanceController extends Controller
             'status'      => 'pending',
             'submitted_at' => now(),
         ]);
+
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "New maintenance request from {$tenant?->first_name} {$tenant?->last_name} in room {$tenant?->room_number}.",
+            ref_id: $maintenance->request_id,
+        );
 
         return response()->json([
             'message' => 'Maintenance request submitted successfully.',

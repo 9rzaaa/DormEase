@@ -601,6 +601,7 @@
                                             'billing_overdue'  => 'billing',
                                             'document_request' => 'nav-docu',
                                             'announcement_new' => 'nav-announ',
+                                            'visitor_registration' => 'nav-visit',
                                             default            => 'nav-visit',
                                         };
                                         $notifTypeLabel = match($notif->type) {
@@ -609,6 +610,7 @@
                                             'billing_overdue'  => 'billing',
                                             'document_request' => 'document',
                                             'announcement_new' => 'announcement',
+                                            'visitor_registration' => 'visitor',
                                             default            => 'general',
                                         };
                                     @endphp
@@ -780,6 +782,7 @@
         billing:      'Billing',
         document:     'Document',
         announcement: 'Announcement',
+        visitor:      'Visitor',
         general:      'General',
     };
 
@@ -855,6 +858,8 @@
         document.getElementById('sidebar-backdrop').classList.toggle('open');
     }
 </script>
+
+@include('partials.live-notifications')
 
 @yield('scripts')
 

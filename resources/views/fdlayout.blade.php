@@ -605,6 +605,7 @@
                                 @foreach($notifications as $notif)
                                     @php
                                         $notifIcon = match($notif->type) {
+                                            'visitor_registration' => 'nav-visit',
                                             'emergency_new'    => 'warn',
                                             'visitor_checkin'  => 'nav-visit',
                                             'visitor_checkout' => 'nav-visit',
@@ -612,6 +613,7 @@
                                             default            => 'bell',
                                         };
                                         $notifTypeLabel = match($notif->type) {
+                                            'visitor_registration' => 'visitor',
                                             'emergency_new'    => 'emergency',
                                             'visitor_checkin'  => 'visitor',
                                             'visitor_checkout' => 'visitor',
@@ -988,6 +990,8 @@
         });
     @endif
 </script>
+
+@include('partials.live-notifications')
 
 @yield('scripts')
 
