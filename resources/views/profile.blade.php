@@ -31,6 +31,7 @@
         margin-top: .2rem;
     }
 
+    /* ── Hero card ── */
     .hero-card {
         position: relative;
         background: var(--white);
@@ -41,7 +42,7 @@
     }
 
     .hero-banner {
-        height: 90px;
+        height: 110px;
         background: linear-gradient(120deg, #e8175d 0%, #ff6ba8 50%, #ffb3d0 100%);
         position: relative;
         overflow: hidden;
@@ -71,6 +72,7 @@
         background: rgba(255,255,255,.07);
     }
 
+    /* Avatar + info row sits BELOW the banner, overlapping it */
     .hero-body {
         padding: 0 1.8rem 1.6rem;
         display: flex;
@@ -80,21 +82,22 @@
 
     .hero-avatar-wrap {
         flex-shrink: 0;
-        margin-top: -36px;
+        margin-top: -42px;   /* pulls avatar up to straddle the banner edge */
         position: relative;
         cursor: pointer;
+        z-index: 1;
     }
 
     .hero-avatar {
-        width: 78px;
-        height: 78px;
+        width: 84px;
+        height: 84px;
         border-radius: 50%;
         background: linear-gradient(135deg, #e8175d, #ff6ba8);
         border: 4px solid var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.9rem;
+        font-size: 2rem;
         font-weight: 800;
         color: var(--white);
         box-shadow: 0 4px 18px rgba(232,23,93,.30);
@@ -148,11 +151,12 @@
     }
 
     .hero-avatar-wrap:hover .avatar-overlay { opacity: 1; }
-    .hero-avatar-wrap:hover .hero-avatar { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
+    .hero-avatar-wrap:hover .hero-avatar    { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
 
+    /* Info block aligns to bottom of avatar */
     .hero-info {
         flex: 1;
-        padding-top: .9rem;
+        padding-bottom: .25rem;
         min-width: 0;
     }
 
@@ -190,6 +194,7 @@
         letter-spacing: .02em;
     }
 
+    /* ── Forms grid ── */
     .forms-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -445,9 +450,10 @@
     @media (max-width: 580px) {
         .field-grid { grid-template-columns: 1fr; }
         .hero-body { flex-direction: column; align-items: flex-start; gap: .5rem; }
+        .hero-avatar-wrap { margin-top: -42px; }
     }
 
-    /* action loading overly */
+    /* action loading overlay */
     .action-loading-overlay {
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;
@@ -499,8 +505,11 @@
         $rc = $roleMap[strtolower($staff->role ?? '')] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc'];
     @endphp
 
+    {{-- ── Hero card with banner + overlapping avatar ── --}}
     <div class="hero-card fade-up d2">
+
         <div class="hero-banner"></div>
+
         <div class="hero-body">
             <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" id="avatar-form">
                 @csrf
@@ -521,6 +530,7 @@
                     </div>
                 </div>
             </form>
+
             <div class="hero-info">
                 <div class="hero-name" id="hero-display-name">
                     {{ $staff->first_name }} {{ $staff->last_name }}
@@ -537,6 +547,7 @@
 
     <div class="forms-grid">
 
+        {{-- Personal Information --}}
         <div class="section-card fade-up d3">
             <div class="section-head">
                 <div class="section-icon">
@@ -598,6 +609,7 @@
             </div>
         </div>
 
+        {{-- Change Password --}}
         <div class="section-card fade-up d4">
             <div class="section-head">
                 <div class="section-icon">
@@ -726,25 +738,25 @@
         };
         reader.readAsDataURL(file);
 
-        showActionLoading('Uploading photo...');  
+        showActionLoading('Uploading photo...');
         document.getElementById('avatar-form').submit();
     });
 
-        // display name live update
-        function updateDisplayName() {
+    // display name live update
+    function updateDisplayName() {
         const fn = document.querySelector('[name="first_name"]').value;
         const ln = document.querySelector('[name="last_name"]').value;
         document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
     }
 
-    // password visibility toggle 
+    // password visibility toggle
     function togglePw(inputId, btn) {
         const inp = document.getElementById(inputId);
         inp.type = inp.type === 'text' ? 'password' : 'text';
         btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
     }
 
-    // pass strength check
+    // password strength check
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
@@ -772,7 +784,7 @@
         document.getElementById('strength-label').textContent = '';
     }
 
-    // toast on page load
+    // toasts on page load
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
