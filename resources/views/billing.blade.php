@@ -939,6 +939,12 @@
         0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100, #fce8f1); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-menu button:hover { background: var(--pink-bg-soft, #fff5f8); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -1007,10 +1013,16 @@
             <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
             History
         </a>
-        <button class="btn-outline" onclick="exportBilling()">
-            <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
-            Export
-        </button>
+        <div class="export-dropdown" id="export-dropdown-billing">
+            <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-billing')">
+                <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-billing">
+                <button onclick="exportBillingCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportBillingPdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 
     <div id="billing-groups" class="fade-up d4">
@@ -1640,7 +1652,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function exportBilling() {
+function exportBillingCsv() {
     const rows = [[
         'Billing Month',
         'Floor',
@@ -1656,9 +1668,9 @@ function exportBilling() {
         'Payment Submitted At'
     ]];
 
-    billingExportGroups.forEach(group => {
-        group.rooms.forEach(room => {
-            room.tenants.forEach(tenant => {
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.forEach(function(tenant) {
                 rows.push([
                     selectedBillingMonth,
                     group.floor,
@@ -1683,21 +1695,118 @@ function exportBilling() {
     }
 
     const csv = rows
-        .map(row => row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+        .map(function(row) { return row.map(function(value) { return '"' + String(value ?? '').replace(/"/g, '""') + '"'; }).join(','); })
         .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     const monthLabel = String(selectedBillingMonth || new Date().toISOString().slice(0, 10)).slice(0, 7);
-
     a.href = URL.createObjectURL(blob);
-    a.download = `water-billing-${monthLabel}.csv`;
+    a.download = 'water-billing-' + monthLabel + '.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-
     showToast('Billing data exported as CSV!', 'success');
 }
+
+function exportBillingPdf() {
+    if (!billingExportGroups || billingExportGroups.length === 0) {
+        showToast('No billing data to export.', 'error');
+        return;
+    }
+
+    var win = window.open('', '_blank');
+    var rows = '';
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.forEach(function(tenant) {
+                rows += '<tr>'
+                    + '<td>' + escHtml(group.floor) + '</td>'
+                    + '<td>' + escHtml(String(room.room_number)) + '</td>'
+                    + '<td>' + escHtml(tenant.name) + '</td>'
+                    + '<td>' + Number(tenant.room_share || 0).toFixed(2) + '</td>'
+                    + '<td>' + escHtml(tenant.payment_status || '') + '</td>'
+                    + '<td>' + escHtml(group.due_date || '') + '</td>'
+                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m³</td>'
+                    + '<td>₱' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
+                    + '</tr>';
+            });
+        });
+    });
+
+    win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escHtml(selectedBillingMonth || '') + '</title>'
+        + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+        + '</head><body>'
+        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+        + '<p>Water Billing — ' + escHtml(selectedBillingMonth || '') + ' — exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (₱)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
+}
+
+function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    menu.style.top      = 'auto';
+    menu.style.bottom   = 'auto';
+
+    var menuHeight = menu.offsetHeight || 80;
+    var spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceBelow >= menuHeight + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown')) {
+        closeAllExportDropdowns();
+    }
+});
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
