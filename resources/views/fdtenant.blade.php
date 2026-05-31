@@ -649,6 +649,12 @@ table th, table td { text-align: center; vertical-align: middle; }
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
 }
+
+.export-dropdown { position: relative; display: inline-flex; }
+.export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+.export-menu.open { display: block; }
+.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+.export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -665,10 +671,16 @@ table th, table td { text-align: center; vertical-align: middle; }
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
             </button>
-            <button class="btn-outline" onclick="exportTenants()">
-                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
-                Export
-            </button>
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportTenants(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportTenantsPDF(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -795,10 +807,16 @@ table th, table td { text-align: center; vertical-align: middle; }
 
     <div class="tad-footer">
         <div class="tad-count-label" id="tad-count-label">0 records</div>
-        <button class="tad-export-btn" onclick="exportTenantArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-archive">
+            <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-archive">
+                <button onclick="exportTenantArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportTenantArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -843,327 +861,351 @@ table th, table td { text-align: center; vertical-align: middle; }
 
 @section('scripts')
 <script>
-    const tenants = @json($tenants);
+const tenants = @json($tenants);
 
-    const deletedTenantArchive  = @json($deletedArchive);
-    const inactiveTenantArchive = @json($inactiveArchive);
-    const moveoutTenantArchive  = @json($moveoutArchive);
+const deletedTenantArchive  = @json($deletedArchive);
+const inactiveTenantArchive = @json($inactiveArchive);
+const moveoutTenantArchive  = @json($moveoutArchive);
 
-    const PER_PAGE  = 8;
-    let currentPage = 1;
-    let filtered    = [...tenants];
-    let tenantArchiveTab = 'deleted';
+const PER_PAGE  = 8;
+let currentPage = 1;
+let filtered    = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
+let tenantArchiveTab = 'deleted';
 
-    document.getElementById('table-date').textContent =
-        'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+document.getElementById('table-date').textContent =
+    'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    function initials(first, last) {
-        return ((first?.[0] ?? '') + (last?.[0] ?? '')).toUpperCase();
+function initials(first, last) {
+    return (((first || '')[0] || '') + ((last || '')[0] || '')).toUpperCase();
+}
+
+function fmtDate(d) {
+    if (!d) return '\u2014';
+    return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function fmtDatePlain(d) {
+    if (!d) return '\u2014';
+    var dt   = new Date(d);
+    var date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+    var time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return date + ' ' + time;
+}
+
+function statusBadge(status) {
+    var map = {
+        active:   '<span class="badge badge-active">Active</span>',
+        pending:  '<span class="badge badge-pending">Pending</span>',
+        move_out: '<span class="badge badge-moveout">Move Out</span>',
+        inactive: '<span class="badge badge-inactive">Inactive</span>',
+    };
+    return map[status] || ('<span class="badge badge-inactive">' + status + '</span>');
+}
+
+function statusPillClass(status) {
+    var map = {
+        active:   'tad-pill-active',
+        pending:  'tad-pill-pending',
+        move_out: 'tad-pill-moveout',
+        inactive: 'tad-pill-inactive',
+    };
+    return map[status] || 'tad-pill-inactive';
+}
+
+function renderTable() {
+    var start    = (currentPage - 1) * PER_PAGE;
+    var pageData = filtered.slice(start, start + PER_PAGE);
+    var tbody    = document.getElementById('tenant-tbody');
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
+    } else {
+        tbody.innerHTML = pageData.map(function(t) {
+            return '<tr>' +
+                '<td class="td-name"><div class="name-cell"><div class="tenant-avatar">' + initials(t.first_name, t.last_name) + '</div><span style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</span></div></td>' +
+                '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
+                '<td>' + (t.room_number || '\u2014') + '</td>' +
+                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td>' + statusBadge(t.status) + '</td>' +
+                '<td style="color:var(--ink-muted);font-size:.85rem;">' + (t.notes || '\u2014') + '</td>' +
+                '<td><div class="action-group">' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                '</div></td>' +
+            '</tr>';
+        }).join('');
     }
 
-    function fmtDate(d) {
-        if (!d) return '—';
-        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
+    var total = filtered.length;
+    var from  = total === 0 ? 0 : start + 1;
+    var to    = Math.min(start + PER_PAGE, total);
+    document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
 
-    function fmtDatePlain(d) {
-        if (!d) return '—';
-        const dt   = new Date(d);
-        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        return `${date} ${time}`;
-    }
+    renderPagination();
+}
 
-    function statusBadge(status) {
-        const map = {
-            active:   '<span class="badge badge-active">Active</span>',
-            pending:  '<span class="badge badge-pending">Pending</span>',
-            move_out: '<span class="badge badge-moveout">Move Out</span>',
-            inactive: '<span class="badge badge-inactive">Inactive</span>',
-        };
-        return map[status] ?? `<span class="badge badge-inactive">${status}</span>`;
-    }
+function renderPagination() {
+    var totalPages = Math.ceil(filtered.length / PER_PAGE);
+    var pg   = document.getElementById('pagination');
+    var html = '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>\u2039</button>';
 
-    function statusPillClass(status) {
-        const map = {
-            active:   'tad-pill-active',
-            pending:  'tad-pill-pending',
-            move_out: 'tad-pill-moveout',
-            inactive: 'tad-pill-inactive',
-        };
-        return map[status] ?? 'tad-pill-inactive';
-    }
-
-    function renderTable() {
-        const start    = (currentPage - 1) * PER_PAGE;
-        const pageData = filtered.slice(start, start + PER_PAGE);
-        const tbody    = document.getElementById('tenant-tbody');
-
-        if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>`;
-        } else {
-            tbody.innerHTML = pageData.map(t => `
-                <tr>
-                    <td class="td-name">
-                        <div class="name-cell">
-                            <div class="tenant-avatar">${initials(t.first_name, t.last_name)}</div>
-                            <span style="font-weight:600;">${t.first_name} ${t.last_name}</span>
-                        </div>
-                    </td>
-                    <td>${t.floor ? 'Floor ' + t.floor : '—'}</td>
-                    <td>${t.room_number ?? '—'}</td>
-                    <td>${t.contact_number ?? '—'}</td>
-                    <td>${statusBadge(t.status)}</td>
-                    <td style="color:var(--ink-muted);font-size:.85rem;">${t.notes ?? '—'}</td>
-                    <td>
-                        <div class="action-group">
-                            <button class="act-btn" title="View Details"
-                                onclick='viewTenant(${JSON.stringify(t)})'>
-                                <img src="{{ asset('icons/eye.png') }}" alt="View">
-                            </button>
-                            <button class="act-btn" title="Add / Edit Note"
-                                onclick='openNotesModal(${t.tenant_id}, "${t.first_name} ${t.last_name}", \`${(t.notes ?? '').replace(/`/g, "'")}\`)'>
-                                <img src="{{ asset('icons/edit.png') }}" alt="Note">
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+    for (var i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += '<button class="page-btn" disabled>...</button>';
         }
-
-        const total = filtered.length;
-        const from  = total === 0 ? 0 : start + 1;
-        const to    = Math.min(start + PER_PAGE, total);
-        document.getElementById('showing-label').textContent =
-            `Showing data ${from} to ${to} of ${total} entries`;
-
-        renderPagination();
     }
 
-    function renderPagination() {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        const pg = document.getElementById('pagination');
-        let html = '';
+    html += '<button class="page-btn" onclick="goPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages || totalPages === 0 ? 'disabled' : '') + '>\u203a</button>';
+    pg.innerHTML = html;
+}
 
-        html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
-
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
-            } else if (i === currentPage - 2 || i === currentPage + 2) {
-                html += `<button class="page-btn" disabled>...</button>`;
-            }
-        }
-
-        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>›</button>`;
-
-        pg.innerHTML = html;
-    }
-
-    function goPage(p) {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        if (p < 1 || p > totalPages) return;
-        currentPage = p;
-        renderTable();
-    }
-
-    function applyFilters() {
-        const q      = document.getElementById('search-input').value.toLowerCase();
-        const sort   = document.getElementById('sort-select').value;
-        const floor  = document.getElementById('floor-filter').value;
-        const status = document.getElementById('status-filter').value;
-
-        filtered = tenants.filter(t => {
-            const matchesSearch =
-                (t.first_name + ' ' + t.last_name).toLowerCase().includes(q) ||
-                (t.room_number    ?? '').toLowerCase().includes(q) ||
-                (t.contact_number ?? '').toLowerCase().includes(q) ||
-                String(t.floor ?? '').includes(q);
-
-            const matchesFloor  = floor  === '' || String(t.floor) === floor;
-            const matchesStatus = status === '' || t.status === status;
-
-            return matchesSearch && matchesFloor && matchesStatus;
-        });
-
-        if (sort === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        if (sort === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        if (sort === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
-        if (sort === 'room')   filtered.sort((a, b) => (a.room_number ?? '').localeCompare(b.room_number ?? ''));
-        if (sort === 'floor')  filtered.sort((a, b) => parseInt(a.floor ?? 0) - parseInt(b.floor ?? 0));
-
-        currentPage = 1;
-        renderTable();
-    }
-
-    function viewTenant(t) {
-        document.getElementById('view-content').innerHTML = `
-            <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${t.first_name} ${t.last_name}</span></div>
-            <div class="view-row"><span class="view-label">Email</span><span class="view-val">${t.email ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${t.contact_number ?? '—'}</span></div>
-            <div class="view-row">
-                <span class="view-label">Floor & Room</span>
-                <span class="view-val">${t.floor && t.room_number ? t.floor + '-' + t.room_number : (t.room_number ?? '—')}</span>
-            </div>
-            <div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">${t.stay_type ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">${fmtDate(t.move_in_date)}</span></div>
-            <div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">${fmtDate(t.move_out_date)}</span></div>
-            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${statusBadge(t.status)}</span></div>
-            <div class="view-row"><span class="view-label">Notes</span><span class="view-val">${t.notes ?? '—'}</span></div>
-        `;
-        openModal('view-modal');
-    }
-
-    function openNotesModal(id, name, currentNote) {
-        document.getElementById('notes-tenant-name').textContent = name;
-        document.getElementById('notes-input').value = currentNote;
-        document.getElementById('notes-form').action = `/tenants/${id}/notes`;
-        openModal('notes-modal');
-    }
-
-    function exportTenants() {
-        const rows = [['Tenant Name', 'Floor No.', 'Room No.', 'Contact No.', 'Status', 'Notes']];
-        tenants.forEach(t => rows.push([
-            `${t.first_name} ${t.last_name}`,
-            t.floor ?? '',
-            t.room_number ?? '',
-            t.contact_number ?? '',
-            t.status ?? '',
-            t.notes ?? '',
-        ]));
-        const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(blob);
-        a.download = 'tenant-directory.csv';
-        a.click();
-        showToast('Tenants exported as CSV!', 'success');
-    }
-
-    function openTenantArchive() {
-        document.getElementById('tad-drawer').classList.add('open');
-        document.getElementById('tad-backdrop').classList.add('open');
-        document.getElementById('tad-search').value = '';
-        document.getElementById('tcount-deleted').textContent  = deletedTenantArchive.length;
-        document.getElementById('tcount-inactive').textContent = inactiveTenantArchive.length;
-        document.getElementById('tcount-moveout').textContent  = moveoutTenantArchive.length;
-        renderTenantArchive();
-    }
-
-    function closeTenantArchive() {
-        document.getElementById('tad-drawer').classList.remove('open');
-        document.getElementById('tad-backdrop').classList.remove('open');
-    }
-
-    function switchTenantArchiveTab(tab) {
-        tenantArchiveTab = tab;
-        document.getElementById('ttab-deleted').classList.toggle('active',  tab === 'deleted');
-        document.getElementById('ttab-inactive').classList.toggle('active', tab === 'inactive');
-        document.getElementById('ttab-moveout').classList.toggle('active',  tab === 'move_out');
-        document.getElementById('tad-search').value = '';
-        renderTenantArchive();
-    }
-
-    function renderTenantArchive() {
-        const q = document.getElementById('tad-search').value.toLowerCase();
-
-        let source;
-        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
-        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
-        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
-
-        const data = source.filter(r =>
-            (r.account_id ?? '').toLowerCase().includes(q) ||
-            (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
-            (r.email         ?? '').toLowerCase().includes(q) ||
-            (r.room_number   ?? '').toLowerCase().includes(q) ||
-            (r.stay_type     ?? '').toLowerCase().includes(q)
-        );
-
-        const list = document.getElementById('tad-list');
-        document.getElementById('tad-count-label').textContent =
-            `${data.length} record${data.length !== 1 ? 's' : ''}`;
-
-        if (data.length === 0) {
-            const labelMap = { deleted: 'deleted', inactive: 'inactive', move_out: 'move out' };
-            list.innerHTML = `<div class="tad-empty">
-                <img class="tad-empty-icon" src="{{ asset('icons/tenants.png') }}" alt="">
-                No ${labelMap[tenantArchiveTab]} records found.
-            </div>`;
-            return;
-        }
-
-        const archiveLabelMap = {
-            deleted:  'Deleted on',
-            inactive: 'Marked inactive on',
-            move_out: 'Moved out on',
-        };
-
-        const archiveLabel = archiveLabelMap[tenantArchiveTab];
-
-        list.innerHTML = data.map((r, i) => `
-            <div class="tad-card" style="animation-delay:${i * 0.04}s;">
-                <div class="tad-card-top">
-                    <div class="tad-card-id">${r.account_id ?? '—'}</div>
-                    <div class="tad-card-time">${r.move_in_date ? fmtDate(r.move_in_date) : '—'}</div>
-                </div>
-                <div class="tad-card-name">${r.first_name} ${r.last_name}</div>
-                <div class="tad-card-email">${r.email ?? '—'}</div>
-                <div class="tad-card-meta">
-                    ${r.floor && r.room_number
-                        ? `<span class="tad-pill tad-pill-room">${r.floor}-${r.room_number}</span>`
-                        : (r.room_number ? `<span class="tad-pill tad-pill-room">${r.room_number}</span>` : '')}
-                    ${r.stay_type
-                        ? `<span class="tad-pill tad-pill-stay">${r.stay_type}</span>`
-                        : ''}
-                    <span class="tad-pill ${statusPillClass(r.status)}">${r.status ?? '—'}</span>
-                </div>
-                <div class="tad-card-archived">
-                    ${archiveLabel}: <span>${fmtDatePlain(r.archived_at)}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function exportTenantArchive() {
-        let source;
-        if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
-        if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
-        if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
-
-        const labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', labelMap[tenantArchiveTab]]];
-
-        source.forEach(r => {
-            rows.push([
-                r.account_id     ?? '',
-                r.first_name,
-                r.last_name,
-                r.email          ?? '',
-                r.contact_number ?? '',
-                r.floor          ?? '',
-                r.room_number    ?? '',
-                r.stay_type      ?? '',
-                r.move_in_date   ?? '',
-                r.move_out_date  ?? '',
-                r.status         ?? '',
-                r.archived_at    ?? '',
-            ]);
-        });
-
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
-        const a   = document.createElement('a');
-        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = `tenants_${tenantArchiveTab}_archive.csv`;
-        a.click();
-    }
-
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () =>
-            showToast('{{ session("success") }}', 'success')
-        );
-    @endif
-
+function goPage(p) {
+    var totalPages = Math.ceil(filtered.length / PER_PAGE);
+    if (p < 1 || p > totalPages) return;
+    currentPage = p;
     renderTable();
+}
+
+function applyFilters() {
+    var q      = document.getElementById('search-input').value.toLowerCase();
+    var sort   = document.getElementById('sort-select').value;
+    var floor  = document.getElementById('floor-filter').value;
+    var status = document.getElementById('status-filter').value;
+
+    filtered = tenants.filter(function(t) {
+        if (t.status === 'inactive' || t.status === 'move_out') return false;
+        var matchesSearch =
+            (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
+            (t.room_number    || '').toLowerCase().indexOf(q) !== -1 ||
+            (t.contact_number || '').toLowerCase().indexOf(q) !== -1 ||
+            String(t.floor || '').indexOf(q) !== -1;
+        var matchesFloor  = floor  === '' || String(t.floor) === floor;
+        var matchesStatus = status === '' || t.status === status;
+        return matchesSearch && matchesFloor && matchesStatus;
+    });
+
+    if (sort === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+    if (sort === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+    if (sort === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+    if (sort === 'room')   filtered.sort(function(a, b) { return (a.room_number || '').localeCompare(b.room_number || ''); });
+    if (sort === 'floor')  filtered.sort(function(a, b) { return parseInt(a.floor || 0) - parseInt(b.floor || 0); });
+
+    currentPage = 1;
+    renderTable();
+}
+
+function viewTenant(t) {
+    document.getElementById('view-content').innerHTML =
+        '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (t.email || '\u2014') + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Floor &amp; Room</span><span class="view-val">' + (t.floor && t.room_number ? t.floor + '-' + t.room_number : (t.room_number || '\u2014')) + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>' +
+        '<div class="view-row"><span class="view-label">Notes</span><span class="view-val">' + (t.notes || '\u2014') + '</span></div>';
+    openModal('view-modal');
+}
+
+function openNotesModal(id, name, currentNote) {
+    document.getElementById('notes-tenant-name').textContent = name;
+    document.getElementById('notes-input').value = currentNote;
+    document.getElementById('notes-form').action = '/tenants/' + id + '/notes';
+    openModal('notes-modal');
+}
+
+function exportTenants() {
+    var rows = [['Tenant Name','Floor No.','Room No.','Contact No.','Status','Notes']];
+    filtered.forEach(function(t) {
+        rows.push([t.first_name + ' ' + t.last_name, t.floor || '', t.room_number || '', t.contact_number || '', t.status || '', t.notes || '']);
+    });
+    var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'tenant-directory.csv';
+    a.click();
+}
+
+function exportTenantsPDF() {
+    var win  = window.open('', '_blank');
+    var rows = filtered.map(function(t) {
+        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.notes || '') + '</td></tr>';
+    }).join('');
+    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+    win.document.close();
+    win.print();
+}
+
+function openTenantArchive() {
+    document.getElementById('tad-drawer').classList.add('open');
+    document.getElementById('tad-backdrop').classList.add('open');
+    document.getElementById('tad-search').value = '';
+    document.getElementById('tcount-deleted').textContent  = deletedTenantArchive.length;
+    document.getElementById('tcount-inactive').textContent = inactiveTenantArchive.length;
+    document.getElementById('tcount-moveout').textContent  = moveoutTenantArchive.length;
+    renderTenantArchive();
+}
+
+function closeTenantArchive() {
+    document.getElementById('tad-drawer').classList.remove('open');
+    document.getElementById('tad-backdrop').classList.remove('open');
+}
+
+function switchTenantArchiveTab(tab) {
+    tenantArchiveTab = tab;
+    document.getElementById('ttab-deleted').classList.toggle('active',  tab === 'deleted');
+    document.getElementById('ttab-inactive').classList.toggle('active', tab === 'inactive');
+    document.getElementById('ttab-moveout').classList.toggle('active',  tab === 'move_out');
+    document.getElementById('tad-search').value = '';
+    renderTenantArchive();
+}
+
+function renderTenantArchive() {
+    var q = document.getElementById('tad-search').value.toLowerCase();
+    var source;
+    if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+    if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+    if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+    var data = source.filter(function(r) {
+        return (r.account_id  || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.first_name + ' ' + r.last_name).toLowerCase().indexOf(q) !== -1 ||
+               (r.email       || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.room_number || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.stay_type   || '').toLowerCase().indexOf(q) !== -1;
+    });
+
+    var list = document.getElementById('tad-list');
+    document.getElementById('tad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+    if (data.length === 0) {
+        var labelMap = { deleted: 'deleted', inactive: 'inactive', move_out: 'move out' };
+        var emptyIcon = '{{ asset("icons/tenants.png") }}';
+        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="' + emptyIcon + '" alt="">No ' + labelMap[tenantArchiveTab] + ' records found.</div>';
+        return;
+    }
+
+    var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on', move_out: 'Moved out on' };
+    var archiveLabel = archiveLabelMap[tenantArchiveTab];
+
+    list.innerHTML = data.map(function(r, i) {
+        var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">' + r.floor + '-' + r.room_number + '</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">' + r.room_number + '</span>' : '');
+        var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">' + r.stay_type + '</span>' : '';
+        return '<div class="tad-card" style="animation-delay:' + (i * 0.04) + 's;">' +
+            '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id || '\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>' +
+            '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>' +
+            '<div class="tad-card-email">' + (r.email || '\u2014') + '</div>' +
+            '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status || '\u2014') + '</span></div>' +
+            '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>' +
+        '</div>';
+    }).join('');
+}
+
+function exportTenantArchive(format) {
+    var source;
+    if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
+    if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
+    if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
+
+    var labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
+
+    if (format === 'pdf') {
+        var win = window.open('', '_blank');
+        var tabLabel = { deleted: 'Deleted', inactive: 'Inactive', move_out: 'Move Out' };
+        var rows = source.map(function(r) {
+            return '<tr><td>' + (r.account_id || '') + '</td><td>' + r.first_name + ' ' + r.last_name + '</td><td>' + (r.email || '') + '</td><td>' + (r.floor && r.room_number ? r.floor + '-' + r.room_number : (r.room_number || '')) + '</td><td>' + (r.stay_type || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.archived_at || '') + '</td></tr>';
+        }).join('');
+        win.document.write('<!DOCTYPE html><html><head><title>Archive - ' + tabLabel[tenantArchiveTab] + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Tenant Archive - ' + tabLabel[tenantArchiveTab] + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Room</th><th>Stay Type</th><th>Status</th><th>' + labelMap[tenantArchiveTab] + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+        win.document.close();
+        win.print();
+        return;
+    }
+
+    var rows = [['Account ID','First Name','Last Name','Email','Contact','Floor','Room','Stay Type','Move-In','Move-Out','Status', labelMap[tenantArchiveTab]]];
+    source.forEach(function(r) {
+        rows.push([r.account_id || '', r.first_name, r.last_name, r.email || '', r.contact_number || '', r.floor || '', r.room_number || '', r.stay_type || '', r.move_in_date || '', r.move_out_date || '', r.status || '', r.archived_at || '']);
+    });
+
+    var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a   = document.createElement('a');
+    a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'tenants_' + tenantArchiveTab + '_archive.csv';
+    a.click();
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    menu.style.top      = 'auto';
+    menu.style.bottom   = 'auto';
+
+    var menuHeight = menu.offsetHeight || 80;
+    var spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceBelow >= menuHeight + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown')) {
+        closeAllExportDropdowns();
+    }
+});
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(m) {
+    m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+});
+
+@if(session('success'))
+    document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
+@endif
+
+renderTable();
 </script>
 @endsection
