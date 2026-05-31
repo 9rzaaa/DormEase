@@ -682,11 +682,40 @@
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function setFormLoading(form, message) {
+        form.querySelectorAll('button[type="submit"]').forEach(btn => {
+            btn.textContent = 'Please wait...';
+            btn.disabled    = true;
+            btn.classList.add('is-loading');
+        });
+        form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+        });
+        showActionLoading(message);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form[data-loading-message]').forEach(form => {
+            form.addEventListener('submit', function () {
+                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+            });
+        });
+    });
+
+    // avatar upload
     document.getElementById('avatar-input').addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
 
-        const preview = document.getElementById('avatar-preview');
+        const preview  = document.getElementById('avatar-preview');
         const initials = document.getElementById('avatar-initials');
 
         const reader = new FileReader();
@@ -697,21 +726,25 @@
         };
         reader.readAsDataURL(file);
 
+        showActionLoading('Uploading photo...');  
         document.getElementById('avatar-form').submit();
     });
 
-    function updateDisplayName() {
+        // display name live update
+        function updateDisplayName() {
         const fn = document.querySelector('[name="first_name"]').value;
         const ln = document.querySelector('[name="last_name"]').value;
         document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
     }
 
+    // password visibility toggle 
     function togglePw(inputId, btn) {
         const inp = document.getElementById(inputId);
         inp.type = inp.type === 'text' ? 'password' : 'text';
         btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
     }
 
+    // pass strength check
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
@@ -739,6 +772,7 @@
         document.getElementById('strength-label').textContent = '';
     }
 
+    // toast on page load
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
