@@ -186,7 +186,14 @@
       </a>
       <p class="footer-brand">A web and mobile dormitory management system for Sanctissimo Rosario Ladies Dormitory, Sampaloc, Manila.</p>
     </div>
-    <div class="footer-col"><h4>Features</h4><a href="{{ route('home') }}#features">Maintenance</a><a href="{{ route('home') }}#features">Announcements</a><a href="{{ route('home') }}#features">Water Billing</a><a href="{{ route('home') }}#features">Visitor Log</a><a href="{{ route('safety.features') }}">Safety Features</a></div>
+    <div class="footer-col">
+      <h4>Features</h4>
+      <a href="{{ route('features') }}#maintenance">Maintenance</a>
+      <a href="{{ route('features') }}#announcements">Announcements</a>
+      <a href="{{ route('features') }}#water-bill">Water Billing</a>
+      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#emergency">Emergency</a>
+      <a href="{{ route('safety.features') }}">Safety Features</a></div>
     <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>
     <div class="footer-col"><h4>Contact</h4><a href="tel:+639175359723">+63 917 535 9723</a><a href="#">1229 Navarra St.</a><a href="#">Sampaloc, Manila</a></div>
   </div>

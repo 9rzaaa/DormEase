@@ -732,8 +732,11 @@
     </div>
     <div class="footer-col">
       <h4>Features</h4>
-      <a href="#">Maintenance</a><a href="#">Announcements</a>
-      <a href="#">Water Billing</a><a href="#">Visitor Log</a><a href="#">Emergency</a>
+      <a href="{{ route('features') }}#maintenance">Maintenance</a>
+      <a href="{{ route('features') }}#announcements">Announcements</a>
+      <a href="{{ route('features') }}#water-bill">Water Billing</a>
+      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#emergency">Emergency</a>
     </div>
     <div class="footer-col">
       <h4>Dormitory</h4>
