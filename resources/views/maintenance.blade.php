@@ -255,15 +255,8 @@
     }
 
     thead th:nth-child(3),
-    tbody td:nth-child(3),
-    thead th:nth-child(6),
-    tbody td:nth-child(6) {
+    tbody td:nth-child(3) {
         padding-left: .55rem;
-    }
-
-    thead th:nth-child(6),
-    tbody td:nth-child(6) {
-        padding-right: 1.50rem;
     }
 
     thead th:nth-child(4),
@@ -271,9 +264,24 @@
         padding-left: 1.15rem;
     }
 
+    thead th:nth-child(6),
+    tbody td:nth-child(6) {
+        text-align: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
     thead th:nth-child(7),
     tbody td:nth-child(7) {
-        padding-left: 1.25rem;
+        padding-left: 2.5rem;
+        padding-right: 1rem;
+    }
+
+    thead th:nth-child(8),
+    tbody td:nth-child(8) {
+        text-align: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .req-id { font-weight: 700; color: var(--hot-pink); font-size: .86rem; white-space: nowrap; }
@@ -303,9 +311,13 @@
     .issue-other      { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
 
     .desc-cell {
-        max-width: 100%; overflow: visible; text-overflow: clip;
-        white-space: normal; overflow-wrap: break-word;
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         color: var(--ink-muted); font-size: .86rem; text-align: left; line-height: 1.35;
+        box-sizing: border-box;
     }
 
     .urgency-badge {
@@ -806,6 +818,12 @@
     0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
     50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
 }
+
+.export-dropdown { position: relative; display: inline-flex; }
+.export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+.export-menu.open { display: block; }
+.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+.export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -822,10 +840,16 @@
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
-            <button class="btn-export" onclick="exportTable()">
-                <img src="{{ asset('icons/export.png') }}" alt="">
-                Export
-            </button>
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-export" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportTable(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportTablePDF(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -905,14 +929,14 @@
             <table id="main-table">
                 <colgroup>
                     <col style="width:10%;">
-                    <col style="width:12%;">
+                    <col style="width:11%;">
                     <col style="width:7%;">
-                    <col style="width:13%;">
                     <col style="width:12%;">
-                    <col style="width:8%;">
-                    <col style="width:19%;">
+                    <col style="width:11%;">
                     <col style="width:9%;">
-                    <col style="width:10%;">
+                    <col style="width:15%;">
+                    <col style="width:11%;">
+                    <col style="width:14%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -982,10 +1006,16 @@
 
     <div class="archive-footer">
         <div class="archive-count-label" id="archive-count-label">0 records</div>
-        <button class="archive-export-btn" onclick="exportArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-archive">
+            <button class="archive-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-archive">
+                <button onclick="exportArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1347,25 +1377,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportTable() {
-        const rows = [['Request ID','Date','Room','Tenant','Issue Type','Description','Urgency','Status','Remarks']];
-        filtered.forEach(r => {
+        var rows = [['Request ID','Date','Room','Tenant','Issue Type','Description','Urgency','Status','Remarks']];
+        filtered.forEach(function(r) {
             rows.push([
                 '#REQ-' + String(r.id).padStart(3,'0'),
                 fmtDatePlain(r.created_at),
-                r.room_number   ?? '',
-                r.tenant_name   ?? '',
-                r.issue_type    ?? '',
-                r.description   ?? '',
-                r.urgency       ?? '',
-                r.status        ?? '',
-                r.admin_remarks ?? '',
+                r.room_number   || '',
+                r.tenant_name   || '',
+                r.issue_type    || '',
+                r.description   || '',
+                r.urgency       || '',
+                r.status        || '',
+                r.admin_remarks || '',
             ]);
         });
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-        const a = document.createElement('a');
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+        var a = document.createElement('a');
         a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
         a.download = 'maintenance_requests.csv';
         a.click();
+    }
+
+    function exportTablePDF() {
+        var win  = window.open('', '_blank');
+        var rows = filtered.map(function(r) {
+            return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.description || '') + '</td></tr>';
+        }).join('');
+        win.document.write('<!DOCTYPE html><html><head><title>Maintenance Requests</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Maintenance Requests as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Request ID</th><th>Date</th><th>Room</th><th>Tenant</th><th>Issue Type</th><th>Urgency</th><th>Status</th><th>Description</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+        win.document.close();
+        win.print();
     }
 
     function openArchive() {
@@ -1435,30 +1475,101 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    function exportArchive() {
-        const data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
-        const label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
-        const rows  = [['Request ID', 'Submitted', 'Room', 'Tenant', 'Issue Type', 'Description', 'Urgency', 'Status', 'Remarks', label]];
-        data.forEach(r => {
+    function exportArchive(format) {
+        var data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
+        var label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
+
+        if (format === 'pdf') {
+            var win      = window.open('', '_blank');
+            var tabLabel = archiveTab === 'closed' ? 'Closed' : 'Deleted';
+            var rows = data.map(function(r) {
+                return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + fmtDatePlain(r.archived_at) + '</td></tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Maintenance Archive - ' + tabLabel + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Maintenance Archive - ' + tabLabel + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Request ID</th><th>Submitted</th><th>Room</th><th>Tenant</th><th>Issue Type</th><th>Urgency</th><th>Status</th><th>' + label + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Request ID','Submitted','Room','Tenant','Issue Type','Description','Urgency','Status','Remarks', label]];
+        data.forEach(function(r) {
             rows.push([
                 '#REQ-' + String(r.id).padStart(3,'0'),
                 fmtDatePlain(r.created_at),
-                r.room_number   ?? '',
-                r.tenant_name   ?? '',
-                r.issue_type    ?? '',
-                r.description   ?? '',
-                r.urgency       ?? '',
-                r.status        ?? '',
-                r.admin_remarks ?? '',
+                r.room_number   || '',
+                r.tenant_name   || '',
+                r.issue_type    || '',
+                r.description   || '',
+                r.urgency       || '',
+                r.status        || '',
+                r.admin_remarks || '',
                 fmtDatePlain(r.archived_at),
             ]);
         });
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-        const a   = document.createElement('a');
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
         a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = `maintenance_${archiveTab}_archive.csv`;
+        a.download = 'maintenance_' + archiveTab + '_archive.csv';
         a.click();
     }
+
+    function getMenuForDropdown(id) {
+        return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+            return m._sourceDropdownId === id;
+        }) || document.querySelector('#' + id + ' .export-menu');
+    }
+
+    function positionExportMenu(dropdown) {
+        var btn  = dropdown.querySelector('button');
+        var menu = getMenuForDropdown(dropdown.id);
+        var rect = btn.getBoundingClientRect();
+
+        if (!menu._movedToBody) {
+            menu._sourceDropdownId = dropdown.id;
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        menu.style.top      = 'auto';
+        menu.style.bottom   = 'auto';
+
+        var menuHeight = menu.offsetHeight || 80;
+        var spaceBelow = window.innerHeight - rect.bottom;
+
+        if (spaceBelow >= menuHeight + 6) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+    }
+
+    function toggleExportDropdown(id) {
+        var dropdown = document.getElementById(id);
+        var menu     = getMenuForDropdown(id);
+        var isOpen   = menu.classList.contains('open');
+        closeAllExportDropdowns();
+        if (!isOpen) {
+            positionExportMenu(dropdown);
+            getMenuForDropdown(id).classList.add('open');
+        }
+    }
+
+    function closeAllExportDropdowns() {
+        document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.export-dropdown')) {
+            closeAllExportDropdowns();
+        }
+    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () =>
