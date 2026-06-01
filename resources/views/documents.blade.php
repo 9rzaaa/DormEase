@@ -888,6 +888,11 @@
                 Document Requests
                 <span class="tab-badge" id="tab-reqs-count">0</span>
             </button>
+            <button class="tab-btn" id="tab-forms-btn" onclick="switchTab('forms')">
+                <img src="{{ asset('icons/attach.png') }}" alt="">
+                Downloadable Forms
+                <span class="tab-badge" id="tab-forms-count">0</span>
+            </button>
         </div>
     </div>
 
@@ -1019,6 +1024,45 @@
         </div>
     </div>
 
+</div>
+
+{{-- Forms Tab --}}
+<div class="tab-panel" id="panel-forms">
+    <div class="toolbar">
+        <div class="search-wrap">
+            <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+            <input type="text" id="form-search" placeholder="Search form name..." oninput="formApplyFilters()">
+        </div>
+        <button class="btn-upload" onclick="openModal('upload-form-modal')" style="margin-left:auto;">
+            <img src="{{ asset('icons/attach.png') }}" alt="">
+            Upload Form
+        </button>
+    </div>
+    <div class="table-card">
+        <div class="table-card-header">
+            <div>
+                <div class="table-card-title">Downloadable Forms</div>
+                <div class="table-card-sub">PDF forms tenants can download and fill out</div>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Label</th>
+                        <th>File</th>
+                        <th>Uploaded</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="form-tbody"></tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <div class="table-info" id="form-info">Showing 0 entries</div>
+            <div class="pagination" id="form-pagination"></div>
+        </div>
+    </div>
 </div>
 
 {{-- Archive Drawer --}}
@@ -1434,6 +1478,65 @@
         </div>
     </div>
 </div>
+{{-- Upload Form Modal --}}
+<div class="modal-overlay" id="upload-form-modal">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+            <div class="modal-title">Upload Downloadable Form</div>
+            <button class="modal-close" onclick="closeModal('upload-form-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-field">
+            <label>Form Label</label>
+            <input type="text" id="uf-label" placeholder="e.g. Guards Form">
+        </div>
+        <div class="modal-field">
+            <label>PDF File (max 20MB)</label>
+            <input type="file" id="uf-file" accept=".pdf">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('upload-form-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitUploadForm()">Upload</button>
+        </div>
+    </div>
+</div>
+
+{{-- Rename Form Modal --}}
+<div class="modal-overlay" id="edit-form-modal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">Rename Form</div>
+            <button class="modal-close" onclick="closeModal('edit-form-modal')">&#x2715;</button>
+        </div>
+        <input type="hidden" id="edit-form-id">
+        <div class="modal-field">
+            <label>Label</label>
+            <input type="text" id="edit-form-label">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('edit-form-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitEditForm()">Save</button>
+        </div>
+    </div>
+</div>
+
+{{-- Delete Form Modal --}}
+<div class="modal-overlay" id="delete-form-modal">
+    <div class="modal" style="max-width:380px;">
+        <div class="modal-header">
+            <div class="modal-title">Delete Form</div>
+            <button class="modal-close" onclick="closeModal('delete-form-modal')">&#x2715;</button>
+        </div>
+        <div class="delete-warn">Tenants will no longer be able to download this form.</div>
+        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
+            Delete <strong id="delete-form-label" style="color:var(--ink);"></strong>?
+        </p>
+        <input type="hidden" id="delete-form-id">
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('delete-form-modal')">Cancel</button>
+            <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteForm()">Delete</button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -1821,12 +1924,19 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
                 body: JSON.stringify({ title, document_type: type, visibility: vis, tenant_id: tid || null }),
             });
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            const msg = err.message
+                ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null)
+                ?? 'Upload failed.';
+            throw new Error(msg);
+            }
             closeModal('edit-doc-modal');
             showToast('Document updated successfully.', 'success');
             fetchAll();
-        } catch {
-            showToast('Update failed.', 'error');
+       } catch (e) {
+        showToast(e.message ?? 'Upload failed.', 'error');
+        }
         } finally {
             hideActionLoading();
             resetButton(editBtn);
@@ -1887,23 +1997,28 @@
         showActionLoading('Uploading document...');
 
         try {
-            const res = await fetch('/admin/documents', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-                body: fd,
-            });
-            if (!res.ok) throw new Error();
-            closeModal('upload-modal');
-            document.getElementById('up-title').value = '';
-            document.getElementById('up-file').value  = '';
-            showToast('Document uploaded successfully.', 'success');
-            fetchAll();
-        } catch {
-            showToast('Upload failed.', 'error');
-        } finally {
-            hideActionLoading();
-            resetButton(uploadBtn);
+        const res = await fetch('/admin/documents', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: fd,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            // Surface the actual validation message if Laravel returns one
+            const msg = err.message ?? Object.values(err.errors ?? {})[0]?.[0] ?? 'Upload failed.';
+            showToast(msg, 'error');
+            return;
         }
+        closeModal('upload-modal');
+        document.getElementById('up-title').value = '';
+        document.getElementById('up-file').value  = '';
+        showToast('Document uploaded successfully.', 'success');
+        fetchAll();
+    } catch (e) {
+        showToast('Network error — check your connection.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(uploadBtn);
     }
 
     // ── Requests tab ───────────────────────────────────────────────────────────
@@ -2335,6 +2450,183 @@
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
 
+    //  Downloadable Forms tab 
+let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
+
+async function fetchForms() {
+    document.getElementById('form-tbody').innerHTML =
+        `<tr><td colspan="4"><div class="empty-state">Loading...</div></td></tr>`;
+    try {
+        const res  = await fetch('/admin/downloadable-forms', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        });
+        const data = await res.json();
+        formState.data = data;
+        document.getElementById('tab-forms-count').textContent = data.length;
+        formApplyFilters();
+    } catch {
+        document.getElementById('form-tbody').innerHTML =
+            `<tr><td colspan="4"><div class="empty-state" style="color:var(--red)">Failed to load forms.</div></td></tr>`;
+    }
+}
+
+function formApplyFilters() {
+    const q = document.getElementById('form-search').value.toLowerCase();
+    formState.filtered = formState.data.filter(f =>
+        !q || (f.label ?? '').toLowerCase().includes(q)
+    );
+    formState.page = 1;
+    renderFormTable();
+}
+
+function openFormFile(filePath) {
+    const url = filePath.startsWith('forms/')
+        ? '/' + filePath
+        : '/storage/' + filePath;
+    window.open(url, '_blank');
+}
+
+function renderFormTable() {
+    const start = (formState.page - 1) * formState.perPage;
+    const page  = formState.filtered.slice(start, start + formState.perPage);
+    const tbody = document.getElementById('form-tbody');
+
+    if (!page.length) {
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">No forms uploaded yet.</div></td></tr>`;
+    } else {
+        tbody.innerHTML = page.map(f => `<tr>
+            <td style="font-weight:600;font-size:.88rem;">${escHtml(f.label)}</td>
+            <td>${fileTypeBadge(f.file_path)}</td>
+            <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(f.created_at)}</td>
+            <td>
+                <div class="action-group">
+                    <button class="act-btn" title="Open" onclick="openFormFile('${escHtml(f.file_path)}')">
+                        <img src="${eyeIcon}" alt="Open">
+                    </button>
+                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, '${escHtml(f.label)}')">
+                        <img src="${editIcon}" alt="Rename">
+                    </button>
+                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, '${escHtml(f.label)}')">
+                        <img src="${deleteIcon}" alt="Delete">
+                    </button>
+                </div>
+            </td>
+        </tr>`).join('');
+    }
+
+    const total  = formState.filtered.length;
+    const endIdx = Math.min(start + formState.perPage, total);
+    document.getElementById('form-info').textContent =
+        `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+    renderPagination('form-pagination', formState.page,
+        Math.ceil(total / formState.perPage),
+        p => { formState.page = p; renderFormTable(); });
+}
+
+async function submitUploadForm() {
+    const label = document.getElementById('uf-label').value.trim();
+    const file  = document.getElementById('uf-file').files[0];
+    if (!label) { showToast('Label is required.', 'error'); return; }
+    if (!file)  { showToast('Please select a PDF file.', 'error'); return; }
+
+    const fd = new FormData();
+    fd.append('label', label);
+    fd.append('file', file);
+
+    const btn = document.querySelector('#upload-form-modal .btn-submit');
+    setButtonLoading(btn, 'Uploading...');
+    showActionLoading('Uploading form...');
+    try {
+        const res = await fetch('/admin/downloadable-forms', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: fd,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            const msg = err.message
+                ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null)
+                ?? 'Upload failed.';
+            throw new Error(msg);
+        }
+        closeModal('upload-form-modal');
+        document.getElementById('uf-label').value = '';
+        document.getElementById('uf-file').value  = '';
+        showToast('Form uploaded successfully.', 'success');
+        fetchForms();
+    } catch (e) {
+        showToast(e.message ?? 'Upload failed.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(btn);
+    }
+}
+
+function openEditForm(id, label) {
+    document.getElementById('edit-form-id').value    = id;
+    document.getElementById('edit-form-label').value = label;
+    openModal('edit-form-modal');
+}
+
+async function submitEditForm() {
+    const id    = document.getElementById('edit-form-id').value;
+    const label = document.getElementById('edit-form-label').value.trim();
+    if (!label) { showToast('Label is required.', 'error'); return; }
+
+    const btn = document.querySelector('#edit-form-modal .btn-submit');
+    setButtonLoading(btn, 'Saving...');
+    showActionLoading('Saving...');
+    try {
+        const res = await fetch(`/admin/downloadable-forms/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ label }),
+        });
+        if (!res.ok) throw new Error();
+        closeModal('edit-form-modal');
+        showToast('Form renamed.', 'success');
+        fetchForms();
+    } catch {
+        showToast('Save failed.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(btn);
+    }
+}
+
+function promptDeleteForm(id, label) {
+    document.getElementById('delete-form-id').value          = id;
+    document.getElementById('delete-form-label').textContent = label;
+    openModal('delete-form-modal');
+}
+
+async function confirmDeleteForm() {
+    const id  = document.getElementById('delete-form-id').value;
+    const btn = document.querySelector('#delete-form-modal .btn-submit[style*="red"]');
+    setButtonLoading(btn, 'Deleting...');
+    showActionLoading('Deleting form...');
+    try {
+        const res = await fetch(`/admin/downloadable-forms/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error();
+        closeModal('delete-form-modal');
+        showToast('Form deleted.', 'success');
+        fetchForms();
+    } catch {
+        showToast('Delete failed.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(btn);
+    }
+}
+
     fetchAll();
+    fetchForms();
 </script>
 @endsection
