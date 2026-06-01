@@ -65,6 +65,7 @@ class SettingsController extends Controller
 
         $defaultPrefs = [
             'emergency_new'    => true,
+            'visitor_registration' => true,
             'visitor_checkin'  => true,
             'visitor_checkout' => true,
             'announcement_new' => true,
@@ -87,6 +88,7 @@ class SettingsController extends Controller
 
         $keys = [
             'emergency_new',
+            'visitor_registration',
             'visitor_checkin',
             'visitor_checkout',
             'announcement_new',

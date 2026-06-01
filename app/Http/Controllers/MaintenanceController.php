@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MaintenanceRequest;
 use App\Models\ArchivedMaintReq;
-use App\Services\NotificationService;
+use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class MaintenanceController extends Controller
 {
@@ -93,6 +94,15 @@ class MaintenanceController extends Controller
         $maintenance->update($updates);
 
         if ($request->status === 'closed') {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $maintenance->tenant_id,
+                type: 'maintenance',
+                title: 'Maintenance request closed',
+                body: "Your maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been closed.",
+                refId: $maintenance->request_id,
+                route: '/tenant/maintenancehistory',
+            );
+
             $this->archiveRequest($maintenance, 'closed');
             $maintenance->delete();
 
@@ -100,10 +110,19 @@ class MaintenanceController extends Controller
                 ->with('success', 'Request closed and moved to archive.');
         }
 
-        NotificationService::send(
-            'maintenance_new',
-            "Maintenance request #{$maintenance->request_id} status updated to {$request->status}.",
-            route('maintenance.index')
+        NotificationHelper::sendToAll(
+            'maintenance_update',
+            "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " status updated to {$request->status}.",
+            $maintenance->request_id
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $maintenance->tenant_id,
+            type: 'maintenance',
+            title: 'Maintenance request updated',
+            body: "Your maintenance request is now {$request->status}.",
+            refId: $maintenance->request_id,
+            route: '/tenant/maintenancehistory',
         );
 
         return redirect()->route('maintenance.index')
@@ -115,6 +134,12 @@ class MaintenanceController extends Controller
         $maintenance = MaintenanceRequest::findOrFail($id);
         $this->archiveRequest($maintenance, 'deleted');
         $maintenance->delete();
+
+        NotificationHelper::sendToAll(
+            'maintenance_deleted',
+            "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been deleted and archived.",
+            $maintenance->request_id
+        );
 
         return redirect()->route('maintenance.index')
             ->with('success', 'Maintenance request deleted and archived.');

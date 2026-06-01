@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRequest;
 use Illuminate\Http\Request;
@@ -254,6 +255,13 @@ class MaintenanceController extends Controller
         ],
     ];
 
+    // Priority weight used for tie-breaking when two issue types score equally.
+    private const PRIORITY_WEIGHT = [
+        'urgent'   => 3,
+        'moderate' => 2,
+        'low'      => 1,
+    ];
+
     public function index(Request $request)
     {
         $tenantId = $request->user()?->tenant_id;
@@ -261,19 +269,7 @@ class MaintenanceController extends Controller
         $requests = MaintenanceRequest::where('tenant_id', $tenantId)
             ->latest('submitted_at')
             ->get()
-            ->map(fn($maintenance) => [
-                'id' => $maintenance->request_id,
-                'room_number' => $maintenance->room_number,
-                'input_type' => $maintenance->input_type,
-                'issue_type' => $maintenance->issue_type,
-                'description' => $maintenance->description,
-                'urgency_level' => $maintenance->urgency_level,
-                'status' => $maintenance->status,
-                'admin_notes' => $maintenance->admin_notes,
-                'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
-                'submitted_at' => $this->formatApiDate($maintenance->submitted_at),
-                'resolved_at' => $this->formatApiDate($maintenance->resolved_at),
-            ]);
+            ->map(fn($maintenance) => $this->formatRequest($maintenance));
 
         return response()->json([
             'requests' => $requests,
@@ -284,39 +280,57 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'description' => 'required|string|max:5000',
-            'input_type' => 'nullable|in:voice,text',
-            'language' => 'nullable|in:en,tl',
+            'issue_type'  => 'nullable|string|max:255',
+            'input_type'  => 'nullable|in:voice,text',
+            'language'    => 'nullable|in:en,tl',
         ]);
 
-        $tenant = $request->user();
+        $tenant             = $request->user();
         $cleanedDescription = $this->cleanText($validated['description']);
-        $classification = $this->classify($cleanedDescription);
+        $classification     = $this->classify($cleanedDescription, $validated['issue_type'] ?? null);
 
         $maintenance = MaintenanceRequest::create([
-            'tenant_id' => $tenant?->tenant_id,
+            'tenant_id'   => $tenant?->tenant_id,
             'room_number' => $tenant?->room_number,
-            'input_type' => $validated['input_type'] ?? 'text',
-            'issue_type' => $classification['issue_type'],
+            'input_type'  => $validated['input_type'] ?? 'text',
+            'issue_type'  => $classification['issue_type'],
             'description' => $cleanedDescription,
             'urgency_level' => $classification['urgency_level'],
-            'status' => 'pending',
+            'status'      => 'pending',
             'submitted_at' => now(),
         ]);
 
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "New maintenance request from {$tenant?->first_name} {$tenant?->last_name} in room {$tenant?->room_number}.",
+            ref_id: $maintenance->request_id,
+        );
+
         return response()->json([
             'message' => 'Maintenance request submitted successfully.',
-            'request' => [
-                'id' => $maintenance->request_id,
-                'room_number' => $maintenance->room_number,
-                'input_type' => $maintenance->input_type,
-                'issue_type' => $maintenance->issue_type,
-                'description' => $maintenance->description,
-                'urgency_level' => $maintenance->urgency_level,
-                'status' => $maintenance->status,
-                'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
-                'submitted_at' => $this->formatApiDate($maintenance->submitted_at),
-            ],
+            'request' => $this->formatRequest($maintenance),
         ], 201);
+    }
+
+    // -------------------------------------------------------------------------
+    // Formatting
+    // -------------------------------------------------------------------------
+
+    private function formatRequest(MaintenanceRequest $maintenance): array
+    {
+        return [
+            'id'             => $maintenance->request_id,
+            'room_number'    => $maintenance->room_number,
+            'input_type'     => $maintenance->input_type,
+            'issue_type'     => $maintenance->issue_type,
+            'description'    => $maintenance->description,
+            'urgency_level'  => $maintenance->urgency_level,
+            'status'         => $maintenance->status,
+            'admin_notes'    => $maintenance->admin_notes,
+            'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
+            'submitted_at'   => $this->formatApiDate($maintenance->submitted_at),
+            'resolved_at'    => $this->formatApiDate($maintenance->resolved_at),
+        ];
     }
 
     private function formatApiDate($date): ?string
@@ -325,6 +339,10 @@ class MaintenanceController extends Controller
             ? $date->copy()->timezone('Asia/Manila')->toIso8601String()
             : null;
     }
+
+    // -------------------------------------------------------------------------
+    // Text cleaning
+    // -------------------------------------------------------------------------
 
     private function cleanText(string $text): string
     {
@@ -335,42 +353,127 @@ class MaintenanceController extends Controller
         return trim($text ?? '');
     }
 
-    private function classify(string $text): array
+    /**
+     * Given a single word that ends in "-ing", returns that word plus candidate
+     * stems so keyword matching works regardless of inflected form.
+     */
+    private function expandIngForms(string $word): array
     {
-        $bestIssue = 'other';
-        $bestScore = 0;
+        $forms = [$word];
+
+        if (!str_ends_with($word, 'ing') || strlen($word) <= 5) {
+            return $forms;
+        }
+        $base = substr($word, 0, -3);
+        if (preg_match('/([b-df-hj-np-tv-z])\1$/', $base, $m)) {
+            $forms[] = substr($base, 0, -1);
+        }
+        $forms[] = $base . 'e';
+
+        $forms[] = $base;
+
+        return array_unique($forms);
+    }
+
+    /**
+     * Checks whether a keyword appears in the text, also testing -ing-stemmed
+     * variants of every word in the text against the keyword.
+     */
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        if (str_contains($text, $keyword)) {
+            return true;
+        }
+        $words        = explode(' ', $text);
+        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
+
+        $candidates = [''];
+        foreach ($expandedWords as $forms) {
+            $next = [];
+            foreach ($candidates as $prefix) {
+                foreach ($forms as $form) {
+                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
+                }
+            }
+            $candidates = array_slice($next, 0, 512);
+        }
+        foreach ($candidates as $candidate) {
+            if (str_contains($candidate, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Classification
+    // -------------------------------------------------------------------------
+
+    private function classify(string $text, ?string $requestedIssue = null): array
+    {
+        $normalizedIssue = $this->normalizeIssueType($requestedIssue);
+        $bestIssue = $normalizedIssue ?? 'other';
+        $bestScore = ($normalizedIssue && $normalizedIssue !== 'other') ? 1 : 0;
+        $bestPriorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$bestIssue]['priority'] ?? 'low'] ?? 0;
 
         foreach (self::ISSUE_RULES as $issue => $rule) {
             $score = 0;
 
             foreach ($rule['keywords'] as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     $score++;
                 }
             }
+            if ($score === 0) {
+                continue;
+            }
+            $priorityWeight = self::PRIORITY_WEIGHT[$rule['priority']] ?? 0;
 
-            if ($score > $bestScore) {
-                $bestIssue = $issue;
-                $bestScore = $score;
+            if ($score > $bestScore || ($score === $bestScore && $priorityWeight > $bestPriorityWeight)) {
+                $bestIssue          = $issue;
+                $bestScore          = $score;
+                $bestPriorityWeight = $priorityWeight;
             }
         }
-
         return [
-            'issue_type' => $bestIssue,
+            'issue_type'    => $bestIssue,
             'urgency_level' => $this->classifyPriority($text, $bestIssue),
         ];
+    }
+
+    private function normalizeIssueType(?string $issue): ?string
+    {
+        if (!$issue) {
+            return null;
+        }
+
+        $normalized = Str::lower(trim($issue));
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
+
+        return match ($normalized) {
+            'plumbing' => 'plumbing',
+            'electrical' => 'electrical',
+            'hvac', 'aircon', 'air conditioning', 'hvac / air conditioning' => 'hvac',
+            'appliance', 'appliance repair' => 'appliance',
+            'carpentry', 'furniture', 'carpentry / furniture' => 'carpentry',
+            'pest', 'pest control' => 'pest',
+            'cleaning' => 'cleaning',
+            'internet', 'cable', 'internet / cable' => 'internet',
+            'other', 'others' => 'other',
+            default => null,
+        };
     }
 
     private function classifyPriority(string $text, string $issue): string
     {
         foreach (self::PRIORITY_RULES as $priority => $keywords) {
             foreach ($keywords as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     return $priority;
                 }
             }
         }
-
         return self::ISSUE_RULES[$issue]['priority'] ?? 'low';
     }
 }

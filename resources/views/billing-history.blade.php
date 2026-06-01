@@ -335,7 +335,6 @@
     .room-card-head {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         margin-bottom: .55rem;
         gap: .5rem;
     }
@@ -377,33 +376,6 @@
         padding: .12rem .55rem;
     }
 
-    .btn-update {
-        width: 28px;
-        height: 28px;
-        border-radius: 10px;
-        background: var(--gradient-pink);
-        border: none;
-        cursor: pointer;
-        transition: var(--ease);
-        flex-shrink: 0;
-        box-shadow: 0 3px 10px rgba(255,79,147,.18);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .btn-update img {
-        width: 12px;
-        height: 12px;
-        filter: brightness(0) invert(1);
-    }
-
-    .btn-update:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 14px rgba(255,79,147,.28);
-    }
-
     .tenants-list {
         display: flex;
         flex-direction: column;
@@ -412,13 +384,20 @@
 
     .tenant-row {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: .45rem 0;
-        gap: .5rem;
+        flex-direction: column;
+        padding: .6rem 0;
+        gap: .45rem;
     }
 
     .tenant-row + .tenant-row { border-top: 1px dashed rgba(255,150,180,.18); }
+
+    .tenant-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        width: 100%;
+    }
 
     .tenant-left { display: flex; align-items: center; gap: .4rem; min-width: 0; flex: 1; }
 
@@ -440,6 +419,48 @@
     .tenant-right { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
 
     .t-amount { font-size: .83rem; font-weight: 700; color: var(--hot-pink); white-space: nowrap; }
+
+    .tenant-proof {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-top: .1rem;
+        box-sizing: border-box;
+    }
+
+    .proof-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        justify-content: center;
+        min-height: 30px;
+        padding: .35rem .65rem;
+        border-radius: 9px;
+        background: var(--white);
+        border: 1px solid var(--border-pink);
+        color: var(--hot-pink);
+        font-size: .72rem;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: border-color .15s, color .15s, background .15s;
+    }
+
+    .proof-detail-btn:hover {
+        background: var(--pink-bg-soft);
+        border-color: var(--bright-pink);
+        color: var(--bright-pink);
+    }
+
+    .proof-detail-btn svg {
+        width: 13px;
+        height: 13px;
+        stroke: currentColor;
+        stroke-width: 2.3;
+        fill: none;
+    }
 
     .badge {
         display: inline-flex;
@@ -537,122 +558,13 @@
         fill: none;
     }
 
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.35);
-        backdrop-filter: blur(4px);
-        z-index: 300;
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-        background: var(--white);
-        border-radius: 26px;
-        padding: 2rem;
-        width: 90%;
-        max-width: 500px;
-        box-shadow: var(--shadow-pink-modal);
-        animation: fadeUp .3s ease;
-        max-height: 90vh;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--bright-pink) transparent;
-    }
-
-    .modal::-webkit-scrollbar { width: 6px; }
-    .modal::-webkit-scrollbar-thumb { background: var(--bright-pink); border-radius: 20px; }
-
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.4rem;
-    }
-
-    .modal-title { font-size: 1.15rem; font-weight: 700; color: var(--ink-soft); }
-    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ink-soft); }
-    .modal-close:hover { color: var(--bright-pink); }
-
-    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .modal-field.full { grid-column: 1 / -1; }
-
-    .modal-field label {
-        display: block;
-        font-size: .8rem;
-        font-weight: 600;
-        color: var(--ink-soft);
-        margin-bottom: .35rem;
-    }
-
-    .modal-field input,
-    .modal-field select {
-        width: 100%;
-        padding: .7rem .95rem;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-pink);
-        font-size: .88rem;
-        color: var(--ink-deep);
-        background: var(--pink-bg-soft);
-        outline: none;
-        transition: border-color .18s;
-        box-sizing: border-box;
-    }
-
-    .modal-field input:focus,
-    .modal-field select:focus {
-        border-color: var(--bright-pink);
-        background: var(--white);
-    }
-
-    .modal-actions {
-        display: flex;
-        gap: .7rem;
-        margin-top: 1.5rem;
-        justify-content: flex-end;
-    }
-
-    .btn-cancel {
-        padding: .65rem 1.2rem;
-        border-radius: 12px;
-        border: 1.5px solid var(--border-pink);
-        background: var(--white);
-        font-size: .87rem;
-        font-weight: 600;
-        color: var(--ink-soft);
-        cursor: pointer;
-        transition: border-color .15s, color .15s;
-    }
-
-    .btn-cancel:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
-
-    .btn-submit {
-        padding: .65rem 1.4rem;
-        border-radius: 12px;
-        border: none;
-        background: var(--bright-pink);
-        color: var(--white);
-        font-size: .87rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform .15s;
-    }
-
-    .btn-submit:hover { transform: translateY(-1px); }
+    .payment-detail-modal { max-width: 560px; }
 
     .view-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 1rem;
         padding: .7rem 0;
         border-bottom: 1px solid var(--border-pink-mid);
         font-size: .88rem;
@@ -660,10 +572,10 @@
 
     .view-row:last-child { border-bottom: none; }
     .view-label { color: var(--ink-soft); font-weight: 500; }
-    .view-val   { font-weight: 600; color: var(--ink-deep); }
+    .view-val { color: var(--ink-deep); font-weight: 700; text-align: right; overflow-wrap: anywhere; }
 
     .payment-proof-card {
-        margin-top: .85rem;
+        margin-top: .95rem;
         padding: .9rem;
         border: 1px solid var(--border-pink-mid);
         border-radius: 14px;
@@ -678,7 +590,7 @@
         margin-bottom: .75rem;
         color: var(--ink-soft);
         font-size: .82rem;
-        font-weight: 700;
+        font-weight: 800;
     }
 
     .payment-proof-meta {
@@ -689,11 +601,16 @@
     }
 
     .payment-proof-meta .view-row {
-        padding: .45rem .55rem;
+        padding: .5rem .6rem;
         border: 1px solid var(--border-pink-mid);
         border-radius: 10px;
         background: var(--white);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .2rem;
     }
+
+    .payment-proof-meta .view-val { text-align: left; }
 
     .proof-image-link {
         display: block;
@@ -705,20 +622,20 @@
 
     .proof-image {
         width: 100%;
-        max-height: 220px;
+        max-height: 260px;
         object-fit: contain;
         display: block;
         background: var(--white);
     }
 
     .proof-empty {
-        margin-top: .75rem;
-        padding: .8rem;
+        padding: 1.1rem;
         border: 1px dashed var(--border-pink);
         border-radius: 12px;
         background: var(--white);
-        color: #b77a94;
-        font-size: .82rem;
+        color: var(--ink-soft);
+        font-size: .84rem;
+        font-weight: 600;
         text-align: center;
     }
 
@@ -740,7 +657,6 @@
         .filters-row { gap: .5rem; }
         .search-input-wrap { max-width: 100%; min-width: 140px; }
         .month-header { gap: .5rem; }
-        .modal-grid { grid-template-columns: 1fr; }
         .payment-proof-meta { grid-template-columns: 1fr; }
     }
 
@@ -752,6 +668,17 @@
         .btn-filter { font-size: .78rem; padding: .5rem .9rem; }
         .btn-outline { font-size: .78rem; padding: .5rem .9rem; }
     }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--border-pink); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-menu button:hover { background: var(--pink-bg-soft); color: var(--hot-pink); }
+
+    .export-month-menu { display: none; position: fixed; background: var(--white); border: 1.5px solid var(--border-pink); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.2); min-width: 155px; overflow: hidden; z-index: 99999; }
+    .export-month-menu.open { display: block; }
+    .export-month-menu button { display: block; width: 100%; padding: .6rem .9rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-month-menu button:hover { background: var(--pink-bg-soft); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -815,14 +742,21 @@
         @if($search || $selectedFloor || $selectedStatus)
         <a href="{{ route('billing.history') }}" class="btn-outline">Clear</a>
         @endif
-        <button class="ms-auto btn-outline" onclick="exportAllHistory()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export All
-        </button>
+        <div class="export-dropdown ms-auto" id="export-dropdown-all">
+            <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-all')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export All
+            </button>
+            <div class="export-menu" id="export-menu-all">
+                <button onclick="exportAllHistoryCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportAllHistoryPdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 
     <div id="history-content" class="fade-up d4">
         @forelse($historyGroups as $hg)
+        @php $monthIndex = $loop->index; @endphp
         <div class="month-block" data-month="{{ $hg['month_key'] }}">
             <div class="month-header" onclick="toggleMonth(this)">
                 <span class="month-title">{{ $hg['month_label'] }}</span>
@@ -831,16 +765,20 @@
                 @if($hg['unpaid_count'] > 0)
                 <span class="month-chip unpaid-chip">{{ $hg['unpaid_count'] }} unpaid</span>
                 @endif
-                <button class="export-month-btn" onclick="event.stopPropagation(); exportMonth('{{ $hg['month_key'] }}')" title="Export {{ $hg['month_label'] }}">
-                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Export
-                </button>
+                <div class="export-month-wrap" style="position:relative;display:inline-flex;flex-shrink:0;" data-month="{{ $hg['month_key'] }}">
+                    <button class="export-month-btn" onclick="event.stopPropagation(); toggleMonthExport(this)" title="Export {{ $hg['month_label'] }}">
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export
+                    </button>
+                    <div class="export-month-menu" data-month-key="{{ $hg['month_key'] }}" data-month-label="{{ $hg['month_label'] }}"></div>
+                </div>
                 <div class="month-chevron">
                     <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
             </div>
             <div class="month-body">
                 @foreach($hg['floor_groups'] as $fg)
+                @php $floorIndex = $loop->index; @endphp
                 <div class="floor-group">
                     <div class="floor-header">
                         <span class="floor-name">{{ $fg['submeter_label'] }}</span>
@@ -851,6 +789,7 @@
                     </div>
                     <div class="rooms-grid">
                         @foreach($fg['rooms'] as $room)
+                        @php $roomIndex = $loop->index; @endphp
                         <div class="room-card">
                             <div class="room-card-head">
                                 <div class="room-card-left">
@@ -860,9 +799,6 @@
                                         <span class="room-meta-occ">{{ $room['occupants_in_room'] }} occupant{{ $room['occupants_in_room'] != 1 ? 's' : '' }}</span>
                                     </div>
                                 </div>
-                                <button class="btn-update" onclick='openHistoryUpdateModal(@json($room), "{{ $hg['month_key'] }}")' title="Edit Status">
-                                    <img src="{{ asset('icons/edit.png') }}" alt="Edit">
-                                </button>
                             </div>
                             <div class="room-reading-pills">
                                 <span class="reading-pill">Prev: {{ number_format($room['prev_reading'], 2) }} m&#179;</span>
@@ -872,13 +808,20 @@
                             <div class="tenants-list">
                                 @foreach($room['tenants'] as $t)
                                 <div class="tenant-row">
-                                    <div class="tenant-left">
-                                        <span class="dot {{ $t['dot_class'] }}"></span>
-                                        <span class="tname">{{ $t['name'] }}</span>
+                                    <div class="tenant-summary">
+                                        <div class="tenant-left">
+                                            <span class="dot {{ $t['dot_class'] }}"></span>
+                                            <span class="tname">{{ $t['name'] }}</span>
+                                        </div>
+                                        <div class="tenant-right">
+                                            <span class="t-amount">&#8369;{{ number_format($t['room_share'], 2) }}</span>
+                                            <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ ucfirst($t['payment_status']) }}</span>
+                                        </div>
                                     </div>
-                                    <div class="tenant-right">
-                                        <span class="t-amount">&#8369;{{ number_format($t['room_share'], 2) }}</span>
-                                        <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ ucfirst($t['payment_status']) }}</span>
+                                    <div class="tenant-proof">
+                                        <button type="button" class="proof-detail-btn" onclick="openPaymentDetails({{ $monthIndex }}, {{ $floorIndex }}, {{ $roomIndex }}, {{ $loop->index }})">
+                                            <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </button>
                                     </div>
                                 </div>
                                 @endforeach
@@ -935,16 +878,15 @@
 @endsection
 
 @section('modals')
-<div class="modal-overlay" id="history-update-modal">
-    <div class="modal">
+<div class="modal-overlay" id="payment-detail-modal" onclick="handleOverlayClick(event, 'payment-detail-modal')">
+    <div class="modal payment-detail-modal" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <div class="modal-title">Update Payment Status</div>
-            <button class="modal-close" onclick="closeModal('history-update-modal')">&#10005;</button>
+            <div class="modal-title">Payment Details</div>
+            <button class="modal-close" onclick="closeModal('payment-detail-modal')">&#x2715;</button>
         </div>
-        <div id="history-update-content"></div>
+        <div id="payment-detail-content"></div>
         <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('history-update-modal')">Cancel</button>
-            <button type="button" class="btn-submit" id="history-save-btn" onclick="saveHistoryStatus()">Save Changes</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('payment-detail-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -954,21 +896,86 @@
 <script>
 const historyData = @json($historyGroups);
 
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, function(char) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[char];
+    });
+}
+
+function openPaymentDetails(monthIndex, floorIndex, roomIndex, tenantIndex) {
+    const group  = historyData?.[monthIndex];
+    const floor  = group?.floor_groups?.[floorIndex];
+    const room   = floor?.rooms?.[roomIndex];
+    const tenant = room?.tenants?.[tenantIndex];
+
+    if (!group || !floor || !room || !tenant) {
+        showToast('Payment details are unavailable.', 'error');
+        return;
+    }
+
+    const status        = String(tenant.payment_status || 'unpaid');
+    const referenceCode = tenant.payment_reference_code ? escapeHtml(tenant.payment_reference_code) : '';
+    const submittedAt   = tenant.payment_submitted_at   ? escapeHtml(tenant.payment_submitted_at)   : '';
+    const proofUrl      = tenant.proof_of_payment_url   ? escapeHtml(tenant.proof_of_payment_url)   : '';
+    const proofHtml     = proofUrl
+        ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
+               <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(tenant.name)}" class="proof-image">
+           </a>`
+        : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
+
+    document.getElementById('payment-detail-content').innerHTML = `
+        <div class="view-row">
+            <span class="view-label">Billing Month</span>
+            <span class="view-val">${escapeHtml(group.month_label)}</span>
+        </div>
+        <div class="view-row">
+            <span class="view-label">Room</span>
+            <span class="view-val">${escapeHtml(room.room_number)}</span>
+        </div>
+        <div class="view-row">
+            <span class="view-label">Tenant</span>
+            <span class="view-val">${escapeHtml(tenant.name)}</span>
+        </div>
+        <div class="view-row">
+            <span class="view-label">Share</span>
+            <span class="view-val">&#8369;${Number(tenant.room_share || 0).toFixed(2)}</span>
+        </div>
+        <div class="payment-proof-card">
+            <div class="payment-proof-head">
+                <span>Payment Proof</span>
+                <span class="badge badge-${status.replaceAll(' ', '-')}">${escapeHtml(status)}</span>
+            </div>
+            <div class="payment-proof-meta">
+                <div class="view-row">
+                    <span class="view-label">Reference</span>
+                    <span class="view-val">${referenceCode}</span>
+                </div>
+                <div class="view-row">
+                    <span class="view-label">Submitted</span>
+                    <span class="view-val">${submittedAt}</span>
+                </div>
+            </div>
+            ${proofHtml}
+        </div>
+    `;
+
+    openModal('payment-detail-modal');
+}
+
 function toggleMonth(header) {
-    const block = header.closest('.month-block');
-    block.classList.toggle('collapsed');
+    header.closest('.month-block').classList.toggle('collapsed');
 }
 
 function applyFilters() {
     const floor  = document.getElementById('filter-floor').value;
     const status = document.getElementById('filter-status').value;
     const search = document.getElementById('filter-search').value.trim();
-    const month = document.getElementById('filter-month').value;
+    const month  = document.getElementById('filter-month').value;
 
     const params = new URLSearchParams();
     if (floor)  params.set('floor',  floor);
     if (status) params.set('status', status);
-    if (month) params.set('month', month);
+    if (month)  params.set('month',  month);
     if (search) params.set('search', search);
     params.set('page', '1');
 
@@ -979,152 +986,70 @@ document.getElementById('filter-search').addEventListener('keydown', function(e)
     if (e.key === 'Enter') applyFilters();
 });
 
-function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>"']/g, function(c) {
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];
-    });
+function downloadCsv(rows, filename) {
+    var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v ?? '').replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var a    = document.createElement('a');
+    a.href   = URL.createObjectURL(blob);
+    a.download = filename + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
 }
 
-function openHistoryUpdateModal(room, monthKey) {
-    let html = `
-        <div style="margin-bottom:1rem;padding:.75rem 1rem;background:var(--pink-bg-soft);border-radius:12px;border:1px solid var(--border-pink);">
-            <div style="font-size:.78rem;font-weight:700;color:var(--hot-pink);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.05em;">Room Details</div>
-            <div style="font-size:.88rem;font-weight:600;color:var(--ink-deep);">Room ${escapeHtml(room.room_number)} &mdash; Floor ${escapeHtml(room.floor)}</div>
-            <div style="font-size:.78rem;color:var(--ink-soft);margin-top:.2rem;">
-                ${escapeHtml(parseFloat(room.floor_consumption_m3 || 0).toFixed(2))} m&#179; consumed &nbsp;&bull;&nbsp; Due: ${escapeHtml(room.due_date)}
-            </div>
-        </div>
-    `;
+function exportMonth(monthKey, format) {
+    var group = historyData.find(function(g) { return g.month_key === monthKey; });
+    if (!group) { showToast('No data for this month.', 'error'); return; }
 
-    room.tenants.forEach(function(t) {
-        const referenceCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '&mdash;';
-        const submittedAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '&mdash;';
-        const proofUrl      = t.proof_of_payment_url   ? escapeHtml(t.proof_of_payment_url)   : '';
-        const proofHtml     = proofUrl
-            ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
-                   <img src="${proofUrl}" alt="Proof of payment" class="proof-image">
-               </a>`
-            : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
-
-        html += `
-            <div style="margin-top:.85rem;padding:1rem;border:1px solid var(--border-pink-mid);border-radius:14px;background:#fafafa;">
-                <div class="view-row">
-                    <span class="view-label">Tenant</span>
-                    <span class="view-val">${escapeHtml(t.name)}</span>
-                </div>
-                <div class="view-row">
-                    <span class="view-label">Share</span>
-                    <span class="view-val">&#8369;${parseFloat(t.room_share || 0).toFixed(2)}</span>
-                </div>
-                <div class="payment-proof-card">
-                    <div class="payment-proof-head">
-                        <span>Payment Proof</span>
-                        <span class="badge badge-${String(t.payment_status || 'unpaid').replaceAll(' ','-')}">${escapeHtml(t.payment_status || 'unpaid')}</span>
-                    </div>
-                    <div class="payment-proof-meta">
-                        <div class="view-row">
-                            <span class="view-label">Reference</span>
-                            <span class="view-val">${referenceCode}</span>
-                        </div>
-                        <div class="view-row">
-                            <span class="view-label">Submitted</span>
-                            <span class="view-val">${submittedAt}</span>
-                        </div>
-                    </div>
-                    ${proofHtml}
-                </div>
-                <div class="modal-field" style="margin-top:1rem;">
-                    <label>Payment Status</label>
-                    <select class="history-status-select" data-billing-id="${escapeHtml(String(t.billing_id ?? ''))}">
-                        <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
-                        <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
-                        <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
-                        <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
-                    </select>
-                </div>
-            </div>
-        `;
-    });
-
-    document.getElementById('history-update-content').innerHTML = html;
-    openModal('history-update-modal');
-}
-
-async function saveHistoryStatus() {
-    const selects = document.querySelectorAll('.history-status-select');
-    if (!selects.length) return;
-
-    const statusUpdates = Array.from(selects).map(s => ({
-        billing_id: parseInt(s.dataset.billingId),
-        payment_status: s.value,
-    })).filter(u => Number.isInteger(u.billing_id) && u.billing_id > 0);
-
-    if (!statusUpdates.length) {
-        showToast('No valid billing records to update.', 'error');
-        return;
-    }
-
-    const saveBtn = document.getElementById('history-save-btn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving...';
-
-    try {
-        const response = await fetch('{{ route("billing.history.updateStatus") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ status_updates: statusUpdates })
+    if (format === 'pdf') {
+        var win  = window.open('', '_blank');
+        var rows = '';
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
+                    rows += '<tr>'
+                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
+                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
+                        + '<td>' + escapeHtml(t.name) + '</td>'
+                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
+                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
+                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
+                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
+                        + '</tr>';
+                });
+            });
         });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            saveBtn.textContent = 'Saved!';
-            showToast('Payment status updated successfully!', 'success');
-            closeModal('history-update-modal');
-            setTimeout(() => location.reload(), 800);
-        } else {
-            showToast(data.message || 'Failed to update status.', 'error');
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save Changes';
-        }
-    } catch (err) {
-        showToast('Network error. Please try again.', 'error');
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Changes';
-    }
-}
-
-function exportMonth(monthKey) {
-    const group = historyData.find(g => g.month_key === monthKey);
-    if (!group) {
-        showToast('No data for this month.', 'error');
+        win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escapeHtml(group.month_label) + '</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Water Billing History ' + escapeHtml(group.month_label) + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
         return;
     }
 
-    const rows = [[
+    var csvRows = [[
         'Billing Month', 'Floor', 'Due Date',
         'Floor Consumption (m3)', 'Total Floor Bill',
         'Room Number', 'Occupants',
         'Tenant', 'Tenant Share', 'Payment Status',
         'Reference Code', 'Payment Submitted At'
     ]];
-
-    group.floor_groups.forEach(fg => {
-        fg.rooms.forEach(room => {
-            room.tenants.forEach(t => {
-                rows.push([
-                    group.month_label,
-                    fg.floor,
-                    fg.due_date,
+    group.floor_groups.forEach(function(fg) {
+        fg.rooms.forEach(function(room) {
+            room.tenants.forEach(function(t) {
+                csvRows.push([
+                    group.month_label, fg.floor, fg.due_date,
                     fg.floor_consumption_m3,
                     Number(fg.total_floor_bill || 0).toFixed(2),
-                    room.room_number,
-                    room.occupants_in_room,
-                    t.name,
-                    Number(t.room_share || 0).toFixed(2),
+                    room.room_number, room.occupants_in_room,
+                    t.name, Number(t.room_share || 0).toFixed(2),
                     t.payment_status,
                     t.payment_reference_code || '',
                     t.payment_submitted_at   || ''
@@ -1132,34 +1057,28 @@ function exportMonth(monthKey) {
             });
         });
     });
-
-    downloadCsv(rows, 'water-billing-' + monthKey.slice(0, 7));
+    downloadCsv(csvRows, 'water-billing-' + monthKey.slice(0, 7));
     showToast('Exported ' + group.month_label + ' billing data.', 'success');
 }
 
-function exportAllHistory() {
-    const rows = [[
+function exportAllHistoryCsv() {
+    var rows = [[
         'Billing Month', 'Floor', 'Due Date',
         'Floor Consumption (m3)', 'Total Floor Bill',
         'Room Number', 'Occupants',
         'Tenant', 'Tenant Share', 'Payment Status',
         'Reference Code', 'Payment Submitted At'
     ]];
-
-    historyData.forEach(group => {
-        group.floor_groups.forEach(fg => {
-            fg.rooms.forEach(room => {
-                room.tenants.forEach(t => {
+    historyData.forEach(function(group) {
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
                     rows.push([
-                        group.month_label,
-                        fg.floor,
-                        fg.due_date,
+                        group.month_label, fg.floor, fg.due_date,
                         fg.floor_consumption_m3,
                         Number(fg.total_floor_bill || 0).toFixed(2),
-                        room.room_number,
-                        room.occupants_in_room,
-                        t.name,
-                        Number(t.room_share || 0).toFixed(2),
+                        room.room_number, room.occupants_in_room,
+                        t.name, Number(t.room_share || 0).toFixed(2),
                         t.payment_status,
                         t.payment_reference_code || '',
                         t.payment_submitted_at   || ''
@@ -1168,36 +1087,138 @@ function exportAllHistory() {
             });
         });
     });
-
-    if (rows.length === 1) {
-        showToast('No billing data to export.', 'error');
-        return;
-    }
-
+    if (rows.length === 1) { showToast('No billing data to export.', 'error'); return; }
     downloadCsv(rows, 'water-billing-history-all');
     showToast('Full history exported as CSV.', 'success');
 }
 
-function downloadCsv(rows, filename) {
-    const csv  = rows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
-    a.download = filename + '.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(a.href);
+function exportAllHistoryPdf() {
+    if (!historyData || historyData.length === 0) { showToast('No billing data to export.', 'error'); return; }
+    var win  = window.open('', '_blank');
+    var rows = '';
+    historyData.forEach(function(group) {
+        group.floor_groups.forEach(function(fg) {
+            fg.rooms.forEach(function(room) {
+                room.tenants.forEach(function(t) {
+                    rows += '<tr>'
+                        + '<td>' + escapeHtml(group.month_label) + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
+                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
+                        + '<td>' + escapeHtml(t.name) + '</td>'
+                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
+                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
+                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
+                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
+                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
+                        + '</tr>';
+                });
+            });
+        });
+    });
+    win.document.write('<!DOCTYPE html><html><head><title>Water Billing History</title>'
+        + '<style>body{font-family:sans-serif;font-size:11px;padding:20px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:14px;font-size:10px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:7px;text-align:left;font-size:10px;text-transform:uppercase}td{padding:6px 7px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+        + '</head><body>'
+        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+        + '<p>Water Billing History - All Records exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<table><thead><tr><th>Month</th><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
 }
+
+function toggleMonthExport(btn) {
+    var wrap   = btn.closest('.export-month-wrap');
+    var menu   = wrap.querySelector('.export-month-menu');
+    var isOpen = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        var monthKey = wrap.dataset.month;
+        menu.innerHTML = '<button onclick="exportMonth(\'' + monthKey + '\', \'csv\'); closeAllExportDropdowns()">Export as CSV</button>'
+                       + '<button onclick="exportMonth(\'' + monthKey + '\', \'pdf\'); closeAllExportDropdowns()">Export as PDF</button>';
+
+        if (!menu._movedToBody) {
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+
+        var rect       = btn.getBoundingClientRect();
+        var spaceBelow = window.innerHeight - rect.bottom;
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        if (spaceBelow >= 86) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+        menu.classList.add('open');
+    }
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    var spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow >= (menu.offsetHeight || 80) + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu, .export-month-menu').forEach(function(m) {
+        m.classList.remove('open');
+    });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('.export-month-wrap')) {
+        closeAllExportDropdowns();
+    }
+});
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-document.querySelectorAll('.modal-overlay').forEach(function(m) {
-    m.addEventListener('click', function(e) {
-        if (e.target === m) m.classList.remove('open');
-    });
-});
+function handleOverlayClick(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
+}
 
 function showToast(msg, type) {
     const t = document.getElementById('toast');

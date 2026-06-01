@@ -858,6 +858,93 @@
 
     #log-modal .btn-submit { padding: .62rem 1.6rem; border-radius: 12px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .86rem; font-weight: 800; cursor: pointer; transition: var(--ease); box-shadow: 0 6px 18px rgba(232,23,93,.28); }
     #log-modal .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(232,23,93,.35); }
+
+    .btn-receipt {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .85rem;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        color: #fff;
+        font-size: .82rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity .18s, transform .15s;
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .btn-receipt:hover {
+        opacity: .9;
+        transform: translateY(-1px);
+    }
+    /* action loading overlay */
+    .action-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,.72);
+        backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: .75rem;
+        padding: 1.25rem 1.6rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--white);
+        box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink);
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px;
+        height: 86px;
+        border: 3px solid var(--pink-50);
+        border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    .loading-logo-wrap img {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+    }
+
+    .is-loading {
+        opacity: .75;
+        pointer-events: none;
+    }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100, #fce8f1); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-menu button:hover { background: var(--pink-bg-soft, #fff5f8); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -926,10 +1013,16 @@
             <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
             History
         </a>
-        <button class="btn-outline" onclick="exportBilling()">
-            <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
-            Export
-        </button>
+        <div class="export-dropdown" id="export-dropdown-billing">
+            <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-billing')">
+                <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-billing">
+                <button onclick="exportBillingCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportBillingPdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 
     <div id="billing-groups" class="fade-up d4">
@@ -992,7 +1085,14 @@
 @endsection
 
 @section('modals')
-
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 <div class="modal-overlay" id="log-modal">
     <div class="modal" style="max-width:640px;">
 
@@ -1077,16 +1177,30 @@
 @section('scripts')
 <script>
 
+function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideActionLoading() {
+    const overlay = document.getElementById('action-loading');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+}
+
 function setButtonLoading(btn, loadingText) {
     btn.disabled = true;
-    btn.classList.add('loading');
-    btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+    btn.classList.add('is-loading');
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = loadingText;
 }
 
 function resetButton(btn, originalText) {
     btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = originalText;
+    btn.classList.remove('is-loading');
+    btn.innerHTML = originalText || btn.dataset.originalText || originalText;
 }
 
 const tenantsByFloor = @json(
@@ -1312,6 +1426,14 @@ function openUpdateModal(room) {
                </a>`
             : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
 
+        const isPaid = t.payment_status === 'paid';
+        const receiptBtn = isPaid && t.billing_id
+            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" rel="noopener" class="btn-receipt">
+                   <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
+                   Download Receipt
+               </a>`
+            : '';
+
         html += `
             <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
                 <div class="view-row">
@@ -1348,11 +1470,14 @@ function openUpdateModal(room) {
                         <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
                     </select>
                 </div>
+                ${receiptBtn}
             </div>
         `;
     });
 
-    document.getElementById('update-form').dataset.billingId = room.tenants[0]?.billing_id ?? '';
+    const primaryBilling = room.tenants.find(t => t.billing_id);
+
+    document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     document.getElementById('update-content').innerHTML = html;
     openModal('update-modal');
 }
@@ -1392,6 +1517,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             setButtonLoading(saveBtn, 'Saving...');
+            showActionLoading('Saving billing changes...');
 
             try {
                 const response = await fetch("{{ route('billing.updateFull') }}", {
@@ -1415,14 +1541,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
                     showToast('Billing updated successfully!', 'success');
                     closeModal('update-modal');
+                    hideActionLoading();
                     setTimeout(() => location.reload(), 800);
                 } else {
                     showToast(data.message || 'Failed to update.', 'error');
                     resetButton(saveBtn, 'Save Changes');
+                    hideActionLoading();
                 }
             } catch (err) {
                 showToast('Network error.', 'error');
                 resetButton(saveBtn, 'Save Changes');
+                hideActionLoading();
             }
         });
     }
@@ -1469,6 +1598,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!valid) return;
 
         setButtonLoading(submitBtn, 'Logging...');
+        showActionLoading('Logging water consumption...');
 
         try {
             const response = await fetch("{{ route('billing.log') }}", {
@@ -1510,17 +1640,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     : 'Failed to log billing. Please check your inputs.';
                 showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
+                hideActionLoading(); 
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
             showToast('Network error — please try again.', 'error');
             resetButton(submitBtn, 'Log & Distribute');
+            hideActionLoading(); 
         }
     });
 });
 
-function exportBilling() {
+function exportBillingCsv() {
     const rows = [[
         'Billing Month',
         'Floor',
@@ -1536,9 +1668,9 @@ function exportBilling() {
         'Payment Submitted At'
     ]];
 
-    billingExportGroups.forEach(group => {
-        group.rooms.forEach(room => {
-            room.tenants.forEach(tenant => {
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.forEach(function(tenant) {
                 rows.push([
                     selectedBillingMonth,
                     group.floor,
@@ -1563,21 +1695,118 @@ function exportBilling() {
     }
 
     const csv = rows
-        .map(row => row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+        .map(function(row) { return row.map(function(value) { return '"' + String(value ?? '').replace(/"/g, '""') + '"'; }).join(','); })
         .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     const monthLabel = String(selectedBillingMonth || new Date().toISOString().slice(0, 10)).slice(0, 7);
-
     a.href = URL.createObjectURL(blob);
-    a.download = `water-billing-${monthLabel}.csv`;
+    a.download = 'water-billing-' + monthLabel + '.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-
     showToast('Billing data exported as CSV!', 'success');
 }
+
+function exportBillingPdf() {
+    if (!billingExportGroups || billingExportGroups.length === 0) {
+        showToast('No billing data to export.', 'error');
+        return;
+    }
+
+    var win = window.open('', '_blank');
+    var rows = '';
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.forEach(function(tenant) {
+                rows += '<tr>'
+                    + '<td>' + escHtml(group.floor) + '</td>'
+                    + '<td>' + escHtml(String(room.room_number)) + '</td>'
+                    + '<td>' + escHtml(tenant.name) + '</td>'
+                    + '<td>' + Number(tenant.room_share || 0).toFixed(2) + '</td>'
+                    + '<td>' + escHtml(tenant.payment_status || '') + '</td>'
+                    + '<td>' + escHtml(group.due_date || '') + '</td>'
+                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m³</td>'
+                    + '<td>₱' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
+                    + '</tr>';
+            });
+        });
+    });
+
+    win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escHtml(selectedBillingMonth || '') + '</title>'
+        + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+        + '</head><body>'
+        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+        + '<p>Water Billing — ' + escHtml(selectedBillingMonth || '') + ' — exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (₱)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
+}
+
+function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    menu.style.top      = 'auto';
+    menu.style.bottom   = 'auto';
+
+    var menuHeight = menu.offsetHeight || 80;
+    var spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceBelow >= menuHeight + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown')) {
+        closeAllExportDropdowns();
+    }
+});
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }

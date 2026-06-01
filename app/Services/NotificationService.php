@@ -17,23 +17,31 @@ class NotificationService
             if (!self::wantsNotification($member, $type)) {
                 continue;
             }
+            Notification::makeRoomFor();
+
             Notification::create([
                 'staff_id' => $member->staff_id,
                 'type'     => $type,
                 'message'  => $message,
                 'url'      => $url,
             ]);
+
+            Notification::pruneToLimit();
         }
     }
 
     public static function sendTo(int $staffId, string $type, string $message, string $url = null): void
     {
+        Notification::makeRoomFor();
+
         Notification::create([
             'staff_id' => $staffId,
             'type'     => $type,
             'message'  => $message,
             'url'      => $url,
         ]);
+
+        Notification::pruneToLimit();
     }
 
     private static function wantsNotification(Staff $member, string $type): bool
@@ -52,6 +60,7 @@ class NotificationService
 
         $frontdeskDefaults = [
             'emergency_new'    => true,
+            'visitor_registration' => true,
             'visitor_checkin'  => true,
             'visitor_checkout' => true,
             'announcement_new' => true,
@@ -65,6 +74,10 @@ class NotificationService
 
         $map    = is_array($prefs) ? $prefs : json_decode($prefs, true);
         $merged = array_merge($defaults, $map ?? []);
+
+        if ($member->role === 'frontdesk' && !array_key_exists($type, $frontdeskDefaults)) {
+            return false;
+        }
 
         return !empty($merged[$type]);
     }

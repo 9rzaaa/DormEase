@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\DownloadableForm;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 
 class DocumentController extends Controller
 {
@@ -87,6 +88,13 @@ class DocumentController extends Controller
             ref_id: $doc->document_id,
         );
 
+        $this->notifyTenantsForDocument(
+            document: $doc,
+            title: 'New document uploaded',
+            body: "A new {$doc->document_type} document is available in your documents.",
+            route: '/tenant/documents',
+        );
+
         return response()->json($doc, 201);
     }
 
@@ -98,6 +106,9 @@ class DocumentController extends Controller
 
     public function update(Request $request, Document $document)
     {
+        $previousVisibility = $document->visibility;
+        $previousTenantId = $document->tenant_id;
+
         $validated = $request->validate([
             'title'         => 'sometimes|required|string|max:255',
             'document_type' => 'sometimes|required|string|max:255',
@@ -107,6 +118,14 @@ class DocumentController extends Controller
 
         $document->update($validated);
         $document->load('tenant');
+
+        $this->notifyTenantsForDocument(
+            document: $document,
+            title: 'Document updated',
+            body: "{$document->title} was updated in your documents.",
+            fallbackVisibility: $previousVisibility,
+            fallbackTenantId: $previousTenantId,
+        );
 
         return response()->json($document);
     }
@@ -138,7 +157,54 @@ class DocumentController extends Controller
 
         $document->delete();
 
+        $this->notifyTenantsForDocument(
+            document: $document,
+            title: 'Document removed',
+            body: "{$document->title} was removed from your documents.",
+        );
+
         return response()->json(['message' => 'Deleted successfully']);
+    }
+
+    private function notifyTenantsForDocument(
+        Document $document,
+        string $title,
+        string $body,
+        ?string $fallbackVisibility = null,
+        ?int $fallbackTenantId = null,
+        string $route = '/tenant/documents',
+    ): void {
+        $pushService = app(TenantPushNotificationService::class);
+        $visibility = $document->visibility;
+
+        if ($visibility === 'all' || $fallbackVisibility === 'all') {
+            $pushService->sendToAllTenants(
+                type: 'document',
+                title: $title,
+                body: $body,
+                refId: $document->document_id,
+                route: $route,
+            );
+
+            return;
+        }
+
+        $tenantId = $visibility === 'specific'
+            ? $document->tenant_id
+            : ($fallbackVisibility === 'specific' ? $fallbackTenantId : null);
+
+        if (!$tenantId) {
+            return;
+        }
+
+        $pushService->sendToTenant(
+            tenant: $tenantId,
+            type: 'document',
+            title: $title,
+            body: $body,
+            refId: $document->document_id,
+            route: $route,
+        );
     }
 
     public function archiveIndex(Request $request)

@@ -255,6 +255,11 @@
                             'desc'  => 'When a new emergency alert is logged.',
                             'icon'  => 'warn',
                         ],
+                        'visitor_registration' => [
+                            'label' => 'Visitor Registration',
+                            'desc'  => 'When a tenant registers a visitor from the mobile app.',
+                            'icon'  => 'nav-visit',
+                        ],
                         'visitor_checkin' => [
                             'label' => 'Visitor Check-In',
                             'desc'  => 'When a visitor signs in at the front desk.',
@@ -313,6 +318,7 @@
 
     const DEFAULTS = {
         emergency_new:    true,
+        visitor_registration: true,
         visitor_checkin:  true,
         visitor_checkout: true,
         announcement_new: true,

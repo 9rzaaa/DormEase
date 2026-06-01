@@ -268,7 +268,7 @@
 
     thead th {
         padding: .75rem .85rem;
-        text-align: center;
+        text-align: left;
         font-size: .78rem;
         font-weight: 800;
         color: var(--ink-muted);
@@ -277,6 +277,11 @@
         background: var(--pink-100);
         border-bottom: 2px solid var(--bright-pink);
         white-space: nowrap;
+    }
+
+    thead th:nth-child(7),
+    thead th:nth-child(8) {
+        text-align: center;
     }
 
     tbody tr {
@@ -291,14 +296,19 @@
         padding: .8rem .85rem;
         color: var(--ink);
         vertical-align: middle;
-        text-align: center;
+        text-align: left;
         font-weight: 500;
+    }
+
+    tbody td:nth-child(7),
+    tbody td:nth-child(8) {
+        text-align: center;
     }
 
     .type-cell {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: .5rem;
         flex-wrap: wrap;
     }
@@ -329,10 +339,9 @@
         white-space: nowrap;
     }
 
-    .badge-pending  { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
     .badge-active   { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
-    .badge-ongoing  { background: var(--pink-100); color: var(--hot-pink); border: 1px solid var(--pink-200); }
     .badge-resolved { background: #e8faf5; color: #1a9d6e; border: 1px solid #8cdebb; }
+    .badge-closed   { background: #f5f5f5; color: #616161; border: 1px solid #e0e0e0; }
     .badge-panic    { background: var(--bright-pink); color: var(--white); border: none; }
     .badge-critical { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
     .badge-urgent   { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
@@ -901,6 +910,32 @@
     @media (max-width: 580px) {
         .stats-row { grid-template-columns: 1fr; }
     }
+
+    .btn-export {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .55rem 1.2rem;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--pink-100);
+        font-size: .85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color .2s, color .2s;
+        font-family: var(--ff-body);
+    }
+
+    .btn-export:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+    .btn-export img { width: 14px; height: 14px; object-fit: contain; opacity: .6; }
+    .btn-export:hover img { opacity: 1; }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+    .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -917,6 +952,16 @@
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-export" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportTable('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportTable('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -963,10 +1008,9 @@
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
-                    <option value="pending">Pending</option>
                     <option value="active">Active</option>
-                    <option value="ongoing">Ongoing</option>
                     <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
                 </select>
                 <select class="filter-select" id="type-filter" onchange="applyFilters()">
                     <option value="">All Types</option>
@@ -1051,10 +1095,16 @@
 
     <div class="archive-footer">
         <div class="archive-count-label" id="archive-count-label">0 records</div>
-        <button class="archive-export-btn" onclick="exportArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-archive">
+            <button class="archive-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-archive">
+                <button onclick="exportArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1082,9 +1132,7 @@
             <div class="em-modal-field">
                 <label>Status</label>
                 <select id="edit-status">
-                    <option value="pending">Pending</option>
                     <option value="active">Active</option>
-                    <option value="ongoing">Ongoing</option>
                     <option value="resolved">Resolved</option>
                     <option value="closed">Closed</option>
                 </select>
@@ -1165,12 +1213,11 @@
 
     function statusBadge(s) {
         const map = {
-            pending:  '<span class="badge badge-pending">Pending</span>',
             active:   '<span class="badge badge-active">Active</span>',
-            ongoing:  '<span class="badge badge-ongoing">Ongoing</span>',
             resolved: '<span class="badge badge-resolved">Resolved</span>',
+            closed:   '<span class="badge badge-closed">Closed</span>',
         };
-        return map[s] ?? `<span class="badge badge-pending">${s}</span>`;
+        return map[s] ?? '<span class="badge badge-active">Active</span>';
     }
 
     function fmtDate(d) {
@@ -1381,7 +1428,7 @@
 
     function openEditModal(r) {
         currentRep = r;
-        document.getElementById('edit-status').value   = r.status      ?? 'pending';
+        document.getElementById('edit-status').value   = r.status ?? 'active';
         document.getElementById('edit-location').value = r.location    ?? '';
         document.getElementById('edit-notes').value    = r.admin_notes ?? '';
         openModal('edit-modal');
@@ -1527,7 +1574,7 @@
                     ${r.room_number && r.room_number !== 'â€”' ? ` - Room ${escHtml(String(r.room_number))}` : ''}
                 </div>
                 <div class="archive-card-meta">
-                    <span class="archive-pill archive-pill-type">${escHtml(r.status ?? 'pending')}</span>
+                    <span class="archive-pill archive-pill-type">${escHtml(r.status ?? 'active')}</span>
                     <span class="archive-pill ${urgencyPillClass[normalizeFilterValue(r.urgency_level)] ?? 'archive-pill-moderate'}">${escHtml(r.urgency_level ?? 'moderate')}</span>
                     ${r.is_panic_alert ? '<span class="archive-pill archive-pill-critical">Panic</span>' : ''}
                 </div>
@@ -1542,51 +1589,140 @@
         `).join('');
     }
 
-    function exportArchive() {
-        const data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
-        const label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
-        const rows = [[
-            'Report ID',
-            'Reported At',
-            'Type',
-            'Urgency',
-            'Location',
-            'Staff / Tenant',
-            'Room',
-            'Status',
-            'Description',
-            label,
-            archiveTab === 'closed' ? 'Closed By' : 'Deleted By',
-        ]];
+    function exportTable(format) {
+        if (format === 'pdf') {
+            var win  = window.open('', '_blank');
+            var rows = filtered.map(function(r) {
+                return '<tr><td>' + escHtml(r.emergency_type || '') + '</td><td>' + escHtml(r.urgency_level || '') + '</td><td>' + escHtml(r.location || '') + '</td><td>' + fmtDatePlain(r.reported_at) + '</td><td>' + escHtml(r.tenant_name || '') + '</td><td>' + (r.room_number && r.room_number !== '—' ? escHtml(String(r.room_number)) : '') + '</td><td>' + escHtml(r.status || '') + '</td><td>' + escHtml(r.description || '') + '</td></tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Emergency Reports</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Emergency Reports as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Type</th><th>Urgency</th><th>Location</th><th>Date Reported</th><th>Staff / Tenant</th><th>Room</th><th>Status</th><th>Description</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
 
-        data.forEach(r => {
+        var rows = [['Report ID', 'Reported At', 'Type', 'Urgency', 'Location', 'Staff / Tenant', 'Room', 'Status', 'Description']];
+        filtered.forEach(function(r) {
             rows.push([
-                `#EM-${String(r.id).padStart(3,'0')}`,
+                '#EM-' + String(r.report_id).padStart(3,'0'),
                 fmtDatePlain(r.reported_at),
-                r.emergency_type ?? '',
-                r.urgency_level ?? '',
-                r.location ?? '',
-                r.tenant_name ?? '',
-                r.room_number ?? '',
-                r.status ?? '',
-                r.description ?? '',
-                fmtDatePlain(r.archived_at),
-                r.archived_by_label ?? '',
+                r.emergency_type || '',
+                r.urgency_level  || '',
+                r.location       || '',
+                r.tenant_name    || '',
+                r.room_number    || '',
+                r.status         || '',
+                r.description    || '',
             ]);
         });
-
-        const csv = rows.map(row =>
-            row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',')
-        ).join('\n');
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `emergency_${archiveTab}_archive.csv`;
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'emergency_reports.csv';
         a.click();
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(a.href);
     }
+
+    function exportArchive(format) {
+        var data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
+        var label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
+        var byLabel = archiveTab === 'closed' ? 'Closed By' : 'Deleted By';
+
+        if (format === 'pdf') {
+            var win      = window.open('', '_blank');
+            var tabLabel = archiveTab === 'closed' ? 'Closed' : 'Deleted';
+            var rows = data.map(function(r) {
+                return '<tr><td>#EM-' + String(r.id).padStart(3,'0') + '</td><td>' + escHtml(r.emergency_type || '') + '</td><td>' + escHtml(r.urgency_level || '') + '</td><td>' + escHtml(r.location || '') + '</td><td>' + escHtml(r.tenant_name || '') + '</td><td>' + escHtml(r.status || '') + '</td><td>' + fmtDatePlain(r.archived_at) + '</td><td>' + escHtml(r.archived_by_label || '') + '</td></tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Emergency Archive - ' + tabLabel + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Emergency Archive - ' + tabLabel + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Report ID</th><th>Type</th><th>Urgency</th><th>Location</th><th>Staff / Tenant</th><th>Status</th><th>' + label + '</th><th>' + byLabel + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Report ID', 'Reported At', 'Type', 'Urgency', 'Location', 'Staff / Tenant', 'Room', 'Status', 'Description', label, byLabel]];
+        data.forEach(function(r) {
+            rows.push([
+                '#EM-' + String(r.id).padStart(3,'0'),
+                fmtDatePlain(r.reported_at),
+                r.emergency_type    || '',
+                r.urgency_level     || '',
+                r.location          || '',
+                r.tenant_name       || '',
+                r.room_number       || '',
+                r.status            || '',
+                r.description       || '',
+                fmtDatePlain(r.archived_at),
+                r.archived_by_label || '',
+            ]);
+        });
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'emergency_' + archiveTab + '_archive.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function getMenuForDropdown(id) {
+        return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+            return m._sourceDropdownId === id;
+        }) || document.querySelector('#' + id + ' .export-menu');
+    }
+
+    function positionExportMenu(dropdown) {
+        var btn  = dropdown.querySelector('button');
+        var menu = getMenuForDropdown(dropdown.id);
+        var rect = btn.getBoundingClientRect();
+
+        if (!menu._movedToBody) {
+            menu._sourceDropdownId = dropdown.id;
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        menu.style.top      = 'auto';
+        menu.style.bottom   = 'auto';
+
+        var menuHeight = menu.offsetHeight || 80;
+        var spaceBelow = window.innerHeight - rect.bottom;
+
+        if (spaceBelow >= menuHeight + 6) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+    }
+
+    function toggleExportDropdown(id) {
+        var dropdown = document.getElementById(id);
+        var menu     = getMenuForDropdown(id);
+        var isOpen   = menu.classList.contains('open');
+        closeAllExportDropdowns();
+        if (!isOpen) {
+            positionExportMenu(dropdown);
+            getMenuForDropdown(id).classList.add('open');
+        }
+    }
+
+    function closeAllExportDropdowns() {
+        document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.export-dropdown')) {
+            closeAllExportDropdowns();
+        }
+    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () =>

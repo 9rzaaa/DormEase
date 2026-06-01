@@ -20,6 +20,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BillingHistoryController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ReceiptController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -65,15 +66,13 @@ Route::post('/login', function () {
     request()->session()->regenerate();
 
     if ($role === 'frontdesk' && $user->is_temp_password) {
-        session(['prompt_temp_password' => true]);
+        session()->flash('prompt_temp_password', true);
     }
 
     return $role === 'frontdesk'
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
 });
-
-//billing hist
 
 Route::post('/logout', function () {
     Auth::guard('staff')->logout();
@@ -82,17 +81,13 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
+Route::post('/frontdesk/profile/dismiss-temp-password', function () {
+    return response()->json(['ok' => true]);
+})->name('fdprofile.dismissTempPassword')->middleware('auth:staff');
+
 // forgot pass
-    Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
-    Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
-
-Route::prefix('billing')->name('billing.')->group(function () {
-    Route::get('/', [BillingController::class, 'index'])->name('index');
-    Route::post('/log', [BillingController::class, 'log'])->name('log');
-    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-
-});
+Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
@@ -130,12 +125,12 @@ Route::middleware('auth:staff')->group(function () {
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
-    Route::get('/', [BillingController::class, 'index'])->name('index');
-    Route::post('/log', [BillingController::class, 'log'])->name('log');
-    Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
-    Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-    Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
-    Route::post('/history/update-status', [BillingHistoryController::class, 'updateStatus'])->name('history.updateStatus');
+        Route::get('/', [BillingController::class, 'index'])->name('index');
+        Route::post('/log', [BillingController::class, 'log'])->name('log');
+        Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+        Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+        Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
 
     // documents
@@ -150,7 +145,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
     Route::match(['put', 'post'], '/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'update'])->name('admin.document-requests.update');
     Route::delete('/admin/document-requests/{documentRequest}', [DocumentRequestController::class, 'destroy'])->name('admin.document-requests.destroy');
-    
+
     // document archive 
     Route::get('/admin/archive-docus', [DocumentController::class, 'archiveIndex'])->name('admin.archive-docus.index');
     Route::delete('/admin/archive-docus/{archiveDocu}', [DocumentController::class, 'archiveDestroy'])->name('admin.archive-docus.destroy');
@@ -170,6 +165,8 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
     Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
     Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
+    Route::get('/emergency/poll-panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
+    Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
 
     // frontdesk
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
@@ -180,6 +177,8 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
     Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
     Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
+    Route::get('/frontdesk/emergency/poll-panic', [EmergencyController::class, 'pollPanic'])->middleware('auth:staff');
+    Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
 
     // profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -195,6 +194,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.updateNotifications');
 
     // notifications
+    Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');

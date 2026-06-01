@@ -6,6 +6,7 @@ use App\Helpers\NotificationHelper;
 use App\Models\ArchivedEmergencyReport;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
+use App\Services\TenantPushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +17,7 @@ class EmergencyController extends Controller
         $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
         $totalCount = $reports->count();
         $criticalCount = $reports
-            ->whereIn('status', ['pending', 'active', 'ongoing'])
+            ->where('status', 'active')
             ->whereIn('urgency_level', ['critical', 'urgent'])
             ->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
@@ -38,7 +39,7 @@ class EmergencyController extends Controller
         $staff = Auth::guard('staff')->user();
         $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
         $totalCount = $reports->count();
-        $activeCount = $reports->whereIn('status', ['pending', 'active', 'ongoing'])->count();
+        $activeCount = $reports->where('status', 'active')->count();
         $resolvedCount = $reports->where('status', 'resolved')->count();
         $panicCount = $reports->where('is_panic_alert', true)->count();
         $closedArchive = $this->archiveCollection('closed');
@@ -74,7 +75,7 @@ class EmergencyController extends Controller
             'urgency_level' => $validated['urgency_level'] ?? null,
             'description' => $validated['description'] ?? null,
             'location' => $validated['location'],
-            'status' => 'pending',
+            'status' => 'active',
             'reported_at' => now(),
         ]);
 
@@ -92,7 +93,7 @@ class EmergencyController extends Controller
     {
         $report = EmergencyReport::findOrFail($id);
         $validated = $request->validate([
-            'status' => 'required|in:pending,active,ongoing,resolved,closed',
+            'status' => 'required|in:active,resolved,closed',
             'admin_notes' => 'nullable|string',
             'location' => 'nullable|string|max:255',
         ]);
@@ -112,6 +113,17 @@ class EmergencyController extends Controller
         ]);
 
         if ($validated['status'] === 'closed') {
+            if ($report->tenant_id) {
+                app(TenantPushNotificationService::class)->sendToTenant(
+                    tenant: $report->tenant_id,
+                    type: 'emergency',
+                    title: 'Emergency report closed',
+                    body: "Your emergency report #{$report->report_id} has been closed.",
+                    refId: $report->report_id,
+                    route: '/tenant/emergency',
+                );
+            }
+
             $this->archiveReport($report, 'closed');
             $report->delete();
 
@@ -124,6 +136,17 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
+
+            if ($report->tenant_id) {
+                app(TenantPushNotificationService::class)->sendToTenant(
+                    tenant: $report->tenant_id,
+                    type: 'emergency',
+                    title: 'Emergency report resolved',
+                    body: "Your emergency report #{$report->report_id} has been resolved.",
+                    refId: $report->report_id,
+                    route: '/tenant/emergency',
+                );
+            }
         }
 
         return response()->json(['success' => true]);
@@ -154,7 +177,7 @@ class EmergencyController extends Controller
             'urgency_level' => $report->urgency_level ?? 'moderate',
             'description' => $report->description ?? '-',
             'location' => $report->location ?? '-',
-            'status' => $report->status ?? 'pending',
+            'status' => $this->normalizeStatus($report->status),
             'admin_notes' => $report->admin_notes ?? '',
             'reported_at' => $report->reported_at ? $report->reported_at->format('Y-m-d H:i:s') : null,
             'resolved_at' => $report->resolved_at ? $report->resolved_at->format('Y-m-d H:i:s') : null,
@@ -192,12 +215,21 @@ class EmergencyController extends Controller
             'urgency_level' => $report->urgency_level,
             'description' => $report->description,
             'location' => $report->location,
-            'status' => $report->status,
+            'status' => $this->normalizeStatus($report->status),
             'admin_notes' => $report->admin_notes,
             'reported_at' => $report->reported_at,
             'resolved_at' => $report->resolved_at,
             'archived_at' => now(),
         ]);
+    }
+
+    private function normalizeStatus(?string $status): string
+    {
+        return match ($status) {
+            'resolved' => 'resolved',
+            'closed' => 'closed',
+            default => 'active',
+        };
     }
 
     private function archivedByLabel(?string $role, ?string $name): string
@@ -240,11 +272,45 @@ class EmergencyController extends Controller
                 'urgency_level' => $report->urgency_level ?? 'moderate',
                 'description' => $report->description ?? '-',
                 'location' => $report->location ?? '-',
-                'status' => $report->status ?? 'pending',
+                'status' => $this->normalizeStatus($report->status),
                 'admin_notes' => $report->admin_notes ?? '',
                 'reported_at' => $report->reported_at,
                 'resolved_at' => $report->resolved_at,
             ];
         })->values();
+    }
+
+    public function pollPanic()
+    {
+        $latest = EmergencyReport::where('is_panic_alert', true)
+            ->where('status', 'active')
+            ->orderByDesc('reported_at')
+            ->first();
+
+        return response()->json([
+            'has_panic' => (bool) $latest,
+            'report_id' => $latest?->report_id,
+            'type'      => $latest?->emergency_type,
+            'location'  => $latest?->location,
+            'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function pollCritical()
+    {
+        $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
+            ->where('status', 'active')
+            ->orderByDesc('reported_at')
+            ->take(5)
+            ->get()
+            ->map(fn($r) => [
+                'report_id'     => $r->report_id,
+                'urgency_level' => $r->urgency_level,
+                'emergency_type' => $r->emergency_type,
+                'location'      => $r->location,
+                'reported_at'   => $r->reported_at?->format('Y-m-d H:i:s'),
+            ]);
+
+        return response()->json(['reports' => $reports]);
     }
 }
