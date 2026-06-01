@@ -6,6 +6,7 @@ use App\Models\ArchiveDocu;
 use App\Models\Document;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use App\Models\DownloadableForm;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\NotificationHelper;
 
@@ -161,4 +162,74 @@ class DocumentController extends Controller
         $archiveDocu->delete();
         return response()->json(['message' => 'Archive record removed.']);
     }
+    // ── Downloadable Forms 
+
+public function indexForms()
+{
+    try {
+        $forms = DownloadableForm::orderBy('label')->get();
+        return response()->json($forms);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+public function storeForm(Request $request)
+{
+    try {
+        $request->validate([
+            'label' => 'required|string|max:255',
+            'file'  => 'required|file|mimes:pdf|max:20480',
+        ]);
+
+        $path = $request->file('file')->store('downloadable-forms', 'public');
+
+        $form = DownloadableForm::create([
+            'label'     => $request->label,
+            'file_path' => $path,
+        ]);
+
+        return response()->json($form, 201);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation failed.',
+            'errors'  => $e->errors(),
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+public function updateForm(Request $request, $id)
+{
+    try {
+        $request->validate(['label' => 'required|string|max:255']);
+
+        $form = DownloadableForm::findOrFail($id);
+        $form->update(['label' => $request->label]);
+
+        return response()->json($form);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+public function destroyForm($id)
+{
+    try {
+        $form = DownloadableForm::findOrFail($id);
+
+        // Only delete from storage if admin-uploaded
+        // Never delete the original static PDFs in public/forms/
+        if (str_starts_with($form->file_path, 'downloadable-forms/')) {
+            Storage::disk('public')->delete($form->file_path);
+        }
+
+        $form->delete();
+
+        return response()->json(['ok' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 }
