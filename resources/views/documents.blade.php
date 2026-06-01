@@ -45,35 +45,6 @@
         gap: .6rem;
     }
 
-    .btn-upload {
-        display: inline-flex;
-        align-items: center;
-        gap: .45rem;
-        padding: .58rem 1.2rem;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white);
-        border: none;
-        font-size: .85rem;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 4px 14px rgba(232,23,93,.3);
-        transition: transform .2s, box-shadow .2s;
-        font-family: var(--ff-body);
-    }
-
-    .btn-upload:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(232,23,93,.38);
-    }
-
-    .btn-upload img {
-        width: 15px;
-        height: 15px;
-        object-fit: contain;
-        filter: brightness(0) invert(1);
-    }
-
     .btn-archive {
         display: inline-flex;
         align-items: center;
@@ -207,7 +178,6 @@
     .toolbar-select:focus { border-color: var(--bright-pink); }
 
     .search-wrap {
-        margin-left: auto;
         position: relative;
         display: flex;
         align-items: center;
@@ -241,74 +211,40 @@
         pointer-events: none;
     }
 
-    .doc-layout {
-        display: flex;
-        gap: 1.2rem;
-        align-items: flex-start;
-    }
+    /* Push search to the right only in the docs/reqs toolbars */
+    .toolbar .search-wrap { margin-left: auto; }
 
-    .type-sidebar {
-        width: 210px;
-        flex-shrink: 0;
-        background: var(--white);
-        border-radius: 14px;
-        border: 1.5px solid var(--baby-pink);
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(232,23,93,.06);
-    }
+    /* Forms toolbar: search stays left, button pushed right */
+    .toolbar-forms .search-wrap { margin-left: 0; }
+    .toolbar-forms .btn-upload  { margin-left: auto; }
 
-    .sidebar-heading {
-        padding: .7rem 1rem .5rem;
-        font-size: .7rem;
-        font-weight: 800;
-        color: var(--ink-muted);
-        text-transform: uppercase;
-        letter-spacing: .06em;
-        border-bottom: 1.5px solid var(--baby-pink);
-    }
-
-    .type-btn {
-        display: flex;
+    .btn-upload {
+        display: inline-flex;
         align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: .65rem 1rem;
-        border: none;
-        border-bottom: 1px solid var(--petal);
-        background: transparent;
-        color: var(--ink);
-        font-size: .81rem;
-        font-family: var(--ff-body);
-        font-weight: 500;
-        text-align: left;
-        cursor: pointer;
-        transition: background .15s, color .15s;
-    }
-
-    .type-btn:last-child { border-bottom: none; }
-    .type-btn:hover:not(.active) { background: var(--blush); color: var(--hot-pink); }
-
-    .type-btn.active {
+        gap: .45rem;
+        padding: .58rem 1.2rem;
+        border-radius: 10px;
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
         color: var(--white);
+        border: none;
+        font-size: .85rem;
         font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(232,23,93,.3);
+        transition: transform .2s, box-shadow .2s;
+        font-family: var(--ff-body);
     }
 
-    .type-count {
-        background: rgba(232,23,93,.12);
-        color: var(--hot-pink);
-        border-radius: 20px;
-        font-size: .68rem;
-        font-weight: 800;
-        padding: 1px 7px;
-        min-width: 20px;
-        text-align: center;
-        flex-shrink: 0;
+    .btn-upload:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(232,23,93,.38);
     }
 
-    .type-btn.active .type-count {
-        background: rgba(255,255,255,.25);
-        color: var(--white);
+    .btn-upload img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
     }
 
     .table-card {
@@ -390,20 +326,6 @@
         border-radius: 50%;
         flex-shrink: 0;
     }
-
-    .visibility-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: .18rem .55rem;
-        border-radius: 6px;
-        font-size: .7rem;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .vis-all      { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-    .vis-specific { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
-    .vis-admin    { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
 
     .file-type-badge {
         display: inline-flex;
@@ -582,14 +504,6 @@
         padding: .45rem .75rem;
         cursor: pointer;
     }
-
-    .modal-two-col {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .8rem;
-    }
-
-    .modal-full { grid-column: 1 / -1; }
 
     .view-detail-row {
         display: flex;
@@ -847,8 +761,6 @@
     }
 
     @media (max-width: 900px) {
-        .doc-layout { flex-direction: column; }
-        .type-sidebar { width: 100%; }
         .modal-two-col { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
         .archive-drawer { width: 100vw; }
@@ -869,10 +781,6 @@
             <button class="btn-archive" onclick="openArchiveDrawer()">
                 <img src="{{ asset('icons/nav-docu.png') }}" alt="">
                 Archive
-            </button>
-            <button class="btn-upload" onclick="openModal('upload-modal')">
-                <img src="{{ asset('icons/attach.png') }}" alt="">
-                Upload Document
             </button>
         </div>
     </div>
@@ -898,78 +806,61 @@
         </div>
     </div>
 
-    {{-- Documents Tab --}}
+    {{-- Documents Tab — filled form submissions from tenants --}}
     <div class="tab-panel active fade-up d3" id="panel-docs">
         <div class="toolbar">
-            <span class="toolbar-label">Category:</span>
-            <select class="toolbar-select" id="doc-filter-type" onchange="docApplyFilters()">
-                <option value="">All Types</option>
-                @foreach($docTypes as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
-                @endforeach
+            <span class="toolbar-label">Status:</span>
+            <select class="toolbar-select" id="doc-filter-status" onchange="docApplyFilters()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
             </select>
 
-            <span class="toolbar-label">Visibility:</span>
-            <select class="toolbar-select" id="doc-filter-vis" onchange="docApplyFilters()">
-                <option value="">All</option>
-                <option value="all">All Tenants</option>
-                <option value="specific">Specific Tenant</option>
-                <option value="admin">Admin Only</option>
+            <span class="toolbar-label">Sort:</span>
+            <select class="toolbar-select" id="doc-sort" onchange="docApplyFilters()">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
             </select>
 
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                <input type="text" id="doc-search" placeholder="Search title, tenant..." oninput="docApplyFilters()">
+                <input type="text" id="doc-search" placeholder="Search tenant, form type..." oninput="docApplyFilters()">
             </div>
         </div>
 
-        <div class="doc-layout">
-            <div class="type-sidebar">
-                <div class="sidebar-heading">Categories</div>
-                <button class="type-btn active" data-type="" onclick="docSetType(this, '')">
-                    All Documents
-                    <span class="type-count" id="sc-all">0</span>
-                </button>
-                @foreach($docTypes as $type)
-                <button class="type-btn" data-type="{{ $type }}" onclick="docSetType(this, '{{ $type }}')">
-                    {{ $type }}
-                    <span class="type-count" id="sc-{{ Str::slug($type) }}">0</span>
-                </button>
-                @endforeach
+        <div class="table-card">
+            <div class="table-card-header">
+                <div>
+                    <div class="table-card-title">Submitted Forms</div>
+                    <div class="table-card-sub">Filled forms uploaded by tenants via the mobile app</div>
+                </div>
             </div>
-
-            <div class="table-card">
-                <div class="table-card-header">
-                    <div>
-                        <div class="table-card-title">Documents</div>
-                        <div class="table-card-sub">as of {{ now()->format('F d, Y') }}</div>
-                    </div>
-                </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Visibility</th>
-                                <th>Tenant</th>
-                                <th>File Type</th>
-                                <th>Date Uploaded</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="doc-tbody"></tbody>
-                    </table>
-                </div>
-                <div class="table-footer">
-                    <div class="table-info" id="doc-info">Showing 0 entries</div>
-                    <div class="pagination" id="doc-pagination"></div>
-                </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Submission ID</th>
+                            <th>Tenant</th>
+                            <th>Form Type</th>
+                            <th>File</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="doc-tbody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-info" id="doc-info">Showing 0 entries</div>
+                <div class="pagination" id="doc-pagination"></div>
             </div>
         </div>
     </div>
 
-    {{-- Requests Tab --}}
+    {{-- Document Requests Tab — certificate / document requests --}}
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
@@ -998,7 +889,7 @@
             <div class="table-card-header">
                 <div>
                     <div class="table-card-title">Document Requests</div>
-                    <div class="table-card-sub">Requests submitted by tenants via the mobile app</div>
+                    <div class="table-card-sub">Certificate and document requests submitted by tenants</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -1010,7 +901,6 @@
                             <th>Document Type</th>
                             <th>Purpose</th>
                             <th>Delivery</th>
-                            <th>Date Needed</th>
                             <th>Submitted</th>
                             <th>Status</th>
                             <th></th>
@@ -1028,12 +918,12 @@
 
     {{-- Downloadable Forms Tab --}}
     <div class="tab-panel" id="panel-forms">
-        <div class="toolbar">
+        <div class="toolbar toolbar-forms">
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                 <input type="text" id="form-search" placeholder="Search form name..." oninput="formApplyFilters()">
             </div>
-            <button class="btn-upload" onclick="openModal('upload-form-modal')" style="margin-left:auto;">
+            <button class="btn-upload" onclick="openModal('upload-form-modal')">
                 <img src="{{ asset('icons/attach.png') }}" alt="">
                 Upload Form
             </button>
@@ -1042,7 +932,7 @@
             <div class="table-card-header">
                 <div>
                     <div class="table-card-title">Downloadable Forms</div>
-                    <div class="table-card-sub">PDF forms tenants can download and fill out</div>
+                    <div class="table-card-sub">PDF forms tenants can download and fill out — automatically listed in the mobile app</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -1073,35 +963,33 @@
         <div class="drawer-header">
             <div class="drawer-header-text">
                 <h2>Document Archive</h2>
-                <span>Records archived from Document Management</span>
+                <span>Archived form submissions and document requests</span>
             </div>
             <button class="drawer-close" onclick="closeArchiveDrawer()">&#x2715;</button>
         </div>
 
         <div class="drawer-tab-bar">
             <button class="drawer-tab-btn active" id="dtab-docs-btn" onclick="switchDrawerTab('docs')">
-                Archived Documents
+                Submitted Forms
                 <span class="drawer-tab-badge" id="dtab-docs-count">0</span>
             </button>
             <button class="drawer-tab-btn" id="dtab-reqs-btn" onclick="switchDrawerTab('reqs')">
-                Archived Requests
+                Document Requests
                 <span class="drawer-tab-badge" id="dtab-reqs-count">0</span>
             </button>
         </div>
 
         <div class="drawer-body">
+            {{-- Archived form submissions --}}
             <div class="drawer-panel active" id="dpanel-docs">
                 <div class="drawer-toolbar">
-                    <span class="toolbar-label">Category:</span>
-                    <select class="toolbar-select" id="adoc-filter-type" onchange="adocApplyFilters()">
-                        <option value="">All Categories</option>
-                    </select>
-                    <span class="toolbar-label">Visibility:</span>
-                    <select class="toolbar-select" id="adoc-filter-vis" onchange="adocApplyFilters()">
-                        <option value="">All</option>
-                        <option value="all">All Tenants</option>
-                        <option value="specific">Specific Tenant</option>
-                        <option value="admin">Admin Only</option>
+                    <span class="toolbar-label">Status:</span>
+                    <select class="toolbar-select" id="adoc-filter-status" onchange="adocApplyFilters()">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="approved">Approved</option>
+                        <option value="denied">Denied</option>
                     </select>
                     <span class="toolbar-label">Sort:</span>
                     <select class="toolbar-select" id="adoc-sort" onchange="adocApplyFilters()">
@@ -1110,26 +998,26 @@
                     </select>
                     <div class="search-wrap" style="margin-left:auto;">
                         <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                        <input type="text" id="adoc-search" placeholder="Search title, tenant..." oninput="adocApplyFilters()">
+                        <input type="text" id="adoc-search" placeholder="Search tenant, form type..." oninput="adocApplyFilters()">
                     </div>
                 </div>
                 <div class="table-card" style="flex:unset;">
                     <div class="table-card-header">
                         <div>
-                            <div class="table-card-title">Archived Documents</div>
-                            <div class="table-card-sub">Documents removed from the active list</div>
+                            <div class="table-card-title">Archived Form Submissions</div>
+                            <div class="table-card-sub">Form submissions removed from the active list</div>
                         </div>
                     </div>
                     <div class="table-wrap">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Title</th>
-                                    <th>Category</th>
-                                    <th>Visibility</th>
+                                    <th>Submission ID</th>
                                     <th>Tenant</th>
-                                    <th>File Type</th>
-                                    <th>Uploaded</th>
+                                    <th>Form Type</th>
+                                    <th>File</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
                                     <th>Archived On</th>
                                     <th></th>
                                 </tr>
@@ -1144,6 +1032,7 @@
                 </div>
             </div>
 
+            {{-- Archived document requests --}}
             <div class="drawer-panel" id="dpanel-reqs">
                 <div class="drawer-toolbar">
                     <span class="toolbar-label">Status:</span>
@@ -1212,141 +1101,61 @@
     </div>
 </div>
 
-{{-- Upload Document Modal --}}
-<div class="modal-overlay" id="upload-modal">
-    <div class="modal" style="max-width:560px;">
-        <div class="modal-header">
-            <div class="modal-title">Upload Document</div>
-            <button class="modal-close" onclick="closeModal('upload-modal')">&#x2715;</button>
-        </div>
-        <div class="modal-two-col">
-            <div class="modal-field modal-full">
-                <label>Title</label>
-                <input type="text" id="up-title" placeholder="e.g. March 2026 Voucher">
-            </div>
-            <div class="modal-field">
-                <label>Category</label>
-                <select id="up-type">
-                    @foreach($docTypes as $type)
-                        <option value="{{ $type }}">{{ $type }}</option>
-                    @endforeach
-                    <option value="__new__">+ New Category</option>
-                </select>
-            </div>
-            <div class="modal-field" id="new-category-field" style="display:none;">
-                <label>New Category Name</label>
-                <input type="text" id="up-new-type" placeholder="e.g. Incident Report">
-            </div>
-            <div class="modal-field">
-                <label>Visibility</label>
-                <select id="up-visibility" onchange="toggleTenantSelect()">
-                    <option value="all">All Tenants</option>
-                    <option value="specific">Specific Tenant</option>
-                    <option value="admin">Admin Only</option>
-                </select>
-            </div>
-            <div class="modal-field modal-full" id="tenant-select-field" style="display:none;">
-                <label>Select Tenant</label>
-                <select id="up-tenant">
-                    <option value="">— Choose a tenant —</option>
-                    @foreach($tenants as $tenant)
-                        <option value="{{ $tenant->tenant_id }}">
-                            {{ $tenant->first_name }} {{ $tenant->last_name }}
-                            @if($tenant->room_number) — Rm {{ $tenant->room_number }} @endif
-                        </option>
-                    @endforeach
-                </select>
-                <small style="color:var(--ink-muted);font-size:.75rem;margin-top:.2rem;">Only active tenants are shown.</small>
-            </div>
-            <div class="modal-field modal-full">
-                <label>File (PDF, PNG, JPG, DOCX, XLSX — max 20MB)</label>
-                <input type="file" id="up-file" accept=".pdf,.png,.jpg,.jpeg,.docx,.doc,.xlsx,.xls">
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('upload-modal')">Cancel</button>
-            <button class="btn-submit" onclick="submitUpload()">Upload Document</button>
-        </div>
-    </div>
-</div>
-
-{{-- View Document Modal --}}
+{{-- View / Review Form Submission Modal --}}
 <div class="modal-overlay" id="view-doc-modal">
-    <div class="modal" style="max-width:500px;">
+    <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title">Document Details</div>
+            <div class="modal-title">Form Submission Details</div>
             <button class="modal-close" onclick="closeModal('view-doc-modal')">&#x2715;</button>
         </div>
         <div id="view-doc-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;">
-            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
-            <button class="btn-submit" onclick="switchToEditDoc()">Edit</button>
-        </div>
+        <div class="modal-actions" style="margin-top:1rem;" id="view-doc-actions"></div>
     </div>
 </div>
 
-{{-- Edit Document Modal --}}
-<div class="modal-overlay" id="edit-doc-modal">
-    <div class="modal" style="max-width:500px;">
+{{-- Update Form Submission Modal --}}
+<div class="modal-overlay" id="update-doc-modal">
+    <div class="modal" style="max-width:480px;">
         <div class="modal-header">
-            <div class="modal-title">Edit Document</div>
-            <button class="modal-close" onclick="closeModal('edit-doc-modal')">&#x2715;</button>
+            <div class="modal-title">Review Submission</div>
+            <button class="modal-close" onclick="closeModal('update-doc-modal')">&#x2715;</button>
         </div>
-        <input type="hidden" id="edit-doc-id">
+        <input type="hidden" id="upd-doc-id">
         <div class="modal-field">
-            <label>Title</label>
-            <input type="text" id="edit-doc-title">
-        </div>
-        <div class="modal-field">
-            <label>Category</label>
-            <select id="edit-doc-type">
-                @foreach($docTypes as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
-                @endforeach
+            <label>Status</label>
+            <select id="upd-doc-status">
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
             </select>
         </div>
         <div class="modal-field">
-            <label>Visibility</label>
-            <select id="edit-doc-vis" onchange="toggleEditTenantSelect()">
-                <option value="all">All Tenants</option>
-                <option value="specific">Specific Tenant</option>
-                <option value="admin">Admin Only</option>
-            </select>
-        </div>
-        <div class="modal-field" id="edit-tenant-field" style="display:none;">
-            <label>Select Tenant</label>
-            <select id="edit-doc-tenant">
-                <option value="">— Choose a tenant —</option>
-                @foreach($tenants as $tenant)
-                    <option value="{{ $tenant->tenant_id }}">
-                        {{ $tenant->first_name }} {{ $tenant->last_name }}
-                        @if($tenant->room_number) — Rm {{ $tenant->room_number }} @endif
-                    </option>
-                @endforeach
-            </select>
+            <label>Admin Remarks (optional)</label>
+            <textarea id="upd-doc-remarks" placeholder="Add remarks or reason for denial..."></textarea>
         </div>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('edit-doc-modal')">Cancel</button>
-            <button class="btn-submit" onclick="submitEditDoc()">Save Changes</button>
+            <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitUpdateDoc()">Save</button>
         </div>
     </div>
 </div>
 
-{{-- Delete Document Modal --}}
+{{-- Archive Form Submission Modal --}}
 <div class="modal-overlay" id="delete-doc-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
-            <div class="modal-title">Delete Document</div>
+            <div class="modal-title">Archive Submission</div>
             <button class="modal-close" onclick="closeModal('delete-doc-modal')">&#x2715;</button>
         </div>
-        <div class="delete-warn">This action cannot be undone. The document will be moved to the archive.</div>
+        <div class="delete-warn">This submission will be moved to the archive and removed from the active list.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
-            Delete <strong id="delete-doc-label" style="color:var(--ink);"></strong>?
+            Archive submission <strong id="delete-doc-label" style="color:var(--ink);"></strong>?
         </p>
         <input type="hidden" id="delete-doc-id">
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-doc-modal')">Cancel</button>
-            <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteDoc()">Delete</button>
+            <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteDoc()">Archive</button>
         </div>
     </div>
 </div>
@@ -1383,10 +1192,10 @@
         </div>
         <div class="modal-field">
             <label>Admin Remarks</label>
-            <textarea id="upd-req-remarks" placeholder="Add remarks or reason for denial..."></textarea>
+            <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
         </div>
         <div class="modal-field">
-            <label>Attach Fulfilled Document — PDF only (optional)</label>
+            <label>Attach Fulfilled Document — PDF only (optional, for digital delivery)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
         </div>
         <div class="modal-actions">
@@ -1415,11 +1224,11 @@
     </div>
 </div>
 
-{{-- View Archived Document Modal --}}
+{{-- View Archived Submission Modal --}}
 <div class="modal-overlay" id="view-adoc-modal">
     <div class="modal" style="max-width:500px;z-index:1100;">
         <div class="modal-header">
-            <div class="modal-title">Archived Document Details</div>
+            <div class="modal-title">Archived Submission Details</div>
             <button class="modal-close" onclick="closeModal('view-adoc-modal')">&#x2715;</button>
         </div>
         <div id="view-adoc-content"></div>
@@ -1443,7 +1252,7 @@
     </div>
 </div>
 
-{{-- Remove Archived Document Modal --}}
+{{-- Remove Archived Submission Modal --}}
 <div class="modal-overlay" id="remove-adoc-modal">
     <div class="modal" style="max-width:400px;z-index:1100;">
         <div class="modal-header">
@@ -1529,7 +1338,7 @@
             <div class="modal-title">Delete Form</div>
             <button class="modal-close" onclick="closeModal('delete-form-modal')">&#x2715;</button>
         </div>
-        <div class="delete-warn">Tenants will no longer be able to download this form.</div>
+        <div class="delete-warn">Tenants will no longer be able to download this form and it will be removed from the mobile app dropdown.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
             Delete <strong id="delete-form-label" style="color:var(--ink);"></strong>?
         </p>
@@ -1574,8 +1383,7 @@ function resetButton(btn) {
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-const CSRF     = document.querySelector('meta[name="csrf-token"]').content;
-const docTypes = @json($docTypes);
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
 const TYPE_COLORS = {
     'Voucher':                        '#FF6BA8',
@@ -1594,9 +1402,9 @@ const editIcon   = "{{ asset('icons/edit.png') }}";
 const deleteIcon = "{{ asset('icons/delete.png') }}";
 
 // ── State ──────────────────────────────────────────────────────────────────────
-let docState  = { type: '', vis: '', search: '', page: 1, perPage: 10, data: [], filtered: [], _base: [] };
+let docState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let reqState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
-let adocState = { filterType: '', filterVis: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+let adocState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
@@ -1608,8 +1416,8 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + tab + '-btn').classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
-    if (tab === 'docs')  fetchAll();
-    if (tab === 'reqs')  fetchAll();
+    if (tab === 'docs')  fetchDocs();
+    if (tab === 'reqs')  fetchReqs();
     if (tab === 'forms') fetchForms();
 }
 
@@ -1638,28 +1446,6 @@ function handleDrawerOverlayClick(e) {
     }
 }
 
-// ── Tenant select toggles ──────────────────────────────────────────────────────
-function toggleTenantSelect() {
-    const v = document.getElementById('up-visibility').value;
-    document.getElementById('tenant-select-field').style.display =
-        v === 'specific' ? 'flex' : 'none';
-}
-
-function toggleEditTenantSelect() {
-    const v = document.getElementById('edit-doc-vis').value;
-    document.getElementById('edit-tenant-field').style.display =
-        v === 'specific' ? 'flex' : 'none';
-}
-
-// ── New category toggle ────────────────────────────────────────────────────────
-document.getElementById('up-type').addEventListener('change', function () {
-    document.getElementById('new-category-field').style.display =
-        this.value === '__new__' ? 'flex' : 'none';
-    if (this.value !== '__new__') {
-        document.getElementById('up-new-type').value = '';
-    }
-});
-
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function fmtDate(d) {
     if (!d) return '—';
@@ -1678,12 +1464,6 @@ function fileTypeBadge(path) {
     if (['doc', 'docx'].includes(ext))          return '<span class="file-type-badge ft-word">Word</span>';
     if (['xls', 'xlsx'].includes(ext))          return '<span class="file-type-badge ft-xl">Excel</span>';
     return `<span class="file-type-badge ft-other">${ext.toUpperCase()}</span>`;
-}
-
-function visBadge(v) {
-    if (v === 'all')      return '<span class="visibility-badge vis-all">All Tenants</span>';
-    if (v === 'specific') return '<span class="visibility-badge vis-specific">Specific Tenant</span>';
-    return '<span class="visibility-badge vis-admin">Admin Only</span>';
 }
 
 function reqStatusBadge(s) {
@@ -1709,121 +1489,67 @@ function renderPagination(containerId, currentPage, totalPages, onGo) {
 }
 
 // ── Fetch ──────────────────────────────────────────────────────────────────────
-async function fetchAll() {
-    await fetchDocs();
-    await fetchReqs();
-}
-
 async function fetchDocs() {
     document.getElementById('doc-tbody').innerHTML =
         `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
-    try {
-        const res  = await fetch('/admin/documents', {
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
-        });
-        const data = await res.json();
-        if (data.error) {
-            document.getElementById('doc-tbody').innerHTML =
-                `<tr><td colspan="7"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
-            return;
-        }
-        docState._base = data.data ?? data;
-        docState.data  = [...docState._base];
-        docApplyFilters();
-        updateDocCounts();
-        document.getElementById('tab-docs-count').textContent = docState.data.length;
-    } catch {
-        document.getElementById('doc-tbody').innerHTML =
-            `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load documents.</div></td></tr>`;
-    }
-}
-
-async function fetchReqs() {
-    document.getElementById('req-tbody').innerHTML =
-        `<tr><td colspan="9"><div class="empty-state">Loading...</div></td></tr>`;
     try {
         const res  = await fetch('/admin/document-requests', {
             headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
         });
         const data = await res.json();
-        if (data.error) {
-            document.getElementById('req-tbody').innerHTML =
-                `<tr><td colspan="9"><div class="empty-state" style="color:red">${data.error}</div></td></tr>`;
-            return;
-        }
-        const allReqs = data.data ?? data;
+        const all  = data.data ?? data;
 
-        const formSubmissions = allReqs
-            .filter(r => r.category === 'form')
-            .map(r => ({
-                _is_form_submission: true,
-                doc_request_id:  r.doc_request_id,
-                document_id:     r.doc_request_id,
-                title:           r.document_type,
-                document_type:   r.document_type,
-                visibility:      'specific',
-                tenant_name:     r.tenant_name ?? r.full_name ?? '—',
-                file_path:       r.attachment,
-                date_posted:     r.submitted_at,
-                status:          r.status,
-                admin_remarks:   r.admin_remarks,
-                fulfilled_file:  r.fulfilled_file,
-            }));
-
-        docState.data = [...(docState._base ?? []), ...formSubmissions];
+        // Documents tab = form submissions only
+        docState.data = all.filter(r => r.category === 'form');
+        document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
         docApplyFilters();
-        updateDocCounts();
-        document.getElementById('tab-docs-count').textContent = docState.data.length;
-
-        reqState.data = allReqs.filter(r => r.category === 'certificate');
-        const pending = reqState.data.filter(r => r.status === 'pending').length;
-        document.getElementById('tab-reqs-count').textContent = pending;
-        reqApplyFilters();
-
     } catch {
-        document.getElementById('req-tbody').innerHTML =
-            `<tr><td colspan="9"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+        document.getElementById('doc-tbody').innerHTML =
+            `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
     }
 }
 
-// ── Documents tab ──────────────────────────────────────────────────────────────
+async function fetchReqs() {
+    document.getElementById('req-tbody').innerHTML =
+        `<tr><td colspan="8"><div class="empty-state">Loading...</div></td></tr>`;
+    try {
+        const res  = await fetch('/admin/document-requests', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        });
+        const data = await res.json();
+        const all  = data.data ?? data;
+
+        // Requests tab = certificate requests only
+        reqState.data = all.filter(r => r.category === 'certificate');
+        const pending = reqState.data.filter(r => r.status === 'pending').length;
+        document.getElementById('tab-reqs-count').textContent = pending;
+        reqApplyFilters();
+    } catch {
+        document.getElementById('req-tbody').innerHTML =
+            `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+    }
+}
+
+// ── Documents tab (form submissions) ──────────────────────────────────────────
 function docApplyFilters() {
-    const q   = document.getElementById('doc-search').value.toLowerCase();
-    const vis = document.getElementById('doc-filter-vis').value;
-    docState.vis    = vis;
-    docState.search = q;
-    docState.filtered = docState.data.filter(d => {
-        const matchType   = !docState.type || d.document_type === docState.type;
-        const matchVis    = !vis || d.visibility === vis;
+    const q      = document.getElementById('doc-search').value.toLowerCase();
+    const status = document.getElementById('doc-filter-status').value;
+    const sort   = document.getElementById('doc-sort').value;
+
+    docState.filtered = docState.data.filter(r => {
+        const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
-            (d.title         ?? '').toLowerCase().includes(q) ||
-            (d.tenant_name   ?? '').toLowerCase().includes(q) ||
-            (d.document_type ?? '').toLowerCase().includes(q);
-        return matchType && matchVis && matchSearch;
+            (r.document_type ?? '').toLowerCase().includes(q) ||
+            (r.tenant_name   ?? '').toLowerCase().includes(q) ||
+            (r.full_name     ?? '').toLowerCase().includes(q);
+        return matchStatus && matchSearch;
     });
+
+    if (sort === 'newest') docState.filtered.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+    if (sort === 'oldest') docState.filtered.sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+
     docState.page = 1;
     renderDocTable();
-}
-
-function docSetType(btn, type) {
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    docState.type = type;
-    document.getElementById('doc-filter-type').value = type;
-    docApplyFilters();
-}
-
-function updateDocCounts() {
-    const counts = {};
-    docState.data.forEach(d => { counts[d.document_type] = (counts[d.document_type] || 0) + 1; });
-    document.getElementById('sc-all').textContent = docState.data.length;
-    document.querySelectorAll('.type-btn[data-type]').forEach(btn => {
-        const t = btn.dataset.type;
-        if (!t) return;
-        const slug    = t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        const countEl = document.getElementById('sc-' + slug);
-        if (countEl) countEl.textContent = counts[t] || 0;
-    });
 }
 
 function renderDocTable() {
@@ -1832,36 +1558,31 @@ function renderDocTable() {
     const tbody = document.getElementById('doc-tbody');
 
     if (!page.length) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No documents found.</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No form submissions found.</div></td></tr>`;
     } else {
-        tbody.innerHTML = page.map(d => {
-            const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
-            const actions = d._is_form_submission
-                ? `<div class="action-group">
-                        <button class="act-btn" title="Review" onclick='viewFormSubmission(${JSON.stringify(d)})'>
-                            <img src="${eyeIcon}" alt="Review">
-                        </button>
-                   </div>`
-                : `<div class="action-group">
-                        <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(d)})'>
+        tbody.innerHTML = page.map(r => {
+            const color    = TYPE_COLORS[r.document_type] || '#B5B7C0';
+            const tenantName = escHtml(r.tenant_name ?? r.full_name ?? '—');
+            return `<tr>
+                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(r.doc_request_id).padStart(3,'0')}</td>
+                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${tenantName}</td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(r.document_type)}</div></td>
+                <td>${fileTypeBadge(r.attachment)}</td>
+                <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
+                <td>${reqStatusBadge(r.status)}</td>
+                <td>
+                    <div class="action-group">
+                        <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
                         </button>
-                        <button class="act-btn" title="Edit" onclick='openEditDoc(${JSON.stringify(d)})'>
-                            <img src="${editIcon}" alt="Edit">
+                        <button class="act-btn" title="Review" onclick='openUpdateDoc(${JSON.stringify(r)})'>
+                            <img src="${editIcon}" alt="Review">
                         </button>
-                        <button class="act-btn danger" title="Delete" onclick="promptDeleteDoc(${d.document_id}, '${escHtml(d.title)}')">
-                            <img src="${deleteIcon}" alt="Delete">
+                        <button class="act-btn danger" title="Archive" onclick="promptDeleteDoc(${r.doc_request_id}, '#FSB-${String(r.doc_request_id).padStart(3,'0')}')">
+                            <img src="${deleteIcon}" alt="Archive">
                         </button>
-                   </div>`;
-
-            return `<tr>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.title)}</div></td>
-                <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
-                <td>${d._is_form_submission ? reqStatusBadge(d.status) : visBadge(d.visibility)}</td>
-                <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
-                <td>${fileTypeBadge(d.file_path)}</td>
-                <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
-                <td>${actions}</td>
+                    </div>
+                </td>
             </tr>`;
         }).join('');
     }
@@ -1875,178 +1596,101 @@ function renderDocTable() {
         p => { docState.page = p; renderDocTable(); });
 }
 
-function viewDoc(d) {
-    currentDoc = d;
+function viewDoc(r) {
+    currentDoc = r;
+    const fileHtml = r.attachment
+        ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">View Uploaded Form</a>`
+        : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
+
     document.getElementById('view-doc-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Title</div><div class="view-detail-val">${escHtml(d.title)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Category</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Visibility</div><div class="view-detail-val">${visBadge(d.visibility)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">File Type</div><div class="view-detail-val">${fileTypeBadge(d.file_path)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Date Uploaded</div><div class="view-detail-val">${fmtDate(d.created_at)}</div></div>
-        ${d.file_path
-            ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">Open File</a>`
-            : '<p style="font-size:.82rem;color:var(--ink-muted);margin-top:.5rem;">No file attached.</p>'}
+        <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(r.doc_request_id).padStart(3,'0')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? r.full_name ?? '—')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(r.document_type)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(r.submitted_at)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
+        ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
+        <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
+    `;
+    document.getElementById('view-doc-actions').innerHTML = `
+        <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+        <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review / Set Status</button>
     `;
     openModal('view-doc-modal');
 }
 
-function viewFormSubmission(d) {
-    currentReq = d;
-    const fileHtml = d.file_path
-        ? `<a class="btn-view-file" href="/storage/${d.file_path}" target="_blank">View Uploaded Form</a>`
-        : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
-
-    document.getElementById('view-req-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.date_posted)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
-        ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
-        <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
-    `;
-    document.getElementById('view-req-actions').innerHTML = `
-        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
-        <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Review / Add Remarks</button>
-    `;
-    openModal('view-req-modal');
+function openUpdateDoc(r) {
+    currentDoc = r;
+    document.getElementById('upd-doc-id').value      = r.doc_request_id;
+    document.getElementById('upd-doc-status').value  = r.status ?? 'pending';
+    document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
+    openModal('update-doc-modal');
 }
 
-function switchToEditDoc() {
-    if (currentDoc) { closeModal('view-doc-modal'); setTimeout(() => openEditDoc(currentDoc), 200); }
-}
-
-function openEditDoc(d) {
-    currentDoc = d;
-    document.getElementById('edit-doc-id').value     = d.document_id;
-    document.getElementById('edit-doc-title').value  = d.title;
-    document.getElementById('edit-doc-type').value   = d.document_type;
-    document.getElementById('edit-doc-vis').value    = d.visibility ?? 'admin';
-    document.getElementById('edit-doc-tenant').value = d.tenant_id ?? '';
-    toggleEditTenantSelect();
-    openModal('edit-doc-modal');
-}
-
-async function submitEditDoc() {
-    const id    = document.getElementById('edit-doc-id').value;
-    const title = document.getElementById('edit-doc-title').value.trim();
-    const type  = document.getElementById('edit-doc-type').value;
-    const vis   = document.getElementById('edit-doc-vis').value;
-    const tid   = document.getElementById('edit-doc-tenant').value;
-    if (!title) { showToast('Title is required', 'error'); return; }
-
-    const editBtn = document.querySelector('#edit-doc-modal .btn-submit');
-    setButtonLoading(editBtn, 'Saving...');
-    showActionLoading('Saving changes...');
-
-    try {
-        const res = await fetch(`/admin/documents/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ title, document_type: type, visibility: vis, tenant_id: tid || null }),
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            const msg = err.message
-                ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null)
-                ?? 'Save failed.';
-            throw new Error(msg);
-        }
-        closeModal('edit-doc-modal');
-        showToast('Document updated successfully.', 'success');
-        fetchAll();
-    } catch (e) {
-        showToast(e.message ?? 'Save failed.', 'error');
-    } finally {
-        hideActionLoading();
-        resetButton(editBtn);
-    }
-}
-
-function promptDeleteDoc(id, title) {
-    document.getElementById('delete-doc-id').value          = id;
-    document.getElementById('delete-doc-label').textContent = title;
-    openModal('delete-doc-modal');
-}
-
-async function confirmDeleteDoc() {
-    const id        = document.getElementById('delete-doc-id').value;
-    const deleteBtn = document.querySelector('#delete-doc-modal .btn-submit[style*="red"]');
-    setButtonLoading(deleteBtn, 'Deleting...');
-    showActionLoading('Deleting document...');
-
-    try {
-        const res = await fetch(`/admin/documents/${id}`, {
-            method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-        });
-        if (!res.ok) throw new Error();
-        closeModal('delete-doc-modal');
-        showToast('Document deleted and archived.', 'success');
-        fetchAll();
-    } catch {
-        showToast('Delete failed.', 'error');
-    } finally {
-        hideActionLoading();
-        resetButton(deleteBtn);
-    }
-}
-
-async function submitUpload() {
-    const title = document.getElementById('up-title').value.trim();
-    let   type  = document.getElementById('up-type').value;
-    const vis   = document.getElementById('up-visibility').value;
-    const tid   = document.getElementById('up-tenant').value;
-    const file  = document.getElementById('up-file').files[0];
-
-    if (type === '__new__') {
-        type = document.getElementById('up-new-type').value.trim();
-        if (!type) { showToast('Please enter a category name.', 'error'); return; }
-    }
-    if (!title) { showToast('Title is required.', 'error'); return; }
+async function submitUpdateDoc() {
+    const id      = document.getElementById('upd-doc-id').value;
+    const status  = document.getElementById('upd-doc-status').value;
+    const remarks = document.getElementById('upd-doc-remarks').value;
 
     const fd = new FormData();
-    fd.append('title', title);
-    fd.append('document_type', type);
-    fd.append('visibility', vis);
-    if (vis === 'specific' && tid) fd.append('tenant_id', tid);
-    if (file) fd.append('file', file);
+    fd.append('_method', 'PUT');
+    fd.append('status', status);
+    fd.append('admin_remarks', remarks);
 
-    const uploadBtn = document.querySelector('#upload-modal .btn-submit');
-    setButtonLoading(uploadBtn, 'Uploading...');
-    showActionLoading('Uploading document...');
+    const btn = document.querySelector('#update-doc-modal .btn-submit');
+    setButtonLoading(btn, 'Saving...');
+    showActionLoading('Updating submission...');
 
     try {
-        const res = await fetch('/admin/documents', {
+        const res = await fetch(`/admin/document-requests/${id}`, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
             body: fd,
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            const msg = err.message
-                ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null)
-                ?? 'Upload failed.';
-            throw new Error(msg);
+            throw new Error(err.message ?? 'Update failed');
         }
-        closeModal('upload-modal');
-        document.getElementById('up-title').value = '';
-        document.getElementById('up-file').value  = '';
-        showToast('Document uploaded successfully.', 'success');
-        fetchAll();
+        closeModal('update-doc-modal');
+        showToast('Submission updated successfully.', 'success');
+        fetchDocs();
     } catch (e) {
-        showToast(e.message ?? 'Upload failed.', 'error');
+        showToast(e.message ?? 'Update failed.', 'error');
     } finally {
         hideActionLoading();
-        resetButton(uploadBtn);
+        resetButton(btn);
     }
 }
 
-// ── Requests tab ───────────────────────────────────────────────────────────────
+function promptDeleteDoc(id, label) {
+    document.getElementById('delete-doc-id').value          = id;
+    document.getElementById('delete-doc-label').textContent = label;
+    openModal('delete-doc-modal');
+}
+
+async function confirmDeleteDoc() {
+    const id  = document.getElementById('delete-doc-id').value;
+    const btn = document.querySelector('#delete-doc-modal .btn-submit[style*="red"]');
+    setButtonLoading(btn, 'Archiving...');
+    showActionLoading('Archiving submission...');
+
+    try {
+        const res = await fetch(`/admin/document-requests/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error();
+        closeModal('delete-doc-modal');
+        showToast('Submission archived.', 'success');
+        fetchDocs();
+    } catch {
+        showToast('Archive failed.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(btn);
+    }
+}
+
+// ── Requests tab (certificate requests) ───────────────────────────────────────
 function reqApplyFilters() {
     const q      = document.getElementById('req-search').value.toLowerCase();
     const status = document.getElementById('req-filter-status').value;
@@ -2074,15 +1718,14 @@ function renderReqTable() {
     const tbody = document.getElementById('req-tbody');
 
     if (!page.length) {
-        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><img src="{{ asset('icons/pending.png') }}" alt="">No document requests found.</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><img src="{{ asset('icons/pending.png') }}" alt="">No document requests found.</div></td></tr>`;
     } else {
         tbody.innerHTML = page.map(r => `<tr>
-            <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</td>
+            <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(r.tenant_name ?? '—')}</td>
             <td style="font-size:.82rem;">${escHtml(r.document_type)}</td>
             <td style="font-size:.8rem;color:var(--ink-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.purpose)}">${escHtml(r.purpose ?? '—')}</td>
-            <td style="font-size:.8rem;">${escHtml(r.delivery_type ?? '—')}</td>
-            <td style="font-size:.8rem;white-space:nowrap;">${fmtDate(r.date_needed)}</td>
+            <td style="font-size:.8rem;">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</td>
             <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
             <td>${reqStatusBadge(r.status)}</td>
             <td>
@@ -2113,25 +1756,25 @@ function renderReqTable() {
 function viewReq(r) {
     currentReq = r;
 
-    const attachmentHtml = r.attachment
-        ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">View Tenant's Uploaded Form</a>`
-        : '<span style="font-size:.82rem;color:var(--ink-muted);">No attachment uploaded.</span>';
+    const deliveryType = (r.delivery_type ?? r.delivery_method ?? '').toLowerCase();
+    const isDigital    = deliveryType.includes('digital');
+    const isHardCopy   = deliveryType.includes('printed') || deliveryType.includes('hard');
 
     const fulfilledHtml = r.fulfilled_file
         ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank">View Fulfilled Document</a>`
-        : '<span style="font-size:.82rem;color:var(--ink-muted);">No document sent yet.</span>';
+        : isHardCopy
+            ? '<span style="font-size:.82rem;color:var(--ink-muted);">Hard copy — tenant will pick up at admin office.</span>'
+            : '<span style="font-size:.82rem;color:var(--ink-muted);">No document uploaded yet.</span>';
 
     document.getElementById('view-req-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3, '0')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? '—')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Document Type</div><div class="view-detail-val">${escHtml(r.document_type)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Purpose</div><div class="view-detail-val">${escHtml(r.purpose ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Delivery Type</div><div class="view-detail-val">${escHtml(r.delivery_type ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Date Needed</div><div class="view-detail-val">${fmtDate(r.date_needed)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Delivery</div><div class="view-detail-val">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(r.submitted_at)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
         ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
-        <div class="view-detail-row"><div class="view-detail-label">Tenant Attachment</div><div class="view-detail-val">${attachmentHtml}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Fulfilled Document</div><div class="view-detail-val">${fulfilledHtml}</div></div>
     `;
     document.getElementById('view-req-actions').innerHTML = `
@@ -2167,8 +1810,8 @@ async function submitUpdateReq() {
     fd.append('admin_remarks', remarks);
     if (file) fd.append('fulfilled_file', file);
 
-    const updateBtn = document.querySelector('#update-req-modal .btn-submit');
-    setButtonLoading(updateBtn, 'Saving...');
+    const btn = document.querySelector('#update-req-modal .btn-submit');
+    setButtonLoading(btn, 'Saving...');
     showActionLoading('Updating request...');
 
     try {
@@ -2183,12 +1826,12 @@ async function submitUpdateReq() {
         }
         closeModal('update-req-modal');
         showToast('Request updated successfully.', 'success');
-        fetchAll();
+        fetchReqs();
     } catch (e) {
         showToast(e.message ?? 'Update failed.', 'error');
     } finally {
         hideActionLoading();
-        resetButton(updateBtn);
+        resetButton(btn);
     }
 }
 
@@ -2199,9 +1842,9 @@ function promptDeleteReq(id, label) {
 }
 
 async function confirmDeleteReq() {
-    const id         = document.getElementById('delete-req-id').value;
-    const archiveBtn = document.querySelector('#delete-req-modal .btn-submit[style*="red"]');
-    setButtonLoading(archiveBtn, 'Archiving...');
+    const id  = document.getElementById('delete-req-id').value;
+    const btn = document.querySelector('#delete-req-modal .btn-submit[style*="red"]');
+    setButtonLoading(btn, 'Archiving...');
     showActionLoading('Archiving request...');
 
     try {
@@ -2212,12 +1855,12 @@ async function confirmDeleteReq() {
         if (!res.ok) throw new Error();
         closeModal('delete-req-modal');
         showToast('Request archived.', 'success');
-        fetchAll();
+        fetchReqs();
     } catch {
         showToast('Archive failed.', 'error');
     } finally {
         hideActionLoading();
-        resetButton(archiveBtn);
+        resetButton(btn);
     }
 }
 
@@ -2230,10 +1873,11 @@ async function fetchArchive() {
         const data = await res.json();
         if (data.error) return;
 
+        // Archived docs = form submissions
         adocState.data = data.filter(r =>
-            r.archivable_type === 'document' ||
-            (r.archivable_type === 'document_request' && r.data?.category === 'form')
+            r.archivable_type === 'document_request' && r.data?.category === 'form'
         );
+        // Archived reqs = certificate requests
         areqState.data = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category !== 'form'
         );
@@ -2241,7 +1885,6 @@ async function fetchArchive() {
         document.getElementById('dtab-docs-count').textContent = adocState.data.length;
         document.getElementById('dtab-reqs-count').textContent = areqState.data.length;
 
-        populateAdocTypeFilter();
         adocApplyFilters();
         areqApplyFilters();
     } catch {
@@ -2250,35 +1893,19 @@ async function fetchArchive() {
     }
 }
 
-function populateAdocTypeFilter() {
-    const types   = [...new Set(adocState.data.map(r => r.data?.document_type).filter(Boolean))].sort();
-    const sel     = document.getElementById('adoc-filter-type');
-    const current = sel.value;
-    sel.innerHTML = '<option value="">All Categories</option>';
-    types.forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t;
-        opt.textContent = t;
-        if (t === current) opt.selected = true;
-        sel.appendChild(opt);
-    });
-}
-
 function adocApplyFilters() {
-    const q    = document.getElementById('adoc-search').value.toLowerCase();
-    const type = document.getElementById('adoc-filter-type').value;
-    const vis  = document.getElementById('adoc-filter-vis').value;
-    const sort = document.getElementById('adoc-sort').value;
+    const q      = document.getElementById('adoc-search').value.toLowerCase();
+    const status = document.getElementById('adoc-filter-status').value;
+    const sort   = document.getElementById('adoc-sort').value;
 
     adocState.filtered = adocState.data.filter(r => {
         const d           = r.data ?? {};
-        const matchType   = !type || d.document_type === type;
-        const matchVis    = !vis  || d.visibility === vis;
-        const matchSearch = !q    ||
-            (d.title         ?? '').toLowerCase().includes(q) ||
+        const matchStatus = !status || d.status === status;
+        const matchSearch = !q      ||
+            (d.document_type ?? '').toLowerCase().includes(q) ||
             (d.tenant_name   ?? '').toLowerCase().includes(q) ||
-            (d.document_type ?? '').toLowerCase().includes(q);
-        return matchType && matchVis && matchSearch;
+            (d.full_name     ?? '').toLowerCase().includes(q);
+        return matchStatus && matchSearch;
     });
 
     if (sort === 'newest') adocState.filtered.sort((a, b) => new Date(b.archived_at) - new Date(a.archived_at));
@@ -2294,25 +1921,25 @@ function renderAdocTable() {
     const tbody = document.getElementById('adoc-tbody');
 
     if (!page.length) {
-        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No archived documents found.</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No archived submissions found.</div></td></tr>`;
     } else {
         tbody.innerHTML = page.map(r => {
             const d     = r.data ?? {};
             const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
             return `<tr>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.title)}</div></td>
-                <td style="font-size:.8rem;color:var(--ink-muted);">${escHtml(d.document_type)}</td>
-                <td>${visBadge(d.visibility)}</td>
-                <td style="font-size:.82rem;">${escHtml(d.tenant_name || '—')}</td>
-                <td>${fileTypeBadge(d.file_path)}</td>
-                <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.date_posted)}</td>
+                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
+                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+                <td>${fileTypeBadge(d.attachment)}</td>
+                <td>${reqStatusBadge(d.status)}</td>
+                <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
                 <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
                 <td>
                     <div class="action-group">
                         <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
                         </button>
-                        <button class="act-btn danger" title="Remove from Archive" onclick="promptRemoveAdoc(${r.archive_id}, '${escHtml(d.title)}')">
+                        <button class="act-btn danger" title="Remove from Archive" onclick="promptRemoveAdoc(${r.archive_id}, '#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}')">
                             <img src="${deleteIcon}" alt="Remove">
                         </button>
                     </div>
@@ -2332,28 +1959,33 @@ function renderAdocTable() {
 
 function viewAdoc(r) {
     const d = r.data ?? {};
+    const fileHtml = d.attachment
+        ? `<a class="btn-view-file" href="/storage/${d.attachment}" target="_blank">View Uploaded Form</a>`
+        : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
+
     document.getElementById('view-adoc-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Title</div><div class="view-detail-val">${escHtml(d.title)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Category</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Visibility</div><div class="view-detail-val">${visBadge(d.visibility)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name || '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">File Type</div><div class="view-detail-val">${fileTypeBadge(d.file_path)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Date Uploaded</div><div class="view-detail-val">${fmtDate(d.date_posted)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.submitted_at)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Status at Archive</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
+        ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
+        <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Archived On</div><div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div></div>
     `;
     openModal('view-adoc-modal');
 }
 
-function promptRemoveAdoc(id, title) {
+function promptRemoveAdoc(id, label) {
     document.getElementById('remove-adoc-id').value          = id;
-    document.getElementById('remove-adoc-label').textContent = title;
+    document.getElementById('remove-adoc-label').textContent = label;
     openModal('remove-adoc-modal');
 }
 
 async function confirmRemoveAdoc() {
-    const id        = document.getElementById('remove-adoc-id').value;
-    const removeBtn = document.querySelector('#remove-adoc-modal .btn-submit[style*="red"]');
-    setButtonLoading(removeBtn, 'Removing...');
+    const id  = document.getElementById('remove-adoc-id').value;
+    const btn = document.querySelector('#remove-adoc-modal .btn-submit[style*="red"]');
+    setButtonLoading(btn, 'Removing...');
     showActionLoading('Removing archive record...');
 
     try {
@@ -2369,7 +2001,7 @@ async function confirmRemoveAdoc() {
         showToast('Remove failed.', 'error');
     } finally {
         hideActionLoading();
-        resetButton(removeBtn);
+        resetButton(btn);
     }
 }
 
@@ -2406,11 +2038,11 @@ function renderAreqTable() {
         tbody.innerHTML = page.map(r => {
             const d = r.data ?? {};
             return `<tr>
-                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(d.doc_request_id ?? 0).padStart(3, '0')}</td>
+                <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? '—')}</td>
                 <td style="font-size:.82rem;">${escHtml(d.document_type)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(d.purpose)}">${escHtml(d.purpose ?? '—')}</td>
-                <td style="font-size:.8rem;">${escHtml(d.delivery_type ?? '—')}</td>
+                <td style="font-size:.8rem;">${escHtml(d.delivery_type ?? d.delivery_method ?? '—')}</td>
                 <td>${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
                 <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
@@ -2419,7 +2051,7 @@ function renderAreqTable() {
                         <button class="act-btn" title="View" onclick='viewAreq(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
                         </button>
-                        <button class="act-btn danger" title="Remove from Archive" onclick="promptRemoveAreq(${r.archive_id}, '#DRQ-${String(d.doc_request_id ?? 0).padStart(3, '0')}')">
+                        <button class="act-btn danger" title="Remove from Archive" onclick="promptRemoveAreq(${r.archive_id}, '#DRQ-${String(d.doc_request_id ?? 0).padStart(3,'0')}')">
                             <img src="${deleteIcon}" alt="Remove">
                         </button>
                     </div>
@@ -2439,16 +2071,20 @@ function renderAreqTable() {
 
 function viewAreq(r) {
     const d = r.data ?? {};
+    const fulfilledHtml = d.fulfilled_file
+        ? `<a class="btn-view-file" href="/storage/${d.fulfilled_file}" target="_blank">View Fulfilled Document</a>`
+        : '<span style="font-size:.82rem;color:var(--ink-muted);">No fulfilled document.</span>';
+
     document.getElementById('view-areq-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(d.doc_request_id ?? 0).padStart(3, '0')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(d.doc_request_id ?? 0).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name ?? '—')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Document Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Purpose</div><div class="view-detail-val">${escHtml(d.purpose ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Delivery Type</div><div class="view-detail-val">${escHtml(d.delivery_type ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Date Needed</div><div class="view-detail-val">${fmtDate(d.date_needed)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">Delivery</div><div class="view-detail-val">${escHtml(d.delivery_type ?? d.delivery_method ?? '—')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.submitted_at)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Status at Archive</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
         ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
+        <div class="view-detail-row"><div class="view-detail-label">Fulfilled Document</div><div class="view-detail-val">${fulfilledHtml}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Archived On</div><div class="view-detail-val"><span class="archive-badge">${fmtDate(r.archived_at)}</span></div></div>
     `;
     openModal('view-areq-modal');
@@ -2461,9 +2097,9 @@ function promptRemoveAreq(id, label) {
 }
 
 async function confirmRemoveAreq() {
-    const id        = document.getElementById('remove-areq-id').value;
-    const removeBtn = document.querySelector('#remove-areq-modal .btn-submit[style*="red"]');
-    setButtonLoading(removeBtn, 'Removing...');
+    const id  = document.getElementById('remove-areq-id').value;
+    const btn = document.querySelector('#remove-areq-modal .btn-submit[style*="red"]');
+    setButtonLoading(btn, 'Removing...');
     showActionLoading('Removing archive record...');
 
     try {
@@ -2479,7 +2115,7 @@ async function confirmRemoveAreq() {
         showToast('Remove failed.', 'error');
     } finally {
         hideActionLoading();
-        resetButton(removeBtn);
+        resetButton(btn);
     }
 }
 
@@ -2511,9 +2147,7 @@ function formApplyFilters() {
 }
 
 function openFormFile(filePath) {
-    const url = filePath.startsWith('forms/')
-        ? '/' + filePath
-        : '/storage/' + filePath;
+    const url = filePath.startsWith('forms/') ? '/' + filePath : '/storage/' + filePath;
     window.open(url, '_blank');
 }
 
@@ -2576,15 +2210,13 @@ async function submitUploadForm() {
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            const msg = err.message
-                ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null)
-                ?? 'Upload failed.';
+            const msg = err.message ?? (err.errors ? Object.values(err.errors)[0]?.[0] : null) ?? 'Upload failed.';
             throw new Error(msg);
         }
         closeModal('upload-form-modal');
         document.getElementById('uf-label').value = '';
         document.getElementById('uf-file').value  = '';
-        showToast('Form uploaded successfully.', 'success');
+        showToast('Form uploaded. Tenants can now see it in the app.', 'success');
         fetchForms();
     } catch (e) {
         showToast(e.message ?? 'Upload failed.', 'error');
@@ -2612,11 +2244,7 @@ async function submitEditForm() {
     try {
         const res = await fetch(`/admin/downloadable-forms/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF,
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
             body: JSON.stringify({ label }),
         });
         if (!res.ok) throw new Error();
@@ -2650,7 +2278,7 @@ async function confirmDeleteForm() {
         });
         if (!res.ok) throw new Error();
         closeModal('delete-form-modal');
-        showToast('Form deleted.', 'success');
+        showToast('Form deleted and removed from the mobile app.', 'success');
         fetchForms();
     } catch {
         showToast('Delete failed.', 'error');
@@ -2660,13 +2288,11 @@ async function confirmDeleteForm() {
     }
 }
 
-// ── Session flash ──────────────────────────────────────────────────────────────
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
 @endif
 
-// ── Init ───────────────────────────────────────────────────────────────────────
-fetchAll();
+fetchDocs();
 fetchForms();
 </script>
 @endsection
