@@ -233,7 +233,10 @@ class DocumentController extends Controller
 public function indexForms()
 {
     try {
-        $forms = DownloadableForm::orderBy('label')->get();
+        $forms = DownloadableForm::orderBy('label')->get()->map(function ($form) {
+            $form->url = Storage::disk('public')->url($form->file_path);
+            return $form;
+        });
         return response()->json($forms);
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
@@ -255,12 +258,11 @@ public function storeForm(Request $request)
             'file_path' => $path,
         ]);
 
+        $form->url = Storage::disk('public')->url($path);
+
         return response()->json($form, 201);
     } catch (\Illuminate\Validation\ValidationException $e) {
-        return response()->json([
-            'message' => 'Validation failed.',
-            'errors'  => $e->errors(),
-        ], 422);
+        return response()->json(['message' => 'Validation failed.', 'errors' => $e->errors()], 422);
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
