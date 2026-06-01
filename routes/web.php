@@ -150,6 +150,12 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/admin/archive-docus', [DocumentController::class, 'archiveIndex'])->name('admin.archive-docus.index');
     Route::delete('/admin/archive-docus/{archiveDocu}', [DocumentController::class, 'archiveDestroy'])->name('admin.archive-docus.destroy');
 
+    // downloadable forms CRUD
+    Route::get('/admin/downloadable-forms',          [DocumentController::class, 'indexForms'])->name('admin.forms.index');
+    Route::post('/admin/downloadable-forms',         [DocumentController::class, 'storeForm'])->name('admin.forms.store');
+    Route::put('/admin/downloadable-forms/{id}',     [DocumentController::class, 'updateForm'])->name('admin.forms.update');
+    Route::delete('/admin/downloadable-forms/{id}',  [DocumentController::class, 'destroyForm'])->name('admin.forms.destroy');
+
     // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::put('/maintenance/{id}', [MaintenanceController::class, 'update'])->name('maintenance.update');

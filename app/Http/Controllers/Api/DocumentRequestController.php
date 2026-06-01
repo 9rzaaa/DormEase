@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DocumentRequest;
 use App\Models\Document;
 use Illuminate\Http\Request;
+use App\Models\DownloadableForm;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentRequestController extends Controller
 {
@@ -78,5 +80,24 @@ class DocumentRequestController extends Controller
         ->get(['document_id', 'title', 'document_type', 'file_path', 'visibility', 'created_at']);
 
     return response()->json($docs);
+}
+public function tenantForms()
+{
+    $forms = DownloadableForm::orderBy('label')->get()->map(function ($f) {
+        // Files in public/forms/ are static — use asset()
+        // Files in downloadable-forms/ are in Laravel storage
+        $url = str_starts_with($f->file_path, 'forms/')
+            ? asset($f->file_path)
+            : Storage::disk('public')->url($f->file_path);
+
+        return [
+            'id'        => $f->id,
+            'label'     => $f->label,
+            'file_path' => $f->file_path,
+            'url'       => $url,
+        ];
+    });
+
+    return response()->json($forms);
 }
 }
