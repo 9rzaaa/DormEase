@@ -34,7 +34,7 @@
 
     /* ── notice bar ── */
     .top-notice {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 101;
       min-height: 34px; display: flex; align-items: center; justify-content: center;
       padding: 6px 5%; background: var(--gradient);
       color: white; font-family: var(--font-head); font-size: .86rem; font-weight: 800; text-align: center;
@@ -42,9 +42,9 @@
 
     /* ── nav ── */
     nav {
-      position: fixed; top: 54px; left: 50%; z-index: 200;
+      position: fixed; top: 54px; left: 50%; z-index: 100;
       width: min(1220px, calc(100% - 12%)); transform: translateX(-50%);
-      background: rgba(255,228,240,0.96); backdrop-filter: blur(16px);
+      background: rgba(255,228,240,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1.5px solid rgba(36,16,24,0.78); border-radius: 999px;
       padding: 0 38px; height: 86px;
       display: flex; align-items: center; justify-content: space-between;
