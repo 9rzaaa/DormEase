@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\WaterBilling;
 use App\Models\WaterRate;
 use App\Models\Tenant;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -393,6 +394,12 @@ class BillingController extends Controller
                 }
 
                 $billingToUpdate->update(['payment_status' => $statusUpdate['payment_status']]);
+                Payment::where('billing_id', $billingToUpdate->billing_id)
+                    ->where('tenant_id', $billingToUpdate->tenant_id)
+                    ->update([
+                        'status' => $statusUpdate['payment_status'],
+                        'confirmed_by' => $statusUpdate['payment_status'] === 'paid' ? Auth::id() : null,
+                    ]);
 
                 if ($statusUpdate['payment_status'] === 'paid') {
                     $tenant = Tenant::find($billingToUpdate->tenant_id);
@@ -421,6 +428,12 @@ class BillingController extends Controller
             }
 
             $billing->update(['payment_status' => $request->payment_status]);
+            Payment::where('billing_id', $billing->billing_id)
+                ->where('tenant_id', $billing->tenant_id)
+                ->update([
+                    'status' => $request->payment_status,
+                    'confirmed_by' => $request->payment_status === 'paid' ? Auth::id() : null,
+                ]);
 
             if ($request->payment_status === 'paid') {
                 $tenant = Tenant::find($billing->tenant_id);
