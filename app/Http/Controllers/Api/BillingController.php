@@ -111,7 +111,7 @@ class BillingController extends Controller
                 'status'           => ucfirst($b->payment_status ?? 'unpaid'),
                 'reference_number' => $payment?->reference_number ?? $b->payment_reference_code,
                 'payment_date'     => $paymentDate
-                    ? Carbon::parse($paymentDate)->format('F d, Y h:i A')
+                    ? Carbon::parse($paymentDate)->format('M d, Y h:i A')
                     : null,
                 'payment_method'   => $payment?->payment_method,
             ];
