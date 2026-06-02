@@ -118,6 +118,7 @@ class VisitorController extends Controller
         NotificationHelper::sendToAll(
             type: 'visitor_checkin',
             message: "{$request->visitor_name} checked in to visit {$tenant->first_name} {$tenant->last_name}.",
+            ref_id: $visitor->visitor_id,
         );
 
         app(TenantPushNotificationService::class)->sendToTenant(
@@ -183,6 +184,26 @@ class VisitorController extends Controller
             'confirmed_by'  => Auth::guard('staff')->id(),
             'status'        => 'inside',
         ]);
+
+        $visitor->load('tenant');
+        $tenantName = $visitor->tenant
+            ? trim("{$visitor->tenant->first_name} {$visitor->tenant->last_name}")
+            : 'a tenant';
+
+        NotificationHelper::sendToAll(
+            type: 'visitor_checkin',
+            message: "{$visitor->visitor_name} checked in to visit {$tenantName}.",
+            ref_id: $visitor->visitor_id,
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked in',
+            body: "{$visitor->visitor_name} has checked in.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
 
         return back()->with('success', 'Visitor time in logged successfully.');
     }

@@ -1464,6 +1464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="archive-card-tenant">${escHtml(r.tenant_name ?? '—')}</div>
                 <div class="archive-card-room">Room ${escHtml(r.room_number ?? '—')}</div>
                 <div class="archive-card-meta">
+                    <span class="archive-pill archive-pill-issue">${escHtml(r.status ?? 'pending')}</span>
                     <span class="archive-pill archive-pill-issue">${escHtml(r.issue_type ?? '—')}</span>
                     <span class="archive-pill ${urgencyPillClass[r.urgency] ?? 'archive-pill-low'}">${escHtml(r.urgency ?? 'low')}</span>
                 </div>
