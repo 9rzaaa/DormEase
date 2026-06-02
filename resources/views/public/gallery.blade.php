@@ -62,6 +62,12 @@
     .nav-links a.nav-active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2.5px; border-radius: 99px; background: var(--gradient); }
     .nav-cta { background: var(--gradient) !important; color: white !important; padding: 11px 26px !important; border-radius: 100px !important; font-weight: 700 !important; box-shadow: 0 8px 18px rgba(232,23,93,0.24); transition: filter .2s, transform .15s !important; }
     .nav-cta:hover { filter: brightness(.94); transform: translateY(-1px); }
+    .nav-toggle { display: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--gradient); color: white; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 18px rgba(232,23,93,0.24); }
+    .nav-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+    .mobile-nav { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; padding: 10px; background: rgba(255,228,240,0.98); border: 1.5px solid rgba(36,16,24,0.55); border-radius: 24px; box-shadow: 0 18px 36px rgba(36,16,24,0.16); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .mobile-nav.open { display: grid; gap: 4px; }
+    .mobile-nav a { color: var(--brown); text-decoration: none; font-size: .95rem; font-weight: 800; padding: 12px 14px; border-radius: 16px; }
+    .mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
     /* ── hero carousel ── */
     .hero-carousel {
@@ -368,7 +374,8 @@
       .nav-logo img { height: 44px; }
       .nav-logo-fb { font-size: 1.22rem; }
       .nav-links { gap: 0; margin-left: auto; }
-      .nav-links li:not(:last-child) { display: none; }
+      .nav-links { display: none; }
+      .nav-toggle { display: inline-flex; flex-shrink: 0; }
       .masonry { columns: 2; }
       .carousel-thumbs { display: none; }
       .stats-strip { grid-template-columns: 1fr 1fr; }
@@ -406,6 +413,16 @@
     <li><a href="{{ route('faqs') }}">FAQs</a></li>
     <li><a href="{{ route('home') }}#contact" class="nav-cta">Contact Us</a></li>
   </ul>
+  <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+  </button>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{{ route('gallery') }}" class="nav-active">Gallery</a>
+    <a href="{{ route('home') }}#how">How it Works</a>
+    <a href="{{ route('home') }}#about">About</a>
+    <a href="{{ route('faqs') }}">FAQs</a>
+    <a href="{{ route('home') }}#contact">Contact Us</a>
+  </div>
 </nav>
 
 {{-- ── hero carousel ── --}}
@@ -802,6 +819,24 @@
   // nav
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        mobileNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   // scroll top
   const scrollTopBtn = document.getElementById('scrollTopBtn');

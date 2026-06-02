@@ -127,6 +127,25 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
   box-shadow: 0 8px 18px rgba(232,23,93,0.24);
 }
 .nav-cta:hover { filter: brightness(0.94); transform: translateY(-1px); }
+.nav-toggle {
+  display: none; width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: var(--gradient-pink); color: white; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 8px 18px rgba(232,23,93,0.24);
+}
+.nav-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.mobile-nav {
+  display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0;
+  padding: 10px; background: rgba(255,228,240,0.98);
+  border: 1.5px solid rgba(36,16,24,0.55); border-radius: 24px;
+  box-shadow: 0 18px 36px rgba(36,16,24,0.16);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.mobile-nav.open { display: grid; gap: 4px; }
+.mobile-nav a {
+  color: var(--brown); text-decoration: none; font-size: .95rem; font-weight: 800;
+  padding: 12px 14px; border-radius: 16px;
+}
+.mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
 .header-info-strip {
   padding: 154px 6% 16px;
@@ -758,7 +777,8 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .about-inner{grid-template-columns:1fr}
   .about-photos{max-width:760px;width:100%;margin:0 auto;}
   .footer-inner{grid-template-columns:1fr 1fr}
-  .nav-links li:not(:last-child){display:none}
+  .nav-links{display:none}
+  .nav-toggle{display:inline-flex;flex-shrink:0}
   .contact-inner{grid-template-columns:minmax(0,1fr) minmax(240px,320px);gap:36px;}
   .cta-section .section-title{font-size:clamp(2rem,4vw,2.7rem);}
   .cta-section .section-sub{font-size:1rem;}
@@ -830,6 +850,16 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <li><a href="{{ route('faqs') }}">FAQs</a></li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
+  <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+  </button>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{{ route('gallery') }}">Gallery</a>
+    <a href="#how">How it Works</a>
+    <a href="#about">About</a>
+    <a href="{{ route('faqs') }}">FAQs</a>
+    <a href="#contact">Contact Us</a>
+  </div>
 </nav>
 
 <div class="header-info-strip">
@@ -1219,6 +1249,24 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        mobileNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => {
