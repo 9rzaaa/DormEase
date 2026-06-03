@@ -11,7 +11,7 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        background: var(--pink-bg);
+        background: var(--blush);
         box-sizing: border-box;
     }
 
