@@ -1418,6 +1418,7 @@
 
         var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on' };
         var archiveLabel = archiveLabelMap[staffArchiveTab];
+        var reactivateBtn = '';
 
         list.innerHTML = data.map(function(r, i) {
             var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
@@ -1438,6 +1439,12 @@
                     + (staffArchiveTab === 'inactive' ? '<span class="sad-pill sad-pill-inactive">Inactive</span>' : '')
                 + '</div>'
                 + '<div class="sad-card-archived">' + archiveLabel + ': <span>' + archivedDisplay + '</span></div>'
+                + (staffArchiveTab === 'inactive'
+                    ? '<form method="POST" action="/staff/' + r.staff_id + '/reactivate" style="margin-top:.75rem;" onsubmit="this.querySelector(\'button\').disabled=true;showActionLoading(\'Reactivating staff...\');">'
+                        + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                        + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
+                        + '</form>'
+                    : '')
                 + '</div>';
         }).join('');
     }

@@ -131,6 +131,7 @@ class StaffController extends Controller
         ]);
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
+        $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
 
         $staff->update([
             'first_name'     => $request->first_name,
@@ -141,11 +142,14 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'duty_status'    => $request->duty_status,
             'is_active'      => $request->is_active,
-            'inactivated_at' => $isBeingDeactivated ? now() : $staff->inactivated_at,
+            'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),
         ]);
 
-        return redirect()->route('staff.index')
-            ->with('success', 'Staff details updated successfully.');
+        $message = $isBeingReactivated
+            ? $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.'
+            : 'Staff details updated successfully.';
+
+        return redirect()->route('staff.index')->with('success', $message);
     }
 
     public function resetPassword($id)
@@ -167,6 +171,23 @@ class StaffController extends Controller
         ]);
     }
 
+    public function reactivate($id)
+    {
+        $staff = Staff::findOrFail($id);
+
+        if ($staff->is_active) {
+            return redirect()->route('staff.index')->with('success', 'Staff is already active.');
+        }
+
+        $staff->update([
+            'is_active'      => true,
+            'inactivated_at' => null,
+        ]);
+
+        return redirect()->route('staff.index')
+            ->with('success', $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.');
+    }
+
     public function destroy($id)
     {
         $staff = Staff::findOrFail($id);
@@ -174,7 +195,7 @@ class StaffController extends Controller
         $name = "{$staff->first_name} {$staff->last_name}";
 
         ArchivedStaff::create([
-            'original_staff_id' => $staff->staff_id,
+            'original_staff_id' => $staff->original_staff_id ?? $staff->staff_id,
             'account_id'        => $staff->account_id,
             'staff_code'        => $staff->staff_code,
             'first_name'        => $staff->first_name,
