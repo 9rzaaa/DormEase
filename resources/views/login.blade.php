@@ -904,6 +904,36 @@
         transition: color .3s;
     }
 
+    .fp-requirements {
+        margin-top: .65rem;
+        display: flex;
+        flex-direction: column;
+        gap: .28rem;
+    }
+
+    .fp-req {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        font-size: .72rem;
+        color: #b5b7c0;
+        font-weight: 500;
+        transition: color .25s;
+    }
+
+    .fp-req.met { color: #16a34a; }
+
+    .fp-req-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #e5ecf6;
+        flex-shrink: 0;
+        transition: background .25s;
+    }
+
+    .fp-req.met .fp-req-dot { background: #16a34a; }
+
     .fp-btn-primary {
         width: 100%;
         padding: .75rem 1.2rem;
@@ -1357,6 +1387,20 @@
                     </div>
                     <div class="fp-strength-bar"><div id="fp-strength-fill"></div></div>
                     <div id="fp-strength-label" class="fp-strength-label"></div>
+                    <div class="fp-requirements" id="fp-requirements">
+                        <div class="fp-req" id="req-length">
+                            <span class="fp-req-dot"></span>At least 8 characters
+                        </div>
+                        <div class="fp-req" id="req-upper">
+                            <span class="fp-req-dot"></span>One uppercase letter
+                        </div>
+                        <div class="fp-req" id="req-number">
+                            <span class="fp-req-dot"></span>One number
+                        </div>
+                        <div class="fp-req" id="req-special">
+                            <span class="fp-req-dot"></span>One special character
+                        </div>
+                    </div>
                 </div>
                 <div class="fp-field">
                     <label>Confirm Password</label>
@@ -1526,13 +1570,22 @@
         if (!val) {
             fill.style.width  = '0%';
             label.textContent = '';
-            return;
+        } else {
+            fill.style.width      = (score * 25) + '%';
+            fill.style.background = colors[score - 1] || colors[0];
+            label.textContent     = labels[score - 1] || labels[0];
+            label.style.color     = colors[score - 1] || colors[0];
         }
 
-        fill.style.width      = (score * 25) + '%';
-        fill.style.background = colors[score - 1] || colors[0];
-        label.textContent     = labels[score - 1] || labels[0];
-        label.style.color     = colors[score - 1] || colors[0];
+        var toggle = function(id, met) {
+            var el = document.getElementById(id);
+            if (met) el.classList.add('met');
+            else el.classList.remove('met');
+        };
+        toggle('req-length',  val.length >= 8);
+        toggle('req-upper',   /[A-Z]/.test(val));
+        toggle('req-number',  /[0-9]/.test(val));
+        toggle('req-special', /[^A-Za-z0-9]/.test(val));
     });
 
     function fpGetCsrf() {
