@@ -118,7 +118,7 @@
         padding: .85rem 1.2rem;
         box-shadow: var(--shadow);
     }
-    .emergency-banner.clear { border-color: #5bcb8a; }
+    .emergency-banner.clear { border-color: var(--bright-pink); }
 
     .emerg-ico-wrap {
         width: 42px; height: 42px; border-radius: 50%;
@@ -162,7 +162,7 @@
         font-family: var(--ff-body); white-space: nowrap;
     }
     .emerg-btn:hover { opacity: .88; }
-    .emerg-btn.ok { background: linear-gradient(135deg, #1a7a4a, #2ecc71); }
+    .emerg-btn.ok { background: var(--bright-pink); }
 
     .panel {
         background: var(--white);
