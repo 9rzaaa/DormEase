@@ -60,7 +60,7 @@
     .table-card {
         background: var(--white);
         border-radius: 18px;
-        border: 2px solid var(--bright-pink);
+        border: 1px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
     }
@@ -69,7 +69,7 @@
         padding: 1.1rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
         background: var(--white); flex-wrap: wrap; gap: .8rem;
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
     .table-title { font-size: 1rem; font-weight: 800; color: var(--ink); }
     .table-date  { font-size: .75rem; color: var(--ink-muted); margin-top: .15rem; }
@@ -119,7 +119,7 @@
         letter-spacing: .05em;
         white-space: nowrap;
         background: var(--blush);
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
     td {
         padding: .8rem .85rem;
