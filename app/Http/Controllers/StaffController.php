@@ -42,8 +42,7 @@ class StaffController extends Controller
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
                 'is_active'      => $s->is_active,
-                'created_at'     => $s->created_at,
-                'updated_at'     => $s->updated_at,
+                'inactivated_at' => $s->inactivated_at,
             ];
         })->values();
 
@@ -131,6 +130,8 @@ class StaffController extends Controller
             'is_active'      => 'nullable|boolean',
         ]);
 
+        $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
+
         $staff->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -140,6 +141,7 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'duty_status'    => $request->duty_status,
             'is_active'      => $request->is_active,
+            'inactivated_at' => $isBeingDeactivated ? now() : $staff->inactivated_at,
         ]);
 
         return redirect()->route('staff.index')

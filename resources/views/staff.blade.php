@@ -1420,7 +1420,7 @@
         var archiveLabel = archiveLabelMap[staffArchiveTab];
 
         list.innerHTML = data.map(function(r, i) {
-            var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.updated_at;
+            var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
             var timeDisplay = fmtDatePlain(dateValue);
             var archivedDisplay = fmtDatePlain(dateValue);
 
@@ -1452,7 +1452,7 @@
         if (format === 'pdf') {
             var win  = window.open('', '_blank');
             var rows = source.map(function(r) {
-                var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.updated_at;
+                var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
                 return '<tr>'
                     + '<td>' + (r.account_id || r.staff_code || '') + '</td>'
                     + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
@@ -1478,7 +1478,7 @@
 
         var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', archiveColLabel]];
         source.forEach(function(r) {
-            var dateValue = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.updated_at || '');
+            var dateValue = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.inactivated_at || '');
             rows.push([
                 r.account_id     || r.staff_code || '',
                 r.first_name,
