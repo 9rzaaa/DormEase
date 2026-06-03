@@ -31,7 +31,6 @@
         margin-top: .2rem;
     }
 
-    /* ── Hero card ── */
     .hero-card {
         position: relative;
         background: var(--white);
@@ -72,7 +71,6 @@
         background: rgba(255,255,255,.07);
     }
 
-    /* Avatar + info row sits BELOW the banner, overlapping it */
     .hero-body {
         padding: 0 1.8rem 1.6rem;
         display: flex;
@@ -82,7 +80,7 @@
 
     .hero-avatar-wrap {
         flex-shrink: 0;
-        margin-top: -42px;   /* pulls avatar up to straddle the banner edge */
+        margin-top: -42px;
         position: relative;
         cursor: pointer;
         z-index: 1;
@@ -153,7 +151,6 @@
     .hero-avatar-wrap:hover .avatar-overlay { opacity: 1; }
     .hero-avatar-wrap:hover .hero-avatar    { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
 
-    /* Info block aligns to bottom of avatar */
     .hero-info {
         flex: 1;
         padding-bottom: .25rem;
@@ -194,7 +191,6 @@
         letter-spacing: .02em;
     }
 
-    /* ── Forms grid ── */
     .forms-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -379,6 +375,36 @@
         line-height: 1.5;
     }
 
+    .pw-requirements {
+        margin-top: .6rem;
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+    }
+
+    .pw-req {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .69rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        transition: color .25s;
+    }
+
+    .pw-req.met { color: #16a34a; }
+
+    .pw-req-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--pink-100);
+        flex-shrink: 0;
+        transition: background .25s;
+    }
+
+    .pw-req.met .pw-req-dot { background: #16a34a; }
+
     .form-actions {
         display: flex;
         justify-content: flex-end;
@@ -453,7 +479,6 @@
         .hero-avatar-wrap { margin-top: -42px; }
     }
 
-    /* action loading overlay */
     .action-loading-overlay {
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;
@@ -505,7 +530,6 @@
         $rc = $roleMap[strtolower($staff->role ?? '')] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc'];
     @endphp
 
-    {{-- ── Hero card with banner + overlapping avatar ── --}}
     <div class="hero-card fade-up d2">
 
         <div class="hero-banner"></div>
@@ -547,7 +571,6 @@
 
     <div class="forms-grid">
 
-        {{-- Personal Information --}}
         <div class="section-card fade-up d3">
             <div class="section-head">
                 <div class="section-icon">
@@ -613,7 +636,6 @@
             </div>
         </div>
 
-        {{-- Change Password --}}
         <div class="section-card fade-up d4">
             <div class="section-head">
                 <div class="section-icon">
@@ -654,6 +676,12 @@
                                     <div class="pw-strength-fill" id="strength-fill"></div>
                                 </div>
                                 <div class="pw-strength-label" id="strength-label"></div>
+                                <div class="pw-requirements" id="pw-requirements">
+                                    <div class="pw-req" id="preq-length"><span class="pw-req-dot"></span>At least 8 characters</div>
+                                    <div class="pw-req" id="preq-upper"><span class="pw-req-dot"></span>One uppercase letter</div>
+                                    <div class="pw-req" id="preq-number"><span class="pw-req-dot"></span>One number</div>
+                                    <div class="pw-req" id="preq-special"><span class="pw-req-dot"></span>One special character</div>
+                                </div>
                             </div>
                             <div class="form-field">
                                 <label>Confirm New Password</label>
@@ -664,7 +692,6 @@
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
-                                <div class="pw-hint">At least 8 characters — mix letters, numbers &amp; symbols.</div>
                             </div>
                         </div>
                     </div>
@@ -726,7 +753,6 @@
         });
     });
 
-    // avatar upload
     document.getElementById('avatar-input').addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
@@ -746,25 +772,27 @@
         document.getElementById('avatar-form').submit();
     });
 
-    // display name live update
     function updateDisplayName() {
         const fn = document.querySelector('[name="first_name"]').value;
         const ln = document.querySelector('[name="last_name"]').value;
         document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
     }
 
-    // password visibility toggle
     function togglePw(inputId, btn) {
         const inp = document.getElementById(inputId);
         inp.type = inp.type === 'text' ? 'password' : 'text';
         btn.querySelector('img').style.opacity = inp.type === 'text' ? '.8' : '.35';
     }
 
-    // password strength check
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
-        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        if (!val) {
+            fill.style.width  = '0%';
+            label.textContent = '';
+            ['preq-length','preq-upper','preq-number','preq-special'].forEach(id => document.getElementById(id).classList.remove('met'));
+            return;
+        }
         let score = 0;
         if (val.length >= 8)          score++;
         if (/[A-Z]/.test(val))        score++;
@@ -781,6 +809,12 @@
         fill.style.background = lvl.color;
         label.textContent     = lvl.text;
         label.style.color     = lvl.color;
+
+        const toggle = (id, met) => document.getElementById(id).classList.toggle('met', met);
+        toggle('preq-length',  val.length >= 8);
+        toggle('preq-upper',   /[A-Z]/.test(val));
+        toggle('preq-number',  /[0-9]/.test(val));
+        toggle('preq-special', /[^A-Za-z0-9]/.test(val));
     }
 
     function resetStrength() {
@@ -788,7 +822,6 @@
         document.getElementById('strength-label').textContent = '';
     }
 
-    // toasts on page load
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
