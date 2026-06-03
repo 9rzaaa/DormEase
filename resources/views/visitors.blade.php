@@ -412,7 +412,8 @@
         background: var(--white);
         padding: 0 1.2rem;
         flex-shrink: 0;
-    }
+        margin-top: -1.2rem;
+}
 
     .modal-tab {
         padding: .8rem 1.1rem;
