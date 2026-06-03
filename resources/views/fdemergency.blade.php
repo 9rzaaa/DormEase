@@ -174,7 +174,7 @@
     .table-card {
         background: var(--white);
         border-radius: 18px;
-        border: 2px solid var(--bright-pink);
+        border: 1px solid var(--bright-pink);
         overflow: hidden;
         box-shadow: 0 6px 24px rgba(255,45,120,.1);
     }
@@ -186,7 +186,7 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: .8rem;
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
         background: var(--white);
     }
 
@@ -286,7 +286,7 @@
         letter-spacing: .05em;
         white-space: nowrap;
         text-align: left;
-        border-bottom: 1.5px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     td {

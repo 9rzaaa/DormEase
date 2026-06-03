@@ -103,7 +103,7 @@
 .table-card {
     background: var(--white);
     border-radius: 18px;
-    border: 2px solid var(--bright-pink);
+    border: 1px solid var(--bright-pink);
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0,0,0,.05), 0 18px 45px rgba(232,23,93,.15);
     box-sizing: border-box;
@@ -117,7 +117,7 @@
     flex-wrap: wrap;
     gap: .8rem;
     background: var(--white);
-    border-bottom: 2px solid var(--bright-pink);
+    border-bottom: 1px solid var(--bright-pink);
 }
 
 .table-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); margin: 0; }
@@ -174,7 +174,7 @@ table { width: 100%; border-collapse: collapse; background: var(--white); }
 
 thead tr {
     background: var(--white);
-    border-bottom: 2px solid var(--bright-pink);
+    border-bottom: 1px solid var(--bright-pink);
 }
 
 th {
