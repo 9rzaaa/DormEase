@@ -10,7 +10,7 @@ class NotificationService
     public static function send(string $type, string $message, string $url = null): void
     {
         $staff = Staff::where('is_active', true)
-            ->whereIn('role', ['admin', 'frontdesk'])
+            ->whereIn('role', ['admin', 'secretary', 'frontdesk'])
             ->get();
 
         foreach ($staff as $member) {
