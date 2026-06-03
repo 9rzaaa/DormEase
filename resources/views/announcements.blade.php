@@ -231,7 +231,7 @@
 
     .columns-wrapper{
         display:grid;
-        grid-template-columns:1fr 1fr 1fr;
+        grid-template-columns:1fr 1fr 1fr 1fr;
         gap:1.2rem;
         align-items:start;
     }
@@ -250,6 +250,10 @@
         align-items:center;
         gap:.6rem;
         border-bottom:2px solid var(--hot-pink);
+    }
+
+    .kanban-col-header.sched-header{
+        border-bottom-color:#7c3aed;
     }
 
     .col-dot{
@@ -276,6 +280,15 @@
         padding:.1rem .55rem;
     }
 
+    .col-count-sched{
+        font-size:.78rem;
+        font-weight:700;
+        color:#7c3aed;
+        background:#f5f3ff;
+        border-radius:20px;
+        padding:.1rem .55rem;
+    }
+
     .kanban-col-body{
         padding:.9rem;
         display:flex;
@@ -296,6 +309,15 @@
     .ann-card:hover{
         box-shadow:0 6px 20px rgba(232,23,93,.12);
         transform:translateY(-2px);
+    }
+
+    .ann-card.sched-card{
+        border-color:#ede9fe;
+        background:#faf9ff;
+    }
+
+    .ann-card.sched-card:hover{
+        box-shadow:0 6px 20px rgba(124,58,237,.12);
     }
 
     .ann-card-top{
@@ -384,12 +406,34 @@
         display:flex;
         align-items:center;
         justify-content:space-between;
+        flex-wrap:wrap;
+        gap:.3rem;
     }
 
     .ann-date,
     .ann-files{
         font-size:.73rem;
         color:var(--ink-muted);
+    }
+
+    .sched-badge{
+        display:inline-flex;
+        align-items:center;
+        gap:.3rem;
+        font-size:.7rem;
+        font-weight:700;
+        color:#7c3aed;
+        background:#f5f3ff;
+        border:1px solid #ddd6fe;
+        border-radius:6px;
+        padding:.18rem .5rem;
+        letter-spacing:.02em;
+    }
+
+    .sched-badge svg{
+        width:11px;
+        height:11px;
+        flex-shrink:0;
     }
 
     .ann-dropdown{
@@ -701,6 +745,120 @@
         margin:0 auto .5rem;
     }
 
+    .schedule-toggle-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:.7rem .9rem;
+        background:#f5f3ff;
+        border:1.5px solid #ddd6fe;
+        border-radius:10px;
+        margin-bottom:.9rem;
+        cursor:pointer;
+        transition:background .2s,border-color .2s;
+        user-select:none;
+    }
+
+    .schedule-toggle-row:hover{
+        background:#ede9fe;
+        border-color:#c4b5fd;
+    }
+
+    .schedule-toggle-label{
+        display:flex;
+        align-items:center;
+        gap:.55rem;
+        font-size:.87rem;
+        font-weight:700;
+        color:#5b21b6;
+    }
+
+    .schedule-toggle-label svg{
+        width:16px;
+        height:16px;
+        flex-shrink:0;
+    }
+
+    .schedule-toggle-switch{
+        width:36px;
+        height:20px;
+        border-radius:99px;
+        background:#c4b5fd;
+        position:relative;
+        transition:background .2s;
+        flex-shrink:0;
+    }
+
+    .schedule-toggle-switch.on{
+        background:#7c3aed;
+    }
+
+    .schedule-toggle-switch::after{
+        content:'';
+        position:absolute;
+        top:2px;
+        left:2px;
+        width:16px;
+        height:16px;
+        border-radius:50%;
+        background:var(--white);
+        transition:transform .2s;
+        box-shadow:0 1px 3px rgba(0,0,0,.2);
+    }
+
+    .schedule-toggle-switch.on::after{
+        transform:translateX(16px);
+    }
+
+    .schedule-fields{
+        display:none;
+        padding:.8rem;
+        background:#faf9ff;
+        border:1.5px solid #ede9fe;
+        border-radius:10px;
+        margin-bottom:.9rem;
+        gap:.8rem;
+        flex-direction:column;
+    }
+
+    .schedule-fields.open{
+        display:flex;
+    }
+
+    .schedule-fields .modal-field{
+        margin-bottom:0;
+    }
+
+    .schedule-fields .modal-field label{
+        color:#5b21b6;
+        font-weight:600;
+    }
+
+    .schedule-fields input[type="datetime-local"]{
+        width:100%;
+        box-sizing:border-box;
+        border:1.5px solid #ddd6fe;
+        border-radius:9px;
+        padding:.55rem .85rem;
+        font-size:.88rem;
+        color:var(--ink);
+        background:var(--white);
+        font-family:var(--ff-body);
+        transition:border-color .15s;
+    }
+
+    .schedule-fields input[type="datetime-local"]:focus{
+        border-color:#7c3aed;
+        outline:none;
+    }
+
+    .schedule-note{
+        font-size:.75rem;
+        color:#6d28d9;
+        margin-top:.35rem;
+        line-height:1.5;
+    }
+
     .ann-archive-drawer{
         position:fixed;
         top:0;right:0;bottom:0;
@@ -894,6 +1052,7 @@
     .aad-pill-high    {background:#fff0f0;color:var(--red);border:1px solid #ffd6d6;}
     .aad-pill-active  {background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
     .aad-pill-closed  {background:var(--blush);color:var(--ink-muted);border:1px solid var(--pink-100);}
+    .aad-pill-scheduled{background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe;}
 
     .aad-card-deleted{
         display:flex;
@@ -1010,7 +1169,7 @@
     .d3{animation-delay:.2s;}
     .d4{animation-delay:.28s;}
 
-    @media(max-width:1100px){
+    @media(max-width:1300px){
         .columns-wrapper{grid-template-columns:1fr 1fr;}
     }
 
@@ -1067,6 +1226,9 @@
                 </button>
                 <button class="compose-tool-btn" title="Attach file" onclick="openModal('post-modal')">
                     <img src="{{ asset('icons/attach.png') }}" alt="">
+                </button>
+                <button class="compose-tool-btn" title="Schedule" onclick="openModal('post-modal')" style="border-color:#ddd6fe;background:#faf9ff;" title="Schedule announcement">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </button>
             </div>
             <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openModal('post-modal')">
@@ -1256,6 +1418,61 @@
             </div>
         </div>
 
+        <div class="kanban-col">
+            <div class="kanban-col-header sched-header">
+                <span class="col-dot" style="background:#7c3aed"></span>
+                <span class="col-title">Scheduled</span>
+                <span class="col-count-sched">{{ $scheduled->count() }}</span>
+            </div>
+            <div class="kanban-col-body">
+                @forelse($scheduled as $ann)
+                    <div class="ann-card sched-card" onclick="openViewModal({{ $ann->announcement_id }})">
+                        <div class="ann-card-top">
+                            <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
+                                {{ ucfirst($ann->priority ?? 'Low') }}
+                            </span>
+                            <div class="ann-menu-wrap">
+                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-sched-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
+                                <div class="ann-dropdown" id="menu-sched-{{ $ann->announcement_id }}">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
+                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit / Reschedule
+                                    </button>
+                                    <button class="ann-dropdown-item" onclick="submitForm('publish-now-{{ $ann->announcement_id }}', event)">
+                                        <img src="{{ asset('icons/announce.png') }}" alt=""> Publish Now
+                                    </button>
+                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
+                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ann-title">{{ $ann->title }}</div>
+                        <div class="ann-desc">{{ $ann->content }}</div>
+                        <div class="ann-footer">
+                            <span class="sched-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                {{ \Carbon\Carbon::parse($ann->scheduled_at)->format('M j, Y · g:i A') }}
+                            </span>
+                            @if($ann->attachment)
+                                <span class="ann-files">
+                                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                                    {{ count(explode(',', $ann->attachment)) }} file(s)
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <form id="publish-now-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.restore', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+
+                @empty
+                    <div class="empty-col">
+                        <img class="empty-icon" src="{{ asset('icons/calendar.png') }}" alt="">
+                        <div>No scheduled announcements</div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
@@ -1304,7 +1521,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Post New Announcement</div>
-            <button class="modal-close" onclick="closeModal('post-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('post-modal')">&#x2715;</button>
         </div>
         <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
@@ -1325,21 +1542,38 @@
                         <option value="high">High</option>
                     </select>
                 </div>
-                <div class="modal-field">
+                <div class="modal-field" id="post-status-field">
                     <label>Status</label>
-                    <select name="status">
+                    <select name="status" id="post-status-select">
                         <option value="active">Active</option>
                         <option value="closed">Closed</option>
                     </select>
                 </div>
             </div>
+
+            <div class="schedule-toggle-row" onclick="toggleSchedule('post')">
+                <span class="schedule-toggle-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Schedule for later
+                </span>
+                <span class="schedule-toggle-switch" id="post-sched-switch"></span>
+            </div>
+
+            <div class="schedule-fields" id="post-sched-fields">
+                <div class="modal-field">
+                    <label>Publish Date &amp; Time</label>
+                    <input type="datetime-local" name="scheduled_at" id="post-scheduled-at">
+                    <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                </div>
+            </div>
+
             <div class="modal-field">
                 <label>Attach Files (optional)</label>
                 <input type="file" name="files[]" multiple style="padding:.5rem .85rem;">
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('post-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Post Announcement</button>
+                <button type="submit" class="btn-submit" id="post-submit-btn">Post Announcement</button>
             </div>
         </form>
     </div>
@@ -1349,7 +1583,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Edit Announcement</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
         <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
@@ -1371,7 +1605,7 @@
                         <option value="high">High</option>
                     </select>
                 </div>
-                <div class="modal-field">
+                <div class="modal-field" id="edit-status-field">
                     <label>Status</label>
                     <select name="status" id="edit-status">
                         <option value="active">Active</option>
@@ -1379,6 +1613,23 @@
                     </select>
                 </div>
             </div>
+
+            <div class="schedule-toggle-row" onclick="toggleSchedule('edit')">
+                <span class="schedule-toggle-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Schedule for later
+                </span>
+                <span class="schedule-toggle-switch" id="edit-sched-switch"></span>
+            </div>
+
+            <div class="schedule-fields" id="edit-sched-fields">
+                <div class="modal-field">
+                    <label>Publish Date &amp; Time</label>
+                    <input type="datetime-local" name="scheduled_at" id="edit-scheduled-at">
+                    <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                </div>
+            </div>
+
             <div class="modal-field">
                 <label>Add Image / Files (optional)</label>
                 <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
@@ -1392,7 +1643,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
+                <button type="submit" class="btn-submit" id="edit-submit-btn">Save Changes</button>
             </div>
         </form>
     </div>
@@ -1402,7 +1653,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title" id="view-modal-title">Announcement</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div id="view-modal-content"></div>
         <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
@@ -1433,6 +1684,23 @@
                     </select>
                 </div>
             </div>
+
+            <div class="schedule-toggle-row" onclick="toggleSchedule('view-edit')">
+                <span class="schedule-toggle-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Schedule for later
+                </span>
+                <span class="schedule-toggle-switch" id="view-edit-sched-switch"></span>
+            </div>
+
+            <div class="schedule-fields" id="view-edit-sched-fields">
+                <div class="modal-field">
+                    <label>Publish Date &amp; Time</label>
+                    <input type="datetime-local" name="scheduled_at" id="view-edit-scheduled-at">
+                    <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                </div>
+            </div>
+
             <div class="modal-field">
                 <label>Add Image / Files (optional)</label>
                 <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
@@ -1460,7 +1728,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Delete Announcement</div>
-            <button class="modal-close" onclick="closeModal('delete-modal')">✕</button>
+            <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
         <div class="delete-warning">This action cannot be undone. The announcement will be permanently removed.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
@@ -1479,9 +1747,9 @@
 
 @section('scripts')
 <script>
-    const annData        = @json($announcements->keyBy('announcement_id'));
+    const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
     const deletedAnnArchive = @json($deletedArchive);
-    const storageBaseUrl = "{{ asset('storage') }}";
+    const storageBaseUrl    = "{{ asset('storage') }}";
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -1525,7 +1793,7 @@
             const ann = annData[id];
             if (!ann) return;
 
-            const postedAt = new Date(ann.posted_at);
+            const postedAt = new Date(ann.posted_at || ann.scheduled_at);
             let show = false;
 
             if (type === 'all') {
@@ -1548,21 +1816,28 @@
 
         document.querySelectorAll('.kanban-col').forEach(col => {
             const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
-            const countEl = col.querySelector('.col-count');
+            const countEl = col.querySelector('.col-count, .col-count-sched');
             if (countEl) countEl.textContent = visible;
 
-            let emptyEl = col.querySelector('.empty-col');
+            let emptyEl = col.querySelector('.empty-col.filter-empty');
             const body  = col.querySelector('.kanban-col-body');
+            const hasStaticEmpty = col.querySelector('.empty-col:not(.filter-empty)');
+
             if (visible === 0) {
-                if (!emptyEl) {
-                    emptyEl = document.createElement('div');
-                    emptyEl.className = 'empty-col filter-empty';
-                    emptyEl.innerHTML = '<div>No announcements match this filter.</div>';
-                    body.appendChild(emptyEl);
+                if (hasStaticEmpty) {
+                    hasStaticEmpty.style.display = '';
+                } else {
+                    if (!emptyEl) {
+                        emptyEl = document.createElement('div');
+                        emptyEl.className = 'empty-col filter-empty';
+                        emptyEl.innerHTML = '<div>No announcements match this filter.</div>';
+                        body.appendChild(emptyEl);
+                    }
+                    emptyEl.style.display = '';
                 }
-                emptyEl.style.display = '';
-            } else if (emptyEl) {
-                emptyEl.style.display = 'none';
+            } else {
+                if (hasStaticEmpty) hasStaticEmpty.style.display = 'none';
+                if (emptyEl) emptyEl.style.display = 'none';
             }
         });
     }
@@ -1599,17 +1874,64 @@
         overlay.setAttribute('aria-hidden', 'false');
     }
 
+    function schedIsOn(prefix) {
+        return document.getElementById(prefix + '-sched-switch').classList.contains('on');
+    }
+
+    function toggleSchedule(prefix, forceState) {
+        const sw     = document.getElementById(prefix + '-sched-switch');
+        const fields = document.getElementById(prefix + '-sched-fields');
+        const input  = document.getElementById(prefix + '-scheduled-at');
+
+        const turnOn = forceState !== undefined ? forceState : !sw.classList.contains('on');
+
+        if (turnOn) {
+            sw.classList.add('on');
+            fields.classList.add('open');
+            input.required = true;
+
+            if (prefix === 'post') {
+                const statusField = document.getElementById('post-status-field');
+                if (statusField) statusField.style.display = 'none';
+            }
+            if (prefix === 'edit') {
+                const statusField = document.getElementById('edit-status-field');
+                if (statusField) statusField.style.display = 'none';
+            }
+        } else {
+            sw.classList.remove('on');
+            fields.classList.remove('open');
+            input.required = false;
+            input.value = '';
+
+            if (prefix === 'post') {
+                const statusField = document.getElementById('post-status-field');
+                if (statusField) statusField.style.display = '';
+            }
+            if (prefix === 'edit') {
+                const statusField = document.getElementById('edit-status-field');
+                if (statusField) statusField.style.display = '';
+            }
+        }
+    }
+
     function openViewModal(id) {
         const ann = annData[id];
         if (!ann) return;
         document.getElementById('view-modal-title').textContent = ann.title;
         hideInlineEdit();
         fillInlineEditForm(ann, id);
+
+        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
+
         document.getElementById('view-modal-content').innerHTML = `
             <div class="view-title">${escapeHtml(ann.title || '')}</div>
             <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
             <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
-            <div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>
+            ${isScheduled
+                ? `<div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:#7c3aed;">${formatDate(ann.scheduled_at)}</span></div>`
+                : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>`
+            }
             <div class="view-content">${escapeHtml(ann.content || '')}</div>
             ${renderAttachments(ann.attachment)}
         `;
@@ -1628,6 +1950,19 @@
         document.getElementById('edit-priority').value = ann.priority || 'low';
         document.getElementById('edit-status').value   = ann.status   || 'active';
         document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
+
+        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
+        if (isScheduled) {
+            const dt = new Date(ann.scheduled_at);
+            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            document.getElementById('edit-scheduled-at').value = local;
+            toggleSchedule('edit', true);
+        } else {
+            toggleSchedule('edit', false);
+        }
+
         openModal('edit-modal');
     }
 
@@ -1649,6 +1984,18 @@
         document.getElementById('view-edit-priority').value    = ann.priority || 'low';
         document.getElementById('view-edit-status').value      = ann.status   || 'active';
         document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
+
+        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
+        if (isScheduled) {
+            const dt = new Date(ann.scheduled_at);
+            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+                .toISOString()
+                .slice(0, 16);
+            document.getElementById('view-edit-scheduled-at').value = local;
+            toggleSchedule('view-edit', true);
+        } else {
+            toggleSchedule('view-edit', false);
+        }
     }
 
     function showInlineEdit() {
@@ -1662,6 +2009,7 @@
         if (!form) return;
         form.classList.remove('open');
         form.reset();
+        toggleSchedule('view-edit', false);
         document.getElementById('view-edit-btn').style.display  = '';
         document.getElementById('view-close-btn').style.display = '';
     }
@@ -1763,7 +2111,7 @@
             <div class="aad-card" style="animation-delay:${i * 0.04}s;">
                 <div class="aad-card-top">
                     <div class="aad-card-id">#${r.announcement_id}</div>
-                    <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : '—'}</div>
+                    <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')}</div>
                 </div>
                 <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
                 <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
@@ -1782,7 +2130,7 @@
     }
 
     function exportAnnArchive() {
-        const rows = [['ID', 'Title', 'Content', 'Priority', 'Status', 'Posted At', 'Deleted On']];
+        const rows = [['ID', 'Title', 'Content', 'Priority', 'Status', 'Posted At', 'Scheduled At', 'Deleted On']];
         deletedAnnArchive.forEach(r => {
             rows.push([
                 r.announcement_id,
@@ -1791,6 +2139,7 @@
                 r.priority     || '',
                 r.status       || '',
                 r.posted_at    || '',
+                r.scheduled_at || '',
                 r.deleted_at   || '',
             ]);
         });
@@ -1800,6 +2149,10 @@
         a.download = 'announcements_deleted_archive.csv';
         a.click();
     }
+
+    document.getElementById('post-modal').addEventListener('shown', () => {
+        toggleSchedule('post', false);
+    });
 
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
