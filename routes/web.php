@@ -56,7 +56,7 @@ Route::post('/login', function () {
         return back()->withErrors(['email' => 'Incorrect password.'])->withInput();
     }
 
-    $staffRoles = ['frontdesk', 'guard', 'staff'];
+    $staffRoles = ['frontdesk', 'guard'];
     if ($user->role === 'admin' && $role !== 'admin') {
         return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
     }
