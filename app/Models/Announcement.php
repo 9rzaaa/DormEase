@@ -19,12 +19,13 @@ class Announcement extends Model
         'status',
         'attachment',
         'posted_at',
+        'scheduled_at',
         'deleted_at',
     ];
-
     protected $casts = [
-        'posted_at'  => 'datetime',
-        'deleted_at' => 'datetime',
+        'posted_at'    => 'datetime',
+        'scheduled_at' => 'datetime',
+        'deleted_at'   => 'datetime',
     ];
 
     public function getIdAttribute()

@@ -1211,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><div class="req-date">${fmtDate(r.created_at)}</div></td>
             <td><span class="room-badge">${escHtml(r.room_number ?? '—')}</span></td>
             <td><span class="tenant-name">${escHtml(r.tenant_name ?? '—')}</span></td>
-            <td><span class="issue-type ${cls}">${escHtml(r.issue_type ?? '—')}</span></td>
+            <td><span class="issue-type ${cls}">${escHtml(r.issue_type ? r.issue_type.charAt(0).toUpperCase() + r.issue_type.slice(1).toLowerCase() : '—')}</span></td>
             <td>${urgencyBadge(r.urgency)}</td>
             <td><div class="desc-cell" title="${escHtml(r.description)}">${escHtml(r.description ?? '—')}</div></td>
             <td>${statusBadge(r.status)}</td>
