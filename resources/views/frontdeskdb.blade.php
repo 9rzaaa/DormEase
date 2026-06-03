@@ -269,7 +269,6 @@
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
-    /* Notification items — highlight only, no movement */
     .notif-item {
         display: flex; align-items: flex-start; gap: .7rem;
         padding: .6rem .5rem;
@@ -289,7 +288,6 @@
     .icon-sm { width: 16px; height: 16px; object-fit: contain; }
     .icon-md { width: 20px; height: 20px; object-fit: contain; }
 
-    /* Quick Summary & Notifications card border */
     .content-col .card,
     .right-col .card {
         border-color: var(--baby-pink);
@@ -548,11 +546,11 @@
 
 @section('modals')
 
-{{-- Emergency Modal: no close button, closes on outside click --}}
 <div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
-    <div class="modal" style="max-width:500px; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
+    <div class="modal" style="max-width:500px; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
         <div class="modal-header" style="padding:1.5rem 2rem 1.2rem; flex-shrink:0; border-bottom:1px solid var(--pink-light);">
             <div class="modal-title">Emergency Alerts</div>
+            <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
         <div style="flex:1; overflow-y:auto; padding:1.2rem 2rem; display:flex; flex-direction:column; gap:.8rem;">
             @if($allEmergencies->isEmpty())
@@ -569,7 +567,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="visitor-detail-modal">
+<div class="modal-overlay" id="visitor-detail-modal" onclick="handleOverlayClick(event, 'visitor-detail-modal')">
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
             <div class="modal-title" id="vd-name"></div>
@@ -746,6 +744,13 @@
     buildChart('visitors');
 
 })();
+
+/* ── Close modal when clicking the backdrop overlay ── */
+window.handleOverlayClick = function(e, modalId) {
+    if (e.target === document.getElementById(modalId)) {
+        closeModal(modalId);
+    }
+};
 
 window.togglePanel = function(id) {
     var body = document.getElementById('body-' + id);

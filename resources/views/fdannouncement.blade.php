@@ -386,16 +386,13 @@
 
 @section('modals')
 
-<div class="modal-overlay" id="view-modal">
+<div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
             <div class="modal-title">Announcement Details</div>
             <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
         </div>
         <div id="view-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-        </div>
     </div>
 </div>
 
@@ -475,6 +472,12 @@
             ? closed.map(buildCard).join('')
             : '<div class="empty-col">No closed announcements.</div>';
     }
+
+    window.handleOverlayClick = function(e, modalId) {
+    if (e.target === document.getElementById(modalId)) {
+        closeModal(modalId);
+    }
+    };
 
     function applyFilters() {
         const q        = document.getElementById('search-input').value.toLowerCase();
