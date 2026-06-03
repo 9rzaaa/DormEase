@@ -140,7 +140,6 @@
     .badge-leave     { background: var(--peach); color: var(--badge-leave-text); border: 1.5px solid var(--badge-leave-border); }
     .badge-admin     { background: var(--petal); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .badge-frontdesk { background: var(--gray-light); color: var(--badge-frontdesk-text); border: 1.5px solid var(--badge-frontdesk-border); }
-    .badge-guard     { background: var(--blush); color: var(--badge-guard-text); border: 1.5px solid var(--badge-guard-border); }
     .badge-staff     { background: var(--mint); color: var(--green); border: 1.5px solid var(--green); }
 
     .action-group { display: flex; align-items: center; justify-content: center; gap: .4rem; }
@@ -720,7 +719,6 @@
                     <option value="admin">Admin</option>
                     <option value="secretary">Secretary</option>
                     <option value="frontdesk">Front Desk</option>
-                    <option value="guard">Guard</option>
                 </select>
                 <div class="filter-divider"></div>
                 <span class="filter-label">Duty:</span>
@@ -849,7 +847,6 @@
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
                         <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
-                        <option value="guard"     {{ old('role') === 'guard'     ? 'selected' : '' }}>Guard</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -918,7 +915,6 @@
                         <option value="admin">Admin</option>
                         <option value="secretary">Secretary</option>
                         <option value="frontdesk">Front Desk</option>
-                        <option value="guard">Guard</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -1045,8 +1041,8 @@
     function roleBadge(role) {
         var map = {
             admin:     '<span class="badge badge-admin">Admin</span>',
+            secretary: '<span class="badge badge-admin">Secretary</span>',
             frontdesk: '<span class="badge badge-frontdesk">Front Desk</span>',
-            guard:     '<span class="badge badge-guard">Guard</span>',
             staff:     '<span class="badge badge-staff">Staff</span>',
         };
         return map[role] || ('<span class="badge badge-staff">' + (role || '\u2014') + '</span>');
