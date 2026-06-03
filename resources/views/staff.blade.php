@@ -718,6 +718,7 @@
                 <select class="sort-select" id="filter-role" onchange="filterTable()">
                     <option value="">All Roles</option>
                     <option value="admin">Admin</option>
+                    <option value="secretary">Secretary</option>
                     <option value="frontdesk">Front Desk</option>
                     <option value="guard">Guard</option>
                 </select>
@@ -846,6 +847,7 @@
                     <select name="role" required>
                         <option value="">Select role</option>
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
+                        <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
                         <option value="guard"     {{ old('role') === 'guard'     ? 'selected' : '' }}>Guard</option>
                     </select>
@@ -914,6 +916,7 @@
                     <label>Role</label>
                     <select name="role" id="edit-role">
                         <option value="admin">Admin</option>
+                        <option value="secretary">Secretary</option>
                         <option value="frontdesk">Front Desk</option>
                         <option value="guard">Guard</option>
                     </select>
