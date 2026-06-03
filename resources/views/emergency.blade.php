@@ -1322,7 +1322,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">Manila Police District</div>
             </div>
             <div class="dir-card-numbers">
@@ -1332,7 +1332,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">PNP Text Hotline</div>
             </div>
             <div class="dir-card-numbers">
@@ -1364,7 +1364,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Ospital ng Sampaloc</div>
             </div>
             <div class="dir-card-numbers">
@@ -1374,7 +1374,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Chinese General Hospital</div>
             </div>
             <div class="dir-card-numbers">
@@ -1383,7 +1383,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Jose R. Reyes Memorial Medical Center</div>
             </div>
             <div class="dir-card-numbers">
@@ -2070,7 +2070,7 @@
         var chips = matched.map(function(h) {
             return h.numbers.map(function(n) {
                 return '<div class="dir-suggested-chip" onclick="copyHotline(\'' + n.replace(/[^0-9]/g,'') + '\', this)">'
-                    + '<span>' + h.icon + '</span>'
+                    + '<img class="chip-icon" src="' + h.icon + '" alt="">'
                     + escHtml(h.name.length > 28 ? h.name.slice(0, 28) + '...' : h.name)
                     + ' &nbsp;<span>' + n + '</span>'
                     + '</div>';
