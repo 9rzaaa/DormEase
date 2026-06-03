@@ -523,8 +523,8 @@
     @php
         $roleMap = [
             'admin'     => ['bg'=>'#FFE4F0','color'=>'#E8175D','border'=>'#FFB3D0'],
+            'secretary' => ['bg'=>'#FFE4F0','color'=>'#E8175D','border'=>'#FFB3D0'],
             'frontdesk' => ['bg'=>'#e8f4ff','color'=>'#1a6fbd','border'=>'#90c4f8'],
-            'guard'     => ['bg'=>'#f3f0ff','color'=>'#6d4fc4','border'=>'#c4b5fd'],
             'staff'     => ['bg'=>'#f0fdf8','color'=>'#166534','border'=>'#86efac'],
         ];
         $rc = $roleMap[strtolower($staff->role ?? '')] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc'];

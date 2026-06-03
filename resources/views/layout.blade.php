@@ -57,8 +57,6 @@
         --badge-leave-border:    #f0c040;
         --badge-frontdesk-text:  #1a6fbd;
         --badge-frontdesk-border: #90c4f8;
-        --badge-guard-text:      #6d4fc4;
-        --badge-guard-border:    #c4b5fd;
         --shift-day:             #f59e0b;
         --shift-night:           #6366f1;
 

@@ -66,7 +66,8 @@ class NotificationService
             'announcement_new' => true,
         ];
 
-        $defaults = $member->role === 'frontdesk' ? $frontdeskDefaults : $adminDefaults;
+        $isFrontdeskRole = $member->role === 'frontdesk';
+        $defaults = $isFrontdeskRole ? $frontdeskDefaults : $adminDefaults;
 
         if (empty($prefs)) {
             return $defaults[$type] ?? false;
@@ -75,7 +76,7 @@ class NotificationService
         $map    = is_array($prefs) ? $prefs : json_decode($prefs, true);
         $merged = array_merge($defaults, $map ?? []);
 
-        if ($member->role === 'frontdesk' && !array_key_exists($type, $frontdeskDefaults)) {
+        if ($isFrontdeskRole && !array_key_exists($type, $frontdeskDefaults)) {
             return false;
         }
 
