@@ -14,7 +14,7 @@ class StaffController extends Controller
     {
         $staff = Staff::orderByDesc('staff_id')->get();
 
-        $staffList = $staff->map(function ($s) {
+        $staffList = $staff->where('is_active', true)->map(function ($s) {
             return [
                 'staff_id'       => $s->staff_id,
                 'account_id'     => $s->account_id,
@@ -28,7 +28,23 @@ class StaffController extends Controller
                 'is_active'      => $s->is_active,
                 'created_at'     => $s->created_at,
             ];
-        });
+        })->values();
+
+        $inactiveArchive = $staff->where('is_active', false)->map(function ($s) {
+            return [
+                'staff_id'       => $s->staff_id,
+                'account_id'     => $s->account_id,
+                'first_name'     => $s->first_name,
+                'last_name'      => $s->last_name,
+                'email'          => $s->email,
+                'role'           => $s->role,
+                'contact_number' => $s->contact_number,
+                'shift_schedule' => $s->shift_schedule,
+                'duty_status'    => $s->duty_status,
+                'is_active'      => $s->is_active,
+                'created_at'     => $s->created_at,
+            ];
+        })->values();
 
         $deletedArchive = ArchivedStaff::orderByDesc('archived_at')->get()->map(function ($r) {
             return [
@@ -47,12 +63,15 @@ class StaffController extends Controller
             ];
         });
 
+        $activeStaff = $staff->where('is_active', true);
+
         return view('staff', [
-            'staffList'      => $staffList,
-            'totalStaff'     => $staff->count(),
-            'onDutyCount'    => $staff->where('duty_status', 'on_duty')->count(),
-            'offDutyCount'   => $staff->where('duty_status', 'off_duty')->count(),
-            'deletedArchive' => $deletedArchive,
+            'staffList'       => $staffList,
+            'totalStaff'      => $activeStaff->count(),
+            'onDutyCount'     => $activeStaff->where('duty_status', 'on_duty')->count(),
+            'offDutyCount'    => $activeStaff->where('duty_status', 'off_duty')->count(),
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
         ]);
     }
 
