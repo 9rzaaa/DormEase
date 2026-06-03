@@ -135,6 +135,11 @@
 
         .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--pink-light); }
 
+        .content-col .card,
+        .right-col .card {
+        border-color: var(--baby-pink);
+        }
+
         .logout-btn {
             display: flex;
             align-items: center;
