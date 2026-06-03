@@ -369,7 +369,7 @@
                 <span class="col-title">All</span>
                 <span class="col-count" id="active-count">0</span>
             </div>
-            <div id="active-col"></div>
+            <div id="active-col" style="display:flex;flex-direction:column;gap:.8rem;"></div>
         </div>
         <div class="col-section">
             <div class="col-header">
@@ -377,7 +377,7 @@
                 <span class="col-title">Closed</span>
                 <span class="col-count" id="closed-count">0</span>
             </div>
-            <div id="closed-col"></div>
+            <div id="closed-col" style="display:flex;flex-direction:column;gap:.8rem;"></div>
         </div>
     </div>
 
