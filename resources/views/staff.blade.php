@@ -714,7 +714,24 @@
                     <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
                 </div>
                 <div class="filter-divider"></div>
-                <span class="filter-label">Sort By:</span>
+                <span class="filter-label">Role:</span>
+                <select class="sort-select" id="filter-role" onchange="filterTable()">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="frontdesk">Front Desk</option>
+                    <option value="guard">Guard</option>
+                    <option value="staff">Staff</option>
+                </select>
+                <div class="filter-divider"></div>
+                <span class="filter-label">Duty:</span>
+                <select class="sort-select" id="filter-duty" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="on_duty">On Duty</option>
+                    <option value="off_duty">Off Duty</option>
+                    <option value="on_leave">On Leave</option>
+                </select>
+                <div class="filter-divider"></div>
+                <span class="filter-label">Sort:</span>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
@@ -1113,13 +1130,18 @@
     }
 
     function filterTable() {
-        var q = document.getElementById('search-input').value.toLowerCase();
+        var q    = document.getElementById('search-input').value.toLowerCase();
+        var role = document.getElementById('filter-role').value;
+        var duty = document.getElementById('filter-duty').value;
         filtered = staffList.filter(function(s) {
-            return (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
+            var matchSearch = (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
                 fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
                 (s.role           || '').toLowerCase().includes(q) ||
                 (s.contact_number || '').toLowerCase().includes(q) ||
                 (s.email          || '').toLowerCase().includes(q);
+            var matchRole = role === '' || s.role === role;
+            var matchDuty = duty === '' || s.duty_status === duty;
+            return matchSearch && matchRole && matchDuty;
         });
         currentPage = 1;
         renderTable();
@@ -1418,7 +1440,6 @@
 
         var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on' };
         var archiveLabel = archiveLabelMap[staffArchiveTab];
-        var reactivateBtn = '';
 
         list.innerHTML = data.map(function(r, i) {
             var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
