@@ -56,7 +56,6 @@
         cursor: pointer;
         font-family: var(--ff-body);
     }
-
     .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
 
     .btn-archive-open {
@@ -143,10 +142,11 @@
         .stats-row { grid-template-columns: 1fr; }
     }
 
+    /* ── Table card ── */
     .table-card {
         background: var(--white);
         border-radius: 16px;
-        border: 2px solid var(--bright-pink);
+        border: 1px solid var(--bright-pink);
         box-shadow: var(--shadow);
         overflow: hidden;
     }
@@ -182,110 +182,50 @@
         flex-wrap: nowrap;
     }
 
-    .table-controls .search-wrap {
-        position: relative;
-        flex-shrink: 0;
-    }
-
-    .table-controls .search-wrap input {
-        padding: .45rem .9rem;
-        border-radius: 9px;
-        border: 1.5px solid var(--border-pink);
-        font-size: .83rem;
-        width: 190px;
-        background: var(--white);
-        color: var(--black);
+    .ctrl-input {
+        padding: .5rem .9rem;
+        border-radius: 10px;
+        border: 1px solid var(--pink-100);
+        font-size: .85rem;
         outline: none;
-        transition: box-shadow .2s;
+        background: var(--white);
+        box-shadow: 0 4px 12px rgba(0,0,0,.1);
+        color: var(--ink);
+        font-family: var(--ff-body);
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .ctrl-input::placeholder { color: var(--gray); }
+    .ctrl-input:focus {
+        border-color: var(--hot-pink);
+        box-shadow: 0 0 0 2px rgba(232,23,93,.12), 0 4px 12px rgba(0,0,0,.08);
     }
 
-    .table-controls .search-wrap input:focus {
-        box-shadow: 0 0 0 2px var(--border-pink);
-    }
+    .ctrl-input-search { width: 160px; }
+    .ctrl-input-sort   { width: 120px; cursor: pointer; }
+    .ctrl-input-date   { width: 130px; cursor: pointer; }
 
-    .table-controls .search-wrap input::placeholder {
-        color: var(--gray);
-    }
-
-    .table-controls .date-range-wrap {
-        display: flex;
-        align-items: center;
-        gap: .35rem;
-        flex-shrink: 0;
-    }
-
-    .table-controls .date-range-wrap .range-label {
+    .ctrl-label {
         font-size: .8rem;
         font-weight: 700;
         color: var(--ink);
         white-space: nowrap;
     }
 
-    .table-controls .date-range-wrap .range-sep {
-        font-size: .8rem;
-        font-weight: 700;
-        color: var(--gray);
-        white-space: nowrap;
-    }
-
-    .table-controls .date-input {
-        padding: .42rem .7rem;
-        border-radius: 9px;
-        border: 1.5px solid var(--border-pink);
-        background: var(--white);
-        font-size: .82rem;
-        color: var(--black);
-        cursor: pointer;
-        outline: none;
-        transition: box-shadow .2s;
-        white-space: nowrap;
-    }
-
-    .table-controls .date-input:focus {
-        box-shadow: 0 0 0 2px var(--border-pink);
-    }
-
-    .table-controls .filter-label {
-        font-size: .8rem;
-        font-weight: 700;
-        color: var(--ink);
-        white-space: nowrap;
-    }
-
-    .table-controls .sort-select {
-        padding: .42rem .7rem;
-        border-radius: 9px;
-        border: 1.5px solid var(--border-pink);
-        background: var(--white);
-        font-size: .82rem;
-        color: var(--black);
-        cursor: pointer;
-        outline: none;
-        transition: box-shadow .2s;
-        white-space: nowrap;
-    }
-
-    .table-controls .sort-select:focus {
-        box-shadow: 0 0 0 2px var(--border-pink);
-    }
-
-    .table-controls .sort-select option {
-        color: var(--black);
-        background: var(--white);
-        font-weight: 700;
-    }
-
-    .table-controls .filter-divider {
+    .filter-divider {
         width: 1px;
         height: 20px;
-        background: var(--border-pink);
+        background: var(--bright-pink);
         flex-shrink: 0;
     }
 
-    .table-wrap {
-        overflow-x: auto;
-        border-top: 2px solid var(--bright-pink);
+    .range-sep {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--gray);
+        white-space: nowrap;
     }
+
+    .table-wrap { overflow-x: auto; }
 
     table {
         width: 100%;
@@ -303,30 +243,25 @@
         text-align: left;
         font-weight: 700;
         white-space: nowrap;
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
 
     th:nth-child(8),
-    th:nth-child(9) {
-        text-align: center;
-    }
+    th:nth-child(9) { text-align: center; }
 
     td {
         padding: .9rem 1rem;
         font-size: .875rem;
-        border-bottom: 1px solid var(--border);
         text-align: left;
         vertical-align: middle;
     }
 
     td:nth-child(8),
-    td:nth-child(9) {
-        text-align: center;
-    }
+    td:nth-child(9) { text-align: center; }
 
-    tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover { background: #fff7fb; }
 
+    /* ── Badges ── */
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
     .badge-completed { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
@@ -336,6 +271,7 @@
 
     .time-pending { color: var(--gray); font-style: italic; font-size: .78rem; }
 
+    /* ── Action buttons ── */
     .act-btn {
         width: 32px;
         height: 32px;
@@ -349,144 +285,384 @@
         transition: .2s;
         font-family: var(--ff-body);
     }
-
     .act-btn:hover {
-        border-color: var(--bright-pink);
-        box-shadow: 0 6px 14px rgba(232,23,93,.15);
+        border-color: var(--blush-pink);
+        box-shadow: 0 4px 12px rgba(232,23,93,.18);
+        background: #fff7fb;
     }
-
     .act-btn img {
         width: 14px;
         height: 14px;
         object-fit: contain;
     }
 
-    .id-photo-wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: .55rem;
-        margin-top: .8rem;
-    }
-
-    .id-photo-wrap img {
-        display: block;
-        width: auto;
-        height: auto;
-        max-width: 100%;
-        max-height: min(320px, 45vh);
-        object-fit: contain;
-        border-radius: 10px;
-        border: 1.5px solid var(--border-pink-mid);
-        background: var(--white);
-    }
-
-    .id-photo-wrap a {
-        font-size: .8rem;
-        font-weight: 700;
-        color: var(--hot-pink);
-        text-decoration: none;
-    }
-
-    .id-photo-wrap a:hover { text-decoration: underline; }
-
-    .no-id-photo {
-        margin: 0;
-        color: var(--ink-muted);
-        font-size: .82rem;
-        font-style: italic;
-    }
-
+    /* ══════════════════════════════════════
+       VISITOR MODAL
+    ══════════════════════════════════════ */
     .visitor-modal {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,.45);
+        background: rgba(20,0,10,.55);
         align-items: center;
         justify-content: center;
         z-index: 9999;
         padding: 20px;
+        backdrop-filter: blur(3px);
     }
 
     .visitor-modal-card {
         background: var(--white);
-        width: 660px;
+        width: 580px;
         max-width: 100%;
-        max-height: 90vh;
+        max-height: 92vh;
         overflow-y: auto;
-        border-radius: 28px;
-        padding: 2.2rem 2.5rem;
-        box-shadow: var(--shadow-pink-modal);
+        border-radius: 24px;
+        box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
         position: relative;
-        animation: modalFade .25s ease;
+        animation: modalFade .25s cubic-bezier(.22,1,.36,1);
+        display: flex;
+        flex-direction: column;
     }
 
+    .visitor-modal-card::-webkit-scrollbar { width: 4px; }
+    .visitor-modal-card::-webkit-scrollbar-track { background: transparent; }
+    .visitor-modal-card::-webkit-scrollbar-thumb { background: #f5b8cf; border-radius: 99px; }
+
     @keyframes modalFade {
-        from { opacity: 0; transform: translateY(10px) scale(.98); }
+        from { opacity: 0; transform: translateY(14px) scale(.97); }
         to   { opacity: 1; transform: translateY(0)    scale(1);   }
     }
 
-    .visitor-modal-close {
-        position: absolute;
-        top: 18px;
-        right: 22px;
-        border: none;
-        background: none;
-        font-size: 2rem;
-        color: var(--ink-muted);
-        cursor: pointer;
-        line-height: 1;
-        transition: color .2s;
+    /* Modal header */
+    .modal-header {
+        padding: 1.2rem 1.8rem .6rem;
+        border-bottom: 1px solid var(--bright-pink);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #fff5f9 0%, #ffffff 100%);
+        border-radius: 24px 24px 0 0;
     }
 
-    .visitor-modal-close:hover { color: var(--hot-pink); }
+    .modal-header-info { flex: 1; min-width: 0; }
 
-    .visitor-modal-header {
+    .modal-header-name {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--black);
+        letter-spacing: -.02em;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .modal-header-id {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        margin-top: .25rem;
+        letter-spacing: .04em;
+    }
+
+    .modal-header-badges {
+        display: flex;
+        gap: .4rem;
+        margin-top: .35rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-header-badge {
+        font-size: .7rem;
+        font-weight: 700;
+        padding: .22rem .65rem;
+        border-radius: 99px;
+        background: var(--petal);
+        color: var(--hot-pink);
+        border: 1px solid var(--baby-pink);
+        letter-spacing: .02em;
+    }
+
+    .modal-close-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        border: 1.5px solid var(--gray-light);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: 1rem;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: .8rem;
-        margin-bottom: 1.6rem;
+        justify-content: center;
+        transition: border-color .2s, color .2s, background .2s;
+        line-height: 1;
+        flex-shrink: 0;
+        margin-top: .1rem;
+    }
+    .modal-close-btn:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: #fff0f5; }
+
+    /* Modal tabs — only 2 now */
+    .modal-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--bright-pink);
+        background: var(--white);
+        padding: 0 1.2rem;
+        flex-shrink: 0;
     }
 
-    .visitor-modal-header h2 {
-        margin: 0;
-        font-size: 1.5rem;
+    .modal-tab {
+        padding: .8rem 1.1rem;
+        font-size: .8rem;
         font-weight: 700;
-        color: var(--ink);
-        letter-spacing: -.02em;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        border-bottom: 2.5px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        font-family: var(--ff-body);
+        letter-spacing: .02em;
+    }
+    .modal-tab:hover { color: var(--hot-pink); }
+    .modal-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+    /* Modal body */
+    .modal-body {
+        padding: 1.2rem 1.8rem 1.2rem;
+        flex: 1;
     }
 
-    .modal-section-title {
-        font-size: .72rem;
+    .modal-tab-panel { display: none; }
+    .modal-tab-panel.active { display: block; }
+
+    .modal-section-label {
+        font-size: .67rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        color: var(--hot-pink);
+        margin: 1rem 0 .55rem;
+    }
+    .modal-section-label:first-child { margin-top: 0; }
+
+    .modal-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .6rem .8rem;
+    }
+
+    .modal-info-item {
+        background: #fff5f9;
+        border: 1px solid #fce4ef;
+        border-radius: 12px;
+        padding: .7rem 1rem;
+        transition: background .15s;
+    }
+    .modal-info-item:hover { background: #ffeef5; }
+    .modal-info-item.full { grid-column: 1 / -1; }
+
+    .modal-info-item-label {
+        font-size: .65rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: .06em;
+        letter-spacing: .07em;
         color: var(--hot-pink);
-        margin: 1.1rem 0 .3rem;
+        margin-bottom: .22rem;
+        opacity: .8;
     }
 
-    .modal-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1.2rem;
-        padding-bottom: .95rem;
-        border-bottom: 1px solid var(--border-pink-mid);
-    }
-
-    .modal-label {
-        color: var(--ink-muted);
-        font-size: .82rem;
-        font-weight: 500;
-    }
-
-    .modal-value {
-        color: var(--ink);
-        font-size: .82rem;
+    .modal-info-item-value {
+        font-size: .88rem;
         font-weight: 600;
-        text-align: right;
+        color: var(--black);
+        line-height: 1.35;
     }
 
+    /* ── Time info row (replaces schedule tab) ── */
+    .modal-time-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: .6rem .8rem;
+        margin-top: .55rem;
+    }
+
+    /* ── Photo area ── */
+    .modal-photo-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: .25rem 0;
+    }
+
+    .modal-photo-frame {
+        width: 100%;
+        background: #fff5f9;
+        border: 1.5px solid #fce4ef;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+
+    .modal-photo-frame img {
+        width: 100%;
+        height: auto;
+        max-height: 320px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .modal-photo-no {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        color: var(--ink-muted);
+    }
+
+    .modal-photo-no-icon {
+        font-size: 2.4rem;
+        margin-bottom: .45rem;
+        opacity: .3;
+        display: block;
+    }
+
+    .modal-photo-no p {
+        margin: 0;
+        font-size: .83rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+    }
+
+    .modal-photo-actions {
+        display: flex;
+        gap: .65rem;
+    }
+
+    .modal-photo-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .55rem 1.2rem;
+        border-radius: 10px;
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: .2s;
+        font-family: var(--ff-body);
+        text-decoration: none;
+    }
+
+    .modal-photo-btn-primary {
+        background: var(--hot-pink);
+        color: var(--white);
+        border: none;
+    }
+    .modal-photo-btn-primary:hover { background: #c8144f; }
+
+    .modal-photo-btn-outline {
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--baby-pink);
+    }
+    .modal-photo-btn-outline:hover { border-color: var(--hot-pink); background: #fff7fb; }
+
+    /* ── Photo lightbox ── */
+    .photo-lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10,0,6,.88);
+        z-index: 10001;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(6px);
+        animation: lbFade .2s ease;
+    }
+
+    @keyframes lbFade {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .photo-lightbox-inner {
+        position: relative;
+        max-width: min(860px, 100%);
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .photo-lightbox-inner img {
+        max-width: 100%;
+        max-height: 78vh;
+        object-fit: contain;
+        border-radius: 14px;
+        box-shadow: 0 24px 80px rgba(0,0,0,.6);
+        animation: lbImg .25s cubic-bezier(.22,1,.36,1);
+    }
+
+    @keyframes lbImg {
+        from { transform: scale(.92); opacity: 0; }
+        to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .photo-lightbox-close {
+        position: absolute;
+        top: -14px;
+        right: -14px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.15);
+        border: 1.5px solid rgba(255,255,255,.3);
+        color: var(--white);
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .2s;
+    }
+    .photo-lightbox-close:hover { background: rgba(255,255,255,.28); }
+
+    .photo-lightbox-caption {
+        font-size: .78rem;
+        color: rgba(255,255,255,.55);
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .photo-lightbox-open-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .45rem 1.1rem;
+        border-radius: 9px;
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: rgba(255,255,255,.12);
+        color: var(--white);
+        border: 1.5px solid rgba(255,255,255,.25);
+        text-decoration: none;
+        transition: background .2s;
+        font-family: var(--ff-body);
+    }
+    .photo-lightbox-open-btn:hover { background: rgba(255,255,255,.22); }
+
+    /* ══════════════════════════════════════
+       ARCHIVE DRAWER
+    ══════════════════════════════════════ */
     .archive-backdrop {
         position: fixed;
         inset: 0;
@@ -711,9 +887,9 @@
         justify-content: center;
         line-height: 1;
     }
-    .archive-pill-purpose  { background: #fff0f7; color: var(--hot-pink); border: 1px solid var(--baby-pink); }
+    .archive-pill-purpose   { background: #fff0f7; color: var(--hot-pink); border: 1px solid var(--baby-pink); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
-    .archive-pill-deleted  { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
 
     .archive-card-footer {
         display: flex;
@@ -799,8 +975,10 @@
 
 @section('content')
 
+{{-- Archive backdrop --}}
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
+{{-- Archive drawer --}}
 <div class="archive-drawer" id="archive-drawer">
     <div class="archive-drawer-header">
         <div>
@@ -845,17 +1023,69 @@
     </div>
 </div>
 
+{{-- Visitor details modal --}}
 <div id="visitorModal" class="visitor-modal">
     <div class="visitor-modal-card">
-        <button type="button" class="visitor-modal-close" onclick="closeModal()">&times;</button>
-        <div class="visitor-modal-header">
-            <span style="font-size:1.7rem"></span>
-            <h2>Visitor Details</h2>
+
+        <div class="modal-header">
+            <div class="modal-header-info">
+                <div class="modal-header-name" id="modalHeaderName">—</div>
+                <div class="modal-header-id"   id="modalHeaderId">VST-000</div>
+                <div class="modal-header-badges" id="modalHeaderBadges"></div>
+            </div>
+            <button class="modal-close-btn" onclick="closeModal()">&#x2715;</button>
         </div>
-        <div id="modalContent"></div>
+
+        {{-- Tab nav — Schedule tab removed --}}
+        <div class="modal-tabs">
+            <button class="modal-tab active" id="mtab-info"  onclick="switchModalTab('info')">Visitor Info</button>
+            <button class="modal-tab"        id="mtab-photo" onclick="switchModalTab('photo')">ID Photo</button>
+        </div>
+
+        {{-- Tab body --}}
+        <div class="modal-body">
+
+            {{-- Info panel — includes schedule info inline --}}
+            <div class="modal-tab-panel active" id="mpanel-info">
+                <div class="modal-section-label">Personal</div>
+                <div class="modal-info-grid" id="minfo-personal"></div>
+
+                <div class="modal-section-label">Visit Details</div>
+                <div class="modal-info-grid" id="minfo-visit"></div>
+
+                <div class="modal-section-label">Schedule &amp; Attendance</div>
+                <div class="modal-info-grid modal-time-row" id="minfo-schedule"></div>
+
+                <div class="modal-section-label">Log Info</div>
+                <div class="modal-info-grid" id="minfo-log"></div>
+            </div>
+
+            {{-- Photo panel --}}
+            <div class="modal-tab-panel" id="mpanel-photo">
+                <div class="modal-section-label">ID Verification</div>
+                <div class="modal-info-grid" id="minfo-idtype" style="margin-bottom:1rem;"></div>
+                <div class="modal-photo-area" id="minfo-photo"></div>
+            </div>
+
+        </div>
     </div>
 </div>
 
+{{-- Photo lightbox --}}
+<div id="photoLightbox" class="photo-lightbox" onclick="closeLightbox(event)">
+    <div class="photo-lightbox-inner">
+        <button class="photo-lightbox-close" onclick="closeLightboxBtn()">&#x2715;</button>
+        <img id="lightboxImg" src="" alt="ID Photo">
+        <div style="display:flex;gap:.7rem;align-items:center;">
+            <div class="photo-lightbox-caption" id="lightboxCaption">ID Photo</div>
+            <a id="lightboxOpenLink" href="#" target="_blank" rel="noopener" class="photo-lightbox-open-btn">
+                Open full image &#x2197;
+            </a>
+        </div>
+    </div>
+</div>
+
+{{-- Main page --}}
 <div class="page-body">
 
     <div class="page-header">
@@ -912,34 +1142,29 @@
             </div>
 
             <div class="table-controls">
-                <div class="search-wrap">
-                    <input
-                        type="text"
-                        id="search-input"
-                        placeholder="Search visitor..."
-                        onkeyup="applyFilters()"
-                    >
-                </div>
+                <input
+                    type="text"
+                    id="search-input"
+                    class="ctrl-input ctrl-input-search"
+                    placeholder="Search visitor..."
+                    onkeyup="applyFilters()"
+                >
 
                 <div class="filter-divider"></div>
 
-                <div class="filter-group">
-                    <span class="filter-label">Sort:</span>
-                    <select id="sort-select" class="sort-select" onchange="applyFilters()">
-                        <option value="newest">Newest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="name">Name</option>
-                    </select>
-                </div>
+                <span class="ctrl-label">Sort:</span>
+                <select id="sort-select" class="ctrl-input ctrl-input-sort" onchange="applyFilters()">
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="name">Name</option>
+                </select>
 
                 <div class="filter-divider"></div>
 
-                <div class="date-range-wrap">
-                    <span class="range-label">Date:</span>
-                    <input type="date" id="date-from" class="date-input" onchange="applyFilters()">
-                    <span class="range-sep">—</span>
-                    <input type="date" id="date-to" class="date-input" onchange="applyFilters()">
-                </div>
+                <span class="ctrl-label">Date:</span>
+                <input type="date" id="date-from" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
+                <span class="range-sep">—</span>
+                <input type="date" id="date-to" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
             </div>
         </div>
 
@@ -990,6 +1215,7 @@
 
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
+    /* ── Formatters ── */
     function fmtDateTime(dt) {
         if (!dt) return '—';
         const d = new Date(dt);
@@ -1017,6 +1243,7 @@
              + ' ' + dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
     }
 
+    /* ── Filters & table render ── */
     function applyFilters() {
         const q    = document.getElementById('search-input').value.toLowerCase().trim();
         const from = document.getElementById('date-from').value;
@@ -1051,7 +1278,7 @@
         const tbody = document.getElementById('logs-tbody');
 
         if (!filtered.length) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:#bbb;font-size:.9rem;">No visitor logs found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2.5rem;color:#bbb;font-size:.9rem;border:1px solid var(--bright-pink);">No visitor logs found.</td></tr>';
             return;
         }
 
@@ -1104,121 +1331,124 @@
         return '<span class="badge ' + cls + '">' + label + '</span>';
     }
 
-    function exportLogsCsv() {
-        if (!filtered.length) { alert('No data to export.'); return; }
+    /* ── Modal helpers ── */
+    function infoItem(label, value, full) {
+        return '<div class="modal-info-item' + (full ? ' full' : '') + '">'
+            + '<div class="modal-info-item-label">' + label + '</div>'
+            + '<div class="modal-info-item-value">' + value + '</div>'
+            + '</div>';
+    }
 
-        var rows = [['Name', 'Expected Date', 'Expected Time', 'Time In', 'Time Out', 'Purpose', 'Tenant Visited', 'Logged By', 'Status']];
-        filtered.forEach(function(v) {
-            rows.push([
-                v.visitor_name     ?? '',
-                fmtDate(v.date_of_visit),
-                fmtTime(v.time_of_visit),
-                v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet',
-                v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside',
-                v.purpose        ?? '',
-                v.tenant?.full_name ?? '',
-                v.staff?.name    ?? '',
-                v.status         ?? '',
-            ]);
+    /* Only 2 tabs now */
+    function switchModalTab(tab) {
+        ['info', 'photo'].forEach(function(t) {
+            document.getElementById('mtab-' + t).classList.toggle('active',   t === tab);
+            document.getElementById('mpanel-' + t).classList.toggle('active', t === tab);
         });
-
-        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
-        var a   = document.createElement('a');
-        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'visitor_logs_' + new Date().toISOString().slice(0, 10) + '.csv';
-        a.click();
-        URL.revokeObjectURL(a.href);
     }
 
-    function exportLogsPdf() {
-        if (!filtered.length) { alert('No data to export.'); return; }
-
-        var win  = window.open('', '_blank');
-        var rows = filtered.map(function(v) {
-            return '<tr>'
-                + '<td>' + (v.visitor_name ?? '') + '</td>'
-                + '<td>' + fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit) + '</td>'
-                + '<td>' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '</td>'
-                + '<td>' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '</td>'
-                + '<td>' + (v.purpose ?? '') + '</td>'
-                + '<td>' + (v.tenant?.full_name ?? '') + '</td>'
-                + '<td>' + (v.staff?.name ?? '') + '</td>'
-                + '<td>' + (v.status ?? '') + '</td>'
-                + '</tr>';
-        }).join('');
-
-        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Visitor Logs - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Name</th><th>Expected Visit</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Tenant Visited</th><th>Logged By</th><th>Status</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
-    }
-
+    /* ── Open visitor modal ── */
     function viewVisitor(id) {
         const v = logs.find(function(item) { return item.id === id; });
         if (!v) return;
 
-        const timeInDisplay = v.arrival_time
-            ? fmtDateTime(v.arrival_time)
-            : '<span style="color:#bbb;font-style:italic">Not yet checked in</span>';
+        /* Header */
+        document.getElementById('modalHeaderName').textContent = v.visitor_name ?? '—';
+        document.getElementById('modalHeaderId').textContent   = 'VST-' + String(v.id).padStart(3, '0');
 
-        const timeOutDisplay = v.departure_time
-            ? fmtDateTime(v.departure_time)
-            : (v.arrival_time ? '<span style="color:#c8960c">Still Inside</span>' : '—');
+        var bBadges = '';
+        if (v.status)  bBadges += '<span class="modal-header-badge">' + v.status.replace(/\b\w/g, function(c){ return c.toUpperCase(); }) + '</span>';
+        if (v.purpose) bBadges += '<span class="modal-header-badge">' + v.purpose + '</span>';
+        document.getElementById('modalHeaderBadges').innerHTML = bBadges;
 
-        var idPhotoHtml = '';
+        /* Personal */
+        document.getElementById('minfo-personal').innerHTML =
+            infoItem('Full Name',    v.visitor_name ?? '—')
+            + infoItem('Contact No.', v.contact_no  ?? '—');
+
+        /* Visit Details */
+        document.getElementById('minfo-visit').innerHTML =
+            infoItem('Purpose',        v.purpose            ?? '—')
+            + infoItem('Tenant Visited', v.tenant?.full_name ?? '—');
+
+        /* Schedule & Attendance — merged into Info tab */
+        const timeInVal  = v.arrival_time   ? fmtDateTime(v.arrival_time)   : '<span style="color:#bbb;font-style:italic;font-size:.8rem">Not yet</span>';
+        const timeOutVal = v.departure_time ? fmtDateTime(v.departure_time) : (v.arrival_time ? '<span style="color:#c8960c;font-weight:700">Still Inside</span>' : '—');
+
+        document.getElementById('minfo-schedule').innerHTML =
+            infoItem('Expected Date', fmtDate(v.date_of_visit))
+            + infoItem('Expected Time', fmtTime(v.time_of_visit))
+            + infoItem('Time In',  timeInVal)
+            + infoItem('Time Out', timeOutVal);
+
+        /* Log Info */
+        document.getElementById('minfo-log').innerHTML =
+            infoItem('Status',    getStatusBadge(v.status))
+            + infoItem('Logged By', v.staff?.name ?? '—');
+
+        /* Photo tab */
+        document.getElementById('minfo-idtype').innerHTML =
+            infoItem('ID Type', v.id_type ?? '—', true);
+
+        var photoArea = '';
         if (v.id_photo) {
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
-            idPhotoHtml = '<div class="id-photo-wrap">'
-                + '<img src="' + src + '" alt="ID Photo" onerror="this.style.display=\'none\'">'
-                + '<a href="' + src + '" target="_blank" rel="noopener">Open full image &#x2197;</a>'
+            photoArea =
+                '<div class="modal-photo-frame">'
+                    + '<img src="' + src + '" alt="ID Photo" onerror="this.closest(\'.modal-photo-frame\').innerHTML=\'<div class=\\\"modal-photo-no\\\"><span class=\\\"modal-photo-no-icon\\\">🪪</span><p>Could not load photo.</p></div>\''
+                + '</div>'
+                + '<div class="modal-photo-actions">'
+                    + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="openLightbox(\'' + src + '\', \'' + (v.id_type ?? 'ID Photo') + '\')">'
+                        + '🔍 View Photo'
+                    + '</button>'
+                    + '<a class="modal-photo-btn modal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
+                        + '↗ Open Full Image'
+                    + '</a>'
                 + '</div>';
         } else {
-            idPhotoHtml = '<div class="id-photo-wrap"><p class="no-id-photo">No ID photo uploaded.</p></div>';
+            photoArea =
+                '<div class="modal-photo-frame" style="width:100%;">'
+                    + '<div class="modal-photo-no">'
+                        + '<span class="modal-photo-no-icon">🪪</span>'
+                        + '<p>No ID photo uploaded.</p>'
+                    + '</div>'
+                + '</div>';
         }
+        document.getElementById('minfo-photo').innerHTML = photoArea;
 
-        document.getElementById('modalContent').innerHTML =
-            '<div class="modal-section-title">Visitor Info</div>'
-            + row('Visitor ID',     'VST-' + String(v.id).padStart(3, '0'))
-            + row('Full Name',      v.visitor_name ?? '—')
-            + row('Contact No.',    v.contact_no   ?? '—')
-            + row('Purpose',        v.purpose      ?? '—')
-            + row('Tenant Visited', v.tenant?.full_name ?? '—')
-            + '<div class="modal-section-title">Schedule</div>'
-            + row('Expected Date',  fmtDate(v.date_of_visit))
-            + row('Expected Time',  fmtTime(v.time_of_visit))
-            + row('Time In',        timeInDisplay)
-            + row('Time Out',       timeOutDisplay)
-            + '<div class="modal-section-title">Log Info</div>'
-            + row('Status',    getStatusBadge(v.status))
-            + row('Logged By', v.staff?.name ?? '—')
-            + '<div class="modal-section-title">ID Verification</div>'
-            + row('ID Type', v.id_type ?? '—')
-            + idPhotoHtml;
-
+        /* Reset to first tab and show */
+        switchModalTab('info');
         document.getElementById('visitorModal').style.display = 'flex';
-    }
-
-    function row(label, value) {
-        return '<div class="modal-row">'
-            + '<span class="modal-label">' + label + '</span>'
-            + '<span class="modal-value">' + value + '</span>'
-            + '</div>';
     }
 
     function closeModal() {
         document.getElementById('visitorModal').style.display = 'none';
     }
 
-    window.onclick = function(e) {
+    window.addEventListener('click', function(e) {
         if (e.target === document.getElementById('visitorModal')) closeModal();
-    };
+    });
 
+    /* ── Photo lightbox ── */
+    function openLightbox(src, caption) {
+        var lb = document.getElementById('photoLightbox');
+        document.getElementById('lightboxImg').src             = src;
+        document.getElementById('lightboxOpenLink').href       = src;
+        document.getElementById('lightboxCaption').textContent = caption || 'ID Photo';
+        lb.style.display = 'flex';
+    }
+
+    function closeLightbox(e) {
+        if (e.target === document.getElementById('photoLightbox')) {
+            document.getElementById('photoLightbox').style.display = 'none';
+        }
+    }
+
+    function closeLightboxBtn() {
+        document.getElementById('photoLightbox').style.display = 'none';
+    }
+
+    /* ── Archive ── */
     function openArchive() {
         document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors) ? completedVisitors.length : 0;
         document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)   ? deletedVisitors.length   : 0;
@@ -1295,6 +1525,62 @@
                 + '</div>'
                 + '</div>';
         }).join('');
+    }
+
+    /* ── CSV/PDF exports ── */
+    function exportLogsCsv() {
+        if (!filtered.length) { alert('No data to export.'); return; }
+
+        var rows = [['Name', 'Expected Date', 'Expected Time', 'Time In', 'Time Out', 'Purpose', 'Tenant Visited', 'Logged By', 'Status']];
+        filtered.forEach(function(v) {
+            rows.push([
+                v.visitor_name     ?? '',
+                fmtDate(v.date_of_visit),
+                fmtTime(v.time_of_visit),
+                v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet',
+                v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside',
+                v.purpose        ?? '',
+                v.tenant?.full_name ?? '',
+                v.staff?.name    ?? '',
+                v.status         ?? '',
+            ]);
+        });
+
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'visitor_logs_' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function exportLogsPdf() {
+        if (!filtered.length) { alert('No data to export.'); return; }
+
+        var win  = window.open('', '_blank');
+        var rows = filtered.map(function(v) {
+            return '<tr>'
+                + '<td>' + (v.visitor_name ?? '') + '</td>'
+                + '<td>' + fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit) + '</td>'
+                + '<td>' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '</td>'
+                + '<td>' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '</td>'
+                + '<td>' + (v.purpose ?? '') + '</td>'
+                + '<td>' + (v.tenant?.full_name ?? '') + '</td>'
+                + '<td>' + (v.staff?.name ?? '') + '</td>'
+                + '<td>' + (v.status ?? '') + '</td>'
+                + '</tr>';
+        }).join('');
+
+        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Visitor Logs - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Name</th><th>Expected Visit</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Tenant Visited</th><th>Logged By</th><th>Status</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
     }
 
     function exportArchiveCsv() {
@@ -1378,6 +1664,7 @@
         win.print();
     }
 
+    /* ── Export dropdown positioning ── */
     function getMenuForDropdown(id) {
         return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
             return m._sourceDropdownId === id;
