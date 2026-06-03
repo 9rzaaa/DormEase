@@ -1033,7 +1033,11 @@
         window.__dismissPanic = function() {
             var banner = document.getElementById('__panic-alert-banner');
             if (banner) banner.remove();
-            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
+            if (__panicBeepInterval) {
+                clearInterval(__panicBeepInterval);
+                __panicBeepInterval = null;
+            }
+            sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
         };
 
         function __fireBrowserNotification(type, location) {
@@ -1047,7 +1051,7 @@
             fetch('{{ url("/emergency/poll-panic") }}', {
                 headers: { 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '' }
             }).then(function(res) { return res.json(); }).then(function(data) {
-                if (data.has_panic && data.report_id !== __panicLastId) {
+                if (data.has_panic && data.report_id !== __panicLastId && !sessionStorage.getItem('panicDismissed_' + data.report_id)) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
                     __showPanicBanner(data.type, data.location);
@@ -1081,6 +1085,7 @@
             var isCritical = report.urgency_level === 'critical';
             var banner = document.createElement('div');
             banner.id = '__critical-banner-' + report.report_id;
+            banner.__reportId = report.report_id;
             banner.style.cssText = [
                 'position:fixed','bottom:2rem','right:2rem','z-index:9000','width:340px',
                 'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
@@ -1122,6 +1127,7 @@
             var el = document.getElementById(id);
             if (!el) return;
             clearTimeout(el.__dismissTimer);
+            sessionStorage.setItem('criticalDismissed_' + el.__reportId, '1');
             el.style.transform = 'translateX(380px)';
             setTimeout(function() {
                 if (el.parentNode) el.parentNode.removeChild(el);
@@ -1137,7 +1143,7 @@
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 (data.reports || []).forEach(function(r) {
-                    if (!__criticalSeen.has(r.report_id)) {
+                    if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
                         __criticalSeen.add(r.report_id);
                         if (__criticalSeen.size > 1) {
                             __criticalQueue.push(r);
