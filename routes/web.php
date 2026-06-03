@@ -56,7 +56,11 @@ Route::post('/login', function () {
         return back()->withErrors(['email' => 'Incorrect password.'])->withInput();
     }
 
-    if ($user->role !== $role) {
+    $staffRoles = ['frontdesk', 'guard', 'staff'];
+    if ($user->role === 'admin' && $role !== 'admin') {
+        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+    }
+    if (in_array($user->role, $staffRoles) && $role !== 'frontdesk') {
         return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
     }
 
@@ -71,7 +75,7 @@ Route::post('/login', function () {
         session()->flash('prompt_temp_password', true);
     }
 
-    return $role === 'frontdesk'
+    return in_array($user->role, $staffRoles)
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
 });
