@@ -997,6 +997,12 @@
         font-size: .9rem;
     }
 
+    .dir-card-icon img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
     .dir-icon-police   { background: #e8f0fe; }
     .dir-icon-fire     { background: #fff3e0; }
     .dir-icon-medical  { background: #e8faf5; }
@@ -1091,6 +1097,13 @@
         transition: background .15s, border-color .15s, color .15s;
     }
 
+    .dir-suggested-chip .chip-icon {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+    .dir-suggested-chip:hover .chip-icon { filter: brightness(0) invert(1); }
+
     .dir-suggested-chip:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
 
     .dir-suggested-chip span {
@@ -1112,13 +1125,13 @@
             <div class="dorm-sub">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <div class="header-actions">
-            <button class="btn-archive-open" onclick="openArchive()">
-                <img src="{{ asset('icons/archive.png') }}" alt="">
-                Archive / History
-            </button>
             <button class="btn-directory" onclick="openModal('dir-modal')">
                 <img src="{{ asset('icons/emergdir.png') }}" alt="">
                 Emergency Directory
+            </button>
+            <button class="btn-archive-open" onclick="openArchive()">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+                Archive / History
             </button>
             <div class="export-dropdown" id="export-dropdown-main">
                 <button class="btn-export" onclick="toggleExportDropdown('export-dropdown-main')">
@@ -1288,7 +1301,7 @@
         <div class="dir-section-title">National Emergency</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-general">&#128222;</div>
+                <div class="dir-card-icon dir-icon-general"><img src="{{ asset('icons/phone.png') }}" alt=""></div>
                 <div class="dir-card-name">National Emergency Hotline</div>
             </div>
             <div class="dir-card-numbers">
@@ -1299,7 +1312,7 @@
         <div class="dir-section-title">Police</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">Philippine National Police (PNP)</div>
             </div>
             <div class="dir-card-numbers">
@@ -1330,7 +1343,7 @@
         <div class="dir-section-title">Fire</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-fire">&#128293;</div>
+                <div class="dir-card-icon dir-icon-fire"><img src="{{ asset('icons/fire.png') }}" alt=""></div>
                 <div class="dir-card-name">Bureau of Fire Protection (NCR)</div>
             </div>
             <div class="dir-card-numbers">
@@ -1342,7 +1355,7 @@
         <div class="dir-section-title">Medical</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">University of Santo Tomas Hospital</div>
             </div>
             <div class="dir-card-numbers">
@@ -1381,7 +1394,7 @@
         <div class="dir-section-title">Red Cross</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-redcross">&#10010;</div>
+                <div class="dir-card-icon dir-icon-redcross"><img src="{{ asset('icons/redcross.png') }}" alt=""></div>
                 <div class="dir-card-name">Philippine Red Cross</div>
             </div>
             <div class="dir-card-numbers">
@@ -2023,16 +2036,17 @@
         );
     @endif
 
+    const baseUrl = '{{ asset("icons/") }}';
     const HOTLINES = [
-        { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency'], icon: '&#128222;', category: 'general' },
-        { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: '&#128110;', category: 'police' },
-        { name: 'Manila Police District', numbers: ['0919-995-0976', '0917-899-2092'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: '&#128110;', category: 'police' },
-        { name: 'Bureau of Fire Protection (NCR)', numbers: ['(02) 8426-0219', '(02) 8426-0246'], tags: ['fire','smoke','burning','flames'], icon: '&#128293;', category: 'fire' },
-        { name: 'University of Santo Tomas Hospital', numbers: ['(02) 8731-3001'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
-        { name: 'Ospital ng Sampaloc', numbers: ['(02) 8749-0207', '0915-069-4087'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
-        { name: 'Chinese General Hospital', numbers: ['(02) 8711-4141'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
-        { name: 'Jose R. Reyes Memorial Medical Center', numbers: ['(02) 8711-9491'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
-        { name: 'Philippine Red Cross', numbers: ['143', '(02) 8790-2300'], tags: ['medical','injury','accident','disaster','flood','fire','emergency'], icon: '&#10010;', category: 'redcross' },
+        { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency'], icon: baseUrl + 'phone.png', category: 'general' },
+        { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: baseUrl + 'police.png', category: 'police' },
+        { name: 'Manila Police District', numbers: ['0919-995-0976', '0917-899-2092'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: baseUrl + 'police.png', category: 'police' },
+        { name: 'Bureau of Fire Protection (NCR)', numbers: ['(02) 8426-0219', '(02) 8426-0246'], tags: ['fire','smoke','burning','flames'], icon: baseUrl + 'fire.png', category: 'fire' },
+        { name: 'University of Santo Tomas Hospital', numbers: ['(02) 8731-3001'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png', category: 'medical' },
+        { name: 'Ospital ng Sampaloc', numbers: ['(02) 8749-0207', '0915-069-4087'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png', category: 'medical' },
+        { name: 'Chinese General Hospital', numbers: ['(02) 8711-4141'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png', category: 'medical' },
+        { name: 'Jose R. Reyes Memorial Medical Center', numbers: ['(02) 8711-9491'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png', category: 'medical' },
+        { name: 'Philippine Red Cross', numbers: ['143', '(02) 8790-2300'], tags: ['medical','injury','accident','disaster','flood','fire','emergency'], icon: baseUrl + 'redcross.png', category: 'redcross' },
     ];
 
     function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
