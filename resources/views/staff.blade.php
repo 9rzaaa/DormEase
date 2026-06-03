@@ -1365,11 +1365,6 @@
         return date + ' ' + time;
     }
 
-    function fmtDateShort(d) {
-        if (!d) return '\u2014';
-        return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
     function openStaffArchive() {
         document.getElementById('sad-drawer').classList.add('open');
         document.getElementById('sad-backdrop').classList.add('open');
@@ -1425,13 +1420,9 @@
         var archiveLabel = archiveLabelMap[staffArchiveTab];
 
         list.innerHTML = data.map(function(r, i) {
-            var timeDisplay = staffArchiveTab === 'deleted'
-                ? fmtDatePlain(r.archived_at)
-                : fmtDateShort(r.created_at);
-
-            var archivedDisplay = staffArchiveTab === 'deleted'
-                ? fmtDatePlain(r.archived_at)
-                : fmtDateShort(r.created_at);
+            var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.updated_at;
+            var timeDisplay = fmtDatePlain(dateValue);
+            var archivedDisplay = fmtDatePlain(dateValue);
 
             return '<div class="sad-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="sad-card-top">'
@@ -1461,9 +1452,7 @@
         if (format === 'pdf') {
             var win  = window.open('', '_blank');
             var rows = source.map(function(r) {
-                var archiveDateDisplay = staffArchiveTab === 'deleted'
-                    ? fmtDatePlain(r.archived_at)
-                    : fmtDateShort(r.created_at);
+                var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.updated_at;
                 return '<tr>'
                     + '<td>' + (r.account_id || r.staff_code || '') + '</td>'
                     + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
@@ -1471,7 +1460,7 @@
                     + '<td>' + (r.role || '') + '</td>'
                     + '<td>' + (r.shift_schedule || '') + '</td>'
                     + '<td>' + (r.duty_status || '') + '</td>'
-                    + '<td>' + archiveDateDisplay + '</td>'
+                    + '<td>' + fmtDatePlain(dateValue) + '</td>'
                     + '</tr>';
             }).join('');
             win.document.write('<!DOCTYPE html><html><head><title>Staff Archive - ' + tabLabel + '</title>'
@@ -1489,7 +1478,7 @@
 
         var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', archiveColLabel]];
         source.forEach(function(r) {
-            var archiveDateDisplay = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.created_at || '');
+            var dateValue = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.updated_at || '');
             rows.push([
                 r.account_id     || r.staff_code || '',
                 r.first_name,
@@ -1499,7 +1488,7 @@
                 r.role           || '',
                 r.shift_schedule || '',
                 r.duty_status    || '',
-                archiveDateDisplay,
+                dateValue,
             ]);
         });
         var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');

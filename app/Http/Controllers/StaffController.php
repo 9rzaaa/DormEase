@@ -43,6 +43,7 @@ class StaffController extends Controller
                 'duty_status'    => $s->duty_status,
                 'is_active'      => $s->is_active,
                 'created_at'     => $s->created_at,
+                'updated_at'     => $s->updated_at,
             ];
         })->values();
 
