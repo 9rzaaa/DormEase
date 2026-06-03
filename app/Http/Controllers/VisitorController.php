@@ -221,6 +221,40 @@ class VisitorController extends Controller
         return back()->with('success', 'Visitor status updated successfully.');
     }
 
+    public function notifyTenant($id)
+    {
+        $visitor = VisitorLog::with('tenant')->findOrFail($id);
+
+        if (!$visitor->tenant_id || !$visitor->tenant) {
+            return response()->json([
+                'message' => 'This visitor is not linked to a tenant.',
+            ], 422);
+        }
+
+        if (in_array($visitor->status, ['completed', 'deleted', 'rejected'], true)) {
+            return response()->json([
+                'message' => 'This visitor can no longer be announced to the tenant.',
+            ], 422);
+        }
+
+        $visitorName = $visitor->visitor_name ?: 'Your visitor';
+        $tokenCount = app(TenantPushNotificationService::class)->sendPushOnlyToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor arriving soon',
+            body: "{$visitorName} is coming soon. Please prepare to receive them.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
+        return response()->json([
+            'message' => $tokenCount > 0
+                ? 'Tenant push notification sent.'
+                : 'No active push notification device found for this tenant.',
+            'sent' => $tokenCount > 0,
+        ]);
+    }
+
     private function formatVisitorLogs($visitors)
     {
         return collect($visitors)->map(function (VisitorLog $visitor) {

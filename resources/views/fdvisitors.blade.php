@@ -849,7 +849,7 @@
                             + '<button class="act-btn blue" title="Log Time Out" ' + (!canTimeout ? 'disabled' : '') + ' onclick="openTimeout(' + v.visitor_id + ', \'' + (v.visitor_name ?? '').replace(/'/g, "\\'") + '\')">'
                                 + '<img src="{{ asset('icons/logout.png') }}" alt="Time Out">'
                             + '</button>'
-                            + '<button class="act-btn" title="Notify Tenant (coming soon)" onclick="showToast(\'Notify Tenant feature coming soon.\', \'\')">'
+                            + '<button class="act-btn" title="Notify Tenant" ' + (!v.tenant_id ? 'disabled' : '') + ' onclick="notifyTenant(' + v.visitor_id + ', this)">'
                                 + '<img src="{{ asset('icons/bell.png') }}" alt="Notify">'
                             + '</button>'
                         + '</div>'
@@ -975,6 +975,36 @@
         document.getElementById('timeout-input').value      = new Date().toISOString().slice(0, 16);
         closeModal('view-modal');
         openModal('timeout-modal');
+    }
+
+    function notifyTenant(id, btn) {
+        if (!id || !btn || btn.disabled) return;
+
+        btn.disabled = true;
+        showToast('Sending tenant push notification...', '');
+
+        fetch('/visitors/' + id + '/notify-tenant', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(function(res) {
+            return res.json().then(function(data) {
+                return { ok: res.ok, data: data };
+            });
+        })
+        .then(function(result) {
+            showToast(result.data.message || (result.ok ? 'Tenant notified.' : 'Unable to notify tenant.'), result.ok ? 'success' : 'error');
+        })
+        .catch(function() {
+            showToast('Unable to notify tenant right now.', 'error');
+        })
+        .finally(function() {
+            btn.disabled = false;
+        });
     }
 
     function exportVisitorsCsv() {

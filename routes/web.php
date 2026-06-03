@@ -120,6 +120,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/visitors', [VisitorController::class, 'adminIndex'])->name('visitors.index');
     Route::post('/visitors/store', [VisitorController::class, 'store'])->name('visitors.store');
     Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
+    Route::post('/visitors/{id}/notify-tenant', [VisitorController::class, 'notifyTenant'])->name('visitors.notify-tenant');
     Route::put('/visitors/timein/{id}', [VisitorController::class, 'timein'])->name('visitors.timein');
     Route::put('/visitors/{id}/status', [VisitorController::class, 'updateStatus'])->name('visitors.status');
 
