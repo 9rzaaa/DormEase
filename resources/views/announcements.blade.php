@@ -253,7 +253,7 @@
     }
 
     .kanban-col-header.sched-header{
-        border-bottom-color:#7c3aed;
+        border-bottom-color:var(--hot-pink);
     }
 
     .col-dot{
@@ -283,8 +283,8 @@
     .col-count-sched{
         font-size:.78rem;
         font-weight:700;
-        color:#7c3aed;
-        background:#f5f3ff;
+        color:var(--hot-pink);
+        background:var(--pink-50);
         border-radius:20px;
         padding:.1rem .55rem;
     }
@@ -312,12 +312,12 @@
     }
 
     .ann-card.sched-card{
-        border-color:#ede9fe;
-        background:#faf9ff;
+        border-color:var(--pink-100);
+        background:var(--blush);
     }
 
     .ann-card.sched-card:hover{
-        box-shadow:0 6px 20px rgba(124,58,237,.12);
+        box-shadow:0 6px 20px rgba(232,23,93,.12);
     }
 
     .ann-card-top{
@@ -422,9 +422,9 @@
         gap:.3rem;
         font-size:.7rem;
         font-weight:700;
-        color:#7c3aed;
-        background:#f5f3ff;
-        border:1px solid #ddd6fe;
+        color:var(--hot-pink);
+        background:var(--petal);
+        border:1px solid var(--pink-200);
         border-radius:6px;
         padding:.18rem .5rem;
         letter-spacing:.02em;
@@ -750,8 +750,8 @@
         align-items:center;
         justify-content:space-between;
         padding:.7rem .9rem;
-        background:#f5f3ff;
-        border:1.5px solid #ddd6fe;
+        background:var(--petal);
+        border:1.5px solid var(--pink-100);
         border-radius:10px;
         margin-bottom:.9rem;
         cursor:pointer;
@@ -760,8 +760,8 @@
     }
 
     .schedule-toggle-row:hover{
-        background:#ede9fe;
-        border-color:#c4b5fd;
+        background:var(--blush);
+        border-color:var(--pink-200);
     }
 
     .schedule-toggle-label{
@@ -770,7 +770,7 @@
         gap:.55rem;
         font-size:.87rem;
         font-weight:700;
-        color:#5b21b6;
+        color:var(--hot-pink);
     }
 
     .schedule-toggle-label svg{
@@ -783,14 +783,14 @@
         width:36px;
         height:20px;
         border-radius:99px;
-        background:#c4b5fd;
+        background:var(--pink-200);
         position:relative;
         transition:background .2s;
         flex-shrink:0;
     }
 
     .schedule-toggle-switch.on{
-        background:#7c3aed;
+        background:var(--hot-pink);
     }
 
     .schedule-toggle-switch::after{
@@ -813,8 +813,8 @@
     .schedule-fields{
         display:none;
         padding:.8rem;
-        background:#faf9ff;
-        border:1.5px solid #ede9fe;
+        background:var(--blush);
+        border:1.5px solid var(--pink-100);
         border-radius:10px;
         margin-bottom:.9rem;
         gap:.8rem;
@@ -830,14 +830,14 @@
     }
 
     .schedule-fields .modal-field label{
-        color:#5b21b6;
+        color:var(--hot-pink);
         font-weight:600;
     }
 
     .schedule-fields input[type="datetime-local"]{
         width:100%;
         box-sizing:border-box;
-        border:1.5px solid #ddd6fe;
+        border:1.5px solid var(--pink-100);
         border-radius:9px;
         padding:.55rem .85rem;
         font-size:.88rem;
@@ -848,13 +848,13 @@
     }
 
     .schedule-fields input[type="datetime-local"]:focus{
-        border-color:#7c3aed;
+        border-color:var(--hot-pink);
         outline:none;
     }
 
     .schedule-note{
         font-size:.75rem;
-        color:#6d28d9;
+        color:var(--bright-pink);
         margin-top:.35rem;
         line-height:1.5;
     }
@@ -1052,7 +1052,7 @@
     .aad-pill-high    {background:#fff0f0;color:var(--red);border:1px solid #ffd6d6;}
     .aad-pill-active  {background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
     .aad-pill-closed  {background:var(--blush);color:var(--ink-muted);border:1px solid var(--pink-100);}
-    .aad-pill-scheduled{background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe;}
+    .aad-pill-scheduled{background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
 
     .aad-card-deleted{
         display:flex;
@@ -1227,8 +1227,8 @@
                 <button class="compose-tool-btn" title="Attach file" onclick="openModal('post-modal')">
                     <img src="{{ asset('icons/attach.png') }}" alt="">
                 </button>
-                <button class="compose-tool-btn" title="Schedule" onclick="openModal('post-modal')" style="border-color:#ddd6fe;background:#faf9ff;" title="Schedule announcement">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <button class="compose-tool-btn" onclick="openModal('post-modal')" style="border-color:var(--pink-100);background:var(--petal);" title="Schedule announcement">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--hot-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </button>
             </div>
             <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openModal('post-modal')">
@@ -1420,7 +1420,7 @@
 
         <div class="kanban-col">
             <div class="kanban-col-header sched-header">
-                <span class="col-dot" style="background:#7c3aed"></span>
+                <span class="col-dot" style="background:var(--hot-pink)"></span>
                 <span class="col-title">Scheduled</span>
                 <span class="col-count-sched">{{ $scheduled->count() }}</span>
             </div>
@@ -1929,7 +1929,7 @@
             <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
             <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
             ${isScheduled
-                ? `<div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:#7c3aed;">${formatDate(ann.scheduled_at)}</span></div>`
+                ? `<div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:var(--hot-pink);">${formatDate(ann.scheduled_at)}</span></div>`
                 : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>`
             }
             <div class="view-content">${escapeHtml(ann.content || '')}</div>
