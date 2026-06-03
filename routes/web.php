@@ -122,6 +122,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
     Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
     Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
+    Route::post('/staff/{id}/reactivate', [StaffController::class, 'reactivate'])->name('staff.reactivate');
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
