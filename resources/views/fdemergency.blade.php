@@ -964,19 +964,15 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        background: var(--pink-100);
     }
 
     .dir-card-icon img {
         width: 20px;
         height: 20px;
         object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
-
-    .dir-icon-police   { background: #e8f0fe; }
-    .dir-icon-fire     { background: #fff3e0; }
-    .dir-icon-medical  { background: #e8faf5; }
-    .dir-icon-redcross { background: #fff0f0; }
-    .dir-icon-general  { background: var(--petal); }
 
     .dir-card-name {
         font-size: .83rem;
@@ -1084,6 +1080,13 @@
     }
 
     .dir-suggested-chip:hover span { color: var(--white); }
+
+    .report-hotline-wrap {
+        margin-bottom: 1rem;
+        display: none;
+    }
+
+    .report-hotline-wrap.visible { display: block; }
 </style>
 @endsection
 
@@ -1278,7 +1281,7 @@
         <div class="dir-section-title">National Emergency</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-general"><img src="{{ asset('icons/phone.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/phone.png') }}" alt=""></div>
                 <div class="dir-card-name">National Emergency Hotline</div>
             </div>
             <div class="dir-card-numbers">
@@ -1289,7 +1292,7 @@
         <div class="dir-section-title">Police</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">Philippine National Police (PNP)</div>
             </div>
             <div class="dir-card-numbers">
@@ -1299,7 +1302,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">Manila Police District</div>
             </div>
             <div class="dir-card-numbers">
@@ -1309,7 +1312,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-police"><img src="{{ asset('icons/police.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/police.png') }}" alt=""></div>
                 <div class="dir-card-name">PNP Text Hotline</div>
             </div>
             <div class="dir-card-numbers">
@@ -1320,7 +1323,7 @@
         <div class="dir-section-title">Fire</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-fire"><img src="{{ asset('icons/fire.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/fire.png') }}" alt=""></div>
                 <div class="dir-card-name">Bureau of Fire Protection (NCR)</div>
             </div>
             <div class="dir-card-numbers">
@@ -1332,7 +1335,7 @@
         <div class="dir-section-title">Medical</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">University of Santo Tomas Hospital</div>
             </div>
             <div class="dir-card-numbers">
@@ -1341,7 +1344,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Ospital ng Sampaloc</div>
             </div>
             <div class="dir-card-numbers">
@@ -1351,7 +1354,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Chinese General Hospital</div>
             </div>
             <div class="dir-card-numbers">
@@ -1360,7 +1363,7 @@
         </div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-medical"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/hospital.png') }}" alt=""></div>
                 <div class="dir-card-name">Jose R. Reyes Memorial Medical Center</div>
             </div>
             <div class="dir-card-numbers">
@@ -1371,7 +1374,7 @@
         <div class="dir-section-title">Red Cross</div>
         <div class="dir-card">
             <div class="dir-card-left">
-                <div class="dir-card-icon dir-icon-redcross"><img src="{{ asset('icons/redcross.png') }}" alt=""></div>
+                <div class="dir-card-icon"><img src="{{ asset('icons/redcross.png') }}" alt=""></div>
                 <div class="dir-card-name">Philippine Red Cross</div>
             </div>
             <div class="dir-card-numbers">
@@ -1401,7 +1404,7 @@
             <div class="modal-grid">
                 <div class="em-modal-field">
                     <label>Emergency Type</label>
-                    <select name="emergency_type" required>
+                    <select name="emergency_type" id="report-type-select" required onchange="updateReportHotlines(this.value)">
                         <option value="">Select type</option>
                         <option value="Medical">Medical</option>
                         <option value="Fire">Fire</option>
@@ -1423,6 +1426,7 @@
                     <input type="checkbox" name="is_panic_alert" value="1" id="panic-check" style="width:16px;height:16px;accent-color:var(--bright-pink);flex-shrink:0;">
                     <label for="panic-check" style="text-transform:none;font-size:.87rem;color:var(--ink);font-weight:600;letter-spacing:0;cursor:pointer;">Mark as Panic Alert</label>
                 </div>
+                <div class="modal-field-full report-hotline-wrap" id="report-hotline-wrap"></div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
@@ -1515,6 +1519,113 @@
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
     const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
+
+    const baseUrl = '{{ asset("icons") }}/';
+    const HOTLINES = [
+        { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency','other','lockout','structural','security','medical','fire'], icon: baseUrl + 'phone.png' },
+        { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security','lockout'], icon: baseUrl + 'police.png' },
+        { name: 'Manila Police District', numbers: ['0919-995-0976', '0917-899-2092'], tags: ['crime','theft','assault','violence','intruder','break','panic','security','lockout'], icon: baseUrl + 'police.png' },
+        { name: 'Bureau of Fire Protection (NCR)', numbers: ['(02) 8426-0219', '(02) 8426-0246'], tags: ['fire','smoke','burning','flames'], icon: baseUrl + 'fire.png' },
+        { name: 'University of Santo Tomas Hospital', numbers: ['(02) 8731-3001'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
+        { name: 'Ospital ng Sampaloc', numbers: ['(02) 8749-0207', '0915-069-4087'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
+        { name: 'Chinese General Hospital', numbers: ['(02) 8711-4141'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
+        { name: 'Jose R. Reyes Memorial Medical Center', numbers: ['(02) 8711-9491'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
+        { name: 'Philippine Red Cross', numbers: ['143', '(02) 8790-2300'], tags: ['medical','injury','accident','disaster','flood','fire','emergency'], icon: baseUrl + 'redcross.png' },
+    ];
+
+    function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
+        var type  = (emergencyType ?? '').toLowerCase();
+        var level = (urgencyLevel ?? '').toLowerCase();
+
+        if (!isPanic && level !== 'critical' && level !== 'urgent') return '';
+
+        var matched = [];
+        var alwaysInclude = ['National Emergency Hotline'];
+
+        HOTLINES.forEach(function(h) {
+            var isMatch = alwaysInclude.includes(h.name) || h.tags.some(function(tag) {
+                return type.includes(tag);
+            });
+            if (isMatch) matched.push(h);
+        });
+
+        if (!matched.length) return '';
+
+        var chips = matched.map(function(h) {
+            return h.numbers.map(function(n) {
+                return '<div class="dir-suggested-chip" onclick="copyHotline(\'' + n.replace(/[^0-9]/g,'') + '\', this)">'
+                    + '<img class="chip-icon" src="' + h.icon + '" alt="">'
+                    + escHtml(h.name.length > 28 ? h.name.slice(0, 28) + '...' : h.name)
+                    + ' &nbsp;<span>' + n + '</span>'
+                    + '</div>';
+            }).join('');
+        }).join('');
+
+        return '<div class="dir-suggested-wrap">'
+            + '<div class="dir-suggested-label">Suggested Hotlines</div>'
+            + '<div class="dir-suggested-chips">' + chips + '</div>'
+            + '</div>';
+    }
+
+    function buildReportHotlines(emergencyType) {
+        var type = (emergencyType ?? '').toLowerCase();
+        if (!type) return '';
+
+        var matched = [];
+        HOTLINES.forEach(function(h) {
+            var isMatch = h.tags.some(function(tag) { return type.includes(tag); });
+            if (isMatch) matched.push(h);
+        });
+
+        if (!matched.length) return '';
+
+        var chips = matched.map(function(h) {
+            return h.numbers.map(function(n) {
+                return '<div class="dir-suggested-chip" onclick="copyHotline(\'' + n.replace(/[^0-9]/g,'') + '\', this)">'
+                    + '<img class="chip-icon" src="' + h.icon + '" alt="">'
+                    + escHtml(h.name.length > 28 ? h.name.slice(0, 28) + '...' : h.name)
+                    + ' &nbsp;<span>' + n + '</span>'
+                    + '</div>';
+            }).join('');
+        }).join('');
+
+        return '<div class="dir-suggested-wrap" style="margin-bottom:0;">'
+            + '<div class="dir-suggested-label">Suggested Hotlines</div>'
+            + '<div class="dir-suggested-chips">' + chips + '</div>'
+            + '</div>';
+    }
+
+    function updateReportHotlines(type) {
+        var wrap = document.getElementById('report-hotline-wrap');
+        var html = buildReportHotlines(type);
+        if (html) {
+            wrap.innerHTML = html;
+            wrap.classList.add('visible');
+        } else {
+            wrap.innerHTML = '';
+            wrap.classList.remove('visible');
+        }
+    }
+
+    function copyHotline(number, btn) {
+        var clean = number.replace(/[^0-9+]/g, '');
+        navigator.clipboard.writeText(clean).then(function() {
+            var origWidth = btn.offsetWidth;
+            btn.style.minWidth = origWidth + 'px';
+            var origHTML = btn.innerHTML;
+            btn.innerHTML = 'Copied!';
+            btn.style.background = 'var(--green)';
+            btn.style.color = 'var(--white)';
+            btn.style.borderColor = 'var(--green)';
+            setTimeout(function() {
+                btn.innerHTML = origHTML;
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+                btn.style.minWidth = '';
+            }, 1500);
+        });
+    }
 
     function urgencyBadge(u) {
         const level = (u ?? 'moderate').toLowerCase();
@@ -2007,73 +2118,6 @@
             showToast('{{ session("success") }}', 'success')
         );
     @endif
-
-    const baseUrl = '{{ asset("icons") }}/';
-    const HOTLINES = [
-        { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency'], icon: baseUrl + 'phone.png' },
-        { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: baseUrl + 'police.png' },
-        { name: 'Manila Police District', numbers: ['0919-995-0976', '0917-899-2092'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: baseUrl + 'police.png' },
-        { name: 'Bureau of Fire Protection (NCR)', numbers: ['(02) 8426-0219', '(02) 8426-0246'], tags: ['fire','smoke','burning','flames'], icon: baseUrl + 'fire.png' },
-        { name: 'University of Santo Tomas Hospital', numbers: ['(02) 8731-3001'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
-        { name: 'Ospital ng Sampaloc', numbers: ['(02) 8749-0207', '0915-069-4087'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
-        { name: 'Chinese General Hospital', numbers: ['(02) 8711-4141'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
-        { name: 'Jose R. Reyes Memorial Medical Center', numbers: ['(02) 8711-9491'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: baseUrl + 'hospital.png' },
-        { name: 'Philippine Red Cross', numbers: ['143', '(02) 8790-2300'], tags: ['medical','injury','accident','disaster','flood','fire','emergency'], icon: baseUrl + 'redcross.png' },
-    ];
-
-    function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
-        var type  = (emergencyType ?? '').toLowerCase();
-        var level = (urgencyLevel ?? '').toLowerCase();
-
-        if (!isPanic && level !== 'critical' && level !== 'urgent') return '';
-
-        var matched = [];
-        var alwaysInclude = ['National Emergency Hotline'];
-
-        HOTLINES.forEach(function(h) {
-            var isMatch = alwaysInclude.includes(h.name) || h.tags.some(function(tag) {
-                return type.includes(tag);
-            });
-            if (isMatch) matched.push(h);
-        });
-
-        if (!matched.length) return '';
-
-        var chips = matched.map(function(h) {
-            return h.numbers.map(function(n) {
-                return '<div class="dir-suggested-chip" onclick="copyHotline(\'' + n.replace(/[^0-9]/g,'') + '\', this)">'
-                    + '<img class="chip-icon" src="' + h.icon + '" alt="">'
-                    + escHtml(h.name.length > 28 ? h.name.slice(0, 28) + '...' : h.name)
-                    + ' &nbsp;<span>' + n + '</span>'
-                    + '</div>';
-            }).join('');
-        }).join('');
-
-        return '<div class="dir-suggested-wrap">'
-            + '<div class="dir-suggested-label">Suggested Hotlines</div>'
-            + '<div class="dir-suggested-chips">' + chips + '</div>'
-            + '</div>';
-    }
-
-    function copyHotline(number, btn) {
-        var clean = number.replace(/[^0-9+]/g, '');
-        navigator.clipboard.writeText(clean).then(function() {
-            var origWidth = btn.offsetWidth;
-            btn.style.minWidth = origWidth + 'px';
-            var origHTML = btn.innerHTML;
-            btn.innerHTML = 'Copied!';
-            btn.style.background = 'var(--green)';
-            btn.style.color = 'var(--white)';
-            btn.style.borderColor = 'var(--green)';
-            setTimeout(function() {
-                btn.innerHTML = origHTML;
-                btn.style.background = '';
-                btn.style.color = '';
-                btn.style.borderColor = '';
-                btn.style.minWidth = '';
-            }, 1500);
-        });
-    }
 
     applyFilters();
 </script>
