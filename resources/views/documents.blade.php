@@ -771,7 +771,6 @@
 @section('content')
 <div class="page-body">
 
-    {{-- Page Header --}}
     <div class="page-header fade-up d1">
         <div class="page-header-text">
             <h1>Document Management</h1>
@@ -785,7 +784,6 @@
         </div>
     </div>
 
-    {{-- Tab Bar --}}
     <div class="fade-up d2">
         <div class="tab-bar">
             <button class="tab-btn active" id="tab-docs-btn" onclick="switchTab('docs')">
@@ -806,7 +804,6 @@
         </div>
     </div>
 
-    {{-- Documents Tab — filled form submissions from tenants --}}
     <div class="tab-panel active fade-up d3" id="panel-docs">
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
@@ -860,7 +857,6 @@
         </div>
     </div>
 
-    {{-- Document Requests Tab — certificate / document requests --}}
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
@@ -916,7 +912,6 @@
         </div>
     </div>
 
-    {{-- Downloadable Forms Tab --}}
     <div class="tab-panel" id="panel-forms">
         <div class="toolbar toolbar-forms">
             <div class="search-wrap">
@@ -932,7 +927,7 @@
             <div class="table-card-header">
                 <div>
                     <div class="table-card-title">Downloadable Forms</div>
-                    <div class="table-card-sub">PDF forms tenants can download and fill out — automatically listed in the mobile app</div>
+                    <div class="table-card-sub">PDF forms tenants can download and fill out, automatically listed in the mobile app</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -955,9 +950,8 @@
         </div>
     </div>
 
-</div>{{-- END .page-body --}}
+</div>
 
-{{-- Archive Drawer --}}
 <div class="archive-drawer-overlay" id="archive-drawer-overlay" onclick="handleDrawerOverlayClick(event)">
     <div class="archive-drawer" id="archive-drawer">
         <div class="drawer-header">
@@ -980,7 +974,6 @@
         </div>
 
         <div class="drawer-body">
-            {{-- Archived form submissions --}}
             <div class="drawer-panel active" id="dpanel-docs">
                 <div class="drawer-toolbar">
                     <span class="toolbar-label">Status:</span>
@@ -1032,7 +1025,6 @@
                 </div>
             </div>
 
-            {{-- Archived document requests --}}
             <div class="drawer-panel" id="dpanel-reqs">
                 <div class="drawer-toolbar">
                     <span class="toolbar-label">Status:</span>
@@ -1091,7 +1083,7 @@
 @endsection
 
 @section('modals')
-{{-- Action Loading Overlay --}}
+
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1101,7 +1093,6 @@
     </div>
 </div>
 
-{{-- View / Review Form Submission Modal --}}
 <div class="modal-overlay" id="view-doc-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1113,7 +1104,6 @@
     </div>
 </div>
 
-{{-- Update Form Submission Modal --}}
 <div class="modal-overlay" id="update-doc-modal">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
@@ -1141,7 +1131,6 @@
     </div>
 </div>
 
-{{-- Archive Form Submission Modal --}}
 <div class="modal-overlay" id="delete-doc-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1160,7 +1149,6 @@
     </div>
 </div>
 
-{{-- View Request Modal --}}
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1172,7 +1160,6 @@
     </div>
 </div>
 
-{{-- Update Request Modal --}}
 <div class="modal-overlay" id="update-req-modal">
     <div class="modal" style="max-width:500px;">
         <div class="modal-header">
@@ -1195,7 +1182,7 @@
             <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
         </div>
         <div class="modal-field">
-            <label>Attach Fulfilled Document — PDF only (optional, for digital delivery)</label>
+            <label>Attach Fulfilled Document - PDF only (optional, for digital delivery)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
         </div>
         <div class="modal-actions">
@@ -1205,7 +1192,6 @@
     </div>
 </div>
 
-{{-- Archive Request Modal --}}
 <div class="modal-overlay" id="delete-req-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1224,7 +1210,6 @@
     </div>
 </div>
 
-{{-- View Archived Submission Modal --}}
 <div class="modal-overlay" id="view-adoc-modal">
     <div class="modal" style="max-width:500px;z-index:1100;">
         <div class="modal-header">
@@ -1238,7 +1223,6 @@
     </div>
 </div>
 
-{{-- View Archived Request Modal --}}
 <div class="modal-overlay" id="view-areq-modal">
     <div class="modal" style="max-width:520px;z-index:1100;">
         <div class="modal-header">
@@ -1252,7 +1236,6 @@
     </div>
 </div>
 
-{{-- Remove Archived Submission Modal --}}
 <div class="modal-overlay" id="remove-adoc-modal">
     <div class="modal" style="max-width:400px;z-index:1100;">
         <div class="modal-header">
@@ -1271,7 +1254,6 @@
     </div>
 </div>
 
-{{-- Remove Archived Request Modal --}}
 <div class="modal-overlay" id="remove-areq-modal">
     <div class="modal" style="max-width:400px;z-index:1100;">
         <div class="modal-header">
@@ -1290,7 +1272,6 @@
     </div>
 </div>
 
-{{-- Upload Form Modal --}}
 <div class="modal-overlay" id="upload-form-modal">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
@@ -1312,7 +1293,6 @@
     </div>
 </div>
 
-{{-- Rename Form Modal --}}
 <div class="modal-overlay" id="edit-form-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1331,7 +1311,6 @@
     </div>
 </div>
 
-{{-- Delete Form Modal --}}
 <div class="modal-overlay" id="delete-form-modal">
     <div class="modal" style="max-width:380px;">
         <div class="modal-header">
@@ -1353,7 +1332,6 @@
 
 @section('scripts')
 <script>
-// ── Loading helpers ────────────────────────────────────────────────────────────
 function showActionLoading(message) {
     const overlay = document.getElementById('action-loading');
     document.getElementById('action-loading-text').textContent = message || 'Please wait...';
@@ -1382,7 +1360,6 @@ function resetButton(btn) {
     btn.classList.remove('is-loading');
 }
 
-// ── Constants ──────────────────────────────────────────────────────────────────
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
 const TYPE_COLORS = {
@@ -1401,7 +1378,6 @@ const eyeIcon    = "{{ asset('icons/eye.png') }}";
 const editIcon   = "{{ asset('icons/edit.png') }}";
 const deleteIcon = "{{ asset('icons/delete.png') }}";
 
-// ── State ──────────────────────────────────────────────────────────────────────
 let docState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let reqState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let adocState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -1410,7 +1386,6 @@ let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
 let currentReq = null;
 
-// ── Tab switching ──────────────────────────────────────────────────────────────
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1428,7 +1403,6 @@ function switchDrawerTab(tab) {
     document.getElementById('dpanel-' + tab).classList.add('active');
 }
 
-// ── Archive drawer ─────────────────────────────────────────────────────────────
 function openArchiveDrawer() {
     document.getElementById('archive-drawer-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1446,7 +1420,6 @@ function handleDrawerOverlayClick(e) {
     }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
 function fmtDate(d) {
     if (!d) return '—';
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1488,7 +1461,6 @@ function renderPagination(containerId, currentPage, totalPages, onGo) {
     pg.innerHTML = html;
 }
 
-// ── Fetch ──────────────────────────────────────────────────────────────────────
 async function fetchDocs() {
     document.getElementById('doc-tbody').innerHTML =
         `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
@@ -1499,7 +1471,6 @@ async function fetchDocs() {
         const data = await res.json();
         const all  = data.data ?? data;
 
-        // Documents tab = form submissions only
         docState.data = all.filter(r => r.category === 'form');
         document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
         docApplyFilters();
@@ -1519,7 +1490,6 @@ async function fetchReqs() {
         const data = await res.json();
         const all  = data.data ?? data;
 
-        // Requests tab = certificate requests only
         reqState.data = all.filter(r => r.category === 'certificate');
         const pending = reqState.data.filter(r => r.status === 'pending').length;
         document.getElementById('tab-reqs-count').textContent = pending;
@@ -1530,7 +1500,6 @@ async function fetchReqs() {
     }
 }
 
-// ── Documents tab (form submissions) ──────────────────────────────────────────
 function docApplyFilters() {
     const q      = document.getElementById('doc-search').value.toLowerCase();
     const status = document.getElementById('doc-filter-status').value;
@@ -1690,7 +1659,6 @@ async function confirmDeleteDoc() {
     }
 }
 
-// ── Requests tab (certificate requests) ───────────────────────────────────────
 function reqApplyFilters() {
     const q      = document.getElementById('req-search').value.toLowerCase();
     const status = document.getElementById('req-filter-status').value;
@@ -1864,7 +1832,6 @@ async function confirmDeleteReq() {
     }
 }
 
-// ── Archive ────────────────────────────────────────────────────────────────────
 async function fetchArchive() {
     try {
         const res  = await fetch('/admin/archive-docus', {
@@ -1873,11 +1840,9 @@ async function fetchArchive() {
         const data = await res.json();
         if (data.error) return;
 
-        // Archived docs = form submissions
         adocState.data = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category === 'form'
         );
-        // Archived reqs = certificate requests
         areqState.data = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category !== 'form'
         );
@@ -2119,7 +2084,6 @@ async function confirmRemoveAreq() {
     }
 }
 
-// ── Downloadable Forms tab ─────────────────────────────────────────────────────
 async function fetchForms() {
     document.getElementById('form-tbody').innerHTML =
         `<tr><td colspan="4"><div class="empty-state">Loading...</div></td></tr>`;
