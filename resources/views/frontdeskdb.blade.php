@@ -269,9 +269,18 @@
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
-    .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--petal); cursor: pointer; transition: background .15s; border-radius: 6px; }
+    /* Notification items — highlight only, no movement */
+    .notif-item {
+        display: flex; align-items: flex-start; gap: .7rem;
+        padding: .6rem .5rem;
+        border-bottom: 1px solid var(--petal);
+        cursor: pointer;
+        transition: background .15s;
+        border-radius: 6px;
+    }
     .notif-item:last-child { border-bottom: none; }
-    .notif-item:hover { background: var(--petal); padding-left: 4px; }
+    .notif-item:hover { background: var(--petal); }
+
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
     .notif-ico { width: 28px; height: 28px; border-radius: 8px; background: var(--petal); border: 1.5px solid var(--baby-pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -279,6 +288,12 @@
 
     .icon-sm { width: 16px; height: 16px; object-fit: contain; }
     .icon-md { width: 20px; height: 20px; object-fit: contain; }
+
+    /* Quick Summary & Notifications card border */
+    .content-col .card,
+    .right-col .card {
+        border-color: var(--baby-pink);
+    }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -421,27 +436,27 @@
                     @if($recentActivities->isEmpty())
                         <div class="empty-state">No recent visitor activity.</div>
                     @else
-                       @foreach($recentActivities as $log)
-                        <div class="activity-row" onclick="openVisitorModal(
-                            '{{ addslashes($log->visitor_name) }}',
-                            '{{ $log->departure_time ? 'Checked Out' : 'Checked In' }}',
-                            '{{ $log->tenant ? addslashes($log->tenant->first_name . ' ' . $log->tenant->last_name) : 'N/A' }}',
-                            '{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}',
-                            '{{ $log->departure_time ? \Carbon\Carbon::parse($log->departure_time)->format('F d, Y, g:i A') : '' }}'
-                        )">
-                            <div class="activity-info">
-                                <div class="activity-title">
-                                    {{ $log->visitor_name }} &mdash; {{ $log->departure_time ? 'Checked Out' : 'Checked In' }}
-                                    @if($log->tenant) for {{ $log->tenant->first_name }} {{ $log->tenant->last_name }} @endif
+                        @foreach($recentActivities as $log)
+                            <div class="activity-row" onclick="openVisitorModal(
+                                '{{ addslashes($log->visitor_name) }}',
+                                '{{ $log->departure_time ? 'Checked Out' : 'Checked In' }}',
+                                '{{ $log->tenant ? addslashes($log->tenant->first_name . ' ' . $log->tenant->last_name) : 'N/A' }}',
+                                '{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}',
+                                '{{ $log->departure_time ? \Carbon\Carbon::parse($log->departure_time)->format('F d, Y, g:i A') : '' }}'
+                            )">
+                                <div class="activity-info">
+                                    <div class="activity-title">
+                                        {{ $log->visitor_name }} &mdash; {{ $log->departure_time ? 'Checked Out' : 'Checked In' }}
+                                        @if($log->tenant) for {{ $log->tenant->first_name }} {{ $log->tenant->last_name }} @endif
+                                    </div>
+                                    <div class="activity-time">{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}</div>
                                 </div>
-                                <div class="activity-time">{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}</div>
+                                <div class="activity-arrow">&#8250;</div>
                             </div>
-                            <div class="activity-arrow">&#8250;</div>
-                        </div>
-                    @endforeach
-                @endif
+                        @endforeach
+                    @endif
+                </div>
             </div>
-        </div>
         </div>
 
         <div class="panel fade-up d5" id="panel-ann">
@@ -488,9 +503,32 @@
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
                 @foreach($notifications as $notif)
-                    <div class="notif-item">
+                    @php
+                        $notifTypeLabel = match($notif->type ?? '') {
+                            'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'visitor',
+                            'emergency_new'    => 'emergency',
+                            'announcement_new' => 'announcement',
+                            default            => 'general',
+                        };
+                        $notifIcon = match($notif->type ?? '') {
+                            'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'nav-visit',
+                            'emergency_new'    => 'warn',
+                            'announcement_new' => 'nav-announ',
+                            default            => 'bell',
+                        };
+                    @endphp
+                    <div class="notif-item" onclick="openNotifDetail({
+                        id:      {{ $notif->notif_id }},
+                        type:    '{{ $notifTypeLabel }}',
+                        icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
+                        message: {{ json_encode($notif->message) }},
+                        time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
+                        ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
+                        url:     '{{ $notif->url ?? '' }}',
+                        isRead:  {{ $notif->is_read ? 'true' : 'false' }}
+                    })">
                         <div class="notif-ico">
-                            <img src="{{ asset('icons/' . ($notif->type ?? 'bell') . '.png') }}" alt=""
+                            <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
                                 onerror="this.src='{{ asset('icons/bell.png') }}'">
                         </div>
                         <div>
@@ -499,9 +537,9 @@
                         </div>
                     </div>
                 @endforeach
-        @endif
+            @endif
+        </div>
     </div>
-</div>
 
 </div>
 
@@ -510,13 +548,13 @@
 
 @section('modals')
 
-<div class="modal-overlay" id="emergency-modal">
-    <div class="modal">
-        <div class="modal-header">
+{{-- Emergency Modal: no close button, closes on outside click --}}
+<div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
+    <div class="modal" style="max-width:500px; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;" onclick="event.stopPropagation()">
+        <div class="modal-header" style="padding:1.5rem 2rem 1.2rem; flex-shrink:0; border-bottom:1px solid var(--pink-light);">
             <div class="modal-title">Emergency Alerts</div>
-            <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.8rem;">
+        <div style="flex:1; overflow-y:auto; padding:1.2rem 2rem; display:flex; flex-direction:column; gap:.8rem;">
             @if($allEmergencies->isEmpty())
                 <p style="color:var(--ink-muted);font-size:.88rem;">No emergency reports found.</p>
             @else
@@ -527,9 +565,6 @@
                     </div>
                 @endforeach
             @endif
-        </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('emergency-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -564,6 +599,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
