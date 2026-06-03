@@ -208,14 +208,14 @@
     .table-card {
         background: var(--white);
         border-radius: 18px;
-        border: 2px solid var(--bright-pink);
+        border: 1px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
     }
 
     .table-card-header {
         padding: 1.2rem 1.5rem .8rem;
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
         background: var(--white);
     }
 
@@ -231,7 +231,7 @@
         font-size: .78rem; font-weight: 800;
         color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em;
         background: var(--blush);
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
         white-space: nowrap;
     }
 
