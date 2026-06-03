@@ -513,7 +513,7 @@
         <div class="sidebar-logo-text">Dorm<em>Ease</em></div>
     </div>
 
-    <div class="sidebar-role">Admin</div>
+    <div class="sidebar-role">{{ auth('staff')->user()->role === 'secretary' ? 'Secretary' : 'Admin' }}</div>
 
     <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -541,9 +541,11 @@
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
         <div class="nav-divider"></div>
+        @if(auth('staff')->user()->role === 'admin')
         <a href="{{ route('staff.index') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
         </a>
+        @endif
         <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>

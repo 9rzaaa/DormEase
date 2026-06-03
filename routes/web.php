@@ -57,7 +57,8 @@ Route::post('/login', function () {
     }
 
     $staffRoles = ['frontdesk', 'guard'];
-    if ($user->role === 'admin' && $role !== 'admin') {
+    $adminRoles = ['admin', 'secretary'];
+    if (in_array($user->role, $adminRoles) && $role !== 'admin') {
         return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
     }
     if (in_array($user->role, $staffRoles) && $role !== 'frontdesk') {
@@ -123,12 +124,14 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/visitors/{id}/status', [VisitorController::class, 'updateStatus'])->name('visitors.status');
 
     // staff
-    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-    Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
-    Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
-    Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
-    Route::post('/staff/{id}/reactivate', [StaffController::class, 'reactivate'])->name('staff.reactivate');
+    Route::middleware('dormhead')->group(function () {
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
+        Route::post('/staff/{id}/reactivate', [StaffController::class, 'reactivate'])->name('staff.reactivate');
+    });
 
     // billing
     Route::prefix('billing')->name('billing.')->group(function () {
