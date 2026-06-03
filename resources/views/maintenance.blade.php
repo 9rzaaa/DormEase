@@ -302,15 +302,15 @@
         font-size: .78rem; font-weight: 700; white-space: nowrap;
     }
 
-    .issue-plumbing   { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-    .issue-electrical { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
-    .issue-hvac       { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-    .issue-carpentry  { background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
-    .issue-general    { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
-    .issue-pest       { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
-    .issue-other      { background: #f5f5f5; color: #424242; border: 1px solid #e0e0e0; }
+    .issue-plumbing,
+    .issue-electrical,
+    .issue-hvac,
+    .issue-carpentry,
+    .issue-general,
+    .issue-pest,
+    .issue-other      { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--baby-pink); }
 
-    .desc-cell {
+        .desc-cell {
         display: block;
         width: 100%;
         overflow: hidden;
@@ -1173,7 +1173,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function issueBadge(type) {
         const cls = issueClasses[type?.toLowerCase()] ?? 'issue-other';
-        return `<span class="issue-type ${cls}">${escHtml(type ?? '—')}</span>`;
+        const label = type ? type.charAt(0).toUpperCase() + type.slice(1).toLowerCase() : '—';
+        return `<span class="issue-type ${cls}">${escHtml(label)}</span>`;
     }
 
     function fmtDate(d) {
