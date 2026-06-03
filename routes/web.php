@@ -46,9 +46,7 @@ Route::post('/login', function () {
     $password = request('password');
     $role     = request('role');
 
-    $user = \App\Models\Staff::where('email', $email)
-        ->where('is_active', true)
-        ->first();
+    $user = \App\Models\Staff::where('email', $email)->first();
 
     if (!$user) {
         return back()->withErrors(['email' => 'No account found with that email.'])->withInput();
@@ -60,6 +58,10 @@ Route::post('/login', function () {
 
     if ($user->role !== $role) {
         return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+    }
+
+    if (!$user->is_active) {
+        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput();
     }
 
     Auth::guard('staff')->login($user, request()->boolean('remember'));
