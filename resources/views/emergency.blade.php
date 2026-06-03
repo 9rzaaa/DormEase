@@ -936,6 +936,170 @@
     .export-menu.open { display: block; }
     .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
     .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
+    .btn-directory {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .6rem 1.2rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        border: none;
+        font-size: .87rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity .2s, transform .15s;
+        white-space: nowrap;
+        font-family: var(--ff-body);
+        box-shadow: 0 4px 14px rgba(232,23,93,.3);
+    }
+    .btn-directory:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-directory img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
+
+    .dir-modal-inner { max-width: 560px; }
+
+    .dir-section-title {
+        font-size: .68rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin: 1.1rem 0 .5rem;
+    }
+
+    .dir-section-title:first-child { margin-top: 0; }
+
+    .dir-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .8rem;
+        padding: .65rem .9rem;
+        border-radius: 10px;
+        background: var(--blush);
+        border: 1px solid var(--pink-100);
+        margin-bottom: .4rem;
+        transition: background .15s, border-color .15s;
+    }
+
+    .dir-card:hover { background: var(--petal); border-color: var(--pink-200); }
+
+    .dir-card-left { display: flex; align-items: center; gap: .65rem; min-width: 0; }
+
+    .dir-card-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: .9rem;
+    }
+
+    .dir-icon-police   { background: #e8f0fe; }
+    .dir-icon-fire     { background: #fff3e0; }
+    .dir-icon-medical  { background: #e8faf5; }
+    .dir-icon-redcross { background: #fff0f0; }
+    .dir-icon-general  { background: var(--petal); }
+
+    .dir-card-name {
+        font-size: .83rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dir-card-numbers {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: .12rem;
+        flex-shrink: 0;
+    }
+
+    .dir-number-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        background: var(--white);
+        border: 1px solid var(--pink-200);
+        border-radius: 6px;
+        padding: .18rem .55rem;
+        font-size: .76rem;
+        font-weight: 700;
+        color: var(--ink);
+        font-family: monospace;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background .15s, border-color .15s;
+    }
+
+    .dir-number-chip:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
+
+    .dir-suggested-wrap {
+        background: linear-gradient(135deg, #fff0f3, #fff7fb);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        padding: .9rem 1rem;
+        margin-bottom: 1.1rem;
+    }
+
+    .dir-suggested-label {
+        font-size: .68rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-bottom: .55rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .dir-suggested-label::before {
+        content: '';
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--hot-pink);
+        animation: pulseDot 1.5s infinite;
+    }
+
+    .dir-suggested-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+    }
+
+    .dir-suggested-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .35rem .8rem;
+        border-radius: 8px;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--ink);
+        cursor: pointer;
+        transition: background .15s, border-color .15s, color .15s;
+    }
+
+    .dir-suggested-chip:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
+
+    .dir-suggested-chip span {
+        font-family: monospace;
+        color: var(--hot-pink);
+        font-size: .8rem;
+    }
+
+    .dir-suggested-chip:hover span { color: var(--white); }
 </style>
 @endsection
 
@@ -951,6 +1115,10 @@
             <button class="btn-archive-open" onclick="openArchive()">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
+            </button>
+            <button class="btn-directory" onclick="openModal('dir-modal')">
+                <img src="{{ asset('icons/emergdir.png') }}" alt="">
+                Emergency Directory
             </button>
             <div class="export-dropdown" id="export-dropdown-main">
                 <button class="btn-export" onclick="toggleExportDropdown('export-dropdown-main')">
@@ -1104,6 +1272,130 @@
                 <button onclick="exportArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
                 <button onclick="exportArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="dir-modal">
+    <div class="modal dir-modal-inner" style="max-width:560px;max-height:88vh;overflow-y:auto;">
+        <div class="modal-header">
+            <div class="modal-title">Emergency Directory</div>
+            <button class="modal-close" onclick="closeModal('dir-modal')">&#x2715;</button>
+        </div>
+
+        <div id="dir-suggested-section" style="display:none;"></div>
+
+        <div class="dir-section-title">National Emergency</div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-general">&#128222;</div>
+                <div class="dir-card-name">National Emergency Hotline</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('911', this)">911</div>
+            </div>
+        </div>
+
+        <div class="dir-section-title">Police</div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-name">Philippine National Police (PNP)</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('117', this)">117</div>
+                <div class="dir-number-chip" onclick="copyHotline('028722-0650', this)">(02) 8722-0650</div>
+            </div>
+        </div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-name">Manila Police District</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('09199950976', this)">0919-995-0976</div>
+                <div class="dir-number-chip" onclick="copyHotline('09178992092', this)">0917-899-2092</div>
+            </div>
+        </div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-police">&#128110;</div>
+                <div class="dir-card-name">PNP Text Hotline</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('09178475757', this)">0917-847-5757</div>
+            </div>
+        </div>
+
+        <div class="dir-section-title">Fire</div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-fire">&#128293;</div>
+                <div class="dir-card-name">Bureau of Fire Protection (NCR)</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('028426-0219', this)">(02) 8426-0219</div>
+                <div class="dir-number-chip" onclick="copyHotline('028426-0246', this)">(02) 8426-0246</div>
+            </div>
+        </div>
+
+        <div class="dir-section-title">Medical</div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-name">University of Santo Tomas Hospital</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('028731-3001', this)">(02) 8731-3001</div>
+            </div>
+        </div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-name">Ospital ng Sampaloc</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('028749-0207', this)">(02) 8749-0207</div>
+                <div class="dir-number-chip" onclick="copyHotline('09150694087', this)">0915-069-4087</div>
+            </div>
+        </div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-name">Chinese General Hospital</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('028711-4141', this)">(02) 8711-4141</div>
+            </div>
+        </div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-medical">&#127973;</div>
+                <div class="dir-card-name">Jose R. Reyes Memorial Medical Center</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('028711-9491', this)">(02) 8711-9491</div>
+            </div>
+        </div>
+
+        <div class="dir-section-title">Red Cross</div>
+        <div class="dir-card">
+            <div class="dir-card-left">
+                <div class="dir-card-icon dir-icon-redcross">&#10010;</div>
+                <div class="dir-card-name">Philippine Red Cross</div>
+            </div>
+            <div class="dir-card-numbers">
+                <div class="dir-number-chip" onclick="copyHotline('143', this)">143</div>
+                <div class="dir-number-chip" onclick="copyHotline('028790-2300', this)">(02) 8790-2300</div>
+            </div>
+        </div>
+
+        <div style="background:var(--blush);border:1px solid var(--pink-100);border-radius:10px;padding:.6rem .9rem;font-size:.74rem;color:var(--ink-muted);margin-top:1rem;line-height:1.6;">
+            Tap any number to copy it to your clipboard.
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('dir-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -1375,6 +1667,7 @@
         currentRep = r;
         document.getElementById('view-content').innerHTML = `
             ${r.is_panic_alert ? `<div class="panic-banner"><img src="{{ asset('icons/warning.png') }}" alt=""> This is a Panic Alert</div>` : ''}
+            ${buildSuggestedHotlines(r.emergency_type, r.urgency_level, r.is_panic_alert)}
             <div class="view-detail-row">
                 <div class="view-detail-label">Emergency Type</div>
                 <div class="view-detail-val">${escHtml(r.emergency_type)}</div>
@@ -1391,7 +1684,7 @@
                 <div class="view-detail-label">Reported By</div>
                 <div class="view-detail-val">
                     ${escHtml(r.tenant_name)}
-                    ${r.room_number && r.room_number !== '—' ? ' — Room ' + escHtml(String(r.room_number)) : ''}
+                    ${r.room_number && r.room_number !== '—' ? ' - Room ' + escHtml(String(r.room_number)) : ''}
                 </div>
             </div>
             <div class="view-detail-row">
@@ -1729,6 +2022,69 @@
             showToast('{{ session("success") }}', 'success')
         );
     @endif
+
+    const HOTLINES = [
+        { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency'], icon: '&#128222;', category: 'general' },
+        { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: '&#128110;', category: 'police' },
+        { name: 'Manila Police District', numbers: ['0919-995-0976', '0917-899-2092'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: '&#128110;', category: 'police' },
+        { name: 'Bureau of Fire Protection (NCR)', numbers: ['(02) 8426-0219', '(02) 8426-0246'], tags: ['fire','smoke','burning','flames'], icon: '&#128293;', category: 'fire' },
+        { name: 'University of Santo Tomas Hospital', numbers: ['(02) 8731-3001'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
+        { name: 'Ospital ng Sampaloc', numbers: ['(02) 8749-0207', '0915-069-4087'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
+        { name: 'Chinese General Hospital', numbers: ['(02) 8711-4141'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
+        { name: 'Jose R. Reyes Memorial Medical Center', numbers: ['(02) 8711-9491'], tags: ['medical','injury','accident','unconscious','seizure','heart','stroke','bleeding','health','sick'], icon: '&#127973;', category: 'medical' },
+        { name: 'Philippine Red Cross', numbers: ['143', '(02) 8790-2300'], tags: ['medical','injury','accident','disaster','flood','fire','emergency'], icon: '&#10010;', category: 'redcross' },
+    ];
+
+    function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
+        var type  = (emergencyType ?? '').toLowerCase();
+        var level = (urgencyLevel ?? '').toLowerCase();
+
+        if (!isPanic && level !== 'critical' && level !== 'urgent') return '';
+
+        var matched = [];
+        var alwaysInclude = ['National Emergency Hotline'];
+
+        HOTLINES.forEach(function(h) {
+            var isMatch = alwaysInclude.includes(h.name) || h.tags.some(function(tag) {
+                return type.includes(tag);
+            });
+            if (isMatch) matched.push(h);
+        });
+
+        if (!matched.length) return '';
+
+        var chips = matched.map(function(h) {
+            return h.numbers.map(function(n) {
+                return '<div class="dir-suggested-chip" onclick="copyHotline(\'' + n.replace(/[^0-9]/g,'') + '\', this)">'
+                    + '<span>' + h.icon + '</span>'
+                    + escHtml(h.name.length > 28 ? h.name.slice(0, 28) + '...' : h.name)
+                    + ' &nbsp;<span>' + n + '</span>'
+                    + '</div>';
+            }).join('');
+        }).join('');
+
+        return '<div class="dir-suggested-wrap">'
+            + '<div class="dir-suggested-label">Suggested Hotlines</div>'
+            + '<div class="dir-suggested-chips">' + chips + '</div>'
+            + '</div>';
+    }
+
+    function copyHotline(number, btn) {
+        var clean = number.replace(/[^0-9+]/g, '');
+        navigator.clipboard.writeText(clean).then(function() {
+            var orig = btn.innerHTML;
+            btn.innerHTML = 'Copied!';
+            btn.style.background = 'var(--green)';
+            btn.style.color = 'var(--white)';
+            btn.style.borderColor = 'var(--green)';
+            setTimeout(function() {
+                btn.innerHTML = orig;
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+            }, 1500);
+        });
+    }
 
     populateTypeFilter();
     applyFilters();
