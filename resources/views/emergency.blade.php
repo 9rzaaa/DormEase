@@ -2036,7 +2036,7 @@
         );
     @endif
 
-    const baseUrl = '{{ asset("icons/") }}';
+    const baseUrl = '{{ asset("icons") }}/';
     const HOTLINES = [
         { name: 'National Emergency Hotline', numbers: ['911'], tags: ['general','panic','emergency'], icon: baseUrl + 'phone.png', category: 'general' },
         { name: 'Philippine National Police (PNP)', numbers: ['117', '(02) 8722-0650'], tags: ['crime','theft','assault','violence','intruder','break','panic','security'], icon: baseUrl + 'police.png', category: 'police' },
@@ -2086,16 +2086,19 @@
     function copyHotline(number, btn) {
         var clean = number.replace(/[^0-9+]/g, '');
         navigator.clipboard.writeText(clean).then(function() {
-            var orig = btn.innerHTML;
+            var origWidth = btn.offsetWidth;
+            btn.style.minWidth = origWidth + 'px';
+            var origHTML = btn.innerHTML;
             btn.innerHTML = 'Copied!';
             btn.style.background = 'var(--green)';
             btn.style.color = 'var(--white)';
             btn.style.borderColor = 'var(--green)';
             setTimeout(function() {
-                btn.innerHTML = orig;
+                btn.innerHTML = origHTML;
                 btn.style.background = '';
                 btn.style.color = '';
                 btn.style.borderColor = '';
+                btn.style.minWidth = '';
             }, 1500);
         });
     }
