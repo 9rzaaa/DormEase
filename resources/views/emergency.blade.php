@@ -1002,12 +1002,8 @@
         height: 20px;
         object-fit: contain;
     }
-
-    .dir-icon-police   { background: #e8f0fe; }
-    .dir-icon-fire     { background: #fff3e0; }
-    .dir-icon-medical  { background: #e8faf5; }
-    .dir-icon-redcross { background: #fff0f0; }
-    .dir-icon-general  { background: var(--petal); }
+    
+    .dir-icon-general  { background: var(--pink-100) }
 
     .dir-card-name {
         font-size: .83rem;
