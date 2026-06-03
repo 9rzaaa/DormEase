@@ -720,7 +720,6 @@
                     <option value="admin">Admin</option>
                     <option value="frontdesk">Front Desk</option>
                     <option value="guard">Guard</option>
-                    <option value="staff">Staff</option>
                 </select>
                 <div class="filter-divider"></div>
                 <span class="filter-label">Duty:</span>
@@ -849,7 +848,6 @@
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
                         <option value="guard"     {{ old('role') === 'guard'     ? 'selected' : '' }}>Guard</option>
-                        <option value="staff"     {{ old('role') === 'staff'     ? 'selected' : '' }}>Staff</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -918,7 +916,6 @@
                         <option value="admin">Admin</option>
                         <option value="frontdesk">Front Desk</option>
                         <option value="guard">Guard</option>
-                        <option value="staff">Staff</option>
                     </select>
                 </div>
                 <div class="modal-field">
