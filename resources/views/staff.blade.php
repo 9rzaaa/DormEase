@@ -296,6 +296,51 @@
 
     .sad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
 
+    .sad-tabs {
+        display: flex;
+        gap: 0;
+        padding: 0 1.8rem;
+        border-bottom: 1px solid var(--pink-100);
+        flex-shrink: 0;
+        background: var(--white);
+    }
+
+    .sad-tab {
+        padding: .85rem 1.1rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        border-bottom: 2.5px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        letter-spacing: .01em;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+    }
+
+    .sad-tab:hover { color: var(--hot-pink); }
+    .sad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+    .sad-tab-count {
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .1rem .45rem;
+        border-radius: 99px;
+        background: var(--petal);
+        color: var(--ink-muted);
+        letter-spacing: .02em;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    .sad-tab.active .sad-tab-count { background: var(--bright-pink); color: var(--white); }
+
     .sad-search-bar {
         padding: 1rem 1.8rem .8rem;
         flex-shrink: 0;
@@ -418,6 +463,7 @@
     .sad-pill-onduty   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
     .sad-pill-offduty  { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
     .sad-pill-onleave  { background: var(--peach); color: var(--badge-leave-text); border: 1px solid var(--badge-leave-border); }
+    .sad-pill-inactive { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
 
     .sad-card-archived {
         display: flex;
@@ -499,6 +545,8 @@
         .sad-list { padding: 0 1rem 1.2rem; }
         .sad-search-bar { padding: .8rem 1rem .6rem; }
         .sad-footer { padding: .75rem 1rem; }
+        .sad-tabs { padding: 0 1rem; }
+        .sad-tab { padding: .75rem .75rem; font-size: .76rem; }
     }
     @media(max-width:600px) {
         .stats-row { grid-template-columns: 1fr; }
@@ -510,43 +558,43 @@
         .search-wrap input { width: 100%; }
         .sort-select { width: 100%; }
     }
-    /* ── Action Loading Overlay ── */
-.action-loading-overlay {
-    position: fixed; inset: 0; z-index: 1200;
-    display: none; align-items: center; justify-content: center;
-    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
-}
-.action-loading-overlay.open { display: flex; }
 
-.action-loading-box {
-    display: flex; align-items: center; flex-direction: column;
-    gap: .75rem; padding: 1.25rem 1.6rem;
-    border: 1px solid var(--baby-pink); border-radius: 12px;
-    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
-    color: var(--ink); font-size: .9rem; font-weight: 700;
-}
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
 
-.loading-logo-wrap {
-    width: 86px; height: 86px;
-    border: 3px solid var(--baby-pink); border-radius: 50%;
-    background: var(--gradient-pink);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 10px 24px rgba(232,23,93,.25);
-    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
-}
-.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
-.is-loading { opacity: .75; pointer-events: none; }
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--baby-pink); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
 
-@keyframes pulseLogo {
-    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
-    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
-}
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--baby-pink); border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
 
-.export-dropdown { position: relative; display: inline-flex; }
-.export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
-.export-menu.open { display: block; }
-.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
-.export-menu button:hover { background: var(--blush); color: var(--hot-pink); }
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+    .export-menu button:hover { background: var(--blush); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -711,15 +759,25 @@
         <span id="action-loading-text">Please wait...</span>
     </div>
 </div>
+
 <div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
 
 <div class="staff-archive-drawer" id="sad-drawer">
     <div class="sad-header">
         <div>
             <div class="sad-title">Archive / History</div>
-            <div class="sad-sub">Record of deleted staff accounts</div>
+            <div class="sad-sub">Records of deleted and inactive staff</div>
         </div>
         <button class="sad-close" onclick="closeStaffArchive()">&#x2715;</button>
+    </div>
+
+    <div class="sad-tabs">
+        <button class="sad-tab active" id="stab-deleted" onclick="switchStaffArchiveTab('deleted')">
+            Deleted <span class="sad-tab-count" id="scount-deleted">0</span>
+        </button>
+        <button class="sad-tab" id="stab-inactive" onclick="switchStaffArchiveTab('inactive')">
+            Inactive <span class="sad-tab-count" id="scount-inactive">0</span>
+        </button>
     </div>
 
     <div class="sad-search-bar">
@@ -739,8 +797,8 @@
                 Export
             </button>
             <div class="export-menu" id="export-menu-archive">
-                <button onclick="exportStaffArchiveCsv(); closeAllExportDropdowns()">Export as CSV</button>
-                <button onclick="exportStaffArchivePdf(); closeAllExportDropdowns()">Export as PDF</button>
+                <button onclick="exportStaffArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportStaffArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
             </div>
         </div>
     </div>
@@ -873,6 +931,9 @@
                     </select>
                 </div>
             </div>
+            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;margin-bottom:.9rem;line-height:1.5;">
+                Setting status to <strong>Inactive</strong> will move this staff member to the archive.
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -913,14 +974,14 @@
 @section('scripts')
 <script>
     function showActionLoading(message) {
-        const overlay = document.getElementById('action-loading');
+        var overlay = document.getElementById('action-loading');
         document.getElementById('action-loading-text').textContent = message || 'Please wait...';
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
     }
 
     function hideActionLoading() {
-        const overlay = document.getElementById('action-loading');
+        var overlay = document.getElementById('action-loading');
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
     }
@@ -946,37 +1007,37 @@
         });
     });
 
-    const staffList  = @json($staffList);
-    const PER_PAGE   = 8;
-    let currentPage  = 1;
-    let filtered     = [...staffList];
-    let currentStaff = null;
+    var staffList  = @json($staffList);
+    var PER_PAGE   = 8;
+    var currentPage  = 1;
+    var filtered     = staffList.slice();
+    var currentStaff = null;
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
     function dutyBadge(status) {
-        const map = {
+        var map = {
             on_duty:  '<span class="badge badge-onduty">On Duty</span>',
             off_duty: '<span class="badge badge-offduty">Off Duty</span>',
             on_leave: '<span class="badge badge-leave">On Leave</span>',
         };
-        return map[status] ?? '<span class="badge badge-offduty">' + (status ?? '—') + '</span>';
+        return map[status] || ('<span class="badge badge-offduty">' + (status || '\u2014') + '</span>');
     }
 
     function roleBadge(role) {
-        const map = {
+        var map = {
             admin:     '<span class="badge badge-admin">Admin</span>',
             frontdesk: '<span class="badge badge-frontdesk">Front Desk</span>',
             guard:     '<span class="badge badge-guard">Guard</span>',
             staff:     '<span class="badge badge-staff">Staff</span>',
         };
-        return map[role] ?? '<span class="badge badge-staff">' + (role ?? '—') + '</span>';
+        return map[role] || ('<span class="badge badge-staff">' + (role || '\u2014') + '</span>');
     }
 
     function shiftLabel(shift) {
-        if (!shift) return '—';
-        const cls = shift.toLowerCase() === 'night' ? 'night' : 'day';
+        if (!shift) return '\u2014';
+        var cls = shift.toLowerCase() === 'night' ? 'night' : 'day';
         return '<span class="shift-dot ' + cls + '">' + shift + '</span>';
     }
 
@@ -985,9 +1046,9 @@
     }
 
     function renderTable() {
-        const start    = (currentPage - 1) * PER_PAGE;
-        const pageData = filtered.slice(start, start + PER_PAGE);
-        const tbody    = document.getElementById('staff-tbody');
+        var start    = (currentPage - 1) * PER_PAGE;
+        var pageData = filtered.slice(start, start + PER_PAGE);
+        var tbody    = document.getElementById('staff-tbody');
 
         if (pageData.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No staff found.</td></tr>';
@@ -998,7 +1059,7 @@
                     + '<td class="td-name">' + s.first_name + ' ' + s.last_name + '</td>'
                     + '<td>' + roleBadge(s.role) + '</td>'
                     + '<td>' + shiftLabel(s.shift_schedule) + '</td>'
-                    + '<td>' + (s.contact_number ?? '—') + '</td>'
+                    + '<td>' + (s.contact_number || '\u2014') + '</td>'
                     + '<td>' + dutyBadge(s.duty_status) + '</td>'
                     + '<td>'
                         + '<div class="action-group">'
@@ -1020,9 +1081,9 @@
             }).join('');
         }
 
-        const total = filtered.length;
-        const from  = total === 0 ? 0 : start + 1;
-        const to    = Math.min(start + PER_PAGE, total);
+        var total = filtered.length;
+        var from  = total === 0 ? 0 : start + 1;
+        var to    = Math.min(start + PER_PAGE, total);
         document.getElementById('showing-label').textContent =
             'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
 
@@ -1030,10 +1091,9 @@
     }
 
     function renderPagination() {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        const pg = document.getElementById('pagination');
-        var html = '';
-        html += '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>&#8249;</button>';
+        var totalPages = Math.ceil(filtered.length / PER_PAGE);
+        var pg = document.getElementById('pagination');
+        var html = '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>&#8249;</button>';
         for (var i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                 html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
@@ -1046,31 +1106,31 @@
     }
 
     function goPage(p) {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
+        var totalPages = Math.ceil(filtered.length / PER_PAGE);
         if (p < 1 || p > totalPages) return;
         currentPage = p;
         renderTable();
     }
 
     function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
+        var q = document.getElementById('search-input').value.toLowerCase();
         filtered = staffList.filter(function(s) {
             return (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
                 fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
-                (s.role           ?? '').toLowerCase().includes(q) ||
-                (s.contact_number ?? '').toLowerCase().includes(q) ||
-                (s.email          ?? '').toLowerCase().includes(q);
+                (s.role           || '').toLowerCase().includes(q) ||
+                (s.contact_number || '').toLowerCase().includes(q) ||
+                (s.email          || '').toLowerCase().includes(q);
         });
         currentPage = 1;
         renderTable();
     }
 
     function sortTable() {
-        const val = document.getElementById('sort-select').value;
+        var val = document.getElementById('sort-select').value;
         if (val === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
         if (val === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
         if (val === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
-        if (val === 'role')   filtered.sort(function(a, b) { return (a.role ?? '').localeCompare(b.role ?? ''); });
+        if (val === 'role')   filtered.sort(function(a, b) { return (a.role || '').localeCompare(b.role || ''); });
         currentPage = 1;
         renderTable();
     }
@@ -1081,7 +1141,7 @@
             '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
             + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (s.contact_number ?? '—') + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (s.contact_number || '\u2014') + '</span></div>'
             + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
@@ -1099,13 +1159,13 @@
     function openEditModal(s) {
         currentStaff = s;
         document.getElementById('edit-form').action           = '/staff/' + s.staff_id;
-        document.getElementById('edit-first-name').value      = s.first_name     ?? '';
-        document.getElementById('edit-last-name').value       = s.last_name      ?? '';
-        document.getElementById('edit-email').value           = s.email          ?? '';
-        document.getElementById('edit-role').value            = s.role           ?? '';
-        document.getElementById('edit-shift').value           = s.shift_schedule ?? '';
-        document.getElementById('edit-contact').value         = s.contact_number ?? '';
-        document.getElementById('edit-duty-status').value     = s.duty_status    ?? 'off_duty';
+        document.getElementById('edit-first-name').value      = s.first_name     || '';
+        document.getElementById('edit-last-name').value       = s.last_name      || '';
+        document.getElementById('edit-email').value           = s.email          || '';
+        document.getElementById('edit-role').value            = s.role           || '';
+        document.getElementById('edit-shift').value           = s.shift_schedule || '';
+        document.getElementById('edit-contact').value         = s.contact_number || '';
+        document.getElementById('edit-duty-status').value     = s.duty_status    || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         openModal('edit-modal');
     }
@@ -1122,10 +1182,10 @@
             rows.push([
                 fmtStaffId(s.staff_id),
                 s.first_name, s.last_name, s.email,
-                s.role            ?? '',
-                s.shift_schedule  ?? '',
-                s.contact_number  ?? '',
-                s.duty_status     ?? '',
+                s.role            || '',
+                s.shift_schedule  || '',
+                s.contact_number  || '',
+                s.duty_status     || '',
             ]);
         });
         var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
@@ -1145,11 +1205,11 @@
             return '<tr>'
                 + '<td>' + fmtStaffId(s.staff_id) + '</td>'
                 + '<td>' + s.first_name + ' ' + s.last_name + '</td>'
-                + '<td>' + (s.email ?? '') + '</td>'
-                + '<td>' + (s.role ?? '') + '</td>'
-                + '<td>' + (s.shift_schedule ?? '') + '</td>'
-                + '<td>' + (s.contact_number ?? '') + '</td>'
-                + '<td>' + (s.duty_status ?? '') + '</td>'
+                + '<td>' + (s.email || '') + '</td>'
+                + '<td>' + (s.role || '') + '</td>'
+                + '<td>' + (s.shift_schedule || '') + '</td>'
+                + '<td>' + (s.contact_number || '') + '</td>'
+                + '<td>' + (s.duty_status || '') + '</td>'
                 + '</tr>';
         }).join('');
         win.document.write('<!DOCTYPE html><html><head><title>Staff List</title>'
@@ -1166,7 +1226,7 @@
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) {
-        const el = document.getElementById(id);
+        var el = document.getElementById(id);
         if (el) el.classList.remove('open');
         if ((id === 'reset-credentials-modal' || id === 'reset-confirm-modal') && el) el.remove();
     }
@@ -1176,10 +1236,10 @@
     });
 
     function copyText(id, btn) {
-        const text = document.getElementById(id)?.innerText.trim();
+        var text = document.getElementById(id) ? document.getElementById(id).innerText.trim() : '';
         if (!text) return;
         navigator.clipboard.writeText(text).then(function() {
-            const old = btn.innerText;
+            var old = btn.innerText;
             btn.innerText = 'Copied!';
             setTimeout(function() { btn.innerText = old; }, 1500);
             showToast('Copied to clipboard!', 'success');
@@ -1187,10 +1247,10 @@
     }
 
     function copyResetText(id, btn) {
-        const text = document.getElementById(id)?.innerText.trim();
+        var text = document.getElementById(id) ? document.getElementById(id).innerText.trim() : '';
         if (!text) return;
         navigator.clipboard.writeText(text).then(function() {
-            const old = btn.innerText;
+            var old = btn.innerText;
             btn.innerText = 'Copied!';
             setTimeout(function() { btn.innerText = old; }, 1500);
             showToast('Copied to clipboard!', 'success');
@@ -1198,9 +1258,9 @@
     }
 
     function resetTempPassword(s) {
-        const existing = document.getElementById('reset-confirm-modal');
+        var existing = document.getElementById('reset-confirm-modal');
         if (existing) existing.remove();
-        const initials = (s.first_name[0] ?? '') + (s.last_name[0] ?? '');
+        var initials = (s.first_name[0] || '') + (s.last_name[0] || '');
         document.body.insertAdjacentHTML('beforeend',
             '<div class="modal-overlay open" id="reset-confirm-modal">'
             + '<div class="modal" style="max-width:420px;">'
@@ -1220,7 +1280,7 @@
                     + '<div class="reset-staff-avatar">' + initials + '</div>'
                     + '<div>'
                         + '<div class="reset-staff-name">' + s.first_name + ' ' + s.last_name + '</div>'
-                        + '<div class="reset-staff-meta">' + fmtStaffId(s.staff_id) + ' &middot; ' + (s.role ?? '—') + '</div>'
+                        + '<div class="reset-staff-meta">' + fmtStaffId(s.staff_id) + ' &middot; ' + (s.role || '\u2014') + '</div>'
                     + '</div>'
                 + '</div>'
                 + '<div class="reset-warning-box">'
@@ -1252,7 +1312,7 @@
         .then(function(res) { return res.json(); })
         .then(function(data) {
             hideActionLoading();
-            const existing = document.getElementById('reset-credentials-modal');
+            var existing = document.getElementById('reset-credentials-modal');
             if (existing) existing.remove();
             document.body.insertAdjacentHTML('beforeend',
                 '<div class="modal-overlay open" id="reset-credentials-modal">'
@@ -1293,20 +1353,29 @@
         });
     }
 
-    const deletedStaffArchive = @json($deletedArchive);
+    var deletedStaffArchive  = @json($deletedArchive);
+    var inactiveStaffArchive = @json($inactiveArchive);
+    var staffArchiveTab      = 'deleted';
 
     function fmtDatePlain(d) {
-        if (!d) return '—';
-        const dt   = new Date(d);
-        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        if (!d) return '\u2014';
+        var dt   = new Date(d);
+        var date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        var time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         return date + ' ' + time;
+    }
+
+    function fmtDateShort(d) {
+        if (!d) return '\u2014';
+        return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     function openStaffArchive() {
         document.getElementById('sad-drawer').classList.add('open');
         document.getElementById('sad-backdrop').classList.add('open');
         document.getElementById('sad-search').value = '';
+        document.getElementById('scount-deleted').textContent  = deletedStaffArchive.length;
+        document.getElementById('scount-inactive').textContent = inactiveStaffArchive.length;
         renderStaffArchive();
     }
 
@@ -1315,99 +1384,131 @@
         document.getElementById('sad-backdrop').classList.remove('open');
     }
 
+    function switchStaffArchiveTab(tab) {
+        staffArchiveTab = tab;
+        document.getElementById('stab-deleted').classList.toggle('active',  tab === 'deleted');
+        document.getElementById('stab-inactive').classList.toggle('active', tab === 'inactive');
+        document.getElementById('sad-search').value = '';
+        renderStaffArchive();
+    }
+
     function dutyPillClass(status) {
-        const map = { on_duty: 'sad-pill-onduty', off_duty: 'sad-pill-offduty', on_leave: 'sad-pill-onleave' };
-        return map[status] ?? 'sad-pill-offduty';
+        var map = { on_duty: 'sad-pill-onduty', off_duty: 'sad-pill-offduty', on_leave: 'sad-pill-onleave' };
+        return map[status] || 'sad-pill-offduty';
     }
 
     function renderStaffArchive() {
-        const q = document.getElementById('sad-search').value.toLowerCase();
-        const data = deletedStaffArchive.filter(function(r) {
-            return (r.account_id ?? '').toLowerCase().includes(q) ||
+        var q = document.getElementById('sad-search').value.toLowerCase();
+        var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
+
+        var data = source.filter(function(r) {
+            return (r.account_id  || '').toLowerCase().includes(q) ||
                 (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
-                (r.email          ?? '').toLowerCase().includes(q) ||
-                (r.role           ?? '').toLowerCase().includes(q) ||
-                (r.shift_schedule ?? '').toLowerCase().includes(q);
+                (r.email          || '').toLowerCase().includes(q) ||
+                (r.role           || '').toLowerCase().includes(q) ||
+                (r.shift_schedule || '').toLowerCase().includes(q);
         });
 
-        const list = document.getElementById('sad-list');
+        var list = document.getElementById('sad-list');
         document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
 
         if (data.length === 0) {
+            var labelMap = { deleted: 'deleted', inactive: 'inactive' };
             list.innerHTML = '<div class="sad-empty">'
                 + '<img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">'
-                + 'No archived staff found.'
+                + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + '</div>';
             return;
         }
 
+        var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on' };
+        var archiveLabel = archiveLabelMap[staffArchiveTab];
+
         list.innerHTML = data.map(function(r, i) {
+            var timeDisplay = staffArchiveTab === 'deleted'
+                ? fmtDatePlain(r.archived_at)
+                : fmtDateShort(r.created_at);
+
+            var archivedDisplay = staffArchiveTab === 'deleted'
+                ? fmtDatePlain(r.archived_at)
+                : fmtDateShort(r.created_at);
+
             return '<div class="sad-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="sad-card-top">'
-                    + '<div class="sad-card-id">' + (r.account_id ?? (r.staff_code ?? '—')) + '</div>'
-                    + '<div class="sad-card-time">' + (r.archived_at ? fmtDatePlain(r.archived_at) : '—') + '</div>'
+                    + '<div class="sad-card-id">' + (r.account_id || (r.staff_code || '\u2014')) + '</div>'
+                    + '<div class="sad-card-time">' + timeDisplay + '</div>'
                 + '</div>'
                 + '<div class="sad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
-                + '<div class="sad-card-email">' + (r.email ?? '—') + '</div>'
+                + '<div class="sad-card-email">' + (r.email || '\u2014') + '</div>'
                 + '<div class="sad-card-meta">'
-                    + (r.role         ? '<span class="sad-pill sad-pill-role">'              + r.role                              + '</span>' : '')
-                    + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">'           + r.shift_schedule                    + '</span>' : '')
+                    + (r.role         ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
+                    + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
                     + (r.duty_status  ? '<span class="sad-pill ' + dutyPillClass(r.duty_status) + '">' + r.duty_status.replace('_', ' ') + '</span>' : '')
+                    + (staffArchiveTab === 'inactive' ? '<span class="sad-pill sad-pill-inactive">Inactive</span>' : '')
                 + '</div>'
-                + '<div class="sad-card-archived">Deleted on: <span>' + fmtDatePlain(r.archived_at) + '</span></div>'
+                + '<div class="sad-card-archived">' + archiveLabel + ': <span>' + archivedDisplay + '</span></div>'
                 + '</div>';
         }).join('');
     }
 
-    function exportStaffArchiveCsv() {
-        if (!deletedStaffArchive.length) { showToast('No archive data to export.', 'error'); return; }
-        var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', 'Deleted On']];
-        deletedStaffArchive.forEach(function(r) {
+    function exportStaffArchive(format) {
+        var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
+        var tabLabel = staffArchiveTab === 'deleted' ? 'Deleted' : 'Inactive';
+        var archiveColLabel = staffArchiveTab === 'deleted' ? 'Deleted On' : 'Marked Inactive On';
+
+        if (!source.length) { showToast('No archive data to export.', 'error'); return; }
+
+        if (format === 'pdf') {
+            var win  = window.open('', '_blank');
+            var rows = source.map(function(r) {
+                var archiveDateDisplay = staffArchiveTab === 'deleted'
+                    ? fmtDatePlain(r.archived_at)
+                    : fmtDateShort(r.created_at);
+                return '<tr>'
+                    + '<td>' + (r.account_id || r.staff_code || '') + '</td>'
+                    + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
+                    + '<td>' + (r.email || '') + '</td>'
+                    + '<td>' + (r.role || '') + '</td>'
+                    + '<td>' + (r.shift_schedule || '') + '</td>'
+                    + '<td>' + (r.duty_status || '') + '</td>'
+                    + '<td>' + archiveDateDisplay + '</td>'
+                    + '</tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Staff Archive - ' + tabLabel + '</title>'
+                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+                + '</head><body>'
+                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+                + '<p>Staff Archive (' + tabLabel + ') - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+                + '<table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Duty Status</th><th>' + archiveColLabel + '</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table>'
+                + '</body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', archiveColLabel]];
+        source.forEach(function(r) {
+            var archiveDateDisplay = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.created_at || '');
             rows.push([
-                r.account_id     ?? '',
+                r.account_id     || r.staff_code || '',
                 r.first_name,
                 r.last_name,
-                r.email          ?? '',
-                r.contact_number ?? '',
-                r.role           ?? '',
-                r.shift_schedule ?? '',
-                r.duty_status    ?? '',
-                r.archived_at    ?? '',
+                r.email          || '',
+                r.contact_number || '',
+                r.role           || '',
+                r.shift_schedule || '',
+                r.duty_status    || '',
+                archiveDateDisplay,
             ]);
         });
         var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
         var a   = document.createElement('a');
         a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = 'staff-deleted-archive.csv';
+        a.download = 'staff-' + staffArchiveTab + '-archive.csv';
         a.click();
         URL.revokeObjectURL(a.href);
         showToast('Archive exported as CSV!', 'success');
-    }
-
-    function exportStaffArchivePdf() {
-        if (!deletedStaffArchive.length) { showToast('No archive data to export.', 'error'); return; }
-        var win  = window.open('', '_blank');
-        var rows = deletedStaffArchive.map(function(r) {
-            return '<tr>'
-                + '<td>' + (r.account_id ?? '') + '</td>'
-                + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
-                + '<td>' + (r.email ?? '') + '</td>'
-                + '<td>' + (r.role ?? '') + '</td>'
-                + '<td>' + (r.shift_schedule ?? '') + '</td>'
-                + '<td>' + (r.duty_status ?? '') + '</td>'
-                + '<td>' + fmtDatePlain(r.archived_at) + '</td>'
-                + '</tr>';
-        }).join('');
-        win.document.write('<!DOCTYPE html><html><head><title>Staff Archive</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Staff Archive - Deleted Records - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Duty Status</th><th>Deleted On</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
     }
 
     function getMenuForDropdown(id) {
@@ -1471,7 +1572,7 @@
         });
     @endif
 
-    filtered = [...staffList];
+    filtered = staffList.slice();
     renderTable();
 </script>
 @endsection
