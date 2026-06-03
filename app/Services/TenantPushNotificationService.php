@@ -73,6 +73,45 @@ class TenantPushNotificationService
         $this->sendExpoMessages($messages);
     }
 
+    public function sendPushOnlyToTenant(
+        Tenant|int $tenant,
+        string $type,
+        string $title,
+        string $body,
+        ?int $refId = null,
+        ?string $route = null
+    ): int {
+        $tenantId = $tenant instanceof Tenant ? $tenant->tenant_id : $tenant;
+        $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
+
+        $tokens = DeviceToken::where('tenant_id', $tenantId)
+            ->pluck('expo_push_token')
+            ->filter()
+            ->values();
+
+        if ($tokens->isEmpty()) {
+            return 0;
+        }
+
+        $messages = $tokens->map(fn(string $token) => [
+            'to' => $token,
+            'sound' => 'default',
+            'channelId' => 'default',
+            'priority' => 'high',
+            'title' => $title,
+            'body' => $body,
+            'data' => [
+                'type' => $type,
+                'route' => $route,
+                'ref_id' => $refId,
+            ],
+        ])->all();
+
+        $this->sendExpoMessages($messages);
+
+        return count($messages);
+    }
+
     public function sendToAllTenants(
         string $type,
         string $title,
