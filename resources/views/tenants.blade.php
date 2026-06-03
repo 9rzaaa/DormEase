@@ -126,7 +126,7 @@
 .table-card {
     background: var(--white);
     border-radius: 18px;
-    border: 2px solid var(--bright-pink);
+    border: 1px solid var(--bright-pink);
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0,0,0,.05), 0 18px 45px rgba(232,23,93,.15);
     box-sizing: border-box;
@@ -140,7 +140,7 @@
     flex-wrap: wrap;
     gap: .8rem;
     background: var(--white);
-    border-bottom: 2px solid var(--bright-pink);
+    border-bottom: 1px solid var(--bright-pink);
 }
 .table-title { font-size: 1.1rem; font-weight: 700; color: var(--ink); margin: 0; }
 .table-date { font-size: .78rem; color: var(--bright-pink); margin-top: .1rem; }
@@ -179,7 +179,7 @@
 .sort-select:focus { box-shadow: 0 0 0 2px rgba(232,23,93,.25); }
 .table-wrap { overflow-x: auto; background: var(--white); -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; background: var(--white); min-width: 700px; }
-thead tr { background: var(--blush); border-bottom: 2px solid var(--bright-pink); }
+thead tr { background: var(--blush); border-bottom: 1px solid var(--bright-pink); }
 th {
     padding: .75rem 1rem;
     font-size: .75rem;
