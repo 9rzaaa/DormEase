@@ -35,7 +35,7 @@ class NotificationHelper
     public static function sendToAll(string $type, string $message, ?int $ref_id = null): void
     {
         $allStaff = Staff::where('is_active', 1)
-            ->whereIn('role', ['admin', 'frontdesk'])
+            ->whereIn('role', ['admin', 'secretary', 'frontdesk'])
             ->get();
 
         foreach ($allStaff as $staff) {
