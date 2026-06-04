@@ -809,6 +809,20 @@
                     <div id="tmp-strength-fill" style="height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;"></div>
                 </div>
                 <div id="tmp-strength-label" style="font-size:.67rem;color:var(--ink-muted);margin-top:.2rem;"></div>
+                <div id="tmp-pw-requirements" style="margin-top:.6rem;display:flex;flex-direction:column;gap:.25rem;">
+                    <div class="tmp-pw-req" id="tmp-preq-length" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-length"></span>At least 8 characters
+                    </div>
+                    <div class="tmp-pw-req" id="tmp-preq-upper" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-upper"></span>One uppercase letter
+                    </div>
+                    <div class="tmp-pw-req" id="tmp-preq-number" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-number"></span>One number
+                    </div>
+                    <div class="tmp-pw-req" id="tmp-preq-special" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                        <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-special"></span>One special character
+                    </div>
+                </div>
             </div>
 
             <div class="modal-field">
@@ -945,7 +959,15 @@
     function checkTmpStrength(val) {
         var fill  = document.getElementById('tmp-strength-fill');
         var label = document.getElementById('tmp-strength-label');
-        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        if (!val) {
+            fill.style.width = '0%';
+            label.textContent = '';
+            [['tmp-preq-length','tmp-dot-length'],['tmp-preq-upper','tmp-dot-upper'],['tmp-preq-number','tmp-dot-number'],['tmp-preq-special','tmp-dot-special']].forEach(function(p) {
+                document.getElementById(p[0]).style.color = 'var(--ink-muted)';
+                document.getElementById(p[1]).style.background = 'var(--pink-100)';
+            });
+            return;
+        }
         var score = 0;
         if (val.length >= 8)          score++;
         if (/[A-Z]/.test(val))        score++;
@@ -962,6 +984,15 @@
         fill.style.background = lvl.color;
         label.textContent     = lvl.text;
         label.style.color     = lvl.color;
+
+        function toggle(reqId, dotId, met) {
+            document.getElementById(reqId).style.color = met ? '#16a34a' : 'var(--ink-muted)';
+            document.getElementById(dotId).style.background = met ? '#16a34a' : 'var(--pink-100)';
+        }
+        toggle('tmp-preq-length',  'tmp-dot-length',  val.length >= 8);
+        toggle('tmp-preq-upper',   'tmp-dot-upper',   /[A-Z]/.test(val));
+        toggle('tmp-preq-number',  'tmp-dot-number',  /[0-9]/.test(val));
+        toggle('tmp-preq-special', 'tmp-dot-special', /[^A-Za-z0-9]/.test(val));
     }
 
     @if(session('error') && session('prompt_temp_password'))
