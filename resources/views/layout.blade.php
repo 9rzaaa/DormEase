@@ -898,7 +898,7 @@
             } catch (e) {}
         }
 
-        function __showPanicBanner(type, location) {
+        function __showPanicBanner(type, location, reportedAt) {
             var existing = document.getElementById('__panic-alert-banner');
             if (existing) existing.remove();
             if (__panicBeepInterval) clearInterval(__panicBeepInterval);
@@ -911,7 +911,8 @@
                 + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
                 + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">Panic Alert</div>'
                 + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(type) + '</div>'
-                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:2rem;">' + __escHtml(location) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(reportedAt) + '</div>'
                 + '<button onclick="__dismissPanic()" style="background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
             document.body.appendChild(banner);
@@ -946,7 +947,7 @@
                 if (data.has_panic && data.report_id !== __panicLastId && !sessionStorage.getItem('panicDismissed_' + data.report_id)) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
-                    __showPanicBanner(data.type, data.location);
+                    __showPanicBanner(data.type, data.location, data.reported_at);
                     __fireBrowserNotification(data.type, data.location);
                 }
             }).catch(function() {});
@@ -1014,6 +1015,7 @@
                 + '<div style="font-size:.85rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.15rem;">'
                 + __criticalEscHtml(report.emergency_type) + '</div>'
                 + '<div style="font-size:.78rem;color:#7A3A55;">' + __criticalEscHtml(report.location) + '</div>'
+                + '<div style="font-size:.7rem;color:#7A3A55;opacity:.75;margin-top:.25rem;">Reported: ' + __criticalEscHtml(report.reported_at || '') + '</div>'
                 + '</div>'
                 + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#7A3A55;font-size:1rem;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;">&#x2715;</button>'
                 + '</div>';
