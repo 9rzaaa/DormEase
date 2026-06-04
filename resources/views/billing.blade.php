@@ -384,6 +384,42 @@
     .badge-overdue    { background: #ffe9ee; color: #e04867; border: 1px solid #ff9db0; }
     .badge-pending    { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
     .badge-not-billed { background: #f5f5f5; color: #999;    border: 1px solid #ddd; }
+    .badge-rejected   { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
+
+    .rejection-reason-wrap {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height .25s ease, opacity .25s ease, margin .25s ease;
+        opacity: 0;
+        margin-top: 0;
+    }
+    .rejection-reason-wrap.visible {
+        max-height: 120px;
+        opacity: 1;
+        margin-top: .6rem;
+    }
+    .rejection-reason-input {
+        width: 100%;
+        padding: .55rem .8rem;
+        border-radius: 10px;
+        border: 1.5px solid #ffb380;
+        background: #fff8f4;
+        font-size: .82rem;
+        color: var(--ink-deep);
+        font-family: var(--ff-body);
+        resize: none;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .18s;
+    }
+    .rejection-reason-input:focus { border-color: #c94a00; background: var(--white); }
+    .rejection-reason-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: #c94a00;
+        margin-bottom: .3rem;
+        display: block;
+    }
 
     .empty-floor {
         padding: 1.5rem;
@@ -1463,12 +1499,17 @@ function openUpdateModal(room) {
                 </div>
                 <div class="modal-field" style="margin-top:1rem;">
                     <label>Payment Status</label>
-                    <select class="status-select" data-billing-id="${t.billing_id ?? ''}">
-                        <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
-                        <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
-                        <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
-                        <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
+                    <select class="status-select" data-billing-id="${t.billing_id ?? ''}" onchange="toggleRejectionReason(this)">
+                        <option value="unpaid"   ${t.payment_status === 'unpaid'   ? 'selected' : ''}>Unpaid</option>
+                        <option value="paid"     ${t.payment_status === 'paid'     ? 'selected' : ''}>Paid</option>
+                        <option value="overdue"  ${t.payment_status === 'overdue'  ? 'selected' : ''}>Overdue</option>
+                        <option value="pending"  ${t.payment_status === 'pending'  ? 'selected' : ''}>Pending</option>
+                        <option value="rejected" ${t.payment_status === 'rejected' ? 'selected' : ''}>Rejected</option>
                     </select>
+                    <div class="rejection-reason-wrap ${t.payment_status === 'rejected' ? 'visible' : ''}">
+                        <label class="rejection-reason-label">Reason for rejection</label>
+                        <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="e.g. Blurry image, wrong reference number...">${escapeHtml(t.rejection_reason || '')}</textarea>
+                    </div>
                 </div>
                 ${receiptBtn}
             </div>
@@ -1480,6 +1521,17 @@ function openUpdateModal(room) {
     document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     document.getElementById('update-content').innerHTML = html;
     openModal('update-modal');
+}
+
+function toggleRejectionReason(select) {
+    var wrap = select.closest('.modal-field').querySelector('.rejection-reason-wrap');
+    if (!wrap) return;
+    if (select.value === 'rejected') {
+        wrap.classList.add('visible');
+        wrap.querySelector('textarea').focus();
+    } else {
+        wrap.classList.remove('visible');
+    }
 }
 
 function recalcUpdateShare() {
@@ -1505,10 +1557,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const firstSelect    = statusSelects[0];
             const payment_status = firstSelect ? firstSelect.value : 'unpaid';
             const status_updates = Array.from(statusSelects)
-                .map(select => ({
-                    billing_id: parseInt(select.dataset.billingId),
-                    payment_status: select.value,
-                }))
+                .map(select => {
+                    const field = select.closest('.modal-field');
+                    const textarea = field ? field.querySelector('.rejection-reason-input') : null;
+                    return {
+                        billing_id:       parseInt(select.dataset.billingId),
+                        payment_status:   select.value,
+                        rejection_reason: (select.value === 'rejected' && textarea) ? textarea.value.trim() : null,
+                    };
+                })
                 .filter(update => Number.isInteger(update.billing_id));
 
             if (!billing_id) {

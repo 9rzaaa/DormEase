@@ -28,6 +28,7 @@ class WaterBilling extends Model
         'proof_of_payment',
         'payment_reference_code',
         'payment_submitted_at',
+        'rejection_reason',
         'due_date',
     ];
 

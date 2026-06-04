@@ -120,9 +120,11 @@ class BillingController extends Controller
                         'payment_submitted_at'   => $billing?->payment_submitted_at
                             ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
                             : null,
+                        'rejection_reason'       => $billing?->rejection_reason,
                         'dot_class' => match ($paymentStatus) {
                             'paid'       => 'dot-green',
                             'overdue'    => 'dot-red',
+                            'rejected'   => 'dot-red',
                             'not billed' => 'dot-gray',
                             default      => 'dot-orange',
                         },
@@ -346,14 +348,15 @@ class BillingController extends Controller
     public function updateFull(Request $request)
     {
         $request->validate([
-            'billing_id'                      => 'required|integer',
-            'prev_reading'                    => 'required|numeric|min:0',
-            'curr_reading'                    => 'required|numeric|min:0|gte:prev_reading',
-            'due_date'                        => 'required|date',
-            'payment_status'                  => 'required|string',
-            'status_updates'                  => 'nullable|array',
-            'status_updates.*.billing_id'     => 'required_with:status_updates|integer',
-            'status_updates.*.payment_status' => 'required_with:status_updates|string|in:unpaid,pending,paid,overdue',
+            'billing_id'                         => 'required|integer',
+            'prev_reading'                       => 'required|numeric|min:0',
+            'curr_reading'                       => 'required|numeric|min:0|gte:prev_reading',
+            'due_date'                           => 'required|date',
+            'payment_status'                     => 'required|string',
+            'status_updates'                     => 'nullable|array',
+            'status_updates.*.billing_id'        => 'required_with:status_updates|integer',
+            'status_updates.*.payment_status'    => 'required_with:status_updates|string|in:unpaid,pending,paid,overdue,rejected',
+            'status_updates.*.rejection_reason'  => 'nullable|string|max:500',
         ]);
 
         $billing   = WaterBilling::findOrFail($request->billing_id);
@@ -393,11 +396,17 @@ class BillingController extends Controller
                     ], 422);
                 }
 
-                $billingToUpdate->update(['payment_status' => $statusUpdate['payment_status']]);
+                $rejectionReason = $statusUpdate['rejection_reason'] ?? null;
+                $isRejected = $statusUpdate['payment_status'] === 'rejected';
+
+                $billingToUpdate->update([
+                    'payment_status'   => $statusUpdate['payment_status'],
+                    'rejection_reason' => $isRejected ? $rejectionReason : null,
+                ]);
                 Payment::where('billing_id', $billingToUpdate->billing_id)
                     ->where('tenant_id', $billingToUpdate->tenant_id)
                     ->update([
-                        'status' => $statusUpdate['payment_status'],
+                        'status'       => $statusUpdate['payment_status'],
                         'confirmed_by' => $statusUpdate['payment_status'] === 'paid' ? Auth::id() : null,
                     ]);
 
@@ -414,6 +423,25 @@ class BillingController extends Controller
                         type: 'payment',
                         title: 'Payment verified',
                         body: 'Your water bill payment has been verified.',
+                        refId: $billingToUpdate->billing_id,
+                        route: '/tenant/water-bill',
+                    );
+                }
+
+                if ($isRejected) {
+                    $tenant = Tenant::find($billingToUpdate->tenant_id);
+                    $reasonText = $rejectionReason ? " Reason: {$rejectionReason}" : '';
+                    NotificationHelper::sendToAll(
+                        type: 'billing_overdue',
+                        message: "Tenant {$tenant->first_name} {$tenant->last_name}'s payment was rejected.{$reasonText}",
+                        ref_id: $billingToUpdate->billing_id,
+                    );
+
+                    app(TenantPushNotificationService::class)->sendToTenant(
+                        tenant: $billingToUpdate->tenant_id,
+                        type: 'payment',
+                        title: 'Payment rejected',
+                        body: "Your water bill payment was rejected.{$reasonText} Please resubmit.",
                         refId: $billingToUpdate->billing_id,
                         route: '/tenant/water-bill',
                     );

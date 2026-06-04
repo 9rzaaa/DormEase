@@ -478,6 +478,7 @@
     .badge-overdue    { background: #ffe9ee; color: #e04867; border: 1px solid #ff9db0; }
     .badge-pending    { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
     .badge-not-billed { background: #f5f5f5; color: #999;    border: 1px solid #ddd; }
+    .badge-rejected   { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
 
     .pagination-row {
         display: flex;
