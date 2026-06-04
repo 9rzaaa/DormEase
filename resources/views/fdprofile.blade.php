@@ -375,6 +375,36 @@
         line-height: 1.5;
     }
 
+    .pw-requirements {
+        margin-top: .6rem;
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+    }
+
+    .pw-req {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .69rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        transition: color .25s;
+    }
+
+    .pw-req.met { color: #16a34a; }
+
+    .pw-req-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--pink-100);
+        flex-shrink: 0;
+        transition: background .25s;
+    }
+
+    .pw-req.met .pw-req-dot { background: #16a34a; }
+
     .form-actions {
         display: flex;
         justify-content: flex-end;
@@ -669,17 +699,12 @@
                                     <div class="pw-strength-fill" id="strength-fill"></div>
                                 </div>
                                 <div class="pw-strength-label" id="strength-label"></div>
-                            </div>
-                            <div class="form-field">
-                                <label>Confirm New Password</label>
-                                <div class="input-wrap">
-                                    <input type="password" name="password_confirmation" id="conf-pw"
-                                        placeholder="Repeat new password" required autocomplete="new-password">
-                                    <button type="button" class="toggle-pw" onclick="togglePw('conf-pw', this)">
-                                        <img src="{{ asset('icons/eye.png') }}" alt="Show">
-                                    </button>
+                                <div class="pw-requirements" id="pw-requirements">
+                                    <div class="pw-req" id="preq-length"><span class="pw-req-dot"></span>At least 8 characters</div>
+                                    <div class="pw-req" id="preq-upper"><span class="pw-req-dot"></span>One uppercase letter</div>
+                                    <div class="pw-req" id="preq-number"><span class="pw-req-dot"></span>One number</div>
+                                    <div class="pw-req" id="preq-special"><span class="pw-req-dot"></span>One special character</div>
                                 </div>
-                                <div class="pw-hint">At least 8 characters — mix letters, numbers &amp; symbols.</div>
                             </div>
                         </div>
                     </div>
@@ -735,7 +760,12 @@
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
-        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        if (!val) {
+            fill.style.width  = '0%';
+            label.textContent = '';
+            ['preq-length','preq-upper','preq-number','preq-special'].forEach(id => document.getElementById(id).classList.remove('met'));
+            return;
+        }
         let score = 0;
         if (val.length >= 8)          score++;
         if (/[A-Z]/.test(val))        score++;
@@ -752,11 +782,18 @@
         fill.style.background = lvl.color;
         label.textContent     = lvl.text;
         label.style.color     = lvl.color;
+
+        const toggle = (id, met) => document.getElementById(id).classList.toggle('met', met);
+        toggle('preq-length',  val.length >= 8);
+        toggle('preq-upper',   /[A-Z]/.test(val));
+        toggle('preq-number',  /[0-9]/.test(val));
+        toggle('preq-special', /[^A-Za-z0-9]/.test(val));
     }
 
     function resetStrength() {
         document.getElementById('strength-fill').style.width = '0%';
         document.getElementById('strength-label').textContent = '';
+        ['preq-length','preq-upper','preq-number','preq-special'].forEach(id => document.getElementById(id).classList.remove('met'));
     }
 
     @if(session('success'))
