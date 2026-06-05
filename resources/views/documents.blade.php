@@ -1113,16 +1113,36 @@
         <input type="hidden" id="upd-doc-id">
         <div class="modal-field">
             <label>Status</label>
-            <select id="upd-doc-status">
+            <select id="upd-doc-status" onchange="toggleRejectionField()">
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="approved">Approved</option>
                 <option value="denied">Denied</option>
             </select>
         </div>
+        <div id="rejection-reason-wrap" style="display:none;">
+            <div class="modal-field">
+                <label>Reason for Rejection</label>
+                <select id="upd-doc-rejection-preset" onchange="handleRejectionPreset()">
+                    <option value="">Select a reason...</option>
+                    <option value="Blurry or unreadable submission">Blurry or unreadable submission</option>
+                    <option value="Incomplete form fields">Incomplete form fields</option>
+                    <option value="Wrong form submitted">Wrong form submitted</option>
+                    <option value="File is corrupted or unreadable">File is corrupted or unreadable</option>
+                    <option value="Missing required signature">Missing required signature</option>
+                    <option value="Photo or scan is too dark">Photo or scan is too dark</option>
+                    <option value="File format not supported">File format not supported</option>
+                    <option value="other">Other (specify below)</option>
+                </select>
+            </div>
+            <div class="modal-field" id="rejection-other-wrap" style="display:none;">
+                <label>Specify Reason</label>
+                <input type="text" id="upd-doc-rejection-other" placeholder="Describe the rejection reason...">
+            </div>
+        </div>
         <div class="modal-field">
-            <label>Admin Remarks (optional)</label>
-            <textarea id="upd-doc-remarks" placeholder="Add remarks or reason for denial..."></textarea>
+            <label>Additional Remarks (optional)</label>
+            <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
@@ -1145,6 +1165,29 @@
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-doc-modal')">Cancel</button>
             <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteDoc()">Archive</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="resubmit-doc-modal">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">Resubmit Form</div>
+            <button class="modal-close" onclick="closeModal('resubmit-doc-modal')">&#x2715;</button>
+        </div>
+        <p style="font-size:.875rem;color:var(--ink-muted);margin-bottom:1rem;line-height:1.6;">
+            Upload a corrected version of the form for
+            <strong id="resubmit-doc-label" style="color:var(--ink);"></strong>.
+            This will reset the status to <strong>Pending</strong> for admin review.
+        </p>
+        <input type="hidden" id="resubmit-doc-id">
+        <div class="modal-field">
+            <label>New File (replaces previous submission)</label>
+            <input type="file" id="resubmit-doc-file">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('resubmit-doc-modal')">Cancel</button>
+            <button class="btn-submit" onclick="confirmResubmitDoc()">Resubmit</button>
         </div>
     </div>
 </div>
@@ -1570,7 +1613,9 @@ function viewDoc(r) {
     const fileHtml = r.attachment
         ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">View Uploaded Form</a>`
         : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
-
+ 
+    const isDenied = r.status === 'denied';
+ 
     document.getElementById('view-doc-content').innerHTML = `
         <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(r.doc_request_id).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? r.full_name ?? '—')}</div></div>
@@ -1579,12 +1624,76 @@ function viewDoc(r) {
         <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
         ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
         <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
+        ${isDenied ? `<div class="view-detail-row"><div class="view-detail-label">Resubmission</div><div class="view-detail-val" style="font-size:.82rem;color:var(--ink-muted);">This submission was denied. A corrected file can be resubmitted below.</div></div>` : ''}
     `;
     document.getElementById('view-doc-actions').innerHTML = `
         <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+        ${isDenied ? `<button class="btn-submit" style="background:var(--white);color:var(--bright-pink);border:1.5px solid var(--bright-pink);" onclick="closeModal('view-doc-modal');setTimeout(()=>openResubmitDoc(currentDoc),200);">Resubmit</button>` : ''}
         <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review / Set Status</button>
     `;
     openModal('view-doc-modal');
+}
+
+function toggleRejectionField() {
+    const status = document.getElementById('upd-doc-status').value;
+    const wrap   = document.getElementById('rejection-reason-wrap');
+    wrap.style.display = status === 'denied' ? '' : 'none';
+    if (status !== 'denied') {
+        document.getElementById('upd-doc-rejection-preset').value = '';
+        document.getElementById('rejection-other-wrap').style.display = 'none';
+        document.getElementById('upd-doc-rejection-other').value = '';
+    }
+}
+ 
+function handleRejectionPreset() {
+    const val  = document.getElementById('upd-doc-rejection-preset').value;
+    const wrap = document.getElementById('rejection-other-wrap');
+    wrap.style.display = val === 'other' ? '' : 'none';
+    if (val !== 'other') {
+        document.getElementById('upd-doc-rejection-other').value = '';
+    }
+}
+ 
+function openResubmitDoc(r) {
+    currentDoc = r;
+    document.getElementById('resubmit-doc-id').value = r.doc_request_id;
+    document.getElementById('resubmit-doc-label').textContent =
+        '#FSB-' + String(r.doc_request_id).padStart(3, '0') + ' — ' + (r.document_type ?? '');
+    document.getElementById('resubmit-doc-file').value = '';
+    openModal('resubmit-doc-modal');
+}
+ 
+async function confirmResubmitDoc() {
+    const id   = document.getElementById('resubmit-doc-id').value;
+    const file = document.getElementById('resubmit-doc-file').files[0];
+    if (!file) { showToast('Please select a file to resubmit.', 'error'); return; }
+ 
+    const fd = new FormData();
+    fd.append('file', file);
+ 
+    const btn = document.querySelector('#resubmit-doc-modal .btn-submit');
+    setButtonLoading(btn, 'Submitting...');
+    showActionLoading('Resubmitting form...');
+ 
+    try {
+        const res = await fetch(`/admin/document-requests/${id}/resubmit`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: fd,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error ?? 'Resubmission failed.');
+        }
+        closeModal('resubmit-doc-modal');
+        showToast('Form resubmitted. Status reset to pending.', 'success');
+        fetchDocs();
+    } catch (e) {
+        showToast(e.message ?? 'Resubmission failed.', 'error');
+    } finally {
+        hideActionLoading();
+        resetButton(btn);
+    }
 }
 
 function openUpdateDoc(r) {
@@ -1592,6 +1701,12 @@ function openUpdateDoc(r) {
     document.getElementById('upd-doc-id').value      = r.doc_request_id;
     document.getElementById('upd-doc-status').value  = r.status ?? 'pending';
     document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
+ 
+    document.getElementById('upd-doc-rejection-preset').value = '';
+    document.getElementById('upd-doc-rejection-other').value  = '';
+    document.getElementById('rejection-other-wrap').style.display = 'none';
+    toggleRejectionField();
+ 
     openModal('update-doc-modal');
 }
 
@@ -1599,16 +1714,27 @@ async function submitUpdateDoc() {
     const id      = document.getElementById('upd-doc-id').value;
     const status  = document.getElementById('upd-doc-status').value;
     const remarks = document.getElementById('upd-doc-remarks').value;
-
+ 
+    let rejectionReason = '';
+    if (status === 'denied') {
+        const preset = document.getElementById('upd-doc-rejection-preset').value;
+        if (!preset) { showToast('Please select a rejection reason.', 'error'); return; }
+        rejectionReason = preset === 'other'
+            ? document.getElementById('upd-doc-rejection-other').value.trim()
+            : preset;
+        if (!rejectionReason) { showToast('Please specify the rejection reason.', 'error'); return; }
+    }
+ 
     const fd = new FormData();
     fd.append('_method', 'PUT');
     fd.append('status', status);
     fd.append('admin_remarks', remarks);
-
+    if (rejectionReason) fd.append('rejection_reason', rejectionReason);
+ 
     const btn = document.querySelector('#update-doc-modal .btn-submit');
     setButtonLoading(btn, 'Saving...');
     showActionLoading('Updating submission...');
-
+ 
     try {
         const res = await fetch(`/admin/document-requests/${id}`, {
             method: 'POST',

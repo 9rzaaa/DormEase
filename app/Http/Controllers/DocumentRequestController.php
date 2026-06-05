@@ -27,22 +27,35 @@ class DocumentRequestController extends Controller
     {
         try {
             $validated = $request->validate([
-                'status'         => 'required|in:pending,processing,approved,ready,denied',
-                'admin_remarks'  => 'nullable|string|max:1000',
-                'fulfilled_file' => 'nullable|file|max:20480',
+                'status'           => 'required|in:pending,processing,approved,ready,denied',
+                'admin_remarks'    => 'nullable|string|max:1000',
+                'rejection_reason' => 'nullable|string|max:500',
+                'fulfilled_file'   => 'nullable|file|max:20480',
             ]);
 
-            $validated['processed_at'] = now();
+            $adminRemarks = $validated['admin_remarks'] ?? null;
+            if ($validated['status'] === 'denied' && !empty($validated['rejection_reason'])) {
+                $reason = $validated['rejection_reason'];
+                $adminRemarks = $adminRemarks
+                    ? "[Reason: {$reason}]\n{$adminRemarks}"
+                    : "[Reason: {$reason}]";
+            }
+
+            $updateData = [
+                'status'        => $validated['status'],
+                'admin_remarks' => $adminRemarks,
+                'processed_at'  => now(),
+            ];
 
             if ($request->hasFile('fulfilled_file')) {
                 if ($documentRequest->fulfilled_file) {
                     Storage::disk('public')->delete($documentRequest->fulfilled_file);
                 }
-                $validated['fulfilled_file'] = $request->file('fulfilled_file')
+                $updateData['fulfilled_file'] = $request->file('fulfilled_file')
                                                    ->store('document-requests', 'public');
             }
 
-            $documentRequest->update($validated);
+            $documentRequest->update($updateData);
             $documentRequest->load('tenant');
 
             NotificationHelper::sendToAll(
@@ -51,13 +64,57 @@ class DocumentRequestController extends Controller
                 ref_id: $documentRequest->id,
             );
 
+            $bodyMap = [
+                'denied' => "Your {$documentRequest->document_type} submission was denied. Please check the remarks and resubmit.",
+            ];
+
             app(TenantPushNotificationService::class)->sendToTenant(
                 tenant: $documentRequest->tenant_id,
                 type: 'document',
                 title: 'Document request updated',
-                body: "Your {$documentRequest->document_type} request is now {$documentRequest->status}.",
+                body: $bodyMap[$documentRequest->status]
+                    ?? "Your {$documentRequest->document_type} request is now {$documentRequest->status}.",
                 refId: $documentRequest->doc_request_id,
                 route: '/tenant/records',
+            );
+
+            return response()->json($documentRequest);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function resubmit(Request $request, DocumentRequest $documentRequest)
+    {
+        try {
+            if ($documentRequest->status !== 'denied') {
+                return response()->json(['error' => 'Only denied submissions can be resubmitted.'], 422);
+            }
+
+            $request->validate([
+                'file' => 'required|file|max:20480',
+            ]);
+
+            if ($documentRequest->attachment) {
+                Storage::disk('public')->delete($documentRequest->attachment);
+            }
+
+            $newPath = $request->file('file')->store('document-requests', 'public');
+
+            $documentRequest->update([
+                'attachment'    => $newPath,
+                'status'        => 'pending',
+                'admin_remarks' => null,
+                'submitted_at'  => now(),
+                'processed_at'  => null,
+            ]);
+
+            $documentRequest->load('tenant');
+
+            NotificationHelper::sendToAll(
+                type: 'document_request',
+                message: "{$documentRequest->tenant->first_name} {$documentRequest->tenant->last_name} resubmitted a {$documentRequest->document_type} form.",
+                ref_id: $documentRequest->doc_request_id,
             );
 
             return response()->json($documentRequest);
@@ -81,7 +138,7 @@ class DocumentRequestController extends Controller
                     'tenant_id'      => $documentRequest->tenant_id,
                     'tenant_name'    => $documentRequest->tenant_name,
                     'document_type'  => $documentRequest->document_type,
-                    'category'       => $documentRequest->category, 
+                    'category'       => $documentRequest->category,
                     'purpose'        => $documentRequest->purpose,
                     'delivery_type'  => $documentRequest->delivery_type,
                     'date_needed'    => $documentRequest->date_needed,
