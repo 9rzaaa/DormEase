@@ -189,8 +189,24 @@ th {
     text-transform: uppercase;
     white-space: nowrap;
     background: var(--blush);
+    text-align: left;
+    vertical-align: middle;
 }
-td { padding: .85rem 1rem; font-size: .875rem; border-bottom: 1px solid var(--pink-100); color: var(--ink); }
+td {
+    padding: .85rem 1rem;
+    font-size: .875rem;
+    border-bottom: 1px solid var(--pink-100);
+    color: var(--ink);
+    text-align: left;
+    vertical-align: middle;
+}
+/* Tenant Name column — centered */
+th:nth-child(2), td:nth-child(2) { text-align: center; }
+/* Status column — centered */
+th:nth-child(7), td:nth-child(7) { text-align: center; }
+/* Action column — centered */
+th:nth-child(8), td:nth-child(8) { text-align: center; }
+
 tbody tr:hover { background: var(--soft-bg); }
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
@@ -198,7 +214,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
-.action-group { display: flex; align-items: center; gap: .4rem; flex-wrap: nowrap; }
+.action-group { display: flex; align-items: center; gap: .4rem; flex-wrap: nowrap; justify-content: center; }
 .act-btn {
     width: 32px; height: 32px;
     border-radius: 8px;
@@ -233,23 +249,163 @@ tbody tr:hover { background: var(--soft-bg); }
 .page-btn:hover:not(:disabled) { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .page-btn:disabled { opacity: .4; cursor: default; }
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-bottom: 1.2rem; }
-.modal-field { display: flex; flex-direction: column; gap: .35rem; }
+
+/* ── MODAL REDESIGN ─────────────────────────────── */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%; max-width: 540px;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    display: flex; flex-direction: column;
+    max-height: 92vh;
+    overflow: hidden;
+    animation: modalIn .28s cubic-bezier(.34,1.3,.64,1) both;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.modal-header {
+    padding: .85rem 1.1rem .75rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1.5px solid var(--pink-100);
+    flex-shrink: 0;
+}
+.modal-title {
+    font-size: 1.1rem; font-weight: 800; color: var(--ink);
+    letter-spacing: -.02em; display: flex; align-items: center; gap: .5rem;
+}
+.modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1.5px solid var(--pink-100); background: var(--petal);
+    color: var(--bright-pink); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s, border-color .2s; flex-shrink: 0;
+}
+.modal-close:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
+
+/* Scrollable body */
+.modal-body {
+    flex: 1; overflow-y: auto; padding: .9rem 1.1rem;
+    scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
+}
+.modal-body::-webkit-scrollbar { width: 5px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+/* Section dividers inside modal */
+.modal-section {
+    margin-bottom: .9rem;
+}
+.modal-section-title {
+    font-size: .7rem; font-weight: 800; color: var(--bright-pink);
+    text-transform: uppercase; letter-spacing: .08em;
+    margin-bottom: .55rem; padding-bottom: .3rem;
+    border-bottom: 1.5px solid var(--petal);
+    display: flex; align-items: center; gap: .4rem;
+}
+.modal-section-title::before {
+    content: '';
+    display: inline-block; width: 3px; height: 12px;
+    background: var(--gradient-pink); border-radius: 2px;
+}
+
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
+.modal-field { display: flex; flex-direction: column; gap: .25rem; }
 .modal-field.full { grid-column: 1 / -1; }
-.modal-field label { font-size: .78rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .03em; }
+.modal-field label {
+    font-size: .72rem; font-weight: 700; color: var(--hot-pink);
+    text-transform: uppercase; letter-spacing: .04em;
+}
 .modal-field input,
 .modal-field select {
-    width: 100%; padding: .65rem .9rem; border-radius: 10px;
+    width: 100%; padding: .5rem .8rem; border-radius: 10px;
     border: 1.5px solid var(--pink-100); background: #fffafd;
     font-size: .875rem; color: #5a1e38; outline: none;
-    box-sizing: border-box; transition: border-color .2s;
+    box-sizing: border-box; transition: border-color .2s, box-shadow .2s, background .2s;
+    font-family: inherit;
 }
-.modal-field input:focus, .modal-field select:focus { border-color: var(--bright-pink); }
-.delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
+.modal-field input:hover, .modal-field select:hover {
+    border-color: var(--pink-200);
+    background: #fff5f9;
+}
+.modal-field input:focus, .modal-field select:focus {
+    border-color: var(--bright-pink);
+    box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+    background: var(--white);
+}
+.modal-field input::placeholder { color: #c4a0af; }
+
+/* Status select with color indicator */
+.status-select-wrap { position: relative; }
+.status-dot {
+    position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
+    width: 8px; height: 8px; border-radius: 50%; pointer-events: none;
+    transition: background .2s;
+}
+.status-select-wrap select { padding-left: 1.9rem; }
+
+/* Info banner */
+.modal-info-banner {
+    background: linear-gradient(135deg, #fff5f9 0%, #ffe8f2 100%);
+    border: 1.5px solid var(--pink-100); border-radius: 10px;
+    padding: .55rem .8rem; font-size: .8rem; color: #7a3050; line-height: 1.5;
+    display: flex; gap: .55rem; align-items: flex-start; margin-bottom: .9rem;
+}
+.modal-info-icon {
+    font-size: .95rem; flex-shrink: 0; margin-top: .05rem;
+}
+.modal-warn-banner {
+    background: #fff9e6; border: 1.5px solid #f0c040; border-radius: 10px;
+    padding: .55rem .8rem; font-size: .8rem; color: #7a5400; line-height: 1.5;
+    display: flex; gap: .55rem; align-items: flex-start;
+}
+
+/* Footer actions */
+.modal-footer {
+    padding: .7rem 1.1rem;
+    border-top: 1.5px solid var(--pink-100);
+    display: flex; align-items: center; justify-content: flex-end; gap: .55rem;
+    flex-shrink: 0; background: #fffafd;
+}
+.btn-cancel {
+    padding: .6rem 1.25rem; border-radius: 10px;
+    border: 1.5px solid var(--pink-100); background: var(--white);
+    color: var(--ink-muted); font-size: .875rem; font-weight: 600;
+    cursor: pointer; transition: .2s; font-family: inherit;
+}
+.btn-cancel:hover { border-color: var(--bright-pink); color: var(--hot-pink); background: var(--petal); }
+.btn-submit {
+    padding: .6rem 1.4rem; border-radius: 10px;
+    border: none; background: var(--gradient-pink);
+    color: var(--white); font-size: .875rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    box-shadow: 0 8px 20px rgba(232,23,93,.25);
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
+.btn-submit:active { transform: translateY(0); }
+
+/* ── OLD modal-actions fallback (for delete/reset/credentials modals) */
+.modal-actions {
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: .65rem; padding-top: 1rem; flex-wrap: wrap;
+}
+
+/* ── VIEW MODAL ── */
 .view-row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; }
 .view-row:last-child { border-bottom: none; }
-.view-label { font-size: .78rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .03em; flex-shrink: 0; }
+.view-label { font-size: .72rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; flex-shrink: 0; }
 .view-val { font-size: .875rem; color: #5a1e38; font-weight: 500; text-align: right; word-break: break-word; }
+
+/* ── CREDENTIALS MODAL ── */
 .credentials-box { background: var(--soft-bg); border: 1.5px solid var(--pink-100); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1rem; }
 .credentials-box h4 { font-size: .8rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .75rem; }
 .credential-row { display: flex; align-items: center; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; flex-wrap: wrap; }
@@ -259,14 +415,16 @@ tbody tr:hover { background: var(--soft-bg); }
 .copy-btn { padding: .3rem .75rem; border-radius: 7px; border: 1.5px solid var(--pink-100); background: var(--white); color: var(--hot-pink); font-size: .75rem; font-weight: 700; cursor: pointer; transition: .2s; flex-shrink: 0; }
 .copy-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .credentials-warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; font-size: .82rem; color: #7a5400; margin-bottom: 1rem; line-height: 1.5; }
+.delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
+
+/* ── ANIMATIONS ── */
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s; }
-table th, table td { text-align: center; vertical-align: middle; }
-.td-id { text-align: left; }
-.td-name { text-align: center; }
+
+/* ── ARCHIVE DRAWER ── */
 .tenant-archive-drawer {
     position: fixed; top: 0; right: 0; bottom: 0;
     width: min(660px, 100vw);
@@ -344,10 +502,11 @@ table th, table td { text-align: center; vertical-align: middle; }
 .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
 .is-loading { opacity: .75; pointer-events: none; }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
+
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
 @media (max-width: 680px) { .page-body { padding: 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
-@media (max-width: 480px) { .page-body { padding: .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } }
+@media (max-width: 480px) { .page-body { padding: .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
 @media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
@@ -525,6 +684,7 @@ table th, table td { text-align: center; vertical-align: middle; }
     </div>
 </div>
 
+{{-- ── CREDENTIALS MODAL (new tenant) ── --}}
 @if(session('new_account_id'))
 <div class="modal-overlay open" id="credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -532,39 +692,42 @@ table th, table td { text-align: center; vertical-align: middle; }
             <div class="modal-title">Tenant Account Created</div>
             <button class="modal-close" onclick="closeModal('credentials-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
-            The account for <strong style="color:var(--ink);">{{ session('new_tenant_name') }}</strong>
-            has been created. Please provide the following credentials to the tenant:
-        </p>
-        <div class="credentials-box">
-            <h4>Login Credentials</h4>
-            <div class="credential-row">
-                <div>
-                    <div class="credential-label">Account ID</div>
-                    <div class="credential-value" id="cred-account-id">{{ session('new_account_id') }}</div>
+        <div class="modal-body">
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                The account for <strong style="color:var(--ink);">{{ session('new_tenant_name') }}</strong>
+                has been created. Please provide the following credentials to the tenant:
+            </p>
+            <div class="credentials-box">
+                <h4>Login Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Account ID</div>
+                        <div class="credential-value" id="cred-account-id">{{ session('new_account_id') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('cred-account-id', this)">Copy</button>
                 </div>
-                <button class="copy-btn" onclick="copyText('cred-account-id', this)">Copy</button>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Temporary Password</div>
+                        <div class="credential-value" id="cred-temp-password">{{ session('new_temp_password') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('cred-temp-password', this)">Copy</button>
+                </div>
             </div>
-            <div class="credential-row">
-                <div>
-                    <div class="credential-label">Temporary Password</div>
-                    <div class="credential-value" id="cred-temp-password">{{ session('new_temp_password') }}</div>
-                </div>
-                <button class="copy-btn" onclick="copyText('cred-temp-password', this)">Copy</button>
+            <div class="credentials-warning">
+                This temporary password will <strong>not be shown again</strong>.
+                Please write it down or inform the tenant immediately.
+                The tenant will be prompted to change their password on first login.
             </div>
         </div>
-        <div class="credentials-warning">
-            This temporary password will <strong>not be shown again</strong>.
-            Please write it down or inform the tenant immediately.
-            The tenant will be prompted to change their password on first login.
-        </div>
-        <div class="modal-actions">
+        <div class="modal-footer">
             <button class="btn-submit" onclick="closeModal('credentials-modal')">Got it, I've noted the credentials</button>
         </div>
     </div>
 </div>
 @endif
 
+{{-- ── RESET CREDENTIALS MODAL ── --}}
 @if(session('reset_account_id'))
 <div class="modal-overlay open" id="reset-credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -572,94 +735,115 @@ table th, table td { text-align: center; vertical-align: middle; }
             <div class="modal-title">Password Reset Successfully</div>
             <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
-            The password for <strong style="color:var(--ink);">{{ session('reset_tenant_name') }}</strong>
-            has been reset. Please provide the new temporary credentials to the tenant:
-        </p>
-        <div class="credentials-box">
-            <h4>New Temporary Credentials</h4>
-            <div class="credential-row">
-                <div>
-                    <div class="credential-label">Account ID</div>
-                    <div class="credential-value" id="reset-account-id">{{ session('reset_account_id') }}</div>
+        <div class="modal-body">
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                The password for <strong style="color:var(--ink);">{{ session('reset_tenant_name') }}</strong>
+                has been reset. Please provide the new temporary credentials to the tenant:
+            </p>
+            <div class="credentials-box">
+                <h4>New Temporary Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Account ID</div>
+                        <div class="credential-value" id="reset-account-id">{{ session('reset_account_id') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('reset-account-id', this)">Copy</button>
                 </div>
-                <button class="copy-btn" onclick="copyText('reset-account-id', this)">Copy</button>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">New Temporary Password</div>
+                        <div class="credential-value" id="reset-temp-password">{{ session('reset_temp_password') }}</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('reset-temp-password', this)">Copy</button>
+                </div>
             </div>
-            <div class="credential-row">
-                <div>
-                    <div class="credential-label">New Temporary Password</div>
-                    <div class="credential-value" id="reset-temp-password">{{ session('reset_temp_password') }}</div>
-                </div>
-                <button class="copy-btn" onclick="copyText('reset-temp-password', this)">Copy</button>
+            <div class="credentials-warning">
+                This temporary password will <strong>not be shown again</strong>.
+                Please inform the tenant of their new password immediately.
             </div>
         </div>
-        <div class="credentials-warning">
-            This temporary password will <strong>not be shown again</strong>.
-            Please inform the tenant of their new password immediately.
-        </div>
-        <div class="modal-actions">
+        <div class="modal-footer">
             <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it, I've noted the credentials</button>
         </div>
     </div>
 </div>
 @endif
 
+{{-- ── ADD TENANT MODAL ── --}}
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Add New Tenant</div>
+            <div class="modal-title">
+                ✦ Add New Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.82rem;color:var(--ink-muted);margin-bottom:1.2rem;background:var(--petal);padding:.7rem 1rem;border-radius:10px;">
-            Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.
-        </p>
-        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant...">
+
+        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
             @csrf
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}">
+            <div class="modal-body">
+
+                <div class="modal-info-banner">
+                    <span class="modal-info-icon">🔑</span>
+                    <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
                 </div>
-                <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}">
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Personal Information</div>
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}" autocomplete="given-name">
+                        </div>
+                        <div class="modal-field">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}" autocomplete="family-name">
+                        </div>
+                        <div class="modal-field full">
+                            <label>Email Address</label>
+                            <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                        </div>
+                        <div class="modal-field full">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-field full">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}">
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Room & Stay Details</div>
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <label>Room No.</label>
+                            <input type="text" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                        </div>
+                        <div class="modal-field">
+                            <label>Floor</label>
+                            <select name="floor">
+                                <option value="">Select floor</option>
+                                @for($i = 1; $i <= 5; $i++)
+                                    <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Stay Type</label>
+                            <select name="stay_type">
+                                <option value="">Select type</option>
+                                <option value="Bed Spacer" {{ old('stay_type') === 'Bed Spacer' ? 'selected' : '' }}>Bed Spacer</option>
+                                <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
+                                <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Move-In Date</label>
+                            <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-field">
-                    <label>Room No.</label>
-                    <input type="text" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
-                </div>
-                <div class="modal-field">
-                    <label>Floor</label>
-                    <select name="floor">
-                        <option value="">Select floor</option>
-                        @for($i = 1; $i <= 5; $i++)
-                            <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
-                        @endfor
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Stay Type</label>
-                    <select name="stay_type">
-                        <option value="">Select type</option>
-                        <option value="Bed Spacer" {{ old('stay_type') === 'Bed Spacer' ? 'selected' : '' }}>Bed Spacer</option>
-                        <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
-                        <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Move-In Date</label>
-                    <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
-                </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
-                </div>
+
             </div>
-            <div class="modal-actions">
+            <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Add Tenant</button>
             </div>
@@ -667,20 +851,22 @@ table th, table td { text-align: center; vertical-align: middle; }
     </div>
 </div>
 
+{{-- ── VIEW MODAL ── --}}
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Tenant Details</div>
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
-        <div id="view-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;">
+        <div class="modal-body" id="view-content"></div>
+        <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>
         </div>
     </div>
 </div>
 
+{{-- ── EDIT TENANT MODAL ── --}}
 <div class="modal-overlay" id="edit-modal">
     <div class="modal">
         <div class="modal-header">
@@ -690,70 +876,94 @@ table th, table td { text-align: center; vertical-align: middle; }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes...">
+
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;">
             @csrf
             @method('PUT')
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" id="edit-first-name" required>
+            <div class="modal-body">
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Personal Information</div>
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" id="edit-first-name" placeholder="First name" required>
+                        </div>
+                        <div class="modal-field">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" id="edit-last-name" placeholder="Last name" required>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Email Address</label>
+                            <input type="email" name="email" id="edit-email" placeholder="Email address" required>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" id="edit-last-name" required>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Room & Stay Details</div>
+                    <div class="modal-grid">
+                        <div class="modal-field">
+                            <label>Room No.</label>
+                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304">
+                        </div>
+                        <div class="modal-field">
+                            <label>Floor</label>
+                            <select name="floor" id="edit-floor">
+                                <option value="">Select floor</option>
+                                @for($i = 1; $i <= 5; $i++)
+                                    <option value="{{ $i }}">Floor {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Stay Type</label>
+                            <select name="stay_type" id="edit-stay-type">
+                                <option value="">Select type</option>
+                                <option value="Bed Spacer">Bed Spacer</option>
+                                <option value="Solo Room">Solo Room</option>
+                                <option value="Shared Room">Shared Room</option>
+                            </select>
+                        </div>
+                        <div class="modal-field">
+                            <label>Move-In Date</label>
+                            <input type="date" name="move_in_date" id="edit-date">
+                        </div>
+                        <div class="modal-field">
+                            <label>Move-Out Date</label>
+                            <input type="date" name="move_out_date" id="edit-moveout">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-field full">
-                    <label>Email</label>
-                    <input type="email" name="email" id="edit-email" required>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">Account Status</div>
+                    <div class="modal-grid">
+                        <div class="modal-field full">
+                            <label>Status</label>
+                            <div class="status-select-wrap">
+                                <span class="status-dot" id="edit-status-dot"></span>
+                                <select name="status" id="edit-status" onchange="updateStatusDot(this)">
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="move_out">Move Out</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-warn-banner" style="margin-top:.8rem;">
+                        <span style="font-size:1rem;flex-shrink:0;">⚠️</span>
+                        <span>Setting status to <strong>Inactive</strong> or <strong>Move Out</strong> will save a record to the archive history.</span>
+                    </div>
                 </div>
-                <div class="modal-field">
-                    <label>Room No.</label>
-                    <input type="text" name="room_number" id="edit-room">
-                </div>
-                <div class="modal-field">
-                    <label>Floor</label>
-                    <select name="floor" id="edit-floor">
-                        <option value="">Select floor</option>
-                        @for($i = 1; $i <= 5; $i++)
-                            <option value="{{ $i }}">Floor {{ $i }}</option>
-                        @endfor
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Stay Type</label>
-                    <select name="stay_type" id="edit-stay-type">
-                        <option value="">Select type</option>
-                        <option value="Bed Spacer">Bed Spacer</option>
-                        <option value="Solo Room">Solo Room</option>
-                        <option value="Shared Room">Shared Room</option>
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Move-In Date</label>
-                    <input type="date" name="move_in_date" id="edit-date">
-                </div>
-                <div class="modal-field">
-                    <label>Move-Out Date</label>
-                    <input type="date" name="move_out_date" id="edit-moveout">
-                </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact">
-                </div>
-                <div class="modal-field full">
-                    <label>Status</label>
-                    <select name="status" id="edit-status">
-                        <option value="active">Active</option>
-                        <option value="pending">Pending</option>
-                        <option value="move_out">Move Out</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
+
             </div>
-            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;margin-bottom:.9rem;line-height:1.5;">
-                Setting status to <strong>Inactive</strong> or <strong>Move Out</strong> will save a record to the archive history.
-            </div>
-            <div class="modal-actions">
+            <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
             </div>
@@ -761,6 +971,7 @@ table th, table td { text-align: center; vertical-align: middle; }
     </div>
 </div>
 
+{{-- ── RESET PASSWORD MODAL ── --}}
 <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -770,21 +981,24 @@ table th, table td { text-align: center; vertical-align: middle; }
             </div>
             <button class="modal-close" onclick="closeModal('reset-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
-            Are you sure you want to reset the password for
-            <strong id="reset-name" style="color:var(--ink);"></strong>?
-            A new temporary password will be generated.
-        </p>
-        <form method="POST" id="reset-form" action="" data-loading-message="Resetting password...">
+        <div class="modal-body">
+            <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:0;">
+                Are you sure you want to reset the password for
+                <strong id="reset-name" style="color:var(--ink);"></strong>?
+                A new temporary password will be generated.
+            </p>
+        </div>
+        <form method="POST" id="reset-form" action="" data-loading-message="Resetting password..." style="display:contents;">
             @csrf
-            <div class="modal-actions">
+            <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('reset-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:#f0c040;color:#1a1a2e;">Reset Password</button>
+                <button type="submit" class="btn-submit" style="background:#f0c040;color:#1a1a2e;box-shadow:0 8px 20px rgba(240,192,64,.3);">Reset Password</button>
             </div>
         </form>
     </div>
 </div>
 
+{{-- ── DELETE MODAL ── --}}
 <div class="modal-overlay" id="delete-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -794,14 +1008,16 @@ table th, table td { text-align: center; vertical-align: middle; }
             </div>
             <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
-        <div class="delete-warning">Warning: This action cannot be undone. The tenant record will be permanently removed.</div>
-        <p style="font-size:.9rem;color:#b06080;">Are you sure you want to delete <strong id="delete-name" style="color:#5a1e38;"></strong>?</p>
-        <div class="modal-actions">
+        <div class="modal-body">
+            <div class="delete-warning">Warning: This action cannot be undone. The tenant record will be permanently removed.</div>
+            <p style="font-size:.9rem;color:#b06080;margin:0;">Are you sure you want to delete <strong id="delete-name" style="color:#5a1e38;"></strong>?</p>
+        </div>
+        <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <form method="POST" id="delete-form" action="" data-loading-message="Deleting tenant...">
+            <form method="POST" id="delete-form" action="" data-loading-message="Deleting tenant..." style="display:contents;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-submit" style="background:var(--red);box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
+                <button type="submit" class="btn-submit" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
             </form>
         </div>
     </div>
@@ -855,6 +1071,13 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
+function updateStatusDot(select) {
+    var dot = document.getElementById('edit-status-dot');
+    if (!dot) return;
+    var colors = { active:'#1f9d69', pending:'#c8960c', move_out:'#E8175D', inactive:'#e04867' };
+    dot.style.background = colors[select.value] || '#ccc';
+}
+
 function statusBadge(status) {
     const map = {
         active:   '<span class="badge badge-active">Active</span>',
@@ -885,8 +1108,8 @@ function renderTable() {
             var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
             var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
             return '<tr>' +
-                '<td class="td-id">' + (t.account_id || '\u2014') + '</td>' +
-                '<td class="td-name">' + nameCell + '</td>' +
+                '<td>' + (t.account_id || '\u2014') + '</td>' +
+                '<td>' + nameCell + '</td>' +
                 '<td>' + floorRoom + '</td>' +
                 '<td>' + fmtDate(t.move_in_date) + '</td>' +
                 '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>' +
@@ -996,6 +1219,7 @@ function openEditModal(t) {
     document.getElementById('edit-moveout').value     = t.move_out_date || '';
     document.getElementById('edit-contact').value     = t.contact_number || '';
     document.getElementById('edit-status').value      = t.status || 'pending';
+    updateStatusDot(document.getElementById('edit-status'));
     openModal('edit-modal');
 }
 
@@ -1186,12 +1410,10 @@ function positionExportMenu(dropdown) {
     menu.style.right    = (window.innerWidth - rect.right) + 'px';
     menu.style.left     = 'auto';
     menu.style.minWidth = rect.width + 'px';
-
     menu.style.top    = 'auto';
     menu.style.bottom = 'auto';
 
     var menuHeight = menu.offsetHeight || 80;
-    var spaceAbove = rect.top;
     var spaceBelow = window.innerHeight - rect.bottom;
 
     if (spaceBelow >= menuHeight + 6) {
