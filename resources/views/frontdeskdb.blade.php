@@ -546,49 +546,121 @@
 
 @section('modals')
 
+{{-- Emergency Alerts Modal --}}
 <div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
-    <div class="modal" style="max-width:500px; max-height:80vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
-        <div class="modal-header" style="padding:1.5rem 2rem 1.2rem; flex-shrink:0; border-bottom:1px solid var(--pink-light);">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
             <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
-        <div style="flex:1; overflow-y:auto; padding:1.2rem 2rem; display:flex; flex-direction:column; gap:.8rem;">
+        <div style="display:flex;flex-direction:column;gap:.65rem;padding:.2rem 0 .4rem;">
             @if($allEmergencies->isEmpty())
-                <p style="color:var(--ink-muted);font-size:.88rem;">No emergency reports found.</p>
+                <div class="empty-state" style="padding:1.2rem 0;">No emergency reports found.</div>
             @else
                 @foreach($allEmergencies as $emergency)
-                    <div class="alert-item {{ $emergency->status === 'resolved' ? 'resolved' : 'active' }}">
-                        <div class="alert-room">{{ $emergency->location ?? 'Unknown' }}: {{ $emergency->emergency_type }}</div>
-                        <div class="alert-status">{{ $emergency->status === 'resolved' ? 'Resolved' : $emergency->status }}</div>
+                    @php $isResolved = strtolower($emergency->status) === 'resolved'; @endphp
+                    <div style="
+                        display:flex;align-items:center;gap:.85rem;
+                        padding:.85rem 1rem;border-radius:12px;border:1.5px solid;
+                        {{ $isResolved ? 'border-color:#5bcb8a;background:#eafbf0;' : 'border-color:var(--bright-pink);background:var(--petal);' }}
+                    ">
+                        <div style="
+                            width:40px;height:40px;border-radius:10px;flex-shrink:0;
+                            display:flex;align-items:center;justify-content:center;
+                            {{ $isResolved ? 'background:#d3f7e6;' : 'background:var(--baby-pink);' }}
+                        ">
+                            @if($isResolved)
+                                <img src="{{ asset('icons/check.png') }}"
+                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(27%) sepia(97%) saturate(500%) hue-rotate(100deg) brightness(90%);"
+                                     alt="Resolved">
+                            @else
+                                <img src="{{ asset('icons/panic.png') }}"
+                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
+                                     alt="Active">
+                            @endif
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:.88rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                {{ $emergency->location ?? 'Unknown Location' }} &mdash; {{ $emergency->emergency_type }}
+                            </div>
+                            <div style="font-size:.75rem;color:var(--ink-muted);margin-top:.18rem;">
+                                {{ \Carbon\Carbon::parse($emergency->created_at)->format('F d, Y · g:i A') }}
+                            </div>
+                        </div>
+                        <div style="
+                            font-size:.7rem;font-weight:800;padding:.22rem .7rem;
+                            border-radius:6px;border:1.5px solid;flex-shrink:0;white-space:nowrap;
+                            {{ $isResolved
+                                ? 'color:#1a7a4a;border-color:#5bcb8a;background:#eafbf0;'
+                                : 'color:#C4003A;border-color:var(--bright-pink);background:var(--baby-pink);' }}
+                        ">
+                            {{ $isResolved ? 'Resolved' : ucfirst($emergency->status) }}
+                        </div>
                     </div>
                 @endforeach
             @endif
         </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('emergency-modal')">Close</button>
+        </div>
     </div>
 </div>
 
+{{-- Notification Detail Modal --}}
+<div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
+    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">Notification</div>
+            <button class="modal-close" onclick="closeModal('notif-detail-modal')">&#x2715;</button>
+        </div>
+        <div style="padding:.3rem 0 .5rem;">
+            <div style="display:flex; gap:1rem; align-items:flex-start;">
+                <div style="
+                    width:48px; height:48px; border-radius:12px; flex-shrink:0;
+                    background:var(--petal); border:1.5px solid var(--baby-pink);
+                    display:flex; align-items:center; justify-content:center;
+                ">
+                    <img id="nd-icon" src=""
+                         style="width:22px;height:22px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
+                         alt="">
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div id="nd-type" style="font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-muted);"></div>
+                    <div id="nd-message" style="font-size:.93rem; font-weight:600; color:var(--ink); margin-top:.25rem; line-height:1.55;"></div>
+                    <div id="nd-time" style="font-size:.77rem; color:var(--ink-muted); margin-top:.45rem;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('notif-detail-modal')">Dismiss</button>
+            <button class="btn-submit" id="nd-action-btn" style="display:none;">View</button>
+        </div>
+    </div>
+</div>
+
+{{-- Visitor Detail Modal --}}
 <div class="modal-overlay" id="visitor-detail-modal" onclick="handleOverlayClick(event, 'visitor-detail-modal')">
-    <div class="modal" style="max-width:420px;">
+    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title" id="vd-name"></div>
             <button class="modal-close" onclick="closeModal('visitor-detail-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div style="display:flex; flex-direction:column; gap:.75rem; padding:.2rem 0 .4rem;">
             <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Status</span>
-                <div id="vd-status" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+                <span style="font-size:.75rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em;">Status</span>
+                <div id="vd-status" style="font-size:.9rem; font-weight:600; color:var(--ink); margin-top:.2rem;"></div>
             </div>
             <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Visiting</span>
-                <div id="vd-tenant" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+                <span style="font-size:.75rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em;">Visiting</span>
+                <div id="vd-tenant" style="font-size:.9rem; font-weight:600; color:var(--ink); margin-top:.2rem;"></div>
             </div>
             <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Arrival Time</span>
-                <div id="vd-arrival" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+                <span style="font-size:.75rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em;">Arrival Time</span>
+                <div id="vd-arrival" style="font-size:.9rem; font-weight:600; color:var(--ink); margin-top:.2rem;"></div>
             </div>
             <div id="vd-departure-wrap">
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Departure Time</span>
-                <div id="vd-departure" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+                <span style="font-size:.75rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.05em;">Departure Time</span>
+                <div id="vd-departure" style="font-size:.9rem; font-weight:600; color:var(--ink); margin-top:.2rem;"></div>
             </div>
         </div>
         <div class="modal-actions">
@@ -745,7 +817,6 @@
 
 })();
 
-/* ── Close modal when clicking the backdrop overlay ── */
 window.handleOverlayClick = function(e, modalId) {
     if (e.target === document.getElementById(modalId)) {
         closeModal(modalId);
@@ -799,6 +870,26 @@ window.openVisitorModal = function(name, status, tenant, arrival, departure) {
     }
 
     openModal('visitor-detail-modal');
+};
+
+window.openNotifDetail = function(data) {
+    var icon = document.getElementById('nd-icon');
+    icon.src = data.icon;
+    icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
+
+    document.getElementById('nd-type').textContent    = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+    document.getElementById('nd-message').textContent = data.message;
+    document.getElementById('nd-time').textContent    = data.time + ' (' + data.ago + ')';
+
+    var actionBtn = document.getElementById('nd-action-btn');
+    if (data.url) {
+        actionBtn.style.display = 'inline-flex';
+        actionBtn.onclick = function() { window.location = data.url; };
+    } else {
+        actionBtn.style.display = 'none';
+    }
+
+    openModal('notif-detail-modal');
 };
 </script>
 @endsection
