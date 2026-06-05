@@ -318,6 +318,63 @@
     .icon-md { width: 20px; height: 20px; object-fit: contain; }
     .icon-lg { width: 28px; height: 28px; object-fit: contain; }
 
+    /* ── Emergency modal ── */
+    .emerg-modal-list {
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+        overflow-y: auto;
+        max-height: 400px;
+        padding: .75rem 0 .25rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--mid-pink) transparent;
+    }
+    .emerg-modal-list::-webkit-scrollbar       { width: 4px; }
+    .emerg-modal-list::-webkit-scrollbar-track { background: transparent; }
+    .emerg-modal-list::-webkit-scrollbar-thumb { background: var(--mid-pink); border-radius: 99px; }
+
+    .emerg-alert-card {
+        display: flex;
+        align-items: flex-start;
+        gap: .85rem;
+        padding: .85rem 1rem;
+        border-radius: 12px;
+        border: 1.5px solid;
+    }
+    .emerg-alert-card.is-active   { border-color: var(--mid-pink);  background: var(--petal); }
+    .emerg-alert-card.is-resolved { border-color: #b8edd1;          background: #f2fbf6; }
+
+    .emerg-alert-icon {
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .emerg-alert-card.is-active .emerg-alert-icon   { background: var(--baby-pink); }
+    .emerg-alert-card.is-resolved .emerg-alert-icon { background: #d3f7e6; }
+    .emerg-alert-icon img { width: 18px; height: 18px; object-fit: contain; }
+    .emerg-alert-card.is-active .emerg-alert-icon img {
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .emerg-alert-card.is-resolved .emerg-alert-icon img {
+        filter: brightness(0) saturate(100%) invert(27%) sepia(97%) saturate(500%) hue-rotate(100deg) brightness(90%);
+    }
+
+    .emerg-alert-body      { flex: 1; min-width: 0; }
+    .emerg-alert-location  {
+        font-size: .88rem; font-weight: 700; color: var(--ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .emerg-alert-time      { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
+
+    .emerg-alert-badge {
+        font-size: .7rem; font-weight: 800;
+        padding: .22rem .7rem; border-radius: 6px;
+        border: 1.5px solid; flex-shrink: 0;
+        white-space: nowrap; align-self: center;
+    }
+    .badge-active   { color: #C4003A; border-color: var(--bright-pink); background: var(--baby-pink); }
+    .badge-resolved { color: #1a7a4a; border-color: #5bcb8a;           background: #eafbf0; }
+
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
         .page-body  { grid-template-columns: 1fr; }
@@ -334,6 +391,7 @@
         .chart-wrap { height: 160px; }
         .chart-switcher { flex-wrap: wrap; }
         .emerg-detail { font-size: .82rem; }
+        .emerg-modal-list { max-height: 260px; }
     }
 </style>
 @endsection
@@ -345,23 +403,23 @@
     <div class="content-col">
 
         <div class="page-header fade-up d1">
-        <div>
-            <h1>Welcome, {{ $staff->first_name }}!</h1>
-            <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
-        </div>
-    </div>
-
-    <div class="card fade-up d2">
-        <div class="card-header">
             <div>
-                <div class="card-title">Quick Summary</div>
-                <div class="card-sub">As of {{ now()->format('F d, Y') }}</div>
+                <h1>Welcome, {{ $staff->first_name }}!</h1>
+                <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
             </div>
-            <button class="export-btn" onclick="exportSummary()">
-                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="">
-                Export
-            </button>
         </div>
+
+        <div class="card fade-up d2">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Quick Summary</div>
+                    <div class="card-sub">As of {{ now()->format('F d, Y') }}</div>
+                </div>
+                <button class="export-btn" onclick="exportSummary()">
+                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="">
+                    Export
+                </button>
+            </div>
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt="tenants"></div>
@@ -724,47 +782,29 @@
             <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.65rem;padding:.2rem 0 .4rem;">
+        <div class="emerg-modal-list">
             @if($allEmergencies->isEmpty())
                 <div class="empty-state" style="padding:1.2rem 0;">No emergency reports found.</div>
             @else
                 @foreach($allEmergencies as $emergency)
                     @php $isResolved = strtolower($emergency->status) === 'resolved'; @endphp
-                    <div style="
-                        display:flex;align-items:center;gap:.85rem;
-                        padding:.85rem 1rem;border-radius:12px;border:1.5px solid;
-                        {{ $isResolved ? 'border-color:#5bcb8a;background:#eafbf0;' : 'border-color:var(--bright-pink);background:var(--petal);' }}
-                    ">
-                        <div style="
-                            width:40px;height:40px;border-radius:10px;flex-shrink:0;
-                            display:flex;align-items:center;justify-content:center;
-                            {{ $isResolved ? 'background:#d3f7e6;' : 'background:var(--baby-pink);' }}
-                        ">
+                    <div class="emerg-alert-card {{ $isResolved ? 'is-resolved' : 'is-active' }}">
+                        <div class="emerg-alert-icon">
                             @if($isResolved)
-                                <img src="{{ asset('icons/check.png') }}"
-                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(27%) sepia(97%) saturate(500%) hue-rotate(100deg) brightness(90%);"
-                                     alt="Resolved">
+                                <img src="{{ asset('icons/check.png') }}" alt="Resolved">
                             @else
-                                <img src="{{ asset('icons/panic.png') }}"
-                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
-                                     alt="Active">
+                                <img src="{{ asset('icons/panic.png') }}" alt="Active">
                             @endif
                         </div>
-                        <div style="flex:1;min-width:0;">
-                            <div style="font-size:.88rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        <div class="emerg-alert-body">
+                            <div class="emerg-alert-location">
                                 {{ $emergency->location ?? 'Unknown Location' }} &mdash; {{ $emergency->emergency_type }}
                             </div>
-                            <div style="font-size:.75rem;color:var(--ink-muted);margin-top:.18rem;">
+                            <div class="emerg-alert-time">
                                 {{ \Carbon\Carbon::parse($emergency->created_at)->format('F d, Y · g:i A') }}
                             </div>
                         </div>
-                        <div style="
-                            font-size:.7rem;font-weight:800;padding:.22rem .7rem;
-                            border-radius:6px;border:1.5px solid;flex-shrink:0;white-space:nowrap;
-                            {{ $isResolved
-                                ? 'color:#1a7a4a;border-color:#5bcb8a;background:#eafbf0;'
-                                : 'color:#C4003A;border-color:var(--bright-pink);background:var(--baby-pink);' }}
-                        ">
+                        <div class="emerg-alert-badge {{ $isResolved ? 'badge-resolved' : 'badge-active' }}">
                             {{ $isResolved ? 'Resolved' : ucfirst($emergency->status) }}
                         </div>
                     </div>
@@ -786,11 +826,7 @@
         </div>
         <div style="padding:.3rem 0 .5rem;">
             <div style="display:flex;gap:1rem;align-items:flex-start;">
-                <div style="
-                    width:48px;height:48px;border-radius:12px;flex-shrink:0;
-                    background:var(--petal);border:1.5px solid var(--baby-pink);
-                    display:flex;align-items:center;justify-content:center;
-                ">
+                <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;background:var(--petal);border:1.5px solid var(--baby-pink);display:flex;align-items:center;justify-content:center;">
                     <img id="nd-icon" src=""
                          style="width:22px;height:22px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
                          alt="">
