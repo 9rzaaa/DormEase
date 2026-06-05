@@ -151,6 +151,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/admin/documents/{document}', [DocumentController::class, 'show'])->name('admin.documents.show');
     Route::put('/admin/documents/{document}', [DocumentController::class, 'update'])->name('admin.documents.update');
     Route::delete('/admin/documents/{document}', [DocumentController::class, 'destroy'])->name('admin.documents.destroy');
+    Route::post('/admin/document-requests/{documentRequest}/resubmit', [DocumentRequestController::class, 'resubmit']);
 
     // document requests
     Route::get('/admin/document-requests', [DocumentRequestController::class, 'index'])->name('admin.document-requests.index');
