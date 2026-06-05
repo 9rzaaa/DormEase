@@ -211,10 +211,8 @@
         pointer-events: none;
     }
 
-    /* Push search to the right only in the docs/reqs toolbars */
     .toolbar .search-wrap { margin-left: auto; }
 
-    /* Forms toolbar: search stays left, button pushed right */
     .toolbar-forms .search-wrap { margin-left: 0; }
     .toolbar-forms .btn-upload  { margin-left: auto; }
 
@@ -355,11 +353,12 @@
         white-space: nowrap;
     }
 
-    .req-pending    { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
-    .req-approved   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-    .req-denied     { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
-    .req-processing { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
-    .req-ready      { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+    .req-pending       { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .req-approved      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .req-denied        { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .req-processing    { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .req-ready         { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+    .req-resubmission  { background: #fff3e0; color: #bf360c; border: 1px solid #ffcc80; }
 
     .action-group {
         display: flex;
@@ -503,6 +502,46 @@
     .modal-field input[type="file"] {
         padding: .45rem .75rem;
         cursor: pointer;
+    }
+
+    .resubmission-toggle {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .65rem .9rem;
+        background: #fff3e0;
+        border: 1.5px solid #ffcc80;
+        border-radius: 10px;
+        margin-bottom: .9rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .resubmission-toggle input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--bright-pink);
+        cursor: pointer;
+        flex-shrink: 0;
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+    .resubmission-toggle span {
+        font-size: .82rem;
+        font-weight: 700;
+        color: #bf360c;
+        line-height: 1.4;
+    }
+
+    .resubmission-toggle span small {
+        display: block;
+        font-weight: 500;
+        color: #e65100;
+        font-size: .75rem;
+        margin-top: .15rem;
     }
 
     .view-detail-row {
@@ -812,6 +851,7 @@
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="approved">Approved</option>
+                <option value="resubmission">For Resubmission</option>
                 <option value="denied">Denied</option>
             </select>
 
@@ -982,6 +1022,7 @@
                         <option value="pending">Pending</option>
                         <option value="processing">Processing</option>
                         <option value="approved">Approved</option>
+                        <option value="resubmission">For Resubmission</option>
                         <option value="denied">Denied</option>
                     </select>
                     <span class="toolbar-label">Sort:</span>
@@ -1139,6 +1180,13 @@
                 <label>Specify Reason</label>
                 <input type="text" id="upd-doc-rejection-other" placeholder="Describe the rejection reason...">
             </div>
+            <label class="resubmission-toggle" for="upd-doc-allow-resubmission">
+                <input type="checkbox" id="upd-doc-allow-resubmission">
+                <span>
+                    Allow tenant to resubmit
+                    <small>The tenant will be notified and can upload a corrected file through the mobile app.</small>
+                </span>
+            </label>
         </div>
         <div class="modal-field">
             <label>Additional Remarks (optional)</label>
@@ -1165,29 +1213,6 @@
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-doc-modal')">Cancel</button>
             <button class="btn-submit" style="background:var(--red);" onclick="confirmDeleteDoc()">Archive</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="resubmit-doc-modal">
-    <div class="modal" style="max-width:460px;">
-        <div class="modal-header">
-            <div class="modal-title">Resubmit Form</div>
-            <button class="modal-close" onclick="closeModal('resubmit-doc-modal')">&#x2715;</button>
-        </div>
-        <p style="font-size:.875rem;color:var(--ink-muted);margin-bottom:1rem;line-height:1.6;">
-            Upload a corrected version of the form for
-            <strong id="resubmit-doc-label" style="color:var(--ink);"></strong>.
-            This will reset the status to <strong>Pending</strong> for admin review.
-        </p>
-        <input type="hidden" id="resubmit-doc-id">
-        <div class="modal-field">
-            <label>New File (replaces previous submission)</label>
-            <input type="file" id="resubmit-doc-file">
-        </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('resubmit-doc-modal')">Cancel</button>
-            <button class="btn-submit" onclick="confirmResubmitDoc()">Resubmit</button>
         </div>
     </div>
 </div>
@@ -1484,11 +1509,12 @@ function fileTypeBadge(path) {
 
 function reqStatusBadge(s) {
     const map = {
-        pending:    '<span class="req-status-badge req-pending">Pending</span>',
-        processing: '<span class="req-status-badge req-processing">Processing</span>',
-        approved:   '<span class="req-status-badge req-approved">Approved</span>',
-        ready:      '<span class="req-status-badge req-ready">Ready</span>',
-        denied:     '<span class="req-status-badge req-denied">Denied</span>',
+        pending:       '<span class="req-status-badge req-pending">Pending</span>',
+        processing:    '<span class="req-status-badge req-processing">Processing</span>',
+        approved:      '<span class="req-status-badge req-approved">Approved</span>',
+        ready:         '<span class="req-status-badge req-ready">Ready</span>',
+        denied:        '<span class="req-status-badge req-denied">Denied</span>',
+        resubmission:  '<span class="req-status-badge req-resubmission">For Resubmission</span>',
     };
     return map[s] ?? '<span class="req-status-badge req-pending">Pending</span>';
 }
@@ -1613,9 +1639,7 @@ function viewDoc(r) {
     const fileHtml = r.attachment
         ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">View Uploaded Form</a>`
         : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
- 
-    const isDenied = r.status === 'denied';
- 
+
     document.getElementById('view-doc-content').innerHTML = `
         <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(r.doc_request_id).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? r.full_name ?? '—')}</div></div>
@@ -1624,11 +1648,9 @@ function viewDoc(r) {
         <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
         ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
         <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
-        ${isDenied ? `<div class="view-detail-row"><div class="view-detail-label">Resubmission</div><div class="view-detail-val" style="font-size:.82rem;color:var(--ink-muted);">This submission was denied. A corrected file can be resubmitted below.</div></div>` : ''}
     `;
     document.getElementById('view-doc-actions').innerHTML = `
         <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
-        ${isDenied ? `<button class="btn-submit" style="background:var(--white);color:var(--bright-pink);border:1.5px solid var(--bright-pink);" onclick="closeModal('view-doc-modal');setTimeout(()=>openResubmitDoc(currentDoc),200);">Resubmit</button>` : ''}
         <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review / Set Status</button>
     `;
     openModal('view-doc-modal');
@@ -1642,9 +1664,10 @@ function toggleRejectionField() {
         document.getElementById('upd-doc-rejection-preset').value = '';
         document.getElementById('rejection-other-wrap').style.display = 'none';
         document.getElementById('upd-doc-rejection-other').value = '';
+        document.getElementById('upd-doc-allow-resubmission').checked = false;
     }
 }
- 
+
 function handleRejectionPreset() {
     const val  = document.getElementById('upd-doc-rejection-preset').value;
     const wrap = document.getElementById('rejection-other-wrap');
@@ -1653,60 +1676,19 @@ function handleRejectionPreset() {
         document.getElementById('upd-doc-rejection-other').value = '';
     }
 }
- 
-function openResubmitDoc(r) {
-    currentDoc = r;
-    document.getElementById('resubmit-doc-id').value = r.doc_request_id;
-    document.getElementById('resubmit-doc-label').textContent =
-        '#FSB-' + String(r.doc_request_id).padStart(3, '0') + ' — ' + (r.document_type ?? '');
-    document.getElementById('resubmit-doc-file').value = '';
-    openModal('resubmit-doc-modal');
-}
- 
-async function confirmResubmitDoc() {
-    const id   = document.getElementById('resubmit-doc-id').value;
-    const file = document.getElementById('resubmit-doc-file').files[0];
-    if (!file) { showToast('Please select a file to resubmit.', 'error'); return; }
- 
-    const fd = new FormData();
-    fd.append('file', file);
- 
-    const btn = document.querySelector('#resubmit-doc-modal .btn-submit');
-    setButtonLoading(btn, 'Submitting...');
-    showActionLoading('Resubmitting form...');
- 
-    try {
-        const res = await fetch(`/admin/document-requests/${id}/resubmit`, {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: fd,
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error ?? 'Resubmission failed.');
-        }
-        closeModal('resubmit-doc-modal');
-        showToast('Form resubmitted. Status reset to pending.', 'success');
-        fetchDocs();
-    } catch (e) {
-        showToast(e.message ?? 'Resubmission failed.', 'error');
-    } finally {
-        hideActionLoading();
-        resetButton(btn);
-    }
-}
 
 function openUpdateDoc(r) {
     currentDoc = r;
     document.getElementById('upd-doc-id').value      = r.doc_request_id;
-    document.getElementById('upd-doc-status').value  = r.status ?? 'pending';
+    document.getElementById('upd-doc-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
     document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
- 
+
     document.getElementById('upd-doc-rejection-preset').value = '';
     document.getElementById('upd-doc-rejection-other').value  = '';
     document.getElementById('rejection-other-wrap').style.display = 'none';
+    document.getElementById('upd-doc-allow-resubmission').checked = (r.status === 'resubmission');
     toggleRejectionField();
- 
+
     openModal('update-doc-modal');
 }
 
@@ -1714,7 +1696,7 @@ async function submitUpdateDoc() {
     const id      = document.getElementById('upd-doc-id').value;
     const status  = document.getElementById('upd-doc-status').value;
     const remarks = document.getElementById('upd-doc-remarks').value;
- 
+
     let rejectionReason = '';
     if (status === 'denied') {
         const preset = document.getElementById('upd-doc-rejection-preset').value;
@@ -1724,17 +1706,22 @@ async function submitUpdateDoc() {
             : preset;
         if (!rejectionReason) { showToast('Please specify the rejection reason.', 'error'); return; }
     }
- 
+
+    const allowResubmission = status === 'denied'
+        ? document.getElementById('upd-doc-allow-resubmission').checked
+        : false;
+
     const fd = new FormData();
     fd.append('_method', 'PUT');
     fd.append('status', status);
     fd.append('admin_remarks', remarks);
+    fd.append('allow_resubmission', allowResubmission ? '1' : '0');
     if (rejectionReason) fd.append('rejection_reason', rejectionReason);
- 
+
     const btn = document.querySelector('#update-doc-modal .btn-submit');
     setButtonLoading(btn, 'Saving...');
     showActionLoading('Updating submission...');
- 
+
     try {
         const res = await fetch(`/admin/document-requests/${id}`, {
             method: 'POST',
@@ -1851,7 +1838,6 @@ function viewReq(r) {
     currentReq = r;
 
     const deliveryType = (r.delivery_type ?? r.delivery_method ?? '').toLowerCase();
-    const isDigital    = deliveryType.includes('digital');
     const isHardCopy   = deliveryType.includes('printed') || deliveryType.includes('hard');
 
     const fulfilledHtml = r.fulfilled_file
