@@ -27,22 +27,33 @@ class DocumentRequestController extends Controller
     {
         try {
             $validated = $request->validate([
-                'status'           => 'required|in:pending,processing,approved,ready,denied',
-                'admin_remarks'    => 'nullable|string|max:1000',
-                'rejection_reason' => 'nullable|string|max:500',
-                'fulfilled_file'   => 'nullable|file|max:20480',
+                'status'             => 'required|in:pending,processing,approved,ready,denied,resubmission',
+                'admin_remarks'      => 'nullable|string|max:1000',
+                'rejection_reason'   => 'nullable|string|max:500',
+                'allow_resubmission' => 'nullable|boolean',
+                'fulfilled_file'     => 'nullable|file|max:20480',
             ]);
 
+            $finalStatus  = $validated['status'];
             $adminRemarks = $validated['admin_remarks'] ?? null;
-            if ($validated['status'] === 'denied' && !empty($validated['rejection_reason'])) {
-                $reason = $validated['rejection_reason'];
-                $adminRemarks = $adminRemarks
-                    ? "[Reason: {$reason}]\n{$adminRemarks}"
-                    : "[Reason: {$reason}]";
+
+            if ($finalStatus === 'denied') {
+                $allowResubmission = filter_var($request->input('allow_resubmission'), FILTER_VALIDATE_BOOLEAN);
+
+                if ($allowResubmission) {
+                    $finalStatus = 'resubmission';
+                }
+
+                $reason = $validated['rejection_reason'] ?? null;
+                if ($reason) {
+                    $adminRemarks = $adminRemarks
+                        ? "[Reason: {$reason}]\n{$adminRemarks}"
+                        : "[Reason: {$reason}]";
+                }
             }
 
             $updateData = [
-                'status'        => $validated['status'],
+                'status'        => $finalStatus,
                 'admin_remarks' => $adminRemarks,
                 'processed_at'  => now(),
             ];
@@ -61,11 +72,12 @@ class DocumentRequestController extends Controller
             NotificationHelper::sendToAll(
                 type: 'document_request',
                 message: "Document request from {$documentRequest->tenant->first_name} {$documentRequest->tenant->last_name} is now {$documentRequest->status}.",
-                ref_id: $documentRequest->id,
+                ref_id: $documentRequest->doc_request_id,
             );
 
             $bodyMap = [
-                'denied' => "Your {$documentRequest->document_type} submission was denied. Please check the remarks and resubmit.",
+                'denied'        => "Your {$documentRequest->document_type} submission was denied.",
+                'resubmission'  => "Your {$documentRequest->document_type} submission was rejected. You may resubmit a corrected file.",
             ];
 
             app(TenantPushNotificationService::class)->sendToTenant(
@@ -87,8 +99,8 @@ class DocumentRequestController extends Controller
     public function resubmit(Request $request, DocumentRequest $documentRequest)
     {
         try {
-            if ($documentRequest->status !== 'denied') {
-                return response()->json(['error' => 'Only denied submissions can be resubmitted.'], 422);
+            if ($documentRequest->status !== 'resubmission') {
+                return response()->json(['error' => 'Only submissions marked for resubmission can be resubmitted.'], 422);
             }
 
             $request->validate([
