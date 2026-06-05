@@ -1192,20 +1192,86 @@
 </div>
 
 <div class="modal-overlay" id="update-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Update / View Billing</div>
-            <button class="modal-close" onclick="closeModal('update-modal')">✕</button>
+  <div class="modal" style="max-width:540px;padding:0;border-radius:20px;overflow:hidden;">
+
+    <div class="modal-top" style="padding:1.25rem 1.5rem 0;border-bottom:1.5px solid var(--border-pink-mid);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:#fff0f6;display:flex;align-items:center;justify-content:center;color:var(--bright-pink);font-size:18px;">🏠</div>
+          <div>
+            <div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Update billing</div>
+            <div id="um-room-title" style="font-size:16px;font-weight:700;color:var(--ink-deep);">Room —</div>
+            <div id="um-room-sub" style="font-size:12px;color:var(--ink-soft);">Floor — · — occupants</div>
+          </div>
         </div>
-        <form id="update-form">
-            @csrf
-            <div id="update-content"></div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('update-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
-        </form>
+        <button class="modal-close" onclick="closeModal('update-modal')" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border-pink);display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+
+      <div style="display:flex;gap:0;" role="tablist" id="um-tab-bar">
+        <button class="um-tab active" role="tab" onclick="umTab('readings',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid var(--bright-pink);cursor:pointer;font-size:12.5px;font-weight:700;color:var(--bright-pink);font-family:inherit;">📊 Readings</button>
+        <button class="um-tab" role="tab" onclick="umTab('payments',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;">💳 Payments</button>
+        <button class="um-tab" role="tab" onclick="umTab('proof',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;">🖼 Proof</button>
+      </div>
     </div>
+
+    <form id="update-form">
+      @csrf
+      <div style="padding:1.25rem 1.5rem;max-height:420px;overflow-y:auto;">
+
+        <!-- READINGS TAB -->
+        <div class="um-panel" id="um-tab-readings">
+          <div style="display:flex;gap:8px;margin-bottom:14px;" id="um-stat-row">
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Consumption</div>
+              <div id="um-disp-cons" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">— m³</div>
+            </div>
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Floor total</div>
+              <div id="um-disp-total" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">₱—</div>
+            </div>
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Per tenant</div>
+              <div id="um-disp-share" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">₱—</div>
+            </div>
+          </div>
+          <div class="modal-grid">
+            <div class="modal-field">
+              <label>Previous reading (m³)</label>
+              <input type="number" step="0.01" id="edit-prev" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+              <label>Current reading (m³)</label>
+              <input type="number" step="0.01" id="edit-curr" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+              <label>Consumption (auto)</label>
+              <input type="text" id="edit-consumption" disabled>
+            </div>
+            <div class="modal-field">
+              <label>Due date</label>
+              <input type="date" id="edit-due-date">
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENTS TAB -->
+        <div class="um-panel" id="um-tab-payments" style="display:none;">
+          <div id="um-tenant-statuses"></div>
+        </div>
+
+        <!-- PROOF TAB -->
+        <div class="um-panel" id="um-tab-proof" style="display:none;">
+          <div id="um-proof-content"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions" style="background:var(--pink-bg-soft);border-top:1px solid var(--border-pink-mid);padding:1rem 1.5rem;">
+        <button type="button" class="btn-cancel" onclick="closeModal('update-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Save changes</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 @endsection
@@ -1881,6 +1947,123 @@ function showToast(msg, type) {
     t.className = 'toast ' + (type || '');
     setTimeout(() => t.classList.add('show'), 10);
     setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function umTab(name, btn) {
+    document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.um-tab').forEach(b => {
+        b.style.borderBottomColor = 'transparent';
+        b.style.color = 'var(--ink-soft)';
+        b.style.fontWeight = '600';
+    });
+    document.getElementById('um-tab-' + name).style.display = 'block';
+    btn.style.borderBottomColor = 'var(--bright-pink)';
+    btn.style.color = 'var(--bright-pink)';
+    btn.style.fontWeight = '700';
+}
+
+function openUpdateModal(room) {
+    // Reset to first tab
+    document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('um-tab-readings').style.display = 'block';
+    document.querySelectorAll('.um-tab').forEach((b, i) => {
+        b.style.borderBottomColor = i === 0 ? 'var(--bright-pink)' : 'transparent';
+        b.style.color = i === 0 ? 'var(--bright-pink)' : 'var(--ink-soft)';
+        b.style.fontWeight = i === 0 ? '700' : '600';
+    });
+
+    // Header
+    document.getElementById('um-room-title').textContent = 'Room ' + room.room_number;
+    document.getElementById('um-room-sub').textContent = 'Floor ' + room.floor + ' · ' + room.occupants_in_room + ' occupant' + (room.occupants_in_room !== 1 ? 's' : '');
+
+    // Readings
+    document.getElementById('edit-prev').value = parseFloat(room.prev_reading ?? 0).toFixed(2);
+    document.getElementById('edit-curr').value = parseFloat(room.curr_reading ?? 0).toFixed(2);
+    document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
+
+    document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
+    document.getElementById('um-disp-share').textContent = '₱' + parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2);
+    recalcUpdateShare();
+
+    // Payments tab
+    let paymentsHtml = '';
+    room.tenants.forEach(function(t) {
+        const initials = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
+        const isPaid = t.payment_status === 'paid';
+        const receiptBtn = isPaid && t.billing_id
+            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">⬇ Download receipt</a>`
+            : '';
+        paymentsHtml += `
+            <div style="border:1.5px solid var(--border-pink);border-radius:14px;overflow:hidden;margin-bottom:12px;">
+                <div style="padding:.7rem 1rem;background:var(--pink-bg-soft);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-pink-mid);">
+                    <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
+                    <div style="flex:1;">
+                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
+                        <div style="font-size:12px;color:var(--ink-soft);">Share: ₱${parseFloat(t.room_share).toFixed(2)}</div>
+                    </div>
+                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${escapeHtml(t.payment_status||'unpaid')}</span>
+                </div>
+                <div style="padding:.9rem 1rem;">
+                    <div class="modal-field">
+                        <label>Payment status</label>
+                        <select class="status-select" data-billing-id="${t.billing_id??''}" onchange="toggleRejectionReason(this)">
+                            <option value="unpaid"   ${t.payment_status==='unpaid'  ?'selected':''}>Unpaid</option>
+                            <option value="paid"     ${t.payment_status==='paid'    ?'selected':''}>Paid</option>
+                            <option value="overdue"  ${t.payment_status==='overdue' ?'selected':''}>Overdue</option>
+                            <option value="pending"  ${t.payment_status==='pending' ?'selected':''}>Pending</option>
+                            <option value="rejected" ${t.payment_status==='rejected'?'selected':''}>Rejected</option>
+                        </select>
+                        <div class="rejection-reason-wrap ${t.payment_status==='rejected'?'visible':''}">
+                            <label class="rejection-reason-label">Reason for rejection</label>
+                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="e.g. Blurry image, wrong reference number...">${escapeHtml(t.rejection_reason||'')}</textarea>
+                        </div>
+                    </div>
+                    ${receiptBtn}
+                </div>
+            </div>`;
+    });
+    document.getElementById('um-tenant-statuses').innerHTML = paymentsHtml;
+
+    // Proof tab
+    let proofHtml = '';
+    room.tenants.forEach(function(t) {
+        const refCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
+        const subAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
+        const proofUrl = t.proof_of_payment_url  ? escapeHtml(t.proof_of_payment_url)   : '';
+        const imgHtml  = proofUrl
+            ? `<a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);"><img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;"></a>`
+            : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
+        proofHtml += `
+            <div style="margin-bottom:16px;">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);border-bottom:1px solid var(--border-pink-mid);padding-bottom:6px;margin-bottom:10px;">${escapeHtml(t.name)}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                    <div style="padding:.5rem .7rem;border:1px solid var(--border-pink-mid);border-radius:10px;background:var(--pink-bg-soft);">
+                        <div style="font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Reference</div>
+                        <div style="font-size:12.5px;font-weight:700;color:var(--ink-deep);margin-top:2px;">${refCode}</div>
+                    </div>
+                    <div style="padding:.5rem .7rem;border:1px solid var(--border-pink-mid);border-radius:10px;background:var(--pink-bg-soft);">
+                        <div style="font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Submitted</div>
+                        <div style="font-size:12.5px;font-weight:700;color:var(--ink-deep);margin-top:2px;">${subAt}</div>
+                    </div>
+                </div>
+                ${imgHtml}
+            </div>`;
+    });
+    document.getElementById('um-proof-content').innerHTML = proofHtml;
+
+    const primaryBilling = room.tenants.find(t => t.billing_id);
+    document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
+    openModal('update-modal');
+}
+
+function recalcUpdateShare() {
+    const prev = parseFloat(document.getElementById('edit-prev')?.value) || 0;
+    const curr = parseFloat(document.getElementById('edit-curr')?.value) || 0;
+    const cons = Math.max(0, curr - prev);
+    const consField = document.getElementById('edit-consumption');
+    if (consField) consField.value = cons.toFixed(2) + ' m³';
+    const dispCons = document.getElementById('um-disp-cons');
+    if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m³';
 }
 
 @if(session('success'))
