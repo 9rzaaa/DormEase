@@ -302,7 +302,7 @@
 
     .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--petal); cursor: pointer; transition: background .15s; border-radius: 6px; }
     .notif-item:last-child { border-bottom: none; }
-    .notif-item:hover { background: var(--petal); padding-left: 4px; }
+    .notif-item:hover { background: var(--petal); }
     .notif-text { font-size: .8rem; color: var(--ink); font-weight: 500; line-height: 1.4; }
     .notif-time { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
     .notif-ico { width: 28px; height: 28px; border-radius: 8px; background: var(--petal); border: 1.5px solid var(--baby-pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -566,7 +566,7 @@
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
                 @foreach($notifications as $notif)
-                    <div class="notif-item">
+                    <div class="notif-item" onclick="openNotifModal('{{ addslashes($notif->message) }}', '{{ $notif->type ?? 'bell' }}', '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}')">
                         <div class="notif-ico">
                             <img src="{{ asset('icons/' . ($notif->type ?? 'bell') . '.png') }}" alt=""
                                  onerror="this.src='{{ asset('icons/bell.png') }}'">
@@ -611,8 +611,9 @@
 
 @section('modals')
 
-<div class="modal-overlay" id="announce-modal">
-    <div class="modal">
+{{-- Post Announcement Modal --}}
+<div class="modal-overlay" id="announce-modal" onclick="handleOverlayClick(event, 'announce-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Post Announcement</div>
             <button class="modal-close" onclick="closeModal('announce-modal')">&#x2715;</button>
@@ -652,8 +653,9 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="edit-ann-modal">
-    <div class="modal">
+{{-- Edit Announcement Modal --}}
+<div class="modal-overlay" id="edit-ann-modal" onclick="handleOverlayClick(event, 'edit-ann-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Edit Announcement</div>
             <button class="modal-close" onclick="closeModal('edit-ann-modal')">&#x2715;</button>
@@ -694,13 +696,14 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-ann-modal">
-    <div class="modal" style="max-width:380px;">
+{{-- Delete Announcement Modal --}}
+<div class="modal-overlay" id="delete-ann-modal" onclick="handleOverlayClick(event, 'delete-ann-modal')">
+    <div class="modal" style="max-width:380px;" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Delete Announcement</div>
             <button class="modal-close" onclick="closeModal('delete-ann-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;">
+        <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;padding:.2rem 0 .4rem;">
             Are you sure you want to delete this announcement? This cannot be undone.
         </p>
         <form method="POST" id="delete-ann-form">
@@ -714,20 +717,56 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="emergency-modal">
-    <div class="modal">
+{{-- Emergency Alerts Modal --}}
+<div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.8rem;">
+        <div style="display:flex;flex-direction:column;gap:.65rem;padding:.2rem 0 .4rem;">
             @if($allEmergencies->isEmpty())
-                <p style="color:var(--ink-muted);font-size:.88rem;">No emergency reports found.</p>
+                <div class="empty-state" style="padding:1.2rem 0;">No emergency reports found.</div>
             @else
                 @foreach($allEmergencies as $emergency)
-                    <div class="alert-item {{ $emergency->status === 'resolved' ? 'resolved' : 'active' }}">
-                        <div class="alert-room">{{ $emergency->location ?? 'Unknown' }}: {{ $emergency->emergency_type }}</div>
-                        <div class="alert-status">{{ $emergency->status === 'resolved' ? 'Resolved' : $emergency->status }}</div>
+                    @php $isResolved = strtolower($emergency->status) === 'resolved'; @endphp
+                    <div style="
+                        display:flex;align-items:center;gap:.85rem;
+                        padding:.85rem 1rem;border-radius:12px;border:1.5px solid;
+                        {{ $isResolved ? 'border-color:#5bcb8a;background:#eafbf0;' : 'border-color:var(--bright-pink);background:var(--petal);' }}
+                    ">
+                        <div style="
+                            width:40px;height:40px;border-radius:10px;flex-shrink:0;
+                            display:flex;align-items:center;justify-content:center;
+                            {{ $isResolved ? 'background:#d3f7e6;' : 'background:var(--baby-pink);' }}
+                        ">
+                            @if($isResolved)
+                                <img src="{{ asset('icons/check.png') }}"
+                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(27%) sepia(97%) saturate(500%) hue-rotate(100deg) brightness(90%);"
+                                     alt="Resolved">
+                            @else
+                                <img src="{{ asset('icons/panic.png') }}"
+                                     style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
+                                     alt="Active">
+                            @endif
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:.88rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                {{ $emergency->location ?? 'Unknown Location' }} &mdash; {{ $emergency->emergency_type }}
+                            </div>
+                            <div style="font-size:.75rem;color:var(--ink-muted);margin-top:.18rem;">
+                                {{ \Carbon\Carbon::parse($emergency->created_at)->format('F d, Y · g:i A') }}
+                            </div>
+                        </div>
+                        <div style="
+                            font-size:.7rem;font-weight:800;padding:.22rem .7rem;
+                            border-radius:6px;border:1.5px solid;flex-shrink:0;white-space:nowrap;
+                            {{ $isResolved
+                                ? 'color:#1a7a4a;border-color:#5bcb8a;background:#eafbf0;'
+                                : 'color:#C4003A;border-color:var(--bright-pink);background:var(--baby-pink);' }}
+                        ">
+                            {{ $isResolved ? 'Resolved' : ucfirst($emergency->status) }}
+                        </div>
                     </div>
                 @endforeach
             @endif
@@ -738,13 +777,45 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="maint-detail-modal">
-    <div class="modal">
+{{-- Notification Detail Modal --}}
+<div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
+    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title">Notification</div>
+            <button class="modal-close" onclick="closeModal('notif-detail-modal')">&#x2715;</button>
+        </div>
+        <div style="padding:.3rem 0 .5rem;">
+            <div style="display:flex;gap:1rem;align-items:flex-start;">
+                <div style="
+                    width:48px;height:48px;border-radius:12px;flex-shrink:0;
+                    background:var(--petal);border:1.5px solid var(--baby-pink);
+                    display:flex;align-items:center;justify-content:center;
+                ">
+                    <img id="nd-icon" src=""
+                         style="width:22px;height:22px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
+                         alt="">
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div id="nd-type" style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);"></div>
+                    <div id="nd-message" style="font-size:.93rem;font-weight:600;color:var(--ink);margin-top:.25rem;line-height:1.55;"></div>
+                    <div id="nd-time" style="font-size:.77rem;color:var(--ink-muted);margin-top:.45rem;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('notif-detail-modal')">Dismiss</button>
+        </div>
+    </div>
+</div>
+
+{{-- Maintenance Detail Modal --}}
+<div class="modal-overlay" id="maint-detail-modal" onclick="handleOverlayClick(event, 'maint-detail-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title" id="md-title"></div>
             <button class="modal-close" onclick="closeModal('maint-detail-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.75rem;">
+        <div style="display:flex;flex-direction:column;gap:.75rem;padding:.2rem 0 .4rem;">
             <div>
                 <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Room</span>
                 <div id="md-room" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
@@ -954,6 +1025,12 @@ window.togglePanel = function(id) {
     chev.classList.toggle('open', !open);
 };
 
+window.handleOverlayClick = function(event, modalId) {
+    if (event.target === event.currentTarget) {
+        closeModal(modalId);
+    }
+};
+
 window.openPostModal = function() {
     document.getElementById('ann-title').value = '';
     document.getElementById('ann-body').value  = '';
@@ -972,6 +1049,16 @@ window.openEditModal = function(id, title, content, priority, status) {
 window.openDeleteModal = function(id) {
     document.getElementById('delete-ann-form').action = '/announcements/' + id;
     openModal('delete-ann-modal');
+};
+
+window.openNotifModal = function(message, type, time) {
+    document.getElementById('nd-message').textContent = message;
+    document.getElementById('nd-time').textContent    = time;
+    document.getElementById('nd-type').textContent    = type.charAt(0).toUpperCase() + type.slice(1);
+    var icon = document.getElementById('nd-icon');
+    icon.src = '{{ asset('icons/') }}' + type + '.png';
+    icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
+    openModal('notif-detail-modal');
 };
 
 window.exportSummary = function() {
@@ -999,9 +1086,9 @@ window.exportSummary = function() {
 @endif
 
 window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned, room) {
-    document.getElementById('md-title').textContent = type;
-    document.getElementById('md-room').textContent = room;
-    document.getElementById('md-desc').textContent = desc;
+    document.getElementById('md-title').textContent  = type;
+    document.getElementById('md-room').textContent   = room;
+    document.getElementById('md-desc').textContent   = desc;
     document.getElementById('md-assign').textContent = assigned;
 
     var urgencyClass = { urgent: 'tag-urgent', moderate: 'tag-moderate' }[urgency.toLowerCase()] || 'tag-low';
