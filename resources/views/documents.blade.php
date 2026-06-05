@@ -2369,6 +2369,7 @@ async function confirmDeleteForm() {
 @endif
 
 fetchDocs();
+fetchReqs();
 fetchForms();
 </script>
 @endsection
