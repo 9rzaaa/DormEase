@@ -200,11 +200,8 @@ td {
     text-align: left;
     vertical-align: middle;
 }
-/* Tenant Name column — centered */
 th:nth-child(2), td:nth-child(2) { text-align: center; }
-/* Status column — centered */
 th:nth-child(7), td:nth-child(7) { text-align: center; }
-/* Action column — centered */
 th:nth-child(8), td:nth-child(8) { text-align: center; }
 
 tbody tr:hover { background: var(--soft-bg); }
@@ -250,7 +247,6 @@ tbody tr:hover { background: var(--soft-bg); }
 .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .page-btn:disabled { opacity: .4; cursor: default; }
 
-/* ── MODAL REDESIGN ─────────────────────────────── */
 .modal-overlay {
     position: fixed; inset: 0; z-index: 800;
     display: none; align-items: center; justify-content: center;
@@ -292,7 +288,6 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 .modal-close:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
 
-/* Scrollable body */
 .modal-body {
     flex: 1; overflow-y: auto; padding: .9rem 1.1rem;
     scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
@@ -301,7 +296,6 @@ tbody tr:hover { background: var(--soft-bg); }
 .modal-body::-webkit-scrollbar-track { background: transparent; }
 .modal-body::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
 
-/* Section dividers inside modal */
 .modal-section {
     margin-bottom: .9rem;
 }
@@ -344,7 +338,6 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 .modal-field input::placeholder { color: #c4a0af; }
 
-/* Status select with color indicator */
 .status-select-wrap { position: relative; }
 .status-dot {
     position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
@@ -353,15 +346,11 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 .status-select-wrap select { padding-left: 1.9rem; }
 
-/* Info banner */
 .modal-info-banner {
     background: linear-gradient(135deg, #fff5f9 0%, #ffe8f2 100%);
     border: 1.5px solid var(--pink-100); border-radius: 10px;
     padding: .55rem .8rem; font-size: .8rem; color: #7a3050; line-height: 1.5;
     display: flex; gap: .55rem; align-items: flex-start; margin-bottom: .9rem;
-}
-.modal-info-icon {
-    font-size: .95rem; flex-shrink: 0; margin-top: .05rem;
 }
 .modal-warn-banner {
     background: #fff9e6; border: 1.5px solid #f0c040; border-radius: 10px;
@@ -369,7 +358,6 @@ tbody tr:hover { background: var(--soft-bg); }
     display: flex; gap: .55rem; align-items: flex-start;
 }
 
-/* Footer actions */
 .modal-footer {
     padding: .7rem 1.1rem;
     border-top: 1.5px solid var(--pink-100);
@@ -393,19 +381,16 @@ tbody tr:hover { background: var(--soft-bg); }
 .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
 .btn-submit:active { transform: translateY(0); }
 
-/* ── OLD modal-actions fallback (for delete/reset/credentials modals) */
 .modal-actions {
     display: flex; align-items: center; justify-content: flex-end;
     gap: .65rem; padding-top: 1rem; flex-wrap: wrap;
 }
 
-/* ── VIEW MODAL ── */
 .view-row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; }
 .view-row:last-child { border-bottom: none; }
 .view-label { font-size: .72rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; flex-shrink: 0; }
 .view-val { font-size: .875rem; color: #5a1e38; font-weight: 500; text-align: right; word-break: break-word; }
 
-/* ── CREDENTIALS MODAL ── */
 .credentials-box { background: var(--soft-bg); border: 1.5px solid var(--pink-100); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1rem; }
 .credentials-box h4 { font-size: .8rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .75rem; }
 .credential-row { display: flex; align-items: center; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; flex-wrap: wrap; }
@@ -417,14 +402,12 @@ tbody tr:hover { background: var(--soft-bg); }
 .credentials-warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; font-size: .82rem; color: #7a5400; margin-bottom: 1rem; line-height: 1.5; }
 .delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
 
-/* ── ANIMATIONS ── */
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s; }
 
-/* ── ARCHIVE DRAWER ── */
 .tenant-archive-drawer {
     position: fixed; top: 0; right: 0; bottom: 0;
     width: min(660px, 100vw);
@@ -727,7 +710,6 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 @endif
 
-{{-- ── RESET CREDENTIALS MODAL ── --}}
 @if(session('reset_account_id'))
 <div class="modal-overlay open" id="reset-credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -769,12 +751,11 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 @endif
 
-{{-- ── ADD TENANT MODAL ── --}}
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">
-                ✦ Add New Tenant
+                Add New Tenant
             </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
@@ -784,7 +765,6 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-body">
 
                 <div class="modal-info-banner">
-                    <span class="modal-info-icon">🔑</span>
                     <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
                 </div>
 
@@ -851,7 +831,6 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-{{-- ── VIEW MODAL ── --}}
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
         <div class="modal-header">
@@ -866,7 +845,6 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-{{-- ── EDIT TENANT MODAL ── --}}
 <div class="modal-overlay" id="edit-modal">
     <div class="modal">
         <div class="modal-header">
@@ -971,7 +949,6 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-{{-- ── RESET PASSWORD MODAL ── --}}
 <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -998,7 +975,6 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-{{-- ── DELETE MODAL ── --}}
 <div class="modal-overlay" id="delete-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
