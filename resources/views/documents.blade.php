@@ -1237,13 +1237,32 @@
         <input type="hidden" id="upd-req-id">
         <div class="modal-field">
             <label>Status</label>
-            <select id="upd-req-status">
+            <select id="upd-req-status" onchange="toggleReqRejectionField()">
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="approved">Approved</option>
                 <option value="ready">Ready for Pickup / Sending</option>
                 <option value="denied">Denied</option>
             </select>
+        </div>
+        <div id="req-rejection-reason-wrap" style="display:none;">
+            <div class="modal-field">
+                <label>Reason for Denial</label>
+                <select id="upd-req-rejection-preset" onchange="handleReqRejectionPreset()">
+                    <option value="">Select a reason...</option>
+                    <option value="Incomplete request details">Incomplete request details</option>
+                    <option value="Purpose not clearly stated">Purpose not clearly stated</option>
+                    <option value="Document type not offered by the dormitory">Document type not offered by the dormitory</option>
+                    <option value="Tenant is not currently active">Tenant is not currently active</option>
+                    <option value="Insufficient processing time given">Insufficient processing time given</option>
+                    <option value="Document currently unavailable">Document currently unavailable</option>
+                    <option value="other">Other (specify below)</option>
+                </select>
+            </div>
+            <div class="modal-field" id="req-rejection-other-wrap" style="display:none;">
+                <label>Specify Reason</label>
+                <input type="text" id="upd-req-rejection-other" placeholder="Describe the denial reason...">
+            </div>
         </div>
         <div class="modal-field">
             <label>Admin Remarks</label>
@@ -1864,12 +1883,36 @@ function viewReq(r) {
     openModal('view-req-modal');
 }
 
+function toggleReqRejectionField() {
+    const status = document.getElementById('upd-req-status').value;
+    const wrap   = document.getElementById('req-rejection-reason-wrap');
+    wrap.style.display = status === 'denied' ? '' : 'none';
+    if (status !== 'denied') {
+        document.getElementById('upd-req-rejection-preset').value = '';
+        document.getElementById('req-rejection-other-wrap').style.display = 'none';
+        document.getElementById('upd-req-rejection-other').value = '';
+    }
+}
+
+function handleReqRejectionPreset() {
+    const val  = document.getElementById('upd-req-rejection-preset').value;
+    const wrap = document.getElementById('req-rejection-other-wrap');
+    wrap.style.display = val === 'other' ? '' : 'none';
+    if (val !== 'other') {
+        document.getElementById('upd-req-rejection-other').value = '';
+    }
+}
+
 function openUpdateReq(r) {
     currentReq = r;
     document.getElementById('upd-req-id').value      = r.doc_request_id;
     document.getElementById('upd-req-status').value  = r.status ?? 'pending';
     document.getElementById('upd-req-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-req-file').value    = '';
+    document.getElementById('upd-req-rejection-preset').value = '';
+    document.getElementById('upd-req-rejection-other').value  = '';
+    document.getElementById('req-rejection-other-wrap').style.display = 'none';
+    toggleReqRejectionField();
     openModal('update-req-modal');
 }
 
@@ -1878,6 +1921,16 @@ async function submitUpdateReq() {
     const status  = document.getElementById('upd-req-status').value;
     const remarks = document.getElementById('upd-req-remarks').value;
     const file    = document.getElementById('upd-req-file').files[0];
+
+    let rejectionReason = '';
+    if (status === 'denied') {
+        const preset = document.getElementById('upd-req-rejection-preset').value;
+        if (!preset) { showToast('Please select a denial reason.', 'error'); return; }
+        rejectionReason = preset === 'other'
+            ? document.getElementById('upd-req-rejection-other').value.trim()
+            : preset;
+        if (!rejectionReason) { showToast('Please specify the denial reason.', 'error'); return; }
+    }
 
     if (file) {
         if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
@@ -1888,6 +1941,7 @@ async function submitUpdateReq() {
     fd.append('_method', 'PUT');
     fd.append('status', status);
     fd.append('admin_remarks', remarks);
+    if (rejectionReason) fd.append('rejection_reason', rejectionReason);
     if (file) fd.append('fulfilled_file', file);
 
     const btn = document.querySelector('#update-req-modal .btn-submit');
