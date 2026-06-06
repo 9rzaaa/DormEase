@@ -287,6 +287,31 @@
         border-color: var(--baby-pink);
     }
 
+    .emerg-modal-list {
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+        max-height: 380px;
+        overflow-y: auto;
+        padding: .2rem .25rem .4rem .25rem;
+        margin: .2rem 0 .4rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--baby-pink) transparent;
+    }
+    .emerg-modal-list::-webkit-scrollbar {
+        width: 5px;
+    }
+    .emerg-modal-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .emerg-modal-list::-webkit-scrollbar-thumb {
+        background: var(--baby-pink);
+        border-radius: 99px;
+    }
+    .emerg-modal-list::-webkit-scrollbar-thumb:hover {
+        background: var(--bright-pink);
+    }
+
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
         .page-body  { grid-template-columns: 1fr; }
@@ -302,6 +327,7 @@
         .stats-grid { grid-template-columns: 1fr 1fr; }
         .chart-wrap { height: 160px; }
         .chart-switcher { flex-wrap: wrap; }
+        .emerg-modal-list { max-height: 260px; }
     }
 </style>
 @endsection
@@ -550,7 +576,7 @@
             <div class="modal-title">Emergency Alerts</div>
             <button class="modal-close" onclick="closeModal('emergency-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.65rem;padding:.2rem 0 .4rem;">
+        <div class="emerg-modal-list">
             @if($allEmergencies->isEmpty())
                 <div class="empty-state" style="padding:1.2rem 0;">No emergency reports found.</div>
             @else
@@ -559,6 +585,7 @@
                     <div style="
                         display:flex;align-items:center;gap:.85rem;
                         padding:.85rem 1rem;border-radius:12px;border:1.5px solid;
+                        flex-shrink:0;
                         {{ $isResolved ? 'border-color:#5bcb8a;background:#eafbf0;' : 'border-color:var(--bright-pink);background:var(--petal);' }}
                     ">
                         <div style="
