@@ -1074,30 +1074,63 @@
 
         function __escHtml(str) {
             return (str == null ? '' : String(str))
-                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         function __buildPanicAudio() {
             try {
                 var ctx = new (window.AudioContext || window.webkitAudioContext)();
                 function beep(freq, start, dur) {
-                    var o = ctx.createOscillator(); var g = ctx.createGain();
-                    o.connect(g); g.connect(ctx.destination);
-                    o.frequency.value = freq; o.type = 'sine';
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    o.frequency.value = freq;
+                    o.type = 'sine';
                     g.gain.setValueAtTime(0.4, ctx.currentTime + start);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-                    o.start(ctx.currentTime + start); o.stop(ctx.currentTime + start + dur + 0.05);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880,0,0.18); beep(880,0.22,0.18); beep(1100,0.44,0.28);
-            } catch(e) {}
+                beep(880, 0, 0.18);
+                beep(880, 0.22, 0.18);
+                beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __formatPanicTime(dateStr) {
+            if (!dateStr) return '';
+
+            var match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+            var d = match
+                ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6] || 0))
+                : new Date(dateStr);
+
+            if (isNaN(d)) return dateStr;
+
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            var hours = d.getHours();
+            var mins = d.getMinutes();
+            var secs = d.getSeconds();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12 || 12;
+
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                + ' ' + String(hours).padStart(2, '0')
+                + ':' + String(mins).padStart(2, '0')
+                + ':' + String(secs).padStart(2, '0')
+                + ' ' + ampm;
         }
 
         function __showPanicBanner(type, location, reportedAt) {
-            var existing = document.getElementById('__panic-alert-banner');
-            if (existing) existing.remove();
             if (__panicBeepInterval) clearInterval(__panicBeepInterval);
             __panicBeepInterval = setInterval(__buildPanicAudio, 3000);
+            var formattedReportedAt = __formatPanicTime(reportedAt);
             var banner = document.createElement('div');
             banner.id = '__panic-alert-banner';
             banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
@@ -1107,7 +1140,7 @@
                 + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">Panic Alert</div>'
                 + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(type) + '</div>'
                 + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(location) + '</div>'
-                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(reportedAt) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(formattedReportedAt) + '</div>'
                 + '<button onclick="__dismissPanic()" style="background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
             document.body.appendChild(banner);
@@ -1116,130 +1149,167 @@
         window.__dismissPanic = function() {
             var banner = document.getElementById('__panic-alert-banner');
             if (banner) banner.remove();
-            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
+            if (__panicBeepInterval) {
+                clearInterval(__panicBeepInterval);
+                __panicBeepInterval = null;
+            }
             sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
         };
 
         function __fireBrowserNotification(type, location) {
             if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try { new Notification('Panic Alert', { body: type + ' \u2014 ' + location }); } catch(e) {}
+                try {
+                    new Notification('Panic Alert', { body: type + ' \u2014 ' + location });
+                } catch (e) {}
             }
         }
 
         function __pollPanic() {
             var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            var csrfToken = csrfMeta ? csrfMeta.content : '';
             fetch('{{ url("/emergency/poll-panic") }}', {
-                headers: { 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '' }
-            }).then(function(res){ return res.json(); }).then(function(data) {
-                if (data.has_panic && data.report_id !== __panicLastId && !sessionStorage.getItem('panicDismissed_' + data.report_id)) {
+                headers: { 'X-CSRF-TOKEN': csrfToken }
+            }).then(function(res) {
+                return res.json();
+            }).then(function(data) {
+                if (
+                    data.has_panic &&
+                    data.report_id !== __panicLastId &&
+                    !sessionStorage.getItem('panicDismissed_' + data.report_id) &&
+                    !document.getElementById('__panic-alert-banner')
+                ) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
                     __showPanicBanner(data.type, data.location, data.reported_at);
                     __fireBrowserNotification(data.type, data.location);
                 }
-            }).catch(function(){});
+            }).catch(function() {});
         }
 
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
             Notification.requestPermission();
         }
+
         __pollPanic();
         setInterval(__pollPanic, 15000);
     })();
 
-    /* ── Critical emergency toast polling ── */
     (function() {
         var __criticalSeen = new Set();
         var __criticalQueue = [];
         var __criticalActive = false;
+        var __criticalBeepInterval = null;
 
         function __criticalEscHtml(str) {
             return (str == null ? '' : String(str))
-                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-                .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function __criticalBeep() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function beep(freq, start, dur) {
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    o.frequency.value = freq;
+                    o.type = 'sine';
+                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
+                }
+                beep(880, 0, 0.18);
+                beep(880, 0.22, 0.18);
+                beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __formatTime12h(dateStr) {
+            if (!dateStr) return '';
+            var d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            var hours = d.getHours();
+            var mins = d.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            mins = mins < 10 ? '0' + mins : mins;
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
         }
 
         function __showNextCritical() {
             if (__criticalActive || __criticalQueue.length === 0) return;
             __criticalActive = true;
-            var report     = __criticalQueue.shift();
+
+            var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
-            var banner     = document.createElement('div');
-            banner.id      = '__critical-banner-' + report.report_id;
-            banner.__reportId = report.report_id;
-            banner.style.cssText = [
-                'position:fixed','bottom:2rem','right:2rem','z-index:9000','width:340px',
-                'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
-                'border:2px solid ' + (isCritical ? '#ffc8d0' : '#ffd54f'),
-                'border-radius:14px','padding:1rem 1.1rem',
-                'box-shadow:0 8px 28px rgba(0,0,0,.18)',
-                'transform:translateX(380px)',
-                'transition:transform .35s cubic-bezier(.4,0,.2,1)',
-                'font-family:inherit',
-            ].join(';');
-            banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.7rem;">'
-                + '<div style="flex-shrink:0;width:36px;height:36px;border-radius:8px;background:'
-                + (isCritical ? '#ffc8d0' : '#ffd54f') + ';display:flex;align-items:center;justify-content:center;">'
-                + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'
-                + (isCritical ? '#c0303a' : '#c07800')
-                + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
-                + '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>'
-                + '<line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
-                + '</svg></div>'
-                + '<div style="flex:1;min-width:0;">'
-                + '<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:'
-                + (isCritical ? '#c0303a' : '#c07800') + ';margin-bottom:.2rem;">'
-                + (isCritical ? 'Critical' : 'Urgent') + ' Emergency</div>'
-                + '<div style="font-size:.85rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.15rem;">'
-                + __criticalEscHtml(report.emergency_type) + '</div>'
-                + '<div style="font-size:.78rem;color:#7A3A55;">' + __criticalEscHtml(report.location) + '</div>'
-                + '<div style="font-size:.7rem;color:#7A3A55;opacity:.75;margin-top:.25rem;">Reported: ' + __criticalEscHtml(report.reported_at || '') + '</div>'
-                + '</div>'
-                + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#7A3A55;font-size:1rem;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;">&#x2715;</button>'
+
+            if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
+            __criticalBeep();
+            __criticalBeepInterval = setInterval(__criticalBeep, 3000);
+
+            var accentColor = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
+            var accentSolid = isCritical ? '#c0303a' : '#c07800';
+            var label       = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
+            var formattedTime = __formatTime12h(report.reported_at);
+
+            var overlay = document.createElement('div');
+            overlay.id = '__critical-alert-overlay';
+            overlay.__reportId = report.report_id;
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+
+            overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
+                + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + label + '</div>'
+                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __criticalEscHtml(report.emergency_type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __criticalEscHtml(report.location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
+                + '<button onclick="__dismissCritical()" style="background:#fff;color:' + accentSolid + ';border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
-            document.body.appendChild(banner);
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() { banner.style.transform = 'translateX(0)'; });
-            });
-            var timer = setTimeout(function() { __dismissCritical(banner.id); }, 8000);
-            banner.__dismissTimer = timer;
+
+            document.body.appendChild(overlay);
         }
 
-        window.__dismissCritical = function(id) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            clearTimeout(el.__dismissTimer);
-            sessionStorage.setItem('criticalDismissed_' + el.__reportId, '1');
-            el.style.transform = 'translateX(380px)';
-            setTimeout(function() {
-                if (el.parentNode) el.parentNode.removeChild(el);
-                __criticalActive = false;
-                __showNextCritical();
-            }, 380);
+        window.__dismissCritical = function() {
+            var overlay = document.getElementById('__critical-alert-overlay');
+            if (!overlay) return;
+            if (__criticalBeepInterval) {
+                clearInterval(__criticalBeepInterval);
+                __criticalBeepInterval = null;
+            }
+            sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
+            overlay.remove();
+            __criticalActive = false;
+            __showNextCritical();
         };
 
         function __pollCritical() {
             fetch('{{ url("/emergency/poll-critical") }}', {
                 headers: { 'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '' }
             })
-            .then(function(res){ return res.json(); })
+            .then(function(res) { return res.json(); })
             .then(function(data) {
                 (data.reports || []).forEach(function(r) {
+                    if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
+
                     if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
                         __criticalSeen.add(r.report_id);
-                        if (__criticalSeen.size > 1) {
-                            __criticalQueue.push(r);
-                            __showNextCritical();
-                        }
+                        __criticalQueue.push(r);
+                        __showNextCritical();
                     }
                 });
-            }).catch(function(){});
+            })
+            .catch(function() {});
         }
 
         __pollCritical();
         setInterval(__pollCritical, 15000);
     })();
 </script>
-
 </body>
 </html>
