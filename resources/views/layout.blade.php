@@ -899,8 +899,6 @@
         }
 
         function __showPanicBanner(type, location, reportedAt) {
-            var existing = document.getElementById('__panic-alert-banner');
-            if (existing) existing.remove();
             if (__panicBeepInterval) clearInterval(__panicBeepInterval);
             __panicBeepInterval = setInterval(__buildPanicAudio, 3000);
             var banner = document.createElement('div');
@@ -944,7 +942,12 @@
             }).then(function(res) {
                 return res.json();
             }).then(function(data) {
-                if (data.has_panic && data.report_id !== __panicLastId && !sessionStorage.getItem('panicDismissed_' + data.report_id)) {
+                if (
+                    data.has_panic &&
+                    data.report_id !== __panicLastId &&
+                    !sessionStorage.getItem('panicDismissed_' + data.report_id) &&
+                    !document.getElementById('__panic-alert-banner')
+                ) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
                     __showPanicBanner(data.type, data.location, data.reported_at);
@@ -1015,20 +1018,14 @@
             var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
 
-            // Start beeping like panic banner
             if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
             __criticalBeep();
             __criticalBeepInterval = setInterval(__criticalBeep, 3000);
 
-            var accentColor  = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
-            var accentSolid  = isCritical ? '#c0303a' : '#c07800';
-            var emoji        = isCritical ? '&#9888;' : '&#9888;';
-            var label        = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
+            var accentColor = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
+            var accentSolid = isCritical ? '#c0303a' : '#c07800';
+            var label       = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
             var formattedTime = __formatTime12h(report.reported_at);
-
-            // Full-screen overlay just like panic banner
-            var existing = document.getElementById('__critical-alert-overlay');
-            if (existing) existing.remove();
 
             var overlay = document.createElement('div');
             overlay.id = '__critical-alert-overlay';
@@ -1037,7 +1034,7 @@
 
             overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
                 + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
-                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">' + emoji + '</div>'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
                 + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + label + '</div>'
                 + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __criticalEscHtml(report.emergency_type) + '</div>'
                 + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __criticalEscHtml(report.location) + '</div>'
@@ -1051,18 +1048,13 @@
         window.__dismissCritical = function() {
             var overlay = document.getElementById('__critical-alert-overlay');
             if (!overlay) return;
-
-            // Stop beeping
             if (__criticalBeepInterval) {
                 clearInterval(__criticalBeepInterval);
                 __criticalBeepInterval = null;
             }
-
             sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
             overlay.remove();
             __criticalActive = false;
-
-            // Show next queued alert if any
             __showNextCritical();
         };
 
