@@ -480,7 +480,6 @@
         background: var(--white);
     }
 
-    /* ── MODAL SYSTEM ── */
     .modal-body {
         flex: 1; overflow-y: auto; padding: .9rem 1.1rem;
         scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
@@ -544,7 +543,6 @@
 
     .modal-field input::placeholder, .modal-field textarea::placeholder { color: #c4a0af; }
 
-    /* ── VIEW DETAIL GRID ── */
     .view-detail-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -573,7 +571,6 @@
 
     .vdi-val.muted { color: var(--ink-muted); }
 
-    /* ── STATUS DOT (edit modal) ── */
     .status-select-wrap { position: relative; }
     .status-dot {
         position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
@@ -582,7 +579,6 @@
     }
     .status-select-wrap select { padding-left: 1.9rem; }
 
-    /* ── MODAL WARN BANNER ── */
     .modal-warn-banner {
         background: #fff9e6; border: 1.5px solid #f0c040; border-radius: 10px;
         padding: .5rem .8rem; font-size: .78rem; color: #7a5400; line-height: 1.5;
@@ -629,7 +625,6 @@
     .d2 { animation-delay: .12s; }
     .d3 { animation-delay: .2s; }
 
-    /* ── ARCHIVE DRAWER ── */
     .archive-backdrop {
         position: fixed;
         inset: 0;
@@ -817,7 +812,6 @@
     .archive-export-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
     .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .65; }
 
-    /* ── EXPORT DROPDOWN ── */
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -836,7 +830,6 @@
     .btn-export img { width: 14px; height: 14px; object-fit: contain; opacity: .6; }
     .btn-export:hover img { opacity: 1; }
 
-    /* ── DIRECTORY MODAL (tabbed) ── */
     .btn-directory {
         display: inline-flex; align-items: center; gap: .45rem;
         padding: .6rem 1.2rem; border-radius: 12px;
@@ -1004,7 +997,6 @@
         cursor: pointer; transition: background .15s, border-color .15s, color .15s; white-space: nowrap;
     }
 
-    /* ── DIR MODAL STICKY HEADER/FOOTER ── */
 #dir-modal .modal {
     display: flex;
     flex-direction: column;
@@ -1243,12 +1235,11 @@
     </div>
 </div>
 
-{{-- ── EMERGENCY DIRECTORY MODAL (tabbed) ── --}}
 <div class="modal-overlay" id="dir-modal">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">
-                🚨 Emergency Directory
+                Emergency Directory
             </div>
             <button class="modal-close" onclick="closeModal('dir-modal')">&#x2715;</button>
         </div>
@@ -1287,7 +1278,6 @@
     </div>
 </div>
 
-{{-- ── REPORT EMERGENCY MODAL ── --}}
 <div class="modal-overlay" id="report-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1331,7 +1321,6 @@
     </div>
 </div>
 
-{{-- ── VIEW MODAL ── --}}
 <div class="modal-overlay" id="view-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1346,7 +1335,6 @@
     </div>
 </div>
 
-{{-- ── EDIT MODAL ── --}}
 <div class="modal-overlay" id="edit-modal">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
@@ -1381,7 +1369,7 @@
                 </div>
             </div>
             <div class="modal-warn-banner">
-                <span style="font-size:.95rem;flex-shrink:0;">⚠️</span>
+                <span style="font-size:.95rem;flex-shrink:0;"></span>
                 <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
             </div>
         </div>
@@ -1392,7 +1380,6 @@
     </div>
 </div>
 
-{{-- ── DELETE MODAL ── --}}
 <div class="modal-overlay" id="delete-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1429,7 +1416,6 @@
 
     const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
 
-    /* ── DIRECTORY DATA ── */
     const baseUrl = '{{ asset("icons") }}/';
 
     const DIR_DATA = [
@@ -1455,7 +1441,6 @@
 
     let dirActiveTab = 'all';
 
-    /* ── DIRECTORY MODAL ── */
     function switchDirTab(tab, btn) {
         dirActiveTab = tab;
         document.querySelectorAll('.dir-tab').forEach(t => t.classList.remove('active'));
@@ -1513,7 +1498,6 @@
         `;
     }
 
-    /* ── SUGGESTED HOTLINES (view modal) ── */
     function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
         const type  = (emergencyType ?? '').toLowerCase();
         const level = (urgencyLevel ?? '').toLowerCase();
@@ -1545,7 +1529,6 @@
         `;
     }
 
-    /* ── REPORT FORM HOTLINES ── */
     function buildReportHotlines(emergencyType) {
         const type = (emergencyType ?? '').toLowerCase();
         if (!type) return '';
@@ -1602,7 +1585,6 @@
         });
     }
 
-    /* ── BADGES ── */
     function urgencyBadge(u) {
         const level = (u ?? 'moderate').toLowerCase();
         const label = level.charAt(0).toUpperCase() + level.slice(1);
@@ -1619,7 +1601,6 @@
         return map[s] ?? '<span class="badge badge-active">Active</span>';
     }
 
-    /* ── DATE FORMATTERS ── */
     function fmtDate(d) {
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -1642,7 +1623,6 @@
         return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
-    /* ── TABLE ── */
     function renderTable() {
         const start    = (currentPage - 1) * PER_PAGE;
         const pageData = filtered.slice(start, start + PER_PAGE);
@@ -1739,11 +1719,9 @@
         renderTable();
     }
 
-    /* ── VIEW MODAL ── */
     function viewReport(r) {
         currentRep = r;
 
-        // Build the "Reported By" value with tenant name + room
         const reportedBy = [
             escHtml(r.tenant_name ?? '—'),
             r.room_number ? `<span style="color:var(--ink-muted);font-weight:400;"> · Room ${escHtml(String(r.room_number))}</span>` : ''
@@ -1905,7 +1883,6 @@
         btn.textContent = 'Delete';
     }
 
-    /* ── ARCHIVE DRAWER ── */
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
@@ -1988,7 +1965,6 @@
         `).join('');
     }
 
-    /* ── EXPORT TABLE ── */
     function exportTable(format) {
         if (format === 'pdf') {
             const win  = window.open('', '_blank');
@@ -2021,7 +1997,6 @@
         URL.revokeObjectURL(a.href);
     }
 
-    /* ── EXPORT ARCHIVE ── */
     function exportArchive(format) {
         const data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
         const label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
@@ -2061,7 +2036,6 @@
         URL.revokeObjectURL(a.href);
     }
 
-    /* ── EXPORT DROPDOWNS ── */
     function getMenuForDropdown(id) {
         return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
             return m._sourceDropdownId === id;
@@ -2126,7 +2100,6 @@
         );
     @endif
 
-    /* ── INIT ── */
     applyFilters();
     renderDirList();
 </script>

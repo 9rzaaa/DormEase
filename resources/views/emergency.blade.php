@@ -291,7 +291,6 @@
     .page-btn:disabled { opacity: .35; cursor: default; }
     .empty-row td { text-align: center; padding: 2.5rem 1rem; color: var(--ink-muted); font-size: .9rem; }
 
-    /* ── MODAL SYSTEM ─────────────────────────────── */
     .modal-overlay {
         position: fixed; inset: 0; z-index: 800;
         display: none; align-items: center; justify-content: center;
@@ -422,7 +421,6 @@
 
     .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(232,23,93,.35); }
 
-    /* ── VIEW MODAL DETAILS ── */
     .view-detail-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -525,7 +523,6 @@
         padding-bottom: .75rem;
     }
 
-    /* ── CATEGORY TABS ── */
     .dir-tabs {
         display: flex;
         gap: 0;
@@ -583,7 +580,6 @@
     .dir-tab-icon { width: 14px; height: 14px; object-fit: contain; opacity: .5; }
     .dir-tab.active .dir-tab-icon { opacity: 1; }
 
-    /* ── DIRECTORY SEARCH ── */
     .dir-search-bar {
         padding: .85rem .75rem;
         flex-shrink: 0;
@@ -610,7 +606,6 @@
         opacity: .4; pointer-events: none;
     }
 
-    /* ── DIRECTORY LIST ── */
     .dir-list { flex: 1; overflow-y: auto; padding: 0 1.1rem 1rem; display: flex; flex-direction: column; gap: .45rem; }
     .dir-list::-webkit-scrollbar { width: 4px; }
     .dir-list::-webkit-scrollbar-track { background: transparent; }
@@ -680,7 +675,6 @@
         padding: .5rem .8rem; font-size: .73rem; color: var(--ink-muted); line-height: 1.55;
     }
 
-    /* ── ARCHIVE DRAWER ── */
     .archive-backdrop {
         position: fixed; inset: 0;
         background: rgba(232,23,93,.15);
@@ -866,7 +860,6 @@
     .btn-directory:hover { opacity: .9; transform: translateY(-1px); }
     .btn-directory img { width: 14px; height: 14px; object-fit: contain; filter: brightness(0) invert(1); }
 
-    /* ── ANIMATIONS ── */
     .fade-up { animation: fdFadeUp .45s ease both; }
     @keyframes fdFadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     .d1 { animation-delay: .05s; }
@@ -1012,7 +1005,6 @@
 
 @section('modals')
 
-{{-- ── ARCHIVE DRAWER ── --}}
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
@@ -1052,17 +1044,15 @@
     </div>
 </div>
 
-{{-- ── EMERGENCY DIRECTORY MODAL ── --}}
 <div class="modal-overlay" id="dir-modal">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">
-                🚨 Emergency Directory
+                Emergency Directory
             </div>
             <button class="modal-close" onclick="closeModal('dir-modal')">&#x2715;</button>
         </div>
 
-        {{-- Category tabs --}}
         <div class="dir-tabs" id="dir-tabs">
             <button class="dir-tab active" onclick="switchDirTab('all', this)">
                 All
@@ -1081,7 +1071,6 @@
             </button>
         </div>
 
-        {{-- Search --}}
         <div class="dir-search-bar">
             <div class="dir-search-inner">
                 <img src="{{ asset('icons/search.png') }}" class="dir-search-icon" alt="">
@@ -1089,7 +1078,6 @@
             </div>
         </div>
 
-        {{-- List --}}
         <div class="dir-list" id="dir-list"></div>
 
         <div class="modal-footer">
@@ -1101,7 +1089,6 @@
     </div>
 </div>
 
-{{-- ── VIEW MODAL ── --}}
 <div class="modal-overlay" id="view-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
@@ -1116,7 +1103,6 @@
     </div>
 </div>
 
-{{-- ── EDIT MODAL ── --}}
 <div class="modal-overlay" id="edit-modal">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
@@ -1151,7 +1137,7 @@
                 </div>
             </div>
             <div class="modal-warn-banner">
-                <span style="font-size:.95rem;flex-shrink:0;">⚠️</span>
+                <span style="font-size:.95rem;flex-shrink:0;"></span>
                 <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
             </div>
         </div>
@@ -1162,7 +1148,6 @@
     </div>
 </div>
 
-{{-- ── DELETE MODAL ── --}}
 <div class="modal-overlay" id="delete-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1208,7 +1193,6 @@
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
-    /* ── STATUS DOT ── */
     function updateEditStatusDot(sel) {
         var dot = document.getElementById('edit-status-dot');
         if (!dot) return;
@@ -1216,7 +1200,6 @@
         dot.style.background = colors[sel.value] || '#ccc';
     }
 
-    /* ── BADGES ── */
     function urgencyBadge(u) {
         const level = (u ?? 'moderate').toLowerCase();
         const label = level.charAt(0).toUpperCase() + level.slice(1);
@@ -1233,7 +1216,6 @@
         return map[s] ?? '<span class="badge badge-active">Active</span>';
     }
 
-    /* ── DATE FORMATTERS ── */
     function fmtDate(d) {
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
@@ -1264,7 +1246,6 @@
         return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
-    /* ── TABLE ── */
     function populateTypeFilter() {
         const select = document.getElementById('type-filter');
         const types = [...new Set(
@@ -1395,7 +1376,6 @@
         renderTable();
     }
 
-    /* ── VIEW MODAL ── */
     function viewReport(r) {
         currentRep = r;
         document.getElementById('view-content').innerHTML = `
@@ -1511,7 +1491,6 @@
         btn.disabled = false; btn.textContent = 'Delete';
     }
 
-    /* ── ARCHIVE DRAWER ── */
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
@@ -1583,7 +1562,6 @@
         `).join('');
     }
 
-    /* ── DIRECTORY MODAL ── */
     const baseUrl = '{{ asset("icons") }}/';
 
     const DIR_DATA = [
@@ -1669,7 +1647,6 @@
         `;
     }
 
-    /* ── SUGGESTED HOTLINES in view modal ── */
     function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
         const type  = (emergencyType ?? '').toLowerCase();
         const level = (urgencyLevel ?? '').toLowerCase();
@@ -1720,7 +1697,6 @@
         });
     }
 
-    /* ── EXPORT ── */
     function exportTable(format) {
         if (format === 'pdf') {
             const win  = window.open('', '_blank');
@@ -1768,7 +1744,6 @@
         a.download = `emergency_${archiveTab}_archive.csv`; a.click(); URL.revokeObjectURL(a.href);
     }
 
-    /* ── EXPORT DROPDOWNS ── */
     function getMenuForDropdown(id) {
         return Array.from(document.querySelectorAll('.export-menu')).find(m => m._sourceDropdownId === id)
             || document.querySelector('#' + id + ' .export-menu');
@@ -1809,7 +1784,6 @@
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
 
-    /* ── INIT ── */
     populateTypeFilter();
     applyFilters();
     renderDirList();
