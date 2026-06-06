@@ -290,22 +290,81 @@ tbody tr:hover { background: var(--soft-bg); }
 
 .empty-state { text-align: center; color: #b06080; padding: 2rem 1rem; font-size: .9rem; }
 
-.view-row {
+.vd-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: .6rem 0;
-    border-bottom: 1px solid var(--pink-100);
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+    border-radius: 12px;
+    margin-bottom: 1.4rem;
 }
 
-.view-row:last-child { border-bottom: none; }
-
-.view-label {
-    font-size: .78rem; font-weight: 700; color: var(--hot-pink);
-    text-transform: uppercase; letter-spacing: .03em;
+.vd-avatar {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(255,255,255,.22);
+    border: 1.5px solid rgba(255,255,255,.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 800; color: var(--white);
+    flex-shrink: 0;
+    letter-spacing: -.02em;
 }
 
-.view-val { font-size: .875rem; color: #5a1e38; font-weight: 500; }
+.vd-header-info { min-width: 0; }
+
+.vd-header-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vd-header-email {
+    font-size: .75rem;
+    color: rgba(255,255,255,.78);
+    margin-top: .18rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.vd-field { display: flex; flex-direction: column; gap: .22rem; }
+
+.vd-field.vd-full { grid-column: 1 / -1; }
+
+.vd-label {
+    font-size: .68rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.vd-val {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--blush);
+    border: 1px solid var(--pink-100);
+    border-radius: 8px;
+    padding: .45rem .7rem;
+    min-height: 2.1rem;
+    display: flex;
+    align-items: center;
+    line-height: 1.35;
+}
+
+.vd-val.vd-muted { color: var(--ink-muted); font-weight: 500; font-style: italic; }
 
 .fade-up { animation: fadeIn .45s ease both; }
 
@@ -811,13 +870,13 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal">
+    <div class="modal" style="max-width:480px;">
         <div class="modal-header">
             <div class="modal-title">Tenant Details</div>
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div id="view-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;">
+        <div class="modal-actions" style="margin-top:.5rem;">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
@@ -987,16 +1046,49 @@ function applyFilters() {
 }
 
 function viewTenant(t) {
+    var ini = (((t.first_name || '')[0] || '') + ((t.last_name || '')[0] || '')).toUpperCase();
+    var isEmpty = function(v) { return !v || String(v).trim() === ''; };
+    var val = function(v, fallback) {
+        var text = isEmpty(v) ? (fallback || '\u2014') : v;
+        var muted = isEmpty(v) ? ' vd-muted' : '';
+        return '<div class="vd-val' + muted + '">' + text + '</div>';
+    };
+
     document.getElementById('view-content').innerHTML =
-        '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (t.email || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Floor &amp; Room</span><span class="view-val">' + (t.floor && t.room_number ? t.floor + '-' + t.room_number : (t.room_number || '\u2014')) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Notes</span><span class="view-val">' + (t.notes || '\u2014') + '</span></div>';
+        '<div class="vd-header">' +
+            '<div class="vd-header-name">' + t.first_name + ' ' + t.last_name + '</div>' +
+        '</div>' +
+        '<div class="vd-grid">' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Contact No.</div>' +
+                val(t.contact_number) +
+            '</div>' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Floor &amp; Room</div>' +
+                val(t.floor && t.room_number ? 'Floor ' + t.floor + ', Room ' + t.room_number : (t.room_number || null)) +
+            '</div>' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Stay Type</div>' +
+                val(t.stay_type) +
+            '</div>' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Status</div>' +
+                '<div class="vd-val" style="background:transparent;border-color:transparent;padding-left:0;">' + statusBadge(t.status) + '</div>' +
+            '</div>' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Move-In Date</div>' +
+                val(fmtDate(t.move_in_date) !== '\u2014' ? fmtDate(t.move_in_date) : null) +
+            '</div>' +
+            '<div class="vd-field">' +
+                '<div class="vd-label">Move-Out Date</div>' +
+                val(fmtDate(t.move_out_date) !== '\u2014' ? fmtDate(t.move_out_date) : null) +
+            '</div>' +
+            '<div class="vd-field vd-full">' +
+                '<div class="vd-label">Notes</div>' +
+                val(t.notes) +
+            '</div>' +
+        '</div>';
+
     openModal('view-modal');
 }
 
