@@ -142,7 +142,6 @@
         .stats-row { grid-template-columns: 1fr; }
     }
 
-    /* ── Table card ── */
     .table-card {
         background: var(--white);
         border-radius: 16px;
@@ -261,7 +260,7 @@
 
     tbody tr:hover { background: #fff7fb; }
 
-    /* ── Badges ── */
+
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
     .badge-completed { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
@@ -271,7 +270,6 @@
 
     .time-pending { color: var(--gray); font-style: italic; font-size: .78rem; }
 
-    /* ── Action buttons ── */
     .act-btn {
         width: 32px;
         height: 32px;
@@ -296,9 +294,6 @@
         object-fit: contain;
     }
 
-    /* ══════════════════════════════════════
-       VISITOR MODAL
-    ══════════════════════════════════════ */
     .visitor-modal {
         display: none;
         position: fixed;
@@ -334,7 +329,6 @@
         to   { opacity: 1; transform: translateY(0)    scale(1);   }
     }
 
-    /* Modal header */
     .modal-header {
         padding: 1.2rem 1.8rem .6rem;
         border-bottom: 1px solid var(--bright-pink);
@@ -405,7 +399,6 @@
     }
     .modal-close-btn:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: #fff0f5; }
 
-    /* Modal tabs — only 2 now */
     .modal-tabs {
         display: flex;
         border-bottom: 1px solid var(--bright-pink);
@@ -432,7 +425,6 @@
     .modal-tab:hover { color: var(--hot-pink); }
     .modal-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
 
-    /* Modal body */
     .modal-body {
         padding: 1.2rem 1.8rem 1.2rem;
         flex: 1;
@@ -484,7 +476,6 @@
         line-height: 1.35;
     }
 
-    /* ── Time info row (replaces schedule tab) ── */
     .modal-time-row {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -492,7 +483,6 @@
         margin-top: .55rem;
     }
 
-    /* ── Photo area ── */
     .modal-photo-area {
         display: flex;
         flex-direction: column;
@@ -574,7 +564,6 @@
     }
     .modal-photo-btn-outline:hover { border-color: var(--hot-pink); background: #fff7fb; }
 
-    /* ── Photo lightbox ── */
     .photo-lightbox {
         display: none;
         position: fixed;
@@ -661,9 +650,6 @@
     }
     .photo-lightbox-open-btn:hover { background: rgba(255,255,255,.22); }
 
-    /* ══════════════════════════════════════
-       ARCHIVE DRAWER
-    ══════════════════════════════════════ */
     .archive-backdrop {
         position: fixed;
         inset: 0;
@@ -976,10 +962,8 @@
 
 @section('content')
 
-{{-- Archive backdrop --}}
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
-{{-- Archive drawer --}}
 <div class="archive-drawer" id="archive-drawer">
     <div class="archive-drawer-header">
         <div>
@@ -1024,7 +1008,6 @@
     </div>
 </div>
 
-{{-- Visitor details modal --}}
 <div id="visitorModal" class="visitor-modal">
     <div class="visitor-modal-card">
 
@@ -1037,16 +1020,13 @@
             <button class="modal-close-btn" onclick="closeModal()">&#x2715;</button>
         </div>
 
-        {{-- Tab nav — Schedule tab removed --}}
         <div class="modal-tabs">
             <button class="modal-tab active" id="mtab-info"  onclick="switchModalTab('info')">Visitor Info</button>
             <button class="modal-tab"        id="mtab-photo" onclick="switchModalTab('photo')">ID Photo</button>
         </div>
 
-        {{-- Tab body --}}
         <div class="modal-body">
 
-            {{-- Info panel — includes schedule info inline --}}
             <div class="modal-tab-panel active" id="mpanel-info">
                 <div class="modal-section-label">Personal</div>
                 <div class="modal-info-grid" id="minfo-personal"></div>
@@ -1061,7 +1041,6 @@
                 <div class="modal-info-grid" id="minfo-log"></div>
             </div>
 
-            {{-- Photo panel --}}
             <div class="modal-tab-panel" id="mpanel-photo">
                 <div class="modal-section-label">ID Verification</div>
                 <div class="modal-info-grid" id="minfo-idtype" style="margin-bottom:1rem;"></div>
@@ -1072,7 +1051,6 @@
     </div>
 </div>
 
-{{-- Photo lightbox --}}
 <div id="photoLightbox" class="photo-lightbox" onclick="closeLightbox(event)">
     <div class="photo-lightbox-inner">
         <button class="photo-lightbox-close" onclick="closeLightboxBtn()">&#x2715;</button>
@@ -1086,7 +1064,6 @@
     </div>
 </div>
 
-{{-- Main page --}}
 <div class="page-body">
 
     <div class="page-header">
@@ -1216,7 +1193,6 @@
 
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
-    /* ── Formatters ── */
     function fmtDateTime(dt) {
         if (!dt) return '—';
         const d = new Date(dt);
@@ -1244,7 +1220,6 @@
              + ' ' + dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
     }
 
-    /* ── Filters & table render ── */
     function applyFilters() {
         const q    = document.getElementById('search-input').value.toLowerCase().trim();
         const from = document.getElementById('date-from').value;
@@ -1332,7 +1307,6 @@
         return '<span class="badge ' + cls + '">' + label + '</span>';
     }
 
-    /* ── Modal helpers ── */
     function infoItem(label, value, full) {
         return '<div class="modal-info-item' + (full ? ' full' : '') + '">'
             + '<div class="modal-info-item-label">' + label + '</div>'
@@ -1340,7 +1314,6 @@
             + '</div>';
     }
 
-    /* Only 2 tabs now */
     function switchModalTab(tab) {
         ['info', 'photo'].forEach(function(t) {
             document.getElementById('mtab-' + t).classList.toggle('active',   t === tab);
@@ -1348,12 +1321,10 @@
         });
     }
 
-    /* ── Open visitor modal ── */
     function viewVisitor(id) {
         const v = logs.find(function(item) { return item.id === id; });
         if (!v) return;
 
-        /* Header */
         document.getElementById('modalHeaderName').textContent = v.visitor_name ?? '—';
         document.getElementById('modalHeaderId').textContent   = 'VST-' + String(v.id).padStart(3, '0');
 
@@ -1362,17 +1333,14 @@
         if (v.purpose) bBadges += '<span class="modal-header-badge">' + v.purpose + '</span>';
         document.getElementById('modalHeaderBadges').innerHTML = bBadges;
 
-        /* Personal */
         document.getElementById('minfo-personal').innerHTML =
             infoItem('Full Name',    v.visitor_name ?? '—')
             + infoItem('Contact No.', v.contact_no  ?? '—');
 
-        /* Visit Details */
         document.getElementById('minfo-visit').innerHTML =
             infoItem('Purpose',        v.purpose            ?? '—')
             + infoItem('Tenant Visited', v.tenant?.full_name ?? '—');
 
-        /* Schedule & Attendance — merged into Info tab */
         const timeInVal  = v.arrival_time   ? fmtDateTime(v.arrival_time)   : '<span style="color:#bbb;font-style:italic;font-size:.8rem">Not yet</span>';
         const timeOutVal = v.departure_time ? fmtDateTime(v.departure_time) : (v.arrival_time ? '<span style="color:#c8960c;font-weight:700">Still Inside</span>' : '—');
 
@@ -1382,12 +1350,10 @@
             + infoItem('Time In',  timeInVal)
             + infoItem('Time Out', timeOutVal);
 
-        /* Log Info */
         document.getElementById('minfo-log').innerHTML =
             infoItem('Status',    getStatusBadge(v.status))
             + infoItem('Logged By', v.staff?.name ?? '—');
 
-        /* Photo tab */
         document.getElementById('minfo-idtype').innerHTML =
             infoItem('ID Type', v.id_type ?? '—', true);
 
@@ -1417,7 +1383,6 @@
         }
         document.getElementById('minfo-photo').innerHTML = photoArea;
 
-        /* Reset to first tab and show */
         switchModalTab('info');
         document.getElementById('visitorModal').style.display = 'flex';
     }
@@ -1430,7 +1395,6 @@
         if (e.target === document.getElementById('visitorModal')) closeModal();
     });
 
-    /* ── Photo lightbox ── */
     function openLightbox(src, caption) {
         var lb = document.getElementById('photoLightbox');
         document.getElementById('lightboxImg').src             = src;
@@ -1449,7 +1413,6 @@
         document.getElementById('photoLightbox').style.display = 'none';
     }
 
-    /* ── Archive ── */
     function openArchive() {
         document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors) ? completedVisitors.length : 0;
         document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)   ? deletedVisitors.length   : 0;
@@ -1528,7 +1491,6 @@
         }).join('');
     }
 
-    /* ── CSV/PDF exports ── */
     function exportLogsCsv() {
         if (!filtered.length) { alert('No data to export.'); return; }
 
@@ -1665,7 +1627,6 @@
         win.print();
     }
 
-    /* ── Export dropdown positioning ── */
     function getMenuForDropdown(id) {
         return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
             return m._sourceDropdownId === id;

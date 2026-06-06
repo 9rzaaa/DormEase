@@ -318,7 +318,6 @@
     .icon-md { width: 20px; height: 20px; object-fit: contain; }
     .icon-lg { width: 28px; height: 28px; object-fit: contain; }
 
-    /* ── Emergency modal ── */
     .emerg-modal-list {
         display: flex;
         flex-direction: column;
