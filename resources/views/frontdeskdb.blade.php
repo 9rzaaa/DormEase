@@ -242,12 +242,6 @@
     .activity-row:last-child { border-bottom: none; }
     .activity-row:hover { background: var(--petal); }
 
-    .activity-avatar {
-        width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-        background: linear-gradient(135deg, var(--baby-pink), var(--hot-pink));
-        display: flex; align-items: center; justify-content: center;
-        font-size: .75rem; font-weight: 800; color: var(--white);
-    }
     .activity-info { min-width: 0; }
     .activity-title { font-size: .88rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .activity-time  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
@@ -269,6 +263,7 @@
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
+    /* Right-col notification items */
     .notif-item {
         display: flex; align-items: flex-start; gap: .7rem;
         padding: .6rem .5rem;
@@ -435,13 +430,16 @@
                         <div class="empty-state">No recent visitor activity.</div>
                     @else
                         @foreach($recentActivities as $log)
-                            <div class="activity-row" onclick="openVisitorModal(
-                                '{{ addslashes($log->visitor_name) }}',
-                                '{{ $log->departure_time ? 'Checked Out' : 'Checked In' }}',
-                                '{{ $log->tenant ? addslashes($log->tenant->first_name . ' ' . $log->tenant->last_name) : 'N/A' }}',
-                                '{{ \Carbon\Carbon::parse($log->arrival_time)->format('F d, Y, g:i A') }}',
-                                '{{ $log->departure_time ? \Carbon\Carbon::parse($log->departure_time)->format('F d, Y, g:i A') : '' }}'
-                            )">
+                            {{-- ✅ Use data attributes + JSON to avoid inline JS quote issues --}}
+                            <div class="activity-row"
+                                 onclick="openVisitorModal(this)"
+                                 data-visitor='{!! json_encode([
+                                     "name"      => $log->visitor_name,
+                                     "status"    => $log->departure_time ? "Checked Out" : "Checked In",
+                                     "tenant"    => $log->tenant ? $log->tenant->first_name . " " . $log->tenant->last_name : "N/A",
+                                     "arrival"   => \Carbon\Carbon::parse($log->arrival_time)->format("F d, Y, g:i A"),
+                                     "departure" => $log->departure_time ? \Carbon\Carbon::parse($log->departure_time)->format("F d, Y, g:i A") : "",
+                                 ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
                                 <div class="activity-info">
                                     <div class="activity-title">
                                         {{ $log->visitor_name }} &mdash; {{ $log->departure_time ? 'Checked Out' : 'Checked In' }}
@@ -494,6 +492,7 @@
 
     </div>
 
+    {{-- Right column: uses the shared openNotifDetail from fdlayout --}}
     <div class="right-col fade-up d5">
         <div class="card">
             <h3>Notifications</h3>
@@ -515,19 +514,22 @@
                             default            => 'bell',
                         };
                     @endphp
-                    <div class="notif-item" onclick="openNotifDetail({
-                        id:      {{ $notif->notif_id }},
-                        type:    '{{ $notifTypeLabel }}',
-                        icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
-                        message: {{ json_encode($notif->message) }},
-                        time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
-                        ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
-                        url:     '{{ $notif->url ?? '' }}',
-                        isRead:  {{ $notif->is_read ? 'true' : 'false' }}
-                    })">
+                    {{-- ✅ Safe: pass data as JSON via data attribute, not an inline JS object literal --}}
+                    <div class="notif-item"
+                         onclick="openNotifDetail(this)"
+                         data-notif='{!! json_encode([
+                             "id"      => $notif->notif_id,
+                             "type"    => $notifTypeLabel,
+                             "icon"    => asset("icons/{$notifIcon}.png"),
+                             "message" => $notif->message,
+                             "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                             "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                             "url"     => $notif->url ?? "",
+                             "isRead"  => (bool) $notif->is_read,
+                         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
                         <div class="notif-ico">
                             <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
-                                onerror="this.src='{{ asset('icons/bell.png') }}'">
+                                 onerror="this.src='{{ asset('icons/bell.png') }}'">
                         </div>
                         <div>
                             <div class="notif-text">{{ $notif->message }}</div>
@@ -602,38 +604,6 @@
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('emergency-modal')">Close</button>
-        </div>
-    </div>
-</div>
-
-{{-- Notification Detail Modal --}}
-<div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
-    <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div class="modal-title">Notification</div>
-            <button class="modal-close" onclick="closeModal('notif-detail-modal')">&#x2715;</button>
-        </div>
-        <div style="padding:.3rem 0 .5rem;">
-            <div style="display:flex; gap:1rem; align-items:flex-start;">
-                <div style="
-                    width:48px; height:48px; border-radius:12px; flex-shrink:0;
-                    background:var(--petal); border:1.5px solid var(--baby-pink);
-                    display:flex; align-items:center; justify-content:center;
-                ">
-                    <img id="nd-icon" src=""
-                         style="width:22px;height:22px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"
-                         alt="">
-                </div>
-                <div style="flex:1; min-width:0;">
-                    <div id="nd-type" style="font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-muted);"></div>
-                    <div id="nd-message" style="font-size:.93rem; font-weight:600; color:var(--ink); margin-top:.25rem; line-height:1.55;"></div>
-                    <div id="nd-time" style="font-size:.77rem; color:var(--ink-muted); margin-top:.45rem;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('notif-detail-modal')">Dismiss</button>
-            <button class="btn-submit" id="nd-action-btn" style="display:none;">View</button>
         </div>
     </div>
 </div>
@@ -817,12 +787,7 @@
 
 })();
 
-window.handleOverlayClick = function(e, modalId) {
-    if (e.target === document.getElementById(modalId)) {
-        closeModal(modalId);
-    }
-};
-
+/* ── Panel toggle ── */
 window.togglePanel = function(id) {
     var body = document.getElementById('body-' + id);
     var chev = document.getElementById('chevron-' + id);
@@ -831,6 +796,7 @@ window.togglePanel = function(id) {
     chev.classList.toggle('open', !open);
 };
 
+/* ── CSV export ── */
 window.exportSummary = function() {
     var rows = [
         ['Metric', 'Value'],
@@ -848,22 +814,20 @@ window.exportSummary = function() {
     showToast('Summary exported as CSV!', 'success');
 };
 
-@if(session('success'))
-    showToast("{{ session('success') }}", 'success');
-@endif
-@if(session('error'))
-    showToast("{{ session('error') }}", 'error');
-@endif
+/* ── Visitor detail modal — reads from data-visitor attribute ── */
+window.openVisitorModal = function(el) {
+    var data;
+    try { data = JSON.parse(el.dataset.visitor); }
+    catch(e) { console.error('openVisitorModal: bad JSON', e); return; }
 
-window.openVisitorModal = function(name, status, tenant, arrival, departure) {
-    document.getElementById('vd-name').textContent    = name;
-    document.getElementById('vd-status').textContent  = status;
-    document.getElementById('vd-tenant').textContent  = tenant;
-    document.getElementById('vd-arrival').textContent = arrival;
+    document.getElementById('vd-name').textContent    = data.name;
+    document.getElementById('vd-status').textContent  = data.status;
+    document.getElementById('vd-tenant').textContent  = data.tenant;
+    document.getElementById('vd-arrival').textContent = data.arrival;
 
     var depWrap = document.getElementById('vd-departure-wrap');
-    if (departure) {
-        document.getElementById('vd-departure').textContent = departure;
+    if (data.departure) {
+        document.getElementById('vd-departure').textContent = data.departure;
         depWrap.style.display = 'block';
     } else {
         depWrap.style.display = 'none';
@@ -872,24 +836,11 @@ window.openVisitorModal = function(name, status, tenant, arrival, departure) {
     openModal('visitor-detail-modal');
 };
 
-window.openNotifDetail = function(data) {
-    var icon = document.getElementById('nd-icon');
-    icon.src = data.icon;
-    icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
-
-    document.getElementById('nd-type').textContent    = data.type.charAt(0).toUpperCase() + data.type.slice(1);
-    document.getElementById('nd-message').textContent = data.message;
-    document.getElementById('nd-time').textContent    = data.time + ' (' + data.ago + ')';
-
-    var actionBtn = document.getElementById('nd-action-btn');
-    if (data.url) {
-        actionBtn.style.display = 'inline-flex';
-        actionBtn.onclick = function() { window.location = data.url; };
-    } else {
-        actionBtn.style.display = 'none';
-    }
-
-    openModal('notif-detail-modal');
-};
+@if(session('success'))
+    showToast("{{ addslashes(session('success')) }}", 'success');
+@endif
+@if(session('error'))
+    showToast("{{ addslashes(session('error')) }}", 'error');
+@endif
 </script>
 @endsection
