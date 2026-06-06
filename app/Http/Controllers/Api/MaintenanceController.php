@@ -30,16 +30,14 @@ class MaintenanceController extends Controller
                 'clogged',
                 'overflow',
                 'tagas',
-                'tumatagas',
-                'tumutulo',
                 'tulo',
                 'gripo',
                 'lababo',
                 'inidoro',
                 'kubeta',
                 'tubo',
-                'barado',
                 'bara',
+                'barado',
                 'baha',
             ],
         ],
@@ -65,8 +63,7 @@ class MaintenanceController extends Controller
                 'ilaw',
                 'saksakan',
                 'kawad',
-                'pundi',
-                'kumukutitap',
+                'kutitap',
                 'walang kuryente',
                 'walang ilaw',
             ],
@@ -86,10 +83,7 @@ class MaintenanceController extends Controller
                 'air con',
                 'electric fan',
                 'mainit',
-                'mainit kwarto',
-                'hindi malamig',
-                'hindi lumalamig',
-                'mahina aircon',
+                'lamig',
                 'bentilador',
             ],
         ],
@@ -134,7 +128,7 @@ class MaintenanceController extends Controller
                 'bintana',
                 'bisagra',
                 'kahoy',
-                'sira pinto',
+                'sira',
             ],
         ],
         'pest' => [
@@ -177,7 +171,7 @@ class MaintenanceController extends Controller
                 'mould',
                 'marumi',
                 'basura',
-                'mabaho',
+                'baho',
                 'amoy',
                 'mantsa',
                 'amag',
@@ -197,13 +191,12 @@ class MaintenanceController extends Controller
                 'connection',
                 'signal',
                 'network',
-                'mahina signal',
                 'walang internet',
                 'walang wifi',
                 'walang wi fi',
                 'mabagal internet',
                 'mabagal wifi',
-                'putol internet',
+                'putol',
             ],
         ],
     ];
@@ -225,14 +218,12 @@ class MaintenanceController extends Controller
             'no electricity',
             'gas leak',
             'sunog',
-            'nasusunog',
             'usok',
             'amoy sunog',
             'baha',
-            'umaapaw',
+            'apaw',
             'walang kuryente',
-            'may kuryente',
-            'kumukuryente',
+            'kuryente',
             'grounded',
         ],
         'moderate' => [
@@ -244,14 +235,11 @@ class MaintenanceController extends Controller
             'not working',
             'cannot use',
             'tagas',
-            'tumatagas',
-            'tumutulo',
-            'barado',
+            'tulo',
+            'bara',
             'sira',
-            'hindi gumagana',
-            'di gumagana',
-            'hindi magamit',
-            'di magamit',
+            'gana',
+            'gamit',
         ],
     ];
 
@@ -261,6 +249,219 @@ class MaintenanceController extends Controller
         'moderate' => 2,
         'low'      => 1,
     ];
+
+    // ---------------------------------------------------------------------------
+    // Tagalog morphology: roots the stemmer should recognise.
+    // Add more roots here as needed; the stemmer expands them automatically.
+    // ---------------------------------------------------------------------------
+    private const TAGALOG_ROOTS = [
+        // Plumbing
+        'tagas',
+        'tulo',
+        'baha',
+        'apaw',
+        'bara',
+        'gripo',
+        'tubo',
+        'lababo',
+        // Electrical
+        'kuryente',
+        'ilaw',
+        'kutitap',
+        'saksak',
+        'kawad',
+        'putok',
+        // HVAC
+        'mainit',
+        'lamig',
+        'init',
+        // Carpentry
+        'pinto',
+        'kandado',
+        'sira',
+        'kahoy',
+        'bisagra',
+        // Cleaning
+        'linis',
+        'kalat',
+        'amag',
+        'mantsa',
+        'baho',
+        'amoy',
+        'basura',
+        // Internet
+        'putol',
+        'signal',
+        // General
+        'gana',
+        'gamit',
+        'ayos',
+        'gusto',
+        'tulong',
+    ];
+
+    // =========================================================================
+    // Tagalog Morphological Stemmer
+    // =========================================================================
+    private function tagalogStem(string $word): array
+    {
+        $candidates = [$word];
+
+        $prefixes = [
+            'makapag',
+            'nakapag',
+            'pinaka',
+            'pinag',
+            'maka',
+            'naka',
+            'mapa',
+            'napa',
+            'mag',
+            'nag',
+            'pag',
+            'ma',
+            'na',
+            'pa',
+            'i',
+            'ka',
+            'sang',
+        ];
+
+        $stripped = $word;
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($word, $prefix) && strlen($word) > strlen($prefix) + 2) {
+                $stripped = substr($word, strlen($prefix));
+                $candidates[] = $stripped;
+                break;
+            }
+        }
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($stripped, $prefix) && strlen($stripped) > strlen($prefix) + 2) {
+                $candidates[] = substr($stripped, strlen($prefix));
+                break;
+            }
+        }
+
+        $suffixes = ['han', 'hin', 'an', 'in', 'ng', 'g'];
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            foreach ($suffixes as $suffix) {
+                if (str_ends_with($c, $suffix) && strlen($c) > strlen($suffix) + 2) {
+                    $candidates[] = substr($c, 0, -strlen($suffix));
+                }
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (preg_match('/^([^aeiou][^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+        }
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])um(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (str_starts_with($c, 'um') && strlen($c) > 4) {
+                $candidates[] = substr($c, 2);
+            }
+        }
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (strlen($c) >= 4 && substr($c, 0, 2) === substr($c, 2, 2)) {
+                $candidates[] = substr($c, 2);
+            }
+            if (strlen($c) >= 6 && substr($c, 0, 3) === substr($c, 3, 3)) {
+                $candidates[] = substr($c, 3);
+            }
+        }
+
+        return array_unique($candidates);
+    }
+
+    /**
+     * Strips common English -ing suffixes from a word to produce candidate stems.
+     */
+    private function expandIngForms(string $word): array
+    {
+        $forms = [$word];
+
+        if (!str_ends_with($word, 'ing') || strlen($word) <= 5) {
+            return $forms;
+        }
+        $base = substr($word, 0, -3);
+        if (preg_match('/([b-df-hj-np-tv-z])\1$/', $base, $m)) {
+            $forms[] = substr($base, 0, -1);
+        }
+
+        $forms[] = $base . 'e';
+        $forms[] = $base;
+
+        return array_unique($forms);
+    }
+
+    /**
+     * Checks whether a keyword appears in the text using:
+     *  - direct substring match
+     *  - English -ing suffix stemming
+     *  - Tagalog morphological stemming (for every word in the text)
+     */
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        if (str_contains($text, $keyword)) {
+            return true;
+        }
+        $words = explode(' ', $text);
+        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
+        $candidates = [''];
+        foreach ($expandedWords as $forms) {
+            $next = [];
+            foreach ($candidates as $prefix) {
+                foreach ($forms as $form) {
+                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
+                }
+            }
+            $candidates = array_slice($next, 0, 512);
+        }
+        foreach ($candidates as $candidate) {
+            if (str_contains($candidate, $keyword)) {
+                return true;
+            }
+        }
+
+        // ── Tagalog morphological matching ───────────────────────────────────
+        // Stem each word in the text; also stem the keyword itself.
+        // Match when any derived root pair is equal (min 4 chars to avoid noise).
+        $keywordRoots = $this->tagalogStem($keyword);
+
+        foreach ($words as $word) {
+            $wordRoots = $this->tagalogStem($word);
+
+            foreach ($wordRoots as $wRoot) {
+
+                if ($wRoot === $keyword) {
+                    return true;
+                }
+                if (str_contains($keyword, $wRoot) && strlen($wRoot) >= 4) {
+                    return true;
+                }
+                if (str_contains($wRoot, $keyword) && strlen($keyword) >= 4) {
+                    return true;
+                }
+                foreach ($keywordRoots as $kRoot) {
+                    if ($wRoot === $kRoot && strlen($kRoot) >= 4) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
     public function index(Request $request)
     {
@@ -353,59 +554,6 @@ class MaintenanceController extends Controller
         return trim($text ?? '');
     }
 
-    /**
-     * Given a single word that ends in "-ing", returns that word plus candidate
-     * stems so keyword matching works regardless of inflected form.
-     */
-    private function expandIngForms(string $word): array
-    {
-        $forms = [$word];
-
-        if (!str_ends_with($word, 'ing') || strlen($word) <= 5) {
-            return $forms;
-        }
-        $base = substr($word, 0, -3);
-        if (preg_match('/([b-df-hj-np-tv-z])\1$/', $base, $m)) {
-            $forms[] = substr($base, 0, -1);
-        }
-        $forms[] = $base . 'e';
-
-        $forms[] = $base;
-
-        return array_unique($forms);
-    }
-
-    /**
-     * Checks whether a keyword appears in the text, also testing -ing-stemmed
-     * variants of every word in the text against the keyword.
-     */
-    private function matchesKeyword(string $text, string $keyword): bool
-    {
-        if (str_contains($text, $keyword)) {
-            return true;
-        }
-        $words        = explode(' ', $text);
-        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
-
-        $candidates = [''];
-        foreach ($expandedWords as $forms) {
-            $next = [];
-            foreach ($candidates as $prefix) {
-                foreach ($forms as $form) {
-                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
-                }
-            }
-            $candidates = array_slice($next, 0, 512);
-        }
-        foreach ($candidates as $candidate) {
-            if (str_contains($candidate, $keyword)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     // -------------------------------------------------------------------------
     // Classification
     // -------------------------------------------------------------------------
@@ -436,6 +584,7 @@ class MaintenanceController extends Controller
                 $bestPriorityWeight = $priorityWeight;
             }
         }
+
         return [
             'issue_type'    => $bestIssue,
             'urgency_level' => $this->classifyPriority($text, $bestIssue),
@@ -474,6 +623,7 @@ class MaintenanceController extends Controller
                 }
             }
         }
+
         return self::ISSUE_RULES[$issue]['priority'] ?? 'low';
     }
 }

@@ -109,7 +109,7 @@ class EmergencyController extends Controller
                 'assault',
                 'magnanakaw',
                 'nanakaw',
-                'nakawan',
+                'nakaw',
                 'away',
                 'gulo',
                 'banta',
@@ -131,9 +131,11 @@ class EmergencyController extends Controller
                 'baha',
                 'binabaha',
                 'tagas',
+                'tulo',
                 'tumutulo',
                 'pumutok na tubo',
                 'umaapaw',
+                'apaw',
             ],
         ],
         'Other' => [
@@ -190,6 +192,186 @@ class EmergencyController extends Controller
             'umaapaw',
         ],
     ];
+
+    // ---------------------------------------------------------------------------
+    // Tagalog morphology: roots that the stemmer should know about.
+    // Add more roots here as needed; the stemmer will expand them automatically.
+    // ---------------------------------------------------------------------------
+    private const TAGALOG_ROOTS = [
+        // Medical
+        'himatay',
+        'hilo',
+        'sugat',
+        'dugo',
+        'sakit',
+        'atake',
+        'hinga',
+        // Fire
+        'sunog',
+        'usok',
+        'apoy',
+        // Electrical
+        'kuryente',
+        'kurente',
+        'putok',
+        // Security
+        'nakaw',
+        'away',
+        'gulo',
+        'banta',
+        'ligalig',
+        // Flood
+        'baha',
+        'tagas',
+        'tulo',
+        'apaw',
+        // General distress
+        'tulong',
+        'takbo',
+        'sigaw',
+        'takas',
+    ];
+
+
+    private function tagalogStem(string $word): array
+    {
+        $candidates = [$word];
+
+        $prefixes = [
+            'makapag',
+            'nakapag',
+            'pinaka',
+            'pinag',
+            'maka',
+            'naka',
+            'mapa',
+            'napa',
+            'mag',
+            'nag',
+            'pag',
+            'ma',
+            'na',
+            'pa',
+            'i',
+            'ka',
+            'sang',
+        ];
+
+        $stripped = $word;
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($word, $prefix) && strlen($word) > strlen($prefix) + 2) {
+                $stripped = substr($word, strlen($prefix));
+                $candidates[] = $stripped;
+                break;
+            }
+        }
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($stripped, $prefix) && strlen($stripped) > strlen($prefix) + 2) {
+                $candidates[] = substr($stripped, strlen($prefix));
+                break;
+            }
+        }
+        $suffixes = ['han', 'hin', 'an', 'in', 'ng', 'g'];
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            foreach ($suffixes as $suffix) {
+                if (str_ends_with($c, $suffix) && strlen($c) > strlen($suffix) + 2) {
+                    $candidates[] = substr($c, 0, -strlen($suffix));
+                }
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (preg_match('/^([^aeiou][^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])um(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (str_starts_with($c, 'um') && strlen($c) > 4) {
+                $candidates[] = substr($c, 2);
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (strlen($c) >= 4 && substr($c, 0, 2) === substr($c, 2, 2)) {
+                $candidates[] = substr($c, 2);
+            }
+            if (strlen($c) >= 6 && substr($c, 0, 3) === substr($c, 3, 3)) {
+                $candidates[] = substr($c, 3);
+            }
+        }
+
+        return array_unique($candidates);
+    }
+
+    /**
+     * Checks whether a keyword appears in the text, using both:
+     *  - direct substring match
+     *  - English -ing suffix stemming
+     *  - Tagalog morphological stemming (for every word in the text)
+     */
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        if (str_contains($text, $keyword)) {
+            return true;
+        }
+        $words = explode(' ', $text);
+        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
+        $candidates = [''];
+        foreach ($expandedWords as $forms) {
+            $next = [];
+            foreach ($candidates as $prefix) {
+                foreach ($forms as $form) {
+                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
+                }
+            }
+            $candidates = array_slice($next, 0, 512);
+        }
+        foreach ($candidates as $candidate) {
+            if (str_contains($candidate, $keyword)) {
+                return true;
+            }
+        }
+
+        // ── Tagalog morphological matching ───────────────────────────────────
+        // For each word in the text, generate all possible roots via the Tagalog
+        // stemmer and check if any root matches the keyword (or vice-versa).
+        foreach ($words as $word) {
+            $roots = $this->tagalogStem($word);
+            foreach ($roots as $root) {
+                if ($root === $keyword) {
+                    return true;
+                }
+                if (str_contains($keyword, $root) && strlen($root) >= 4) {
+                    return true;
+                }
+                if (str_contains($root, $keyword) && strlen($keyword) >= 4) {
+                    return true;
+                }
+            }
+
+            $keywordRoots = $this->tagalogStem($keyword);
+            foreach ($keywordRoots as $kRoot) {
+                foreach ($roots as $root) {
+                    if ($root === $kRoot && strlen($root) >= 4) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
     public function index(Request $request)
     {
@@ -287,13 +469,6 @@ class EmergencyController extends Controller
      * Strips common -ing suffixes from a word to produce candidate stems.
      * Returns an array of the original word plus any derived stems.
      *
-     * Examples:
-     *   "bleeding"  → ["bleeding", "bleed"]
-     *   "sparking"  → ["sparking", "spark"]
-     *   "burning"   → ["burning", "burn"]
-     *   "flooding"  → ["flooding", "flood"]
-     *   "overflowing" → ["overflowing", "overflow"]
-     *   "sparring"  → ["sparring", "spar"]   (double-consonant: rr → r)
      */
     private function expandIngForms(string $word): array
     {
@@ -310,43 +485,9 @@ class EmergencyController extends Controller
         }
 
         $forms[] = $base . 'e';
-
         $forms[] = $base;
 
         return array_unique($forms);
-    }
-
-    /**
-     * Checks whether a keyword appears anywhere in the text,
-     * also testing -ing-stripped stems of each word in the text against the keyword.
-     */
-    private function matchesKeyword(string $text, string $keyword): bool
-    {
-        if (str_contains($text, $keyword)) {
-            return true;
-        }
-
-        $words = explode(' ', $text);
-        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
-
-        $candidates = [''];
-        foreach ($expandedWords as $forms) {
-            $next = [];
-            foreach ($candidates as $prefix) {
-                foreach ($forms as $form) {
-                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
-                }
-            }
-            $candidates = array_slice($next, 0, 512);
-        }
-
-        foreach ($candidates as $candidate) {
-            if (str_contains($candidate, $keyword)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function classify(string $text, ?string $requestedType, bool $isPanicAlert): array
