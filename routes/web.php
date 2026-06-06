@@ -107,6 +107,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
+    Route::post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
 
     // announcements
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
