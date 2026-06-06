@@ -624,17 +624,21 @@
                                         };
                                     @endphp
 
+                                    {{-- ✅ FIX: data is stored as JSON in data-notif attribute --}}
+                                    {{-- This avoids quote-breaking and special-character issues  --}}
+                                    {{-- that occurred when building a JS object literal inline.  --}}
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
-                                         onclick="openNotifDetail({
-                                             id:      {{ $notif->notif_id }},
-                                             type:    '{{ $notifTypeLabel }}',
-                                             icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
-                                             message: {{ json_encode($notif->message) }},
-                                             time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
-                                             ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
-                                             url:     '{{ $notif->url ?? '' }}',
-                                             isRead:  {{ $notif->is_read ? 'true' : 'false' }}
-                                         })">
+                                         onclick="openNotifDetail(this)"
+                                         data-notif='{!! json_encode([
+                                             "id"      => $notif->notif_id,
+                                             "type"    => $notifTypeLabel,
+                                             "icon"    => asset("icons/{$notifIcon}.png"),
+                                             "message" => $notif->message,
+                                             "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                                             "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                                             "url"     => $notif->url ?? "",
+                                             "isRead"  => (bool) $notif->is_read,
+                                         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
                                         @if(!$notif->is_read)
                                             <div class="notif-unread-dot"></div>
                                         @else
@@ -883,62 +887,90 @@
         general:      'General',
     };
 
-    function openNotifDetail(notif) {
-        var badge = document.getElementById('notif-detail-badge');
-        badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
-        badge.textContent = typeLabels[notif.type] || 'General';
 
-        var icon = document.getElementById('notif-detail-icon');
-        icon.src = notif.icon;
-        icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
+        var notif;
 
-        document.getElementById('notif-detail-message').textContent = notif.message;
-
-        document.getElementById('notif-detail-time').textContent =
-            notif.time + ' (' + notif.ago + ')';
-
-        var statusEl = document.getElementById('notif-detail-status');
-        if (notif.isRead) {
-            statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">&#10003; Read</span>';
+        if (elOrNotif && typeof elOrNotif === 'object' && !elOrNotif.nodeType) {
+            notif = elOrNotif;
         } else {
-            statusEl.innerHTML = '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
+            try {
+                notif = JSON.parse(elOrNotif.dataset.notif);
+            } catch (e) {
+                console.error('openNotifDetail: failed to parse data-notif', e);
+                openModal('notif-detail-modal');
+                return;
+            }
         }
 
-        var urlRow  = document.getElementById('notif-detail-url-row');
-        var viewBtn = document.getElementById('notif-detail-view-btn');
-        if (notif.url) {
-            urlRow.style.display = 'flex';
-            document.getElementById('notif-detail-url-text').textContent = notif.url;
-            viewBtn.style.display = 'inline-flex';
-            viewBtn.href = notif.url;
-        } else {
-            urlRow.style.display = 'none';
-            viewBtn.style.display = 'none';
-        }
+        try {
+            var badge = document.getElementById('notif-detail-badge');
+            if (badge) {
+                badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
+                badge.textContent = typeLabels[notif.type] || 'General';
+            }
 
-        if (!notif.isRead) {
-            fetch('/notifications/' + notif.id + '/read', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                }
-            }).then(function() {
-                var badge = document.getElementById('notif-badge');
-                if (badge) {
-                    var current = parseInt(badge.textContent) || 0;
-                    if (current <= 1) badge.remove();
-                    else badge.textContent = current - 1;
-                }
-            });
+            var icon = document.getElementById('notif-detail-icon');
+            if (icon) {
+                icon.src = notif.icon || '';
+                icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
+            }
+
+            var msgEl = document.getElementById('notif-detail-message');
+            if (msgEl) msgEl.textContent = notif.message || '';
+
+            var timeEl = document.getElementById('notif-detail-time');
+            if (timeEl) timeEl.textContent = (notif.time || '') + (notif.ago ? ' (' + notif.ago + ')' : '');
+
+            var statusEl = document.getElementById('notif-detail-status');
+            if (statusEl) {
+                statusEl.innerHTML = notif.isRead
+                    ? '<span style="color:var(--green);font-weight:700;">&#10003; Read</span>'
+                    : '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
+            }
+
+            var urlRow  = document.getElementById('notif-detail-url-row');
+            var viewBtn = document.getElementById('notif-detail-view-btn');
+            if (notif.url) {
+                if (urlRow) urlRow.style.display = 'flex';
+                var urlText = document.getElementById('notif-detail-url-text');
+                if (urlText) urlText.textContent = notif.url;
+                if (viewBtn) { viewBtn.style.display = 'inline-flex'; viewBtn.href = notif.url; }
+            } else {
+                if (urlRow) urlRow.style.display = 'none';
+                if (viewBtn) viewBtn.style.display = 'none';
+            }
+
+            if (!notif.isRead) {
+                fetch('/notifications/' + notif.id + '/read', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    }
+                }).then(function() {
+                    var b = document.getElementById('notif-badge');
+                    if (b) {
+                        var current = parseInt(b.textContent) || 0;
+                        if (current <= 1) b.remove();
+                        else b.textContent = current - 1;
+                    }
+                    if (elOrNotif && elOrNotif.nodeType) {
+                        elOrNotif.classList.remove('unread');
+                        var dot = elOrNotif.querySelector('.notif-unread-dot');
+                        if (dot) dot.style.background = 'transparent';
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('openNotifDetail: error populating modal', e);
         }
 
         openModal('notif-detail-modal');
-    }
+    };
 
-    function closeNotifDetail() {
+    window.closeNotifDetail = function() {
         closeModal('notif-detail-modal');
-    }
+    };
 
     function markAllRead() {
         fetch('/notifications/read-all', {
