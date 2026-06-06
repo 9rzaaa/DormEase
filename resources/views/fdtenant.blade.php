@@ -186,33 +186,23 @@ th {
     text-transform: uppercase;
     white-space: nowrap;
     background: var(--white);
+    text-align: left;
 }
+
+th.th-center { text-align: center; }
 
 td {
     padding: .85rem 1rem;
     font-size: .875rem;
     border-bottom: 1px solid var(--pink-100);
     color: var(--ink);
+    text-align: left;
+    vertical-align: middle;
 }
+
+td.td-center { text-align: center; }
 
 tbody tr:hover { background: var(--soft-bg); }
-
-table th, table td { text-align: center; vertical-align: middle; }
-.td-name { text-align: left; }
-
-.name-cell {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: .75rem;
-}
-
-.tenant-avatar {
-    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
-    display: flex; align-items: center; justify-content: center;
-    font-size: .78rem; font-weight: 700; color: var(--white);
-}
 
 .badge {
     display: inline-flex;
@@ -750,9 +740,9 @@ table th, table td { text-align: center; vertical-align: middle; }
                         <th>Floor No.</th>
                         <th>Room No.</th>
                         <th>Contact No.</th>
-                        <th>Status</th>
+                        <th class="th-center">Status</th>
                         <th>Notes</th>
-                        <th>Action</th>
+                        <th class="th-center">Action</th>
                     </tr>
                 </thead>
                 <tbody id="tenant-tbody"></tbody>
@@ -922,13 +912,13 @@ function renderTable() {
     } else {
         tbody.innerHTML = pageData.map(function(t) {
             return '<tr>' +
-                '<td class="td-name"><div class="name-cell"><div class="tenant-avatar">' + initials(t.first_name, t.last_name) + '</div><span style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</span></div></td>' +
+                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td>' + statusBadge(t.status) + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;">' + (t.notes || '\u2014') + '</td>' +
-                '<td><div class="action-group">' +
+                '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
                     '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
                 '</div></td>' +
