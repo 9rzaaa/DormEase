@@ -263,7 +263,6 @@
     .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
-    /* Right-col notification items */
     .notif-item {
         display: flex; align-items: flex-start; gap: .7rem;
         padding: .6rem .5rem;
@@ -430,7 +429,6 @@
                         <div class="empty-state">No recent visitor activity.</div>
                     @else
                         @foreach($recentActivities as $log)
-                            {{-- ✅ Use data attributes + JSON to avoid inline JS quote issues --}}
                             <div class="activity-row"
                                  onclick="openVisitorModal(this)"
                                  data-visitor='{!! json_encode([
@@ -492,14 +490,13 @@
 
     </div>
 
-    {{-- Right column: uses the shared openNotifDetail from fdlayout --}}
     <div class="right-col fade-up d5">
         <div class="card">
             <h3>Notifications</h3>
             @if($notifications->isEmpty())
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
-                @foreach($notifications as $notif)
+                @foreach($notifications->take(6) as $notif)
                     @php
                         $notifTypeLabel = match($notif->type ?? '') {
                             'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'visitor',
@@ -514,7 +511,6 @@
                             default            => 'bell',
                         };
                     @endphp
-                    {{-- ✅ Safe: pass data as JSON via data attribute, not an inline JS object literal --}}
                     <div class="notif-item"
                          onclick="openNotifDetail(this)"
                          data-notif='{!! json_encode([
@@ -548,7 +544,6 @@
 
 @section('modals')
 
-{{-- Emergency Alerts Modal --}}
 <div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -608,7 +603,6 @@
     </div>
 </div>
 
-{{-- Visitor Detail Modal --}}
 <div class="modal-overlay" id="visitor-detail-modal" onclick="handleOverlayClick(event, 'visitor-detail-modal')">
     <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -787,7 +781,6 @@
 
 })();
 
-/* ── Panel toggle ── */
 window.togglePanel = function(id) {
     var body = document.getElementById('body-' + id);
     var chev = document.getElementById('chevron-' + id);
@@ -796,7 +789,6 @@ window.togglePanel = function(id) {
     chev.classList.toggle('open', !open);
 };
 
-/* ── CSV export ── */
 window.exportSummary = function() {
     var rows = [
         ['Metric', 'Value'],
@@ -814,7 +806,6 @@ window.exportSummary = function() {
     showToast('Summary exported as CSV!', 'success');
 };
 
-/* ── Visitor detail modal — reads from data-visitor attribute ── */
 window.openVisitorModal = function(el) {
     var data;
     try { data = JSON.parse(el.dataset.visitor); }
