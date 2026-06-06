@@ -898,9 +898,35 @@
             } catch (e) {}
         }
 
+        function __formatPanicTime(dateStr) {
+            if (!dateStr) return '';
+
+            var match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+            var d = match
+                ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6] || 0))
+                : new Date(dateStr);
+
+            if (isNaN(d)) return dateStr;
+
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            var hours = d.getHours();
+            var mins = d.getMinutes();
+            var secs = d.getSeconds();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12 || 12;
+
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                + ' ' + String(hours).padStart(2, '0')
+                + ':' + String(mins).padStart(2, '0')
+                + ':' + String(secs).padStart(2, '0')
+                + ' ' + ampm;
+        }
+
         function __showPanicBanner(type, location, reportedAt) {
             if (__panicBeepInterval) clearInterval(__panicBeepInterval);
             __panicBeepInterval = setInterval(__buildPanicAudio, 3000);
+            var formattedReportedAt = __formatPanicTime(reportedAt);
             var banner = document.createElement('div');
             banner.id = '__panic-alert-banner';
             banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
@@ -910,7 +936,7 @@
                 + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">Panic Alert</div>'
                 + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(type) + '</div>'
                 + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(location) + '</div>'
-                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(reportedAt) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(formattedReportedAt) + '</div>'
                 + '<button onclick="__dismissPanic()" style="background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
             document.body.appendChild(banner);
@@ -1065,6 +1091,8 @@
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 (data.reports || []).forEach(function(r) {
+                    if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
+
                     if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
                         __criticalSeen.add(r.report_id);
                         __criticalQueue.push(r);
