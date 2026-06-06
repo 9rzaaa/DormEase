@@ -179,6 +179,30 @@ class TenantController extends Controller
             ->with('success', 'Tenant information updated successfully.');
     }
 
+    public function reactivate($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        if ($tenant->status !== 'inactive') {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Tenant is already active.');
+        }
+
+        $tenant->update([
+            'status'    => 'active',
+            'is_active' => true,
+        ]);
+
+        NotificationHelper::sendToAll(
+            type: 'maintenance_new',
+            message: "Tenant {$tenant->first_name} {$tenant->last_name} account has been reactivated.",
+            ref_id: $tenant->tenant_id,
+        );
+
+        return redirect()->route('tenants.index')
+            ->with('success', "Tenant {$tenant->first_name} {$tenant->last_name} has been reactivated.");
+    }
+
     public function apiUpdateProfile(Request $request)
     {
         $tenant = $request->user();
@@ -297,5 +321,52 @@ class TenantController extends Controller
         $tenant->update(['notes' => $request->notes]);
 
         return redirect()->back()->with('success', 'Note saved successfully.');
+    }
+
+    public function apiLogin(Request $request)
+    {
+        $request->validate([
+            'account_id' => 'required|string',
+            'password'   => 'required|string',
+        ]);
+
+        $tenant = Tenant::where('account_id', $request->account_id)->first();
+
+        if (!$tenant || !Hash::check($request->password, $tenant->password_hash)) {
+            return response()->json([
+                'error'   => 'invalid_credentials',
+                'message' => 'Account ID or password is incorrect.',
+            ], 401);
+        }
+
+        if (!$tenant->is_active) {
+            return response()->json([
+                'error'   => 'account_deactivated',
+                'message' => 'Your account has been temporarily deactivated. Please visit the admin office for reactivation.',
+            ], 403);
+        }
+
+        $tenant->update(['last_login_at' => now()]);
+
+        $token = $tenant->createToken('tenant-app')->plainTextToken;
+
+        return response()->json([
+            'message'          => 'Login successful.',
+            'token'            => $token,
+            'is_temp_password' => $tenant->is_temp_password,
+            'tenant'           => [
+                'tenant_id'      => $tenant->tenant_id,
+                'account_id'     => $tenant->account_id,
+                'first_name'     => $tenant->first_name,
+                'last_name'      => $tenant->last_name,
+                'email'          => $tenant->email,
+                'contact_number' => $tenant->contact_number,
+                'profile_photo'  => $tenant->profile_photo,
+                'room_number'    => $tenant->room_number,
+                'floor'          => $tenant->floor,
+                'stay_type'      => $tenant->stay_type,
+                'status'         => $tenant->status,
+            ],
+        ]);
     }
 }

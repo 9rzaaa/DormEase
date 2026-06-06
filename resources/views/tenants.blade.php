@@ -205,12 +205,17 @@ th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
 
 tbody tr:hover { background: var(--soft-bg); }
+tbody tr.row-inactive { background: #fff8f8; }
+tbody tr.row-inactive:hover { background: #fff0f0; }
+
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
+.badge-deactivated { background: #ffe0e0; color: #b00020; border: 1px solid #ffb3b3; font-size: .68rem; padding: .18rem .55rem; border-radius: 99px; font-weight: 700; display: inline-flex; align-items: center; gap: .3rem; }
+
 .action-group { display: flex; align-items: center; gap: .4rem; flex-wrap: nowrap; justify-content: center; }
 .act-btn {
     width: 32px; height: 32px;
@@ -226,6 +231,17 @@ tbody tr:hover { background: var(--soft-bg); }
     flex-shrink: 0;
 }
 .act-btn:hover { border-color: var(--bright-pink); box-shadow: 0 6px 14px rgba(232,23,93,.15); }
+.act-btn-reactivate {
+    border-color: #8ce0bb;
+    background: #e8faf5;
+}
+.act-btn-reactivate:hover {
+    background: #1f9d69;
+    border-color: #1f9d69;
+    box-shadow: 0 6px 14px rgba(31,157,105,.25);
+}
+.act-btn-reactivate:hover img { filter: brightness(0) invert(1); }
+
 .table-footer {
     display: flex;
     align-items: center;
@@ -357,6 +373,12 @@ tbody tr:hover { background: var(--soft-bg); }
     padding: .55rem .8rem; font-size: .8rem; color: #7a5400; line-height: 1.5;
     display: flex; gap: .55rem; align-items: flex-start;
 }
+.modal-deactivated-banner {
+    background: #ffe0e0; border: 1.5px solid #ffb3b3; border-radius: 10px;
+    padding: .65rem .9rem; font-size: .82rem; color: #b00020; line-height: 1.5;
+    display: flex; gap: .6rem; align-items: flex-start; margin-bottom: .9rem;
+    font-weight: 600;
+}
 
 .modal-footer {
     padding: .7rem 1.1rem;
@@ -380,6 +402,14 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
 .btn-submit:active { transform: translateY(0); }
+.btn-reactivate {
+    padding: .6rem 1.4rem; border-radius: 10px;
+    border: none; background: linear-gradient(135deg, #1f9d69, #27c984);
+    color: var(--white); font-size: .875rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    box-shadow: 0 8px 20px rgba(31,157,105,.25);
+}
+.btn-reactivate:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(31,157,105,.35); }
 
 .modal-actions {
     display: flex; align-items: center; justify-content: flex-end;
@@ -401,6 +431,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .copy-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .credentials-warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; font-size: .82rem; color: #7a5400; margin-bottom: 1rem; line-height: 1.5; }
 .delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
+.reactivate-info { background: #e8faf5; border: 1px solid #8ce0bb; border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #1f5c42; margin-bottom: 1rem; line-height: 1.5; }
 
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -466,6 +497,10 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-pill-inactive { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
 .tad-card-archived { display: flex; align-items: center; gap: .4rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); font-size: .7rem; color: var(--ink-muted); font-weight: 500; }
 .tad-card-archived span { color: var(--bright-pink); font-weight: 600; }
+.tad-card-actions { display: flex; align-items: center; gap: .5rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); }
+.tad-card-archived-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); flex-wrap: wrap; }
+.tad-reactivate-btn { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 700; color: #1f9d69; background: #e8faf5; border: 1px solid #8ce0bb; border-radius: 7px; padding: .3rem .7rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; font-family: var(--ff-body); white-space: nowrap; flex-shrink: 0; }
+.tad-reactivate-btn:hover { background: #1f9d69; color: var(--white); border-color: #1f9d69; }
 .tad-empty { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .85rem; }
 .tad-empty-icon { width: 40px; height: 40px; margin: 0 auto .75rem; opacity: .3; display: block; }
 .tad-footer { padding: .9rem 1.8rem; border-top: 1px solid var(--pink-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; flex-wrap: wrap; gap: .5rem; }
@@ -583,6 +618,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
                 </select>
             </div>
         </div>
@@ -667,7 +703,6 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-{{-- ── CREDENTIALS MODAL (new tenant) ── --}}
 @if(session('new_account_id'))
 <div class="modal-overlay open" id="credentials-modal">
     <div class="modal" style="max-width:440px;">
@@ -791,7 +826,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
 
                 <div class="modal-section">
-                    <div class="modal-section-title">Room & Stay Details</div>
+                    <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
                         <div class="modal-field">
                             <label>Room No.</label>
@@ -838,7 +873,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
-        <div class="modal-footer">
+        <div class="modal-footer" id="view-footer">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>
         </div>
@@ -859,6 +894,11 @@ tbody tr:hover { background: var(--soft-bg); }
             @csrf
             @method('PUT')
             <div class="modal-body">
+
+                <div id="edit-deactivated-banner" class="modal-deactivated-banner" style="display:none;">
+                    <span style="font-size:1.1rem;flex-shrink:0;">&#x26D4;</span>
+                    <span>This account is currently <strong>deactivated</strong>. The tenant cannot log in to the mobile app until reactivated.</span>
+                </div>
 
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
@@ -883,7 +923,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
 
                 <div class="modal-section">
-                    <div class="modal-section-title">Room & Stay Details</div>
+                    <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
                         <div class="modal-field">
                             <label>Room No.</label>
@@ -925,7 +965,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Status</label>
                             <div class="status-select-wrap">
                                 <span class="status-dot" id="edit-status-dot"></span>
-                                <select name="status" id="edit-status" onchange="updateStatusDot(this)">
+                                <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleDeactivatedBanner(this.value);">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
                                     <option value="move_out">Move Out</option>
@@ -935,15 +975,40 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                     </div>
                     <div class="modal-warn-banner" style="margin-top:.8rem;">
-                        <span style="font-size:1rem;flex-shrink:0;">⚠️</span>
-                        <span>Setting status to <strong>Inactive</strong> or <strong>Move Out</strong> will save a record to the archive history.</span>
+                        <span style="font-size:1rem;flex-shrink:0;">&#x26A0;&#xFE0F;</span>
+                        <span>Setting status to <strong>Inactive</strong> will <strong>block the tenant from logging into the mobile app</strong> until reactivated. Setting to <strong>Move Out</strong> will save a record to the archive history.</span>
                     </div>
                 </div>
 
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" id="edit-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="reactivate-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title" style="color:#1f9d69;">Reactivate Account</div>
+            <button class="modal-close" onclick="closeModal('reactivate-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="reactivate-info">
+                Reactivating this account will allow the tenant to log back into the mobile app.
+                Their account status will be set to <strong>Active</strong>.
+            </div>
+            <p style="font-size:.9rem;color:var(--ink-muted);margin:0;">
+                Reactivate account for <strong id="reactivate-name" style="color:var(--ink);"></strong>?
+            </p>
+        </div>
+        <form method="POST" id="reactivate-form" action="" data-loading-message="Reactivating account..." style="display:contents;">
+            @csrf
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('reactivate-modal')">Cancel</button>
+                <button type="submit" class="btn-reactivate">Reactivate</button>
             </div>
         </form>
     </div>
@@ -1010,28 +1075,28 @@ let filtered = [];
 let currentTenant = null;
 
 function showActionLoading(message) {
-    const overlay = document.getElementById('action-loading');
+    var overlay = document.getElementById('action-loading');
     document.getElementById('action-loading-text').textContent = message || 'Please wait...';
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 }
 
 function setFormLoading(form, message) {
-    form.querySelectorAll('button[type="submit"]').forEach(btn => {
+    form.querySelectorAll('button[type="submit"]').forEach(function(btn) {
         btn.textContent = 'Please wait...';
         btn.disabled = true;
         btn.classList.add('is-loading');
     });
-    form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+    form.querySelectorAll('button:not([type="submit"])').forEach(function(btn) {
         btn.disabled = true;
         btn.classList.add('is-loading');
     });
     showActionLoading(message);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('form[data-loading-message]').forEach(form => {
-        form.addEventListener('submit', function () {
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
+        form.addEventListener('submit', function() {
             setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
         });
     });
@@ -1043,8 +1108,8 @@ document.getElementById('table-date').textContent =
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+document.querySelectorAll('.modal-overlay').forEach(function(m) {
+    m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
 });
 
 function updateStatusDot(select) {
@@ -1054,8 +1119,14 @@ function updateStatusDot(select) {
     dot.style.background = colors[select.value] || '#ccc';
 }
 
+function toggleDeactivatedBanner(status) {
+    var banner = document.getElementById('edit-deactivated-banner');
+    if (!banner) return;
+    banner.style.display = status === 'inactive' ? 'flex' : 'none';
+}
+
 function statusBadge(status) {
-    const map = {
+    var map = {
         active:   '<span class="badge badge-active">Active</span>',
         pending:  '<span class="badge badge-pending">Pending</span>',
         move_out: '<span class="badge badge-moveout">Move Out</span>',
@@ -1068,22 +1139,36 @@ function tempBadge(isTemp) {
     return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
 }
 
+function deactivatedBadge() {
+    return '<span class="badge-deactivated">&#x26D4; Deactivated</span>';
+}
+
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function renderTable() {
-    const start = (currentPage - 1) * PER_PAGE;
-    const pageData = filtered.slice(start, start + PER_PAGE);
-    const tbody = document.getElementById('tenant-tbody');
+    var start = (currentPage - 1) * PER_PAGE;
+    var pageData = filtered.slice(start, start + PER_PAGE);
+    var tbody = document.getElementById('tenant-tbody');
     if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     } else {
         tbody.innerHTML = pageData.map(function(t) {
             var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-            var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
-            return '<tr>' +
+            var isInactive = t.status === 'inactive';
+            var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' +
+                (t.is_temp_password ? tempBadge(true) : '') +
+                (isInactive ? deactivatedBadge() : '') +
+                '</div>';
+
+            var reactivateBtn = isInactive
+                ? '<button class="act-btn act-btn-reactivate" title="Reactivate Account" onclick="openReactivateModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')">' +
+                  '<img src="{{ asset('icons/tenants.png') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(37%) sepia(72%) saturate(550%) hue-rotate(107deg) brightness(95%) contrast(92%);" alt="Reactivate"></button>'
+                : '';
+
+            return '<tr class="' + (isInactive ? 'row-inactive' : '') + '">' +
                 '<td>' + (t.account_id || '\u2014') + '</td>' +
                 '<td>' + nameCell + '</td>' +
                 '<td>' + floorRoom + '</td>' +
@@ -1094,8 +1179,9 @@ function renderTable() {
                 '<td><div class="action-group">' +
                     '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>' +
                     '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>' +
-                    '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + t.first_name + ' ' + t.last_name + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>' +
-                    '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + t.first_name + ' ' + t.last_name + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>' +
+                    reactivateBtn +
+                    '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>' +
+                    '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
@@ -1105,6 +1191,10 @@ function renderTable() {
     var to    = Math.min(start + PER_PAGE, total);
     document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
     renderPagination();
+}
+
+function escapeJs(str) {
+    return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 function renderPagination() {
@@ -1136,7 +1226,7 @@ function applyFilters() {
     var status = document.getElementById('status-filter').value;
 
     filtered = tenants.filter(function(t) {
-        if (t.status === 'inactive' || t.status === 'move_out') return false;
+        if (t.status === 'move_out') return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
             (t.account_id  || '').toLowerCase().indexOf(q) !== -1 ||
@@ -1161,7 +1251,11 @@ function applyFilters() {
 function viewTenant(t) {
     currentTenant = t;
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
+    var deactivatedBanner = t.status === 'inactive'
+        ? '<div class="modal-deactivated-banner"><span style="font-size:1.1rem;flex-shrink:0;">&#x26D4;</span><span>This account is <strong>deactivated</strong>. The tenant cannot log in to the mobile app.</span></div>'
+        : '';
     document.getElementById('view-content').innerHTML =
+        deactivatedBanner +
         '<div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">' + (t.account_id || '\u2014') + '</span></div>' +
         '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>' +
         '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + t.email + '</span></div>' +
@@ -1172,6 +1266,19 @@ function viewTenant(t) {
         '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>' +
         '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>' +
         '<div class="view-row"><span class="view-label">Password Status</span><span class="view-val">' + (t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant') + '</span></div>';
+
+    var footer = document.getElementById('view-footer');
+    if (t.status === 'inactive') {
+        footer.innerHTML =
+            '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>' +
+            '<button class="btn-reactivate" onclick="closeModal(\'view-modal\'); setTimeout(function(){ openReactivateModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\'); }, 200);">Reactivate Account</button>' +
+            '<button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>';
+    } else {
+        footer.innerHTML =
+            '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>' +
+            '<button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>';
+    }
+
     openModal('view-modal');
 }
 
@@ -1196,7 +1303,14 @@ function openEditModal(t) {
     document.getElementById('edit-contact').value     = t.contact_number || '';
     document.getElementById('edit-status').value      = t.status || 'pending';
     updateStatusDot(document.getElementById('edit-status'));
+    toggleDeactivatedBanner(t.status || 'pending');
     openModal('edit-modal');
+}
+
+function openReactivateModal(id, name) {
+    document.getElementById('reactivate-name').textContent = name;
+    document.getElementById('reactivate-form').action = '/tenants/' + id + '/reactivate';
+    openModal('reactivate-modal');
 }
 
 function openResetModal(id, name) {
@@ -1250,7 +1364,7 @@ function copyText(elementId, btn) {
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
 
-filtered = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
+filtered = tenants.filter(function(t) { return t.status !== 'move_out'; });
 renderTable();
 
 const deletedTenantArchive  = @json($deletedArchive);
@@ -1323,12 +1437,23 @@ function renderTenantArchive() {
     list.innerHTML = data.map(function(r, i) {
         var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">'+r.floor+'-'+r.room_number+'</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">'+r.room_number+'</span>' : '');
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">'+r.stay_type+'</span>' : '';
+
+        var reactivateSection = '';
+        if (tenantArchiveTab === 'inactive' && r.id) {
+            reactivateSection = '<div class="tad-card-archived-row">' +
+                '<div class="tad-card-archived" style="margin:0;padding:0;border:none;">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>' +
+                '<button class="tad-reactivate-btn" onclick="closeTenantArchive(); setTimeout(function(){ openReactivateModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\'); }, 350);">Reactivate</button>' +
+            '</div>';
+        } else {
+            reactivateSection = '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>';
+        }
+
         return '<div class="tad-card" style="animation-delay:' + (i*0.04) + 's;">' +
             '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id||'\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>' +
             '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>' +
             '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>' +
             '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status||'\u2014') + '</span></div>' +
-            '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>' +
+            reactivateSection +
         '</div>';
     }).join('');
 }
