@@ -203,19 +203,13 @@ td {
 th:nth-child(2), td:nth-child(2) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
-
 tbody tr:hover { background: var(--soft-bg); }
-tbody tr.row-inactive { background: #fff8f8; }
-tbody tr.row-inactive:hover { background: #fff0f0; }
-
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
-.badge-deactivated { background: #ffe0e0; color: #b00020; border: 1px solid #ffb3b3; font-size: .68rem; padding: .18rem .55rem; border-radius: 99px; font-weight: 700; display: inline-flex; align-items: center; gap: .3rem; }
-
 .action-group { display: flex; align-items: center; gap: .4rem; flex-wrap: nowrap; justify-content: center; }
 .act-btn {
     width: 32px; height: 32px;
@@ -231,17 +225,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     flex-shrink: 0;
 }
 .act-btn:hover { border-color: var(--bright-pink); box-shadow: 0 6px 14px rgba(232,23,93,.15); }
-.act-btn-reactivate {
-    border-color: #8ce0bb;
-    background: #e8faf5;
-}
-.act-btn-reactivate:hover {
-    background: #1f9d69;
-    border-color: #1f9d69;
-    box-shadow: 0 6px 14px rgba(31,157,105,.25);
-}
-.act-btn-reactivate:hover img { filter: brightness(0) invert(1); }
-
 .table-footer {
     display: flex;
     align-items: center;
@@ -262,7 +245,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 .page-btn:hover:not(:disabled) { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .page-btn:disabled { opacity: .4; cursor: default; }
-
 .modal-overlay {
     position: fixed; inset: 0; z-index: 800;
     display: none; align-items: center; justify-content: center;
@@ -303,7 +285,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     transition: background .2s, color .2s, border-color .2s; flex-shrink: 0;
 }
 .modal-close:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
-
 .modal-body {
     flex: 1; overflow-y: auto; padding: .9rem 1.1rem;
     scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
@@ -311,10 +292,7 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 .modal-body::-webkit-scrollbar { width: 5px; }
 .modal-body::-webkit-scrollbar-track { background: transparent; }
 .modal-body::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
-
-.modal-section {
-    margin-bottom: .9rem;
-}
+.modal-section { margin-bottom: .9rem; }
 .modal-section-title {
     font-size: .7rem; font-weight: 800; color: var(--bright-pink);
     text-transform: uppercase; letter-spacing: .08em;
@@ -327,7 +305,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     display: inline-block; width: 3px; height: 12px;
     background: var(--gradient-pink); border-radius: 2px;
 }
-
 .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
 .modal-field { display: flex; flex-direction: column; gap: .25rem; }
 .modal-field.full { grid-column: 1 / -1; }
@@ -343,17 +320,13 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     box-sizing: border-box; transition: border-color .2s, box-shadow .2s, background .2s;
     font-family: inherit;
 }
-.modal-field input:hover, .modal-field select:hover {
-    border-color: var(--pink-200);
-    background: #fff5f9;
-}
+.modal-field input:hover, .modal-field select:hover { border-color: var(--pink-200); background: #fff5f9; }
 .modal-field input:focus, .modal-field select:focus {
     border-color: var(--bright-pink);
     box-shadow: 0 0 0 3px rgba(232,23,93,.1);
     background: var(--white);
 }
 .modal-field input::placeholder { color: #c4a0af; }
-
 .status-select-wrap { position: relative; }
 .status-dot {
     position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
@@ -361,7 +334,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     transition: background .2s;
 }
 .status-select-wrap select { padding-left: 1.9rem; }
-
 .modal-info-banner {
     background: linear-gradient(135deg, #fff5f9 0%, #ffe8f2 100%);
     border: 1.5px solid var(--pink-100); border-radius: 10px;
@@ -373,13 +345,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
     padding: .55rem .8rem; font-size: .8rem; color: #7a5400; line-height: 1.5;
     display: flex; gap: .55rem; align-items: flex-start;
 }
-.modal-deactivated-banner {
-    background: #ffe0e0; border: 1.5px solid #ffb3b3; border-radius: 10px;
-    padding: .65rem .9rem; font-size: .82rem; color: #b00020; line-height: 1.5;
-    display: flex; gap: .6rem; align-items: flex-start; margin-bottom: .9rem;
-    font-weight: 600;
-}
-
 .modal-footer {
     padding: .7rem 1.1rem;
     border-top: 1.5px solid var(--pink-100);
@@ -402,25 +367,10 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 }
 .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
 .btn-submit:active { transform: translateY(0); }
-.btn-reactivate {
-    padding: .6rem 1.4rem; border-radius: 10px;
-    border: none; background: linear-gradient(135deg, #1f9d69, #27c984);
-    color: var(--white); font-size: .875rem; font-weight: 700;
-    cursor: pointer; transition: .2s; font-family: inherit;
-    box-shadow: 0 8px 20px rgba(31,157,105,.25);
-}
-.btn-reactivate:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(31,157,105,.35); }
-
-.modal-actions {
-    display: flex; align-items: center; justify-content: flex-end;
-    gap: .65rem; padding-top: 1rem; flex-wrap: wrap;
-}
-
 .view-row { display: flex; justify-content: space-between; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; }
 .view-row:last-child { border-bottom: none; }
 .view-label { font-size: .72rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; flex-shrink: 0; }
 .view-val { font-size: .875rem; color: #5a1e38; font-weight: 500; text-align: right; word-break: break-word; }
-
 .credentials-box { background: var(--soft-bg); border: 1.5px solid var(--pink-100); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1rem; }
 .credentials-box h4 { font-size: .8rem; font-weight: 700; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .75rem; }
 .credential-row { display: flex; align-items: center; justify-content: space-between; padding: .5rem 0; border-bottom: 1px solid var(--pink-100); gap: .5rem; flex-wrap: wrap; }
@@ -431,14 +381,11 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 .copy-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .credentials-warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; font-size: .82rem; color: #7a5400; margin-bottom: 1rem; line-height: 1.5; }
 .delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
-.reactivate-info { background: #e8faf5; border: 1px solid #8ce0bb; border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #1f5c42; margin-bottom: 1rem; line-height: 1.5; }
-
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s; }
-
 .tenant-archive-drawer {
     position: fixed; top: 0; right: 0; bottom: 0;
     width: min(660px, 100vw);
@@ -497,10 +444,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 .tad-pill-inactive { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
 .tad-card-archived { display: flex; align-items: center; gap: .4rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); font-size: .7rem; color: var(--ink-muted); font-weight: 500; }
 .tad-card-archived span { color: var(--bright-pink); font-weight: 600; }
-.tad-card-actions { display: flex; align-items: center; gap: .5rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); }
-.tad-card-archived-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); flex-wrap: wrap; }
-.tad-reactivate-btn { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 700; color: #1f9d69; background: #e8faf5; border: 1px solid #8ce0bb; border-radius: 7px; padding: .3rem .7rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; font-family: var(--ff-body); white-space: nowrap; flex-shrink: 0; }
-.tad-reactivate-btn:hover { background: #1f9d69; color: var(--white); border-color: #1f9d69; }
 .tad-empty { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .85rem; }
 .tad-empty-icon { width: 40px; height: 40px; margin: 0 auto .75rem; opacity: .3; display: block; }
 .tad-footer { padding: .9rem 1.8rem; border-top: 1px solid var(--pink-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; flex-wrap: wrap; gap: .5rem; }
@@ -520,7 +463,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
 .is-loading { opacity: .75; pointer-events: none; }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
-
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
 @media (max-width: 680px) { .page-body { padding: 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
@@ -618,7 +560,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
-                    <option value="inactive">Inactive</option>
                 </select>
             </div>
         </div>
@@ -789,20 +730,15 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">
-                Add New Tenant
-            </div>
+            <div class="modal-title">Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-
         <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
             @csrf
             <div class="modal-body">
-
                 <div class="modal-info-banner">
                     <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
                 </div>
-
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
@@ -824,7 +760,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
@@ -856,7 +791,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
@@ -873,9 +807,9 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
-        <div class="modal-footer" id="view-footer">
+        <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-            <button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>
+            <button class="btn-submit" onclick="switchToEdit()">Edit</button>
         </div>
     </div>
 </div>
@@ -889,17 +823,10 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-
         <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;">
             @csrf
             @method('PUT')
             <div class="modal-body">
-
-                <div id="edit-deactivated-banner" class="modal-deactivated-banner" style="display:none;">
-                    <span style="font-size:1.1rem;flex-shrink:0;">&#x26D4;</span>
-                    <span>This account is currently <strong>deactivated</strong>. The tenant cannot log in to the mobile app until reactivated.</span>
-                </div>
-
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
@@ -921,7 +848,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
@@ -957,7 +883,6 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-section">
                     <div class="modal-section-title">Account Status</div>
                     <div class="modal-grid">
@@ -965,7 +890,7 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                             <label>Status</label>
                             <div class="status-select-wrap">
                                 <span class="status-dot" id="edit-status-dot"></span>
-                                <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleDeactivatedBanner(this.value);">
+                                <select name="status" id="edit-status" onchange="updateStatusDot(this)">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
                                     <option value="move_out">Move Out</option>
@@ -976,39 +901,13 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
                     </div>
                     <div class="modal-warn-banner" style="margin-top:.8rem;">
                         <span style="font-size:1rem;flex-shrink:0;">&#x26A0;&#xFE0F;</span>
-                        <span>Setting status to <strong>Inactive</strong> will <strong>block the tenant from logging into the mobile app</strong> until reactivated. Setting to <strong>Move Out</strong> will save a record to the archive history.</span>
+                        <span>Setting status to <strong>Inactive</strong> will block the tenant from logging into the mobile app. Setting to <strong>Move Out</strong> saves a record to archive history.</span>
                     </div>
                 </div>
-
             </div>
-            <div class="modal-footer" id="edit-footer">
+            <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="modal-overlay" id="reactivate-modal">
-    <div class="modal" style="max-width:420px;">
-        <div class="modal-header">
-            <div class="modal-title" style="color:#1f9d69;">Reactivate Account</div>
-            <button class="modal-close" onclick="closeModal('reactivate-modal')">&#x2715;</button>
-        </div>
-        <div class="modal-body">
-            <div class="reactivate-info">
-                Reactivating this account will allow the tenant to log back into the mobile app.
-                Their account status will be set to <strong>Active</strong>.
-            </div>
-            <p style="font-size:.9rem;color:var(--ink-muted);margin:0;">
-                Reactivate account for <strong id="reactivate-name" style="color:var(--ink);"></strong>?
-            </p>
-        </div>
-        <form method="POST" id="reactivate-form" action="" data-loading-message="Reactivating account..." style="display:contents;">
-            @csrf
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModal('reactivate-modal')">Cancel</button>
-                <button type="submit" class="btn-reactivate">Reactivate</button>
             </div>
         </form>
     </div>
@@ -1068,11 +967,11 @@ tbody tr.row-inactive:hover { background: #fff0f0; }
 
 @section('scripts')
 <script>
-const tenants = @json($tenants);
-const PER_PAGE = 8;
-let currentPage = 1;
-let filtered = [];
-let currentTenant = null;
+var tenants = @json($tenants);
+var PER_PAGE = 8;
+var currentPage = 1;
+var filtered = [];
+var currentTenant = null;
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1119,12 +1018,6 @@ function updateStatusDot(select) {
     dot.style.background = colors[select.value] || '#ccc';
 }
 
-function toggleDeactivatedBanner(status) {
-    var banner = document.getElementById('edit-deactivated-banner');
-    if (!banner) return;
-    banner.style.display = status === 'inactive' ? 'flex' : 'none';
-}
-
 function statusBadge(status) {
     var map = {
         active:   '<span class="badge badge-active">Active</span>',
@@ -1139,13 +1032,13 @@ function tempBadge(isTemp) {
     return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
 }
 
-function deactivatedBadge() {
-    return '<span class="badge-deactivated">&#x26D4; Deactivated</span>';
-}
-
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function escapeJs(str) {
+    return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 function renderTable() {
@@ -1157,33 +1050,22 @@ function renderTable() {
     } else {
         tbody.innerHTML = pageData.map(function(t) {
             var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-            var isInactive = t.status === 'inactive';
-            var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' +
-                (t.is_temp_password ? tempBadge(true) : '') +
-                (isInactive ? deactivatedBadge() : '') +
-                '</div>';
-
-            var reactivateBtn = isInactive
-                ? '<button class="act-btn act-btn-reactivate" title="Reactivate Account" onclick="openReactivateModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')">' +
-                  '<img src="{{ asset('icons/tenants.png') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(37%) sepia(72%) saturate(550%) hue-rotate(107deg) brightness(95%) contrast(92%);" alt="Reactivate"></button>'
-                : '';
-
-            return '<tr class="' + (isInactive ? 'row-inactive' : '') + '">' +
-                '<td>' + (t.account_id || '\u2014') + '</td>' +
-                '<td>' + nameCell + '</td>' +
-                '<td>' + floorRoom + '</td>' +
-                '<td>' + fmtDate(t.move_in_date) + '</td>' +
-                '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>' +
-                '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td>' + statusBadge(t.status) + '</td>' +
-                '<td><div class="action-group">' +
-                    '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>' +
-                    '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>' +
-                    reactivateBtn +
-                    '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>' +
-                    '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>' +
-                '</div></td>' +
-            '</tr>';
+            var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
+            return '<tr>'
+                + '<td>' + (t.account_id || '\u2014') + '</td>'
+                + '<td>' + nameCell + '</td>'
+                + '<td>' + floorRoom + '</td>'
+                + '<td>' + fmtDate(t.move_in_date) + '</td>'
+                + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
+                + '<td>' + (t.contact_number || '\u2014') + '</td>'
+                + '<td>' + statusBadge(t.status) + '</td>'
+                + '<td><div class="action-group">'
+                    + '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
+                    + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
+                    + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
+                    + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
+                + '</div></td>'
+                + '</tr>';
         }).join('');
     }
     var total = filtered.length;
@@ -1191,10 +1073,6 @@ function renderTable() {
     var to    = Math.min(start + PER_PAGE, total);
     document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
     renderPagination();
-}
-
-function escapeJs(str) {
-    return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 function renderPagination() {
@@ -1226,7 +1104,7 @@ function applyFilters() {
     var status = document.getElementById('status-filter').value;
 
     filtered = tenants.filter(function(t) {
-        if (t.status === 'move_out') return false;
+        if (t.status === 'inactive' || t.status === 'move_out') return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
             (t.account_id  || '').toLowerCase().indexOf(q) !== -1 ||
@@ -1251,34 +1129,17 @@ function applyFilters() {
 function viewTenant(t) {
     currentTenant = t;
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-    var deactivatedBanner = t.status === 'inactive'
-        ? '<div class="modal-deactivated-banner"><span style="font-size:1.1rem;flex-shrink:0;">&#x26D4;</span><span>This account is <strong>deactivated</strong>. The tenant cannot log in to the mobile app.</span></div>'
-        : '';
     document.getElementById('view-content').innerHTML =
-        deactivatedBanner +
-        '<div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">' + (t.account_id || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + t.email + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Floor &amp; Room No.</span><span class="view-val">' + floorRoom + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>' +
-        '<div class="view-row"><span class="view-label">Password Status</span><span class="view-val">' + (t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant') + '</span></div>';
-
-    var footer = document.getElementById('view-footer');
-    if (t.status === 'inactive') {
-        footer.innerHTML =
-            '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>' +
-            '<button class="btn-reactivate" onclick="closeModal(\'view-modal\'); setTimeout(function(){ openReactivateModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\'); }, 200);">Reactivate Account</button>' +
-            '<button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>';
-    } else {
-        footer.innerHTML =
-            '<button class="btn-cancel" onclick="closeModal(\'view-modal\')">Close</button>' +
-            '<button class="btn-submit" id="view-edit-btn" onclick="switchToEdit()">Edit</button>';
-    }
-
+        '<div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">' + (t.account_id || '\u2014') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + t.email + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Floor &amp; Room No.</span><span class="view-val">' + floorRoom + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Password Status</span><span class="view-val">' + (t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant') + '</span></div>';
     openModal('view-modal');
 }
 
@@ -1291,7 +1152,7 @@ function switchToEdit() {
 
 function openEditModal(t) {
     currentTenant = t;
-    document.getElementById('edit-form').action        = '/tenants/' + t.tenant_id;
+    document.getElementById('edit-form').action       = '/tenants/' + t.tenant_id;
     document.getElementById('edit-first-name').value  = t.first_name || '';
     document.getElementById('edit-last-name').value   = t.last_name  || '';
     document.getElementById('edit-email').value       = t.email      || '';
@@ -1303,14 +1164,7 @@ function openEditModal(t) {
     document.getElementById('edit-contact').value     = t.contact_number || '';
     document.getElementById('edit-status').value      = t.status || 'pending';
     updateStatusDot(document.getElementById('edit-status'));
-    toggleDeactivatedBanner(t.status || 'pending');
     openModal('edit-modal');
-}
-
-function openReactivateModal(id, name) {
-    document.getElementById('reactivate-name').textContent = name;
-    document.getElementById('reactivate-form').action = '/tenants/' + id + '/reactivate';
-    openModal('reactivate-modal');
 }
 
 function openResetModal(id, name) {
@@ -1364,13 +1218,13 @@ function copyText(elementId, btn) {
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
 
-filtered = tenants.filter(function(t) { return t.status !== 'move_out'; });
+filtered = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
 renderTable();
 
-const deletedTenantArchive  = @json($deletedArchive);
-const inactiveTenantArchive = @json($inactiveArchive);
-const moveoutTenantArchive  = @json($moveoutArchive);
-let tenantArchiveTab = 'deleted';
+var deletedTenantArchive  = @json($deletedArchive);
+var inactiveTenantArchive = @json($inactiveArchive);
+var moveoutTenantArchive  = @json($moveoutArchive);
+var tenantArchiveTab = 'deleted';
 
 function fmtDatePlain(d) {
     if (!d) return '\u2014';
@@ -1437,24 +1291,20 @@ function renderTenantArchive() {
     list.innerHTML = data.map(function(r, i) {
         var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">'+r.floor+'-'+r.room_number+'</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">'+r.room_number+'</span>' : '');
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">'+r.stay_type+'</span>' : '';
-
-        var reactivateSection = '';
-        if (tenantArchiveTab === 'inactive' && r.id) {
-            reactivateSection = '<div class="tad-card-archived-row">' +
-                '<div class="tad-card-archived" style="margin:0;padding:0;border:none;">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>' +
-                '<button class="tad-reactivate-btn" onclick="closeTenantArchive(); setTimeout(function(){ openReactivateModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\'); }, 350);">Reactivate</button>' +
-            '</div>';
-        } else {
-            reactivateSection = '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>';
-        }
-
-        return '<div class="tad-card" style="animation-delay:' + (i*0.04) + 's;">' +
-            '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id||'\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>' +
-            '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>' +
-            '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>' +
-            '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status||'\u2014') + '</span></div>' +
-            reactivateSection +
-        '</div>';
+        var reactivateForm = tenantArchiveTab === 'inactive' && r.id
+            ? '<form method="POST" action="/tenants/' + r.id + '/reactivate" style="margin-top:.75rem;" onsubmit="this.querySelector(\'button\').disabled=true;showActionLoading(\'Reactivating account...\');">'
+                + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
+                + '</form>'
+            : '';
+        return '<div class="tad-card" style="animation-delay:' + (i*0.04) + 's;">'
+            + '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id||'\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>'
+            + '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
+            + '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>'
+            + '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status||'\u2014') + '</span></div>'
+            + '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>'
+            + reactivateForm
+            + '</div>';
     }).join('');
 }
 
@@ -1499,13 +1349,11 @@ function positionExportMenu(dropdown) {
     var btn  = dropdown.querySelector('button');
     var menu = getMenuForDropdown(dropdown.id);
     var rect = btn.getBoundingClientRect();
-
     if (!menu._movedToBody) {
         menu._sourceDropdownId = dropdown.id;
         document.body.appendChild(menu);
         menu._movedToBody = true;
     }
-
     menu.style.position = 'fixed';
     menu.style.zIndex   = '99999';
     menu.style.right    = (window.innerWidth - rect.right) + 'px';
@@ -1513,10 +1361,8 @@ function positionExportMenu(dropdown) {
     menu.style.minWidth = rect.width + 'px';
     menu.style.top    = 'auto';
     menu.style.bottom = 'auto';
-
     var menuHeight = menu.offsetHeight || 80;
     var spaceBelow = window.innerHeight - rect.bottom;
-
     if (spaceBelow >= menuHeight + 6) {
         menu.style.top    = (rect.bottom + 6) + 'px';
         menu.style.bottom = 'auto';
