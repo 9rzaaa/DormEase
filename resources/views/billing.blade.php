@@ -225,10 +225,8 @@
         flex-direction: column;
         gap: 0;
         transition: all .15s ease;
-    
         border-right: 2px solid #ff8fbc;
         border-bottom: 2px solid #ff8fbc;
-
         position: relative;
     }
 
@@ -279,26 +277,24 @@
     }
 
     .btn-update {
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
-    background: var(--gradient-pink);
-    border: none;
-    cursor: pointer;
-    transition: var(--ease);
-    flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(255,79,147,.18);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: var(--gradient-pink);
+        border: none;
+        cursor: pointer;
+        transition: var(--ease);
+        flex-shrink: 0;
+        box-shadow: 0 3px 10px rgba(255,79,147,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
 
     .btn-update img {
         width: 12px;
         height: 12px;
-
         filter: brightness(0) invert(1);
     }
 
@@ -306,6 +302,7 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 14px rgba(255,79,147,.28);
     }
+
     .tenants-list {
         display: flex;
         flex-direction: column;
@@ -918,7 +915,7 @@
         opacity: .9;
         transform: translateY(-1px);
     }
-    /* action loading overlay */
+
     .action-loading-overlay {
         position: fixed;
         inset: 0;
@@ -981,6 +978,21 @@
     .export-menu.open { display: block; }
     .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
     .export-menu button:hover { background: var(--pink-bg-soft, #fff5f8); color: var(--hot-pink); }
+
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+        flex-shrink: 0;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+        vertical-align: middle;
+        margin-right: 3px;
+    }
+
+    .um-tab.active .tab-icon,
+    .um-tab[style*="var(--bright-pink)"] .tab-icon {
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+    }
 </style>
 @endsection
 
@@ -1043,7 +1055,10 @@
                 </option>
             @endforeach
         </select>
-        <button class="btn-filter" onclick="applyMonthFilter()">≡ Filter</button>
+        <button class="btn-filter" onclick="applyMonthFilter()">
+            <img src="{{ asset('icons/filter.png') }}" alt="" style="width:14px;height:14px;filter:brightness(0) invert(1);flex-shrink:0;">
+            Filter
+        </button>
         <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
         <a href="{{ route('billing.history') }}" class="btn-outline">
             <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
@@ -1129,6 +1144,7 @@
         <span id="action-loading-text">Please wait...</span>
     </div>
 </div>
+
 <div class="modal-overlay" id="log-modal">
     <div class="modal" style="max-width:640px;">
 
@@ -1197,7 +1213,9 @@
     <div class="modal-top" style="padding:1.25rem 1.5rem 0;border-bottom:1.5px solid var(--border-pink-mid);">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:38px;height:38px;border-radius:10px;background:#fff0f6;display:flex;align-items:center;justify-content:center;color:var(--bright-pink);font-size:18px;">🏠</div>
+          <div style="width:38px;height:38px;border-radius:10px;background:#fff0f6;display:flex;align-items:center;justify-content:center;">
+            <img src="{{ asset('icons/bed.png') }}" alt="" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);">
+          </div>
           <div>
             <div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Update billing</div>
             <div id="um-room-title" style="font-size:16px;font-weight:700;color:var(--ink-deep);">Room —</div>
@@ -1208,9 +1226,18 @@
       </div>
 
       <div style="display:flex;gap:0;" role="tablist" id="um-tab-bar">
-        <button class="um-tab active" role="tab" onclick="umTab('readings',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid var(--bright-pink);cursor:pointer;font-size:12.5px;font-weight:700;color:var(--bright-pink);font-family:inherit;">📊 Readings</button>
-        <button class="um-tab" role="tab" onclick="umTab('payments',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;">💳 Payments</button>
-        <button class="um-tab" role="tab" onclick="umTab('proof',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;">🖼 Proof</button>
+        <button class="um-tab active" role="tab" onclick="umTab('readings',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid var(--bright-pink);cursor:pointer;font-size:12.5px;font-weight:700;color:var(--bright-pink);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/chart.png') }}" alt="" class="tab-icon">
+            Readings
+        </button>
+        <button class="um-tab" role="tab" onclick="umTab('payments',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/billing.png') }}" alt="" class="tab-icon" style="filter:brightness(0) saturate(100%) invert(50%);">
+            Payments
+        </button>
+        <button class="um-tab" role="tab" onclick="umTab('proof',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/attach.png') }}" alt="" class="tab-icon" style="filter:brightness(0) saturate(100%) invert(50%);">
+            Proof
+        </button>
       </div>
     </div>
 
@@ -1218,7 +1245,6 @@
       @csrf
       <div style="padding:1.25rem 1.5rem;max-height:420px;overflow-y:auto;">
 
-        <!-- READINGS TAB -->
         <div class="um-panel" id="um-tab-readings">
           <div style="display:flex;gap:8px;margin-bottom:14px;" id="um-stat-row">
             <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
@@ -1254,12 +1280,10 @@
           </div>
         </div>
 
-        <!-- PAYMENTS TAB -->
         <div class="um-panel" id="um-tab-payments" style="display:none;">
           <div id="um-tenant-statuses"></div>
         </div>
 
-        <!-- PROOF TAB -->
         <div class="um-panel" id="um-tab-proof" style="display:none;">
           <div id="um-proof-content"></div>
         </div>
@@ -1479,6 +1503,7 @@ function escapeHtml(value) {
         return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[char];
     });
 }
+
 
 function openUpdateModal(room) {
     let html = `
@@ -1763,14 +1788,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     : 'Failed to log billing. Please check your inputs.';
                 showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
-                hideActionLoading(); 
+                hideActionLoading();
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
             showToast('Network error — please try again.', 'error');
             resetButton(submitBtn, 'Log & Distribute');
-            hideActionLoading(); 
+            hideActionLoading();
         }
     });
 });
@@ -1955,28 +1980,33 @@ function umTab(name, btn) {
         b.style.borderBottomColor = 'transparent';
         b.style.color = 'var(--ink-soft)';
         b.style.fontWeight = '600';
+        const icon = b.querySelector('.tab-icon');
+        if (icon) icon.style.filter = 'brightness(0) saturate(100%) invert(50%)';
     });
     document.getElementById('um-tab-' + name).style.display = 'block';
     btn.style.borderBottomColor = 'var(--bright-pink)';
     btn.style.color = 'var(--bright-pink)';
     btn.style.fontWeight = '700';
+    const activeIcon = btn.querySelector('.tab-icon');
+    if (activeIcon) activeIcon.style.filter = 'brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%)';
 }
 
 function openUpdateModal(room) {
-    // Reset to first tab
     document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
     document.getElementById('um-tab-readings').style.display = 'block';
     document.querySelectorAll('.um-tab').forEach((b, i) => {
         b.style.borderBottomColor = i === 0 ? 'var(--bright-pink)' : 'transparent';
         b.style.color = i === 0 ? 'var(--bright-pink)' : 'var(--ink-soft)';
         b.style.fontWeight = i === 0 ? '700' : '600';
+        const icon = b.querySelector('.tab-icon');
+        if (icon) icon.style.filter = i === 0
+            ? 'brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%)'
+            : 'brightness(0) saturate(100%) invert(50%)';
     });
 
-    // Header
     document.getElementById('um-room-title').textContent = 'Room ' + room.room_number;
     document.getElementById('um-room-sub').textContent = 'Floor ' + room.floor + ' · ' + room.occupants_in_room + ' occupant' + (room.occupants_in_room !== 1 ? 's' : '');
 
-    // Readings
     document.getElementById('edit-prev').value = parseFloat(room.prev_reading ?? 0).toFixed(2);
     document.getElementById('edit-curr').value = parseFloat(room.curr_reading ?? 0).toFixed(2);
     document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
@@ -1985,13 +2015,15 @@ function openUpdateModal(room) {
     document.getElementById('um-disp-share').textContent = '₱' + parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2);
     recalcUpdateShare();
 
-    // Payments tab
     let paymentsHtml = '';
     room.tenants.forEach(function(t) {
         const initials = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
         const isPaid = t.payment_status === 'paid';
         const receiptBtn = isPaid && t.billing_id
-            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">⬇ Download receipt</a>`
+            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">
+                   <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
+                   Download receipt
+               </a>`
             : '';
         paymentsHtml += `
             <div style="border:1.5px solid var(--border-pink);border-radius:14px;overflow:hidden;margin-bottom:12px;">
@@ -2024,7 +2056,6 @@ function openUpdateModal(room) {
     });
     document.getElementById('um-tenant-statuses').innerHTML = paymentsHtml;
 
-    // Proof tab
     let proofHtml = '';
     room.tenants.forEach(function(t) {
         const refCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
