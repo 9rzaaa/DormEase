@@ -1005,7 +1005,7 @@
             mins = mins < 10 ? '0' + mins : mins;
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
             return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
-                + ' at ' + hours + ':' + mins + ' ' + ampm;
+                + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
         }
 
         function __showNextCritical() {
@@ -1015,78 +1015,55 @@
             var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
 
+            // Start beeping like panic banner
             if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
             __criticalBeep();
             __criticalBeepInterval = setInterval(__criticalBeep, 3000);
 
-            var banner = document.createElement('div');
-            banner.id = '__critical-banner-' + report.report_id;
-            banner.__reportId = report.report_id;
-            banner.style.cssText = [
-                'position:fixed',
-                'bottom:2rem',
-                'right:2rem',
-                'z-index:9000',
-                'width:360px',
-                'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
-                'border:2px solid ' + (isCritical ? '#ffc8d0' : '#ffd54f'),
-                'border-radius:14px',
-                'padding:1.2rem 1.2rem',
-                'box-shadow:0 8px 28px rgba(0,0,0,.22)',
-                'transform:translateX(400px)',
-                'transition:transform .35s cubic-bezier(.4,0,.2,1)',
-                'font-family:inherit',
-            ].join(';');
-
+            var accentColor  = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
+            var accentSolid  = isCritical ? '#c0303a' : '#c07800';
+            var emoji        = isCritical ? '&#9888;' : '&#9888;';
+            var label        = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
             var formattedTime = __formatTime12h(report.reported_at);
 
-            banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.75rem;">'
-                + '<div style="flex-shrink:0;width:40px;height:40px;border-radius:10px;background:'
-                + (isCritical ? '#ffc8d0' : '#ffd54f')
-                + ';display:flex;align-items:center;justify-content:center;">'
-                + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'
-                + (isCritical ? '#c0303a' : '#c07800')
-                + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
-                + '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>'
-                + '<line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
-                + '</svg></div>'
-                + '<div style="flex:1;min-width:0;">'
-                + '<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:'
-                + (isCritical ? '#c0303a' : '#c07800')
-                + ';margin-bottom:.25rem;">' + (isCritical ? '🚨 Critical Emergency' : '⚠️ Urgent Emergency') + '</div>'
-                + '<div style="font-size:.9rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.2rem;">'
-                + __criticalEscHtml(report.emergency_type) + '</div>'
-                + '<div style="font-size:.8rem;color:#7A3A55;font-weight:600;">' + __criticalEscHtml(report.location) + '</div>'
-                + '<div style="font-size:.72rem;color:#7A3A55;opacity:.8;margin-top:.3rem;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
-                + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="margin-top:.85rem;width:100%;padding:.55rem 0;border-radius:9px;border:none;background:'
-                + (isCritical ? 'linear-gradient(135deg,#ff2d78,#c0303a)' : 'linear-gradient(135deg,#f59e0b,#c07800)')
-                + ';color:#fff;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.02em;">'
-                + 'Acknowledge &amp; Dismiss</button>'
-                + '</div>'
+            // Full-screen overlay just like panic banner
+            var existing = document.getElementById('__critical-alert-overlay');
+            if (existing) existing.remove();
+
+            var overlay = document.createElement('div');
+            overlay.id = '__critical-alert-overlay';
+            overlay.__reportId = report.report_id;
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+
+            overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
+                + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">' + emoji + '</div>'
+                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + label + '</div>'
+                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __criticalEscHtml(report.emergency_type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __criticalEscHtml(report.location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
+                + '<button onclick="__dismissCritical()" style="background:#fff;color:' + accentSolid + ';border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
 
-            document.body.appendChild(banner);
-            requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    banner.style.transform = 'translateX(0)';
-                });
-            });
+            document.body.appendChild(overlay);
         }
 
-        window.__dismissCritical = function(id) {
-            var el = document.getElementById(id);
-            if (!el) return;
+        window.__dismissCritical = function() {
+            var overlay = document.getElementById('__critical-alert-overlay');
+            if (!overlay) return;
+
+            // Stop beeping
             if (__criticalBeepInterval) {
                 clearInterval(__criticalBeepInterval);
                 __criticalBeepInterval = null;
             }
-            sessionStorage.setItem('criticalDismissed_' + el.__reportId, '1');
-            el.style.transform = 'translateX(400px)';
-            setTimeout(function() {
-                if (el.parentNode) el.parentNode.removeChild(el);
-                __criticalActive = false;
-                __showNextCritical();
-            }, 380);
+
+            sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
+            overlay.remove();
+            __criticalActive = false;
+
+            // Show next queued alert if any
+            __showNextCritical();
         };
 
         function __pollCritical() {
