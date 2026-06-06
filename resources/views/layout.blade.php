@@ -965,11 +965,47 @@
         var __criticalSeen = new Set();
         var __criticalQueue = [];
         var __criticalActive = false;
+        var __criticalBeepInterval = null;
 
         function __criticalEscHtml(str) {
             return (str == null ? '' : String(str))
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function __criticalBeep() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function beep(freq, start, dur) {
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    o.frequency.value = freq;
+                    o.type = 'sine';
+                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
+                }
+                beep(880, 0, 0.18);
+                beep(880, 0.22, 0.18);
+                beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __formatTime12h(dateStr) {
+            if (!dateStr) return '';
+            var d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            var hours = d.getHours();
+            var mins = d.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            mins = mins < 10 ? '0' + mins : mins;
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                + ' at ' + hours + ':' + mins + ' ' + ampm;
         }
 
         function __showNextCritical() {
@@ -979,6 +1015,10 @@
             var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
 
+            if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
+            __criticalBeep();
+            __criticalBeepInterval = setInterval(__criticalBeep, 3000);
+
             var banner = document.createElement('div');
             banner.id = '__critical-banner-' + report.report_id;
             banner.__reportId = report.report_id;
@@ -987,22 +1027,24 @@
                 'bottom:2rem',
                 'right:2rem',
                 'z-index:9000',
-                'width:340px',
+                'width:360px',
                 'background:' + (isCritical ? '#fff0f0' : '#fff8e1'),
                 'border:2px solid ' + (isCritical ? '#ffc8d0' : '#ffd54f'),
                 'border-radius:14px',
-                'padding:1rem 1.1rem',
-                'box-shadow:0 8px 28px rgba(0,0,0,.18)',
-                'transform:translateX(380px)',
+                'padding:1.2rem 1.2rem',
+                'box-shadow:0 8px 28px rgba(0,0,0,.22)',
+                'transform:translateX(400px)',
                 'transition:transform .35s cubic-bezier(.4,0,.2,1)',
                 'font-family:inherit',
             ].join(';');
 
-            banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.7rem;">'
-                + '<div style="flex-shrink:0;width:36px;height:36px;border-radius:8px;background:'
+            var formattedTime = __formatTime12h(report.reported_at);
+
+            banner.innerHTML = '<div style="display:flex;align-items:flex-start;gap:.75rem;">'
+                + '<div style="flex-shrink:0;width:40px;height:40px;border-radius:10px;background:'
                 + (isCritical ? '#ffc8d0' : '#ffd54f')
                 + ';display:flex;align-items:center;justify-content:center;">'
-                + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="'
+                + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="'
                 + (isCritical ? '#c0303a' : '#c07800')
                 + '" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
                 + '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>'
@@ -1011,13 +1053,16 @@
                 + '<div style="flex:1;min-width:0;">'
                 + '<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:'
                 + (isCritical ? '#c0303a' : '#c07800')
-                + ';margin-bottom:.2rem;">' + (isCritical ? 'Critical' : 'Urgent') + ' Emergency</div>'
-                + '<div style="font-size:.85rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.15rem;">'
+                + ';margin-bottom:.25rem;">' + (isCritical ? '🚨 Critical Emergency' : '⚠️ Urgent Emergency') + '</div>'
+                + '<div style="font-size:.9rem;font-weight:700;color:#2D0A1A;line-height:1.3;margin-bottom:.2rem;">'
                 + __criticalEscHtml(report.emergency_type) + '</div>'
-                + '<div style="font-size:.78rem;color:#7A3A55;">' + __criticalEscHtml(report.location) + '</div>'
-                + '<div style="font-size:.7rem;color:#7A3A55;opacity:.75;margin-top:.25rem;">Reported: ' + __criticalEscHtml(report.reported_at || '') + '</div>'
+                + '<div style="font-size:.8rem;color:#7A3A55;font-weight:600;">' + __criticalEscHtml(report.location) + '</div>'
+                + '<div style="font-size:.72rem;color:#7A3A55;opacity:.8;margin-top:.3rem;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
+                + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="margin-top:.85rem;width:100%;padding:.55rem 0;border-radius:9px;border:none;background:'
+                + (isCritical ? 'linear-gradient(135deg,#ff2d78,#c0303a)' : 'linear-gradient(135deg,#f59e0b,#c07800)')
+                + ';color:#fff;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.02em;">'
+                + 'Acknowledge &amp; Dismiss</button>'
                 + '</div>'
-                + '<button onclick="__dismissCritical(\'' + banner.id + '\')" style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer;color:#7A3A55;font-size:1rem;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;">&#x2715;</button>'
                 + '</div>';
 
             document.body.appendChild(banner);
@@ -1026,17 +1071,17 @@
                     banner.style.transform = 'translateX(0)';
                 });
             });
-
-            var timer = setTimeout(function() { __dismissCritical(banner.id); }, 8000);
-            banner.__dismissTimer = timer;
         }
 
         window.__dismissCritical = function(id) {
             var el = document.getElementById(id);
             if (!el) return;
-            clearTimeout(el.__dismissTimer);
+            if (__criticalBeepInterval) {
+                clearInterval(__criticalBeepInterval);
+                __criticalBeepInterval = null;
+            }
             sessionStorage.setItem('criticalDismissed_' + el.__reportId, '1');
-            el.style.transform = 'translateX(380px)';
+            el.style.transform = 'translateX(400px)';
             setTimeout(function() {
                 if (el.parentNode) el.parentNode.removeChild(el);
                 __criticalActive = false;
@@ -1053,10 +1098,8 @@
                 (data.reports || []).forEach(function(r) {
                     if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
                         __criticalSeen.add(r.report_id);
-                        if (__criticalSeen.size > 1) {
-                            __criticalQueue.push(r);
-                            __showNextCritical();
-                        }
+                        __criticalQueue.push(r);
+                        __showNextCritical();
                     }
                 });
             })
