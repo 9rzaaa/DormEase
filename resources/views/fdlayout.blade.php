@@ -624,9 +624,6 @@
                                         };
                                     @endphp
 
-                                    {{-- ✅ FIX: data is stored as JSON in data-notif attribute --}}
-                                    {{-- This avoids quote-breaking and special-character issues  --}}
-                                    {{-- that occurred when building a JS object literal inline.  --}}
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
                                          onclick="openNotifDetail(this)"
                                          data-notif='{!! json_encode([
@@ -887,7 +884,7 @@
         general:      'General',
     };
 
-
+    window.openNotifDetail = function(elOrNotif) {
         var notif;
 
         if (elOrNotif && typeof elOrNotif === 'object' && !elOrNotif.nodeType) {
@@ -966,7 +963,7 @@
         }
 
         openModal('notif-detail-modal');
-    };
+    };  
 
     window.closeNotifDetail = function() {
         closeModal('notif-detail-modal');
@@ -980,11 +977,6 @@
                 'Accept': 'application/json',
             }
         }).then(function() { location.reload(); });
-    }
-
-    function closeTempPwModal() {
-        var m = document.getElementById('temp-pw-modal');
-        if (m) m.classList.remove('open');
     }
 
     function toggleTmpPw(inputId, btn) {
