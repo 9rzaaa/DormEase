@@ -137,7 +137,7 @@
 
         .content-col .card,
         .right-col .card {
-        border-color: var(--baby-pink);
+            border-color: var(--baby-pink);
         }
 
         .logout-btn {
@@ -398,6 +398,7 @@
         }
         .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
+        /* ── Notification Detail Modal ── */
         .notif-detail-modal { max-width: 520px; }
 
         .notif-detail-type-badge {
@@ -456,7 +457,7 @@
         .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
         .toast {
-            position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
             background: var(--ink); color: var(--white);
             padding: .85rem 1.4rem; border-radius: 12px;
             font-size: .87rem; font-weight: 600;
@@ -565,7 +566,6 @@
     </nav>
 
     <div class="sidebar-logout">
-        <form method="POST" action="/logout" id="logout-form">@csrf</form>
         <button class="logout-btn" onclick="openModal('logout-modal')">
             <span class="nav-icon">
                 <img src="{{ asset('icons/logout.png') }}" alt="Logout">
@@ -608,19 +608,19 @@
                                     @php
                                         $notifIcon = match($notif->type) {
                                             'visitor_registration' => 'nav-visit',
-                                            'emergency_new'    => 'warn',
-                                            'visitor_checkin'  => 'nav-visit',
-                                            'visitor_checkout' => 'nav-visit',
-                                            'announcement_new' => 'nav-announ',
-                                            default            => 'bell',
+                                            'emergency_new'        => 'warn',
+                                            'visitor_checkin'      => 'nav-visit',
+                                            'visitor_checkout'     => 'nav-visit',
+                                            'announcement_new'     => 'nav-announ',
+                                            default                => 'bell',
                                         };
                                         $notifTypeLabel = match($notif->type) {
                                             'visitor_registration' => 'visitor',
-                                            'emergency_new'    => 'emergency',
-                                            'visitor_checkin'  => 'visitor',
-                                            'visitor_checkout' => 'visitor',
-                                            'announcement_new' => 'announcement',
-                                            default            => 'general',
+                                            'emergency_new'        => 'emergency',
+                                            'visitor_checkin'      => 'visitor',
+                                            'visitor_checkout'     => 'visitor',
+                                            'announcement_new'     => 'announcement',
+                                            default                => 'general',
                                         };
                                     @endphp
 
@@ -816,16 +816,16 @@
                 </div>
                 <div id="tmp-strength-label" style="font-size:.67rem;color:var(--ink-muted);margin-top:.2rem;"></div>
                 <div id="tmp-pw-requirements" style="margin-top:.6rem;display:flex;flex-direction:column;gap:.25rem;">
-                    <div class="tmp-pw-req" id="tmp-preq-length" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                    <div id="tmp-preq-length" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
                         <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-length"></span>At least 8 characters
                     </div>
-                    <div class="tmp-pw-req" id="tmp-preq-upper" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                    <div id="tmp-preq-upper" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
                         <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-upper"></span>One uppercase letter
                     </div>
-                    <div class="tmp-pw-req" id="tmp-preq-number" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                    <div id="tmp-preq-number" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
                         <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-number"></span>One number
                     </div>
-                    <div class="tmp-pw-req" id="tmp-preq-special" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
+                    <div id="tmp-preq-special" style="display:flex;align-items:center;gap:.4rem;font-size:.69rem;color:var(--ink-muted);font-weight:500;transition:color .25s;">
                         <span style="width:6px;height:6px;border-radius:50%;background:var(--pink-100);flex-shrink:0;transition:background .25s;display:inline-block;" id="tmp-dot-special"></span>One special character
                     </div>
                 </div>
@@ -857,6 +857,8 @@
 
 <div class="toast" id="toast"></div>
 
+<form method="POST" action="/logout" id="logout-form" style="display:none;">@csrf</form>
+
 <script>
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -874,7 +876,7 @@
         setTimeout(function() { t.classList.remove('show'); }, 3200);
     }
 
-    var typeLabels = {
+    var __typeLabels = {
         maintenance:  'Maintenance',
         emergency:    'Emergency',
         billing:      'Billing',
@@ -884,26 +886,29 @@
         general:      'General',
     };
 
-    window.openNotifDetail = function(elOrNotif) {
+    window.openNotifDetail = function(source) {
         var notif;
 
-        if (elOrNotif && typeof elOrNotif === 'object' && !elOrNotif.nodeType) {
-            notif = elOrNotif;
-        } else {
+        if (source && source.nodeType) {
             try {
-                notif = JSON.parse(elOrNotif.dataset.notif);
+                notif = JSON.parse(source.dataset.notif);
             } catch (e) {
                 console.error('openNotifDetail: failed to parse data-notif', e);
                 openModal('notif-detail-modal');
                 return;
             }
+        } else if (source && typeof source === 'object') {
+            notif = source;
+        } else {
+            console.error('openNotifDetail: unexpected argument', source);
+            return;
         }
 
         try {
             var badge = document.getElementById('notif-detail-badge');
             if (badge) {
-                badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
-                badge.textContent = typeLabels[notif.type] || 'General';
+                badge.className   = 'notif-detail-type-badge ' + (notif.type || 'general');
+                badge.textContent = __typeLabels[notif.type] || 'General';
             }
 
             var icon = document.getElementById('notif-detail-icon');
@@ -928,16 +933,16 @@
             var urlRow  = document.getElementById('notif-detail-url-row');
             var viewBtn = document.getElementById('notif-detail-view-btn');
             if (notif.url) {
-                if (urlRow) urlRow.style.display = 'flex';
+                if (urlRow)  urlRow.style.display = 'flex';
                 var urlText = document.getElementById('notif-detail-url-text');
-                if (urlText) urlText.textContent = notif.url;
+                if (urlText) urlText.textContent  = notif.url;
                 if (viewBtn) { viewBtn.style.display = 'inline-flex'; viewBtn.href = notif.url; }
             } else {
-                if (urlRow) urlRow.style.display = 'none';
-                if (viewBtn) viewBtn.style.display = 'none';
+                if (urlRow)  urlRow.style.display  = 'none';
+                if (viewBtn) viewBtn.style.display  = 'none';
             }
 
-            if (!notif.isRead) {
+            if (!notif.isRead && notif.id) {
                 fetch('/notifications/' + notif.id + '/read', {
                     method: 'POST',
                     headers: {
@@ -948,22 +953,23 @@
                     var b = document.getElementById('notif-badge');
                     if (b) {
                         var current = parseInt(b.textContent) || 0;
-                        if (current <= 1) b.remove();
-                        else b.textContent = current - 1;
+                        if (current <= 1) { b.remove(); }
+                        else              { b.textContent = current - 1; }
                     }
-                    if (elOrNotif && elOrNotif.nodeType) {
-                        elOrNotif.classList.remove('unread');
-                        var dot = elOrNotif.querySelector('.notif-unread-dot');
+                    /* If source was a DOM element, update its visual state */
+                    if (source && source.nodeType) {
+                        source.classList.remove('unread');
+                        var dot = source.querySelector('.notif-unread-dot');
                         if (dot) dot.style.background = 'transparent';
                     }
-                });
+                }).catch(function() {});
             }
         } catch (e) {
             console.error('openNotifDetail: error populating modal', e);
         }
 
         openModal('notif-detail-modal');
-    };  
+    };
 
     window.closeNotifDetail = function() {
         closeModal('notif-detail-modal');
@@ -988,12 +994,15 @@
     function checkTmpStrength(val) {
         var fill  = document.getElementById('tmp-strength-fill');
         var label = document.getElementById('tmp-strength-label');
+        if (!fill || !label) return;
         if (!val) {
-            fill.style.width = '0%';
+            fill.style.width  = '0%';
             label.textContent = '';
-            [['tmp-preq-length','tmp-dot-length'],['tmp-preq-upper','tmp-dot-upper'],['tmp-preq-number','tmp-dot-number'],['tmp-preq-special','tmp-dot-special']].forEach(function(p) {
-                document.getElementById(p[0]).style.color = 'var(--ink-muted)';
-                document.getElementById(p[1]).style.background = 'var(--pink-100)';
+            [['tmp-preq-length','tmp-dot-length'],['tmp-preq-upper','tmp-dot-upper'],
+             ['tmp-preq-number','tmp-dot-number'],['tmp-preq-special','tmp-dot-special']].forEach(function(p) {
+                var r = document.getElementById(p[0]); var d = document.getElementById(p[1]);
+                if (r) r.style.color = 'var(--ink-muted)';
+                if (d) d.style.background = 'var(--pink-100)';
             });
             return;
         }
@@ -1015,8 +1024,9 @@
         label.style.color     = lvl.color;
 
         function toggle(reqId, dotId, met) {
-            document.getElementById(reqId).style.color = met ? '#16a34a' : 'var(--ink-muted)';
-            document.getElementById(dotId).style.background = met ? '#16a34a' : 'var(--pink-100)';
+            var r = document.getElementById(reqId); var d = document.getElementById(dotId);
+            if (r) r.style.color = met ? '#16a34a' : 'var(--ink-muted)';
+            if (d) d.style.background = met ? '#16a34a' : 'var(--pink-100)';
         }
         toggle('tmp-preq-length',  'tmp-dot-length',  val.length >= 8);
         toggle('tmp-preq-upper',   'tmp-dot-upper',   /[A-Z]/.test(val));
@@ -1024,9 +1034,23 @@
         toggle('tmp-preq-special', 'tmp-dot-special', /[^A-Za-z0-9]/.test(val));
     }
 
+    function dismissTempPassword() {
+        fetch('{{ route('fdprofile.dismissTempPassword') }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        }).then(function() {
+            var m = document.getElementById('temp-pw-modal');
+            if (m) m.classList.remove('open');
+        });
+    }
+
+    /* ── Session flash toasts ── */
     @if(session('error') && session('prompt_temp_password'))
         document.addEventListener('DOMContentLoaded', function() {
-            showToast('{{ session("error") }}', 'error');
+            showToast('{{ addslashes(session("error")) }}', 'error');
             var m = document.getElementById('temp-pw-modal');
             if (m) m.classList.add('open');
         });
@@ -1034,7 +1058,7 @@
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', function() {
-            showToast('{{ session("success") }}', 'success');
+            showToast('{{ addslashes(session("success")) }}', 'success');
         });
     @endif
 </script>
@@ -1050,24 +1074,22 @@
 
         function __escHtml(str) {
             return (str == null ? '' : String(str))
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
         }
 
         function __buildPanicAudio() {
             try {
                 var ctx = new (window.AudioContext || window.webkitAudioContext)();
                 function beep(freq, start, dur) {
-                    var o = ctx.createOscillator();
-                    var g = ctx.createGain();
+                    var o = ctx.createOscillator(); var g = ctx.createGain();
                     o.connect(g); g.connect(ctx.destination);
                     o.frequency.value = freq; o.type = 'sine';
                     g.gain.setValueAtTime(0.4, ctx.currentTime + start);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-                    o.start(ctx.currentTime + start);
-                    o.stop(ctx.currentTime + start + dur + 0.05);
+                    o.start(ctx.currentTime + start); o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+                beep(880,0,0.18); beep(880,0.22,0.18); beep(1100,0.44,0.28);
             } catch(e) {}
         }
 
@@ -1094,10 +1116,7 @@
         window.__dismissPanic = function() {
             var banner = document.getElementById('__panic-alert-banner');
             if (banner) banner.remove();
-            if (__panicBeepInterval) {
-                clearInterval(__panicBeepInterval);
-                __panicBeepInterval = null;
-            }
+            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
             sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
         };
 
@@ -1111,14 +1130,14 @@
             var csrfMeta = document.querySelector('meta[name="csrf-token"]');
             fetch('{{ url("/emergency/poll-panic") }}', {
                 headers: { 'X-CSRF-TOKEN': csrfMeta ? csrfMeta.content : '' }
-            }).then(function(res) { return res.json(); }).then(function(data) {
+            }).then(function(res){ return res.json(); }).then(function(data) {
                 if (data.has_panic && data.report_id !== __panicLastId && !sessionStorage.getItem('panicDismissed_' + data.report_id)) {
                     __panicLastId = data.report_id;
                     __buildPanicAudio();
                     __showPanicBanner(data.type, data.location, data.reported_at);
                     __fireBrowserNotification(data.type, data.location);
                 }
-            }).catch(function() {});
+            }).catch(function(){});
         }
 
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
@@ -1128,6 +1147,7 @@
         setInterval(__pollPanic, 15000);
     })();
 
+    /* ── Critical emergency toast polling ── */
     (function() {
         var __criticalSeen = new Set();
         var __criticalQueue = [];
@@ -1135,17 +1155,17 @@
 
         function __criticalEscHtml(str) {
             return (str == null ? '' : String(str))
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
         }
 
         function __showNextCritical() {
             if (__criticalActive || __criticalQueue.length === 0) return;
             __criticalActive = true;
-            var report = __criticalQueue.shift();
+            var report     = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
-            var banner = document.createElement('div');
-            banner.id = '__critical-banner-' + report.report_id;
+            var banner     = document.createElement('div');
+            banner.id      = '__critical-banner-' + report.report_id;
             banner.__reportId = report.report_id;
             banner.style.cssText = [
                 'position:fixed','bottom:2rem','right:2rem','z-index:9000','width:340px',
@@ -1202,7 +1222,7 @@
             fetch('{{ url("/emergency/poll-critical") }}', {
                 headers: { 'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '' }
             })
-            .then(function(res) { return res.json(); })
+            .then(function(res){ return res.json(); })
             .then(function(data) {
                 (data.reports || []).forEach(function(r) {
                     if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
@@ -1213,25 +1233,13 @@
                         }
                     }
                 });
-            }).catch(function() {});
+            }).catch(function(){});
         }
 
-    __pollCritical();
+        __pollCritical();
         setInterval(__pollCritical, 15000);
     })();
-
-    function dismissTempPassword() {
-        fetch('{{ route('fdprofile.dismissTempPassword') }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
-        }).then(function() {
-            var m = document.getElementById('temp-pw-modal');
-            if (m) m.classList.remove('open');
-        });
-    }
 </script>
+
 </body>
 </html>
