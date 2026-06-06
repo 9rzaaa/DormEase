@@ -1235,7 +1235,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="dir-modal">
+<div class="modal-overlay" id="dir-modal" onclick="handleOverlayClick(event, 'dir-modal')">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">
@@ -1278,7 +1278,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="report-modal">
+<div class="modal-overlay" id="report-modal" onclick="handleOverlayClick(event, 'report-modal')">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
             <div class="modal-title">Report Emergency</div>
@@ -1321,7 +1321,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
+<div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
             <div class="modal-title">Emergency Details</div>
@@ -1335,7 +1335,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="edit-modal">
+<div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event, 'edit-modal')">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
             <div class="modal-title">Update Emergency Report</div>
@@ -1380,7 +1380,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
+<div class="modal-overlay" id="delete-modal" onclick="handleOverlayClick(event, 'delete-modal')">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
             <div class="modal-title">Delete Report</div>
