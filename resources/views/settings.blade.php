@@ -268,7 +268,7 @@
         .field-grid { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
     }
-    /* ── action loading overlay ── */
+
     .action-loading-overlay {
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;

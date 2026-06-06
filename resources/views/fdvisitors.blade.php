@@ -394,7 +394,6 @@
         .archive-search-bar { padding: .8rem 1rem .6rem; }
         .archive-footer { padding: .75rem 1rem; }
     }
-        /* ── Action Loading Overlay ── */
     .action-loading-overlay {
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;
