@@ -616,6 +616,36 @@
         flex-shrink: 0;
     }
 
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--baby-pink); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--baby-pink); border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
     .fade-up { animation: fdFadeUp .45s ease both; }
     @keyframes fdFadeUp {
         from { opacity: 0; transform: translateY(12px); }
@@ -997,34 +1027,18 @@
         cursor: pointer; transition: background .15s, border-color .15s, color .15s; white-space: nowrap;
     }
 
-#dir-modal .modal {
-    display: flex;
-    flex-direction: column;
-    max-height: 92vh;
-    overflow: hidden;
-}
+    #dir-modal .modal {
+        display: flex;
+        flex-direction: column;
+        max-height: 92vh;
+        overflow: hidden;
+    }
 
-#dir-modal .modal-header {
-    flex-shrink: 0;
-}
-
-#dir-modal .dir-tabs {
-    flex-shrink: 0;
-}
-
-#dir-modal .dir-search-bar {
-    flex-shrink: 0;
-}
-
-#dir-modal .dir-list {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-}
-
-#dir-modal .modal-actions {
-    flex-shrink: 0;
-}
+    #dir-modal .modal-header { flex-shrink: 0; }
+    #dir-modal .dir-tabs { flex-shrink: 0; }
+    #dir-modal .dir-search-bar { flex-shrink: 0; }
+    #dir-modal .dir-list { flex: 1; overflow-y: auto; min-height: 0; }
+    #dir-modal .modal-actions { flex-shrink: 0; }
 
     .dir-suggested-chip .chip-icon { width: 14px; height: 14px; object-fit: contain; flex-shrink: 0; }
     .dir-suggested-chip:hover .chip-icon { filter: brightness(0) invert(1); }
@@ -1189,6 +1203,15 @@
 
 @section('modals')
 
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
@@ -1238,9 +1261,7 @@
 <div class="modal-overlay" id="dir-modal" onclick="handleOverlayClick(event, 'dir-modal')">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
-            <div class="modal-title">
-                Emergency Directory
-            </div>
+            <div class="modal-title">Emergency Directory</div>
             <button class="modal-close" onclick="closeModal('dir-modal')">&#x2715;</button>
         </div>
 
@@ -1413,6 +1434,19 @@
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        const overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
 
     const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
 
@@ -1732,11 +1766,9 @@
                 ? `<div class="panic-banner"><img src="{{ asset('icons/warning.png') }}" alt=""> This is a Panic Alert</div>`
                 : ''}
             ${buildSuggestedHotlines(r.emergency_type, r.urgency_level, r.is_panic_alert)}
-
             <div class="modal-section">
                 <div class="modal-section-title">Report Information</div>
                 <div class="view-detail-grid">
-
                     <div class="view-detail-item">
                         <div class="vdi-label">Emergency Type</div>
                         <div class="vdi-val">${escHtml(r.emergency_type ?? '—')}</div>
@@ -1745,7 +1777,6 @@
                         <div class="vdi-label">Urgency Level</div>
                         <div class="vdi-val">${urgencyBadge(r.urgency_level)}</div>
                     </div>
-
                     <div class="view-detail-item">
                         <div class="vdi-label">Status</div>
                         <div class="vdi-val">${statusBadge(r.status)}</div>
@@ -1754,7 +1785,6 @@
                         <div class="vdi-label">Location</div>
                         <div class="vdi-val">${escHtml(r.location ?? '—')}</div>
                     </div>
-
                     <div class="view-detail-item">
                         <div class="vdi-label">Reported By</div>
                         <div class="vdi-val">${reportedBy}</div>
@@ -1763,23 +1793,19 @@
                         <div class="vdi-label">Date Reported</div>
                         <div class="vdi-val">${fmtDate(r.reported_at)}</div>
                     </div>
-
                     <div class="view-detail-item full">
                         <div class="vdi-label">Date Resolved</div>
                         <div class="vdi-val ${!r.resolved_at ? 'muted' : ''}">${r.resolved_at ? fmtDate(r.resolved_at) : '—'}</div>
                     </div>
-
                     <div class="view-detail-item full">
                         <div class="vdi-label">Description</div>
                         <div class="vdi-val" style="white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
                     </div>
-
                     ${r.admin_notes ? `
                     <div class="view-detail-item full">
                         <div class="vdi-label">Frontdesk Notes</div>
                         <div class="vdi-val" style="white-space:pre-wrap;">${escHtml(r.admin_notes)}</div>
                     </div>` : ''}
-
                 </div>
             </div>
         `;
@@ -1813,6 +1839,7 @@
         const btn = document.querySelector('#edit-modal .btn-submit');
         btn.disabled    = true;
         btn.textContent = 'Saving...';
+        showActionLoading('Updating report...');
 
         try {
             const res = await fetch(`/frontdesk/emergency/${currentRep.report_id}`, {
@@ -1839,10 +1866,11 @@
             }
         } catch {
             showToast('Network error.', 'error');
+        } finally {
+            hideActionLoading();
+            btn.disabled    = false;
+            btn.textContent = 'Save Changes';
         }
-
-        btn.disabled    = false;
-        btn.textContent = 'Save Changes';
     }
 
     function openDeleteModal(id, type) {
@@ -1856,6 +1884,7 @@
         const btn = document.querySelector('#delete-modal .btn-submit');
         btn.disabled    = true;
         btn.textContent = 'Deleting...';
+        showActionLoading('Deleting report...');
 
         try {
             const res = await fetch(`/frontdesk/emergency/${deleteId}`, {
@@ -1877,10 +1906,11 @@
             }
         } catch {
             showToast('Network error.', 'error');
+        } finally {
+            hideActionLoading();
+            btn.disabled    = false;
+            btn.textContent = 'Delete';
         }
-
-        btn.disabled    = false;
-        btn.textContent = 'Delete';
     }
 
     function openArchive() {
