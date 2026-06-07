@@ -18,7 +18,7 @@ class BillingHistoryController extends Controller
         $search         = $request->get('search', '');
         $perPage        = 6;
 
-        $allTenants = Tenant::where('is_active', true)
+        $allTenants = Tenant::where('status', 'active')
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')

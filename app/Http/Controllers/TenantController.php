@@ -339,6 +339,13 @@ class TenantController extends Controller
             ], 401);
         }
 
+        if ($tenant->status === 'pending') {
+            return response()->json([
+                'error'   => 'account_pending',
+                'message' => 'Your account is pending activation. Please visit the admin office to complete your registration.',
+            ], 403);
+        }
+        
         if (!$tenant->is_active) {
             return response()->json([
                 'error'   => 'account_deactivated',
