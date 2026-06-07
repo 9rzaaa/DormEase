@@ -866,6 +866,37 @@
     .d2 { animation-delay: .12s; }
     .d3 { animation-delay: .2s; }
 
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--baby-pink); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--baby-pink); border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
     @media (max-width: 900px) {
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -1004,6 +1035,15 @@
 @endsection
 
 @section('modals')
+
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
@@ -1185,6 +1225,19 @@
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
     const normalizeFilterValue = value => String(value ?? '').trim().toLowerCase();
+
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        const overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -1446,6 +1499,7 @@
         if (!currentRep) return;
         const btn = document.querySelector('#edit-modal .btn-submit');
         btn.disabled = true; btn.textContent = 'Saving...';
+        showActionLoading('Updating report...');
         try {
             const res = await fetch(`/emergency/${currentRep.report_id}`, {
                 method: 'PUT',
@@ -1461,9 +1515,16 @@
                 showToast('Report updated successfully!', 'success');
                 closeModal('edit-modal');
                 setTimeout(() => location.reload(), 800);
-            } else { showToast('Failed to update report.', 'error'); }
-        } catch (err) { showToast('Error: ' + err.message, 'error'); }
-        btn.disabled = false; btn.textContent = 'Save Changes';
+            } else {
+                showToast('Failed to update report.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+        }
     }
 
     function openDeleteModal(id, type) {
@@ -1476,6 +1537,7 @@
         if (!deleteId) return;
         const btn = document.querySelector('#delete-modal .btn-submit');
         btn.disabled = true; btn.textContent = 'Deleting...';
+        showActionLoading('Deleting report...');
         try {
             const res = await fetch(`/emergency/${deleteId}`, {
                 method: 'DELETE',
@@ -1486,9 +1548,16 @@
                 showToast('Report moved to archive.', 'success');
                 closeModal('delete-modal');
                 setTimeout(() => location.reload(), 800);
-            } else { showToast('Failed to delete.', 'error'); }
-        } catch { showToast('Network error.'); }
-        btn.disabled = false; btn.textContent = 'Delete';
+            } else {
+                showToast('Failed to delete.', 'error');
+            }
+        } catch {
+            showToast('Network error.');
+        } finally {
+            hideActionLoading();
+            btn.disabled = false;
+            btn.textContent = 'Delete';
+        }
     }
 
     function openArchive() {
