@@ -297,6 +297,10 @@
         white-space: nowrap;
     }
 
+    thead th.th-center {
+        text-align: center;
+    }
+
     tbody tr {
         border-bottom: 1px solid var(--petal);
         transition: background .15s;
@@ -309,6 +313,10 @@
         padding: .75rem 1rem;
         color: var(--ink);
         vertical-align: middle;
+    }
+
+    tbody td.td-center {
+        text-align: center;
     }
 
     .doc-title-cell {
@@ -361,8 +369,9 @@
     .req-resubmission  { background: #fff3e0; color: #bf360c; border: 1px solid #ffcc80; }
 
     .action-group {
-        display: flex;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: .3rem;
     }
 
@@ -459,6 +468,182 @@
         margin: 0 auto .6rem;
     }
 
+    .vd-tab-bar {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        border-top: 1px solid var(--baby-pink);
+        border-bottom: 1.5px solid var(--baby-pink);
+        margin: 0 -1.4rem;
+        padding: 0 1.4rem;
+        background: var(--white);
+    }
+
+    .vd-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .55rem 1rem;
+        border: none;
+        border-bottom: 2.5px solid transparent;
+        background: transparent;
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+        margin-bottom: -1.5px;
+    }
+
+    .vd-tab-btn.active {
+        color: var(--bright-pink);
+        border-bottom-color: var(--bright-pink);
+    }
+
+    .vd-tab-btn svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+        opacity: .6;
+    }
+
+    .vd-tab-btn.active svg {
+        opacity: 1;
+    }
+
+    .vd-panel { display: none; padding-top: 1rem; }
+    .vd-panel.active { display: block; }
+
+    .vd-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .6rem .8rem;
+    }
+
+    .vd-detail-grid.full { grid-template-columns: 1fr; }
+
+    .vd-detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: .18rem;
+        background: var(--blush);
+        border: 1px solid var(--baby-pink);
+        border-radius: 9px;
+        padding: .55rem .75rem;
+    }
+
+    .vd-detail-item.span2 { grid-column: 1 / -1; }
+
+    .vd-detail-label {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .vd-detail-val {
+        font-size: .84rem;
+        color: var(--ink);
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    .vd-file-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .8rem;
+        padding: 1.6rem 1rem;
+        background: var(--blush);
+        border: 1.5px dashed var(--baby-pink);
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .vd-file-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        box-shadow: 0 4px 14px rgba(232,23,93,.25);
+    }
+
+    .vd-file-icon svg {
+        width: 22px;
+        height: 22px;
+        color: white;
+    }
+
+    .vd-file-box p {
+        font-size: .8rem;
+        color: var(--ink-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .vd-file-box strong {
+        display: block;
+        font-size: .85rem;
+        color: var(--ink);
+        font-weight: 700;
+        margin-bottom: .15rem;
+    }
+
+    .remark-box {
+        background: var(--blush);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        font-size: .83rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+        white-space: pre-wrap;
+    }
+
+    .btn-view-file {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .5rem 1.1rem;
+        border-radius: 9px;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: var(--white);
+        font-size: .82rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity .2s;
+    }
+
+    .btn-view-file:hover { opacity: .88; }
+
+    .vd-status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: .6rem;
+        padding: .6rem .75rem;
+        background: var(--blush);
+        border: 1px solid var(--baby-pink);
+        border-radius: 9px;
+    }
+
+    .vd-status-label {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    /* ── Other modal fields ── */
     .modal-field {
         display: flex;
         flex-direction: column;
@@ -568,34 +753,6 @@
         font-weight: 500;
         line-height: 1.6;
     }
-
-    .remark-box {
-        background: var(--blush);
-        border: 1.5px solid var(--baby-pink);
-        border-radius: 10px;
-        padding: .65rem .9rem;
-        font-size: .83rem;
-        color: var(--ink-muted);
-        line-height: 1.6;
-        white-space: pre-wrap;
-    }
-
-    .btn-view-file {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        padding: .5rem 1.1rem;
-        border-radius: 9px;
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white);
-        font-size: .82rem;
-        font-weight: 700;
-        text-decoration: none;
-        margin-top: .6rem;
-        transition: opacity .2s;
-    }
-
-    .btn-view-file:hover { opacity: .88; }
 
     .delete-warn {
         background: #fff0f0;
@@ -803,6 +960,7 @@
         .modal-two-col { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
         .archive-drawer { width: 100vw; }
+        .vd-detail-grid { grid-template-columns: 1fr; }
     }
 </style>
 @endsection
@@ -883,8 +1041,8 @@
                             <th>Form Type</th>
                             <th>File</th>
                             <th>Submitted</th>
-                            <th>Status</th>
-                            <th></th>
+                            <th class="th-center">Status</th>
+                            <th class="th-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="doc-tbody"></tbody>
@@ -938,8 +1096,8 @@
                             <th>Purpose</th>
                             <th>Delivery</th>
                             <th>Submitted</th>
-                            <th>Status</th>
-                            <th></th>
+                            <th class="th-center">Status</th>
+                            <th class="th-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="req-tbody"></tbody>
@@ -977,7 +1135,7 @@
                             <th>Label</th>
                             <th>File</th>
                             <th>Uploaded</th>
-                            <th></th>
+                            <th class="th-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="form-tbody"></tbody>
@@ -1050,10 +1208,10 @@
                                     <th>Tenant</th>
                                     <th>Form Type</th>
                                     <th>File</th>
-                                    <th>Status</th>
+                                    <th class="th-center">Status</th>
                                     <th>Submitted</th>
                                     <th>Archived On</th>
-                                    <th></th>
+                                    <th class="th-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="adoc-tbody"></tbody>
@@ -1103,10 +1261,10 @@
                                     <th>Document Type</th>
                                     <th>Purpose</th>
                                     <th>Delivery</th>
-                                    <th>Status</th>
+                                    <th class="th-center">Status</th>
                                     <th>Submitted</th>
                                     <th>Archived On</th>
-                                    <th></th>
+                                    <th class="th-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="areq-tbody"></tbody>
@@ -1135,12 +1293,39 @@
 </div>
 
 <div class="modal-overlay" id="view-doc-modal">
-    <div class="modal" style="max-width:520px;">
+    <div class="modal" style="max-width:540px;">
         <div class="modal-header">
             <div class="modal-title">Form Submission Details</div>
             <button class="modal-close" onclick="closeModal('view-doc-modal')">&#x2715;</button>
         </div>
-        <div id="view-doc-content"></div>
+
+        <div class="vd-tab-bar">
+            <button class="vd-tab-btn active" id="vd-tab-info-btn" onclick="switchVdTab('info')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Details
+            </button>
+            <button class="vd-tab-btn" id="vd-tab-file-btn" onclick="switchVdTab('file')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Uploaded File
+            </button>
+            <button class="vd-tab-btn" id="vd-tab-remarks-btn" onclick="switchVdTab('remarks')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Remarks
+            </button>
+        </div>
+
+        <div class="vd-panel active" id="vd-panel-info">
+            <div class="vd-detail-grid" id="vd-info-grid"></div>
+        </div>
+
+        <div class="vd-panel" id="vd-panel-file">
+            <div id="vd-file-content"></div>
+        </div>
+
+        <div class="vd-panel" id="vd-panel-remarks">
+            <div id="vd-remarks-content"></div>
+        </div>
+
         <div class="modal-actions" style="margin-top:1rem;" id="view-doc-actions"></div>
     </div>
 </div>
@@ -1490,6 +1675,13 @@ function switchDrawerTab(tab) {
     document.getElementById('dpanel-' + tab).classList.add('active');
 }
 
+function switchVdTab(tab) {
+    document.querySelectorAll('.vd-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.vd-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('vd-tab-' + tab + '-btn').classList.add('active');
+    document.getElementById('vd-panel-' + tab).classList.add('active');
+}
+
 function openArchiveDrawer() {
     document.getElementById('archive-drawer-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1558,7 +1750,6 @@ async function fetchDocs() {
         });
         const data = await res.json();
         const all  = data.data ?? data;
-
         docState.data = all.filter(r => r.category === 'form');
         document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
         docApplyFilters();
@@ -1577,10 +1768,8 @@ async function fetchReqs() {
         });
         const data = await res.json();
         const all  = data.data ?? data;
-
         reqState.data = all.filter(r => r.category === 'certificate');
-        const pending = reqState.data.filter(r => r.status === 'pending').length;
-        document.getElementById('tab-reqs-count').textContent = pending;
+        document.getElementById('tab-reqs-count').textContent = reqState.data.filter(r => r.status === 'pending').length;
         reqApplyFilters();
     } catch {
         document.getElementById('req-tbody').innerHTML =
@@ -1618,7 +1807,7 @@ function renderDocTable() {
         tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><img src="{{ asset('icons/nav-docu.png') }}" alt="">No form submissions found.</div></td></tr>`;
     } else {
         tbody.innerHTML = page.map(r => {
-            const color    = TYPE_COLORS[r.document_type] || '#B5B7C0';
+            const color      = TYPE_COLORS[r.document_type] || '#B5B7C0';
             const tenantName = escHtml(r.tenant_name ?? r.full_name ?? '—');
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(r.doc_request_id).padStart(3,'0')}</td>
@@ -1626,8 +1815,8 @@ function renderDocTable() {
                 <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(r.document_type)}</div></td>
                 <td>${fileTypeBadge(r.attachment)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
-                <td>${reqStatusBadge(r.status)}</td>
-                <td>
+                <td class="td-center">${reqStatusBadge(r.status)}</td>
+                <td class="td-center">
                     <div class="action-group">
                         <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
@@ -1655,19 +1844,83 @@ function renderDocTable() {
 
 function viewDoc(r) {
     currentDoc = r;
-    const fileHtml = r.attachment
-        ? `<a class="btn-view-file" href="/storage/${r.attachment}" target="_blank">View Uploaded Form</a>`
-        : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
+    const color = TYPE_COLORS[r.document_type] || '#B5B7C0';
 
-    document.getElementById('view-doc-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(r.doc_request_id).padStart(3,'0')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? r.full_name ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(r.document_type)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(r.submitted_at)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
-        ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
-        <div class="view-detail-row"><div class="view-detail-label">Uploaded File</div><div class="view-detail-val">${fileHtml}</div></div>
+    switchVdTab('info');
+
+    document.getElementById('vd-info-grid').innerHTML = `
+        <div class="vd-detail-item">
+            <div class="vd-detail-label">Submission ID</div>
+            <div class="vd-detail-val" style="font-weight:800;color:var(--hot-pink);">#FSB-${String(r.doc_request_id).padStart(3,'0')}</div>
+        </div>
+        <div class="vd-detail-item">
+            <div class="vd-detail-label">Submitted</div>
+            <div class="vd-detail-val">${fmtDate(r.submitted_at)}</div>
+        </div>
+        <div class="vd-detail-item span2">
+            <div class="vd-detail-label">Tenant</div>
+            <div class="vd-detail-val">${escHtml(r.tenant_name ?? r.full_name ?? '—')}</div>
+        </div>
+        <div class="vd-detail-item span2">
+            <div class="vd-detail-label">Form Type</div>
+            <div class="vd-detail-val" style="display:flex;align-items:center;gap:.45rem;">
+                <span style="width:9px;height:9px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
+                ${escHtml(r.document_type)}
+            </div>
+        </div>
+        <div class="vd-detail-item span2">
+            <div class="vd-detail-label">Status</div>
+            <div class="vd-detail-val">${reqStatusBadge(r.status)}</div>
+        </div>
     `;
+
+    if (r.attachment) {
+        const ext = r.attachment.split('.').pop().toLowerCase();
+        const isPdf = ext === 'pdf';
+        document.getElementById('vd-file-content').innerHTML = `
+            <div class="vd-file-box">
+                <div class="vd-file-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                <div>
+                    <strong>${isPdf ? 'PDF Document' : ext.toUpperCase() + ' File'}</strong>
+                    <p>Tap the button below to open the uploaded file in a new tab.</p>
+                </div>
+                <a class="btn-view-file" href="/storage/${escHtml(r.attachment)}" target="_blank">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open File
+                </a>
+            </div>
+        `;
+    } else {
+        document.getElementById('vd-file-content').innerHTML = `
+            <div class="vd-file-box">
+                <div style="opacity:.35;">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <p>No file was uploaded with this submission.</p>
+            </div>
+        `;
+    }
+
+    if (r.admin_remarks) {
+        document.getElementById('vd-remarks-content').innerHTML = `
+            <div class="vd-detail-item" style="background:var(--blush);border-radius:10px;padding:.8rem .95rem;border:1.5px solid var(--baby-pink);">
+                <div class="vd-detail-label" style="margin-bottom:.4rem;">Admin Remarks</div>
+                <div class="remark-box" style="margin:0;">${escHtml(r.admin_remarks)}</div>
+            </div>
+        `;
+    } else {
+        document.getElementById('vd-remarks-content').innerHTML = `
+            <div class="vd-file-box" style="padding:1.4rem 1rem;">
+                <p style="color:var(--ink-muted);font-size:.82rem;">No remarks have been added for this submission.</p>
+            </div>
+        `;
+    }
+
     document.getElementById('view-doc-actions').innerHTML = `
         <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
         <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review / Set Status</button>
@@ -1691,9 +1944,7 @@ function handleRejectionPreset() {
     const val  = document.getElementById('upd-doc-rejection-preset').value;
     const wrap = document.getElementById('rejection-other-wrap');
     wrap.style.display = val === 'other' ? '' : 'none';
-    if (val !== 'other') {
-        document.getElementById('upd-doc-rejection-other').value = '';
-    }
+    if (val !== 'other') document.getElementById('upd-doc-rejection-other').value = '';
 }
 
 function openUpdateDoc(r) {
@@ -1701,13 +1952,11 @@ function openUpdateDoc(r) {
     document.getElementById('upd-doc-id').value      = r.doc_request_id;
     document.getElementById('upd-doc-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
     document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
-
     document.getElementById('upd-doc-rejection-preset').value = '';
     document.getElementById('upd-doc-rejection-other').value  = '';
     document.getElementById('rejection-other-wrap').style.display = 'none';
     document.getElementById('upd-doc-allow-resubmission').checked = (r.status === 'resubmission');
     toggleRejectionField();
-
     openModal('update-doc-modal');
 }
 
@@ -1773,7 +2022,6 @@ async function confirmDeleteDoc() {
     const btn = document.querySelector('#delete-doc-modal .btn-submit[style*="red"]');
     setButtonLoading(btn, 'Archiving...');
     showActionLoading('Archiving submission...');
-
     try {
         const res = await fetch(`/admin/document-requests/${id}`, {
             method: 'DELETE',
@@ -1827,8 +2075,8 @@ function renderReqTable() {
             <td style="font-size:.8rem;color:var(--ink-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.purpose)}">${escHtml(r.purpose ?? '—')}</td>
             <td style="font-size:.8rem;">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</td>
             <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
-            <td>${reqStatusBadge(r.status)}</td>
-            <td>
+            <td class="td-center">${reqStatusBadge(r.status)}</td>
+            <td class="td-center">
                 <div class="action-group">
                     <button class="act-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
                         <img src="${eyeIcon}" alt="View">
@@ -1855,7 +2103,6 @@ function renderReqTable() {
 
 function viewReq(r) {
     currentReq = r;
-
     const deliveryType = (r.delivery_type ?? r.delivery_method ?? '').toLowerCase();
     const isHardCopy   = deliveryType.includes('printed') || deliveryType.includes('hard');
 
@@ -1898,9 +2145,7 @@ function handleReqRejectionPreset() {
     const val  = document.getElementById('upd-req-rejection-preset').value;
     const wrap = document.getElementById('req-rejection-other-wrap');
     wrap.style.display = val === 'other' ? '' : 'none';
-    if (val !== 'other') {
-        document.getElementById('upd-req-rejection-other').value = '';
-    }
+    if (val !== 'other') document.getElementById('upd-req-rejection-other').value = '';
 }
 
 function openUpdateReq(r) {
@@ -1980,7 +2225,6 @@ async function confirmDeleteReq() {
     const btn = document.querySelector('#delete-req-modal .btn-submit[style*="red"]');
     setButtonLoading(btn, 'Archiving...');
     showActionLoading('Archiving request...');
-
     try {
         const res = await fetch(`/admin/document-requests/${id}`, {
             method: 'DELETE',
@@ -2062,10 +2306,10 @@ function renderAdocTable() {
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
                 <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
                 <td>${fileTypeBadge(d.attachment)}</td>
-                <td>${reqStatusBadge(d.status)}</td>
+                <td class="td-center">${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
                 <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
-                <td>
+                <td class="td-center">
                     <div class="action-group">
                         <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
@@ -2118,7 +2362,6 @@ async function confirmRemoveAdoc() {
     const btn = document.querySelector('#remove-adoc-modal .btn-submit[style*="red"]');
     setButtonLoading(btn, 'Removing...');
     showActionLoading('Removing archive record...');
-
     try {
         const res = await fetch(`/admin/archive-docus/${id}`, {
             method: 'DELETE',
@@ -2174,10 +2417,10 @@ function renderAreqTable() {
                 <td style="font-size:.82rem;">${escHtml(d.document_type)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(d.purpose)}">${escHtml(d.purpose ?? '—')}</td>
                 <td style="font-size:.8rem;">${escHtml(d.delivery_type ?? d.delivery_method ?? '—')}</td>
-                <td>${reqStatusBadge(d.status)}</td>
+                <td class="td-center">${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
                 <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
-                <td>
+                <td class="td-center">
                     <div class="action-group">
                         <button class="act-btn" title="View" onclick='viewAreq(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
@@ -2232,7 +2475,6 @@ async function confirmRemoveAreq() {
     const btn = document.querySelector('#remove-areq-modal .btn-submit[style*="red"]');
     setButtonLoading(btn, 'Removing...');
     showActionLoading('Removing archive record...');
-
     try {
         const res = await fetch(`/admin/archive-docus/${id}`, {
             method: 'DELETE',
@@ -2293,7 +2535,7 @@ function renderFormTable() {
             <td style="font-weight:600;font-size:.88rem;">${escHtml(f.label)}</td>
             <td>${fileTypeBadge(f.file_path)}</td>
             <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(f.created_at)}</td>
-            <td>
+            <td class="td-center">
                 <div class="action-group">
                     <button class="act-btn" title="Open" onclick="openFormFile('${escHtml(f.file_path)}')">
                         <img src="${eyeIcon}" alt="Open">
