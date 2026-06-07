@@ -51,7 +51,7 @@ class BillingController extends Controller
             }, $months);
         }
 
-        $allTenants = Tenant::where('status', 'active')
+        $allTenants = Tenant::whereIn('status', ['active', 'pending', 'inactive'])
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
@@ -59,7 +59,7 @@ class BillingController extends Controller
 
         $floors = $allTenants->pluck('floor')->unique()->sort()->values();
 
-        $activeFloors = $floors;
+        $activeFloors = $allTenants->where('status', 'active')->pluck('floor')->unique()->sort()->values();
 
         $loggedFloors = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
             ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
@@ -75,13 +75,17 @@ class BillingController extends Controller
             ->keyBy('tenant_id');
 
         $totalBill    = $billings->sum('room_share');
-        $totalTenants = $allTenants->count();
+        $totalTenants = $allTenants->where('status', 'active')->count();
         $unpaidCount  = $billings->where('payment_status', 'unpaid')->count();
         $overdueCount = $billings->where('payment_status', 'overdue')->count();
 
         $billingGroups = [];
 
         foreach ($allTenants->groupBy('floor') as $floor => $floorTenants) {
+
+            if ($floorTenants->where('status', 'active')->isEmpty()) {
+                continue;
+            }
 
             if ($selectedFloor && $floor != $selectedFloor) {
                 continue;
@@ -157,7 +161,7 @@ class BillingController extends Controller
                     'curr_reading'         => $floorBilling?->curr_reading ?? 0,
                     'floor_consumption_m3' => $floorBilling?->floor_consumption_m3 ?? 0,
                     'rooms_sharing'        => $floorBilling?->rooms_sharing ?? 0,
-                    'occupants_in_room'    => count($tenantRows),
+                    'occupants_in_room'    => collect($tenantRows)->where('payment_status', '!=', 'pending-tenant')->where('payment_status', '!=', 'inactive-tenant')->count(),
                     'total_floor_bill'     => $floorBilling?->total_floor_bill ?? 0,
                     'due_date'             => $floorBilling?->due_date
                         ? Carbon::parse($floorBilling->due_date)->format('M d, Y')
@@ -310,6 +314,7 @@ class BillingController extends Controller
             WaterBilling::whereIn('floor', $floors->all())
                 ->whereDate('billing_month', $billingMonthDate->format('Y-m-d'))
                 ->get()
+                ->unique('tenant_id')
                 ->each(function (WaterBilling $billing) use ($pushService, $monthLabel) {
                     $pushService->sendToTenant(
                         tenant: $billing->tenant_id,
@@ -362,7 +367,7 @@ class BillingController extends Controller
             'prev_reading'                       => 'required|numeric|min:0',
             'curr_reading'                       => 'required|numeric|min:0|gte:prev_reading',
             'due_date'                           => 'required|date',
-            'payment_status'                     => 'required|string',
+            'payment_status'                     => 'required|string|in:unpaid,pending,paid,overdue,rejected',
             'status_updates'                     => 'nullable|array',
             'status_updates.*.billing_id'        => 'required_with:status_updates|integer',
             'status_updates.*.payment_status'    => 'required_with:status_updates|string|in:unpaid,pending,paid,overdue,rejected',
@@ -381,7 +386,7 @@ class BillingController extends Controller
             ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
             ->count();
 
-        $share = $count ? round($total / $count, 2) : 0;
+        $share = $count > 0 ? round($total / $count, 2) : 0;
 
         WaterBilling::where('floor', $billing->floor)
             ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
