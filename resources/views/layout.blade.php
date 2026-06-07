@@ -448,6 +448,12 @@
     .alert-room   { font-weight: 700; font-size: .9rem; color: var(--ink); }
     .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
 
+    .notif-detail-type-badge.tenant {
+    background: var(--blush);
+    color: var(--bright-pink);
+    border: 1.5px solid var(--baby-pink);
+    }
+
     .toast {
         position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
         background: var(--ink); color: var(--white);
@@ -595,23 +601,25 @@
                             @if(isset($notifications) && $notifications->count())
                                 @foreach($notifications as $notif)
                                     @php
-                                        $notifIcon = match($notif->type) {
-                                            'maintenance_new'  => 'maintenance',
-                                            'emergency_new'    => 'warn',
-                                            'billing_overdue'  => 'billing',
-                                            'document_request' => 'nav-docu',
-                                            'announcement_new' => 'nav-announ',
-                                            'visitor_registration' => 'nav-visit',
-                                            default            => 'nav-visit',
+                                        $notifIcon = match(true) {
+                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                            str_starts_with($notif->type, 'emergency')    => 'warn',
+                                            str_starts_with($notif->type, 'billing')      => 'billing',
+                                            str_starts_with($notif->type, 'document')     => 'nav-docu',
+                                            str_starts_with($notif->type, 'announcement') => 'nav-announ',
+                                            str_starts_with($notif->type, 'visitor')      => 'nav-visit',
+                                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                                            default                                        => 'bell',
                                         };
-                                        $notifTypeLabel = match($notif->type) {
-                                            'maintenance_new'  => 'maintenance',
-                                            'emergency_new'    => 'emergency',
-                                            'billing_overdue'  => 'billing',
-                                            'document_request' => 'document',
-                                            'announcement_new' => 'announcement',
-                                            'visitor_registration' => 'visitor',
-                                            default            => 'general',
+                                        $notifTypeLabel = match(true) {
+                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                            str_starts_with($notif->type, 'emergency')    => 'emergency',
+                                            str_starts_with($notif->type, 'billing')      => 'billing',
+                                            str_starts_with($notif->type, 'document')     => 'document',
+                                            str_starts_with($notif->type, 'announcement') => 'announcement',
+                                            str_starts_with($notif->type, 'visitor')      => 'visitor',
+                                            str_starts_with($notif->type, 'tenant')       => 'tenant',
+                                            default                                        => 'general',
                                         };
                                     @endphp
 
@@ -783,6 +791,7 @@
         document:     'Document',
         announcement: 'Announcement',
         visitor:      'Visitor',
+        tenant:       'Tenant',     
         general:      'General',
     };
 
