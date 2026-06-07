@@ -114,7 +114,7 @@ class TenantController extends Controller
         ]);
 
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
+            type: 'tenant_new',
             message: "New tenant {$tenant->first_name} {$tenant->last_name} has been added.",
             ref_id: $tenant->tenant_id,
         );
@@ -170,7 +170,7 @@ class TenantController extends Controller
         }
 
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
+            type: 'tenant_updated',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} information has been updated.",
             ref_id: $tenant->tenant_id,
         );
@@ -194,7 +194,7 @@ class TenantController extends Controller
         ]);
 
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
+            type: 'tenant_reactivated',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} account has been reactivated.",
             ref_id: $tenant->tenant_id,
         );
