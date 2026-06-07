@@ -75,6 +75,17 @@ class StaffController extends Controller
         ]);
     }
 
+    private function shiftTimes(?string $schedule): array
+    {
+        if ($schedule === 'Day') {
+            return ['shift_start' => '06:00:00', 'shift_end' => '18:00:00'];
+        }
+        if ($schedule === 'Night') {
+            return ['shift_start' => '18:00:00', 'shift_end' => '06:00:00'];
+        }
+        return ['shift_start' => null, 'shift_end' => null];
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -88,6 +99,8 @@ class StaffController extends Controller
 
         $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
 
+        $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
         $staff = Staff::create([
             'staff_code'       => 'ST-' . str_pad((Staff::max('staff_id') ?? 0) + 1, 3, '0', STR_PAD_LEFT),
             'first_name'       => $request->first_name,
@@ -98,6 +111,8 @@ class StaffController extends Controller
             'role'             => $request->role,
             'contact_number'   => $request->contact_number,
             'shift_schedule'   => $request->shift_schedule,
+            'shift_start'      => $shiftTimes['shift_start'],
+            'shift_end'        => $shiftTimes['shift_end'],
             'duty_status'      => 'off_duty',
             'is_active'        => true,
         ]);
@@ -133,6 +148,8 @@ class StaffController extends Controller
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
         $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
 
+        $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
         $staff->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -140,6 +157,8 @@ class StaffController extends Controller
             'role'           => $request->role,
             'contact_number' => $request->contact_number,
             'shift_schedule' => $request->shift_schedule,
+            'shift_start'    => $shiftTimes['shift_start'],
+            'shift_end'      => $shiftTimes['shift_end'],
             'duty_status'    => $request->duty_status,
             'is_active'      => $request->is_active,
             'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),

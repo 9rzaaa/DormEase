@@ -35,7 +35,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
         gap: 1rem;
         margin-top: 1rem;
     }
@@ -444,6 +444,14 @@
                     <div class="stat-label">Unresolved Reports</div>
                     <div class="stat-sub">Ongoing concerns</div>
                 </div>
+                @if(($expectedAbsent ?? 0) > 0)
+                <div class="stat-box" style="background:linear-gradient(135deg,#f0c040 0%,#e6a800 100%);">
+                    <div class="stat-icon"><img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent"></div>
+                    <div class="stat-num">{{ $expectedAbsent }}</div>
+                    <div class="stat-label">Expected On Shift</div>
+                    <div class="stat-sub">Not yet logged in</div>
+                </div>
+                @endif
             </div>
         </div>
 

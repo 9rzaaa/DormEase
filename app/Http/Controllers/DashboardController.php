@@ -11,6 +11,7 @@ use App\Models\Announcement;
 use App\Models\Notification;
 use App\Models\VisitorLog;
 use Carbon\Carbon;
+use App\Models\Staff;
 
 class DashboardController extends Controller
 {
@@ -73,6 +74,25 @@ class DashboardController extends Controller
                 ];
             });
 
+        $now = now();
+        $currentTime = Carbon::createFromTimeString($now->format('H:i:s'));
+
+        $expectedAbsent = Staff::where('is_active', true)
+            ->whereNotNull('shift_start')
+            ->whereNotNull('shift_end')
+            ->where('duty_status', '!=', 'on_duty')
+            ->get()
+            ->filter(function ($s) use ($currentTime) {
+                $shiftStart = Carbon::createFromTimeString($s->shift_start);
+                $shiftEnd   = Carbon::createFromTimeString($s->shift_end);
+                $isNight    = $shiftEnd->lessThan($shiftStart);
+                if ($isNight) {
+                    return $currentTime->greaterThanOrEqualTo($shiftStart) || $currentTime->lessThan($shiftEnd);
+                }
+                return $currentTime->between($shiftStart, $shiftEnd);
+            })
+            ->count();
+
         return view('dashboard', [
             'staff'                => $staff,
             'totalTenants'         => Tenant::where('status', 'active')->count(),
@@ -96,6 +116,7 @@ class DashboardController extends Controller
             'tenantsByFloor'       => $tenantsByFloor,
             'maintenanceByUrgency' => $maintenanceByUrgency,
             'visitorsByDay'        => $visitorsByDay,
+            'expectedAbsent'       => $expectedAbsent,
         ]);
     }
 }
