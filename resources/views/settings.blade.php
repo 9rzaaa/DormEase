@@ -549,10 +549,10 @@
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
                     All clearing is <strong>permanent and cannot be undone</strong>.
-                    Records deleted by auto-clear or manual clear are gone forever.
-                    You will receive a notification <strong>warn days before</strong> the scheduled clear runs.
-                    To cancel, disable the toggle for that module before the clear date.
-                    <br>Save settings first before using Clear Now.
+                    Records deleted by auto-clear or manual clear are <strong>gone forever</strong>.
+                    You will receive a notification <strong>before the scheduled clear runs</strong> based on your warn days setting.
+                    To cancel, <strong>disable the toggle</strong> for that module before the clear date.
+                    <strong>Save settings first</strong> before using Clear Now.
                 </span>
             </div>
  
