@@ -16,6 +16,7 @@ class MaintenanceController extends Controller
         $staff = Auth::guard('staff')->user();
 
         $requests = MaintenanceRequest::with('tenant')
+            ->whereNotIn('status', ['resolved', 'closed'])
             ->latest('submitted_at')
             ->get()
             ->map(function ($r) {
@@ -34,12 +35,17 @@ class MaintenanceController extends Controller
 
         $stats = [
             'total'       => MaintenanceRequest::count(),
-            'urgent'      => MaintenanceRequest::where('urgency_level', 'urgent')->count(),
+            'urgent'      => MaintenanceRequest::whereNotIn('status', ['resolved', 'closed'])->where('urgency_level', 'urgent')->count(),
             'in_progress' => MaintenanceRequest::where('status', 'in-progress')->count(),
-            'resolved'    => MaintenanceRequest::where('status', 'resolved')->count(),
+            'resolved'    => ArchivedMaintReq::where('archive_type', 'resolved')->count(),
         ];
 
         $closedArchive = ArchivedMaintReq::where('archive_type', 'closed')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $resolvedArchive = ArchivedMaintReq::where('archive_type', 'resolved')
             ->orderByDesc('archived_at')
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
@@ -49,7 +55,7 @@ class MaintenanceController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'deletedArchive'));
+        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'resolvedArchive', 'deletedArchive'));
     }
 
     private function formatArchive(ArchivedMaintReq $r): array
@@ -108,6 +114,29 @@ class MaintenanceController extends Controller
 
             return redirect()->route('maintenance.index')
                 ->with('success', 'Request closed and moved to archive.');
+        }
+
+        if ($request->status === 'resolved') {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $maintenance->tenant_id,
+                type: 'maintenance',
+                title: 'Maintenance request resolved',
+                body: "Your maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been resolved.",
+                refId: $maintenance->request_id,
+                route: '/tenant/maintenancehistory',
+            );
+
+            NotificationHelper::sendToAll(
+                'maintenance_update',
+                "Maintenance request #REQ-" . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT) . " has been resolved.",
+                $maintenance->request_id
+            );
+
+            $this->archiveRequest($maintenance, 'resolved');
+            $maintenance->delete();
+
+            return redirect()->route('maintenance.index')
+                ->with('success', 'Request resolved and moved to archive.');
         }
 
         NotificationHelper::sendToAll(
