@@ -589,6 +589,20 @@
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
 
+    .atd-pill-onduty  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+    .atd-pill-offduty { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
+
+    .atd-duration {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        background: var(--blush);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .15rem .55rem;
+        white-space: nowrap;
+    }
+
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -792,6 +806,9 @@
         </button>
         <button class="sad-tab" id="stab-inactive" onclick="switchStaffArchiveTab('inactive')">
             Inactive <span class="sad-tab-count" id="scount-inactive">0</span>
+        </button>
+        <button class="sad-tab" id="stab-attendance" onclick="switchStaffArchiveTab('attendance')">
+            Attendance Log <span class="sad-tab-count" id="scount-attendance">0</span>
         </button>
     </div>
 
@@ -1371,9 +1388,10 @@
         });
     }
 
-    var deletedStaffArchive  = @json($deletedArchive);
-    var inactiveStaffArchive = @json($inactiveArchive);
-    var staffArchiveTab      = 'deleted';
+    var deletedStaffArchive   = @json($deletedArchive);
+    var inactiveStaffArchive  = @json($inactiveArchive);
+    var attendanceLogsArchive = @json($attendanceLogs);
+    var staffArchiveTab       = 'deleted';
 
     function fmtDatePlain(d) {
         if (!d) return '\u2014';
@@ -1387,8 +1405,9 @@
         document.getElementById('sad-drawer').classList.add('open');
         document.getElementById('sad-backdrop').classList.add('open');
         document.getElementById('sad-search').value = '';
-        document.getElementById('scount-deleted').textContent  = deletedStaffArchive.length;
-        document.getElementById('scount-inactive').textContent = inactiveStaffArchive.length;
+        document.getElementById('scount-deleted').textContent    = deletedStaffArchive.length;
+        document.getElementById('scount-inactive').textContent   = inactiveStaffArchive.length;
+        document.getElementById('scount-attendance').textContent = attendanceLogsArchive.length;
         renderStaffArchive();
     }
 
@@ -1399,8 +1418,9 @@
 
     function switchStaffArchiveTab(tab) {
         staffArchiveTab = tab;
-        document.getElementById('stab-deleted').classList.toggle('active',  tab === 'deleted');
-        document.getElementById('stab-inactive').classList.toggle('active', tab === 'inactive');
+        document.getElementById('stab-deleted').classList.toggle('active',    tab === 'deleted');
+        document.getElementById('stab-inactive').classList.toggle('active',   tab === 'inactive');
+        document.getElementById('stab-attendance').classList.toggle('active', tab === 'attendance');
         document.getElementById('sad-search').value = '';
         renderStaffArchive();
     }
@@ -1412,6 +1432,12 @@
 
     function renderStaffArchive() {
         var q = document.getElementById('sad-search').value.toLowerCase();
+
+        if (staffArchiveTab === 'attendance') {
+            renderAttendanceLog(q);
+            return;
+        }
+
         var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
 
         var data = source.filter(function(r) {
@@ -1466,7 +1492,51 @@
         }).join('');
     }
 
+    function renderAttendanceLog(q) {
+        var data = attendanceLogsArchive.filter(function(r) {
+            return (r.staff_name     || '').toLowerCase().includes(q) ||
+                   (r.role           || '').toLowerCase().includes(q) ||
+                   (r.shift_schedule || '').toLowerCase().includes(q) ||
+                   (r.duty_status    || '').toLowerCase().includes(q);
+        });
+
+        var list = document.getElementById('sad-list');
+        document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+        if (data.length === 0) {
+            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">No attendance records found.</div>';
+            return;
+        }
+
+        list.innerHTML = data.map(function(r, i) {
+            var dutyClass = r.duty_status === 'on_duty' ? 'atd-pill-onduty' : 'atd-pill-offduty';
+            var dutyLabel = r.duty_status === 'on_duty' ? 'On Duty' : 'Off Duty';
+            return '<div class="sad-card" style="animation-delay:' + (i * 0.03) + 's;">'
+                + '<div class="sad-card-top">'
+                    + '<div class="sad-card-id">ST-' + String(r.staff_id).padStart(3, '0') + '</div>'
+                    + '<div class="sad-card-time">' + fmtDatePlain(r.login_at) + '</div>'
+                + '</div>'
+                + '<div class="sad-card-name">' + r.staff_name + '</div>'
+                + '<div class="sad-card-meta">'
+                    + (r.role           ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
+                    + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
+                    + '<span class="sad-pill ' + dutyClass + '">' + dutyLabel + '</span>'
+                    + (r.duration ? '<span class="atd-duration">' + r.duration + '</span>' : '')
+                + '</div>'
+                + '<div class="sad-card-archived">'
+                    + 'Login: <span>' + fmtDatePlain(r.login_at) + '</span>'
+                    + '&nbsp;&nbsp;Logout: <span>' + (r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in') + '</span>'
+                + '</div>'
+            + '</div>';
+        }).join('');
+    }
+
     function exportStaffArchive(format) {
+        if (staffArchiveTab === 'attendance') {
+            exportAttendanceLogs(format);
+            return;
+        }
+
         var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
         var tabLabel = staffArchiveTab === 'deleted' ? 'Deleted' : 'Inactive';
         var archiveColLabel = staffArchiveTab === 'deleted' ? 'Deleted On' : 'Marked Inactive On';
@@ -1522,6 +1592,58 @@
         a.click();
         URL.revokeObjectURL(a.href);
         showToast('Archive exported as CSV!', 'success');
+    }
+
+    function exportAttendanceLogs(format) {
+        if (!attendanceLogsArchive.length) { showToast('No attendance data to export.', 'error'); return; }
+
+        if (format === 'pdf') {
+            var win  = window.open('', '_blank');
+            var rows = attendanceLogsArchive.map(function(r) {
+                return '<tr>'
+                    + '<td>' + 'ST-' + String(r.staff_id).padStart(3, '0') + '</td>'
+                    + '<td>' + r.staff_name + '</td>'
+                    + '<td>' + (r.role || '') + '</td>'
+                    + '<td>' + (r.shift_schedule || '') + '</td>'
+                    + '<td>' + fmtDatePlain(r.login_at) + '</td>'
+                    + '<td>' + (r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in') + '</td>'
+                    + '<td>' + (r.duration || '') + '</td>'
+                    + '<td>' + (r.duty_status || '') + '</td>'
+                    + '</tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Staff Attendance Log</title>'
+                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+                + '</head><body>'
+                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+                + '<p>Staff Attendance Log - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+                + '<table><thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Shift</th><th>Login</th><th>Logout</th><th>Duration</th><th>Duty Status</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table>'
+                + '</body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Staff ID', 'Name', 'Role', 'Shift', 'Login', 'Logout', 'Duration', 'Duty Status']];
+        attendanceLogsArchive.forEach(function(r) {
+            rows.push([
+                'ST-' + String(r.staff_id).padStart(3, '0'),
+                r.staff_name,
+                r.role           || '',
+                r.shift_schedule || '',
+                r.login_at       || '',
+                r.logout_at      || 'Still logged in',
+                r.duration       || '',
+                r.duty_status    || '',
+            ]);
+        });
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'staff-attendance-log.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Attendance log exported as CSV!', 'success');
     }
 
     function getMenuForDropdown(id) {

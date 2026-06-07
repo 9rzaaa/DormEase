@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Staff;
 use App\Models\ArchivedStaff;
+use App\Models\StaffAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -65,6 +66,27 @@ class StaffController extends Controller
 
         $activeStaff = $staff->where('is_active', true);
 
+        $attendanceLogs = StaffAttendance::orderByDesc('login_at')->take(200)->get()->map(function ($a) {
+            $duration = null;
+            if ($a->login_at && $a->logout_at) {
+                $mins = (int) $a->login_at->diffInMinutes($a->logout_at);
+                $duration = ($mins >= 60)
+                    ? floor($mins / 60) . 'h ' . ($mins % 60) . 'm'
+                    : $mins . 'm';
+            }
+            return [
+                'attendance_id'  => $a->attendance_id,
+                'staff_id'       => $a->staff_id,
+                'staff_name'     => $a->staff_name,
+                'role'           => $a->role,
+                'shift_schedule' => $a->shift_schedule,
+                'login_at'       => $a->login_at?->toDateTimeString(),
+                'logout_at'      => $a->logout_at?->toDateTimeString(),
+                'duty_status'    => $a->duty_status,
+                'duration'       => $duration,
+            ];
+        });
+
         return view('staff', [
             'staffList'       => $staffList,
             'totalStaff'      => $activeStaff->count(),
@@ -72,6 +94,7 @@ class StaffController extends Controller
             'offDutyCount'    => $activeStaff->where('duty_status', 'off_duty')->count(),
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
+            'attendanceLogs'  => $attendanceLogs,
         ]);
     }
 
