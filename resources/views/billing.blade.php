@@ -1116,7 +1116,7 @@
                                 <span class="tname">{{ $t['name'] }}</span>
                             </div>
                             <div class="tenant-right">
-                                <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '—' : '₱' . number_format($t['room_share'], 2) }}</span>
+                                <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '-' : '₱' . number_format($t['room_share'], 2) }}</span>
                                 @php
                                     $badgeLabels = [
                                         'pending-tenant'  => 'Pending',
@@ -1925,7 +1925,7 @@ function openUpdateModal(room) {
 
     document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
     const firstBilledTenant = room.tenants.find(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
-    document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '—';
+    document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '-';
     recalcUpdateShare();
 
     let paymentsHtml = '';
