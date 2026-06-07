@@ -1365,7 +1365,7 @@
                 '<div class="modal-photo-frame">'
                     + '<img src="' + src + '" alt="ID Photo" id="modal-id-photo" onerror="document.getElementById(\'modal-id-photo\').style.display=\'none\'; document.getElementById(\'modal-photo-error\').style.display=\'flex\';">'
                     + '<div id="modal-photo-error" class="modal-photo-no" style="display:none;">'
-                        + '<span class="modal-photo-no-icon">🪪</span>'
+                        + '<span class="modal-photo-no-icon"></span>'
                         + '<p>Could not load photo.</p>'
                     + '</div>'
                 + '</div>'
@@ -1381,7 +1381,7 @@
             photoArea =
                 '<div class="modal-photo-frame">'
                     + '<div class="modal-photo-no">'
-                        + '<span class="modal-photo-no-icon">🪪</span>'
+                        + '<span class="modal-photo-no-icon"></span>'
                         + '<p>No ID photo uploaded.</p>'
                     + '</div>'
                 + '</div>';
