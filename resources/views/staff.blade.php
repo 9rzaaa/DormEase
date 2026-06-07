@@ -823,14 +823,19 @@
 
     <div class="sad-footer">
         <div class="sad-count-label" id="sad-count-label">0 records</div>
-        <div class="export-dropdown" id="export-dropdown-archive">
-            <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
-                <img src="{{ asset('icons/export.png') }}" alt="">
-                Export
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <button id="clear-log-btn" style="display:none;padding:.35rem .85rem;border-radius:8px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onclick="confirmClearAttendanceLog()">
+                Clear Log
             </button>
-            <div class="export-menu" id="export-menu-archive">
-                <button onclick="exportStaffArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
-                <button onclick="exportStaffArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            <div class="export-dropdown" id="export-dropdown-archive">
+                <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-archive">
+                    <button onclick="exportStaffArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportStaffArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1592,6 +1597,64 @@
         a.click();
         URL.revokeObjectURL(a.href);
         showToast('Archive exported as CSV!', 'success');
+    }
+
+    function confirmClearAttendanceLog() {
+        var existing = document.getElementById('clear-log-confirm-modal');
+        if (existing) existing.remove();
+
+        document.body.insertAdjacentHTML('beforeend',
+            '<div class="modal-overlay open" id="clear-log-confirm-modal">'
+            + '<div class="modal" style="max-width:400px;">'
+                + '<div class="modal-header">'
+                    + '<div class="modal-title">Clear Attendance Log</div>'
+                    + '<button class="modal-close" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">&#x2715;</button>'
+                + '</div>'
+                + '<div class="delete-warning">This will permanently delete all attendance records. This action cannot be undone.</div>'
+                + '<p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to clear the entire attendance log?</p>'
+                + '<div class="modal-actions">'
+                    + '<button class="btn-cancel" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">Cancel</button>'
+                    + '<button class="btn-submit" style="background:var(--red);" onclick="executeClearAttendanceLog()">Clear All</button>'
+                + '</div>'
+            + '</div>'
+            + '</div>'
+        );
+
+        document.getElementById('clear-log-confirm-modal').addEventListener('click', function(e) {
+            if (e.target === this) this.remove();
+        });
+    }
+
+    function executeClearAttendanceLog() {
+        var modal = document.getElementById('clear-log-confirm-modal');
+        if (modal) modal.remove();
+
+        showActionLoading('Clearing attendance log...');
+
+        fetch('/staff/attendance/clear', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            hideActionLoading();
+            if (data.success) {
+                attendanceLogsArchive = [];
+                document.getElementById('scount-attendance').textContent = 0;
+                renderAttendanceLog('');
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message || 'Failed to clear.', 'error');
+            }
+        })
+        .catch(function() {
+            hideActionLoading();
+            showToast('Network error.', 'error');
+        });
     }
 
     function exportAttendanceLogs(format) {
