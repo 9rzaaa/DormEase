@@ -478,8 +478,10 @@
     .badge-overdue    { background: #ffe9ee; color: #e04867; border: 1px solid #ff9db0; }
     .badge-pending    { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
     .badge-not-billed { background: #f5f5f5; color: #999;    border: 1px solid #ddd; }
-    .badge-rejected   { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
-
+    .badge-rejected        { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
+    .badge-pending-tenant  { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
+    .badge-inactive-tenant { background: #fff0f0; color: #e04867; border: 1px solid #ffb3c1; }
+    
     .pagination-row {
         display: flex;
         align-items: center;
@@ -815,8 +817,17 @@
                                             <span class="tname">{{ $t['name'] }}</span>
                                         </div>
                                         <div class="tenant-right">
-                                            <span class="t-amount">&#8369;{{ number_format($t['room_share'], 2) }}</span>
-                                            <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ ucfirst($t['payment_status']) }}</span>
+                                            <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '-' : '₱' . number_format($t['room_share'], 2) }}</span>
+                                            @php
+                                                $badgeLabels = [
+                                                    'pending-tenant'  => 'Pending',
+                                                    'inactive-tenant' => 'Inactive',
+                                                    'not billed'      => 'Not Billed',
+                                                    'not-billed'      => 'Not Billed',
+                                                ];
+                                                $badgeText = $badgeLabels[$t['payment_status']] ?? ucfirst($t['payment_status']);
+                                            @endphp
+                                            <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ $badgeText }}</span>
                                         </div>
                                     </div>
                                     <div class="tenant-proof">
