@@ -75,11 +75,10 @@ class BillingController extends Controller
             ->keyBy('tenant_id');
 
         $activeTenantIds = $allTenants->where('status', 'active')->pluck('tenant_id');
-        $totalBill    = $billings->whereIn('tenant_id', $activeTenantIds)->sum('room_share');
+        $totalBill    = $billings->values()->unique('floor')->sum('total_floor_bill');
         $totalTenants = $activeTenantIds->count();
         $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count();
         $overdueCount = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'overdue')->count();
-
         $billingGroups = [];
 
         foreach ($allTenants->groupBy('floor') as $floor => $floorTenants) {
