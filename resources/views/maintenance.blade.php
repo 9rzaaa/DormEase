@@ -904,7 +904,6 @@
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="in-progress">In-Progress</option>
-            <option value="resolved">Resolved</option>
         </select>
 
         <select class="toolbar-select" id="urgency-filter" onchange="applyFilters()">
@@ -989,6 +988,10 @@
             Closed
             <span class="archive-tab-count" id="acount-closed">0</span>
         </button>
+        <button class="archive-tab" id="atab-resolved" onclick="switchArchiveTab('resolved')">
+            Resolved
+            <span class="archive-tab-count" id="acount-resolved">0</span>
+        </button>
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
@@ -1048,8 +1051,8 @@
                     <select name="status" id="edit-status">
                         <option value="pending">Pending</option>
                         <option value="in-progress">In-Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        <option value="resolved">Resolve &amp; Archive</option>
+                        <option value="closed">Close &amp; Archive</option>
                     </select>
                 </div>
                 <div class="maint-modal-field">
@@ -1130,8 +1133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-    const requests = @json($requests);
-    const closedArchive = @json($closedArchive);
+    const requests       = @json($requests);
+    const closedArchive  = @json($closedArchive);
+    const resolvedArchive = @json($resolvedArchive);
     const deletedArchive = @json($deletedArchive);
     const perPage  = 10;
     let filtered    = [...requests];
@@ -1412,8 +1416,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
-        document.getElementById('acount-closed').textContent  = closedArchive.length;
-        document.getElementById('acount-deleted').textContent = deletedArchive.length;
+        document.getElementById('acount-closed').textContent    = closedArchive.length;
+        document.getElementById('acount-resolved').textContent  = resolvedArchive.length;
+        document.getElementById('acount-deleted').textContent   = deletedArchive.length;
         renderArchive();
     }
 
@@ -1424,15 +1429,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchArchiveTab(tab) {
         archiveTab = tab;
-        document.getElementById('atab-closed').classList.toggle('active',  tab === 'closed');
-        document.getElementById('atab-deleted').classList.toggle('active', tab === 'deleted');
+        document.getElementById('atab-closed').classList.toggle('active',   tab === 'closed');
+        document.getElementById('atab-resolved').classList.toggle('active', tab === 'resolved');
+        document.getElementById('atab-deleted').classList.toggle('active',  tab === 'deleted');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
 
     function renderArchive() {
         const q    = document.getElementById('archive-search').value.toLowerCase();
-        const data = archiveTab === 'closed' ? closedArchive : deletedArchive;
+        const data = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
 
         const filtered = data.filter(r =>
             ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
@@ -1448,13 +1454,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filtered.length === 0) {
             list.innerHTML = `<div class="archive-empty">
                 <img class="archive-empty-icon" src="{{ asset('icons/maintenance.png') }}" alt="">
-                No ${archiveTab} requests found.
+                No ${archiveTab === 'resolved' ? 'resolved' : archiveTab} requests found.
             </div>`;
             return;
         }
 
         const urgencyPillClass = { urgent: 'archive-pill-urgent', moderate: 'archive-pill-moderate', low: 'archive-pill-low' };
-        const archiveLabel     = archiveTab === 'closed' ? 'Closed on' : 'Deleted on';
+        const archiveLabel = archiveTab === 'closed' ? 'Closed on' : archiveTab === 'resolved' ? 'Resolved on' : 'Deleted on';
 
         list.innerHTML = filtered.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
@@ -1478,12 +1484,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportArchive(format) {
-        var data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
-        var label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
+        var data     = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+        var label    = archiveTab === 'closed' ? 'Closed On' : archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
 
         if (format === 'pdf') {
             var win      = window.open('', '_blank');
-            var tabLabel = archiveTab === 'closed' ? 'Closed' : 'Deleted';
+            var tabLabel = archiveTab === 'closed' ? 'Closed' : archiveTab === 'resolved' ? 'Resolved' : 'Deleted';
             var rows = data.map(function(r) {
                 return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + fmtDatePlain(r.archived_at) + '</td></tr>';
             }).join('');
