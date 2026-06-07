@@ -101,6 +101,7 @@ class NotificationController extends Controller
             'document_request' => 'document',
             'announcement_new' => 'announcement',
             'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'visitor',
+            'tenant_new', 'tenant_updated', 'tenant_deleted', 'tenant_moved_in', 'tenant_moved_out' => 'tenant',
             default => 'general',
         };
 
@@ -111,6 +112,7 @@ class NotificationController extends Controller
             'document' => 'nav-docu',
             'announcement' => 'nav-announ',
             'visitor' => 'nav-visit',
+            'tenant' => 'nav-tenants',
             default => 'bell',
         };
 
