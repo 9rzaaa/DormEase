@@ -47,7 +47,8 @@ class ArchiveSettingsController extends Controller
     public function clearNow(Request $request)
     {
         $request->validate([
-            'module' => 'required|string',
+            'module'         => 'required|string',
+            'retention_days' => 'nullable|integer|min:1|max:3650',
         ]);
 
         $moduleConfig = [
@@ -67,14 +68,20 @@ class ArchiveSettingsController extends Controller
             return response()->json(['success' => false, 'message' => 'Unknown module.'], 422);
         }
 
-        $cutoff = Carbon::now()->subDays($setting->retention_days);
+        $retentionDays = $request->filled('retention_days')
+            ? (int) $request->retention_days
+            : $setting->retention_days;
+
+        $cutoff = Carbon::now()->subDays($retentionDays);
         $model  = $config['model'];
         $column = $config['column'];
 
         if ($request->module === 'announcements') {
-            $deleted = $model::withTrashed()->where($column, '<', $cutoff)->forceDelete();
+            $deleted = $model::withTrashed()->where($column, '<', $cutoff)->count();
+            $model::withTrashed()->where($column, '<', $cutoff)->forceDelete();
         } else {
-            $deleted = $model::where($column, '<', $cutoff)->delete();
+            $deleted = $model::where($column, '<', $cutoff)->count();
+            $model::where($column, '<', $cutoff)->delete();
         }
 
         $setting->last_cleared_at = Carbon::now();
@@ -86,7 +93,7 @@ class ArchiveSettingsController extends Controller
 
         \App\Helpers\NotificationHelper::sendToAll(
             type: 'billing_overdue',
-            message: "Manual clear completed for {$label}. {$deleted} record(s) older than {$setting->retention_days} days have been permanently deleted.",
+            message: "Manual clear completed for {$label}. {$deleted} record(s) older than {$retentionDays} days have been permanently deleted.",
         );
 
         return response()->json([
