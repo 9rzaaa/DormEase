@@ -738,25 +738,25 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/tenants.png') }}" alt="">
             </div>
-            <div class="stat-label">Total Tenants</div>
-            <div class="stat-num">{{ $totalTenants }}</div>
-            <div class="stat-sub">Currently Registered</div>
+            <div class="stat-label">Active Tenants</div>
+            <div class="stat-num">{{ $activeCount }}</div>
+            <div class="stat-sub">Out of {{ $totalTenants }} registered</div>
         </div>
         <div class="stat-box">
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/bed.png') }}" alt="">
             </div>
             <div class="stat-label">Units Occupied</div>
-            <div class="stat-num">{{ $occupiedUnits }}</div>
-            <div class="stat-sub">Out of {{ $totalUnits }} available</div>
+            <div class="stat-num">{{ $activeOccupied }}</div>
+            <div class="stat-sub">By active tenants</div>
         </div>
         <div class="stat-box">
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/bed.png') }}" alt="">
             </div>
             <div class="stat-label">Vacant Units</div>
-            <div class="stat-num">{{ $vacantUnits }}</div>
-            <div class="stat-sub">Out of {{ $totalUnits }} units</div>
+            <div class="stat-num">{{ $totalUnits - $activeOccupied }}</div>
+            <div class="stat-sub">Out of {{ $totalUnits }} total units</div>
         </div>
     </div>
 

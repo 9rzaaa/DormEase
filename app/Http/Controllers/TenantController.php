@@ -305,6 +305,7 @@ class TenantController extends Controller
             'occupiedUnits'   => $occupiedUnits,
             'vacantUnits'     => $vacantUnits,
             'totalUnits'      => $totalUnits,
+            'activeOccupied'  => Tenant::where('status', 'active')->whereNotNull('room_number')->distinct('room_number')->count('room_number'),
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'moveoutArchive'  => $moveoutArchive,
