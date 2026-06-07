@@ -14,7 +14,6 @@
         background: var(--pink-bg);
         box-sizing: border-box;
     }
-
     .page-header {
         display: flex;
         align-items: flex-start;
@@ -22,7 +21,6 @@
         flex-wrap: wrap;
         gap: 1rem;
     }
-
     .page-header-text h1 {
         font-size: 2rem;
         font-weight: 700;
@@ -31,21 +29,18 @@
         line-height: 1.15;
         margin: 0;
     }
-
     .page-header-text .dorm-sub {
         font-size: .95rem;
         font-weight: 600;
         color: var(--bright-pink);
         margin-top: .2rem;
     }
-
     .filter-bar {
         display: flex;
         align-items: center;
         gap: .6rem;
         flex-wrap: wrap;
     }
-
     .filter-select {
         padding: .45rem 1.8rem .45rem .75rem;
         border-radius: 10px;
@@ -65,17 +60,12 @@
         transition: border-color .2s;
         box-shadow: 0 2px 8px rgba(255,45,120,.07);
     }
-
-    .filter-select:focus {
-        border-color: var(--bright-pink);
-    }
-
+    .filter-select:focus { border-color: var(--bright-pink); }
     .search-box {
         position: relative;
         display: flex;
         align-items: center;
     }
-
     .search-box input {
         padding: .45rem .85rem .45rem 2rem;
         border-radius: 10px;
@@ -89,12 +79,7 @@
         transition: border-color .2s, width .3s;
         box-shadow: 0 2px 8px rgba(255,45,120,.07);
     }
-
-    .search-box input:focus {
-        border-color: var(--bright-pink);
-        width: 220px;
-    }
-
+    .search-box input:focus { border-color: var(--bright-pink); width: 220px; }
     .search-icon {
         position: absolute;
         left: .6rem;
@@ -104,20 +89,13 @@
         opacity: .4;
         pointer-events: none;
     }
-
     .columns-wrap {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 1.2rem;
         align-items: start;
     }
-
-    .col-section {
-        display: flex;
-        flex-direction: column;
-        gap: .8rem;
-    }
-
+    .col-section { display: flex; flex-direction: column; gap: .8rem; }
     .col-header {
         display: flex;
         align-items: center;
@@ -125,25 +103,9 @@
         padding-bottom: .5rem;
         border-bottom: 2px solid var(--bright-pink);
     }
-
-    .col-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--bright-pink);
-        flex-shrink: 0;
-    }
-
+    .col-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bright-pink); flex-shrink: 0; }
     .col-dot.closed { background: var(--ink-muted); }
-
-    .col-title {
-        font-size: .85rem;
-        font-weight: 800;
-        color: var(--ink);
-        text-transform: uppercase;
-        letter-spacing: .05em;
-    }
-
+    .col-title { font-size: .85rem; font-weight: 800; color: var(--ink); text-transform: uppercase; letter-spacing: .05em; }
     .col-count {
         margin-left: auto;
         background: var(--pink-100);
@@ -154,7 +116,6 @@
         border-radius: 999px;
         border: 1px solid var(--pink-200);
     }
-
     .ann-card {
         background: var(--white);
         border-radius: 16px;
@@ -167,23 +128,9 @@
         transition: transform .2s, box-shadow .2s, border-color .2s;
         cursor: default;
     }
-
-    .ann-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(255,45,120,.13);
-        border-color: var(--bright-pink);
-    }
-
-    .ann-card.closed-card {
-        opacity: .85;
-        border-color: #e8e8e8;
-    }
-
-    .ann-card.closed-card:hover {
-        border-color: var(--pink-200);
-        box-shadow: 0 6px 18px rgba(0,0,0,.06);
-    }
-
+    .ann-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,45,120,.13); border-color: var(--bright-pink); }
+    .ann-card.closed-card { opacity: .85; border-color: #e8e8e8; }
+    .ann-card.closed-card:hover { border-color: var(--pink-200); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
     .ann-priority {
         display: inline-flex;
         align-items: center;
@@ -195,18 +142,10 @@
         text-transform: uppercase;
         width: fit-content;
     }
-
     .priority-low      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
     .priority-moderate { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
     .priority-high     { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
-
-    .ann-title {
-        font-size: .97rem;
-        font-weight: 800;
-        color: var(--ink);
-        line-height: 1.3;
-    }
-
+    .ann-title { font-size: .97rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
     .ann-content {
         font-size: .82rem;
         color: var(--ink-muted);
@@ -216,7 +155,6 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-
     .ann-footer {
         display: flex;
         align-items: center;
@@ -225,21 +163,8 @@
         flex-wrap: wrap;
         margin-top: .2rem;
     }
-
-    .ann-meta {
-        font-size: .75rem;
-        color: var(--ink-muted);
-        display: flex;
-        align-items: center;
-        gap: .4rem;
-    }
-
-    .ann-actions {
-        display: flex;
-        align-items: center;
-        gap: .3rem;
-    }
-
+    .ann-meta { font-size: .75rem; color: var(--ink-muted); display: flex; align-items: center; gap: .4rem; }
+    .ann-actions { display: flex; align-items: center; gap: .3rem; }
     .act-btn {
         width: 30px;
         height: 30px;
@@ -253,18 +178,8 @@
         transition: .2s;
         font-family: var(--ff-body);
     }
-
-    .act-btn:hover {
-        border-color: var(--bright-pink);
-        box-shadow: 0 3px 10px rgba(255,45,120,.15);
-    }
-
-    .act-btn img {
-        width: 14px;
-        height: 14px;
-        object-fit: contain;
-    }
-
+    .act-btn:hover { border-color: var(--bright-pink); box-shadow: 0 3px 10px rgba(255,45,120,.15); }
+    .act-btn img { width: 14px; height: 14px; object-fit: contain; }
     .file-chip {
         display: inline-flex;
         align-items: center;
@@ -277,13 +192,7 @@
         color: var(--ink-muted);
         font-weight: 600;
     }
-
-    .file-chip img {
-        width: 11px;
-        height: 11px;
-        opacity: .5;
-    }
-
+    .file-chip img { width: 11px; height: 11px; opacity: .5; }
     .empty-col {
         text-align: center;
         padding: 2rem 1rem;
@@ -294,30 +203,171 @@
         border: 2px dashed var(--pink-200);
     }
 
-    .view-detail-row {
+    .ann-modal-header {
+        padding: 1.4rem 1.5rem 0;
+    }
+    .ann-modal-top {
         display: flex;
-        flex-direction: column;
-        gap: .18rem;
-        padding: .65rem 0;
-        border-bottom: 1px solid var(--pink-100);
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
     }
-
-    .view-detail-row:last-child { border-bottom: none; }
-
-    .view-detail-label {
-        font-size: .7rem;
+    .ann-modal-title-text {
+        font-size: 1.1rem;
         font-weight: 800;
-        color: var(--bright-pink);
-        text-transform: uppercase;
-        letter-spacing: .05em;
+        color: var(--ink);
+        line-height: 1.3;
+        flex: 1;
+    }
+    .ann-modal-badges {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        flex-wrap: wrap;
+        margin-bottom: .9rem;
+    }
+    .ann-modal-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        font-size: .78rem;
+        color: var(--ink-muted);
+        padding-bottom: .9rem;
+        border-bottom: 1.5px solid var(--pink-100);
+    }
+    .ann-modal-meta-item { display: flex; align-items: center; gap: .3rem; }
+    .ann-modal-meta-item img { width: 13px; height: 13px; opacity: .45; }
+
+    .ann-tabs {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 0 1.5rem;
+        border-bottom: 1.5px solid var(--pink-100);
+        margin-top: .1rem;
+    }
+    .ann-tab {
+        padding: .65rem 1rem;
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        border-bottom: 2.5px solid transparent;
+        margin-bottom: -1.5px;
+        transition: color .2s, border-color .2s;
+        font-family: var(--ff-body);
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+    }
+    .ann-tab:hover { color: var(--bright-pink); }
+    .ann-tab.active { color: var(--bright-pink); border-bottom-color: var(--bright-pink); }
+    .ann-tab-badge {
+        background: var(--pink-100);
+        color: var(--hot-pink);
+        font-size: .65rem;
+        font-weight: 800;
+        padding: .1rem .4rem;
+        border-radius: 999px;
+        border: 1px solid var(--pink-200);
     }
 
-    .view-detail-val {
+    .ann-tab-pane { display: none; padding: 1.2rem 1.5rem 1.5rem; }
+    .ann-tab-pane.active { display: block; }
+
+    .ann-content-body {
         font-size: .875rem;
         color: var(--ink);
-        font-weight: 500;
-        line-height: 1.6;
+        line-height: 1.75;
+        white-space: pre-wrap;
     }
+
+    .file-preview-grid {
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+    }
+    .file-preview-item {
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--white);
+    }
+    .file-preview-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .6rem .9rem;
+        background: var(--pink-50, #fff5f8);
+        border-bottom: 1px solid var(--pink-100);
+    }
+    .file-preview-name {
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+    .file-preview-name img { width: 13px; height: 13px; opacity: .5; }
+    .file-preview-dl {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--bright-pink);
+        text-decoration: none;
+        padding: .22rem .65rem;
+        border-radius: 7px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        transition: .2s;
+    }
+    .file-preview-dl:hover { background: var(--pink-100); border-color: var(--bright-pink); }
+    .file-preview-body { padding: .8rem; }
+    .file-preview-body img {
+        width: 100%;
+        max-height: 280px;
+        object-fit: contain;
+        border-radius: 8px;
+        display: block;
+    }
+    .file-preview-body iframe {
+        width: 100%;
+        height: 320px;
+        border: none;
+        border-radius: 8px;
+        display: block;
+    }
+    .file-preview-unsupported {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        padding: 1.5rem;
+        color: var(--ink-muted);
+        font-size: .8rem;
+        text-align: center;
+    }
+    .file-preview-unsupported img { width: 32px; height: 32px; opacity: .3; margin-bottom: .25rem; }
+
+    .no-files-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        gap: .5rem;
+        color: var(--ink-muted);
+        font-size: .82rem;
+        text-align: center;
+    }
+    .no-files-state img { width: 36px; height: 36px; opacity: .25; margin-bottom: .25rem; }
 
     .fade-up { animation: fdFadeUp .45s ease both; }
     @keyframes fdFadeUp {
@@ -387,12 +437,35 @@
 @section('modals')
 
 <div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
-    <div class="modal" style="max-width:500px;">
-        <div class="modal-header">
-            <div class="modal-title">Announcement Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">✕</button>
+    <div class="modal" style="max-width:560px;padding:0;overflow:hidden;">
+        <div class="ann-modal-header">
+            <div class="ann-modal-top">
+                <div class="ann-modal-title-text" id="vm-title"></div>
+                <button class="modal-close" onclick="closeModal('view-modal')" style="flex-shrink:0;">✕</button>
+            </div>
+            <div class="ann-modal-badges" id="vm-badges"></div>
+            <div class="ann-modal-meta-row" id="vm-meta"></div>
         </div>
-        <div id="view-content"></div>
+
+        <div class="ann-tabs" id="vm-tabs">
+            <button class="ann-tab active" data-tab="content" onclick="switchTab(this,'content')">
+                <img src="{{ asset('icons/eye.png') }}" style="width:13px;height:13px;opacity:.6;" alt="">
+                Content
+            </button>
+            <button class="ann-tab" data-tab="files" onclick="switchTab(this,'files')">
+                <img src="{{ asset('icons/attach.png') }}" style="width:13px;height:13px;opacity:.6;" alt="">
+                Attachments
+                <span class="ann-tab-badge" id="vm-file-count">0</span>
+            </button>
+        </div>
+
+        <div class="ann-tab-pane active" id="tab-content">
+            <div class="ann-content-body" id="vm-body"></div>
+        </div>
+
+        <div class="ann-tab-pane" id="tab-files">
+            <div class="file-preview-grid" id="vm-files"></div>
+        </div>
     </div>
 </div>
 
@@ -412,6 +485,12 @@
         return map[p] ?? '<span class="ann-priority priority-low">Low</span>';
     }
 
+    function statusBadge(s) {
+        return s === 'closed'
+            ? '<span class="ann-priority" style="background:#f5f5f5;color:#666;border:1px solid #ddd;">Closed</span>'
+            : '<span class="ann-priority" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;">Active</span>';
+    }
+
     function fmtDate(d) {
         if (!d) return '—';
         return new Date(d).toLocaleDateString('en-US', {
@@ -424,14 +503,53 @@
         return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
-    function fileCount(attachment) {
-        if (!attachment) return 0;
-        return attachment.split(',').filter(f => f.trim()).length;
+    function getFiles(attachment) {
+        if (!attachment) return [];
+        return attachment.split(',').map(f => f.trim()).filter(Boolean);
+    }
+
+    function fileExt(path) {
+        return (path.split('.').pop() || '').toLowerCase();
+    }
+
+    function buildFilePreview(filePath) {
+        const name = filePath.split('/').pop();
+        const ext  = fileExt(filePath);
+        const url = filePath.startsWith('http') ? filePath : `/storage/${filePath}`;
+        const isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
+        const isPdf   = ext === 'pdf';
+
+        let previewHtml = '';
+        if (isImage) {
+            previewHtml = `<div class="file-preview-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy"></div>`;
+        } else if (isPdf) {
+            previewHtml = `<div class="file-preview-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
+        } else {
+            previewHtml = `
+                <div class="file-preview-unsupported">
+                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                    <span>Preview not available for <strong>.${ext}</strong> files.</span>
+                </div>`;
+        }
+
+        return `
+            <div class="file-preview-item">
+                <div class="file-preview-bar">
+                    <div class="file-preview-name">
+                        <img src="{{ asset('icons/attach.png') }}" alt="">
+                        ${escHtml(name)}
+                    </div>
+                    <a href="${url}" target="_blank" class="file-preview-dl" download>
+                        ↓ Download
+                    </a>
+                </div>
+                ${previewHtml}
+            </div>`;
     }
 
     function buildCard(r) {
         const isClosed = r.status === 'closed';
-        const files    = fileCount(r.attachment);
+        const files    = getFiles(r.attachment);
         return `
             <div class="ann-card ${isClosed ? 'closed-card' : ''}">
                 <div>${priorityBadge(r.priority)}</div>
@@ -444,7 +562,7 @@
                         </div>
                         <div class="file-chip">
                             <img src="{{ asset('icons/attach.png') }}" alt="">
-                            ${files} file${files !== 1 ? 's' : ''}
+                            ${files.length} file${files.length !== 1 ? 's' : ''}
                         </div>
                     </div>
                     <div class="ann-actions">
@@ -453,86 +571,77 @@
                         </button>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
     }
 
     function renderCols() {
         const active = filtered.filter(r => r.status !== 'closed');
         const closed = filtered.filter(r => r.status === 'closed');
-
         document.getElementById('active-count').textContent = active.length;
         document.getElementById('closed-count').textContent = closed.length;
-
         document.getElementById('active-col').innerHTML = active.length
             ? active.map(buildCard).join('')
             : '<div class="empty-col">No active announcements.</div>';
-
         document.getElementById('closed-col').innerHTML = closed.length
             ? closed.map(buildCard).join('')
             : '<div class="empty-col">No closed announcements.</div>';
     }
 
     window.handleOverlayClick = function(e, modalId) {
-    if (e.target === document.getElementById(modalId)) {
-        closeModal(modalId);
-    }
+        if (e.target === document.getElementById(modalId)) closeModal(modalId);
     };
 
     function applyFilters() {
         const q        = document.getElementById('search-input').value.toLowerCase();
         const priority = document.getElementById('priority-filter').value;
         const sort     = document.getElementById('sort-select').value;
-
         filtered = announcements.filter(r => {
-            const matchSearch =
-                (r.title   ?? '').toLowerCase().includes(q) ||
-                (r.content ?? '').toLowerCase().includes(q);
+            const matchSearch   = (r.title ?? '').toLowerCase().includes(q) || (r.content ?? '').toLowerCase().includes(q);
             const matchPriority = !priority || r.priority === priority;
             return matchSearch && matchPriority;
         });
-
         if (sort === 'newest') filtered.sort((a, b) => new Date(b.posted_at) - new Date(a.posted_at));
         if (sort === 'oldest') filtered.sort((a, b) => new Date(a.posted_at) - new Date(b.posted_at));
-
         renderCols();
     }
 
-    function viewAnn(r) {
-        const files = r.attachment
-            ? r.attachment.split(',').filter(f => f.trim()).map(f =>
-                `<a href="/storage/${f.trim()}" target="_blank" style="color:var(--bright-pink);font-size:.82rem;">${f.trim().split('/').pop()}</a>`
-              ).join('<br>')
-            : '—';
+    function switchTab(btn, tabId) {
+        document.querySelectorAll('.ann-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ann-tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
 
-        document.getElementById('view-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Title</div>
-                <div class="view-detail-val" style="font-weight:700;">${escHtml(r.title)}</div>
+    function viewAnn(r) {
+        const files = getFiles(r.attachment);
+
+        document.getElementById('vm-title').textContent = r.title ?? '';
+        document.getElementById('vm-badges').innerHTML  = priorityBadge(r.priority) + ' ' + statusBadge(r.status);
+        document.getElementById('vm-meta').innerHTML    = `
+            <div class="ann-modal-meta-item">
+                <img src="{{ asset('icons/eye.png') }}" alt="">
+                <span>Posted ${fmtDate(r.posted_at)}</span>
             </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Priority</div>
-                <div class="view-detail-val">${priorityBadge(r.priority)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Status</div>
-                <div class="view-detail-val">${r.status === 'closed'
-                    ? '<span class="ann-priority" style="background:#f5f5f5;color:#666;border:1px solid #ddd;">Closed</span>'
-                    : '<span class="ann-priority" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;">Active</span>'}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Content</div>
-                <div class="view-detail-val" style="white-space:pre-wrap;">${escHtml(r.content)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Posted</div>
-                <div class="view-detail-val">${fmtDate(r.posted_at)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Attachments</div>
-                <div class="view-detail-val">${files}</div>
-            </div>
-        `;
+            <div class="ann-modal-meta-item">
+                <img src="{{ asset('icons/attach.png') }}" alt="">
+                <span>${files.length} attachment${files.length !== 1 ? 's' : ''}</span>
+            </div>`;
+
+        document.getElementById('vm-body').textContent = r.content ?? '';
+        document.getElementById('vm-file-count').textContent = files.length;
+
+        document.getElementById('vm-files').innerHTML = files.length
+            ? files.map(buildFilePreview).join('')
+            : `<div class="no-files-state">
+                <img src="{{ asset('icons/attach.png') }}" alt="">
+                <span>No attachments on this announcement.</span>
+               </div>`;
+
+        document.querySelectorAll('.ann-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ann-tab-pane').forEach(p => p.classList.remove('active'));
+        document.querySelector('.ann-tab[data-tab="content"]').classList.add('active');
+        document.getElementById('tab-content').classList.add('active');
+
         openModal('view-modal');
     }
 
