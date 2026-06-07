@@ -1116,8 +1116,17 @@
                                 <span class="tname">{{ $t['name'] }}</span>
                             </div>
                             <div class="tenant-right">
-                                <span class="t-amount">₱{{ number_format($t['room_share'], 2) }}</span>
-                                <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ ucfirst($t['payment_status']) }}</span>
+                                <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '—' : '₱' . number_format($t['room_share'], 2) }}</span>
+                                @php
+                                    $badgeLabels = [
+                                        'pending-tenant'  => 'Pending',
+                                        'inactive-tenant' => 'Inactive',
+                                        'not-billed'      => 'Not Billed',
+                                        'not billed'      => 'Not Billed',
+                                    ];
+                                    $badgeText = $badgeLabels[$t['payment_status']] ?? ucfirst($t['payment_status']);
+                                @endphp
+                                <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ $badgeText }}</span>
                             </div>
                         </div>
                         @endforeach
@@ -1332,7 +1341,7 @@ function resetButton(btn, originalText) {
 }
 
 const tenantsByFloor = @json(
-    $allTenants->groupBy('floor')->map(fn($tenants) =>
+    $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
             'name'        => $t->first_name . ' ' . $t->last_name,
             'room_number' => $t->room_number,
@@ -1506,116 +1515,6 @@ function escapeHtml(value) {
     });
 }
 
-
-function openUpdateModal(room) {
-    let html = `
-        <div class="modal-grid" style="margin-bottom:1rem;">
-            <div class="modal-field">
-                <label>Room</label>
-                <input type="text" value="${room.room_number}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Floor</label>
-                <input type="text" value="${room.floor}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Previous Reading (m³)</label>
-                <input type="number" step="0.01" id="edit-prev" value="${parseFloat(room.prev_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
-            </div>
-            <div class="modal-field">
-                <label>Current Reading (m³)</label>
-                <input type="number" step="0.01" id="edit-curr" value="${parseFloat(room.curr_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
-            </div>
-            <div class="modal-field">
-                <label>Floor Consumption (m³)</label>
-                <input type="text" id="edit-consumption" value="${parseFloat(room.floor_consumption_m3 ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Total Floor Bill (₱)</label>
-                <input type="text" id="edit-total-bill" value="${parseFloat(room.total_floor_bill ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Per Tenant Share (₱)</label>
-                <input type="text" id="edit-room-share" value="${parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Due Date</label>
-                <input type="date" id="edit-due-date" value="${room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : ''}">
-            </div>
-        </div>
-    `;
-
-    room.tenants.forEach(function(t) {
-        const referenceCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
-        const submittedAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
-        const proofUrl      = t.proof_of_payment_url   ? escapeHtml(t.proof_of_payment_url)   : '';
-        const proofHtml     = proofUrl
-            ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
-                   <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(t.name)}" class="proof-image">
-               </a>`
-            : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
-
-        const isPaid = t.payment_status === 'paid';
-        const receiptBtn = isPaid && t.billing_id
-            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" rel="noopener" class="btn-receipt">
-                   <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
-                   Download Receipt
-               </a>`
-            : '';
-
-        html += `
-            <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
-                <div class="view-row">
-                    <span class="view-label">Tenant</span>
-                    <span class="view-val">${escapeHtml(t.name)}</span>
-                </div>
-                <div class="view-row">
-                    <span class="view-label">Share</span>
-                    <span class="view-val tenant-share-display">₱${parseFloat(t.room_share).toFixed(2)}</span>
-                </div>
-                <div class="payment-proof-card">
-                    <div class="payment-proof-head">
-                        <span>Payment Proof</span>
-                        <span class="badge badge-${String(t.payment_status || 'unpaid').replaceAll(' ', '-')}">${escapeHtml(t.payment_status || 'unpaid')}</span>
-                    </div>
-                    <div class="payment-proof-meta">
-                        <div class="view-row">
-                            <span class="view-label">Reference</span>
-                            <span class="view-val">${referenceCode}</span>
-                        </div>
-                        <div class="view-row">
-                            <span class="view-label">Submitted</span>
-                            <span class="view-val">${submittedAt}</span>
-                        </div>
-                    </div>
-                    ${proofHtml}
-                </div>
-                <div class="modal-field" style="margin-top:1rem;">
-                    <label>Payment Status</label>
-                    <select class="status-select" data-billing-id="${t.billing_id ?? ''}" onchange="toggleRejectionReason(this)">
-                        <option value="unpaid"   ${t.payment_status === 'unpaid'   ? 'selected' : ''}>Unpaid</option>
-                        <option value="paid"     ${t.payment_status === 'paid'     ? 'selected' : ''}>Paid</option>
-                        <option value="overdue"  ${t.payment_status === 'overdue'  ? 'selected' : ''}>Overdue</option>
-                        <option value="pending"  ${t.payment_status === 'pending'  ? 'selected' : ''}>Pending</option>
-                        <option value="rejected" ${t.payment_status === 'rejected' ? 'selected' : ''}>Rejected</option>
-                    </select>
-                    <div class="rejection-reason-wrap ${t.payment_status === 'rejected' ? 'visible' : ''}">
-                        <label class="rejection-reason-label">Reason for rejection</label>
-                        <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="e.g. Blurry image, wrong reference number...">${escapeHtml(t.rejection_reason || '')}</textarea>
-                    </div>
-                </div>
-                ${receiptBtn}
-            </div>
-        `;
-    });
-
-    const primaryBilling = room.tenants.find(t => t.billing_id);
-
-    document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
-    document.getElementById('update-content').innerHTML = html;
-    openModal('update-modal');
-}
-
 function toggleRejectionReason(select) {
     var wrap = select.closest('.modal-field').querySelector('.rejection-reason-wrap');
     if (!wrap) return;
@@ -1646,10 +1545,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const prev_reading   = document.getElementById('edit-prev').value;
             const curr_reading   = document.getElementById('edit-curr').value;
             const due_date       = document.getElementById('edit-due-date').value;
-            const statusSelects  = updateForm.querySelectorAll('.status-select');
-            const firstSelect    = statusSelects[0];
-            const payment_status = firstSelect ? firstSelect.value : 'unpaid';
-            const status_updates = Array.from(statusSelects)
+                const statusSelects  = updateForm.querySelectorAll('.status-select');
+                const firstSelect    = Array.from(statusSelects).find(s => s.value !== 'pending-tenant' && s.value !== 'inactive-tenant');
+                const payment_status = firstSelect ? firstSelect.value : 'unpaid';
+                const status_updates = Array.from(statusSelects)
+                .filter(select => select.value !== 'pending-tenant' && select.value !== 'inactive-tenant')
                 .map(select => {
                     const field = select.closest('.modal-field');
                     const textarea = field ? field.querySelector('.rejection-reason-input') : null;
@@ -1662,7 +1562,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .filter(update => Number.isInteger(update.billing_id));
 
             if (!billing_id) {
-                showToast('No billing record found.', 'error');
+                showToast('No billing record for this room as all tenants are pending or inactive.', 'error');
                 return;
             }
 
@@ -1820,7 +1720,9 @@ function exportBillingCsv() {
 
     billingExportGroups.forEach(function(group) {
         group.rooms.forEach(function(room) {
-            room.tenants.forEach(function(tenant) {
+            room.tenants.filter(function(tenant) {
+                return tenant.payment_status !== 'pending-tenant' && tenant.payment_status !== 'inactive-tenant';
+            }).forEach(function(tenant) {
                 rows.push([
                     selectedBillingMonth,
                     group.floor,
@@ -1869,7 +1771,9 @@ function exportBillingPdf() {
     var rows = '';
     billingExportGroups.forEach(function(group) {
         group.rooms.forEach(function(room) {
-            room.tenants.forEach(function(tenant) {
+            room.tenants.filter(function(tenant) {
+                return tenant.payment_status !== 'pending-tenant' && tenant.payment_status !== 'inactive-tenant';
+            }).forEach(function(tenant) {
                 rows += '<tr>'
                     + '<td>' + escHtml(group.floor) + '</td>'
                     + '<td>' + escHtml(String(room.room_number)) + '</td>'
@@ -2014,7 +1918,8 @@ function openUpdateModal(room) {
     document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
 
     document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
-    document.getElementById('um-disp-share').textContent = '₱' + parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2);
+    const firstBilledTenant = room.tenants.find(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
+    document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '—';
     recalcUpdateShare();
 
     let paymentsHtml = '';
@@ -2033,9 +1938,9 @@ function openUpdateModal(room) {
                     <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
                     <div style="flex:1;">
                         <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
-                        <div style="font-size:12px;color:var(--ink-soft);">Share: ₱${parseFloat(t.room_share).toFixed(2)}</div>
+                        <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
                     </div>
-                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${escapeHtml(t.payment_status||'unpaid')}</span>
+                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${{'pending-tenant':'Pending','inactive-tenant':'Inactive','not billed':'Not Billed','not-billed':'Not Billed'}[t.payment_status] || escapeHtml(t.payment_status||'unpaid')}</span>
                 </div>
                 <div style="padding:.9rem 1rem;">
                     <div class="modal-field">
@@ -2046,6 +1951,8 @@ function openUpdateModal(room) {
                             <option value="overdue"  ${t.payment_status==='overdue' ?'selected':''}>Overdue</option>
                             <option value="pending"  ${t.payment_status==='pending' ?'selected':''}>Pending</option>
                             <option value="rejected" ${t.payment_status==='rejected'?'selected':''}>Rejected</option>
+                            <option value="pending-tenant"  disabled ${t.payment_status==='pending-tenant' ?'selected':''}>Pending Tenant</option>
+                            <option value="inactive-tenant" disabled ${t.payment_status==='inactive-tenant'?'selected':''}>Inactive Tenant</option>
                         </select>
                         <div class="rejection-reason-wrap ${t.payment_status==='rejected'?'visible':''}">
                             <label class="rejection-reason-label">Reason for rejection</label>
@@ -2059,7 +1966,7 @@ function openUpdateModal(room) {
     document.getElementById('um-tenant-statuses').innerHTML = paymentsHtml;
 
     let proofHtml = '';
-    room.tenants.forEach(function(t) {
+    room.tenants.filter(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant').forEach(function(t) {
         const refCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
         const subAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
         const proofUrl = t.proof_of_payment_url  ? escapeHtml(t.proof_of_payment_url)   : '';
@@ -2082,9 +1989,10 @@ function openUpdateModal(room) {
                 ${imgHtml}
             </div>`;
     });
-    document.getElementById('um-proof-content').innerHTML = proofHtml;
+    document.getElementById('um-proof-content').innerHTML = proofHtml ||
+        `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.4rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No active tenants with billing in this room.</div>`;
 
-    const primaryBilling = room.tenants.find(t => t.billing_id);
+    const primaryBilling = room.tenants.find(t => t.billing_id && t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
     document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     openModal('update-modal');
 }
@@ -2097,6 +2005,12 @@ function recalcUpdateShare() {
     if (consField) consField.value = cons.toFixed(2) + ' m³';
     const dispCons = document.getElementById('um-disp-cons');
     if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m³';
+    const dispShare = document.getElementById('um-disp-share');
+    if (dispShare && dispShare.textContent !== '—') {
+        dispShare.textContent = '~ recalculating on save';
+        dispShare.style.fontSize = '11px';
+        dispShare.style.color = 'var(--ink-soft)';
+    }
 }
 
 @if(session('success'))
