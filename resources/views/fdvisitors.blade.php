@@ -1221,7 +1221,6 @@
                     + '<img src="' + src + '" alt="ID Photo" id="vmodal-id-photo"'
                     + ' onerror="document.getElementById(\'vmodal-id-photo\').style.display=\'none\'; document.getElementById(\'vmodal-photo-error\').style.display=\'flex\';">'
                     + '<div id="vmodal-photo-error" class="vmodal-photo-no" style="display:none;">'
-                        + '<span class="vmodal-photo-no-icon">&#128247;</span>'
                         + '<p>Could not load photo.</p>'
                     + '</div>'
                 + '</div>'
@@ -1237,7 +1236,6 @@
             photoArea =
                 '<div class="vmodal-photo-frame">'
                     + '<div class="vmodal-photo-no">'
-                        + '<span class="vmodal-photo-no-icon">&#128247;</span>'
                         + '<p>No ID photo uploaded.</p>'
                     + '</div>'
                 + '</div>';
