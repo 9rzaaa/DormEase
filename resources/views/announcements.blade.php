@@ -1227,8 +1227,8 @@
                 <button class="compose-tool-btn" title="Attach file" onclick="openModal('post-modal')">
                     <img src="{{ asset('icons/attach.png') }}" alt="">
                 </button>
-                <button class="compose-tool-btn" onclick="openModal('post-modal')" style="border-color:var(--pink-100);background:var(--petal);" title="Schedule announcement">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--hot-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <button class="compose-tool-btn" onclick="openModal('post-modal')" title="Schedule announcement">
+                    <img src="{{ asset('icons/clock.png') }}" alt="">
                 </button>
             </div>
             <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openModal('post-modal')">
