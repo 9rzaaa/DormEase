@@ -29,7 +29,9 @@ class SettingsController extends Controller
             $notifPrefs = array_merge($defaultPrefs, $saved ?? []);
         }
 
-        return view('settings', compact('staff', 'notifPrefs'));
+        $archiveSettings = \App\Models\ArchiveSetting::all()->keyBy('module');
+
+        return view('settings', compact('staff', 'notifPrefs', 'archiveSettings'));
     }
 
     public function updateNotifications(Request $request)
