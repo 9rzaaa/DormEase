@@ -260,7 +260,6 @@
 
     tbody tr:hover { background: #fff7fb; }
 
-
     .badge { padding: .28rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
     .badge-approved,
     .badge-completed { background: #e8faf5; color: var(--green); border: 1.5px solid var(--green); }
@@ -406,7 +405,7 @@
         padding: 0 1.2rem;
         flex-shrink: 0;
         margin-top: -1.2rem;
-}
+    }
 
     .modal-tab {
         padding: .8rem 1.1rem;
@@ -500,15 +499,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 200px;
     }
 
     .modal-photo-frame img {
         width: 100%;
         height: auto;
-        max-height: 320px;
         object-fit: contain;
         display: block;
+        border-radius: 12px;
     }
 
     .modal-photo-no {
@@ -1362,7 +1360,7 @@
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
             photoArea =
                 '<div class="modal-photo-frame">'
-                    + '<img src="' + src + '" alt="ID Photo" onerror="this.closest(\'.modal-photo-frame\').innerHTML=\'<div class=\\\"modal-photo-no\\\"><span class=\\\"modal-photo-no-icon\\\">🪪</span><p>Could not load photo.</p></div>\''
+                    + '<img src="' + src + '" alt="ID Photo" onerror="this.closest(\'.modal-photo-frame\').innerHTML=\'<div class=\\\"modal-photo-no\\\"><span class=\\\"modal-photo-no-icon\\\">🪪</span><p>Could not load photo.</p></div>\'">'
                 + '</div>'
                 + '<div class="modal-photo-actions">'
                     + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="openLightbox(\'' + src + '\', \'' + (v.id_type ?? 'ID Photo') + '\')">'
