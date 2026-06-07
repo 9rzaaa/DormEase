@@ -281,13 +281,25 @@
 
     .empty-state { text-align: center; padding: 1.8rem; color: var(--ink-muted); font-size: .88rem; }
 
-    .announce-item { padding: .85rem .5rem; border-bottom: 1px solid var(--petal); border-radius: 8px; transition: background .15s; }
+    .announce-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: .85rem .5rem;
+        border-bottom: 1px solid var(--petal);
+        border-radius: 8px;
+        transition: background .15s;
+    }
     .announce-item:last-child { border-bottom: none; }
     .announce-item:hover { background: var(--petal); }
+
+    .announce-item-left { flex: 1; min-width: 0; }
     .announce-title   { font-size: .9rem; font-weight: 700; color: var(--ink); }
     .announce-date    { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
-    .announce-actions { display: flex; gap: .5rem; margin-top: .5rem; }
-    .announce-action-btn { font-size: .75rem; font-weight: 700; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--baby-pink); background: var(--petal); color: var(--hot-pink); cursor: pointer; transition: background .2s; font-family: var(--ff-body); }
+
+    .announce-actions { display: flex; gap: .4rem; flex-shrink: 0; align-items: center; }
+    .announce-action-btn { font-size: .75rem; font-weight: 700; padding: .28rem .7rem; border-radius: 6px; border: 1.5px solid var(--baby-pink); background: var(--petal); color: var(--hot-pink); cursor: pointer; transition: background .2s; font-family: var(--ff-body); white-space: nowrap; }
     .announce-action-btn:hover { background: var(--baby-pink); }
     .announce-action-btn.delete { background: #fff0f3; border-color: var(--mid-pink); color: #C4003A; }
     .announce-action-btn.delete:hover { background: var(--baby-pink); }
@@ -391,6 +403,8 @@
         .chart-switcher { flex-wrap: wrap; }
         .emerg-detail { font-size: .82rem; }
         .emerg-modal-list { max-height: 260px; }
+        .announce-item { flex-wrap: wrap; }
+        .announce-actions { width: 100%; justify-content: flex-end; }
     }
 </style>
 @endsection
@@ -597,13 +611,15 @@
                     @else
                         @foreach($announcements as $ann)
                             <div class="announce-item" id="ann-row-{{ $ann->announcement_id }}">
-                                <div style="display:flex;align-items:center;gap:.4rem;">
-                                    <div class="announce-title">{{ $ann->title }}</div>
-                                    <span class="priority-badge priority-{{ strtolower($ann->priority ?? 'low') }}">
-                                        {{ ucfirst($ann->priority ?? 'Low') }}
-                                    </span>
+                                <div class="announce-item-left">
+                                    <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
+                                        <div class="announce-title">{{ $ann->title }}</div>
+                                        <span class="priority-badge priority-{{ strtolower($ann->priority ?? 'low') }}">
+                                            {{ ucfirst($ann->priority ?? 'Low') }}
+                                        </span>
+                                    </div>
+                                    <div class="announce-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F d, Y · g:i A') }}</div>
                                 </div>
-                                <div class="announce-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F d, Y · g:i A') }}</div>
                                 <div class="announce-actions">
                                     <button class="announce-action-btn"
                                         onclick="openEditModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', '{{ addslashes($ann->content) }}', '{{ $ann->priority }}', '{{ $ann->status }}')">
@@ -676,7 +692,6 @@
 
 @section('modals')
 
-{{-- Post Announcement Modal --}}
 <div class="modal-overlay" id="announce-modal" onclick="handleOverlayClick(event, 'announce-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -718,7 +733,6 @@
     </div>
 </div>
 
-{{-- Edit Announcement Modal --}}
 <div class="modal-overlay" id="edit-ann-modal" onclick="handleOverlayClick(event, 'edit-ann-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -761,7 +775,6 @@
     </div>
 </div>
 
-{{-- Delete Announcement Modal --}}
 <div class="modal-overlay" id="delete-ann-modal" onclick="handleOverlayClick(event, 'delete-ann-modal')">
     <div class="modal" style="max-width:380px;" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -782,7 +795,6 @@
     </div>
 </div>
 
-{{-- Emergency Alerts Modal --}}
 <div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -824,7 +836,6 @@
     </div>
 </div>
 
-{{-- Notification Detail Modal --}}
 <div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
     <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -851,7 +862,6 @@
     </div>
 </div>
 
-{{-- Maintenance Detail Modal --}}
 <div class="modal-overlay" id="maint-detail-modal" onclick="handleOverlayClick(event, 'maint-detail-modal')">
     <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-header">
