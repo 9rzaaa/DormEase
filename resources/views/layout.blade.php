@@ -192,9 +192,7 @@
         border: 2px solid var(--white);
     }
 
-    #notif-wrap {
-        position: relative;
-    }
+    #notif-wrap { position: relative; }
     .notif-dropdown {
         position: absolute;
         top: 100%;
@@ -391,9 +389,7 @@
     }
     .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-    .notif-detail-modal {
-        max-width: 520px;
-    }
+    .notif-detail-modal { max-width: 520px; }
     .notif-detail-type-badge {
         display: inline-flex; align-items: center; gap: .4rem;
         padding: .3rem .75rem; border-radius: 20px;
@@ -401,10 +397,12 @@
         margin-bottom: 1.2rem;
     }
     .notif-detail-type-badge.maintenance  { background: #fff7e6; color: #b45309; border: 1.5px solid #fde68a; }
-    .notif-detail-type-badge.emergency    { background: #fff0f0; color: var(--red);   border: 1.5px solid #fca5a5; }
+    .notif-detail-type-badge.emergency    { background: #fff0f0; color: var(--red); border: 1.5px solid #fca5a5; }
     .notif-detail-type-badge.billing      { background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; }
     .notif-detail-type-badge.document     { background: var(--blush); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .notif-detail-type-badge.announcement { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
+    .notif-detail-type-badge.tenant       { background: var(--blush); color: var(--bright-pink); border: 1.5px solid var(--baby-pink); }
+    .notif-detail-type-badge.visitor      { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
     .notif-detail-type-badge.general      { background: var(--petal); color: var(--ink-muted); border: 1.5px solid var(--baby-pink); }
 
     .notif-detail-icon-wrap {
@@ -447,12 +445,6 @@
     .alert-item.resolved { background: #f0fdf8; border-color: var(--mint); }
     .alert-room   { font-weight: 700; font-size: .9rem; color: var(--ink); }
     .alert-status { font-size: .8rem; color: var(--ink-muted); margin-top: .2rem; }
-
-    .notif-detail-type-badge.tenant {
-    background: var(--blush);
-    color: var(--bright-pink);
-    border: 1.5px solid var(--baby-pink);
-    }
 
     .toast {
         position: fixed; bottom: 2rem; right: 2rem; z-index: 400;
@@ -791,7 +783,7 @@
         document:     'Document',
         announcement: 'Announcement',
         visitor:      'Visitor',
-        tenant:       'Tenant',     
+        tenant:       'Tenant',
         general:      'General',
     };
 
@@ -805,9 +797,7 @@
         icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
 
         document.getElementById('notif-detail-message').textContent = notif.message;
-
-        document.getElementById('notif-detail-time').textContent =
-            notif.time + ' (' + notif.ago + ')';
+        document.getElementById('notif-detail-time').textContent = notif.time + ' (' + notif.ago + ')';
 
         var statusEl = document.getElementById('notif-detail-status');
         if (notif.isRead) {
@@ -816,7 +806,7 @@
             statusEl.innerHTML = '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
         }
 
-        var urlRow = document.getElementById('notif-detail-url-row');
+        var urlRow  = document.getElementById('notif-detail-url-row');
         var viewBtn = document.getElementById('notif-detail-view-btn');
         if (notif.url) {
             urlRow.style.display = 'flex';
@@ -892,44 +882,30 @@
                 function beep(freq, start, dur) {
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
-                    o.connect(g);
-                    g.connect(ctx.destination);
-                    o.frequency.value = freq;
-                    o.type = 'sine';
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
                     g.gain.setValueAtTime(0.4, ctx.currentTime + start);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
                     o.start(ctx.currentTime + start);
                     o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18);
-                beep(880, 0.22, 0.18);
-                beep(1100, 0.44, 0.28);
+                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
             } catch (e) {}
         }
 
         function __formatPanicTime(dateStr) {
             if (!dateStr) return '';
-
             var match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
             var d = match
                 ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6] || 0))
                 : new Date(dateStr);
-
             if (isNaN(d)) return dateStr;
-
             var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-            var hours = d.getHours();
-            var mins = d.getMinutes();
-            var secs = d.getSeconds();
+            var hours = d.getHours(), mins = d.getMinutes(), secs = d.getSeconds();
             var ampm = hours >= 12 ? 'PM' : 'AM';
-
             hours = hours % 12 || 12;
-
             return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
-                + ' ' + String(hours).padStart(2, '0')
-                + ':' + String(mins).padStart(2, '0')
-                + ':' + String(secs).padStart(2, '0')
-                + ' ' + ampm;
+                + ' ' + String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0') + ' ' + ampm;
         }
 
         function __showPanicBanner(type, location, reportedAt) {
@@ -954,47 +930,36 @@
         window.__dismissPanic = function() {
             var banner = document.getElementById('__panic-alert-banner');
             if (banner) banner.remove();
-            if (__panicBeepInterval) {
-                clearInterval(__panicBeepInterval);
-                __panicBeepInterval = null;
-            }
+            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
             sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
         };
 
         function __fireBrowserNotification(type, location) {
             if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try {
-                    new Notification('Panic Alert', { body: type + ' \u2014 ' + location });
-                } catch (e) {}
+                try { new Notification('Panic Alert', { body: type + ' \u2014 ' + location }); } catch (e) {}
             }
         }
 
         function __pollPanic() {
             var csrfMeta = document.querySelector('meta[name="csrf-token"]');
             var csrfToken = csrfMeta ? csrfMeta.content : '';
-            fetch('{{ url("/emergency/poll-panic") }}', {
-                headers: { 'X-CSRF-TOKEN': csrfToken }
-            }).then(function(res) {
-                return res.json();
-            }).then(function(data) {
-                if (
-                    data.has_panic &&
-                    data.report_id !== __panicLastId &&
-                    !sessionStorage.getItem('panicDismissed_' + data.report_id) &&
-                    !document.getElementById('__panic-alert-banner')
-                ) {
-                    __panicLastId = data.report_id;
-                    __buildPanicAudio();
-                    __showPanicBanner(data.type, data.location, data.reported_at);
-                    __fireBrowserNotification(data.type, data.location);
-                }
-            }).catch(function() {});
+            fetch('{{ url("/emergency/poll-panic") }}', { headers: { 'X-CSRF-TOKEN': csrfToken } })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== __panicLastId
+                        && !sessionStorage.getItem('panicDismissed_' + data.report_id)
+                        && !document.getElementById('__panic-alert-banner')) {
+                        __panicLastId = data.report_id;
+                        __buildPanicAudio();
+                        __showPanicBanner(data.type, data.location, data.reported_at);
+                        __fireBrowserNotification(data.type, data.location);
+                    }
+                }).catch(function() {});
         }
 
         if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
             Notification.requestPermission();
         }
-
         __pollPanic();
         setInterval(__pollPanic, 15000);
     })();
@@ -1017,18 +982,14 @@
                 function beep(freq, start, dur) {
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
-                    o.connect(g);
-                    g.connect(ctx.destination);
-                    o.frequency.value = freq;
-                    o.type = 'sine';
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
                     g.gain.setValueAtTime(0.4, ctx.currentTime + start);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
                     o.start(ctx.currentTime + start);
                     o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18);
-                beep(880, 0.22, 0.18);
-                beep(1100, 0.44, 0.28);
+                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
             } catch (e) {}
         }
 
@@ -1036,37 +997,30 @@
             if (!dateStr) return '';
             var d = new Date(dateStr);
             if (isNaN(d)) return dateStr;
-            var hours = d.getHours();
-            var mins = d.getMinutes();
+            var hours = d.getHours(), mins = d.getMinutes();
             var ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12 || 12;
             mins = mins < 10 ? '0' + mins : mins;
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
-                + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
         }
 
         function __showNextCritical() {
             if (__criticalActive || __criticalQueue.length === 0) return;
             __criticalActive = true;
-
             var report = __criticalQueue.shift();
             var isCritical = report.urgency_level === 'critical';
-
             if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
             __criticalBeep();
             __criticalBeepInterval = setInterval(__criticalBeep, 3000);
-
             var accentColor = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
             var accentSolid = isCritical ? '#c0303a' : '#c07800';
             var label       = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
             var formattedTime = __formatTime12h(report.reported_at);
-
             var overlay = document.createElement('div');
             overlay.id = '__critical-alert-overlay';
             overlay.__reportId = report.report_id;
             overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-
             overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
                 + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
                 + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
@@ -1076,17 +1030,13 @@
                 + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
                 + '<button onclick="__dismissCritical()" style="background:#fff;color:' + accentSolid + ';border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
                 + '</div>';
-
             document.body.appendChild(overlay);
         }
 
         window.__dismissCritical = function() {
             var overlay = document.getElementById('__critical-alert-overlay');
             if (!overlay) return;
-            if (__criticalBeepInterval) {
-                clearInterval(__criticalBeepInterval);
-                __criticalBeepInterval = null;
-            }
+            if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
             sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
             overlay.remove();
             __criticalActive = false;
@@ -1101,15 +1051,13 @@
             .then(function(data) {
                 (data.reports || []).forEach(function(r) {
                     if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
-
                     if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
                         __criticalSeen.add(r.report_id);
                         __criticalQueue.push(r);
                         __showNextCritical();
                     }
                 });
-            })
-            .catch(function() {});
+            }).catch(function() {});
         }
 
         __pollCritical();
