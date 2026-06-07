@@ -21,6 +21,10 @@ class ArchiveSettingsController extends Controller
 
     public function update(Request $request)
     {
+        if (Auth::guard('staff')->user()?->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
         $request->validate([
             'modules'                    => 'required|array',
             'modules.*.module'           => 'required|string',
@@ -46,6 +50,10 @@ class ArchiveSettingsController extends Controller
 
     public function clearNow(Request $request)
     {
+        if (Auth::guard('staff')->user()?->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
         $request->validate([
             'module'         => 'required|string',
             'retention_days' => 'nullable|integer|min:1|max:3650',
