@@ -900,7 +900,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                     </div>
                     <div class="modal-warn-banner" style="margin-top:.8rem;">
-                        <span style="font-size:1rem;flex-shrink:0;">&#x26A0;&#xFE0F;</span>
+                        <span style="font-size:1rem;flex-shrink:0;"></span>
                         <span>Setting status to <strong>Inactive</strong> will block the tenant from logging into the mobile app. Setting to <strong>Move Out</strong> saves a record to archive history.</span>
                     </div>
                 </div>

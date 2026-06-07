@@ -100,9 +100,11 @@ class BillingHistoryController extends Controller
                             'proof_of_payment_url'   => $b->proof_of_payment
                                 ? Storage::disk('public')->url($b->proof_of_payment)
                                 : null,
+                            'rejection_reason' => $b->rejection_reason,
                             'dot_class' => match ($paymentStatus) {
                                 'paid'       => 'dot-green',
                                 'overdue'    => 'dot-red',
+                                'rejected'   => 'dot-red',
                                 'not billed' => 'dot-gray',
                                 default      => 'dot-orange',
                             },
@@ -130,7 +132,7 @@ class BillingHistoryController extends Controller
 
                 $floorGroups[] = [
                     'floor'                => $floor,
-                    'submeter_label'       => "Floor {$floor} — Submeter #{$floor}",
+                    'submeter_label'       => "Floor {$floor} - Submeter #{$floor}",
                     'floor_consumption_m3' => number_format($firstBilling->floor_consumption_m3 ?? 0, 2),
                     'total_floor_bill'     => $floorBillings->sum('room_share'),
                     'room_count'           => count($rooms),
