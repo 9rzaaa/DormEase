@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('staff_attendance', function (Blueprint $table) {
             $table->id('attendance_id');
-            $table->unsignedBigInteger('staff_id');
+            $table->unsignedInteger('staff_id');
             $table->string('staff_name');
             $table->string('role')->nullable();
             $table->string('shift_schedule')->nullable();
