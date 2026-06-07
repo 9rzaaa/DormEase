@@ -36,13 +36,14 @@ class EmergencyController extends Controller
     public function frontdeskIndex()
     {
         $staff = Auth::guard('staff')->user();
-        $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
-        $totalCount = $reports->count();
-        $activeCount = $reports->where('status', 'active')->count();
-        $resolvedCount = $reports->where('status', 'resolved')->count();
-        $panicCount = $reports->where('is_panic_alert', true)->count();
-        $closedArchive = $this->archiveCollection('closed');
-        $deletedArchive = $this->archiveCollection('deleted');
+        $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
+        $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
+        $activeCount   = EmergencyReport::where('status', 'active')->count();
+        $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
+        $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
+        $closedArchive   = $this->archiveCollection('closed');
+        $resolvedArchive = $this->archiveCollection('resolved');
+        $deletedArchive  = $this->archiveCollection('deleted');
 
         return view('fdemergency', compact(
             'staff',
@@ -52,6 +53,7 @@ class EmergencyController extends Controller
             'resolvedCount',
             'panicCount',
             'closedArchive',
+            'resolvedArchive',
             'deletedArchive'
         ));
     }
