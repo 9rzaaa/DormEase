@@ -73,6 +73,33 @@ Route::post('/login', function () {
     Auth::guard('staff')->login($user, request()->boolean('remember'));
     request()->session()->regenerate();
 
+    $now = now();
+    $dutyStatus = $user->duty_status;
+
+    if ($user->shift_start && $user->shift_end) {
+        $shiftStart = \Carbon\Carbon::createFromTimeString($user->shift_start);
+        $shiftEnd   = \Carbon\Carbon::createFromTimeString($user->shift_end);
+
+        $currentTime = \Carbon\Carbon::createFromTimeString($now->format('H:i:s'));
+
+        $isNightShift = $shiftEnd->lessThan($shiftStart);
+
+        if ($isNightShift) {
+            $withinShift = $currentTime->greaterThanOrEqualTo($shiftStart) || $currentTime->lessThan($shiftEnd);
+        } else {
+            $withinShift = $currentTime->between($shiftStart, $shiftEnd);
+        }
+
+        if ($withinShift) {
+            $dutyStatus = 'on_duty';
+        }
+    }
+
+    $user->updateQuietly([
+        'last_login_at' => $now,
+        'duty_status'   => $dutyStatus,
+    ]);
+
     if ($role === 'frontdesk' && $user->is_temp_password) {
         session()->flash('prompt_temp_password', true);
     }
@@ -83,6 +110,10 @@ Route::post('/login', function () {
 });
 
 Route::post('/logout', function () {
+    $user = Auth::guard('staff')->user();
+    if ($user) {
+        $user->updateQuietly(['duty_status' => 'off_duty']);
+    }
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();

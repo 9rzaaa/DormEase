@@ -25,6 +25,9 @@ class Staff extends Authenticatable
         'account_id',
         'contact_number',
         'shift_schedule',
+        'shift_start',
+        'shift_end',
+        'last_login_at',
         'duty_status',
         'attachment',
         'profile_picture',
@@ -40,7 +43,10 @@ class Staff extends Authenticatable
     protected $casts = [
         'is_temp_password' => 'boolean',
         'is_active'        => 'boolean',
-        'inactivated_at'   => 'datetime',
+        'inactivated_at' => 'datetime',
+        'last_login_at'  => 'datetime',
+        'shift_start'    => 'string',
+        'shift_end'      => 'string',
     ];
 
     public function getAuthPassword()
