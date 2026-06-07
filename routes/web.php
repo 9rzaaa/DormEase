@@ -181,6 +181,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
         Route::post('/staff/{id}/reset-password', [StaffController::class, 'resetPassword'])->name('staff.reset-password');
         Route::post('/staff/{id}/reactivate', [StaffController::class, 'reactivate'])->name('staff.reactivate');
+        Route::post('/staff/attendance/clear', [StaffController::class, 'clearAttendance'])->name('staff.attendance.clear');
     });
 
     // billing

@@ -230,6 +230,17 @@ class StaffController extends Controller
             ->with('success', $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.');
     }
 
+    public function clearAttendance()
+    {
+        $count = StaffAttendance::count();
+        StaffAttendance::truncate();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Cleared {$count} attendance record(s).",
+        ]);
+    }
+
     public function destroy($id)
     {
         $staff = Staff::findOrFail($id);
