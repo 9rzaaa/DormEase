@@ -290,71 +290,6 @@ tbody tr:hover { background: var(--soft-bg); }
 
 .empty-state { text-align: center; color: #b06080; padding: 2rem 1rem; font-size: .9rem; }
 
-.vd-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.2rem 1.4rem;
-    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
-    border-radius: 12px;
-    margin-bottom: 1.4rem;
-}
-
-.vd-header-info { min-width: 0; }
-
-.vd-header-name {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--white);
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.vd-header-email {
-    font-size: .75rem;
-    color: rgba(255,255,255,.78);
-    margin-top: .18rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.vd-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .65rem 1.2rem;
-    margin-bottom: 1rem;
-}
-
-.vd-field { display: flex; flex-direction: column; gap: .22rem; }
-.vd-field.vd-full { grid-column: 1 / -1; }
-
-.vd-label {
-    font-size: .68rem;
-    font-weight: 800;
-    color: var(--bright-pink);
-    text-transform: uppercase;
-    letter-spacing: .06em;
-}
-
-.vd-val {
-    font-size: .875rem;
-    font-weight: 600;
-    color: var(--ink);
-    background: var(--blush);
-    border: 1px solid var(--pink-100);
-    border-radius: 8px;
-    padding: .45rem .7rem;
-    min-height: 2.1rem;
-    display: flex;
-    align-items: center;
-    line-height: 1.35;
-}
-
-.vd-val.vd-muted { color: var(--ink-muted); font-weight: 500; font-style: italic; }
-
 .modal-field {
     display: flex;
     flex-direction: column;
@@ -742,9 +677,214 @@ tbody tr:hover { background: var(--soft-bg); }
 .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
 .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
 
+.td-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 0, 10, .55);
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.td-modal-card {
+    background: var(--white);
+    width: 520px;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 24px;
+    box-shadow: 0 24px 64px rgba(232,23,93,.2), 0 8px 24px rgba(0,0,0,.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: tdModalFade .25s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes tdModalFade {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.td-modal-hero {
+    position: relative;
+    padding: 1.6rem 1.8rem 1.4rem;
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+    flex-shrink: 0;
+}
+
+.td-modal-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+}
+
+.td-modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.15);
+    color: var(--white);
+    font-size: .95rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    z-index: 1;
+    line-height: 1;
+}
+
+.td-modal-close:hover { background: rgba(255,255,255,.28); }
+
+.td-modal-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+}
+
+.td-modal-meta {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .45rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.td-modal-pill {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .22rem .65rem;
+    border-radius: 99px;
+    background: rgba(255,255,255,.2);
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,.3);
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.td-modal-pill.pill-status-active   { background: rgba(31,157,105,.3); border-color: rgba(140,224,187,.5); }
+.td-modal-pill.pill-status-pending  { background: rgba(200,150,12,.3); border-color: rgba(240,192,64,.5); }
+.td-modal-pill.pill-status-inactive { background: rgba(224,72,103,.3); border-color: rgba(255,155,176,.5); }
+.td-modal-pill.pill-status-moveout  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+
+.td-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.4rem 1.8rem 1.6rem;
+}
+
+.td-modal-body::-webkit-scrollbar { width: 4px; }
+.td-modal-body::-webkit-scrollbar-track { background: transparent; }
+.td-modal-body::-webkit-scrollbar-thumb { background: var(--pink-100); border-radius: 99px; }
+
+.td-section-label {
+    font-size: .63rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--bright-pink);
+    margin: 1.1rem 0 .6rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.td-section-label:first-child { margin-top: 0; }
+
+.td-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--pink-100), transparent);
+}
+
+.td-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .55rem .75rem;
+}
+
+.td-info-item {
+    background: #fff5f9;
+    border: 1px solid #fce4ef;
+    border-radius: 11px;
+    padding: .65rem .9rem;
+    transition: background .15s, border-color .15s;
+    cursor: default;
+}
+
+.td-info-item:hover { background: #ffeef5; border-color: #f9c6dc; }
+
+.td-info-item.full { grid-column: 1 / -1; }
+
+.td-info-label {
+    font-size: .62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--hot-pink);
+    opacity: .8;
+    margin-bottom: .2rem;
+}
+
+.td-info-value {
+    font-size: .87rem;
+    font-weight: 600;
+    color: var(--black);
+    line-height: 1.35;
+}
+
+.td-info-value.empty {
+    color: var(--ink-muted);
+    font-style: italic;
+    font-weight: 400;
+    font-size: .82rem;
+}
+
+.td-modal-footer {
+    padding: .9rem 1.8rem;
+    border-top: 1px solid var(--pink-100);
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    background: #fff8fb;
+}
+
+.td-modal-close-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .55rem 1.3rem;
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--hot-pink);
+    border: 1.5px solid var(--pink-100);
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    font-family: var(--ff-body);
+}
+
+.td-modal-close-btn:hover {
+    border-color: var(--bright-pink);
+    background: var(--petal);
+}
+
 @media (max-width: 900px) {
     .stats-row { grid-template-columns: 1fr; }
     .page-body { padding: 1.2rem 1rem; }
+    .td-info-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {
@@ -759,6 +899,10 @@ tbody tr:hover { background: var(--soft-bg); }
 @media (max-width: 600px) {
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
+    .td-modal-card { border-radius: 16px; }
+    .td-modal-hero { padding: 1.3rem 1.4rem 1.2rem; }
+    .td-modal-body { padding: 1.1rem 1.4rem 1.4rem; }
+    .td-modal-footer { padding: .75rem 1.4rem; }
 }
 </style>
 @endsection
@@ -934,16 +1078,21 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
-    <div class="modal" style="max-width:480px;">
-        <div class="modal-header">
-            <div class="modal-title">Tenant Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+<div class="td-modal" id="view-modal">
+    <div class="td-modal-card">
+
+        <div class="td-modal-hero">
+            <button class="td-modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+            <div class="td-modal-name" id="td-modal-name">—</div>
+            <div class="td-modal-meta" id="td-modal-meta"></div>
         </div>
-        <div id="view-content"></div>
-        <div class="modal-actions" style="margin-top:.5rem;">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+
+        <div class="td-modal-body" id="td-modal-body"></div>
+
+        <div class="td-modal-footer">
+            <button class="td-modal-close-btn" onclick="closeModal('view-modal')">Close</button>
         </div>
+
     </div>
 </div>
 
@@ -1117,50 +1266,74 @@ function applyFilters() {
     renderTable();
 }
 
-function viewTenant(t) {
-    var isEmpty = function(v) { return !v || String(v).trim() === ''; };
-    var val = function(v, fallback) {
-        var text  = isEmpty(v) ? (fallback || '\u2014') : v;
-        var muted = isEmpty(v) ? ' vd-muted' : '';
-        return '<div class="vd-val' + muted + '">' + text + '</div>';
+function infoItem(label, value, full) {
+    var isEmpty  = !value || String(value).trim() === '' || value === '\u2014';
+    var valClass = isEmpty ? 'td-info-value empty' : 'td-info-value';
+    var display  = isEmpty ? 'Not provided' : value;
+    return '<div class="td-info-item' + (full ? ' full' : '') + '">'
+        + '<div class="td-info-label">' + label + '</div>'
+        + '<div class="' + valClass + '">' + display + '</div>'
+        + '</div>';
+}
+
+function statusPillModalClass(status) {
+    var map = {
+        active:   'pill-status-active',
+        pending:  'pill-status-pending',
+        inactive: 'pill-status-inactive',
+        move_out: 'pill-status-moveout',
     };
+    return map[status] || '';
+}
 
-    document.getElementById('view-content').innerHTML =
-        '<div class="vd-header">' +
-            '<div class="vd-header-name">' + t.first_name + ' ' + t.last_name + '</div>' +
-        '</div>' +
-        '<div class="vd-grid">' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Contact No.</div>' +
-                val(t.contact_number) +
-            '</div>' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Floor &amp; Room</div>' +
-                val(t.floor && t.room_number ? 'Floor ' + t.floor + ', Room ' + t.room_number : (t.room_number || null)) +
-            '</div>' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Stay Type</div>' +
-                val(t.stay_type) +
-            '</div>' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Status</div>' +
-                '<div class="vd-val" style="background:transparent;border-color:transparent;padding-left:0;">' + statusBadge(t.status) + '</div>' +
-            '</div>' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Move-In Date</div>' +
-                val(fmtDate(t.move_in_date) !== '\u2014' ? fmtDate(t.move_in_date) : null) +
-            '</div>' +
-            '<div class="vd-field">' +
-                '<div class="vd-label">Move-Out Date</div>' +
-                val(fmtDate(t.move_out_date) !== '\u2014' ? fmtDate(t.move_out_date) : null) +
-            '</div>' +
-            '<div class="vd-field vd-full">' +
-                '<div class="vd-label">Notes</div>' +
-                val(t.notes) +
-            '</div>' +
-        '</div>';
+function viewTenant(t) {
+    document.getElementById('td-modal-name').textContent = t.first_name + ' ' + t.last_name;
 
-    openModal('view-modal');
+    var statusLabel = { active: 'Active', pending: 'Pending', inactive: 'Inactive', move_out: 'Move Out' };
+    var metaHtml = '';
+    if (t.status) {
+        metaHtml += '<span class="td-modal-pill ' + statusPillModalClass(t.status) + '">'
+            + (statusLabel[t.status] || t.status)
+            + '</span>';
+    }
+    if (t.floor && t.room_number) {
+        metaHtml += '<span class="td-modal-pill">Floor ' + t.floor + ' &bull; Rm ' + t.room_number + '</span>';
+    } else if (t.room_number) {
+        metaHtml += '<span class="td-modal-pill">Rm ' + t.room_number + '</span>';
+    }
+    if (t.stay_type) {
+        metaHtml += '<span class="td-modal-pill">' + t.stay_type + '</span>';
+    }
+    document.getElementById('td-modal-meta').innerHTML = metaHtml;
+
+    var bodyHtml = '';
+
+    bodyHtml += '<div class="td-section-label">Contact</div>';
+    bodyHtml += '<div class="td-info-grid">';
+    bodyHtml += infoItem('Contact No.', t.contact_number);
+    bodyHtml += infoItem('Stay Type', t.stay_type);
+    bodyHtml += '</div>';
+
+    bodyHtml += '<div class="td-section-label">Room Assignment</div>';
+    bodyHtml += '<div class="td-info-grid">';
+    bodyHtml += infoItem('Floor', t.floor ? 'Floor ' + t.floor : '');
+    bodyHtml += infoItem('Room No.', t.room_number);
+    bodyHtml += '</div>';
+
+    bodyHtml += '<div class="td-section-label">Stay Period</div>';
+    bodyHtml += '<div class="td-info-grid">';
+    bodyHtml += infoItem('Move-In Date',  fmtDate(t.move_in_date));
+    bodyHtml += infoItem('Move-Out Date', fmtDate(t.move_out_date));
+    bodyHtml += '</div>';
+
+    bodyHtml += '<div class="td-section-label">Notes</div>';
+    bodyHtml += '<div class="td-info-grid">';
+    bodyHtml += infoItem('Note', t.notes, true);
+    bodyHtml += '</div>';
+
+    document.getElementById('td-modal-body').innerHTML = bodyHtml;
+
+    document.getElementById('view-modal').style.display = 'flex';
 }
 
 function openNotesModal(id, name, currentNote) {
@@ -1395,7 +1568,19 @@ document.addEventListener('click', function(e) {
 });
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+    var el = document.getElementById(id);
+    if (el.classList.contains('td-modal')) {
+        el.style.display = 'none';
+    } else {
+        el.classList.remove('open');
+    }
+}
+
+window.addEventListener('click', function(e) {
+    var vm = document.getElementById('view-modal');
+    if (e.target === vm) vm.style.display = 'none';
+});
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
     m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
