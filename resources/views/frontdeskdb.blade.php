@@ -360,14 +360,14 @@
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/tenants.png') }}" class="icon-md" alt=""></div>
                     <div class="stat-num">{{ $totalTenants ?? 0 }}</div>
-                    <div class="stat-label">Total Tenants</div>
-                    <div class="stat-sub">Currently Registered</div>
+                    <div class="stat-label">Active Tenants</div>
+                    <div class="stat-sub">Currently Active</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/bed.png') }}" class="icon-md" alt=""></div>
                     <div class="stat-num">{{ $occupiedUnits ?? 0 }}</div>
                     <div class="stat-label">Units Occupied</div>
-                    <div class="stat-sub">Out of {{ $totalUnits ?? 0 }} available</div>
+                    <div class="stat-sub">Out of {{ $totalUnits ?? 0 }} total units</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-icon"><img src="{{ asset('icons/visitor.png') }}" class="icon-md" alt=""></div>

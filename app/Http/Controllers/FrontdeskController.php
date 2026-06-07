@@ -35,17 +35,18 @@ class FrontdeskController extends Controller
         ->groupBy('status')
         ->get();
 
-        $tenantsByFloor = Tenant::where('is_active', true)
-            ->whereNotNull('room_number')
+        $tenantsByFloor = Tenant::where('status', 'active')
+            ->whereNotNull('floor')
             ->get()
-            ->groupBy(fn($t) => substr($t->room_number, 0, 1))
+            ->groupBy('floor')
             ->map(fn($group, $floor) => ['floor' => $floor, 'cnt' => $group->count()])
+            ->sortKeys()
             ->values();
 
         return view('frontdeskdb', [
             'staff'             => $staff,
-            'totalTenants'      => Tenant::where('is_active', true)->count(),
-            'occupiedUnits'     => Tenant::whereNotNull('room_number')->where('is_active', true)->count(),
+            'totalTenants'      => Tenant::where('status', 'active')->count(),
+            'occupiedUnits'     => Tenant::where('status', 'active')->whereNotNull('room_number')->distinct('room_number')->count('room_number'),
             'totalUnits'        => 25,
             'visitorsToday'     => VisitorLog::whereDate('arrival_time', Carbon::today())->count(),
             'activeEmergencies' => EmergencyReport::where('status', '!=', 'resolved')->count(),
