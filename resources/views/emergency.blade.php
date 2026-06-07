@@ -1059,6 +1059,9 @@
         <button class="archive-tab active" id="atab-closed" onclick="switchArchiveTab('closed')">
             Closed <span class="archive-tab-count" id="acount-closed">0</span>
         </button>
+        <button class="archive-tab" id="atab-resolved" onclick="switchArchiveTab('resolved')">
+            Resolved <span class="archive-tab-count" id="acount-resolved">0</span>
+        </button>
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted <span class="archive-tab-count" id="acount-deleted">0</span>
         </button>
@@ -1159,8 +1162,8 @@
                             <span class="status-dot" id="edit-status-dot"></span>
                             <select id="edit-status" onchange="updateEditStatusDot(this)">
                                 <option value="active">Active</option>
-                                <option value="resolved">Resolved</option>
-                                <option value="closed">Closed</option>
+                                <option value="resolved">Resolve &amp; Archive</option>
+                                <option value="closed">Close &amp; Archive</option>
                             </select>
                         </div>
                     </div>
@@ -1211,9 +1214,10 @@
 
 @section('scripts')
 <script>
-    const reports        = @json($reports);
-    const closedArchive  = @json($closedArchive);
-    const deletedArchive = @json($deletedArchive);
+    const reports          = @json($reports);
+    const closedArchive    = @json($closedArchive);
+    const resolvedArchive  = @json($resolvedArchive);
+    const deletedArchive   = @json($deletedArchive);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -1563,8 +1567,9 @@
     function openArchive() {
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
-        document.getElementById('acount-closed').textContent  = closedArchive.length;
-        document.getElementById('acount-deleted').textContent = deletedArchive.length;
+        document.getElementById('acount-closed').textContent    = closedArchive.length;
+        document.getElementById('acount-resolved').textContent  = resolvedArchive.length;
+        document.getElementById('acount-deleted').textContent   = deletedArchive.length;
         renderArchive();
     }
 
@@ -1575,8 +1580,9 @@
 
     function switchArchiveTab(tab) {
         archiveTab = tab;
-        document.getElementById('atab-closed').classList.toggle('active', tab === 'closed');
-        document.getElementById('atab-deleted').classList.toggle('active', tab === 'deleted');
+        document.getElementById('atab-closed').classList.toggle('active',   tab === 'closed');
+        document.getElementById('atab-resolved').classList.toggle('active', tab === 'resolved');
+        document.getElementById('atab-deleted').classList.toggle('active',  tab === 'deleted');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
@@ -1584,7 +1590,7 @@
     function renderArchive() {
         const q    = normalizeFilterValue(document.getElementById('archive-search').value);
         const list = document.getElementById('archive-list');
-        const data = archiveTab === 'closed' ? closedArchive : deletedArchive;
+        const data = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
         const fa   = data.filter(r =>
             normalizeFilterValue(r.emergency_type).includes(q) ||
             normalizeFilterValue(r.urgency_level).includes(q) ||
@@ -1599,13 +1605,13 @@
             `${fa.length} record${fa.length !== 1 ? 's' : ''}`;
 
         if (fa.length === 0) {
-            list.innerHTML = `<div class="archive-empty"><img class="archive-empty-icon" src="{{ asset('icons/nav-emerg.png') }}" alt="">No ${archiveTab} emergency reports found.</div>`;
+            list.innerHTML = `<div class="archive-empty"><img class="archive-empty-icon" src="{{ asset('icons/nav-emerg.png') }}" alt="">No ${archiveTab === 'resolved' ? 'resolved' : archiveTab} emergency reports found.</div>`;
             return;
         }
 
         const urgCls = { critical:'archive-pill-critical', urgent:'archive-pill-urgent', moderate:'archive-pill-moderate' };
-        const archiveLabel = archiveTab === 'closed' ? 'Closed on' : 'Deleted on';
-        const byLabel      = archiveTab === 'closed' ? 'Closed by' : 'Deleted by';
+        const archiveLabel = archiveTab === 'closed' ? 'Closed on' : archiveTab === 'resolved' ? 'Resolved on' : 'Deleted on';
+        const byLabel      = archiveTab === 'closed' ? 'Closed by' : archiveTab === 'resolved' ? 'Resolved by' : 'Deleted by';
 
         list.innerHTML = fa.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
@@ -1788,12 +1794,12 @@
     }
 
     function exportArchive(format) {
-        const data  = archiveTab === 'closed' ? closedArchive : deletedArchive;
-        const label = archiveTab === 'closed' ? 'Closed On' : 'Deleted On';
-        const byLbl = archiveTab === 'closed' ? 'Closed By' : 'Deleted By';
+        const data  = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+        const label = archiveTab === 'closed' ? 'Closed On' : archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
+        const byLbl = archiveTab === 'closed' ? 'Closed By' : archiveTab === 'resolved' ? 'Resolved By' : 'Deleted By';
         if (format === 'pdf') {
             const win  = window.open('', '_blank');
-            const tLbl = archiveTab === 'closed' ? 'Closed' : 'Deleted';
+            const tLbl = archiveTab === 'closed' ? 'Closed' : archiveTab === 'resolved' ? 'Resolved' : 'Deleted';
             const rows = data.map(r =>
                 `<tr><td>#EM-${String(r.id).padStart(3,'0')}</td><td>${escHtml(r.emergency_type||'')}</td><td>${escHtml(r.urgency_level||'')}</td><td>${escHtml(r.location||'')}</td><td>${escHtml(r.tenant_name||'')}</td><td>${escHtml(r.status||'')}</td><td>${fmtDatePlain(r.archived_at)}</td><td>${escHtml(r.archived_by_label||'')}</td></tr>`
             ).join('');
@@ -1810,7 +1816,9 @@
         const csv = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
-        a.download = `emergency_${archiveTab}_archive.csv`; a.click(); URL.revokeObjectURL(a.href);
+        a.download = `emergency_${archiveTab}_archive.csv`;
+        a.click();
+        URL.revokeObjectURL(a.href);
     }
 
     function getMenuForDropdown(id) {
