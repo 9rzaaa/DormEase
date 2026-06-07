@@ -181,6 +181,10 @@ class TenantController extends Controller
 
     public function reactivate($id)
     {
+        if (\Illuminate\Support\Facades\Auth::guard('staff')->user()?->role !== 'admin') {
+            return redirect()->route('tenants.index')->with('error', 'Unauthorized.');
+        }
+
         $tenant = Tenant::findOrFail($id);
 
         if ($tenant->status !== 'inactive') {

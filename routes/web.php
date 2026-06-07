@@ -155,7 +155,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
-    Route::post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
+    Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
 
     // announcements
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
@@ -258,7 +258,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::put('/settings/archive', [ArchiveSettingsController::class, 'update'])->name('settings.archive.update');
         Route::post('/settings/archive/clear-now', [ArchiveSettingsController::class, 'clearNow'])->name('settings.archive.clearNow');
     });
-    
+
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');

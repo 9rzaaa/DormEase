@@ -1291,7 +1291,8 @@ function renderTenantArchive() {
     list.innerHTML = data.map(function(r, i) {
         var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">'+r.floor+'-'+r.room_number+'</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">'+r.room_number+'</span>' : '');
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">'+r.stay_type+'</span>' : '';
-        var reactivateForm = tenantArchiveTab === 'inactive' && r.id
+        var isAdmin = {{ Auth::guard('staff')->user()?->role === 'admin' ? 'true' : 'false' }};
+        var reactivateForm = tenantArchiveTab === 'inactive' && r.id && isAdmin
             ? '<form method="POST" action="/tenants/' + r.id + '/reactivate" style="margin-top:.75rem;" onsubmit="this.querySelector(\'button\').disabled=true;showActionLoading(\'Reactivating account...\');">'
                 + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
