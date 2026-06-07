@@ -976,7 +976,7 @@
         <div class="header-actions">
             <button class="btn-archive" onclick="openArchiveDrawer()">
                 <img src="{{ asset('icons/nav-docu.png') }}" alt="">
-                Archive
+                Archive / History
             </button>
         </div>
     </div>
