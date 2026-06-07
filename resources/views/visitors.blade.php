@@ -492,6 +492,7 @@
 
     .modal-photo-frame {
         width: 100%;
+        aspect-ratio: 4 / 3;
         background: #fff5f9;
         border: 1.5px solid #fce4ef;
         border-radius: 14px;
@@ -499,12 +500,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
     }
 
     .modal-photo-frame img {
         width: 100%;
-        height: auto;
-        object-fit: contain;
+        height: 100%;
+        object-fit: cover;
         display: block;
         border-radius: 12px;
     }
@@ -1358,12 +1360,17 @@
         var photoArea = '';
         if (v.id_photo) {
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
+            window.__currentPhotoSrc = src;
             photoArea =
                 '<div class="modal-photo-frame">'
-                    + '<img src="' + src + '" alt="ID Photo" onerror="this.closest(\'.modal-photo-frame\').innerHTML=\'<div class=\\\"modal-photo-no\\\"><span class=\\\"modal-photo-no-icon\\\">🪪</span><p>Could not load photo.</p></div>\'">'
+                    + '<img src="' + src + '" alt="ID Photo" id="modal-id-photo" onerror="document.getElementById(\'modal-id-photo\').style.display=\'none\'; document.getElementById(\'modal-photo-error\').style.display=\'flex\';">'
+                    + '<div id="modal-photo-error" class="modal-photo-no" style="display:none;">'
+                        + '<span class="modal-photo-no-icon">🪪</span>'
+                        + '<p>Could not load photo.</p>'
+                    + '</div>'
                 + '</div>'
                 + '<div class="modal-photo-actions">'
-                    + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="openLightbox(\'' + src + '\', \'' + (v.id_type ?? 'ID Photo') + '\')">'
+                    + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="openLightbox(window.__currentPhotoSrc, \'' + (v.id_type ?? 'ID Photo') + '\')">'
                         + '🔍 View Photo'
                     + '</button>'
                     + '<a class="modal-photo-btn modal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
@@ -1372,7 +1379,7 @@
                 + '</div>';
         } else {
             photoArea =
-                '<div class="modal-photo-frame" style="width:100%;">'
+                '<div class="modal-photo-frame">'
                     + '<div class="modal-photo-no">'
                         + '<span class="modal-photo-no-icon">🪪</span>'
                         + '<p>No ID photo uploaded.</p>'
