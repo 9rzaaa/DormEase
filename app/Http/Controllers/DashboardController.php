@@ -18,17 +18,22 @@ class DashboardController extends Controller
     {
         $staff = Auth::guard('staff')->user();
 
-        $monthlyBilling = DB::table('water_billing')
-            ->select(
-                DB::raw('DATE_FORMAT(billing_month, "%Y-%m") as period'),
-                DB::raw('SUM(CASE WHEN payment_status = "paid" THEN room_share ELSE 0 END) as collected'),
-                DB::raw('SUM(CASE WHEN payment_status = "unpaid" THEN room_share ELSE 0 END) as unpaid')
-            )
-            ->where('billing_month', '>=', Carbon::now()->subMonths(6)->startOfMonth())
-            ->groupBy(DB::raw('DATE_FORMAT(billing_month, "%Y-%m")'))
-            ->orderBy(DB::raw('DATE_FORMAT(billing_month, "%Y-%m")'))
-            ->get()
-            ->keyBy('period');
+        $activeTenantIds = Tenant::where('status', 'active')->pluck('tenant_id');
+
+    $activeTenantIds = Tenant::where('status', 'active')->pluck('tenant_id');
+
+    $monthlyBilling = DB::table('water_billing')
+        ->select(
+            DB::raw('DATE_FORMAT(billing_month, "%Y-%m") as period'),
+            DB::raw('SUM(CASE WHEN payment_status = "paid" THEN room_share ELSE 0 END) as collected'),
+            DB::raw('SUM(CASE WHEN payment_status = "unpaid" THEN room_share ELSE 0 END) as unpaid')
+        )
+        ->whereIn('tenant_id', $activeTenantIds)
+        ->where('billing_month', '>=', Carbon::now()->subMonths(6)->startOfMonth())
+        ->groupBy(DB::raw('DATE_FORMAT(billing_month, "%Y-%m")'))
+        ->orderBy(DB::raw('DATE_FORMAT(billing_month, "%Y-%m")'))
+        ->get()
+        ->keyBy('period');
 
         $chartLabels    = [];
         $chartCollected = [];
@@ -44,7 +49,7 @@ class DashboardController extends Controller
             $chartUnpaid[]    = $found ? (float) $found->unpaid    : 0;
         }
 
-        $tenantsByFloor = Tenant::where('is_active', true)
+        $tenantsByFloor = Tenant::where('status', 'active')
             ->selectRaw('SUBSTRING(room_number, 1, 1) as floor, COUNT(*) as cnt')
             ->groupBy(DB::raw('SUBSTRING(room_number, 1, 1)'))
             ->orderBy(DB::raw('SUBSTRING(room_number, 1, 1)'))
@@ -70,8 +75,8 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'staff'                => $staff,
-            'totalTenants'         => Tenant::where('is_active', true)->count(),
-            'pendingPayments'      => DB::table('water_billing')->where('payment_status', 'unpaid')->count(),
+            'totalTenants'         => Tenant::where('status', 'active')->count(),
+            'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count(),
             'pendingMaintenance'   => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
             'unresolvedReports'    => EmergencyReport::where('status', '!=', 'resolved')->count(),
             'maintenanceRequests'  => MaintenanceRequest::with('tenant')
