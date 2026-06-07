@@ -401,7 +401,7 @@
     .notif-detail-type-badge.billing      { background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; }
     .notif-detail-type-badge.document     { background: var(--blush); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .notif-detail-type-badge.announcement { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
-    .notif-detail-type-badge.tenant       { background: var(--blush); color: var(--bright-pink); border: 1.5px solid var(--baby-pink); }
+    .notif-detail-type-badge.tenants       { background: var(--blush); color: var(--bright-pink); border: 1.5px solid var(--baby-pink); }
     .notif-detail-type-badge.visitor      { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
     .notif-detail-type-badge.general      { background: var(--petal); color: var(--ink-muted); border: 1.5px solid var(--baby-pink); }
 
@@ -600,7 +600,7 @@
                                             str_starts_with($notif->type, 'document')     => 'nav-docu',
                                             str_starts_with($notif->type, 'announcement') => 'nav-announ',
                                             str_starts_with($notif->type, 'visitor')      => 'nav-visit',
-                                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                                            str_starts_with($notif->type, 'tenants')       => 'nav-tenants',
                                             default                                        => 'bell',
                                         };
                                         $notifTypeLabel = match(true) {
@@ -610,7 +610,7 @@
                                             str_starts_with($notif->type, 'document')     => 'document',
                                             str_starts_with($notif->type, 'announcement') => 'announcement',
                                             str_starts_with($notif->type, 'visitor')      => 'visitor',
-                                            str_starts_with($notif->type, 'tenant')       => 'tenant',
+                                            str_starts_with($notif->type, 'tenants')       => 'tenants',
                                             default                                        => 'general',
                                         };
                                     @endphp
@@ -783,7 +783,7 @@
         document:     'Document',
         announcement: 'Announcement',
         visitor:      'Visitor',
-        tenant:       'Tenant',
+        tenants:       'Tenant',
         general:      'General',
     };
 
