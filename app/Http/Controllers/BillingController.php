@@ -51,7 +51,7 @@ class BillingController extends Controller
             }, $months);
         }
 
-        $allTenants = Tenant::where('is_active', true)
+        $allTenants = Tenant::where('status', 'active')
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
@@ -100,36 +100,46 @@ class BillingController extends Controller
 
                 $tenantRows = $roomTenants->map(function ($tenant) use ($billings) {
 
-                    $billing = $billings->get($tenant->tenant_id);
+                $billing = $billings->get($tenant->tenant_id);
 
+                if ($tenant->status === 'pending') {
+                    $paymentStatus = 'pending-tenant';
+                    $dotClass = 'dot-gray';
+                } elseif ($tenant->status === 'inactive') {
+                    $paymentStatus = 'inactive-tenant';
+                    $dotClass = 'dot-gray';
+                } else {
                     $paymentStatus = $billing
                         ? strtolower($billing->payment_status ?? 'unpaid')
                         : 'not billed';
 
-                    return [
-                        'billing_id'             => $billing?->billing_id,
-                        'tenant_id'              => $tenant->tenant_id,
-                        'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
-                        'room_share'             => $billing?->room_share ?? 0,
-                        'payment_status'         => $paymentStatus,
-                        'proof_of_payment'       => $billing?->proof_of_payment,
-                        'proof_of_payment_url'   => $billing?->proof_of_payment
-                            ? Storage::disk('public')->url($billing->proof_of_payment)
-                            : null,
-                        'payment_reference_code' => $billing?->payment_reference_code,
-                        'payment_submitted_at'   => $billing?->payment_submitted_at
-                            ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
-                            : null,
-                        'rejection_reason'       => $billing?->rejection_reason,
-                        'dot_class' => match ($paymentStatus) {
-                            'paid'       => 'dot-green',
-                            'overdue'    => 'dot-red',
-                            'rejected'   => 'dot-red',
-                            'not billed' => 'dot-gray',
-                            default      => 'dot-orange',
-                        },
-                    ];
-                })->values()->toArray();
+                    $dotClass = match ($paymentStatus) {
+                        'paid'       => 'dot-green',
+                        'overdue'    => 'dot-red',
+                        'rejected'   => 'dot-red',
+                        'not billed' => 'dot-gray',
+                        default      => 'dot-orange',
+                    };
+                }
+
+                return [
+                    'billing_id'             => $billing?->billing_id,
+                    'tenant_id'              => $tenant->tenant_id,
+                    'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
+                    'room_share'             => $billing?->room_share ?? 0,
+                    'payment_status'         => $paymentStatus,
+                    'proof_of_payment'       => $billing?->proof_of_payment,
+                    'proof_of_payment_url'   => $billing?->proof_of_payment
+                        ? Storage::disk('public')->url($billing->proof_of_payment)
+                        : null,
+                    'payment_reference_code' => $billing?->payment_reference_code,
+                    'payment_submitted_at'   => $billing?->payment_submitted_at
+                        ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
+                        : null,
+                    'rejection_reason'       => $billing?->rejection_reason,
+                    'dot_class'              => $dotClass,
+                ];
+            })->values()->toArray();
 
                 if (
                     $isDueDatePassed
@@ -230,7 +240,7 @@ class BillingController extends Controller
                     ['rate_per_m3'     => round($ratePerM3, 4)]
                 );
 
-                $tenantsByFloor = Tenant::where('is_active', true)
+                $tenantsByFloor = Tenant::where('status', 'active')
                     ->whereIn('floor', $floors->all())
                     ->get()
                     ->groupBy('floor');

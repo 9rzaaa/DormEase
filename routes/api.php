@@ -15,10 +15,8 @@ use App\Http\Controllers\Api\EmergencyController;
 use App\Http\Controllers\Api\DeviceTokenController;
 use App\Http\Controllers\Api\NotificationController;
 
-// ── Public routes ─────────────────────────────────────────────────────────────
-Route::post('/login', [AuthController::class, 'login']);
 
-// ── Protected routes (requires Sanctum token) ─────────────────────────────────
+Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', function (Request $request) {
@@ -35,27 +33,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 
-    // ── Announcements ─────────────────────────────────────────────────────────
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
-    // ── Password ──────────────────────────────────────────────────────────────
     Route::post('/change-password', [PasswordController::class, 'change']);
 
-    // ── Visitors ──────────────────────────────────────────────────────────────
     Route::get('/visitors',                 [VisitorController::class, 'index']);
     Route::post('/visitors',                [VisitorController::class, 'store']);
     Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
 
-    // ── Billing ───────────────────────────────────────────────────────────────
     Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
-    // ── Document Requests ─────────────────────────────────────────────────────
     Route::get('/document-requests', [DocumentRequestController::class, 'index']); 
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
     Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
     
-    // ── Tenant Documents (admin-uploaded docs visible to this tenant) ──────────────
     Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
     Route::get('/tenant/forms', [DocumentRequestController::class, 'tenantForms']);
 
@@ -65,7 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/emergency', [EmergencyController::class, 'index']);
     Route::post('/emergency', [EmergencyController::class, 'store']);
 
-    // ── Profile ───────────────────────────────────────────────────────────────
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
             'profile_photo' => 'required|image|max:2048',
