@@ -1340,14 +1340,15 @@ function resetButton(btn, originalText) {
     btn.innerHTML = originalText || btn.dataset.originalText || originalText;
 }
 
-const tenantsByFloor = @json(
-    $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
+@php
+    $tenantsByFloorData = $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
             'name'        => $t->first_name . ' ' . $t->last_name,
             'room_number' => $t->room_number,
         ])->values()
-    )
-);
+    );
+@endphp
+const tenantsByFloor = {!! json_encode($tenantsByFloorData) !!};
 
 const activeFloors   = @json($activeFloors->values());
 const unloggedFloors = @json($unloggedFloors->values());
