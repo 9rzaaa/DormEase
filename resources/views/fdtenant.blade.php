@@ -300,16 +300,6 @@ tbody tr:hover { background: var(--soft-bg); }
     margin-bottom: 1.4rem;
 }
 
-.vd-avatar {
-    width: 48px; height: 48px; border-radius: 12px;
-    background: rgba(255,255,255,.22);
-    border: 1.5px solid rgba(255,255,255,.35);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; font-weight: 800; color: var(--white);
-    flex-shrink: 0;
-    letter-spacing: -.02em;
-}
-
 .vd-header-info { min-width: 0; }
 
 .vd-header-name {
@@ -339,7 +329,6 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 .vd-field { display: flex; flex-direction: column; gap: .22rem; }
-
 .vd-field.vd-full { grid-column: 1 / -1; }
 
 .vd-label {
@@ -365,6 +354,42 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 .vd-val.vd-muted { color: var(--ink-muted); font-weight: 500; font-style: italic; }
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    margin-bottom: .9rem;
+}
+
+.modal-field label {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--hot-pink);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.modal-field textarea {
+    width: 100%;
+    padding: .6rem .9rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--baby-pink);
+    background: var(--blush);
+    font-size: .875rem;
+    color: var(--ink);
+    font-family: var(--ff-body);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .2s, background .2s;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modal-field textarea:focus {
+    border-color: var(--bright-pink);
+    background: var(--white);
+}
 
 .fade-up { animation: fadeIn .45s ease both; }
 
@@ -680,6 +705,43 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
 
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--baby-pink); border-radius: 12px;
+    background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--baby-pink); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+}
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+.is-loading { opacity: .75; pointer-events: none; }
+
+@keyframes pulseLogo {
+    0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+    50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+}
+
+.export-dropdown { position: relative; display: inline-flex; }
+.export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+.export-menu.open { display: block; }
+.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+.export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
+
 @media (max-width: 900px) {
     .stats-row { grid-template-columns: 1fr; }
     .page-body { padding: 1.2rem 1rem; }
@@ -698,12 +760,6 @@ tbody tr:hover { background: var(--soft-bg); }
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
 }
-
-.export-dropdown { position: relative; display: inline-flex; }
-.export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
-.export-menu.open { display: block; }
-.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
-.export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -819,6 +875,15 @@ tbody tr:hover { background: var(--soft-bg); }
 
 @section('modals')
 
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
 <div class="tenant-archive-backdrop" id="tad-backdrop" onclick="closeTenantArchive()"></div>
 
 <div class="tenant-archive-drawer" id="tad-drawer">
@@ -891,18 +956,14 @@ tbody tr:hover { background: var(--soft-bg); }
         <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;">
             Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
         </p>
-        <form method="POST" id="notes-form">
-            @csrf
-            @method('PATCH')
-            <div class="modal-field">
-                <label>Note</label>
-                <textarea name="notes" id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Note</button>
-            </div>
-        </form>
+        <div class="modal-field">
+            <label>Note</label>
+            <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
+            <button type="button" class="btn-submit" id="notes-save-btn" onclick="submitNote()">Save Note</button>
+        </div>
     </div>
 </div>
 
@@ -916,16 +977,27 @@ const deletedTenantArchive  = @json($deletedArchive);
 const inactiveTenantArchive = @json($inactiveArchive);
 const moveoutTenantArchive  = @json($moveoutArchive);
 
+const CSRF      = document.querySelector('meta[name="csrf-token"]').content;
 const PER_PAGE  = 8;
 let currentPage = 1;
 let filtered    = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
 let tenantArchiveTab = 'deleted';
+let currentNoteId    = null;
 
 document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-function initials(first, last) {
-    return (((first || '')[0] || '') + ((last || '')[0] || '')).toUpperCase();
+function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideActionLoading() {
+    const overlay = document.getElementById('action-loading');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
 }
 
 function fmtDate(d) {
@@ -1046,10 +1118,9 @@ function applyFilters() {
 }
 
 function viewTenant(t) {
-    var ini = (((t.first_name || '')[0] || '') + ((t.last_name || '')[0] || '')).toUpperCase();
     var isEmpty = function(v) { return !v || String(v).trim() === ''; };
     var val = function(v, fallback) {
-        var text = isEmpty(v) ? (fallback || '\u2014') : v;
+        var text  = isEmpty(v) ? (fallback || '\u2014') : v;
         var muted = isEmpty(v) ? ' vd-muted' : '';
         return '<div class="vd-val' + muted + '">' + text + '</div>';
     };
@@ -1093,33 +1164,56 @@ function viewTenant(t) {
 }
 
 function openNotesModal(id, name, currentNote) {
+    currentNoteId = id;
     document.getElementById('notes-tenant-name').textContent = name;
-    document.getElementById('notes-input').value = currentNote;
-    document.getElementById('notes-form').action = '/tenants/' + id + '/notes';
+    document.getElementById('notes-input').value = currentNote || '';
     openModal('notes-modal');
 }
 
-function exportTenants() {
-    var rows = [['Tenant Name','Floor No.','Room No.','Contact No.','Status','Notes']];
-    filtered.forEach(function(t) {
-        rows.push([t.first_name + ' ' + t.last_name, t.floor || '', t.room_number || '', t.contact_number || '', t.status || '', t.notes || '']);
-    });
-    var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
-    var blob = new Blob([csv], { type: 'text/csv' });
-    var a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
-    a.download = 'tenant-directory.csv';
-    a.click();
-}
+async function submitNote() {
+    if (!currentNoteId) return;
 
-function exportTenantsPDF() {
-    var win  = window.open('', '_blank');
-    var rows = filtered.map(function(t) {
-        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.notes || '') + '</td></tr>';
-    }).join('');
-    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
-    win.document.close();
-    win.print();
+    const note = document.getElementById('notes-input').value.trim();
+    const btn  = document.getElementById('notes-save-btn');
+
+    btn.disabled    = true;
+    btn.textContent = 'Saving...';
+    btn.classList.add('is-loading');
+    showActionLoading('Saving note...');
+
+    try {
+        const res = await fetch('/tenants/' + currentNoteId + '/notes', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ notes: note }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || 'Failed to save note.');
+        }
+
+        const idx = tenants.findIndex(function(t) { return t.tenant_id === currentNoteId; });
+        if (idx !== -1) tenants[idx].notes = note;
+
+        const filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
+        if (filteredIdx !== -1) filtered[filteredIdx].notes = note;
+
+        renderTable();
+        closeModal('notes-modal');
+        showToast('Note saved successfully.', 'success');
+    } catch (e) {
+        showToast(e.message || 'Failed to save note.', 'error');
+    } finally {
+        hideActionLoading();
+        btn.disabled    = false;
+        btn.textContent = 'Save Note';
+        btn.classList.remove('is-loading');
+    }
 }
 
 function openTenantArchive() {
@@ -1185,6 +1279,29 @@ function renderTenantArchive() {
             '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>' +
         '</div>';
     }).join('');
+}
+
+function exportTenants() {
+    var rows = [['Tenant Name','Floor No.','Room No.','Contact No.','Status','Notes']];
+    filtered.forEach(function(t) {
+        rows.push([t.first_name + ' ' + t.last_name, t.floor || '', t.room_number || '', t.contact_number || '', t.status || '', t.notes || '']);
+    });
+    var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'tenant-directory.csv';
+    a.click();
+}
+
+function exportTenantsPDF() {
+    var win  = window.open('', '_blank');
+    var rows = filtered.map(function(t) {
+        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.notes || '') + '</td></tr>';
+    }).join('');
+    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+    win.document.close();
+    win.print();
 }
 
 function exportTenantArchive(format) {
