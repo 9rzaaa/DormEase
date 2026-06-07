@@ -603,6 +603,87 @@
         white-space: nowrap;
     }
 
+    .atd-date-divider {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .35rem 0 .1rem;
+        position: sticky;
+        top: 0;
+        background: var(--soft-bg);
+        z-index: 2;
+    }
+
+    .atd-date-label {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        white-space: nowrap;
+        background: var(--petal);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .2rem .75rem;
+    }
+
+    .atd-date-line {
+        flex: 1;
+        height: 1px;
+        background: var(--pink-100);
+    }
+
+    .atd-day-count {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        white-space: nowrap;
+    }
+
+    .atd-filter-bar {
+        display: flex;
+        gap: .5rem;
+        padding: .6rem 1.8rem .2rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .atd-filter-select {
+        padding: .38rem 1.6rem .38rem .65rem;
+        border-radius: 8px;
+        border: 1px solid var(--pink-100);
+        background: var(--white);
+        font-family: var(--ff-body);
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--ink);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right .5rem center;
+        transition: border-color .2s;
+    }
+
+    .atd-filter-select:focus { border-color: var(--bright-pink); }
+
+    .atd-card-login-time {
+        font-size: .72rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        margin-top: .55rem;
+        padding-top: .55rem;
+        border-top: 1px solid var(--pink-100);
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .atd-card-login-time span { color: var(--bright-pink); font-weight: 600; }
+
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -817,6 +898,25 @@
             <img src="{{ asset('icons/search.png') }}" class="sad-search-icon" alt="">
             <input type="text" id="sad-search" placeholder="Search archived staff..." oninput="renderStaffArchive()">
         </div>
+    </div>
+
+    <div class="atd-filter-bar" id="atd-filter-bar" style="display:none;">
+        <select class="atd-filter-select" id="atd-filter-role" onchange="renderStaffArchive()">
+            <option value="">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="secretary">Secretary</option>
+            <option value="frontdesk">Front Desk</option>
+        </select>
+        <select class="atd-filter-select" id="atd-filter-duty" onchange="renderStaffArchive()">
+            <option value="">All Status</option>
+            <option value="on_duty">On Duty</option>
+            <option value="off_duty">Off Duty</option>
+        </select>
+        <select class="atd-filter-select" id="atd-filter-shift" onchange="renderStaffArchive()">
+            <option value="">All Shifts</option>
+            <option value="Day">Day</option>
+            <option value="Night">Night</option>
+        </select>
     </div>
 
     <div class="sad-list" id="sad-list"></div>
@@ -1426,7 +1526,15 @@
         document.getElementById('stab-deleted').classList.toggle('active',    tab === 'deleted');
         document.getElementById('stab-inactive').classList.toggle('active',   tab === 'inactive');
         document.getElementById('stab-attendance').classList.toggle('active', tab === 'attendance');
+        document.getElementById('clear-log-btn').style.display   = tab === 'attendance' ? 'inline-flex' : 'none';
+        document.getElementById('atd-filter-bar').style.display  = tab === 'attendance' ? 'flex' : 'none';
+        document.getElementById('sad-search').placeholder = tab === 'attendance' ? 'Search by name...' : 'Search archived staff...';
         document.getElementById('sad-search').value = '';
+        if (tab !== 'attendance') {
+            document.getElementById('atd-filter-role').value  = '';
+            document.getElementById('atd-filter-duty').value  = '';
+            document.getElementById('atd-filter-shift').value = '';
+        }
         renderStaffArchive();
     }
 
@@ -1498,11 +1606,16 @@
     }
 
     function renderAttendanceLog(q) {
+        var roleFilter  = document.getElementById('atd-filter-role')  ? document.getElementById('atd-filter-role').value  : '';
+        var dutyFilter  = document.getElementById('atd-filter-duty')  ? document.getElementById('atd-filter-duty').value  : '';
+        var shiftFilter = document.getElementById('atd-filter-shift') ? document.getElementById('atd-filter-shift').value : '';
+
         var data = attendanceLogsArchive.filter(function(r) {
-            return (r.staff_name     || '').toLowerCase().includes(q) ||
-                   (r.role           || '').toLowerCase().includes(q) ||
-                   (r.shift_schedule || '').toLowerCase().includes(q) ||
-                   (r.duty_status    || '').toLowerCase().includes(q);
+            var matchSearch = (r.staff_name || '').toLowerCase().includes(q);
+            var matchRole   = roleFilter  === '' || (r.role           || '') === roleFilter;
+            var matchDuty   = dutyFilter  === '' || (r.duty_status    || '') === dutyFilter;
+            var matchShift  = shiftFilter === '' || (r.shift_schedule || '') === shiftFilter;
+            return matchSearch && matchRole && matchDuty && matchShift;
         });
 
         var list = document.getElementById('sad-list');
@@ -1513,27 +1626,52 @@
             return;
         }
 
-        list.innerHTML = data.map(function(r, i) {
-            var dutyClass = r.duty_status === 'on_duty' ? 'atd-pill-onduty' : 'atd-pill-offduty';
-            var dutyLabel = r.duty_status === 'on_duty' ? 'On Duty' : 'Off Duty';
-            return '<div class="sad-card" style="animation-delay:' + (i * 0.03) + 's;">'
-                + '<div class="sad-card-top">'
-                    + '<div class="sad-card-id">ST-' + String(r.staff_id).padStart(3, '0') + '</div>'
-                    + '<div class="sad-card-time">' + fmtDatePlain(r.login_at) + '</div>'
-                + '</div>'
-                + '<div class="sad-card-name">' + r.staff_name + '</div>'
-                + '<div class="sad-card-meta">'
-                    + (r.role           ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
-                    + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
-                    + '<span class="sad-pill ' + dutyClass + '">' + dutyLabel + '</span>'
-                    + (r.duration ? '<span class="atd-duration">' + r.duration + '</span>' : '')
-                + '</div>'
-                + '<div class="sad-card-archived">'
-                    + 'Login: <span>' + fmtDatePlain(r.login_at) + '</span>'
-                    + '&nbsp;&nbsp;Logout: <span>' + (r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in') + '</span>'
-                + '</div>'
+        var grouped = {};
+        data.forEach(function(r) {
+            var dateKey = r.login_at ? new Date(r.login_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown Date';
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(r);
+        });
+
+        var html = '';
+        var cardIndex = 0;
+
+        Object.keys(grouped).forEach(function(dateKey) {
+            var group = grouped[dateKey];
+            html += '<div class="atd-date-divider">'
+                + '<div class="atd-date-label">' + dateKey + '</div>'
+                + '<div class="atd-date-line"></div>'
+                + '<div class="atd-day-count">' + group.length + ' session' + (group.length !== 1 ? 's' : '') + '</div>'
             + '</div>';
-        }).join('');
+
+            group.forEach(function(r) {
+                var dutyClass = r.duty_status === 'on_duty' ? 'atd-pill-onduty' : 'atd-pill-offduty';
+                var dutyLabel = r.duty_status === 'on_duty' ? 'On Duty' : 'Off Duty';
+                var loginTime  = r.login_at  ? new Date(r.login_at).toLocaleTimeString('en-US',  { hour: '2-digit', minute: '2-digit', hour12: true }) : '\u2014';
+                var logoutTime = r.logout_at ? new Date(r.logout_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Still logged in';
+
+                html += '<div class="sad-card" style="animation-delay:' + (cardIndex * 0.025) + 's;">'
+                    + '<div class="sad-card-top">'
+                        + '<div class="sad-card-id">ST-' + String(r.staff_id).padStart(3, '0') + '</div>'
+                        + (r.duration ? '<span class="atd-duration">' + r.duration + '</span>' : '')
+                    + '</div>'
+                    + '<div class="sad-card-name">' + r.staff_name + '</div>'
+                    + '<div class="sad-card-meta">'
+                        + (r.role           ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
+                        + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
+                        + '<span class="sad-pill ' + dutyClass + '">' + dutyLabel + '</span>'
+                    + '</div>'
+                    + '<div class="atd-card-login-time">'
+                        + 'Login: <span>' + loginTime + '</span>'
+                        + '&nbsp;&nbsp;&nbsp;Logout: <span>' + logoutTime + '</span>'
+                    + '</div>'
+                + '</div>';
+
+                cardIndex++;
+            });
+        });
+
+        list.innerHTML = html;
     }
 
     function exportStaffArchive(format) {
