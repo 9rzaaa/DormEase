@@ -317,11 +317,14 @@
     .vmodal-photo-panel {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 1rem;
+        padding: .25rem 0;
     }
 
     .vmodal-photo-frame {
         width: 100%;
+        aspect-ratio: 4 / 3;
         background: #fff5f9;
         border: 1.5px solid #fce4ef;
         border-radius: 14px;
@@ -329,42 +332,33 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 240px;
+        position: relative;
     }
 
     .vmodal-photo-frame img {
         width: 100%;
-        height: auto;
-        max-height: 380px;
-        object-fit: contain;
+        height: 100%;
+        object-fit: cover;
         display: block;
+        border-radius: 12px;
     }
 
     .vmodal-photo-no {
         text-align: center;
-        padding: 3rem 1.5rem;
+        padding: 2.5rem 1.5rem;
         color: var(--ink-muted);
-        width: 100%;
     }
 
     .vmodal-photo-no-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        margin: 0 auto .6rem;
-        opacity: .25;
-    }
-
-    .vmodal-photo-no-icon svg {
-        width: 48px;
-        height: 48px;
+        font-size: 2.4rem;
+        margin-bottom: .45rem;
+        opacity: .3;
+        display: block;
     }
 
     .vmodal-photo-no p { margin: 0; font-size: .83rem; font-weight: 600; color: var(--ink-muted); }
 
-    .vmodal-photo-actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+    .vmodal-photo-actions { display: flex; gap: .65rem; }
 
     .vmodal-photo-btn {
         display: inline-flex; align-items: center; gap: .4rem;
@@ -1218,33 +1212,32 @@
         document.getElementById('vminfo-idtype').innerHTML =
             vmInfoItem('ID Type', v.id_type || '—', true);
 
-        var noPhotoIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
-            + '<rect x="3" y="5" width="18" height="14" rx="2"/>'
-            + '<circle cx="9" cy="11" r="2"/>'
-            + '<path d="M3 17l4-4 3 3 4-5 4 6"/>'
-            + '</svg>';
-
         var photoArea = '';
         if (v.id_photo) {
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
+            window.__currentPhotoSrc = src;
             photoArea =
                 '<div class="vmodal-photo-frame">'
-                    + '<img src="' + src + '" alt="ID Photo"'
-                    + ' onerror="this.closest(\'.vmodal-photo-frame\').innerHTML=\'<div class=\\\"vmodal-photo-no\\\"><div class=\\\"vmodal-photo-no-icon\\\">' + noPhotoIcon.replace(/'/g, "\\'") + '</div><p>Could not load photo.</p></div>\'">'
+                    + '<img src="' + src + '" alt="ID Photo" id="vmodal-id-photo"'
+                    + ' onerror="document.getElementById(\'vmodal-id-photo\').style.display=\'none\'; document.getElementById(\'vmodal-photo-error\').style.display=\'flex\';">'
+                    + '<div id="vmodal-photo-error" class="vmodal-photo-no" style="display:none;">'
+                        + '<span class="vmodal-photo-no-icon">&#128247;</span>'
+                        + '<p>Could not load photo.</p>'
+                    + '</div>'
                 + '</div>'
                 + '<div class="vmodal-photo-actions">'
-                    + '<button class="vmodal-photo-btn vmodal-photo-btn-primary" onclick="openLightbox(\'' + src + '\', \'' + (v.id_type || 'ID Photo') + '\')">'
-                        + 'View Full Photo'
+                    + '<button class="vmodal-photo-btn vmodal-photo-btn-primary" onclick="openLightbox(window.__currentPhotoSrc, \'' + (v.id_type || 'ID Photo') + '\')">'
+                        + 'View Photo'
                     + '</button>'
                     + '<a class="vmodal-photo-btn vmodal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
-                        + 'Open in New Tab'
+                        + 'Open Full Image &#x2197;'
                     + '</a>'
                 + '</div>';
         } else {
             photoArea =
-                '<div class="vmodal-photo-frame" style="width:100%;">'
+                '<div class="vmodal-photo-frame">'
                     + '<div class="vmodal-photo-no">'
-                        + '<div class="vmodal-photo-no-icon">' + noPhotoIcon + '</div>'
+                        + '<span class="vmodal-photo-no-icon">&#128247;</span>'
                         + '<p>No ID photo uploaded.</p>'
                     + '</div>'
                 + '</div>';
