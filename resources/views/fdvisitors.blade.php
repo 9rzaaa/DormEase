@@ -5,7 +5,6 @@
 
 @section('styles')
 <style>
-
     .dorm-name { font-size: 1rem; font-weight: 600; color: var(--bright-pink); margin-top: .2rem; }
 
     .btn-primary {
@@ -186,7 +185,7 @@
         width: 100%; padding: .65rem .9rem; border-radius: 10px;
         border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
         font-size: .88rem; color: var(--ink); background: var(--pink-bg); outline: none;
-        transition: border-color .2s;
+        transition: border-color .2s; box-sizing: border-box;
     }
     .modal-field input:focus,
     .modal-field select:focus { border-color: var(--bright-pink); background: var(--white); }
@@ -216,17 +215,15 @@
     }
 
     .visitor-modal-card {
-        background: var(--white); width: 580px; max-width: 100%;
-        max-height: 92vh; overflow-y: auto;
+        background: var(--white); width: 600px; max-width: 100%;
+        max-height: 92vh;
         border-radius: 24px;
         box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
         position: relative;
         animation: modalFade .25s cubic-bezier(.22,1,.36,1);
         display: flex; flex-direction: column;
+        overflow: hidden;
     }
-    .visitor-modal-card::-webkit-scrollbar { width: 4px; }
-    .visitor-modal-card::-webkit-scrollbar-track { background: transparent; }
-    .visitor-modal-card::-webkit-scrollbar-thumb { background: #f5b8cf; border-radius: 99px; }
 
     @keyframes modalFade {
         from { opacity: 0; transform: translateY(14px) scale(.97); }
@@ -235,7 +232,6 @@
 
     .vmodal-header {
         padding: 1.2rem 1.8rem 1rem;
-        border-bottom: none;
         display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
         flex-shrink: 0;
         background: linear-gradient(135deg, #fff5f9 0%, #ffffff 100%);
@@ -282,7 +278,15 @@
     .vmodal-tab:hover { color: var(--hot-pink); }
     .vmodal-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
 
-    .vmodal-body { padding: 1.2rem 1.8rem; flex: 1; }
+    .vmodal-body {
+        padding: 1.2rem 1.8rem;
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    .vmodal-body::-webkit-scrollbar { width: 4px; }
+    .vmodal-body::-webkit-scrollbar-track { background: transparent; }
+    .vmodal-body::-webkit-scrollbar-thumb { background: #f5b8cf; border-radius: 99px; }
 
     .vmodal-tab-panel { display: none; }
     .vmodal-tab-panel.active { display: block; }
@@ -310,20 +314,57 @@
 
     .vmodal-time-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: .6rem .8rem; margin-top: .55rem; }
 
-    .vmodal-photo-area { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: .25rem 0; }
+    .vmodal-photo-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 
     .vmodal-photo-frame {
-        width: 100%; background: #fff5f9; border: 1.5px solid #fce4ef;
-        border-radius: 14px; overflow: hidden;
-        display: flex; align-items: center; justify-content: center; min-height: 200px;
+        width: 100%;
+        background: #fff5f9;
+        border: 1.5px solid #fce4ef;
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 240px;
     }
-    .vmodal-photo-frame img { width: 100%; height: auto; max-height: 320px; object-fit: contain; display: block; }
 
-    .vmodal-photo-no { text-align: center; padding: 2.5rem 1.5rem; color: var(--ink-muted); }
-    .vmodal-photo-no-icon { font-size: 2.4rem; margin-bottom: .45rem; opacity: .3; display: block; }
+    .vmodal-photo-frame img {
+        width: 100%;
+        height: auto;
+        max-height: 380px;
+        object-fit: contain;
+        display: block;
+    }
+
+    .vmodal-photo-no {
+        text-align: center;
+        padding: 3rem 1.5rem;
+        color: var(--ink-muted);
+        width: 100%;
+    }
+
+    .vmodal-photo-no-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto .6rem;
+        opacity: .25;
+    }
+
+    .vmodal-photo-no-icon svg {
+        width: 48px;
+        height: 48px;
+    }
+
     .vmodal-photo-no p { margin: 0; font-size: .83rem; font-weight: 600; color: var(--ink-muted); }
 
-    .vmodal-photo-actions { display: flex; gap: .65rem; }
+    .vmodal-photo-actions { display: flex; gap: .65rem; flex-wrap: wrap; }
 
     .vmodal-photo-btn {
         display: inline-flex; align-items: center; gap: .4rem;
@@ -482,9 +523,9 @@
         letter-spacing: .03em; text-transform: uppercase;
         display: inline-flex; align-items: center; justify-content: center; line-height: 1; vertical-align: middle;
     }
-    .archive-pill-purpose  { background: var(--pink-bg); color: var(--hot-pink); border: 1px solid var(--pink-light); }
+    .archive-pill-purpose   { background: var(--pink-bg); color: var(--hot-pink); border: 1px solid var(--pink-light); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
-    .archive-pill-deleted  { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
 
     .archive-card-footer {
         display: flex; align-items: center; gap: .4rem;
@@ -527,6 +568,7 @@
         .archive-list { padding: 0 1rem 1.2rem; }
         .archive-search-bar { padding: .8rem 1rem .6rem; }
         .archive-footer { padding: .75rem 1rem; }
+        .vmodal-time-row { grid-template-columns: 1fr 1fr; }
     }
 
     .action-loading-overlay {
@@ -766,7 +808,7 @@
             <div class="vmodal-tab-panel" id="vmpanel-photo">
                 <div class="vmodal-section-label">ID Verification</div>
                 <div class="vmodal-info-grid" id="vminfo-idtype" style="margin-bottom:1rem;"></div>
-                <div class="vmodal-photo-area" id="vminfo-photo"></div>
+                <div class="vmodal-photo-panel" id="vminfo-photo"></div>
             </div>
 
         </div>
@@ -1176,26 +1218,33 @@
         document.getElementById('vminfo-idtype').innerHTML =
             vmInfoItem('ID Type', v.id_type || '—', true);
 
+        var noPhotoIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+            + '<rect x="3" y="5" width="18" height="14" rx="2"/>'
+            + '<circle cx="9" cy="11" r="2"/>'
+            + '<path d="M3 17l4-4 3 3 4-5 4 6"/>'
+            + '</svg>';
+
         var photoArea = '';
         if (v.id_photo) {
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
             photoArea =
                 '<div class="vmodal-photo-frame">'
-                    + '<img src="' + src + '" alt="ID Photo" onerror="this.closest(\'.vmodal-photo-frame\').innerHTML=\'<div class=\\\"vmodal-photo-no\\\"><span class=\\\"vmodal-photo-no-icon\\\">🪪</span><p>Could not load photo.</p></div>\''
+                    + '<img src="' + src + '" alt="ID Photo"'
+                    + ' onerror="this.closest(\'.vmodal-photo-frame\').innerHTML=\'<div class=\\\"vmodal-photo-no\\\"><div class=\\\"vmodal-photo-no-icon\\\">' + noPhotoIcon.replace(/'/g, "\\'") + '</div><p>Could not load photo.</p></div>\'">'
                 + '</div>'
                 + '<div class="vmodal-photo-actions">'
                     + '<button class="vmodal-photo-btn vmodal-photo-btn-primary" onclick="openLightbox(\'' + src + '\', \'' + (v.id_type || 'ID Photo') + '\')">'
-                        + '🔍 View Photo'
+                        + 'View Full Photo'
                     + '</button>'
                     + '<a class="vmodal-photo-btn vmodal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
-                        + '↗ Open Full Image'
+                        + 'Open in New Tab'
                     + '</a>'
                 + '</div>';
         } else {
             photoArea =
                 '<div class="vmodal-photo-frame" style="width:100%;">'
                     + '<div class="vmodal-photo-no">'
-                        + '<span class="vmodal-photo-no-icon">🪪</span>'
+                        + '<div class="vmodal-photo-no-icon">' + noPhotoIcon + '</div>'
                         + '<p>No ID photo uploaded.</p>'
                     + '</div>'
                 + '</div>';
@@ -1522,6 +1571,5 @@
 
     filtered = visitors.slice();
     renderTable();
-
 </script>
 @endsection
