@@ -83,10 +83,6 @@ class BillingController extends Controller
 
         foreach ($allTenants->groupBy('floor') as $floor => $floorTenants) {
 
-            if ($floorTenants->where('status', 'active')->isEmpty()) {
-                continue;
-            }
-
             if ($selectedFloor && $floor != $selectedFloor) {
                 continue;
             }
@@ -172,7 +168,7 @@ class BillingController extends Controller
 
             $billingGroups[] = [
                 'floor'                => $floor,
-                'submeter_label'       => "Floor {$floor} – Submeter #{$floor}",
+                'submeter_label'       => "Floor {$floor} - Submeter #{$floor}",
                 'floor_consumption_m3' => $floorBilling
                     ? number_format($floorBilling->floor_consumption_m3 ?? 0, 2)
                     : '0.00',
