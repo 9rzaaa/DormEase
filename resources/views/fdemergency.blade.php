@@ -1409,6 +1409,7 @@
     const closedArchive    = @json($closedArchive);
     const resolvedArchive  = @json($resolvedArchive);
     const deletedArchive   = @json($deletedArchive);
+    const PER_PAGE = 10;
     let currentPage = 1;
     let filtered    = [...reports];
     let currentRep  = null;
