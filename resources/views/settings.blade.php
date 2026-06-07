@@ -439,11 +439,13 @@
             <img src="{{ asset('icons/bell.png') }}" alt="">
             Notifications
         </button>
+        @if(Auth::guard('staff')->user()?->role === 'admin')
         <button class="tab-btn"
             onclick="switchTab('archive')">
             <img src="{{ asset('icons/archive.png') }}" alt="">
             Archive Clearing
         </button>
+        @endif
     </div>
 
     <div class="tab-panel active fade-up d3"
@@ -532,6 +534,7 @@
         </div>
 
     </div>
+        @if(Auth::guard('staff')->user()?->role === 'admin')
         <div class="tab-panel fade-up d3" id="tab-archive">
  
         <div class="settings-card">
@@ -647,7 +650,8 @@
             </div>
         </div>
  
-    </div> 
+    </div>
+    @endif
 </div>
 @endsection
 

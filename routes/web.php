@@ -254,9 +254,11 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/settings/email', [SettingsController::class, 'updateEmail'])->name('settings.updateEmail');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.updatePassword');
     Route::put('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.updateNotifications');
-    Route::put('/settings/archive', [ArchiveSettingsController::class, 'update'])->name('settings.archive.update');
-    Route::post('/settings/archive/clear-now', [ArchiveSettingsController::class, 'clearNow'])->name('settings.archive.clearNow');
-
+    Route::middleware('dormhead')->group(function () {
+        Route::put('/settings/archive', [ArchiveSettingsController::class, 'update'])->name('settings.archive.update');
+        Route::post('/settings/archive/clear-now', [ArchiveSettingsController::class, 'clearNow'])->name('settings.archive.clearNow');
+    });
+    
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
