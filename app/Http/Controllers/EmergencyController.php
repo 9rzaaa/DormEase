@@ -189,14 +189,14 @@ class EmergencyController extends Controller
         $tenantName = $tenant
             ? trim($tenant->first_name . ' ' . $tenant->last_name)
             : 'Front Desk';
-        $staff = Auth::guard('staff')->user();
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user() ?? Auth::user();
 
         ArchivedEmergencyReport::create([
             'original_id' => $report->report_id,
             'archive_type' => $type,
             'archived_by_staff_id' => $staff?->staff_id,
             'archived_by_name' => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : null,
-            'archived_by_role' => $staff?->role,
+            'archived_by_role' => $staff?->role ?? 'admin',
             'tenant_id' => $report->tenant_id,
             'tenant_name' => $tenantName,
             'room_number' => $tenant->room_number ?? '-',
