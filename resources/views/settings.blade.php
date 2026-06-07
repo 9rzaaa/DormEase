@@ -299,6 +299,120 @@
         0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
+
+    .archive-warning-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .9rem 1.1rem;
+        border-radius: 10px;
+        background: #fff8ec;
+        border: 1.5px solid #f5a24b;
+        color: #7a4500;
+        font-size: .84rem;
+        font-weight: 600;
+        line-height: 1.55;
+        margin-bottom: 1.4rem;
+    }
+    .archive-warning-banner strong { color: #c45c00; }
+    
+    .archive-table { width: 100%; border-collapse: collapse; }
+    .archive-table th {
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        padding: .5rem .75rem;
+        text-align: left;
+        border-bottom: 1.5px solid var(--petal);
+        white-space: nowrap;
+    }
+    .archive-table td {
+        padding: .85rem .75rem;
+        border-bottom: 1px solid var(--petal);
+        vertical-align: middle;
+        font-size: .87rem;
+        color: var(--ink);
+    }
+    .archive-table tr:last-child td { border-bottom: none; }
+    .archive-table tr:hover td { background: var(--blush); }
+    
+    .archive-module-name { font-weight: 700; font-size: .88rem; color: var(--ink); }
+    .archive-last-cleared { font-size: .75rem; color: var(--ink-muted); margin-top: .18rem; }
+    
+    .retention-input {
+        width: 80px;
+        padding: .42rem .6rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--baby-pink);
+        font-family: var(--ff-body);
+        font-size: .85rem;
+        color: var(--ink);
+        background: var(--blush);
+        outline: none;
+        text-align: center;
+        transition: border-color .2s;
+    }
+    .retention-input:focus { border-color: var(--bright-pink); background: var(--white); }
+    .retention-input:disabled { opacity: .45; cursor: not-allowed; }
+    
+    .warn-input {
+        width: 60px;
+        padding: .42rem .6rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--baby-pink);
+        font-family: var(--ff-body);
+        font-size: .85rem;
+        color: var(--ink);
+        background: var(--blush);
+        outline: none;
+        text-align: center;
+        transition: border-color .2s;
+    }
+    .warn-input:focus { border-color: var(--bright-pink); background: var(--white); }
+    .warn-input:disabled { opacity: .45; cursor: not-allowed; }
+    
+    .btn-clear-now {
+        padding: .38rem .85rem;
+        border-radius: 8px;
+        border: 1.5px solid #f5a24b;
+        background: #fff8ec;
+        color: #a85c00;
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s, color .2s;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+    }
+    .btn-clear-now:hover { background: #f5a24b; color: var(--white); border-color: #f5a24b; }
+    .btn-clear-now:disabled { opacity: .4; cursor: not-allowed; }
+    
+    .apply-all-row {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .85rem 0 1rem;
+        border-bottom: 1.5px solid var(--petal);
+        margin-bottom: .5rem;
+        flex-wrap: wrap;
+    }
+    .apply-all-label { font-size: .84rem; font-weight: 700; color: var(--ink-muted); flex-shrink: 0; }
+    .btn-apply-all {
+        padding: .42rem 1rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--petal);
+        color: var(--hot-pink);
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: background .2s;
+    }
+    .btn-apply-all:hover { background: var(--baby-pink); }
+
 </style>
 @endsection
 
@@ -323,6 +437,11 @@
             onclick="switchTab('notifications')">
             <img src="{{ asset('icons/bell.png') }}" alt="">
             Notifications
+        </button>
+        <button class="tab-btn"
+            onclick="switchTab('archive')">
+            <img src="{{ asset('icons/archive.png') }}" alt="">
+            Archive Clearing
         </button>
     </div>
 
@@ -412,7 +531,121 @@
         </div>
 
     </div>
-
+        <div class="tab-panel fade-up d3" id="tab-archive">
+ 
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">
+                    <img src="{{ asset('icons/archive.png') }}" alt="">
+                </div>
+                <div>
+                    <div class="settings-card-title">Archive Auto-Clear Settings</div>
+                    <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
+                </div>
+            </div>
+ 
+            <div class="archive-warning-banner">
+                <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
+                <span>
+                    All clearing is <strong>permanent and cannot be undone</strong>.
+                    Records deleted by auto-clear or manual clear are gone forever.
+                    You will receive a notification <strong>warn days before</strong> the scheduled clear runs —
+                    to cancel, disable the toggle for that module before the clear date.
+                </span>
+            </div>
+ 
+            <div class="apply-all-row">
+                <span class="apply-all-label">Apply retention period to all modules:</span>
+                <input type="number" id="apply-all-days" min="30" max="3650" value="365"
+                    class="retention-input" style="width:90px;">
+                <span style="font-size:.82rem;color:var(--ink-muted);">days</span>
+                <button type="button" class="btn-apply-all" onclick="applyAllRetention()">Apply to All</button>
+            </div>
+ 
+            <table class="archive-table" id="archive-table">
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Enable</th>
+                        <th>Retention (days)</th>
+                        <th>Warn Before (days)</th>
+                        <th>Last Cleared</th>
+                        <th>Clear Now</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $moduleLabels = [
+                            'water_billing'       => 'Water Billing',
+                            'visitor_logs'        => 'Visitor Logs',
+                            'announcements'       => 'Announcements',
+                            'tenant_archive'      => 'Tenant Archive',
+                            'maintenance_archive' => 'Maintenance Archive',
+                            'emergency_archive'   => 'Emergency Archive',
+                            'staff_archive'       => 'Staff Archive',
+                        ];
+                    @endphp
+                    @foreach($moduleLabels as $moduleKey => $moduleLabel)
+                        @php $s = $archiveSettings[$moduleKey] ?? null; @endphp
+                        <tr data-module="{{ $moduleKey }}">
+                            <td>
+                                <div class="archive-module-name">{{ $moduleLabel }}</div>
+                                <div class="archive-last-cleared">
+                                    Last cleared:
+                                    <span class="last-cleared-val">
+                                        {{ $s?->last_cleared_at ? $s->last_cleared_at->format('M d, Y h:i A') : 'Never' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <label class="toggle-wrap">
+                                    <input type="checkbox" class="module-enable-toggle"
+                                        data-module="{{ $moduleKey }}"
+                                        {{ $s?->is_enabled ? 'checked' : '' }}
+                                        onchange="toggleModuleRow('{{ $moduleKey }}', this.checked)">
+                                    <span class="toggle-track"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <input type="number" class="retention-input module-retention"
+                                    data-module="{{ $moduleKey }}"
+                                    min="30" max="3650"
+                                    value="{{ $s?->retention_days ?? 365 }}"
+                                    {{ $s?->is_enabled ? '' : 'disabled' }}>
+                            </td>
+                            <td>
+                                <input type="number" class="warn-input module-warn"
+                                    data-module="{{ $moduleKey }}"
+                                    min="1" max="30"
+                                    value="{{ $s?->warn_days_before ?? 7 }}"
+                                    {{ $s?->is_enabled ? '' : 'disabled' }}>
+                            </td>
+                            <td>
+                                <span class="last-cleared-display" style="font-size:.8rem;color:var(--ink-muted);">
+                                    {{ $s?->last_cleared_at ? $s->last_cleared_at->format('M d, Y') : 'Never' }}
+                                </span>
+                            </td>
+                            <td>
+                                <button type="button"
+                                    class="btn-clear-now"
+                                    data-module="{{ $moduleKey }}"
+                                    data-label="{{ $moduleLabel }}"
+                                    {{ $s?->is_enabled ? '' : 'disabled' }}
+                                    onclick="confirmClearNow('{{ $moduleKey }}', '{{ $moduleLabel }}', this)">
+                                    Clear Now
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+ 
+            <div class="form-actions">
+                <button type="button" class="btn-save" onclick="saveArchiveSettings()">Save Archive Settings</button>
+            </div>
+        </div>
+ 
+    </div> 
 </div>
 @endsection
 
@@ -505,5 +738,101 @@
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
     @endif
+
+    function toggleModuleRow(module, enabled) {
+        document.querySelector(`.module-retention[data-module="${module}"]`).disabled = !enabled;
+        document.querySelector(`.module-warn[data-module="${module}"]`).disabled = !enabled;
+        var clearBtn = document.querySelector(`.btn-clear-now[data-module="${module}"]`);
+        if (clearBtn) clearBtn.disabled = !enabled;
+    }
+    
+    function applyAllRetention() {
+        var days = parseInt(document.getElementById('apply-all-days').value);
+        if (!days || days < 30 || days > 3650) {
+            showToast('Enter a valid retention period between 30 and 3650 days.', 'error');
+            return;
+        }
+        document.querySelectorAll('.module-retention').forEach(function(input) {
+            input.value = days;
+        });
+        showToast('Retention period applied to all modules. Save to confirm.', 'success');
+    }
+    
+    function saveArchiveSettings() {
+        var modules = [];
+        document.querySelectorAll('#archive-table tbody tr').forEach(function(row) {
+            var module = row.dataset.module;
+            modules.push({
+                module:           module,
+                is_enabled:       row.querySelector('.module-enable-toggle').checked,
+                retention_days:   parseInt(row.querySelector('.module-retention').value),
+                warn_days_before: parseInt(row.querySelector('.module-warn').value),
+            });
+        });
+    
+        showActionLoading('Saving archive settings...');
+    
+        fetch('{{ route("settings.archive.update") }}', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({ modules: modules }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            document.getElementById('action-loading').classList.remove('open');
+            if (data.success) {
+                showToast('Archive settings saved.', 'success');
+            } else {
+                showToast(data.message || 'Failed to save.', 'error');
+            }
+        })
+        .catch(function() {
+            document.getElementById('action-loading').classList.remove('open');
+            showToast('Network error.', 'error');
+        });
+    }
+    
+    function confirmClearNow(module, label, btn) {
+        if (!confirm('This will permanently delete all ' + label + ' records older than the set retention period. This cannot be undone. Proceed?')) {
+            return;
+        }
+    
+        btn.disabled = true;
+        btn.textContent = 'Clearing...';
+        showActionLoading('Clearing ' + label + '...');
+    
+        fetch('{{ route("settings.archive.clearNow") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({ module: module }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            document.getElementById('action-loading').classList.remove('open');
+            btn.disabled = false;
+            btn.textContent = 'Clear Now';
+            if (data.success) {
+                showToast(data.message, 'success');
+                var row = btn.closest('tr');
+                row.querySelectorAll('.last-cleared-val, .last-cleared-display').forEach(function(el) {
+                    el.textContent = data.last_cleared_at;
+                });
+            } else {
+                showToast(data.message || 'Failed to clear.', 'error');
+            }
+        })
+        .catch(function() {
+            document.getElementById('action-loading').classList.remove('open');
+            btn.disabled = false;
+            btn.textContent = 'Clear Now';
+            showToast('Network error.', 'error');
+        });
+    }
 </script>
 @endsection
