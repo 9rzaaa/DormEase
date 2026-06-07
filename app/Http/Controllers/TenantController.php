@@ -321,7 +321,7 @@ class TenantController extends Controller
         $tenant = Tenant::findOrFail($id);
         $tenant->update(['notes' => $request->notes]);
 
-        return redirect()->back()->with('success', 'Note saved successfully.');
+        return response()->json(['message' => 'Note saved successfully.']);
     }
 
     public function apiLogin(Request $request)
@@ -346,7 +346,7 @@ class TenantController extends Controller
                 'message' => 'Your account is pending activation. Please visit the admin office to complete your registration.',
             ], 403);
         }
-        
+
         if (!$tenant->is_active) {
             return response()->json([
                 'error'   => 'account_deactivated',
