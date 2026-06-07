@@ -314,7 +314,7 @@
         line-height: 1.55;
         margin-bottom: 1.4rem;
     }
-    .archive-warning-banner strong { color: var(--hot-pink); }
+    .archive-warning-banner strong { color: var(--hot-pink); font-weight: 800; text-decoration: underline; }
     
     .archive-table { width: 100%; border-collapse: collapse; }
     .archive-table th {
