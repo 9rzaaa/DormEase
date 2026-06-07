@@ -100,6 +100,16 @@ Route::post('/login', function () {
         'duty_status'   => $dutyStatus,
     ]);
 
+    \App\Models\StaffAttendance::create([
+        'staff_id'       => $user->staff_id,
+        'staff_name'     => $user->first_name . ' ' . $user->last_name,
+        'role'           => $user->role,
+        'shift_schedule' => $user->shift_schedule,
+        'login_at'       => $now,
+        'logout_at'      => null,
+        'duty_status'    => $dutyStatus,
+    ]);
+
     if ($role === 'frontdesk' && $user->is_temp_password) {
         session()->flash('prompt_temp_password', true);
     }
@@ -113,6 +123,12 @@ Route::post('/logout', function () {
     $user = Auth::guard('staff')->user();
     if ($user) {
         $user->updateQuietly(['duty_status' => 'off_duty']);
+
+        \App\Models\StaffAttendance::where('staff_id', $user->staff_id)
+            ->whereNull('logout_at')
+            ->latest('login_at')
+            ->first()
+            ?->update(['logout_at' => now()]);
     }
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
