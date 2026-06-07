@@ -14,15 +14,13 @@ class EmergencyController extends Controller
 {
     public function adminIndex()
     {
-        $reports = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get());
-        $totalCount = $reports->count();
-        $criticalCount = $reports
-            ->where('status', 'active')
-            ->whereIn('urgency_level', ['critical', 'urgent'])
-            ->count();
-        $resolvedCount = $reports->where('status', 'resolved')->count();
-        $closedArchive = $this->archiveCollection('closed');
-        $deletedArchive = $this->archiveCollection('deleted');
+        $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
+        $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
+        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
+        $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
+        $closedArchive   = $this->archiveCollection('closed');
+        $resolvedArchive = $this->archiveCollection('resolved');
+        $deletedArchive  = $this->archiveCollection('deleted');
 
         return view('emergency', compact(
             'reports',
@@ -30,6 +28,7 @@ class EmergencyController extends Controller
             'criticalCount',
             'resolvedCount',
             'closedArchive',
+            'resolvedArchive',
             'deletedArchive'
         ));
     }
@@ -93,23 +92,14 @@ class EmergencyController extends Controller
     {
         $report = EmergencyReport::findOrFail($id);
         $validated = $request->validate([
-            'status' => 'required|in:active,resolved,closed',
+            'status'      => 'required|in:active,resolved,closed',
             'admin_notes' => 'nullable|string',
-            'location' => 'nullable|string|max:255',
+            'location'    => 'nullable|string|max:255',
         ]);
 
-        $resolvedAt = $report->resolved_at;
-        if (in_array($validated['status'], ['resolved', 'closed'], true) && !$resolvedAt) {
-            $resolvedAt = now();
-        } elseif (!in_array($validated['status'], ['resolved', 'closed'], true)) {
-            $resolvedAt = null;
-        }
-
         $report->update([
-            'status' => $validated['status'],
             'admin_notes' => $validated['admin_notes'] ?? null,
-            'location' => $validated['location'] ?? $report->location,
-            'resolved_at' => $resolvedAt,
+            'location'    => $validated['location'] ?? $report->location,
         ]);
 
         if ($validated['status'] === 'closed') {
@@ -123,20 +113,12 @@ class EmergencyController extends Controller
                     route: '/tenant/emergency',
                 );
             }
-
             $this->archiveReport($report, 'closed');
             $report->delete();
-
             return response()->json(['success' => true, 'archived' => true]);
         }
 
         if ($validated['status'] === 'resolved') {
-            NotificationHelper::sendToAll(
-                type: 'emergency_new',
-                message: "Emergency report #{$report->report_id} has been resolved.",
-                ref_id: $report->report_id,
-            );
-
             if ($report->tenant_id) {
                 app(TenantPushNotificationService::class)->sendToTenant(
                     tenant: $report->tenant_id,
@@ -147,6 +129,14 @@ class EmergencyController extends Controller
                     route: '/tenant/emergency',
                 );
             }
+            NotificationHelper::sendToAll(
+                type: 'emergency_new',
+                message: "Emergency report #{$report->report_id} has been resolved.",
+                ref_id: $report->report_id,
+            );
+            $this->archiveReport($report, 'resolved');
+            $report->delete();
+            return response()->json(['success' => true, 'archived' => true]);
         }
 
         return response()->json(['success' => true]);
