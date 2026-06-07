@@ -87,7 +87,13 @@ class BillingHistoryController extends Controller
                 })->sortKeys() as $roomNumber => $roomBillings) {
 
                     $tenantRows = $roomBillings->map(function ($b) {
-                        $paymentStatus = strtolower($b->payment_status ?? 'unpaid');
+                        if ($b->tenant->status === 'pending') {
+                            $paymentStatus = 'pending-tenant';
+                        } elseif ($b->tenant->status === 'inactive') {
+                            $paymentStatus = 'inactive-tenant';
+                        } else {
+                            $paymentStatus = strtolower($b->payment_status ?? 'unpaid');
+                        }
                         return [
                             'billing_id'             => $b->billing_id,
                             'name'                   => trim(($b->tenant->first_name ?? '') . ' ' . ($b->tenant->last_name ?? '')),
