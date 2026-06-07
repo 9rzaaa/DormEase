@@ -1798,7 +1798,7 @@ function exportBillingPdf() {
         + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
         + '</head><body>'
         + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-        + '<p>Water Billing — ' + escHtml(selectedBillingMonth || '') + ' — exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<p>Water Billing - ' + escHtml(selectedBillingMonth || '') + ' exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
         + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (₱)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
         + '<tbody>' + rows + '</tbody></table>'
         + '</body></html>');
