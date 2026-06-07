@@ -306,15 +306,15 @@
         gap: .75rem;
         padding: .9rem 1.1rem;
         border-radius: 10px;
-        background: #fff8ec;
-        border: 1.5px solid #f5a24b;
-        color: #7a4500;
+        background: var(--petal);
+        border: 1.5px solid var(--bright-pink);
+        color: var(--hot-pink);
         font-size: .84rem;
         font-weight: 600;
         line-height: 1.55;
         margin-bottom: 1.4rem;
     }
-    .archive-warning-banner strong { color: #c45c00; }
+    .archive-warning-banner strong { color: var(--hot-pink); }
     
     .archive-table { width: 100%; border-collapse: collapse; }
     .archive-table th {
@@ -376,9 +376,9 @@
     .btn-clear-now {
         padding: .38rem .85rem;
         border-radius: 8px;
-        border: 1.5px solid #f5a24b;
-        background: #fff8ec;
-        color: #a85c00;
+        border: 1.5px solid var(--bright-pink);
+        background: var(--petal);
+        color: var(--hot-pink);
         font-size: .78rem;
         font-weight: 700;
         cursor: pointer;
@@ -386,7 +386,7 @@
         font-family: var(--ff-body);
         white-space: nowrap;
     }
-    .btn-clear-now:hover { background: #f5a24b; color: var(--white); border-color: #f5a24b; }
+    .btn-clear-now:hover { background: var(--gradient-pink); color: var(--white); border-color: var(--bright-pink); }
     .btn-clear-now:disabled { opacity: .4; cursor: not-allowed; }
     
     .apply-all-row {
@@ -402,16 +402,17 @@
     .btn-apply-all {
         padding: .42rem 1rem;
         border-radius: 8px;
-        border: 1.5px solid var(--baby-pink);
-        background: var(--petal);
-        color: var(--hot-pink);
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
         font-size: .8rem;
         font-weight: 700;
         cursor: pointer;
         font-family: var(--ff-body);
-        transition: background .2s;
+        transition: opacity .2s;
+        box-shadow: var(--shadow-pink-btn);
     }
-    .btn-apply-all:hover { background: var(--baby-pink); }
+    .btn-apply-all:hover { opacity: .88; }
 
 </style>
 @endsection
@@ -549,8 +550,9 @@
                 <span>
                     All clearing is <strong>permanent and cannot be undone</strong>.
                     Records deleted by auto-clear or manual clear are gone forever.
-                    You will receive a notification <strong>warn days before</strong> the scheduled clear runs —
-                    to cancel, disable the toggle for that module before the clear date.
+                    You will receive a notification <strong>warn days before</strong> the scheduled clear runs.
+                    To cancel, disable the toggle for that module before the clear date.
+                    <br>Save settings first before using Clear Now.
                 </span>
             </div>
  
@@ -733,7 +735,7 @@
         });
     }
     @if(session('open_tab'))
-        switchTab('{{ session('open_tab') }}');
+        switchTab("{{ session('open_tab') }}");
     @endif
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
@@ -796,7 +798,10 @@
     }
     
     function confirmClearNow(module, label, btn) {
-        if (!confirm('This will permanently delete all ' + label + ' records older than the set retention period. This cannot be undone. Proceed?')) {
+        var retentionInput = document.querySelector(`.module-retention[data-module="${module}"]`);
+        var retentionDays  = retentionInput ? parseInt(retentionInput.value) : null;
+
+        if (!confirm('This will permanently delete all ' + label + ' records older than ' + retentionDays + ' day(s). This action cannot be undone. Proceed?')) {
             return;
         }
     
@@ -810,7 +815,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
-            body: JSON.stringify({ module: module }),
+            body: JSON.stringify({ module: module, retention_days: retentionDays }),
         })
         .then(function(r) { return r.json(); })
         .then(function(data) {
