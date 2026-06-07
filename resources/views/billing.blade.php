@@ -1515,6 +1515,11 @@ function escapeHtml(value) {
     });
 }
 
+function getBadgeLabel(status) {
+    var labels = {'pending-tenant':'Pending','inactive-tenant':'Inactive','not billed':'Not Billed','not-billed':'Not Billed'};
+    return labels[status] || escapeHtml(status || 'unpaid');
+}
+
 function toggleRejectionReason(select) {
     var wrap = select.closest('.modal-field').querySelector('.rejection-reason-wrap');
     if (!wrap) return;
@@ -1940,7 +1945,7 @@ function openUpdateModal(room) {
                         <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
                         <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
                     </div>
-                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${{'pending-tenant':'Pending','inactive-tenant':'Inactive','not billed':'Not Billed','not-billed':'Not Billed'}[t.payment_status] || escapeHtml(t.payment_status||'unpaid')}</span>
+                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${getBadgeLabel(t.payment_status)}</span>
                 </div>
                 <div style="padding:.9rem 1rem;">
                     <div class="modal-field">
