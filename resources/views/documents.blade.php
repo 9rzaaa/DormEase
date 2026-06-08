@@ -1029,17 +1029,13 @@
     }
 
     .approved-zone {
-        border-top: 1.5px solid var(--baby-pink);
+        border-top: 2.5px solid rgba(232,23,93,.25);
         background: linear-gradient(135deg, #fff0f7 0%, #fff7fb 60%, #ffeef5 100%);
         position: relative;
     }
 
     .approved-zone::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
+        display: none;
     }
 
     .approved-zone::after {
@@ -1314,11 +1310,10 @@
     }
 
     .approved-card-dot {
-        width: 7px;
-        height: 7px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         flex-shrink: 0;
-        box-shadow: 0 0 0 2px rgba(255,255,255,.8), 0 0 0 3px currentColor;
     }
 
     .approved-card-tenant {
