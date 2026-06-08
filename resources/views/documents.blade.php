@@ -1489,6 +1489,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
@@ -2490,6 +2491,7 @@ async function submitUpdateDoc() {
         closeModal('update-doc-modal');
         showToast('Submission updated successfully.', 'success');
         fetchDocs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch (e) {
         showToast(e.message ?? 'Update failed.', 'error');
     } finally {
@@ -2518,6 +2520,7 @@ async function confirmDeleteDoc() {
         closeModal('delete-doc-modal');
         showToast('Submission archived.', 'success');
         fetchDocs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch {
         showToast('Archive failed.', 'error');
     } finally {
@@ -2693,6 +2696,7 @@ async function submitUpdateReq() {
         closeModal('update-req-modal');
         showToast('Request updated successfully.', 'success');
         fetchReqs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch (e) {
         showToast(e.message ?? 'Update failed.', 'error');
     } finally {
@@ -2721,6 +2725,7 @@ async function confirmDeleteReq() {
         closeModal('delete-req-modal');
         showToast('Request archived.', 'success');
         fetchReqs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch {
         showToast('Archive failed.', 'error');
     } finally {
