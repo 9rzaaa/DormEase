@@ -16,7 +16,13 @@ class DocumentRequestController extends Controller
         try {
             $requests = DocumentRequest::with('tenant')
                             ->orderBy('submitted_at', 'desc')
-                            ->get();
+                            ->get()
+                            ->map(function ($r) {
+                                $r->tenant_name = $r->tenant
+                                    ? trim($r->tenant->first_name . ' ' . $r->tenant->last_name)
+                                    : '—';
+                                return $r;
+                            });
             return response()->json($requests);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -140,6 +146,10 @@ class DocumentRequestController extends Controller
         try {
             $documentRequest->load('tenant');
 
+            $tenantName = $documentRequest->tenant
+                ? trim($documentRequest->tenant->first_name . ' ' . $documentRequest->tenant->last_name)
+                : '—';
+
             ArchiveDocu::create([
                 'archivable_type' => 'document_request',
                 'original_id'     => $documentRequest->doc_request_id,
@@ -148,7 +158,7 @@ class DocumentRequestController extends Controller
                 'data'            => [
                     'doc_request_id' => $documentRequest->doc_request_id,
                     'tenant_id'      => $documentRequest->tenant_id,
-                    'tenant_name'    => $documentRequest->tenant_name,
+                    'tenant_name'    => $tenantName,
                     'document_type'  => $documentRequest->document_type,
                     'category'       => $documentRequest->category,
                     'purpose'        => $documentRequest->purpose,
