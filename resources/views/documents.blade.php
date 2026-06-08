@@ -97,9 +97,19 @@
         font-weight: 600;
         color: var(--ink-muted);
         cursor: pointer;
-        transition: background .2s, color .2s;
+        transition: background .2s, color .2s, box-shadow .2s;
         font-family: var(--ff-body);
         white-space: nowrap;
+    }
+
+    .tab-btn:not(.active):hover {
+        background: rgba(232,23,93,.07);
+        color: var(--bright-pink);
+    }
+
+    .tab-btn:not(.active):hover img {
+        opacity: .75;
+        filter: invert(27%) sepia(90%) saturate(2000%) hue-rotate(315deg) brightness(90%);
     }
 
     .tab-btn img {
@@ -289,11 +299,11 @@
         text-align: left;
         font-size: .71rem;
         font-weight: 800;
-        color: var(--ink-muted);
+        color: var(--hot-pink);
         text-transform: uppercase;
         letter-spacing: .05em;
-        background: var(--blush);
-        border-bottom: 1px solid var(--bright-pink);
+        background: linear-gradient(135deg, #fff0f7 0%, #fde8f0 100%);
+        border-bottom: 1.5px solid rgba(232,23,93,.18);
         white-space: nowrap;
     }
 
@@ -303,11 +313,17 @@
 
     tbody tr {
         border-bottom: 1px solid var(--petal);
-        transition: background .15s;
+        transition: background .18s, box-shadow .18s;
+        position: relative;
     }
 
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fff7fb; }
+
+    tbody tr:hover { background: linear-gradient(90deg, #fff0f7 0%, #fff7fb 100%); }
+
+    tbody tr:hover td:first-child {
+        box-shadow: inset 3px 0 0 var(--bright-pink);
+    }
 
     tbody td {
         padding: .75rem 1rem;
@@ -354,19 +370,41 @@
     .req-status-badge {
         display: inline-flex;
         align-items: center;
-        padding: .2rem .65rem;
+        gap: .35rem;
+        padding: .25rem .75rem;
         border-radius: 20px;
-        font-size: .71rem;
+        font-size: .7rem;
         font-weight: 800;
         white-space: nowrap;
+        letter-spacing: .01em;
+    }
+
+    .req-status-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: inline-block;
     }
 
     .req-pending       { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .req-pending::before { background: #f9a825; box-shadow: 0 0 0 2px rgba(249,168,37,.2); }
+
     .req-approved      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .req-approved::before { background: #43a047; box-shadow: 0 0 0 2px rgba(67,160,71,.2); }
+
     .req-denied        { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+    .req-denied::before { background: #e53935; box-shadow: 0 0 0 2px rgba(229,57,53,.2); }
+
     .req-processing    { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .req-processing::before { background: #1e88e5; box-shadow: 0 0 0 2px rgba(30,136,229,.2); }
+
     .req-ready         { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+    .req-ready::before { background: #8e24aa; box-shadow: 0 0 0 2px rgba(142,36,170,.2); }
+
     .req-resubmission  { background: #fff3e0; color: #bf360c; border: 1px solid #ffcc80; }
+    .req-resubmission::before { background: #fb8c00; box-shadow: 0 0 0 2px rgba(251,140,0,.2); }
 
     .action-group {
         display: inline-flex;
@@ -376,31 +414,61 @@
     }
 
     .act-btn {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        border: 1px solid var(--bright-pink);
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: 1.5px solid transparent;
         background: var(--white);
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        transition: .2s;
+        transition: background .2s, border-color .2s, box-shadow .2s, transform .15s;
         font-family: var(--ff-body);
-    }
-
-    .act-btn:hover {
-        border-color: var(--bright-pink);
-        box-shadow: 0 3px 10px rgba(255,45,120,.15);
+        position: relative;
     }
 
     .act-btn img {
         width: 13px;
         height: 13px;
         object-fit: contain;
+        transition: transform .15s;
     }
 
-    .act-btn.danger:hover { border-color: #e04867; }
+    .act-btn:hover img { transform: scale(1.12); }
+
+    .act-btn:nth-child(1) {
+        background: rgba(30,136,229,.07);
+        border-color: rgba(30,136,229,.2);
+    }
+
+    .act-btn:nth-child(1):hover {
+        background: rgba(30,136,229,.14);
+        border-color: rgba(30,136,229,.4);
+        box-shadow: 0 3px 10px rgba(30,136,229,.15);
+    }
+
+    .act-btn:nth-child(2) {
+        background: rgba(251,140,0,.07);
+        border-color: rgba(251,140,0,.22);
+    }
+
+    .act-btn:nth-child(2):hover {
+        background: rgba(251,140,0,.14);
+        border-color: rgba(251,140,0,.4);
+        box-shadow: 0 3px 10px rgba(251,140,0,.18);
+    }
+
+    .act-btn.danger {
+        background: rgba(229,57,53,.07);
+        border-color: rgba(229,57,53,.2);
+    }
+
+    .act-btn.danger:hover {
+        background: rgba(229,57,53,.13);
+        border-color: rgba(229,57,53,.4);
+        box-shadow: 0 3px 10px rgba(229,57,53,.15);
+    }
 
     .table-footer {
         padding: .85rem 1.5rem;
@@ -454,18 +522,26 @@
 
     .empty-state {
         text-align: center;
-        padding: 3rem 1rem;
+        padding: 2.8rem 1rem;
         color: var(--ink-muted);
-        font-size: .88rem;
+        font-size: .85rem;
+        font-weight: 500;
+        line-height: 1.6;
     }
 
     .empty-state img {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
         object-fit: contain;
-        opacity: .35;
+        opacity: .25;
         display: block;
-        margin: 0 auto .6rem;
+        margin: 0 auto .7rem;
+        filter: invert(27%) sepia(90%) saturate(1500%) hue-rotate(315deg) brightness(85%);
+        background: linear-gradient(135deg, #fff0f7, #fde8f0);
+        padding: .6rem;
+        border-radius: 12px;
+        box-sizing: content-box;
+        border: 1.5px solid rgba(232,23,93,.12);
     }
 
     .vd-tab-bar {
@@ -991,7 +1067,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .8rem 1.4rem .8rem 1.65rem;
+        padding: .8rem 1.4rem .8rem 1.4rem;
         cursor: pointer;
         user-select: none;
         transition: background .2s;
@@ -1087,7 +1163,7 @@
         display: flex;
         flex-direction: column;
         gap: .8rem;
-        padding: .9rem 1.4rem 1.1rem 1.65rem;
+        padding: .9rem 1.4rem 1.1rem 1.4rem;
         border-top: 1px solid rgba(232,23,93,.12);
         position: relative;
         z-index: 1;
