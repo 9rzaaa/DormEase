@@ -975,11 +975,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .9rem 1.2rem;
+        padding: .75rem 1.1rem;
         cursor: pointer;
         user-select: none;
         transition: background .15s;
-        background: linear-gradient(135deg, rgba(232,23,93,.04) 0%, rgba(255,255,255,0) 100%);
     }
 
     .approved-panel-header:hover { background: var(--petal); }
@@ -987,17 +986,17 @@
     .approved-panel-header-left {
         display: flex;
         align-items: center;
-        gap: .6rem;
-        font-size: .92rem;
+        gap: .55rem;
+        font-size: .88rem;
         font-weight: 700;
         color: var(--ink);
     }
 
     .approved-panel-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #29BD9B 0%, #1a9e80 100%);
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1006,30 +1005,30 @@
     }
 
     .approved-panel-count {
-        font-size: .7rem;
+        font-size: .68rem;
         font-weight: 800;
         background: var(--petal);
         color: var(--hot-pink);
         border: 1.5px solid var(--baby-pink);
         border-radius: 100px;
-        padding: 2px 9px;
+        padding: 1px 8px;
     }
 
     .approved-panel-header-right {
         display: flex;
         align-items: center;
-        gap: .75rem;
+        gap: .6rem;
     }
 
     .approved-panel-hint {
-        font-size: .75rem;
+        font-size: .73rem;
         color: var(--ink-muted);
         font-weight: 500;
     }
 
     .approved-chevron {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1040,7 +1039,7 @@
     .approved-chevron.open { transform: rotate(180deg); }
 
     .approved-panel-body {
-        border-top: 1.5px solid var(--petal);
+        border-top: 1px solid var(--petal);
         max-height: 0;
         overflow: hidden;
         transition: max-height .4s cubic-bezier(.4,0,.2,1);
@@ -1049,42 +1048,41 @@
     .approved-panel-body.open { max-height: 1200px; }
 
     .approved-search-bar {
-        padding: .9rem 1.2rem .5rem;
+        padding: .8rem 1.1rem .4rem;
     }
 
     .approved-cards-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: .85rem;
-        padding: .5rem 1.2rem 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: .7rem;
+        padding: .4rem 1.1rem .9rem;
     }
 
     .approved-card {
-        background: var(--white);
-        border-radius: 12px;
+        background: var(--petal);
+        border-radius: 10px;
         border: 1.5px solid var(--baby-pink);
-        padding: .9rem 1rem;
+        padding: .75rem .9rem;
         display: flex;
         flex-direction: column;
-        gap: .6rem;
+        gap: .5rem;
         transition: box-shadow .2s, transform .2s;
-        cursor: default;
     }
 
     .approved-card:hover {
-        box-shadow: 0 6px 20px rgba(232,23,93,.1);
+        box-shadow: 0 4px 14px rgba(232,23,93,.12);
         transform: translateY(-2px);
     }
 
     .approved-card-top {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
-        gap: .5rem;
+        gap: .4rem;
     }
 
     .approved-card-id {
-        font-size: .72rem;
+        font-size: .7rem;
         font-weight: 800;
         color: var(--hot-pink);
     }
@@ -1092,26 +1090,26 @@
     .approved-card-approved-badge {
         display: inline-flex;
         align-items: center;
-        gap: .3rem;
-        font-size: .67rem;
+        gap: .25rem;
+        font-size: .65rem;
         font-weight: 800;
-        color: #1a7a4a;
-        background: #eafbf0;
-        border: 1.5px solid #5bcb8a;
+        color: var(--hot-pink);
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
         border-radius: 100px;
-        padding: .18rem .55rem;
+        padding: .15rem .5rem;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
     .approved-card-approved-badge svg {
-        width: 10px;
-        height: 10px;
+        width: 9px;
+        height: 9px;
         flex-shrink: 0;
     }
 
     .approved-card-type {
-        font-size: .88rem;
+        font-size: .84rem;
         font-weight: 700;
         color: var(--ink);
         display: flex;
@@ -1120,14 +1118,14 @@
     }
 
     .approved-card-dot {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         flex-shrink: 0;
     }
 
     .approved-card-tenant {
-        font-size: .8rem;
+        font-size: .77rem;
         color: var(--ink-muted);
         font-weight: 500;
     }
@@ -1136,26 +1134,26 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-top: .5rem;
-        border-top: 1px solid var(--petal);
+        padding-top: .45rem;
+        border-top: 1px solid var(--baby-pink);
     }
 
     .approved-card-date {
-        font-size: .73rem;
+        font-size: .7rem;
         color: var(--ink-muted);
     }
 
     .approved-card-view-btn {
         display: inline-flex;
         align-items: center;
-        gap: .3rem;
-        font-size: .73rem;
+        gap: .28rem;
+        font-size: .7rem;
         font-weight: 700;
         color: var(--hot-pink);
-        background: var(--petal);
+        background: var(--white);
         border: 1.5px solid var(--baby-pink);
-        border-radius: 7px;
-        padding: .25rem .65rem;
+        border-radius: 6px;
+        padding: .22rem .6rem;
         cursor: pointer;
         transition: background .2s;
         font-family: var(--ff-body);
@@ -1167,16 +1165,16 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .5rem 1.2rem .9rem;
+        padding: .4rem 1.1rem .8rem;
         flex-wrap: wrap;
         gap: .5rem;
     }
 
     .approved-empty {
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem;
         color: var(--ink-muted);
-        font-size: .88rem;
+        font-size: .85rem;
         grid-column: 1 / -1;
     }
 </style>
@@ -1526,7 +1524,6 @@
                     </div>
                 </div>
             </div>
-        </div>
 
         <div class="drawer-panel" id="dpanel-denied">
             <div class="drawer-toolbar">
