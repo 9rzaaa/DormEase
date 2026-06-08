@@ -967,7 +967,6 @@
         border-top: 1.5px solid var(--baby-pink);
         background: linear-gradient(135deg, #fff0f7 0%, #fff7fb 60%, #ffeef5 100%);
         position: relative;
-        overflow: hidden;
     }
 
     .approved-zone::before {
