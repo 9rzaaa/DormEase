@@ -963,113 +963,126 @@
         .vd-detail-grid { grid-template-columns: 1fr; }
     }
 
-    .approved-panel {
-        background: var(--white);
-        border-radius: 14px;
-        border: 1.5px solid var(--baby-pink);
-        overflow: hidden;
-        box-shadow: 0 2px 16px rgba(232,23,93,.07);
+    .approved-zone {
+        border-top: 2px solid var(--petal);
+        background: linear-gradient(180deg, #fff7fb 0%, var(--white) 100%);
         position: relative;
     }
 
-    .approved-panel::before {
+    .approved-zone::before {
         content: '';
         position: absolute;
         left: 0; top: 0; bottom: 0;
-        width: 4px;
+        width: 3px;
         background: linear-gradient(180deg, var(--hot-pink), var(--bright-pink));
-        border-radius: 4px 0 0 4px;
+        border-radius: 0 0 0 14px;
     }
 
-    .approved-panel-header {
+    .approved-zone-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .7rem 1.1rem .7rem 1.3rem;
+        padding: .75rem 1.4rem .75rem 1.6rem;
         cursor: pointer;
         user-select: none;
         transition: background .15s;
     }
 
-    .approved-panel-header:hover { background: var(--petal); }
-
-    .approved-panel-header-left {
-        display: flex;
-        align-items: center;
-        gap: .55rem;
-        font-size: .85rem;
-        font-weight: 700;
-        color: var(--ink);
+    .approved-zone-header:hover {
+        background: rgba(232,23,93,.04);
     }
 
-    .approved-panel-icon {
-        width: 22px;
-        height: 22px;
+    .approved-zone-header-left {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .approved-zone-icon {
+        width: 20px;
+        height: 20px;
         border-radius: 6px;
-        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         color: white;
+        box-shadow: 0 2px 6px rgba(232,23,93,.3);
     }
 
-    .approved-panel-count {
-        font-size: .67rem;
+    .approved-zone-title {
+        font-size: .84rem;
         font-weight: 800;
-        background: var(--petal);
-        color: var(--hot-pink);
-        border: 1.5px solid var(--baby-pink);
-        border-radius: 100px;
-        padding: 1px 8px;
+        color: var(--ink);
+        letter-spacing: -.01em;
     }
 
-    .approved-panel-header-right {
+    .approved-zone-count {
+        font-size: .66rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        color: white;
+        border-radius: 100px;
+        padding: 2px 8px;
+        box-shadow: 0 2px 6px rgba(232,23,93,.25);
+    }
+
+    .approved-zone-header-right {
         display: flex;
         align-items: center;
         gap: .6rem;
     }
 
-    .approved-panel-hint {
-        font-size: .72rem;
+    .approved-zone-hint {
+        font-size: .73rem;
         color: var(--ink-muted);
         font-weight: 500;
     }
 
     .approved-chevron {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--hot-pink);
-        transition: transform .3s cubic-bezier(.4,0,.2,1);
+        background: var(--petal);
+        border-radius: 6px;
+        border: 1px solid var(--baby-pink);
+        transition: transform .3s cubic-bezier(.4,0,.2,1), background .2s;
     }
 
-    .approved-chevron.open { transform: rotate(180deg); }
+    .approved-chevron.open {
+        transform: rotate(180deg);
+        background: var(--bright-pink);
+        color: white;
+        border-color: var(--bright-pink);
+    }
 
-    .approved-panel-body {
-        border-top: 1px solid var(--petal);
+    .approved-zone-body {
         max-height: 0;
         overflow: hidden;
-        transition: max-height .45s cubic-bezier(.4,0,.2,1);
+        transition: max-height .4s cubic-bezier(.4,0,.2,1);
     }
 
-    .approved-panel-body.open { max-height: 260px; }
+    .approved-zone-body.open {
+        max-height: 320px;
+    }
 
-    .approved-tray-wrap {
+    .approved-zone-inner {
         display: flex;
         flex-direction: column;
-        gap: .6rem;
-        padding: .85rem 1.3rem;
+        gap: .75rem;
+        padding: .85rem 1.4rem 1rem 1.6rem;
+        border-top: 1px solid var(--petal);
     }
 
-    .approved-tray-top {
+    .approved-zone-toolbar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: .75rem;
         flex-wrap: wrap;
-        gap: .5rem;
     }
 
     .approved-tray-search {
@@ -1082,18 +1095,17 @@
         padding: .35rem .75rem .35rem 1.8rem;
         border-radius: 8px;
         border: 1.5px solid var(--baby-pink);
-        background: var(--petal);
+        background: var(--white);
         font-size: .78rem;
         color: var(--ink);
         outline: none;
         width: 180px;
         font-family: var(--ff-body);
-        transition: border-color .2s, width .3s, background .2s;
+        transition: border-color .2s, width .3s;
     }
 
     .approved-tray-search input:focus {
         border-color: var(--bright-pink);
-        background: var(--white);
         width: 210px;
     }
 
@@ -1116,7 +1128,7 @@
         display: flex;
         gap: .65rem;
         overflow-x: auto;
-        padding-bottom: .5rem;
+        padding-bottom: .4rem;
         scrollbar-width: thin;
         scrollbar-color: var(--baby-pink) transparent;
     }
@@ -1127,20 +1139,20 @@
 
     .approved-card {
         flex-shrink: 0;
-        width: 200px;
-        background: var(--petal);
+        width: 192px;
+        background: var(--white);
         border-radius: 10px;
         border: 1.5px solid var(--baby-pink);
-        padding: .7rem .85rem;
+        padding: .65rem .8rem;
         display: flex;
         flex-direction: column;
-        gap: .45rem;
+        gap: .4rem;
         transition: box-shadow .2s, transform .2s, border-color .2s;
         cursor: default;
     }
 
     .approved-card:hover {
-        box-shadow: 0 4px 16px rgba(232,23,93,.13);
+        box-shadow: 0 4px 16px rgba(232,23,93,.12);
         transform: translateY(-2px);
         border-color: var(--bright-pink);
     }
@@ -1153,7 +1165,7 @@
     }
 
     .approved-card-id {
-        font-size: .68rem;
+        font-size: .67rem;
         font-weight: 800;
         color: var(--hot-pink);
     }
@@ -1161,31 +1173,32 @@
     .approved-card-approved-badge {
         display: inline-flex;
         align-items: center;
-        gap: .22rem;
-        font-size: .62rem;
+        gap: .2rem;
+        font-size: .6rem;
         font-weight: 800;
-        color: var(--hot-pink);
-        background: var(--white);
-        border: 1.5px solid var(--baby-pink);
+        color: #2e7d32;
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
         border-radius: 100px;
-        padding: .12rem .45rem;
+        padding: .1rem .42rem;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
     .approved-card-approved-badge svg {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         flex-shrink: 0;
+        stroke: #2e7d32;
     }
 
     .approved-card-type {
-        font-size: .82rem;
+        font-size: .8rem;
         font-weight: 700;
         color: var(--ink);
         display: flex;
         align-items: center;
-        gap: .35rem;
+        gap: .32rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1199,7 +1212,7 @@
     }
 
     .approved-card-tenant {
-        font-size: .75rem;
+        font-size: .73rem;
         color: var(--ink-muted);
         font-weight: 500;
         white-space: nowrap;
@@ -1211,50 +1224,41 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-top: .4rem;
-        border-top: 1px solid var(--baby-pink);
+        padding-top: .38rem;
+        border-top: 1px solid var(--petal);
         margin-top: auto;
     }
 
     .approved-card-date {
-        font-size: .68rem;
+        font-size: .66rem;
         color: var(--ink-muted);
     }
 
     .approved-card-view-btn {
         display: inline-flex;
         align-items: center;
-        gap: .22rem;
-        font-size: .68rem;
+        gap: .2rem;
+        font-size: .66rem;
         font-weight: 700;
         color: var(--hot-pink);
-        background: var(--white);
-        border: 1.5px solid var(--baby-pink);
+        background: var(--petal);
+        border: 1px solid var(--baby-pink);
         border-radius: 5px;
-        padding: .18rem .5rem;
+        padding: .16rem .46rem;
         cursor: pointer;
-        transition: background .2s;
+        transition: background .2s, border-color .2s;
         font-family: var(--ff-body);
     }
 
-    .approved-card-view-btn:hover { background: var(--baby-pink); }
-
-    .approved-tray-footer {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-    }
-
-    .approved-tray-pagination {
-        display: flex;
-        align-items: center;
-        gap: .25rem;
+    .approved-card-view-btn:hover {
+        background: var(--baby-pink);
+        border-color: var(--bright-pink);
     }
 
     .approved-empty {
         font-size: .82rem;
         color: var(--ink-muted);
-        padding: .5rem 0;
+        padding: .25rem 0;
     }
 </style>
 @endsection
@@ -1346,41 +1350,37 @@
                 <div class="table-info" id="doc-info">Showing 0 entries</div>
                 <div class="pagination" id="doc-pagination"></div>
             </div>
-        </div>
-    <div class="approved-panel" id="approved-panel">
-        <div class="approved-panel-header" onclick="toggleApprovedPanel()">
-            <div class="approved-panel-header-left">
-                <div class="approved-panel-icon">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                </div>
-                <span>Approved Submissions</span>
-                <span class="approved-panel-count" id="approved-count-badge">0</span>
-            </div>
-            <div class="approved-panel-header-right">
-                <span class="approved-panel-hint" id="approved-panel-hint">Click to expand</span>
-                <div class="approved-chevron" id="approved-chevron">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                </div>
-            </div>
-        </div>
-        <div class="approved-panel-body" id="approved-panel-body">
-            <div class="approved-tray-wrap">
-                <div class="approved-tray-top">
-                    <div class="approved-tray-search">
-                        <img src="{{ asset('icons/search.png') }}" alt="">
-                        <input type="text" id="approved-search" placeholder="Search..." oninput="approvedApplyFilters()">
+            <div class="approved-zone" id="approved-zone">
+                <div class="approved-zone-header" onclick="toggleApprovedPanel()">
+                    <div class="approved-zone-header-left">
+                        <div class="approved-zone-icon">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <span class="approved-zone-title">Approved Submissions</span>
+                        <span class="approved-zone-count" id="approved-count-badge">0</span>
                     </div>
-                    <span class="approved-tray-info" id="approved-info"></span>
+                    <div class="approved-zone-header-right">
+                        <span class="approved-zone-hint" id="approved-panel-hint">Click to expand</span>
+                        <div class="approved-chevron" id="approved-chevron">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
                 </div>
-                <div class="approved-tray" id="approved-cards-grid"></div>
-                <div class="approved-tray-footer">
-                    <div class="approved-tray-pagination">
-                        <div class="pagination" id="approved-pagination"></div>
+                <div class="approved-zone-body" id="approved-panel-body">
+                    <div class="approved-zone-inner">
+                        <div class="approved-zone-toolbar">
+                            <div class="approved-tray-search">
+                                <img src="{{ asset('icons/search.png') }}" alt="">
+                                <input type="text" id="approved-search" placeholder="Search approved..." oninput="approvedApplyFilters()">
+                            </div>
+                            <span class="approved-tray-info" id="approved-info"></span>
+                            <div class="pagination" id="approved-pagination" style="margin-left:auto;"></div>
+                        </div>
+                        <div class="approved-tray" id="approved-cards-grid"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
@@ -3054,10 +3054,10 @@ let approvedState = { search: '', page: 1, perPage: 8, data: [], filtered: [] };
 let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function toggleApprovedPanel() {
-    const body  = document.getElementById('approved-panel-body');
-    const chev  = document.getElementById('approved-chevron');
-    const hint  = document.getElementById('approved-panel-hint');
-    const open  = body.classList.contains('open');
+    const body = document.getElementById('approved-panel-body');
+    const chev = document.getElementById('approved-chevron');
+    const hint = document.getElementById('approved-panel-hint');
+    const open = body.classList.contains('open');
     body.classList.toggle('open', !open);
     chev.classList.toggle('open', !open);
     hint.textContent = open ? 'Click to expand' : 'Click to collapse';
