@@ -260,8 +260,8 @@
         background: var(--white);
         border-radius: 14px;
         border: 1px solid var(--bright-pink);
-        overflow: hidden;
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
+        overflow: hidden;
     }
 
     .table-card-header {
@@ -437,37 +437,26 @@
 
     .act-btn:hover img { transform: scale(1.12); }
 
-    .act-btn:nth-child(1) {
-        background: rgba(30,136,229,.07);
-        border-color: rgba(30,136,229,.2);
+    .act-btn {
+        background: rgba(232,23,93,.06);
+        border-color: rgba(232,23,93,.18);
     }
 
-    .act-btn:nth-child(1):hover {
-        background: rgba(30,136,229,.14);
-        border-color: rgba(30,136,229,.4);
-        box-shadow: 0 3px 10px rgba(30,136,229,.15);
-    }
-
-    .act-btn:nth-child(2) {
-        background: rgba(251,140,0,.07);
-        border-color: rgba(251,140,0,.22);
-    }
-
-    .act-btn:nth-child(2):hover {
-        background: rgba(251,140,0,.14);
-        border-color: rgba(251,140,0,.4);
-        box-shadow: 0 3px 10px rgba(251,140,0,.18);
+    .act-btn:hover {
+        background: rgba(232,23,93,.13);
+        border-color: rgba(232,23,93,.38);
+        box-shadow: 0 3px 10px rgba(232,23,93,.15);
     }
 
     .act-btn.danger {
-        background: rgba(229,57,53,.07);
-        border-color: rgba(229,57,53,.2);
+        background: rgba(232,23,93,.06);
+        border-color: rgba(232,23,93,.18);
     }
 
     .act-btn.danger:hover {
-        background: rgba(229,57,53,.13);
-        border-color: rgba(229,57,53,.4);
-        box-shadow: 0 3px 10px rgba(229,57,53,.15);
+        background: rgba(232,23,93,.13);
+        border-color: rgba(232,23,93,.38);
+        box-shadow: 0 3px 10px rgba(232,23,93,.15);
     }
 
     .table-footer {
@@ -1226,7 +1215,8 @@
         display: flex;
         gap: .7rem;
         overflow-x: auto;
-        padding-bottom: .45rem;
+        padding: .25rem .25rem .45rem .25rem;
+        margin: -.25rem -.25rem -.25rem -.25rem;
         scrollbar-width: thin;
         scrollbar-color: rgba(232,23,93,.25) transparent;
     }
