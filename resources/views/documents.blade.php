@@ -2747,10 +2747,11 @@ async function fetchArchive() {
             r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
         );
         areqState.data   = data.filter(r =>
-            r.archivable_type === 'document_request' && r.data?.category !== 'form'
+            r.archivable_type === 'document_request' && r.data?.category !== 'form' &&
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
         );
         adeniedState.data = data.filter(r =>
-            r.archivable_type === 'document_request' && r.data?.category === 'form' &&
+            r.archivable_type === 'document_request' &&
             (r.data?.status === 'denied' || r.data?.status === 'resubmission')
         );
 
