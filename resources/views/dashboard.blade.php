@@ -459,11 +459,13 @@
                     <div class="stat-sub">Ongoing concerns</div>
                 </div>
                 @if(($expectedAbsent ?? 0) > 0)
-                <div class="stat-box" style="background:linear-gradient(135deg,#f0c040 0%,#e6a800 100%);">
-                    <div class="stat-icon"><img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent"></div>
-                    <div class="stat-num">{{ $expectedAbsent }}</div>
-                    <div class="stat-label">Expected On Shift</div>
-                    <div class="stat-sub">Not yet logged in</div>
+                <div class="stat-box" style="background:linear-gradient(135deg,#f0a500 0%,#e6a800 100%); display:flex; flex-direction:row; align-items:center; gap:.75rem; padding:.75rem 1rem; grid-column: 1 / -1;">
+                    <div class="stat-icon" style="margin-bottom:0; flex-shrink:0;"><img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent"></div>
+                    <div>
+                        <div class="stat-label" style="margin-top:0;">Expected On Shift</div>
+                        <div class="stat-sub">Not yet logged in</div>
+                    </div>
+                    <div class="stat-num" style="margin-left:auto;">{{ $expectedAbsent }}</div>
                 </div>
                 @endif
             </div>
