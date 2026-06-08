@@ -1231,40 +1231,38 @@
     .approved-card {
         flex-shrink: 0;
         width: 188px;
-        background: rgba(255,255,255,.9);
+        background: var(--white);
         border-radius: 12px;
         border: 1.5px solid rgba(232,23,93,.15);
-        padding: .7rem .85rem;
+        padding: 0;
         display: flex;
         flex-direction: column;
-        gap: .42rem;
-        transition: box-shadow .25s, transform .25s, border-color .25s, background .2s;
         cursor: default;
-        backdrop-filter: blur(4px);
         position: relative;
+        transition: border-color .25s, background .2s;
         overflow: hidden;
     }
 
     .approved-card::before {
         content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 2.5px;
+        display: block;
+        height: 3px;
+        width: 100%;
         background: linear-gradient(90deg, var(--bright-pink), var(--hot-pink));
-        border-radius: 12px 12px 0 0;
-        opacity: 0;
-        transition: opacity .25s;
+        flex-shrink: 0;
+    }
+
+    .approved-card-inner {
+        padding: .65rem .85rem .7rem;
+        display: flex;
+        flex-direction: column;
+        gap: .42rem;
+        flex: 1;
     }
 
     .approved-card:hover {
-        box-shadow: 0 6px 20px rgba(232,23,93,.14);
-        transform: translateY(-3px);
-        border-color: rgba(232,23,93,.3);
-        background: var(--white);
-    }
-
-    .approved-card:hover::before {
-        opacity: 1;
+        border-color: rgba(232,23,93,.35);
+        background: #fff8fb;
     }
 
     .approved-card-top {
@@ -3212,24 +3210,26 @@ function renderApprovedCards() {
         const name  = escHtml(r.tenant_name ?? r.full_name ?? '—');
         const id    = String(r.doc_request_id).padStart(3, '0');
         return `<div class="approved-card">
-            <div class="approved-card-top">
-                <span class="approved-card-id">#FSB-${id}</span>
-                <span class="approved-card-approved-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    Approved
-                </span>
-            </div>
-            <div class="approved-card-type">
-                <span class="approved-card-dot" style="background:${color}"></span>
-                ${escHtml(r.document_type)}
-            </div>
-            <div class="approved-card-tenant">${name}</div>
-            <div class="approved-card-footer">
-                <span class="approved-card-date">${fmtDate(r.submitted_at)}</span>
-                <button class="approved-card-view-btn" onclick='viewDoc(${JSON.stringify(r)})'>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    View
-                </button>
+            <div class="approved-card-inner">
+                <div class="approved-card-top">
+                    <span class="approved-card-id">#FSB-${id}</span>
+                    <span class="approved-card-approved-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Approved
+                    </span>
+                </div>
+                <div class="approved-card-type">
+                    <span class="approved-card-dot" style="background:${color}"></span>
+                    ${escHtml(r.document_type)}
+                </div>
+                <div class="approved-card-tenant">${name}</div>
+                <div class="approved-card-footer">
+                    <span class="approved-card-date">${fmtDate(r.submitted_at)}</span>
+                    <button class="approved-card-view-btn" onclick='viewDoc(${JSON.stringify(r)})'>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        View
+                    </button>
+                </div>
             </div>
         </div>`;
     }).join('');
