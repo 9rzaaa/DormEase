@@ -962,6 +962,223 @@
         .archive-drawer { width: 100vw; }
         .vd-detail-grid { grid-template-columns: 1fr; }
     }
+
+    .approved-panel {
+        background: var(--white);
+        border-radius: 14px;
+        border: 1.5px solid var(--baby-pink);
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(232,23,93,.07);
+    }
+
+    .approved-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .9rem 1.2rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background .15s;
+        background: linear-gradient(135deg, rgba(232,23,93,.04) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .approved-panel-header:hover { background: var(--petal); }
+
+    .approved-panel-header-left {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-size: .92rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .approved-panel-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #29BD9B 0%, #1a9e80 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: white;
+    }
+
+    .approved-panel-count {
+        font-size: .7rem;
+        font-weight: 800;
+        background: var(--petal);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 100px;
+        padding: 2px 9px;
+    }
+
+    .approved-panel-header-right {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .approved-panel-hint {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .approved-chevron {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--hot-pink);
+        transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    .approved-chevron.open { transform: rotate(180deg); }
+
+    .approved-panel-body {
+        border-top: 1.5px solid var(--petal);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .4s cubic-bezier(.4,0,.2,1);
+    }
+
+    .approved-panel-body.open { max-height: 1200px; }
+
+    .approved-search-bar {
+        padding: .9rem 1.2rem .5rem;
+    }
+
+    .approved-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: .85rem;
+        padding: .5rem 1.2rem 1rem;
+    }
+
+    .approved-card {
+        background: var(--white);
+        border-radius: 12px;
+        border: 1.5px solid var(--baby-pink);
+        padding: .9rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+        transition: box-shadow .2s, transform .2s;
+        cursor: default;
+    }
+
+    .approved-card:hover {
+        box-shadow: 0 6px 20px rgba(232,23,93,.1);
+        transform: translateY(-2px);
+    }
+
+    .approved-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .5rem;
+    }
+
+    .approved-card-id {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+    }
+
+    .approved-card-approved-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .67rem;
+        font-weight: 800;
+        color: #1a7a4a;
+        background: #eafbf0;
+        border: 1.5px solid #5bcb8a;
+        border-radius: 100px;
+        padding: .18rem .55rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .approved-card-approved-badge svg {
+        width: 10px;
+        height: 10px;
+        flex-shrink: 0;
+    }
+
+    .approved-card-type {
+        font-size: .88rem;
+        font-weight: 700;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .approved-card-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .approved-card-tenant {
+        font-size: .8rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .approved-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: .5rem;
+        border-top: 1px solid var(--petal);
+    }
+
+    .approved-card-date {
+        font-size: .73rem;
+        color: var(--ink-muted);
+    }
+
+    .approved-card-view-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .73rem;
+        font-weight: 700;
+        color: var(--hot-pink);
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 7px;
+        padding: .25rem .65rem;
+        cursor: pointer;
+        transition: background .2s;
+        font-family: var(--ff-body);
+    }
+
+    .approved-card-view-btn:hover { background: var(--baby-pink); }
+
+    .approved-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .5rem 1.2rem .9rem;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .approved-empty {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--ink-muted);
+        font-size: .88rem;
+        grid-column: 1 / -1;
+    }
 </style>
 @endsection
 
@@ -1051,6 +1268,35 @@
             <div class="table-footer">
                 <div class="table-info" id="doc-info">Showing 0 entries</div>
                 <div class="pagination" id="doc-pagination"></div>
+            </div>
+        </div>
+    <div class="approved-panel" id="approved-panel">
+        <div class="approved-panel-header" onclick="toggleApprovedPanel()">
+            <div class="approved-panel-header-left">
+                <div class="approved-panel-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span>Approved Submissions</span>
+                <span class="approved-panel-count" id="approved-count-badge">0</span>
+            </div>
+            <div class="approved-panel-header-right">
+                <span class="approved-panel-hint" id="approved-panel-hint">Click to expand</span>
+                <div class="approved-chevron" id="approved-chevron">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="approved-panel-body" id="approved-panel-body">
+            <div class="approved-search-bar">
+                <div class="search-wrap">
+                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                    <input type="text" id="approved-search" placeholder="Search tenant, form type..." oninput="approvedApplyFilters()">
+                </div>
+            </div>
+            <div class="approved-cards-grid" id="approved-cards-grid"></div>
+            <div class="approved-footer">
+                <div class="table-info" id="approved-info">Showing 0 entries</div>
+                <div class="pagination" id="approved-pagination"></div>
             </div>
         </div>
     </div>
@@ -1169,6 +1415,10 @@
                 Document Requests
                 <span class="drawer-tab-badge" id="dtab-reqs-count">0</span>
             </button>
+            <button class="drawer-tab-btn" id="dtab-denied-btn" onclick="switchDrawerTab('denied')">
+                Denied Submissions
+                <span class="drawer-tab-badge" id="dtab-denied-count">0</span>
+            </button>
         </div>
 
         <div class="drawer-body">
@@ -1277,6 +1527,50 @@
                 </div>
             </div>
         </div>
+
+        <div class="drawer-panel" id="dpanel-denied">
+            <div class="drawer-toolbar">
+                <span class="toolbar-label">Sort:</span>
+                <select class="toolbar-select" id="adenied-sort" onchange="adeniedApplyFilters()">
+                    <option value="newest">Newest Archived</option>
+                    <option value="oldest">Oldest Archived</option>
+                </select>
+                <div class="search-wrap" style="margin-left:auto;">
+                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                    <input type="text" id="adenied-search" placeholder="Search tenant, form type..." oninput="adeniedApplyFilters()">
+                </div>
+            </div>
+            <div class="table-card" style="flex:unset;">
+                <div class="table-card-header">
+                    <div>
+                        <div class="table-card-title">Denied Submissions</div>
+                        <div class="table-card-sub">Rejected and resubmission-flagged form submissions</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Submission ID</th>
+                                <th>Tenant</th>
+                                <th>Form Type</th>
+                                <th>File</th>
+                                <th class="th-center">Status</th>
+                                <th>Submitted</th>
+                                <th>Archived On</th>
+                                <th class="th-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adenied-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-info" id="adenied-info">Showing 0 entries</div>
+                    <div class="pagination" id="adenied-pagination"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
@@ -1753,6 +2047,7 @@ async function fetchDocs() {
         docState.data = all.filter(r => r.category === 'form');
         document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
         docApplyFilters();
+        approvedApplyFilters();
     } catch {
         document.getElementById('doc-tbody').innerHTML =
             `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
@@ -1783,6 +2078,9 @@ function docApplyFilters() {
     const sort   = document.getElementById('doc-sort').value;
 
     docState.filtered = docState.data.filter(r => {
+        if (r.status === 'approved') return false;
+        if (r.status === 'denied')   return false;
+        if (r.status === 'resubmission') return false;
         const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
@@ -2250,18 +2548,25 @@ async function fetchArchive() {
         const data = await res.json();
         if (data.error) return;
 
-        adocState.data = data.filter(r =>
-            r.archivable_type === 'document_request' && r.data?.category === 'form'
+        adocState.data   = data.filter(r =>
+            r.archivable_type === 'document_request' && r.data?.category === 'form' &&
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
         );
-        areqState.data = data.filter(r =>
+        areqState.data   = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category !== 'form'
         );
+        adeniedState.data = data.filter(r =>
+            r.archivable_type === 'document_request' && r.data?.category === 'form' &&
+            (r.data?.status === 'denied' || r.data?.status === 'resubmission')
+        );
 
-        document.getElementById('dtab-docs-count').textContent = adocState.data.length;
-        document.getElementById('dtab-reqs-count').textContent = areqState.data.length;
+        document.getElementById('dtab-docs-count').textContent   = adocState.data.length;
+        document.getElementById('dtab-reqs-count').textContent   = areqState.data.length;
+        document.getElementById('dtab-denied-count').textContent = adeniedState.data.length;
 
         adocApplyFilters();
         areqApplyFilters();
+        adeniedApplyFilters();
     } catch {
         document.getElementById('adoc-tbody').innerHTML =
             `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load archive.</div></td></tr>`;
@@ -2663,6 +2968,148 @@ async function confirmDeleteForm() {
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
 @endif
+
+let approvedState = { search: '', page: 1, perPage: 9, data: [], filtered: [] };
+let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+
+function toggleApprovedPanel() {
+    const body  = document.getElementById('approved-panel-body');
+    const chev  = document.getElementById('approved-chevron');
+    const hint  = document.getElementById('approved-panel-hint');
+    const open  = body.classList.contains('open');
+    body.classList.toggle('open', !open);
+    chev.classList.toggle('open', !open);
+    hint.textContent = open ? 'Click to expand' : 'Click to collapse';
+}
+
+function approvedApplyFilters() {
+    const q = (document.getElementById('approved-search')?.value ?? '').toLowerCase();
+    approvedState.data = docState.data.filter(r => r.status === 'approved');
+    document.getElementById('approved-count-badge').textContent = approvedState.data.length;
+
+    approvedState.filtered = approvedState.data.filter(r => {
+        return !q ||
+            (r.document_type ?? '').toLowerCase().includes(q) ||
+            (r.tenant_name   ?? '').toLowerCase().includes(q) ||
+            (r.full_name     ?? '').toLowerCase().includes(q);
+    });
+
+    approvedState.filtered.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+    approvedState.page = 1;
+    renderApprovedCards();
+}
+
+function renderApprovedCards() {
+    const start = (approvedState.page - 1) * approvedState.perPage;
+    const page  = approvedState.filtered.slice(start, start + approvedState.perPage);
+    const grid  = document.getElementById('approved-cards-grid');
+
+    if (!page.length) {
+        grid.innerHTML = `<div class="approved-empty">No approved submissions found.</div>`;
+        document.getElementById('approved-info').textContent = 'Showing 0 entries';
+        document.getElementById('approved-pagination').innerHTML = '';
+        return;
+    }
+
+    grid.innerHTML = page.map(r => {
+        const color = TYPE_COLORS[r.document_type] || '#B5B7C0';
+        const name  = escHtml(r.tenant_name ?? r.full_name ?? '—');
+        const id    = String(r.doc_request_id).padStart(3, '0');
+        return `<div class="approved-card">
+            <div class="approved-card-top">
+                <span class="approved-card-id">#FSB-${id}</span>
+                <span class="approved-card-approved-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Approved
+                </span>
+            </div>
+            <div class="approved-card-type">
+                <span class="approved-card-dot" style="background:${color}"></span>
+                ${escHtml(r.document_type)}
+            </div>
+            <div class="approved-card-tenant">${name}</div>
+            <div class="approved-card-footer">
+                <span class="approved-card-date">${fmtDate(r.submitted_at)}</span>
+                <button class="approved-card-view-btn" onclick='viewDoc(${JSON.stringify(r)})'>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    View
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+
+    const total  = approvedState.filtered.length;
+    const endIdx = Math.min(start + approvedState.perPage, total);
+    document.getElementById('approved-info').textContent =
+        `Showing ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+    renderPagination('approved-pagination', approvedState.page,
+        Math.ceil(total / approvedState.perPage),
+        p => { approvedState.page = p; renderApprovedCards(); });
+}
+
+function adeniedApplyFilters() {
+    const q    = document.getElementById('adenied-search').value.toLowerCase();
+    const sort = document.getElementById('adenied-sort').value;
+
+    adeniedState.filtered = adeniedState.data.filter(r => {
+        const d = r.data ?? {};
+        return !q ||
+            (d.document_type ?? '').toLowerCase().includes(q) ||
+            (d.tenant_name   ?? '').toLowerCase().includes(q) ||
+            (d.full_name     ?? '').toLowerCase().includes(q);
+    });
+
+    if (sort === 'newest') adeniedState.filtered.sort((a, b) => new Date(b.archived_at) - new Date(a.archived_at));
+    if (sort === 'oldest') adeniedState.filtered.sort((a, b) => new Date(a.archived_at) - new Date(b.archived_at));
+
+    adeniedState.page = 1;
+    renderAdeniedTable();
+}
+
+function renderAdeniedTable() {
+    const start = (adeniedState.page - 1) * adeniedState.perPage;
+    const page  = adeniedState.filtered.slice(start, start + adeniedState.perPage);
+    const tbody = document.getElementById('adenied-tbody');
+
+    if (!page.length) {
+        tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">No denied submissions found.</div></td></tr>`;
+        document.getElementById('adenied-info').textContent = 'Showing 0 entries';
+        document.getElementById('adenied-pagination').innerHTML = '';
+        return;
+    }
+
+    tbody.innerHTML = page.map(r => {
+        const d     = r.data ?? {};
+        const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
+        return `<tr>
+            <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
+            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td>${fileTypeBadge(d.attachment)}</td>
+            <td class="td-center">${reqStatusBadge(d.status)}</td>
+            <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
+            <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
+            <td class="td-center">
+                <div class="action-group">
+                    <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
+                        <img src="${eyeIcon}" alt="View">
+                    </button>
+                    <button class="act-btn danger" title="Remove" onclick="promptRemoveAdoc(${r.archive_id}, '#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}')">
+                        <img src="${deleteIcon}" alt="Remove">
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+
+    const total  = adeniedState.filtered.length;
+    const endIdx = Math.min(start + adeniedState.perPage, total);
+    document.getElementById('adenied-info').textContent =
+        `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+    renderPagination('adenied-pagination', adeniedState.page,
+        Math.ceil(total / adeniedState.perPage),
+        p => { adeniedState.page = p; renderAdeniedTable(); });
+}
 
 fetchDocs();
 fetchReqs();
