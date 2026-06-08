@@ -15,14 +15,14 @@ class DocumentRequestController extends Controller
     {
         try {
             $requests = DocumentRequest::with('tenant')
-                            ->orderBy('submitted_at', 'desc')
-                            ->get()
-                            ->map(function ($r) {
-                                $r->tenant_name = $r->tenant
-                                    ? trim($r->tenant->first_name . ' ' . $r->tenant->last_name)
-                                    : '—';
-                                return $r;
-                            });
+                ->orderBy('submitted_at', 'desc')
+                ->get()
+                ->map(function ($r) {
+                    $r->tenant_name = $r->tenant
+                        ? trim($r->tenant->first_name . ' ' . $r->tenant->last_name)
+                        : '—';
+                    return $r;
+                });
             return response()->json($requests);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -40,6 +40,7 @@ class DocumentRequestController extends Controller
                 'fulfilled_file'     => 'nullable|file|max:20480',
             ]);
 
+            $oldStatus    = $documentRequest->status;
             $finalStatus  = $validated['status'];
             $adminRemarks = $validated['admin_remarks'] ?? null;
 
@@ -69,11 +70,43 @@ class DocumentRequestController extends Controller
                     Storage::disk('public')->delete($documentRequest->fulfilled_file);
                 }
                 $updateData['fulfilled_file'] = $request->file('fulfilled_file')
-                                                   ->store('document-requests', 'public');
+                    ->store('document-requests', 'public');
             }
 
             $documentRequest->update($updateData);
             $documentRequest->load('tenant');
+
+            // Archive if status changed to denied or resubmission
+            if (($finalStatus === 'denied' || $finalStatus === 'resubmission') && $oldStatus !== $finalStatus) {
+                $tenantName = $documentRequest->tenant
+                    ? trim($documentRequest->tenant->first_name . ' ' . $documentRequest->tenant->last_name)
+                    : '—';
+
+                ArchiveDocu::create([
+                    'archivable_type' => 'document_request',
+                    'original_id'     => $documentRequest->doc_request_id,
+                    'archived_by'     => auth('staff')->id(),
+                    'archived_at'     => now(),
+                    'data'            => [
+                        'doc_request_id' => $documentRequest->doc_request_id,
+                        'tenant_id'      => $documentRequest->tenant_id,
+                        'tenant_name'    => $tenantName,
+                        'document_type'  => $documentRequest->document_type,
+                        'category'       => $documentRequest->category,
+                        'purpose'        => $documentRequest->purpose,
+                        'delivery_type'  => $documentRequest->delivery_type,
+                        'date_needed'    => $documentRequest->date_needed,
+                        'attachment'     => $documentRequest->attachment,
+                        'status'         => $finalStatus,
+                        'admin_remarks'  => $adminRemarks,
+                        'fulfilled_file' => $updateData['fulfilled_file'] ?? $documentRequest->fulfilled_file,
+                        'submitted_at'   => $documentRequest->submitted_at,
+                        'processed_at'   => now(),
+                        'rejection_reason' => $validated['rejection_reason'] ?? null,
+                        'allow_resubmission' => $finalStatus === 'resubmission',
+                    ],
+                ]);
+            }
 
             NotificationHelper::sendToAll(
                 type: 'document_request',
