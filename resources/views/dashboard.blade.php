@@ -412,8 +412,8 @@
         align-items: center;
         gap: 0;
         width: fit-content;
-        background: #fff8e1;
-        border: 1.5px solid #f5a24b;
+        background: var(--petal);
+        border: 1.5px solid var(--baby-pink);
         border-radius: 100px;
         overflow: hidden;
         transition: all .3s cubic-bezier(.4,0,.2,1);
@@ -424,7 +424,7 @@
         width: 38px;
         height: 38px;
         border-radius: 100px;
-        background: linear-gradient(135deg,#f0a500,#e6a800);
+        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -449,7 +449,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1.5px solid #fff8e1;
+        border: 1.5px solid var(--petal);
     }
     .shift-pill-content {
         display: flex;
@@ -468,11 +468,11 @@
     .shift-pill-label {
         font-size: .78rem;
         font-weight: 700;
-        color: #a84c00;
+        color: var(--hot-pink);
     }
     .shift-pill-sub {
         font-size: .7rem;
-        color: #c47a00;
+        color: var(--bright-pink);
         margin-top: .1rem;
     }
 </style>
