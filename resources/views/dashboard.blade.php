@@ -437,8 +437,8 @@
     }
     .shift-pill-count {
         position: absolute;
-        top: -3px;
-        right: -3px;
+        top: 0px;
+        right: -2px;
         background: #C4003A;
         color: #fff;
         font-size: .6rem;
