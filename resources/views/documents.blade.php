@@ -2535,6 +2535,8 @@ function reqApplyFilters() {
     const sort   = document.getElementById('req-sort').value;
 
     reqState.filtered = reqState.data.filter(r => {
+        if (r.status === 'denied')   return false;
+        if (r.status === 'resubmission') return false;
         const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
