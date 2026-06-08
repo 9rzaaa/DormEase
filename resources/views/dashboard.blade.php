@@ -406,6 +406,75 @@
         .announce-item { flex-wrap: wrap; }
         .announce-actions { width: 100%; justify-content: flex-end; }
     }
+
+    .shift-pill {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        width: fit-content;
+        background: #fff8e1;
+        border: 1.5px solid #f5a24b;
+        border-radius: 100px;
+        overflow: hidden;
+        transition: all .3s cubic-bezier(.4,0,.2,1);
+        cursor: default;
+    }
+    .shift-pill-icon {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        border-radius: 100px;
+        background: linear-gradient(135deg,#f0a500,#e6a800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .shift-pill-icon img {
+        filter: brightness(0) invert(1);
+        width: 16px;
+        height: 16px;
+    }
+    .shift-pill-count {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        background: #C4003A;
+        color: #fff;
+        font-size: .6rem;
+        font-weight: 800;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #fff8e1;
+    }
+    .shift-pill-content {
+        display: flex;
+        flex-direction: column;
+        max-width: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-width .35s cubic-bezier(.4,0,.2,1), opacity .25s ease, padding .3s ease;
+        white-space: nowrap;
+    }
+    .shift-pill:hover .shift-pill-content {
+        max-width: 180px;
+        opacity: 1;
+        padding: 0 1rem 0 .6rem;
+    }
+    .shift-pill-label {
+        font-size: .78rem;
+        font-weight: 700;
+        color: #a84c00;
+    }
+    .shift-pill-sub {
+        font-size: .7rem;
+        color: #c47a00;
+        margin-top: .1rem;
+    }
 </style>
 @endsection
 
@@ -459,13 +528,15 @@
                     <div class="stat-sub">Ongoing concerns</div>
                 </div>
                 @if(($expectedAbsent ?? 0) > 0)
-                <div class="stat-box" style="background:linear-gradient(135deg,#f0a500 0%,#e6a800 100%); display:flex; flex-direction:row; align-items:center; gap:.75rem; padding:.75rem 1rem; grid-column: 1 / -1;">
-                    <div class="stat-icon" style="margin-bottom:0; flex-shrink:0;"><img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent"></div>
-                    <div>
-                        <div class="stat-label" style="margin-top:0;">Expected On Shift</div>
-                        <div class="stat-sub">Not yet logged in</div>
+                <div class="shift-pill" style="grid-column: 1 / -1;">
+                    <div class="shift-pill-icon">
+                        <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
+                        <span class="shift-pill-count">{{ $expectedAbsent }}</span>
                     </div>
-                    <div class="stat-num" style="margin-left:auto;">{{ $expectedAbsent }}</div>
+                    <div class="shift-pill-content">
+                        <span class="shift-pill-label">Expected On Shift</span>
+                        <span class="shift-pill-sub">Not yet logged in</span>
+                    </div>
                 </div>
                 @endif
             </div>
