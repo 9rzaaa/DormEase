@@ -969,13 +969,23 @@
         border: 1.5px solid var(--baby-pink);
         overflow: hidden;
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
+        position: relative;
+    }
+
+    .approved-panel::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, var(--hot-pink), var(--bright-pink));
+        border-radius: 4px 0 0 4px;
     }
 
     .approved-panel-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: .75rem 1.1rem;
+        padding: .7rem 1.1rem .7rem 1.3rem;
         cursor: pointer;
         user-select: none;
         transition: background .15s;
@@ -987,15 +997,15 @@
         display: flex;
         align-items: center;
         gap: .55rem;
-        font-size: .88rem;
+        font-size: .85rem;
         font-weight: 700;
         color: var(--ink);
     }
 
     .approved-panel-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 7px;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
         background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         display: flex;
         align-items: center;
@@ -1005,7 +1015,7 @@
     }
 
     .approved-panel-count {
-        font-size: .68rem;
+        font-size: .67rem;
         font-weight: 800;
         background: var(--petal);
         color: var(--hot-pink);
@@ -1021,14 +1031,14 @@
     }
 
     .approved-panel-hint {
-        font-size: .73rem;
+        font-size: .72rem;
         color: var(--ink-muted);
         font-weight: 500;
     }
 
     .approved-chevron {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1042,47 +1052,108 @@
         border-top: 1px solid var(--petal);
         max-height: 0;
         overflow: hidden;
-        transition: max-height .4s cubic-bezier(.4,0,.2,1);
+        transition: max-height .45s cubic-bezier(.4,0,.2,1);
     }
 
-    .approved-panel-body.open { max-height: 1200px; }
+    .approved-panel-body.open { max-height: 260px; }
 
-    .approved-search-bar {
-        padding: .8rem 1.1rem .4rem;
+    .approved-tray-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+        padding: .85rem 1.3rem;
     }
 
-    .approved-cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-        gap: .7rem;
-        padding: .4rem 1.1rem .9rem;
+    .approved-tray-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: .5rem;
     }
+
+    .approved-tray-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .approved-tray-search input {
+        padding: .35rem .75rem .35rem 1.8rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--petal);
+        font-size: .78rem;
+        color: var(--ink);
+        outline: none;
+        width: 180px;
+        font-family: var(--ff-body);
+        transition: border-color .2s, width .3s, background .2s;
+    }
+
+    .approved-tray-search input:focus {
+        border-color: var(--bright-pink);
+        background: var(--white);
+        width: 210px;
+    }
+
+    .approved-tray-search img {
+        position: absolute;
+        left: .55rem;
+        width: 12px;
+        height: 12px;
+        opacity: .4;
+        pointer-events: none;
+    }
+
+    .approved-tray-info {
+        font-size: .73rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+    }
+
+    .approved-tray {
+        display: flex;
+        gap: .65rem;
+        overflow-x: auto;
+        padding-bottom: .5rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--baby-pink) transparent;
+    }
+
+    .approved-tray::-webkit-scrollbar { height: 4px; }
+    .approved-tray::-webkit-scrollbar-track { background: transparent; }
+    .approved-tray::-webkit-scrollbar-thumb { background: var(--mid-pink); border-radius: 99px; }
 
     .approved-card {
+        flex-shrink: 0;
+        width: 200px;
         background: var(--petal);
         border-radius: 10px;
         border: 1.5px solid var(--baby-pink);
-        padding: .75rem .9rem;
+        padding: .7rem .85rem;
         display: flex;
         flex-direction: column;
-        gap: .5rem;
-        transition: box-shadow .2s, transform .2s;
+        gap: .45rem;
+        transition: box-shadow .2s, transform .2s, border-color .2s;
+        cursor: default;
     }
 
     .approved-card:hover {
-        box-shadow: 0 4px 14px rgba(232,23,93,.12);
+        box-shadow: 0 4px 16px rgba(232,23,93,.13);
         transform: translateY(-2px);
+        border-color: var(--bright-pink);
     }
 
     .approved-card-top {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: .4rem;
+        gap: .3rem;
     }
 
     .approved-card-id {
-        font-size: .7rem;
+        font-size: .68rem;
         font-weight: 800;
         color: var(--hot-pink);
     }
@@ -1090,31 +1161,34 @@
     .approved-card-approved-badge {
         display: inline-flex;
         align-items: center;
-        gap: .25rem;
-        font-size: .65rem;
+        gap: .22rem;
+        font-size: .62rem;
         font-weight: 800;
         color: var(--hot-pink);
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 100px;
-        padding: .15rem .5rem;
+        padding: .12rem .45rem;
         white-space: nowrap;
         flex-shrink: 0;
     }
 
     .approved-card-approved-badge svg {
-        width: 9px;
-        height: 9px;
+        width: 8px;
+        height: 8px;
         flex-shrink: 0;
     }
 
     .approved-card-type {
-        font-size: .84rem;
+        font-size: .82rem;
         font-weight: 700;
         color: var(--ink);
         display: flex;
         align-items: center;
-        gap: .4rem;
+        gap: .35rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .approved-card-dot {
@@ -1125,35 +1199,39 @@
     }
 
     .approved-card-tenant {
-        font-size: .77rem;
+        font-size: .75rem;
         color: var(--ink-muted);
         font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .approved-card-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-top: .45rem;
+        padding-top: .4rem;
         border-top: 1px solid var(--baby-pink);
+        margin-top: auto;
     }
 
     .approved-card-date {
-        font-size: .7rem;
+        font-size: .68rem;
         color: var(--ink-muted);
     }
 
     .approved-card-view-btn {
         display: inline-flex;
         align-items: center;
-        gap: .28rem;
-        font-size: .7rem;
+        gap: .22rem;
+        font-size: .68rem;
         font-weight: 700;
         color: var(--hot-pink);
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
-        border-radius: 6px;
-        padding: .22rem .6rem;
+        border-radius: 5px;
+        padding: .18rem .5rem;
         cursor: pointer;
         transition: background .2s;
         font-family: var(--ff-body);
@@ -1161,21 +1239,22 @@
 
     .approved-card-view-btn:hover { background: var(--baby-pink); }
 
-    .approved-footer {
+    .approved-tray-footer {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: .4rem 1.1rem .8rem;
-        flex-wrap: wrap;
-        gap: .5rem;
+        justify-content: flex-end;
+    }
+
+    .approved-tray-pagination {
+        display: flex;
+        align-items: center;
+        gap: .25rem;
     }
 
     .approved-empty {
-        text-align: center;
-        padding: 1.5rem 1rem;
+        font-size: .82rem;
         color: var(--ink-muted);
-        font-size: .85rem;
-        grid-column: 1 / -1;
+        padding: .5rem 0;
     }
 </style>
 @endsection
@@ -1272,7 +1351,7 @@
         <div class="approved-panel-header" onclick="toggleApprovedPanel()">
             <div class="approved-panel-header-left">
                 <div class="approved-panel-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <span>Approved Submissions</span>
                 <span class="approved-panel-count" id="approved-count-badge">0</span>
@@ -1280,21 +1359,25 @@
             <div class="approved-panel-header-right">
                 <span class="approved-panel-hint" id="approved-panel-hint">Click to expand</span>
                 <div class="approved-chevron" id="approved-chevron">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
             </div>
         </div>
         <div class="approved-panel-body" id="approved-panel-body">
-            <div class="approved-search-bar">
-                <div class="search-wrap">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="approved-search" placeholder="Search tenant, form type..." oninput="approvedApplyFilters()">
+            <div class="approved-tray-wrap">
+                <div class="approved-tray-top">
+                    <div class="approved-tray-search">
+                        <img src="{{ asset('icons/search.png') }}" alt="">
+                        <input type="text" id="approved-search" placeholder="Search..." oninput="approvedApplyFilters()">
+                    </div>
+                    <span class="approved-tray-info" id="approved-info"></span>
                 </div>
-            </div>
-            <div class="approved-cards-grid" id="approved-cards-grid"></div>
-            <div class="approved-footer">
-                <div class="table-info" id="approved-info">Showing 0 entries</div>
-                <div class="pagination" id="approved-pagination"></div>
+                <div class="approved-tray" id="approved-cards-grid"></div>
+                <div class="approved-tray-footer">
+                    <div class="approved-tray-pagination">
+                        <div class="pagination" id="approved-pagination"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1525,7 +1608,7 @@
                 </div>
             </div>
 
-        <div class="drawer-panel" id="dpanel-denied">
+            <div class="drawer-panel" id="dpanel-denied">
             <div class="drawer-toolbar">
                 <span class="toolbar-label">Sort:</span>
                 <select class="toolbar-select" id="adenied-sort" onchange="adeniedApplyFilters()">
@@ -1568,6 +1651,7 @@
             </div>
         </div>
 
+        </div>
     </div>
 </div>
 @endsection
@@ -2966,7 +3050,7 @@ async function confirmDeleteForm() {
     document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
 @endif
 
-let approvedState = { search: '', page: 1, perPage: 9, data: [], filtered: [] };
+let approvedState = { search: '', page: 1, perPage: 8, data: [], filtered: [] };
 let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function toggleApprovedPanel() {
@@ -3003,7 +3087,7 @@ function renderApprovedCards() {
 
     if (!page.length) {
         grid.innerHTML = `<div class="approved-empty">No approved submissions found.</div>`;
-        document.getElementById('approved-info').textContent = 'Showing 0 entries';
+        document.getElementById('approved-info').textContent = '';
         document.getElementById('approved-pagination').innerHTML = '';
         return;
     }
@@ -3028,7 +3112,7 @@ function renderApprovedCards() {
             <div class="approved-card-footer">
                 <span class="approved-card-date">${fmtDate(r.submitted_at)}</span>
                 <button class="approved-card-view-btn" onclick='viewDoc(${JSON.stringify(r)})'>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     View
                 </button>
             </div>
@@ -3038,7 +3122,7 @@ function renderApprovedCards() {
     const total  = approvedState.filtered.length;
     const endIdx = Math.min(start + approvedState.perPage, total);
     document.getElementById('approved-info').textContent =
-        `Showing ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+        `${total ? start + 1 : 0}–${endIdx} of ${total}`;
     renderPagination('approved-pagination', approvedState.page,
         Math.ceil(total / approvedState.perPage),
         p => { approvedState.page = p; renderApprovedCards(); });
