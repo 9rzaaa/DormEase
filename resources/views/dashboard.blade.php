@@ -489,6 +489,18 @@
                 <h1>Welcome, {{ $staff->first_name }}!</h1>
                 <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
             </div>
+            @if(($expectedAbsent ?? 0) > 0)
+            <div class="shift-pill">
+                <div class="shift-pill-icon">
+                    <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
+                    <span class="shift-pill-count">{{ $expectedAbsent }}</span>
+                </div>
+                <div class="shift-pill-content">
+                    <span class="shift-pill-label">Expected On Shift</span>
+                    <span class="shift-pill-sub">Not yet logged in</span>
+                </div>
+            </div>
+            @endif
         </div>
 
         <div class="card fade-up d2">
@@ -527,18 +539,6 @@
                     <div class="stat-label">Unresolved Reports</div>
                     <div class="stat-sub">Ongoing concerns</div>
                 </div>
-                @if(($expectedAbsent ?? 0) > 0)
-                <div class="shift-pill" style="grid-column: 1 / -1;">
-                    <div class="shift-pill-icon">
-                        <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
-                        <span class="shift-pill-count">{{ $expectedAbsent }}</span>
-                    </div>
-                    <div class="shift-pill-content">
-                        <span class="shift-pill-label">Expected On Shift</span>
-                        <span class="shift-pill-sub">Not yet logged in</span>
-                    </div>
-                </div>
-                @endif
             </div>
         </div>
 
