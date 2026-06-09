@@ -8,6 +8,43 @@ use Illuminate\View\View;
 
 class NotificationComposer
 {
+    const ADMIN_TYPES = [
+        'announcement_new',
+        'visitor_registration',
+        'visitor_checkin',
+        'visitor_checkout',
+        'emergency_new',
+        'emergency_updated',
+        'maintenance_new',
+        'maintenance_update',
+        'maintenance_updated',
+        'maintenance_deleted',
+        'document_request',
+        'billing_overdue',
+        'tenant_new',
+        'tenant_updated',
+        'tenant_reactivated',
+        'tenant_deleted',
+    ];
+
+    const FRONTDESK_TYPES = [
+        'announcement_new',
+        'visitor_registration',
+        'visitor_checkin',
+        'visitor_checkout',
+        'emergency_new',
+        'emergency_updated',
+        'tenant_new',
+        'tenant_updated',
+        'tenant_reactivated',
+        'tenant_deleted',
+    ];
+
+    public static function visibleTypesFor(?string $role): array
+    {
+        return $role === 'frontdesk' ? self::FRONTDESK_TYPES : self::ADMIN_TYPES;
+    }
+
     public function compose(View $view): void
     {
         $staff = Auth::guard('staff')->user();
@@ -19,12 +56,15 @@ class NotificationComposer
             return;
         }
 
+        $types = self::visibleTypesFor($staff->role);
+
         $notifications = Notification::where('staff_id', $staff->staff_id)
+            ->whereIn('type', $types)
             ->orderByDesc('created_at')
-            ->take(10)
             ->get();
 
         $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
+            ->whereIn('type', $types)
             ->where('is_read', 0)
             ->count();
 

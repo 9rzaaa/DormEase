@@ -225,10 +225,8 @@
         flex-direction: column;
         gap: 0;
         transition: all .15s ease;
-    
         border-right: 2px solid #ff8fbc;
         border-bottom: 2px solid #ff8fbc;
-
         position: relative;
     }
 
@@ -279,26 +277,24 @@
     }
 
     .btn-update {
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
-    background: var(--gradient-pink);
-    border: none;
-    cursor: pointer;
-    transition: var(--ease);
-    flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(255,79,147,.18);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: var(--gradient-pink);
+        border: none;
+        cursor: pointer;
+        transition: var(--ease);
+        flex-shrink: 0;
+        box-shadow: 0 3px 10px rgba(255,79,147,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
 
     .btn-update img {
         width: 12px;
         height: 12px;
-
         filter: brightness(0) invert(1);
     }
 
@@ -306,6 +302,7 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 14px rgba(255,79,147,.28);
     }
+
     .tenants-list {
         display: flex;
         flex-direction: column;
@@ -384,6 +381,44 @@
     .badge-overdue    { background: #ffe9ee; color: #e04867; border: 1px solid #ff9db0; }
     .badge-pending    { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
     .badge-not-billed { background: #f5f5f5; color: #999;    border: 1px solid #ddd; }
+    .badge-rejected   { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
+    .badge-pending-tenant  { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
+    .badge-inactive-tenant { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
+    
+    .rejection-reason-wrap {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height .25s ease, opacity .25s ease, margin .25s ease;
+        opacity: 0;
+        margin-top: 0;
+    }
+    .rejection-reason-wrap.visible {
+        max-height: 120px;
+        opacity: 1;
+        margin-top: .6rem;
+    }
+    .rejection-reason-input {
+        width: 100%;
+        padding: .55rem .8rem;
+        border-radius: 10px;
+        border: 1.5px solid #ffb380;
+        background: #fff8f4;
+        font-size: .82rem;
+        color: var(--ink-deep);
+        font-family: var(--ff-body);
+        resize: none;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .18s;
+    }
+    .rejection-reason-input:focus { border-color: #c94a00; background: var(--white); }
+    .rejection-reason-label {
+        font-size: .72rem;
+        font-weight: 700;
+        color: #c94a00;
+        margin-bottom: .3rem;
+        display: block;
+    }
 
     .empty-floor {
         padding: 1.5rem;
@@ -858,6 +893,108 @@
 
     #log-modal .btn-submit { padding: .62rem 1.6rem; border-radius: 12px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .86rem; font-weight: 800; cursor: pointer; transition: var(--ease); box-shadow: 0 6px 18px rgba(232,23,93,.28); }
     #log-modal .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(232,23,93,.35); }
+
+    .btn-receipt {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        margin-top: .85rem;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        color: #fff;
+        font-size: .82rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity .18s, transform .15s;
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .btn-receipt:hover {
+        opacity: .9;
+        transform: translateY(-1px);
+    }
+
+    .action-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,.72);
+        backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: .75rem;
+        padding: 1.25rem 1.6rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--white);
+        box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink);
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px;
+        height: 86px;
+        border: 3px solid var(--pink-50);
+        border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+
+    .loading-logo-wrap img {
+        width: 62px;
+        height: 62px;
+        object-fit: contain;
+    }
+
+    .is-loading {
+        opacity: .75;
+        pointer-events: none;
+    }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100, #fce8f1); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
+    .export-menu button:hover { background: var(--pink-bg-soft, #fff5f8); color: var(--hot-pink); }
+
+    .tab-icon {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+        flex-shrink: 0;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+        vertical-align: middle;
+        margin-right: 3px;
+    }
+
+    .um-tab.active .tab-icon,
+    .um-tab[style*="var(--bright-pink)"] .tab-icon {
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+    }
 </style>
 @endsection
 
@@ -920,16 +1057,25 @@
                 </option>
             @endforeach
         </select>
-        <button class="btn-filter" onclick="applyMonthFilter()">≡ Filter</button>
+        <button class="btn-filter" onclick="applyMonthFilter()">
+            <img src="{{ asset('icons/filter.png') }}" alt="" style="width:14px;height:14px;filter:brightness(0) invert(1);flex-shrink:0;">
+            Filter
+        </button>
         <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
         <a href="{{ route('billing.history') }}" class="btn-outline">
             <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
             History
         </a>
-        <button class="btn-outline" onclick="exportBilling()">
-            <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
-            Export
-        </button>
+        <div class="export-dropdown" id="export-dropdown-billing">
+            <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-billing')">
+                <img src="{{ asset('icons/export.png') }}" alt="" class="export-icon">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-billing">
+                <button onclick="exportBillingCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportBillingPdf(); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 
     <div id="billing-groups" class="fade-up d4">
@@ -970,8 +1116,17 @@
                                 <span class="tname">{{ $t['name'] }}</span>
                             </div>
                             <div class="tenant-right">
-                                <span class="t-amount">₱{{ number_format($t['room_share'], 2) }}</span>
-                                <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ ucfirst($t['payment_status']) }}</span>
+                                <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '-' : '₱' . number_format($t['room_share'], 2) }}</span>
+                                @php
+                                    $badgeLabels = [
+                                        'pending-tenant'  => 'Pending',
+                                        'inactive-tenant' => 'Inactive',
+                                        'not-billed'      => 'Not Billed',
+                                        'not billed'      => 'Not Billed',
+                                    ];
+                                    $badgeText = $badgeLabels[$t['payment_status']] ?? ucfirst($t['payment_status']);
+                                @endphp
+                                <span class="badge badge-{{ str_replace(' ', '-', $t['payment_status']) }}">{{ $badgeText }}</span>
                             </div>
                         </div>
                         @endforeach
@@ -992,6 +1147,14 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 
 <div class="modal-overlay" id="log-modal">
     <div class="modal" style="max-width:640px;">
@@ -1056,20 +1219,94 @@
 </div>
 
 <div class="modal-overlay" id="update-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Update / View Billing</div>
-            <button class="modal-close" onclick="closeModal('update-modal')">✕</button>
+  <div class="modal" style="max-width:540px;padding:0;border-radius:20px;overflow:hidden;">
+
+    <div class="modal-top" style="padding:1.25rem 1.5rem 0;border-bottom:1.5px solid var(--border-pink-mid);">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:#fff0f6;display:flex;align-items:center;justify-content:center;">
+            <img src="{{ asset('icons/bed.png') }}" alt="" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Update billing</div>
+            <div id="um-room-title" style="font-size:16px;font-weight:700;color:var(--ink-deep);">Room —</div>
+            <div id="um-room-sub" style="font-size:12px;color:var(--ink-soft);">Floor — · — occupants</div>
+          </div>
         </div>
-        <form id="update-form">
-            @csrf
-            <div id="update-content"></div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('update-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
-        </form>
+        <button class="modal-close" onclick="closeModal('update-modal')" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border-pink);display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+
+      <div style="display:flex;gap:0;" role="tablist" id="um-tab-bar">
+        <button class="um-tab active" role="tab" onclick="umTab('readings',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid var(--bright-pink);cursor:pointer;font-size:12.5px;font-weight:700;color:var(--bright-pink);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/chart.png') }}" alt="" class="tab-icon">
+            Readings
+        </button>
+        <button class="um-tab" role="tab" onclick="umTab('payments',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/billing.png') }}" alt="" class="tab-icon" style="filter:brightness(0) saturate(100%) invert(50%);">
+            Payments
+        </button>
+        <button class="um-tab" role="tab" onclick="umTab('proof',this)" style="flex:1;padding:.6rem .5rem;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;">
+            <img src="{{ asset('icons/attach.png') }}" alt="" class="tab-icon" style="filter:brightness(0) saturate(100%) invert(50%);">
+            Proof
+        </button>
+      </div>
     </div>
+
+    <form id="update-form">
+      @csrf
+      <div style="padding:1.25rem 1.5rem;max-height:420px;overflow-y:auto;">
+
+        <div class="um-panel" id="um-tab-readings">
+          <div style="display:flex;gap:8px;margin-bottom:14px;" id="um-stat-row">
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Consumption</div>
+              <div id="um-disp-cons" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">— m³</div>
+            </div>
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Floor total</div>
+              <div id="um-disp-total" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">₱—</div>
+            </div>
+            <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
+              <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Per tenant</div>
+              <div id="um-disp-share" style="font-size:17px;font-weight:700;color:var(--bright-pink);margin-top:2px;">₱—</div>
+            </div>
+          </div>
+          <div class="modal-grid">
+            <div class="modal-field">
+              <label>Previous reading (m³)</label>
+              <input type="number" step="0.01" id="edit-prev" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+              <label>Current reading (m³)</label>
+              <input type="number" step="0.01" id="edit-curr" oninput="recalcUpdateShare()">
+            </div>
+            <div class="modal-field">
+              <label>Consumption (auto)</label>
+              <input type="text" id="edit-consumption" disabled>
+            </div>
+            <div class="modal-field">
+              <label>Due date</label>
+              <input type="date" id="edit-due-date">
+            </div>
+          </div>
+        </div>
+
+        <div class="um-panel" id="um-tab-payments" style="display:none;">
+          <div id="um-tenant-statuses"></div>
+        </div>
+
+        <div class="um-panel" id="um-tab-proof" style="display:none;">
+          <div id="um-proof-content"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions" style="background:var(--pink-bg-soft);border-top:1px solid var(--border-pink-mid);padding:1rem 1.5rem;">
+        <button type="button" class="btn-cancel" onclick="closeModal('update-modal')">Cancel</button>
+        <button type="submit" class="btn-submit">Save changes</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 @endsection
@@ -1077,26 +1314,41 @@
 @section('scripts')
 <script>
 
+function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function hideActionLoading() {
+    const overlay = document.getElementById('action-loading');
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+}
+
 function setButtonLoading(btn, loadingText) {
     btn.disabled = true;
-    btn.classList.add('loading');
-    btn.innerHTML = `<span class="btn-spinner"></span>${loadingText}`;
+    btn.classList.add('is-loading');
+    btn.dataset.originalText = btn.innerHTML;
+    btn.innerHTML = loadingText;
 }
 
 function resetButton(btn, originalText) {
     btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = originalText;
+    btn.classList.remove('is-loading');
+    btn.innerHTML = originalText || btn.dataset.originalText || originalText;
 }
 
-const tenantsByFloor = @json(
-    $allTenants->groupBy('floor')->map(fn($tenants) =>
+@php
+    $tenantsByFloorData = $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
             'name'        => $t->first_name . ' ' . $t->last_name,
             'room_number' => $t->room_number,
         ])->values()
-    )
-);
+    );
+@endphp
+const tenantsByFloor = {!! json_encode($tenantsByFloorData) !!};
 
 const activeFloors   = @json($activeFloors->values());
 const unloggedFloors = @json($unloggedFloors->values());
@@ -1264,97 +1516,20 @@ function escapeHtml(value) {
     });
 }
 
-function openUpdateModal(room) {
-    let html = `
-        <div class="modal-grid" style="margin-bottom:1rem;">
-            <div class="modal-field">
-                <label>Room</label>
-                <input type="text" value="${room.room_number}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Floor</label>
-                <input type="text" value="${room.floor}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Previous Reading (m³)</label>
-                <input type="number" step="0.01" id="edit-prev" value="${parseFloat(room.prev_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
-            </div>
-            <div class="modal-field">
-                <label>Current Reading (m³)</label>
-                <input type="number" step="0.01" id="edit-curr" value="${parseFloat(room.curr_reading ?? 0).toFixed(2)}" oninput="recalcUpdateShare()">
-            </div>
-            <div class="modal-field">
-                <label>Floor Consumption (m³)</label>
-                <input type="text" id="edit-consumption" value="${parseFloat(room.floor_consumption_m3 ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Total Floor Bill (₱)</label>
-                <input type="text" id="edit-total-bill" value="${parseFloat(room.total_floor_bill ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Per Tenant Share (₱)</label>
-                <input type="text" id="edit-room-share" value="${parseFloat(room.tenants[0]?.room_share ?? 0).toFixed(2)}" disabled>
-            </div>
-            <div class="modal-field">
-                <label>Due Date</label>
-                <input type="date" id="edit-due-date" value="${room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : ''}">
-            </div>
-        </div>
-    `;
+function getBadgeLabel(status) {
+    var labels = {'pending-tenant':'Pending','inactive-tenant':'Inactive','not billed':'Not Billed','not-billed':'Not Billed'};
+    return labels[status] || escapeHtml(status || 'unpaid');
+}
 
-    room.tenants.forEach(function(t) {
-        const referenceCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
-        const submittedAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
-        const proofUrl      = t.proof_of_payment_url   ? escapeHtml(t.proof_of_payment_url)   : '';
-        const proofHtml     = proofUrl
-            ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
-                   <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(t.name)}" class="proof-image">
-               </a>`
-            : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
-
-        html += `
-            <div style="margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:12px;background:#fafafa;">
-                <div class="view-row">
-                    <span class="view-label">Tenant</span>
-                    <span class="view-val">${escapeHtml(t.name)}</span>
-                </div>
-                <div class="view-row">
-                    <span class="view-label">Share</span>
-                    <span class="view-val tenant-share-display">₱${parseFloat(t.room_share).toFixed(2)}</span>
-                </div>
-                <div class="payment-proof-card">
-                    <div class="payment-proof-head">
-                        <span>Payment Proof</span>
-                        <span class="badge badge-${String(t.payment_status || 'unpaid').replaceAll(' ', '-')}">${escapeHtml(t.payment_status || 'unpaid')}</span>
-                    </div>
-                    <div class="payment-proof-meta">
-                        <div class="view-row">
-                            <span class="view-label">Reference</span>
-                            <span class="view-val">${referenceCode}</span>
-                        </div>
-                        <div class="view-row">
-                            <span class="view-label">Submitted</span>
-                            <span class="view-val">${submittedAt}</span>
-                        </div>
-                    </div>
-                    ${proofHtml}
-                </div>
-                <div class="modal-field" style="margin-top:1rem;">
-                    <label>Payment Status</label>
-                    <select class="status-select" data-billing-id="${t.billing_id ?? ''}">
-                        <option value="unpaid"  ${t.payment_status === 'unpaid'  ? 'selected' : ''}>Unpaid</option>
-                        <option value="paid"    ${t.payment_status === 'paid'    ? 'selected' : ''}>Paid</option>
-                        <option value="overdue" ${t.payment_status === 'overdue' ? 'selected' : ''}>Overdue</option>
-                        <option value="pending" ${t.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
-                    </select>
-                </div>
-            </div>
-        `;
-    });
-
-    document.getElementById('update-form').dataset.billingId = room.tenants[0]?.billing_id ?? '';
-    document.getElementById('update-content').innerHTML = html;
-    openModal('update-modal');
+function toggleRejectionReason(select) {
+    var wrap = select.closest('.modal-field').querySelector('.rejection-reason-wrap');
+    if (!wrap) return;
+    if (select.value === 'rejected') {
+        wrap.classList.add('visible');
+        wrap.querySelector('textarea').focus();
+    } else {
+        wrap.classList.remove('visible');
+    }
 }
 
 function recalcUpdateShare() {
@@ -1376,22 +1551,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const prev_reading   = document.getElementById('edit-prev').value;
             const curr_reading   = document.getElementById('edit-curr').value;
             const due_date       = document.getElementById('edit-due-date').value;
-            const statusSelects  = updateForm.querySelectorAll('.status-select');
-            const firstSelect    = statusSelects[0];
-            const payment_status = firstSelect ? firstSelect.value : 'unpaid';
-            const status_updates = Array.from(statusSelects)
-                .map(select => ({
-                    billing_id: parseInt(select.dataset.billingId),
-                    payment_status: select.value,
-                }))
+                const statusSelects  = updateForm.querySelectorAll('.status-select');
+                const firstSelect    = Array.from(statusSelects).find(s => s.value !== 'pending-tenant' && s.value !== 'inactive-tenant');
+                const payment_status = firstSelect ? firstSelect.value : 'unpaid';
+                const status_updates = Array.from(statusSelects)
+                .filter(select => select.value !== 'pending-tenant' && select.value !== 'inactive-tenant')
+                .map(select => {
+                    const field = select.closest('.modal-field');
+                    const textarea = field ? field.querySelector('.rejection-reason-input') : null;
+                    return {
+                        billing_id:       parseInt(select.dataset.billingId),
+                        payment_status:   select.value,
+                        rejection_reason: (select.value === 'rejected' && textarea) ? textarea.value.trim() : null,
+                    };
+                })
                 .filter(update => Number.isInteger(update.billing_id));
 
             if (!billing_id) {
-                showToast('No billing record found.', 'error');
+                showToast('No billing record for this room as all tenants are pending or inactive.', 'error');
                 return;
             }
 
             setButtonLoading(saveBtn, 'Saving...');
+            showActionLoading('Saving billing changes...');
 
             try {
                 const response = await fetch("{{ route('billing.updateFull') }}", {
@@ -1415,14 +1597,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
                     showToast('Billing updated successfully!', 'success');
                     closeModal('update-modal');
+                    hideActionLoading();
                     setTimeout(() => location.reload(), 800);
                 } else {
                     showToast(data.message || 'Failed to update.', 'error');
                     resetButton(saveBtn, 'Save Changes');
+                    hideActionLoading();
                 }
             } catch (err) {
                 showToast('Network error.', 'error');
                 resetButton(saveBtn, 'Save Changes');
+                hideActionLoading();
             }
         });
     }
@@ -1469,6 +1654,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!valid) return;
 
         setButtonLoading(submitBtn, 'Logging...');
+        showActionLoading('Logging water consumption...');
 
         try {
             const response = await fetch("{{ route('billing.log') }}", {
@@ -1510,17 +1696,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     : 'Failed to log billing. Please check your inputs.';
                 showToast(msg, 'error');
                 resetButton(submitBtn, 'Log & Distribute');
+                hideActionLoading();
             }
 
         } catch (err) {
             console.error('Fetch error:', err);
             showToast('Network error — please try again.', 'error');
             resetButton(submitBtn, 'Log & Distribute');
+            hideActionLoading();
         }
     });
 });
 
-function exportBilling() {
+function exportBillingCsv() {
     const rows = [[
         'Billing Month',
         'Floor',
@@ -1536,9 +1724,11 @@ function exportBilling() {
         'Payment Submitted At'
     ]];
 
-    billingExportGroups.forEach(group => {
-        group.rooms.forEach(room => {
-            room.tenants.forEach(tenant => {
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.filter(function(tenant) {
+                return tenant.payment_status !== 'pending-tenant' && tenant.payment_status !== 'inactive-tenant';
+            }).forEach(function(tenant) {
                 rows.push([
                     selectedBillingMonth,
                     group.floor,
@@ -1563,21 +1753,120 @@ function exportBilling() {
     }
 
     const csv = rows
-        .map(row => row.map(value => `"${String(value ?? '').replace(/"/g, '""')}"`).join(','))
+        .map(function(row) { return row.map(function(value) { return '"' + String(value ?? '').replace(/"/g, '""') + '"'; }).join(','); })
         .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     const monthLabel = String(selectedBillingMonth || new Date().toISOString().slice(0, 10)).slice(0, 7);
-
     a.href = URL.createObjectURL(blob);
-    a.download = `water-billing-${monthLabel}.csv`;
+    a.download = 'water-billing-' + monthLabel + '.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-
     showToast('Billing data exported as CSV!', 'success');
 }
+
+function exportBillingPdf() {
+    if (!billingExportGroups || billingExportGroups.length === 0) {
+        showToast('No billing data to export.', 'error');
+        return;
+    }
+
+    var win = window.open('', '_blank');
+    var rows = '';
+    billingExportGroups.forEach(function(group) {
+        group.rooms.forEach(function(room) {
+            room.tenants.filter(function(tenant) {
+                return tenant.payment_status !== 'pending-tenant' && tenant.payment_status !== 'inactive-tenant';
+            }).forEach(function(tenant) {
+                rows += '<tr>'
+                    + '<td>' + escHtml(group.floor) + '</td>'
+                    + '<td>' + escHtml(String(room.room_number)) + '</td>'
+                    + '<td>' + escHtml(tenant.name) + '</td>'
+                    + '<td>' + Number(tenant.room_share || 0).toFixed(2) + '</td>'
+                    + '<td>' + escHtml(tenant.payment_status || '') + '</td>'
+                    + '<td>' + escHtml(group.due_date || '') + '</td>'
+                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m³</td>'
+                    + '<td>₱' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
+                    + '</tr>';
+            });
+        });
+    });
+
+    win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escHtml(selectedBillingMonth || '') + '</title>'
+        + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+        + '</head><body>'
+        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+        + '<p>Water Billing - ' + escHtml(selectedBillingMonth || '') + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (₱)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
+}
+
+function escHtml(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getMenuForDropdown(id) {
+    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+        return m._sourceDropdownId === id;
+    }) || document.querySelector('#' + id + ' .export-menu');
+}
+
+function positionExportMenu(dropdown) {
+    var btn  = dropdown.querySelector('button');
+    var menu = getMenuForDropdown(dropdown.id);
+    var rect = btn.getBoundingClientRect();
+
+    if (!menu._movedToBody) {
+        menu._sourceDropdownId = dropdown.id;
+        document.body.appendChild(menu);
+        menu._movedToBody = true;
+    }
+
+    menu.style.position = 'fixed';
+    menu.style.zIndex   = '99999';
+    menu.style.right    = (window.innerWidth - rect.right) + 'px';
+    menu.style.left     = 'auto';
+    menu.style.minWidth = rect.width + 'px';
+    menu.style.top      = 'auto';
+    menu.style.bottom   = 'auto';
+
+    var menuHeight = menu.offsetHeight || 80;
+    var spaceBelow = window.innerHeight - rect.bottom;
+
+    if (spaceBelow >= menuHeight + 6) {
+        menu.style.top    = (rect.bottom + 6) + 'px';
+        menu.style.bottom = 'auto';
+    } else {
+        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        menu.style.top    = 'auto';
+    }
+}
+
+function toggleExportDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var menu     = getMenuForDropdown(id);
+    var isOpen   = menu.classList.contains('open');
+    closeAllExportDropdowns();
+    if (!isOpen) {
+        positionExportMenu(dropdown);
+        getMenuForDropdown(id).classList.add('open');
+    }
+}
+
+function closeAllExportDropdowns() {
+    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-dropdown')) {
+        closeAllExportDropdowns();
+    }
+});
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
@@ -1595,6 +1884,139 @@ function showToast(msg, type) {
     t.className = 'toast ' + (type || '');
     setTimeout(() => t.classList.add('show'), 10);
     setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function umTab(name, btn) {
+    document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.um-tab').forEach(b => {
+        b.style.borderBottomColor = 'transparent';
+        b.style.color = 'var(--ink-soft)';
+        b.style.fontWeight = '600';
+        const icon = b.querySelector('.tab-icon');
+        if (icon) icon.style.filter = 'brightness(0) saturate(100%) invert(50%)';
+    });
+    document.getElementById('um-tab-' + name).style.display = 'block';
+    btn.style.borderBottomColor = 'var(--bright-pink)';
+    btn.style.color = 'var(--bright-pink)';
+    btn.style.fontWeight = '700';
+    const activeIcon = btn.querySelector('.tab-icon');
+    if (activeIcon) activeIcon.style.filter = 'brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%)';
+}
+
+function openUpdateModal(room) {
+    document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('um-tab-readings').style.display = 'block';
+    document.querySelectorAll('.um-tab').forEach((b, i) => {
+        b.style.borderBottomColor = i === 0 ? 'var(--bright-pink)' : 'transparent';
+        b.style.color = i === 0 ? 'var(--bright-pink)' : 'var(--ink-soft)';
+        b.style.fontWeight = i === 0 ? '700' : '600';
+        const icon = b.querySelector('.tab-icon');
+        if (icon) icon.style.filter = i === 0
+            ? 'brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%)'
+            : 'brightness(0) saturate(100%) invert(50%)';
+    });
+
+    document.getElementById('um-room-title').textContent = 'Room ' + room.room_number;
+    document.getElementById('um-room-sub').textContent = 'Floor ' + room.floor + ' · ' + room.occupants_in_room + ' occupant' + (room.occupants_in_room !== 1 ? 's' : '');
+
+    document.getElementById('edit-prev').value = parseFloat(room.prev_reading ?? 0).toFixed(2);
+    document.getElementById('edit-curr').value = parseFloat(room.curr_reading ?? 0).toFixed(2);
+    document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
+
+    document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
+    const firstBilledTenant = room.tenants.find(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
+    document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '-';
+    recalcUpdateShare();
+
+    let paymentsHtml = '';
+    room.tenants.forEach(function(t) {
+        const initials = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
+        const isPaid = t.payment_status === 'paid';
+        const receiptBtn = isPaid && t.billing_id
+            ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">
+                   <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
+                   Download receipt
+               </a>`
+            : '';
+        paymentsHtml += `
+            <div style="border:1.5px solid var(--border-pink);border-radius:14px;overflow:hidden;margin-bottom:12px;">
+                <div style="padding:.7rem 1rem;background:var(--pink-bg-soft);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-pink-mid);">
+                    <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
+                    <div style="flex:1;">
+                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
+                        <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
+                    </div>
+                    <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${getBadgeLabel(t.payment_status)}</span>
+                </div>
+                <div style="padding:.9rem 1rem;">
+                    <div class="modal-field">
+                        <label>Payment status</label>
+                        <select class="status-select" data-billing-id="${t.billing_id??''}" onchange="toggleRejectionReason(this)">
+                            <option value="unpaid"   ${t.payment_status==='unpaid'  ?'selected':''}>Unpaid</option>
+                            <option value="paid"     ${t.payment_status==='paid'    ?'selected':''}>Paid</option>
+                            <option value="overdue"  ${t.payment_status==='overdue' ?'selected':''}>Overdue</option>
+                            <option value="pending"  ${t.payment_status==='pending' ?'selected':''}>Pending</option>
+                            <option value="rejected" ${t.payment_status==='rejected'?'selected':''}>Rejected</option>
+                            <option value="pending-tenant"  disabled ${t.payment_status==='pending-tenant' ?'selected':''}>Pending Tenant</option>
+                            <option value="inactive-tenant" disabled ${t.payment_status==='inactive-tenant'?'selected':''}>Inactive Tenant</option>
+                        </select>
+                        <div class="rejection-reason-wrap ${t.payment_status==='rejected'?'visible':''}">
+                            <label class="rejection-reason-label">Reason for rejection</label>
+                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="e.g. Blurry image, wrong reference number...">${escapeHtml(t.rejection_reason||'')}</textarea>
+                        </div>
+                    </div>
+                    ${receiptBtn}
+                </div>
+            </div>`;
+    });
+    document.getElementById('um-tenant-statuses').innerHTML = paymentsHtml;
+
+    let proofHtml = '';
+    room.tenants.filter(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant').forEach(function(t) {
+        const refCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
+        const subAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
+        const proofUrl = t.proof_of_payment_url  ? escapeHtml(t.proof_of_payment_url)   : '';
+        const imgHtml  = proofUrl
+            ? `<a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);"><img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;"></a>`
+            : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
+        proofHtml += `
+            <div style="margin-bottom:16px;">
+                <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);border-bottom:1px solid var(--border-pink-mid);padding-bottom:6px;margin-bottom:10px;">${escapeHtml(t.name)}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                    <div style="padding:.5rem .7rem;border:1px solid var(--border-pink-mid);border-radius:10px;background:var(--pink-bg-soft);">
+                        <div style="font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Reference</div>
+                        <div style="font-size:12.5px;font-weight:700;color:var(--ink-deep);margin-top:2px;">${refCode}</div>
+                    </div>
+                    <div style="padding:.5rem .7rem;border:1px solid var(--border-pink-mid);border-radius:10px;background:var(--pink-bg-soft);">
+                        <div style="font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Submitted</div>
+                        <div style="font-size:12.5px;font-weight:700;color:var(--ink-deep);margin-top:2px;">${subAt}</div>
+                    </div>
+                </div>
+                ${imgHtml}
+            </div>`;
+    });
+    document.getElementById('um-proof-content').innerHTML = proofHtml ||
+        `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.4rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No active tenants with billing in this room.</div>`;
+
+    const primaryBilling = room.tenants.find(t => t.billing_id && t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
+    document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
+    openModal('update-modal');
+}
+
+function recalcUpdateShare() {
+    const prev = parseFloat(document.getElementById('edit-prev')?.value) || 0;
+    const curr = parseFloat(document.getElementById('edit-curr')?.value) || 0;
+    const cons = Math.max(0, curr - prev);
+    const consField = document.getElementById('edit-consumption');
+    if (consField) consField.value = cons.toFixed(2) + ' m³';
+    const dispCons = document.getElementById('um-disp-cons');
+    if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m³';
+    const dispShare = document.getElementById('um-disp-share');
+    if (dispShare && dispShare.textContent !== '—') {
+        dispShare.textContent = '~ recalculating on save';
+        dispShare.style.fontSize = '11px';
+        dispShare.style.color = 'var(--ink-soft)';
+    }
 }
 
 @if(session('success'))

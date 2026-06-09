@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\WaterBilling;
 use App\Models\WaterRate;
 use App\Models\Tenant;
@@ -62,6 +64,12 @@ class BillingController extends Controller
             ->take(6)
             ->get();
 
+        $historyPayments = Payment::where('tenant_id', $tenant->tenant_id)
+            ->whereIn('billing_id', $historyBillings->pluck('billing_id'))
+            ->orderByDesc('payment_date')
+            ->get()
+            ->keyBy('billing_id');
+
         // ── Build response ────────────────────────────────────────────────────
         $currentBillingData = [
             'id'             => $currentBilling->billing_id,
@@ -92,12 +100,22 @@ class BillingController extends Controller
             'occupants'         => $occupantsInRoom,
         ];
 
-        $historyData = $historyBillings->map(fn($b) => [
-            'id'     => $b->billing_id,
-            'month'  => Carbon::parse($b->billing_month)->format('M Y'),
-            'amount' => number_format($b->room_share, 2),
-            'status' => ucfirst($b->payment_status ?? 'unpaid'),
-        ])->values()->toArray();
+        $historyData = $historyBillings->map(function ($b) use ($historyPayments) {
+            $payment = $historyPayments->get($b->billing_id);
+            $paymentDate = $payment?->payment_date ?? $b->payment_submitted_at;
+
+            return [
+                'id'               => $b->billing_id,
+                'month'            => Carbon::parse($b->billing_month)->format('M Y'),
+                'amount'           => number_format($payment?->amount_paid ?? $b->room_share, 2),
+                'status'           => ucfirst($b->payment_status ?? 'unpaid'),
+                'reference_number' => $payment?->reference_number ?? $b->payment_reference_code,
+                'payment_date'     => $paymentDate
+                    ? Carbon::parse($paymentDate)->format('M d, Y h:i A')
+                    : null,
+                'payment_method'   => $payment?->payment_method,
+            ];
+        })->values()->toArray();
 
         return response()->json([
             'current_billing' => $currentBillingData,
@@ -114,6 +132,7 @@ class BillingController extends Controller
             'billing_id' => 'required|integer',
             'proof_of_payment' => 'required|image|max:4096',
             'reference_code' => 'required|string|max:100',
+            'payment_method' => 'nullable|string|max:100',
         ]);
 
         /** @var Tenant $tenant */
@@ -147,6 +166,28 @@ class BillingController extends Controller
             'payment_reference_code' => $request->reference_code,
             'payment_submitted_at' => now(),
         ]);
+
+        Payment::updateOrCreate(
+            [
+                'billing_id' => $billing->billing_id,
+                'tenant_id' => $tenant->tenant_id,
+            ],
+            [
+                'confirmed_by' => null,
+                'payment_method' => $request->payment_method,
+                'amount_paid' => $billing->room_share,
+                'proof_of_payment' => $path,
+                'reference_number' => $request->reference_code,
+                'payment_date' => now(),
+                'status' => 'pending',
+            ]
+        );
+
+        NotificationHelper::sendToAll(
+            type: 'billing_overdue',
+            message: "{$tenant->first_name} {$tenant->last_name} submitted payment proof for water billing.",
+            ref_id: $billing->billing_id,
+        );
 
         return response()->json([
             'success' => true,

@@ -5,6 +5,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\NotificationHelper;
+use App\Services\TenantPushNotificationService;
 use Carbon\Carbon;
 
 class VisitorController extends Controller
@@ -100,7 +101,7 @@ class VisitorController extends Controller
             ? Carbon::parse($request->arrival_time)
             : now();
 
-        VisitorLog::create([
+        $visitor = VisitorLog::create([
             'visitor_name'  => $request->visitor_name,
             'tenant_id'     => $request->tenant_id,
             'confirmed_by'  => Auth::guard('staff')->id(),
@@ -117,6 +118,16 @@ class VisitorController extends Controller
         NotificationHelper::sendToAll(
             type: 'visitor_checkin',
             message: "{$request->visitor_name} checked in to visit {$tenant->first_name} {$tenant->last_name}.",
+            ref_id: $visitor->visitor_id,
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $request->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked in',
+            body: "{$request->visitor_name} has checked in.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
         );
 
         return redirect()->back()
@@ -146,6 +157,15 @@ class VisitorController extends Controller
             ref_id: $visitor->visitor_id,
         );
 
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked out',
+            body: "{$visitor->visitor_name} has checked out.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
         return back()->with('success', 'Visitor checked out successfully.');
     }
 
@@ -165,6 +185,26 @@ class VisitorController extends Controller
             'status'        => 'inside',
         ]);
 
+        $visitor->load('tenant');
+        $tenantName = $visitor->tenant
+            ? trim("{$visitor->tenant->first_name} {$visitor->tenant->last_name}")
+            : 'a tenant';
+
+        NotificationHelper::sendToAll(
+            type: 'visitor_checkin',
+            message: "{$visitor->visitor_name} checked in to visit {$tenantName}.",
+            ref_id: $visitor->visitor_id,
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor checked in',
+            body: "{$visitor->visitor_name} has checked in.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
         return back()->with('success', 'Visitor time in logged successfully.');
     }
 
@@ -179,6 +219,40 @@ class VisitorController extends Controller
         ]);
 
         return back()->with('success', 'Visitor status updated successfully.');
+    }
+
+    public function notifyTenant($id)
+    {
+        $visitor = VisitorLog::with('tenant')->findOrFail($id);
+
+        if (!$visitor->tenant_id || !$visitor->tenant) {
+            return response()->json([
+                'message' => 'This visitor is not linked to a tenant.',
+            ], 422);
+        }
+
+        if (in_array($visitor->status, ['completed', 'deleted', 'rejected'], true)) {
+            return response()->json([
+                'message' => 'This visitor can no longer be announced to the tenant.',
+            ], 422);
+        }
+
+        $visitorName = $visitor->visitor_name ?: 'Your visitor';
+        $tokenCount = app(TenantPushNotificationService::class)->sendPushOnlyToTenant(
+            tenant: $visitor->tenant_id,
+            type: 'visitor',
+            title: 'Visitor arriving soon',
+            body: "{$visitorName} is coming soon. Please prepare to receive them.",
+            refId: $visitor->visitor_id,
+            route: '/tenant/visitors',
+        );
+
+        return response()->json([
+            'message' => $tokenCount > 0
+                ? 'Tenant push notification sent.'
+                : 'No active push notification device found for this tenant.',
+            'sent' => $tokenCount > 0,
+        ]);
     }
 
     private function formatVisitorLogs($visitors)

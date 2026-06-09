@@ -18,41 +18,13 @@ class BillingHistoryController extends Controller
         $search         = $request->get('search', '');
         $perPage        = 6;
 
-        $allTenants = Tenant::where('is_active', true)
+        $allTenants = Tenant::where('status', 'active')
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
             ->get();
 
         $floors = $allTenants->pluck('floor')->unique()->sort()->values();
-
-        $billingQuery = WaterBilling::with('tenant')
-            ->select(
-                'billing_month',
-                'floor',
-                'prev_reading',
-                'curr_reading',
-                'floor_consumption_m3',
-                'total_floor_bill',
-                'rooms_sharing',
-                'due_date'
-            )
-            ->groupBy(
-                'billing_month',
-                'floor',
-                'prev_reading',
-                'curr_reading',
-                'floor_consumption_m3',
-                'total_floor_bill',
-                'rooms_sharing',
-                'due_date'
-            )
-            ->orderByDesc('billing_month')
-            ->orderBy('floor');
-
-        if ($selectedFloor !== '') {
-            $billingQuery->where('floor', $selectedFloor);
-        }
 
         $distinctMonths = WaterBilling::selectRaw('DATE_FORMAT(billing_month, "%Y-%m-01") as month_val')
             ->groupByRaw('DATE_FORMAT(billing_month, "%Y-%m-01")')
@@ -66,6 +38,10 @@ class BillingHistoryController extends Controller
 
         if ($selectedFloor !== '') {
             $detailQuery->where('floor', $selectedFloor);
+        }
+
+        if ($selectedStatus !== '') {
+            $detailQuery->where('payment_status', $selectedStatus);
         }
 
         if ($selectedMonth !== '') {
@@ -111,7 +87,13 @@ class BillingHistoryController extends Controller
                 })->sortKeys() as $roomNumber => $roomBillings) {
 
                     $tenantRows = $roomBillings->map(function ($b) {
-                        $paymentStatus = strtolower($b->payment_status ?? 'unpaid');
+                        if ($b->tenant->status === 'pending') {
+                            $paymentStatus = 'pending-tenant';
+                        } elseif ($b->tenant->status === 'inactive') {
+                            $paymentStatus = 'inactive-tenant';
+                        } else {
+                            $paymentStatus = strtolower($b->payment_status ?? 'unpaid');
+                        }
                         return [
                             'billing_id'             => $b->billing_id,
                             'name'                   => trim(($b->tenant->first_name ?? '') . ' ' . ($b->tenant->last_name ?? '')),
@@ -124,9 +106,11 @@ class BillingHistoryController extends Controller
                             'proof_of_payment_url'   => $b->proof_of_payment
                                 ? Storage::disk('public')->url($b->proof_of_payment)
                                 : null,
+                            'rejection_reason' => $b->rejection_reason,
                             'dot_class' => match ($paymentStatus) {
                                 'paid'       => 'dot-green',
                                 'overdue'    => 'dot-red',
+                                'rejected'   => 'dot-red',
                                 'not billed' => 'dot-gray',
                                 default      => 'dot-orange',
                             },
@@ -154,7 +138,7 @@ class BillingHistoryController extends Controller
 
                 $floorGroups[] = [
                     'floor'                => $floor,
-                    'submeter_label'       => "Floor {$floor} — Submeter #{$floor}",
+                    'submeter_label'       => "Floor {$floor} - Submeter #{$floor}",
                     'floor_consumption_m3' => number_format($firstBilling->floor_consumption_m3 ?? 0, 2),
                     'total_floor_bill'     => $floorBillings->sum('room_share'),
                     'room_count'           => count($rooms),

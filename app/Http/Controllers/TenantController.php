@@ -15,17 +15,29 @@ class TenantController extends Controller
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();
 
-        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+        $deletedArchive  = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $inactiveArchive = ArchivedTenant::where('archive_type', 'inactive')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $moveoutArchive  = ArchivedTenant::where('archive_type', 'move_out')
             ->orderByDesc('archived_at')
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
         return view('tenants', [
-            'tenants'        => $tenants,
-            'totalTenants'   => $tenants->count(),
-            'activeCount'    => $tenants->where('status', 'active')->count(),
-            'pendingCount'   => $tenants->where('status', 'pending')->count(),
-            'deletedArchive' => $deletedArchive,
+            'tenants'         => $tenants,
+            'totalTenants'    => $tenants->count(),
+            'activeCount'     => $tenants->where('status', 'active')->count(),
+            'pendingCount'    => $tenants->where('status', 'pending')->count(),
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
+            'moveoutArchive'  => $moveoutArchive,
         ]);
     }
 
@@ -102,7 +114,7 @@ class TenantController extends Controller
         ]);
 
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
+            type: 'tenant_new',
             message: "New tenant {$tenant->first_name} {$tenant->last_name} has been added.",
             ref_id: $tenant->tenant_id,
         );
@@ -131,6 +143,8 @@ class TenantController extends Controller
             'status'         => 'required|in:active,pending,move_out,inactive',
         ]);
 
+        $previousStatus = $tenant->status;
+
         $tenant->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -145,14 +159,52 @@ class TenantController extends Controller
             'is_active'      => $request->status !== 'inactive',
         ]);
 
+        $fresh = $tenant->fresh();
+
+        if ($previousStatus !== 'inactive' && $request->status === 'inactive') {
+            $this->archiveTenant($fresh, 'inactive');
+        }
+
+        if ($previousStatus !== 'move_out' && $request->status === 'move_out') {
+            $this->archiveTenant($fresh, 'move_out');
+        }
+
         NotificationHelper::sendToAll(
-            type: 'maintenance_new',
+            type: 'tenant_updated',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} information has been updated.",
             ref_id: $tenant->tenant_id,
         );
 
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant information updated successfully.');
+    }
+
+    public function reactivate($id)
+    {
+        if (\Illuminate\Support\Facades\Auth::guard('staff')->user()?->role !== 'admin') {
+            return redirect()->route('tenants.index')->with('error', 'Unauthorized.');
+        }
+
+        $tenant = Tenant::findOrFail($id);
+
+        if ($tenant->status !== 'inactive') {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Tenant is already active.');
+        }
+
+        $tenant->update([
+            'status'    => 'active',
+            'is_active' => true,
+        ]);
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_reactivated',
+            message: "Tenant {$tenant->first_name} {$tenant->last_name} account has been reactivated.",
+            ref_id: $tenant->tenant_id,
+        );
+
+        return redirect()->route('tenants.index')
+            ->with('success', "Tenant {$tenant->first_name} {$tenant->last_name} has been reactivated.");
     }
 
     public function apiUpdateProfile(Request $request)
@@ -230,7 +282,17 @@ class TenantController extends Controller
             ->orderBy('first_name')
             ->get();
 
-        $deletedArchive = ArchivedTenant::where('archive_type', 'deleted')
+        $deletedArchive  = ArchivedTenant::where('archive_type', 'deleted')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $inactiveArchive = ArchivedTenant::where('archive_type', 'inactive')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        $moveoutArchive  = ArchivedTenant::where('archive_type', 'move_out')
             ->orderByDesc('archived_at')
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
@@ -240,14 +302,17 @@ class TenantController extends Controller
         $vacantUnits   = $totalUnits - $occupiedUnits;
 
         return view('fdtenant', [
-            'tenants'        => $tenants,
-            'totalTenants'   => $tenants->count(),
-            'activeCount'    => $tenants->where('status', 'active')->count(),
-            'pendingCount'   => $tenants->where('status', 'pending')->count(),
-            'occupiedUnits'  => $occupiedUnits,
-            'vacantUnits'    => $vacantUnits,
-            'totalUnits'     => $totalUnits,
-            'deletedArchive' => $deletedArchive,
+            'tenants'         => $tenants,
+            'totalTenants'    => $tenants->count(),
+            'activeCount'     => $tenants->where('status', 'active')->count(),
+            'pendingCount'    => $tenants->where('status', 'pending')->count(),
+            'occupiedUnits'   => $occupiedUnits,
+            'vacantUnits'     => $vacantUnits,
+            'totalUnits'      => $totalUnits,
+            'activeOccupied'  => Tenant::where('status', 'active')->whereNotNull('room_number')->distinct('room_number')->count('room_number'),
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
+            'moveoutArchive'  => $moveoutArchive,
         ]);
     }
 
@@ -260,6 +325,60 @@ class TenantController extends Controller
         $tenant = Tenant::findOrFail($id);
         $tenant->update(['notes' => $request->notes]);
 
-        return redirect()->back()->with('success', 'Note saved successfully.');
+        return response()->json(['message' => 'Note saved successfully.']);
+    }
+
+    public function apiLogin(Request $request)
+    {
+        $request->validate([
+            'account_id' => 'required|string',
+            'password'   => 'required|string',
+        ]);
+
+        $tenant = Tenant::where('account_id', $request->account_id)->first();
+
+        if (!$tenant || !Hash::check($request->password, $tenant->password_hash)) {
+            return response()->json([
+                'error'   => 'invalid_credentials',
+                'message' => 'Account ID or password is incorrect.',
+            ], 401);
+        }
+
+        if ($tenant->status === 'pending') {
+            return response()->json([
+                'error'   => 'account_pending',
+                'message' => 'Your account is pending activation. Please visit the admin office to complete your registration.',
+            ], 403);
+        }
+
+        if (!$tenant->is_active) {
+            return response()->json([
+                'error'   => 'account_deactivated',
+                'message' => 'Your account has been temporarily deactivated. Please visit the admin office for reactivation.',
+            ], 403);
+        }
+
+        $tenant->update(['last_login_at' => now()]);
+
+        $token = $tenant->createToken('tenant-app')->plainTextToken;
+
+        return response()->json([
+            'message'          => 'Login successful.',
+            'token'            => $token,
+            'is_temp_password' => $tenant->is_temp_password,
+            'tenant'           => [
+                'tenant_id'      => $tenant->tenant_id,
+                'account_id'     => $tenant->account_id,
+                'first_name'     => $tenant->first_name,
+                'last_name'      => $tenant->last_name,
+                'email'          => $tenant->email,
+                'contact_number' => $tenant->contact_number,
+                'profile_photo'  => $tenant->profile_photo,
+                'room_number'    => $tenant->room_number,
+                'floor'          => $tenant->floor,
+                'stay_type'      => $tenant->stay_type,
+                'status'         => $tenant->status,
+            ],
+        ]);
     }
 }

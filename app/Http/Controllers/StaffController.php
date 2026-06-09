@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Staff;
 use App\Models\ArchivedStaff;
+use App\Models\StaffAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -14,7 +15,7 @@ class StaffController extends Controller
     {
         $staff = Staff::orderByDesc('staff_id')->get();
 
-        $staffList = $staff->map(function ($s) {
+        $staffList = $staff->where('is_active', true)->map(function ($s) {
             return [
                 'staff_id'       => $s->staff_id,
                 'account_id'     => $s->account_id,
@@ -28,7 +29,23 @@ class StaffController extends Controller
                 'is_active'      => $s->is_active,
                 'created_at'     => $s->created_at,
             ];
-        });
+        })->values();
+
+        $inactiveArchive = $staff->where('is_active', false)->map(function ($s) {
+            return [
+                'staff_id'       => $s->staff_id,
+                'account_id'     => $s->account_id,
+                'first_name'     => $s->first_name,
+                'last_name'      => $s->last_name,
+                'email'          => $s->email,
+                'role'           => $s->role,
+                'contact_number' => $s->contact_number,
+                'shift_schedule' => $s->shift_schedule,
+                'duty_status'    => $s->duty_status,
+                'is_active'      => $s->is_active,
+                'inactivated_at' => $s->inactivated_at,
+            ];
+        })->values();
 
         $deletedArchive = ArchivedStaff::orderByDesc('archived_at')->get()->map(function ($r) {
             return [
@@ -47,13 +64,49 @@ class StaffController extends Controller
             ];
         });
 
+        $activeStaff = $staff->where('is_active', true);
+
+        $attendanceLogs = StaffAttendance::orderByDesc('login_at')->take(200)->get()->map(function ($a) {
+            $duration = null;
+            if ($a->login_at && $a->logout_at) {
+                $mins = (int) $a->login_at->diffInMinutes($a->logout_at);
+                $duration = ($mins >= 60)
+                    ? floor($mins / 60) . 'h ' . ($mins % 60) . 'm'
+                    : $mins . 'm';
+            }
+            return [
+                'attendance_id'  => $a->attendance_id,
+                'staff_id'       => $a->staff_id,
+                'staff_name'     => $a->staff_name,
+                'role'           => $a->role,
+                'shift_schedule' => $a->shift_schedule,
+                'login_at'       => $a->login_at?->toDateTimeString(),
+                'logout_at'      => $a->logout_at?->toDateTimeString(),
+                'duty_status'    => $a->duty_status,
+                'duration'       => $duration,
+            ];
+        });
+
         return view('staff', [
-            'staffList'      => $staffList,
-            'totalStaff'     => $staff->count(),
-            'onDutyCount'    => $staff->where('duty_status', 'on_duty')->count(),
-            'offDutyCount'   => $staff->where('duty_status', 'off_duty')->count(),
-            'deletedArchive' => $deletedArchive,
+            'staffList'       => $staffList,
+            'totalStaff'      => $activeStaff->count(),
+            'onDutyCount'     => $activeStaff->where('duty_status', 'on_duty')->count(),
+            'offDutyCount'    => $activeStaff->where('duty_status', 'off_duty')->count(),
+            'deletedArchive'  => $deletedArchive,
+            'inactiveArchive' => $inactiveArchive,
+            'attendanceLogs'  => $attendanceLogs,
         ]);
+    }
+
+    private function shiftTimes(?string $schedule): array
+    {
+        if ($schedule === 'Day') {
+            return ['shift_start' => '06:00:00', 'shift_end' => '18:00:00'];
+        }
+        if ($schedule === 'Night') {
+            return ['shift_start' => '18:00:00', 'shift_end' => '06:00:00'];
+        }
+        return ['shift_start' => null, 'shift_end' => null];
     }
 
     public function store(Request $request)
@@ -69,6 +122,8 @@ class StaffController extends Controller
 
         $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
 
+        $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
         $staff = Staff::create([
             'staff_code'       => 'ST-' . str_pad((Staff::max('staff_id') ?? 0) + 1, 3, '0', STR_PAD_LEFT),
             'first_name'       => $request->first_name,
@@ -79,6 +134,8 @@ class StaffController extends Controller
             'role'             => $request->role,
             'contact_number'   => $request->contact_number,
             'shift_schedule'   => $request->shift_schedule,
+            'shift_start'      => $shiftTimes['shift_start'],
+            'shift_end'        => $shiftTimes['shift_end'],
             'duty_status'      => 'off_duty',
             'is_active'        => true,
         ]);
@@ -111,6 +168,11 @@ class StaffController extends Controller
             'is_active'      => 'nullable|boolean',
         ]);
 
+        $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
+        $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
+
+        $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
         $staff->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -118,12 +180,18 @@ class StaffController extends Controller
             'role'           => $request->role,
             'contact_number' => $request->contact_number,
             'shift_schedule' => $request->shift_schedule,
+            'shift_start'    => $shiftTimes['shift_start'],
+            'shift_end'      => $shiftTimes['shift_end'],
             'duty_status'    => $request->duty_status,
             'is_active'      => $request->is_active,
+            'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),
         ]);
 
-        return redirect()->route('staff.index')
-            ->with('success', 'Staff details updated successfully.');
+        $message = $isBeingReactivated
+            ? $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.'
+            : 'Staff details updated successfully.';
+
+        return redirect()->route('staff.index')->with('success', $message);
     }
 
     public function resetPassword($id)
@@ -145,6 +213,34 @@ class StaffController extends Controller
         ]);
     }
 
+    public function reactivate($id)
+    {
+        $staff = Staff::findOrFail($id);
+
+        if ($staff->is_active) {
+            return redirect()->route('staff.index')->with('success', 'Staff is already active.');
+        }
+
+        $staff->update([
+            'is_active'      => true,
+            'inactivated_at' => null,
+        ]);
+
+        return redirect()->route('staff.index')
+            ->with('success', $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.');
+    }
+
+    public function clearAttendance()
+    {
+        $count = StaffAttendance::count();
+        StaffAttendance::truncate();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Cleared {$count} attendance record(s).",
+        ]);
+    }
+
     public function destroy($id)
     {
         $staff = Staff::findOrFail($id);
@@ -152,7 +248,7 @@ class StaffController extends Controller
         $name = "{$staff->first_name} {$staff->last_name}";
 
         ArchivedStaff::create([
-            'original_staff_id' => $staff->staff_id,
+            'original_staff_id' => $staff->original_staff_id ?? $staff->staff_id,
             'account_id'        => $staff->account_id,
             'staff_code'        => $staff->staff_code,
             'first_name'        => $staff->first_name,

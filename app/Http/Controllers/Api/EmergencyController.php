@@ -105,11 +105,11 @@ class EmergencyController extends Controller
                 'fight',
                 'threat',
                 'stranger',
-                'harassment',
+                'harass',
                 'assault',
                 'magnanakaw',
                 'nanakaw',
-                'nakawan',
+                'nakaw',
                 'away',
                 'gulo',
                 'banta',
@@ -131,9 +131,11 @@ class EmergencyController extends Controller
                 'baha',
                 'binabaha',
                 'tagas',
+                'tulo',
                 'tumutulo',
                 'pumutok na tubo',
                 'umaapaw',
+                'apaw',
             ],
         ],
         'Other' => [
@@ -191,6 +193,186 @@ class EmergencyController extends Controller
         ],
     ];
 
+    // ---------------------------------------------------------------------------
+    // Tagalog morphology: roots that the stemmer should know about.
+    // Add more roots here as needed; the stemmer will expand them automatically.
+    // ---------------------------------------------------------------------------
+    private const TAGALOG_ROOTS = [
+        // Medical
+        'himatay',
+        'hilo',
+        'sugat',
+        'dugo',
+        'sakit',
+        'atake',
+        'hinga',
+        // Fire
+        'sunog',
+        'usok',
+        'apoy',
+        // Electrical
+        'kuryente',
+        'kurente',
+        'putok',
+        // Security
+        'nakaw',
+        'away',
+        'gulo',
+        'banta',
+        'ligalig',
+        // Flood
+        'baha',
+        'tagas',
+        'tulo',
+        'apaw',
+        // General distress
+        'tulong',
+        'takbo',
+        'sigaw',
+        'takas',
+    ];
+
+
+    private function tagalogStem(string $word): array
+    {
+        $candidates = [$word];
+
+        $prefixes = [
+            'makapag',
+            'nakapag',
+            'pinaka',
+            'pinag',
+            'maka',
+            'naka',
+            'mapa',
+            'napa',
+            'mag',
+            'nag',
+            'pag',
+            'ma',
+            'na',
+            'pa',
+            'i',
+            'ka',
+            'sang',
+        ];
+
+        $stripped = $word;
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($word, $prefix) && strlen($word) > strlen($prefix) + 2) {
+                $stripped = substr($word, strlen($prefix));
+                $candidates[] = $stripped;
+                break;
+            }
+        }
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($stripped, $prefix) && strlen($stripped) > strlen($prefix) + 2) {
+                $candidates[] = substr($stripped, strlen($prefix));
+                break;
+            }
+        }
+        $suffixes = ['han', 'hin', 'an', 'in', 'ng', 'g'];
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            foreach ($suffixes as $suffix) {
+                if (str_ends_with($c, $suffix) && strlen($c) > strlen($suffix) + 2) {
+                    $candidates[] = substr($c, 0, -strlen($suffix));
+                }
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (preg_match('/^([^aeiou][^aeiou])in(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (preg_match('/^([^aeiou])um(.+)$/u', $c, $m)) {
+                $candidates[] = $m[1] . $m[2];
+            }
+            if (str_starts_with($c, 'um') && strlen($c) > 4) {
+                $candidates[] = substr($c, 2);
+            }
+        }
+
+        $allSoFar = $candidates;
+        foreach ($allSoFar as $c) {
+            if (strlen($c) >= 4 && substr($c, 0, 2) === substr($c, 2, 2)) {
+                $candidates[] = substr($c, 2);
+            }
+            if (strlen($c) >= 6 && substr($c, 0, 3) === substr($c, 3, 3)) {
+                $candidates[] = substr($c, 3);
+            }
+        }
+
+        return array_unique($candidates);
+    }
+
+    /**
+     * Checks whether a keyword appears in the text, using both:
+     *  - direct substring match
+     *  - English -ing suffix stemming
+     *  - Tagalog morphological stemming (for every word in the text)
+     */
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        if (str_contains($text, $keyword)) {
+            return true;
+        }
+        $words = explode(' ', $text);
+        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
+        $candidates = [''];
+        foreach ($expandedWords as $forms) {
+            $next = [];
+            foreach ($candidates as $prefix) {
+                foreach ($forms as $form) {
+                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
+                }
+            }
+            $candidates = array_slice($next, 0, 512);
+        }
+        foreach ($candidates as $candidate) {
+            if (str_contains($candidate, $keyword)) {
+                return true;
+            }
+        }
+
+        // ── Tagalog morphological matching ───────────────────────────────────
+        // For each word in the text, generate all possible roots via the Tagalog
+        // stemmer and check if any root matches the keyword (or vice-versa).
+        foreach ($words as $word) {
+            $roots = $this->tagalogStem($word);
+            foreach ($roots as $root) {
+                if ($root === $keyword) {
+                    return true;
+                }
+                if (str_contains($keyword, $root) && strlen($root) >= 4) {
+                    return true;
+                }
+                if (str_contains($root, $keyword) && strlen($keyword) >= 4) {
+                    return true;
+                }
+            }
+
+            $keywordRoots = $this->tagalogStem($keyword);
+            foreach ($keywordRoots as $kRoot) {
+                foreach ($roots as $root) {
+                    if ($root === $kRoot && strlen($root) >= 4) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function index(Request $request)
     {
         $tenantId = $request->user()?->tenant_id;
@@ -198,7 +380,7 @@ class EmergencyController extends Controller
         $reports = EmergencyReport::where('tenant_id', $tenantId)
             ->latest('reported_at')
             ->get()
-            ->map(fn ($report) => $this->formatReport($report));
+            ->map(fn($report) => $this->formatReport($report));
 
         return response()->json([
             'reports' => $reports,
@@ -212,7 +394,7 @@ class EmergencyController extends Controller
             'emergency_type' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:5000',
             'location' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:50',
+            'status' => 'nullable|in:active,resolved,closed',
             'input_type' => 'nullable|in:voice,text',
             'language' => 'nullable|in:en,tl',
         ]);
@@ -233,7 +415,7 @@ class EmergencyController extends Controller
             'input_type' => $validated['input_type'] ?? 'text',
             'description' => $cleanedDescription ?: $rawDescription,
             'location' => $location,
-            'status' => $validated['status'] ?? 'pending',
+            'status' => 'active',
             'reported_at' => now(),
         ]);
 
@@ -283,6 +465,31 @@ class EmergencyController extends Controller
         return trim($text ?? '');
     }
 
+    /**
+     * Strips common -ing suffixes from a word to produce candidate stems.
+     * Returns an array of the original word plus any derived stems.
+     *
+     */
+    private function expandIngForms(string $word): array
+    {
+        $forms = [$word];
+
+        if (!str_ends_with($word, 'ing') || strlen($word) <= 5) {
+            return $forms;
+        }
+
+        $base = substr($word, 0, -3);
+
+        if (preg_match('/([b-df-hj-np-tv-z])\1$/', $base, $m)) {
+            $forms[] = substr($base, 0, -1);
+        }
+
+        $forms[] = $base . 'e';
+        $forms[] = $base;
+
+        return array_unique($forms);
+    }
+
     private function classify(string $text, ?string $requestedType, bool $isPanicAlert): array
     {
         if ($isPanicAlert) {
@@ -294,13 +501,13 @@ class EmergencyController extends Controller
 
         $normalizedType = $this->normalizeEmergencyType($requestedType);
         $bestType = $normalizedType ?? 'Other';
-        $bestScore = $normalizedType ? 1 : 0;
+        $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1 : 0;
 
         foreach (self::EMERGENCY_RULES as $type => $rule) {
             $score = 0;
 
             foreach ($rule['keywords'] as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     $score++;
                 }
             }
@@ -321,7 +528,7 @@ class EmergencyController extends Controller
     {
         foreach (self::URGENCY_RULES as $urgency => $keywords) {
             foreach ($keywords as $keyword) {
-                if (str_contains($text, $keyword)) {
+                if ($this->matchesKeyword($text, $keyword)) {
                     return $urgency;
                 }
             }
@@ -353,8 +560,8 @@ class EmergencyController extends Controller
     private function isPanicAlert(?string $requestedType, string $text): bool
     {
         return $this->normalizeEmergencyType($requestedType) === 'Panic Alert'
-            || str_contains($text, 'panic alert')
-            || str_contains($text, 'panic');
+            || $this->matchesKeyword($text, 'panic alert')
+            || $this->matchesKeyword($text, 'panic');
     }
 
     private function detectLocation(string $text): ?string

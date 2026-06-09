@@ -57,8 +57,6 @@
         --badge-leave-border:    #f0c040;
         --badge-frontdesk-text:  #1a6fbd;
         --badge-frontdesk-border: #90c4f8;
-        --badge-guard-text:      #6d4fc4;
-        --badge-guard-border:    #c4b5fd;
         --shift-day:             #f59e0b;
         --shift-night:           #6366f1;
 
@@ -194,15 +192,12 @@
         border: 2px solid var(--white);
     }
 
-    /* ── Notification dropdown ──   */
-    #notif-wrap {
-        position: relative;
-    }
+    #notif-wrap { position: relative; }
     .notif-dropdown {
         position: absolute;
-        top: 100%;          
+        top: 100%;
         right: 0;
-        padding-top: 8px;   
+        padding-top: 8px;
         width: 320px;
         z-index: 200;
         opacity: 0;
@@ -394,9 +389,7 @@
     }
     .btn-submit:hover { opacity: .9; transform: translateY(-1px); }
 
-    .notif-detail-modal {
-        max-width: 520px;
-    }
+    .notif-detail-modal { max-width: 520px; }
     .notif-detail-type-badge {
         display: inline-flex; align-items: center; gap: .4rem;
         padding: .3rem .75rem; border-radius: 20px;
@@ -404,10 +397,12 @@
         margin-bottom: 1.2rem;
     }
     .notif-detail-type-badge.maintenance  { background: #fff7e6; color: #b45309; border: 1.5px solid #fde68a; }
-    .notif-detail-type-badge.emergency    { background: #fff0f0; color: var(--red);   border: 1.5px solid #fca5a5; }
+    .notif-detail-type-badge.emergency    { background: #fff0f0; color: var(--red); border: 1.5px solid #fca5a5; }
     .notif-detail-type-badge.billing      { background: #f0fdf4; color: #15803d; border: 1.5px solid #86efac; }
     .notif-detail-type-badge.document     { background: var(--blush); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .notif-detail-type-badge.announcement { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
+    .notif-detail-type-badge.tenant       { background: var(--blush); color: var(--bright-pink); border: 1.5px solid var(--baby-pink); }
+    .notif-detail-type-badge.visitor      { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
     .notif-detail-type-badge.general      { background: var(--petal); color: var(--ink-muted); border: 1.5px solid var(--baby-pink); }
 
     .notif-detail-icon-wrap {
@@ -514,7 +509,7 @@
         <div class="sidebar-logo-text">Dorm<em>Ease</em></div>
     </div>
 
-    <div class="sidebar-role">Admin</div>
+    <div class="sidebar-role">{{ auth('staff')->user()->role === 'secretary' ? 'Secretary' : 'Admin' }}</div>
 
     <nav class="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -542,9 +537,11 @@
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
         <div class="nav-divider"></div>
+        @if(auth('staff')->user()->role === 'admin')
         <a href="{{ route('staff.index') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-staff.png') }}" alt=""></span> Manage Staff
         </a>
+        @endif
         <a href="{{ route('settings.index') }}" class="nav-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-settings.png') }}" alt=""></span> Settings
         </a>
@@ -596,21 +593,25 @@
                             @if(isset($notifications) && $notifications->count())
                                 @foreach($notifications as $notif)
                                     @php
-                                        $notifIcon = match($notif->type) {
-                                            'maintenance_new'  => 'maintenance',
-                                            'emergency_new'    => 'warn',
-                                            'billing_overdue'  => 'billing',
-                                            'document_request' => 'nav-docu',
-                                            'announcement_new' => 'nav-announ',
-                                            default            => 'nav-visit',
+                                        $notifIcon = match(true) {
+                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                            str_starts_with($notif->type, 'emergency')    => 'warn',
+                                            str_starts_with($notif->type, 'billing')      => 'billing',
+                                            str_starts_with($notif->type, 'document')     => 'nav-docu',
+                                            str_starts_with($notif->type, 'announcement') => 'nav-announ',
+                                            str_starts_with($notif->type, 'visitor')      => 'nav-visit',
+                                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                                            default                                        => 'bell',
                                         };
-                                        $notifTypeLabel = match($notif->type) {
-                                            'maintenance_new'  => 'maintenance',
-                                            'emergency_new'    => 'emergency',
-                                            'billing_overdue'  => 'billing',
-                                            'document_request' => 'document',
-                                            'announcement_new' => 'announcement',
-                                            default            => 'general',
+                                        $notifTypeLabel = match(true) {
+                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                            str_starts_with($notif->type, 'emergency')    => 'emergency',
+                                            str_starts_with($notif->type, 'billing')      => 'billing',
+                                            str_starts_with($notif->type, 'document')     => 'document',
+                                            str_starts_with($notif->type, 'announcement') => 'announcement',
+                                            str_starts_with($notif->type, 'visitor')      => 'visitor',
+                                            str_starts_with($notif->type, 'tenant')       => 'tenant',
+                                            default                                        => 'general',
                                         };
                                     @endphp
 
@@ -766,46 +767,47 @@
         if (e.target === document.getElementById(id)) closeModal(id);
     }
 
-    function showToast(msg, type = '') {
-        const t = document.getElementById('toast');
+    function showToast(msg, type) {
+        type = type || '';
+        var t = document.getElementById('toast');
         t.textContent = msg;
         t.className   = 'toast ' + type;
-        setTimeout(() => t.classList.add('show'),    10);
-        setTimeout(() => t.classList.remove('show'), 3200);
+        setTimeout(function() { t.classList.add('show'); },    10);
+        setTimeout(function() { t.classList.remove('show'); }, 3200);
     }
 
-    const typeLabels = {
+    var typeLabels = {
         maintenance:  'Maintenance',
         emergency:    'Emergency',
         billing:      'Billing',
         document:     'Document',
         announcement: 'Announcement',
+        visitor:      'Visitor',
+        tenant:       'Tenant',
         general:      'General',
     };
 
     function openNotifDetail(notif) {
-        const badge = document.getElementById('notif-detail-badge');
+        var badge = document.getElementById('notif-detail-badge');
         badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
         badge.textContent = typeLabels[notif.type] || 'General';
 
-        const icon = document.getElementById('notif-detail-icon');
+        var icon = document.getElementById('notif-detail-icon');
         icon.src = notif.icon;
         icon.onerror = function() { this.src = '{{ asset("icons/bell.png") }}'; };
 
         document.getElementById('notif-detail-message').textContent = notif.message;
+        document.getElementById('notif-detail-time').textContent = notif.time + ' (' + notif.ago + ')';
 
-        document.getElementById('notif-detail-time').textContent =
-            notif.time + ' (' + notif.ago + ')';
-
-        const statusEl = document.getElementById('notif-detail-status');
+        var statusEl = document.getElementById('notif-detail-status');
         if (notif.isRead) {
             statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">&#10003; Read</span>';
         } else {
             statusEl.innerHTML = '<span style="color:var(--hot-pink);font-weight:700;">&#9679; Unread</span>';
         }
 
-        const urlRow = document.getElementById('notif-detail-url-row');
-        const viewBtn = document.getElementById('notif-detail-view-btn');
+        var urlRow  = document.getElementById('notif-detail-url-row');
+        var viewBtn = document.getElementById('notif-detail-view-btn');
         if (notif.url) {
             urlRow.style.display = 'flex';
             document.getElementById('notif-detail-url-text').textContent = notif.url;
@@ -823,10 +825,10 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
                 }
-            }).then(() => {
-                const badge = document.getElementById('notif-badge');
+            }).then(function() {
+                var badge = document.getElementById('notif-badge');
                 if (badge) {
-                    const current = parseInt(badge.textContent) || 0;
+                    var current = parseInt(badge.textContent) || 0;
                     if (current <= 1) badge.remove();
                     else badge.textContent = current - 1;
                 }
@@ -847,7 +849,7 @@
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Accept': 'application/json',
             }
-        }).then(() => location.reload());
+        }).then(function() { location.reload(); });
     }
 
     function toggleSidebar() {
@@ -856,7 +858,211 @@
     }
 </script>
 
+@include('partials.live-notifications')
+
 @yield('scripts')
 
+<script>
+    (function() {
+        var __panicLastId = null;
+        var __panicBeepInterval = null;
+
+        function __escHtml(str) {
+            return (str == null ? '' : String(str))
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function __buildPanicAudio() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function beep(freq, start, dur) {
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
+                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
+                }
+                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __formatPanicTime(dateStr) {
+            if (!dateStr) return '';
+            var match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+            var d = match
+                ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6] || 0))
+                : new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            var hours = d.getHours(), mins = d.getMinutes(), secs = d.getSeconds();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
+                + ' ' + String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0') + ' ' + ampm;
+        }
+
+        function __showPanicBanner(type, location, reportedAt) {
+            if (__panicBeepInterval) clearInterval(__panicBeepInterval);
+            __panicBeepInterval = setInterval(__buildPanicAudio, 3000);
+            var formattedReportedAt = __formatPanicTime(reportedAt);
+            var banner = document.createElement('div');
+            banner.id = '__panic-alert-banner';
+            banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            banner.innerHTML = '<style>@keyframes __pp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
+                + '<div style="background:linear-gradient(135deg,#ff2d78,#c0303a);color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__pp 1.5s infinite;">'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">Panic Alert</div>'
+                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __escHtml(formattedReportedAt) + '</div>'
+                + '<button onclick="__dismissPanic()" style="background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
+                + '</div>';
+            document.body.appendChild(banner);
+        }
+
+        window.__dismissPanic = function() {
+            var banner = document.getElementById('__panic-alert-banner');
+            if (banner) banner.remove();
+            if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
+            sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
+        };
+
+        function __fireBrowserNotification(type, location) {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                try { new Notification('Panic Alert', { body: type + ' \u2014 ' + location }); } catch (e) {}
+            }
+        }
+
+        function __pollPanic() {
+            var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            var csrfToken = csrfMeta ? csrfMeta.content : '';
+            fetch('{{ url("/emergency/poll-panic") }}', { headers: { 'X-CSRF-TOKEN': csrfToken } })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== __panicLastId
+                        && !sessionStorage.getItem('panicDismissed_' + data.report_id)
+                        && !document.getElementById('__panic-alert-banner')) {
+                        __panicLastId = data.report_id;
+                        __buildPanicAudio();
+                        __showPanicBanner(data.type, data.location, data.reported_at);
+                        __fireBrowserNotification(data.type, data.location);
+                    }
+                }).catch(function() {});
+        }
+
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        __pollPanic();
+        setInterval(__pollPanic, 15000);
+    })();
+
+    (function() {
+        var __criticalSeen = new Set();
+        var __criticalQueue = [];
+        var __criticalActive = false;
+        var __criticalBeepInterval = null;
+
+        function __criticalEscHtml(str) {
+            return (str == null ? '' : String(str))
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function __criticalBeep() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                function beep(freq, start, dur) {
+                    var o = ctx.createOscillator();
+                    var g = ctx.createGain();
+                    o.connect(g); g.connect(ctx.destination);
+                    o.frequency.value = freq; o.type = 'sine';
+                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+                    o.start(ctx.currentTime + start);
+                    o.stop(ctx.currentTime + start + dur + 0.05);
+                }
+                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+            } catch (e) {}
+        }
+
+        function __formatTime12h(dateStr) {
+            if (!dateStr) return '';
+            var d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            var hours = d.getHours(), mins = d.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            mins = mins < 10 ? '0' + mins : mins;
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
+        }
+
+        function __showNextCritical() {
+            if (__criticalActive || __criticalQueue.length === 0) return;
+            __criticalActive = true;
+            var report = __criticalQueue.shift();
+            var isCritical = report.urgency_level === 'critical';
+            if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
+            __criticalBeep();
+            __criticalBeepInterval = setInterval(__criticalBeep, 3000);
+            var accentColor = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
+            var accentSolid = isCritical ? '#c0303a' : '#c07800';
+            var label       = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
+            var formattedTime = __formatTime12h(report.reported_at);
+            var overlay = document.createElement('div');
+            overlay.id = '__critical-alert-overlay';
+            overlay.__reportId = report.report_id;
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
+                + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
+                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + label + '</div>'
+                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __criticalEscHtml(report.emergency_type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __criticalEscHtml(report.location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
+                + '<button onclick="__dismissCritical()" style="background:#fff;color:' + accentSolid + ';border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
+                + '</div>';
+            document.body.appendChild(overlay);
+        }
+
+        window.__dismissCritical = function() {
+            var overlay = document.getElementById('__critical-alert-overlay');
+            if (!overlay) return;
+            if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
+            sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
+            overlay.remove();
+            __criticalActive = false;
+            __showNextCritical();
+        };
+
+        function __pollCritical() {
+            fetch('{{ url("/emergency/poll-critical") }}', {
+                headers: { 'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                (data.reports || []).forEach(function(r) {
+                    if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
+                    if (!__criticalSeen.has(r.report_id) && !sessionStorage.getItem('criticalDismissed_' + r.report_id)) {
+                        __criticalSeen.add(r.report_id);
+                        __criticalQueue.push(r);
+                        __showNextCritical();
+                    }
+                });
+            }).catch(function() {});
+        }
+
+        __pollCritical();
+        setInterval(__pollCritical, 15000);
+    })();
+</script>
 </body>
 </html>

@@ -21,7 +21,9 @@ class ProfileController extends Controller
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
             'email'          => 'required|email|max:255|unique:staff,email,' . $staff->staff_id . ',staff_id',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ['nullable', 'regex:/^09\d{9}$/'],
+        ], [
+            'contact_number.regex' => 'Contact number must be 11 digits and start with 09 (e.g. 09123456789).',
         ]);
 
         $staff->update([

@@ -83,6 +83,25 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
   box-shadow: 0 8px 18px rgba(232,23,93,0.24);
 }
 .nav-cta:hover { filter: brightness(0.94); transform: translateY(-1px); }
+.nav-toggle {
+  display: none; width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: var(--gradient-pink); color: white; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 8px 18px rgba(232,23,93,0.24);
+}
+.nav-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.mobile-nav {
+  display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0;
+  padding: 10px; background: rgba(255,228,240,0.98);
+  border: 1.5px solid rgba(36,16,24,0.55); border-radius: 24px;
+  box-shadow: 0 18px 36px rgba(36,16,24,0.16);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.mobile-nav.open { display: grid; gap: 4px; }
+.mobile-nav a {
+  color: var(--brown); text-decoration: none; font-size: .95rem; font-weight: 800;
+  padding: 12px 14px; border-radius: 16px;
+}
+.mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
 /* Mobile hamburger toggle */
 .nav-toggle {
@@ -827,6 +846,24 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        mobileNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   const navToggle = document.getElementById('navToggle');
   const mobileNav = document.getElementById('mobileNav');

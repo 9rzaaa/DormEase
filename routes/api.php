@@ -12,11 +12,13 @@ use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\DocumentRequestController;
 use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\EmergencyController;
+use App\Http\Controllers\Api\DeviceTokenController;
+use App\Http\Controllers\Api\NotificationController;
 
-// ── Public routes ─────────────────────────────────────────────────────────────
+// public route
 Route::post('/login', [AuthController::class, 'login']);
 
-// ── Protected routes (requires Sanctum token) ─────────────────────────────────
+// protected routes
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', function (Request $request) {
@@ -25,33 +27,48 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // ── Announcements ─────────────────────────────────────────────────────────
+    Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+    Route::delete('/device-tokens', [DeviceTokenController::class, 'destroy']);
+
+    // notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+
+    // announcements
     Route::get('/announcements', [AnnouncementController::class, 'index']);
 
-    // ── Password ──────────────────────────────────────────────────────────────
+    // change passoword
     Route::post('/change-password', [PasswordController::class, 'change']);
 
-    // ── Visitors ──────────────────────────────────────────────────────────────
+    // visitors
     Route::get('/visitors',                 [VisitorController::class, 'index']);
     Route::post('/visitors',                [VisitorController::class, 'store']);
     Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
 
-    // ── Billing ───────────────────────────────────────────────────────────────
+    // billing
     Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
     Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
-    // ── Document Requests ─────────────────────────────────────────────────────
-    Route::get('/document-requests', [DocumentRequestController::class, 'index']); // ✅ FIXED (this was missing)
+    // document request
+    Route::get('/document-requests', [DocumentRequestController::class, 'index']);
     Route::post('/document-requests', [DocumentRequestController::class, 'store']);
     Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
 
+    // document forms
+    Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
+    Route::get('/tenant/forms', [DocumentRequestController::class, 'tenantForms']);
+
+    // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
 
+    // emergency
     Route::get('/emergency', [EmergencyController::class, 'index']);
     Route::post('/emergency', [EmergencyController::class, 'store']);
 
-    // ── Profile ───────────────────────────────────────────────────────────────
+    // profile
     Route::post('/profile/photo', function (Request $request) {
         $request->validate([
             'profile_photo' => 'required|image|max:2048',
@@ -84,6 +101,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
         return response()->json(['message' => 'Profile updated successfully.']);
     });
-
 });
-

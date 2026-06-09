@@ -29,7 +29,9 @@ class SettingsController extends Controller
             $notifPrefs = array_merge($defaultPrefs, $saved ?? []);
         }
 
-        return view('settings', compact('staff', 'notifPrefs'));
+        $archiveSettings = \App\Models\ArchiveSetting::all()->keyBy('module');
+
+        return view('settings', compact('staff', 'notifPrefs', 'archiveSettings'));
     }
 
     public function updateNotifications(Request $request)
@@ -65,6 +67,7 @@ class SettingsController extends Controller
 
         $defaultPrefs = [
             'emergency_new'    => true,
+            'visitor_registration' => true,
             'visitor_checkin'  => true,
             'visitor_checkout' => true,
             'announcement_new' => true,
@@ -87,6 +90,7 @@ class SettingsController extends Controller
 
         $keys = [
             'emergency_new',
+            'visitor_registration',
             'visitor_checkin',
             'visitor_checkout',
             'announcement_new',

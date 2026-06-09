@@ -13,6 +13,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+        $middleware->alias([
+        'dormhead' => \App\Http\Middleware\DormHeadOnly::class,
+    ]);
+    })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->alias([
+            'tenant.active' => \App\Http\Middleware\CheckTenantActive::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

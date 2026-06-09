@@ -41,7 +41,7 @@
     }
 
     .hero-banner {
-        height: 90px;
+        height: 110px;
         background: linear-gradient(120deg, #e8175d 0%, #ff6ba8 50%, #ffb3d0 100%);
         position: relative;
         overflow: hidden;
@@ -80,21 +80,22 @@
 
     .hero-avatar-wrap {
         flex-shrink: 0;
-        margin-top: -36px;
+        margin-top: -42px;
         position: relative;
         cursor: pointer;
+        z-index: 1;
     }
 
     .hero-avatar {
-        width: 78px;
-        height: 78px;
+        width: 84px;
+        height: 84px;
         border-radius: 50%;
         background: linear-gradient(135deg, #e8175d, #ff6ba8);
         border: 4px solid var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.9rem;
+        font-size: 2rem;
         font-weight: 800;
         color: var(--white);
         box-shadow: 0 4px 18px rgba(232,23,93,.30);
@@ -148,11 +149,11 @@
     }
 
     .hero-avatar-wrap:hover .avatar-overlay { opacity: 1; }
-    .hero-avatar-wrap:hover .hero-avatar { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
+    .hero-avatar-wrap:hover .hero-avatar    { box-shadow: 0 6px 24px rgba(232,23,93,.45); }
 
     .hero-info {
         flex: 1;
-        padding-top: .9rem;
+        padding-bottom: .25rem;
         min-width: 0;
     }
 
@@ -374,6 +375,36 @@
         line-height: 1.5;
     }
 
+    .pw-requirements {
+        margin-top: .6rem;
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+    }
+
+    .pw-req {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .69rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        transition: color .25s;
+    }
+
+    .pw-req.met { color: #16a34a; }
+
+    .pw-req-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--pink-100);
+        flex-shrink: 0;
+        transition: background .25s;
+    }
+
+    .pw-req.met .pw-req-dot { background: #16a34a; }
+
     .form-actions {
         display: flex;
         justify-content: flex-end;
@@ -445,6 +476,38 @@
     @media (max-width: 580px) {
         .field-grid { grid-template-columns: 1fr; }
         .hero-body { flex-direction: column; align-items: flex-start; gap: .5rem; }
+        .hero-avatar-wrap { margin-top: -42px; }
+    }
+
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--pink-200); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--pink-200); border-radius: 50%;
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
 </style>
 @endsection
@@ -460,15 +523,17 @@
     @php
         $roleMap = [
             'admin'     => ['bg'=>'#FFE4F0','color'=>'#E8175D','border'=>'#FFB3D0'],
+            'secretary' => ['bg'=>'#FFE4F0','color'=>'#E8175D','border'=>'#FFB3D0'],
             'frontdesk' => ['bg'=>'#e8f4ff','color'=>'#1a6fbd','border'=>'#90c4f8'],
-            'guard'     => ['bg'=>'#f3f0ff','color'=>'#6d4fc4','border'=>'#c4b5fd'],
             'staff'     => ['bg'=>'#f0fdf8','color'=>'#166534','border'=>'#86efac'],
         ];
         $rc = $roleMap[strtolower($staff->role ?? '')] ?? ['bg'=>'#f0f0f0','color'=>'#555','border'=>'#ccc'];
     @endphp
 
     <div class="hero-card fade-up d2">
+
         <div class="hero-banner"></div>
+
         <div class="hero-body">
             <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" id="avatar-form">
                 @csrf
@@ -489,6 +554,7 @@
                     </div>
                 </div>
             </form>
+
             <div class="hero-info">
                 <div class="hero-name" id="hero-display-name">
                     {{ $staff->first_name }} {{ $staff->last_name }}
@@ -516,7 +582,7 @@
                 </div>
             </div>
             <div class="section-body">
-                <form method="POST" action="{{ route('profile.update') }}" id="info-form">
+                <form method="POST" action="{{ route('profile.update') }}" id="info-form" data-loading-message="Saving changes...">
                     @csrf
                     @method('PUT')
                     <div class="form-fields">
@@ -542,7 +608,11 @@
                                 <label>Contact Number</label>
                                 <input type="text" name="contact_number"
                                     value="{{ old('contact_number', $staff->contact_number) }}"
-                                    placeholder="e.g. 0912-345-6789">
+                                    placeholder="09XXXXXXXXX"
+                                    maxlength="11">
+                                @error('contact_number')
+                                    <span style="font-size:.7rem; color:#e8175d; margin-top:.2rem; display:block;">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="form-field full">
                                 <label>Role</label>
@@ -577,7 +647,7 @@
                 </div>
             </div>
             <div class="section-body">
-                <form method="POST" action="{{ route('profile.password') }}" id="pw-form">
+                <form method="POST" action="{{ route('profile.password') }}" id="pw-form" data-loading-message="Updating password...">
                     @csrf
                     @method('PUT')
                     <div class="form-fields">
@@ -606,6 +676,12 @@
                                     <div class="pw-strength-fill" id="strength-fill"></div>
                                 </div>
                                 <div class="pw-strength-label" id="strength-label"></div>
+                                <div class="pw-requirements" id="pw-requirements">
+                                    <div class="pw-req" id="preq-length"><span class="pw-req-dot"></span>At least 8 characters</div>
+                                    <div class="pw-req" id="preq-upper"><span class="pw-req-dot"></span>One uppercase letter</div>
+                                    <div class="pw-req" id="preq-number"><span class="pw-req-dot"></span>One number</div>
+                                    <div class="pw-req" id="preq-special"><span class="pw-req-dot"></span>One special character</div>
+                                </div>
                             </div>
                             <div class="form-field">
                                 <label>Confirm New Password</label>
@@ -616,7 +692,6 @@
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
-                                <div class="pw-hint">At least 8 characters — mix letters, numbers &amp; symbols.</div>
                             </div>
                         </div>
                     </div>
@@ -638,15 +713,51 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
+    function showActionLoading(message) {
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function setFormLoading(form, message) {
+        form.querySelectorAll('button[type="submit"]').forEach(btn => {
+            btn.textContent = 'Please wait...';
+            btn.disabled    = true;
+            btn.classList.add('is-loading');
+        });
+        form.querySelectorAll('button:not([type="submit"])').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+        });
+        showActionLoading(message);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form[data-loading-message]').forEach(form => {
+            form.addEventListener('submit', function () {
+                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+            });
+        });
+    });
+
     document.getElementById('avatar-input').addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
 
-        const preview = document.getElementById('avatar-preview');
+        const preview  = document.getElementById('avatar-preview');
         const initials = document.getElementById('avatar-initials');
 
         const reader = new FileReader();
@@ -657,6 +768,7 @@
         };
         reader.readAsDataURL(file);
 
+        showActionLoading('Uploading photo...');
         document.getElementById('avatar-form').submit();
     });
 
@@ -675,7 +787,12 @@
     function checkStrength(val) {
         const fill  = document.getElementById('strength-fill');
         const label = document.getElementById('strength-label');
-        if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+        if (!val) {
+            fill.style.width  = '0%';
+            label.textContent = '';
+            ['preq-length','preq-upper','preq-number','preq-special'].forEach(id => document.getElementById(id).classList.remove('met'));
+            return;
+        }
         let score = 0;
         if (val.length >= 8)          score++;
         if (/[A-Z]/.test(val))        score++;
@@ -692,6 +809,12 @@
         fill.style.background = lvl.color;
         label.textContent     = lvl.text;
         label.style.color     = lvl.color;
+
+        const toggle = (id, met) => document.getElementById(id).classList.toggle('met', met);
+        toggle('preq-length',  val.length >= 8);
+        toggle('preq-upper',   /[A-Z]/.test(val));
+        toggle('preq-number',  /[0-9]/.test(val));
+        toggle('preq-special', /[^A-Za-z0-9]/.test(val));
     }
 
     function resetStrength() {

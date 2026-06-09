@@ -41,6 +41,12 @@
     .nav-links a.nav-active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2.5px; border-radius:99px; background:var(--gradient-pink); }
     .nav-cta { background:var(--gradient-pink) !important; color:white !important; padding:11px 26px !important; border-radius:100px !important; font-weight:700 !important; transition:filter .2s,transform .15s !important; box-shadow:0 8px 18px rgba(232,23,93,.24); }
     .nav-cta:hover { filter:brightness(.94); transform:translateY(-1px); }
+    .nav-toggle { display:none; width:44px; height:44px; border:0; border-radius:50%; background:var(--gradient-pink); color:white; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 18px rgba(232,23,93,.24); }
+    .nav-toggle svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; }
+    .mobile-nav { display:none; position:absolute; top:calc(100% + 10px); left:0; right:0; padding:10px; background:rgba(255,228,240,.98); border:1.5px solid rgba(36,16,24,.55); border-radius:24px; box-shadow:0 18px 36px rgba(36,16,24,.16); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); }
+    .mobile-nav.open { display:grid; gap:4px; }
+    .mobile-nav a { color:var(--brown); text-decoration:none; font-size:.95rem; font-weight:800; padding:12px 14px; border-radius:16px; }
+    .mobile-nav a:hover, .mobile-nav a.nav-active { color:var(--pink); background:rgba(255,255,255,.62); }
     .header-spacer { height:154px; background:var(--cream); }
 
     .faq-hero { padding:70px 6% 52px; background:var(--cream); }
@@ -111,7 +117,8 @@
     #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
 
     @media(max-width:960px){
-      .nav-links li:not(:last-child){display:none}
+      .nav-links{display:none}
+      .nav-toggle{display:inline-flex;flex-shrink:0}
       .footer-inner{grid-template-columns:1fr 1fr}
       .faq-inner{grid-template-columns:1fr; gap:40px;}
       .faq-left{position:static;}
@@ -153,6 +160,16 @@
       <li><a href="{{ route('faqs') }}" class="nav-active">FAQs</a></li>
       <li><a href="{{ route('home') }}#contact" class="nav-cta">Contact Us</a></li>
     </ul>
+    <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+    </button>
+    <div class="mobile-nav" id="mobileNav">
+      <a href="{{ route('gallery') }}">Gallery</a>
+      <a href="{{ route('home') }}#how">How it Works</a>
+      <a href="{{ route('home') }}#about">About</a>
+      <a href="{{ route('faqs') }}" class="nav-active">FAQs</a>
+      <a href="{{ route('home') }}#contact">Contact Us</a>
+    </div>
   </nav>
   <div class="header-spacer"></div>
 </header>
@@ -295,7 +312,14 @@
       </a>
       <p class="footer-brand">A web and mobile dormitory management system for Sanctissimo Rosario Ladies Dormitory, Sampaloc, Manila.</p>
     </div>
-    <div class="footer-col"><h4>Features</h4><a href="{{ route('home') }}#features">Maintenance</a><a href="{{ route('home') }}#features">Announcements</a><a href="{{ route('home') }}#features">Water Billing</a><a href="{{ route('home') }}#features">Visitor Log</a><a href="{{ route('safety.features') }}">Safety Features</a></div>
+    <div class="footer-col">
+      <h4>Features</h4>
+      <a href="{{ route('features') }}#maintenance">Maintenance</a>
+      <a href="{{ route('features') }}#announcements">Announcements</a>
+      <a href="{{ route('features') }}#water-bill">Water Billing</a>
+      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#emergency">Emergency</a>
+      <a href="{{ route('safety.features') }}">Safety Features</a></div>
     <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>
     <div class="footer-col"><h4>Contact</h4><a href="tel:+639175359723">+63 917 535 9723</a><a href="#">1229 Navarra St.</a><a href="#">Sampaloc, Manila</a></div>
   </div>
@@ -325,6 +349,24 @@
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        mobileNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => {

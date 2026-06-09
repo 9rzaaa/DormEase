@@ -60,7 +60,7 @@
     .table-card {
         background: var(--white);
         border-radius: 18px;
-        border: 2px solid var(--bright-pink);
+        border: 1px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
     }
@@ -69,7 +69,7 @@
         padding: 1.1rem 1.5rem;
         display: flex; align-items: center; justify-content: space-between;
         background: var(--white); flex-wrap: wrap; gap: .8rem;
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
     .table-title { font-size: 1rem; font-weight: 800; color: var(--ink); }
     .table-date  { font-size: .75rem; color: var(--ink-muted); margin-top: .15rem; }
@@ -119,7 +119,7 @@
         letter-spacing: .05em;
         white-space: nowrap;
         background: var(--blush);
-        border-bottom: 2px solid var(--bright-pink);
+        border-bottom: 1px solid var(--bright-pink);
     }
     td {
         padding: .8rem .85rem;
@@ -140,7 +140,6 @@
     .badge-leave     { background: var(--peach); color: var(--badge-leave-text); border: 1.5px solid var(--badge-leave-border); }
     .badge-admin     { background: var(--petal); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .badge-frontdesk { background: var(--gray-light); color: var(--badge-frontdesk-text); border: 1.5px solid var(--badge-frontdesk-border); }
-    .badge-guard     { background: var(--blush); color: var(--badge-guard-text); border: 1.5px solid var(--badge-guard-border); }
     .badge-staff     { background: var(--mint); color: var(--green); border: 1.5px solid var(--green); }
 
     .action-group { display: flex; align-items: center; justify-content: center; gap: .4rem; }
@@ -296,6 +295,51 @@
 
     .sad-close:hover { background: var(--pink-100); color: var(--hot-pink); }
 
+    .sad-tabs {
+        display: flex;
+        gap: 0;
+        padding: 0 1.8rem;
+        border-bottom: 1px solid var(--pink-100);
+        flex-shrink: 0;
+        background: var(--white);
+    }
+
+    .sad-tab {
+        padding: .85rem 1.1rem;
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        border-bottom: 2.5px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color .2s, border-color .2s;
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        letter-spacing: .01em;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+    }
+
+    .sad-tab:hover { color: var(--hot-pink); }
+    .sad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+
+    .sad-tab-count {
+        font-size: .68rem;
+        font-weight: 800;
+        padding: .1rem .45rem;
+        border-radius: 99px;
+        background: var(--petal);
+        color: var(--ink-muted);
+        letter-spacing: .02em;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    .sad-tab.active .sad-tab-count { background: var(--bright-pink); color: var(--white); }
+
     .sad-search-bar {
         padding: 1rem 1.8rem .8rem;
         flex-shrink: 0;
@@ -418,6 +462,7 @@
     .sad-pill-onduty   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
     .sad-pill-offduty  { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
     .sad-pill-onleave  { background: var(--peach); color: var(--badge-leave-text); border: 1px solid var(--badge-leave-border); }
+    .sad-pill-inactive { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
 
     .sad-card-archived {
         display: flex;
@@ -499,6 +544,8 @@
         .sad-list { padding: 0 1rem 1.2rem; }
         .sad-search-bar { padding: .8rem 1rem .6rem; }
         .sad-footer { padding: .75rem 1rem; }
+        .sad-tabs { padding: 0 1rem; }
+        .sad-tab { padding: .75rem .75rem; font-size: .76rem; }
     }
     @media(max-width:600px) {
         .stats-row { grid-template-columns: 1fr; }
@@ -510,6 +557,138 @@
         .search-wrap input { width: 100%; }
         .sort-select { width: 100%; }
     }
+
+    .action-loading-overlay {
+        position: fixed; inset: 0; z-index: 1200;
+        display: none; align-items: center; justify-content: center;
+        background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+    }
+    .action-loading-overlay.open { display: flex; }
+
+    .action-loading-box {
+        display: flex; align-items: center; flex-direction: column;
+        gap: .75rem; padding: 1.25rem 1.6rem;
+        border: 1px solid var(--baby-pink); border-radius: 12px;
+        background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14);
+        color: var(--ink); font-size: .9rem; font-weight: 700;
+    }
+
+    .loading-logo-wrap {
+        width: 86px; height: 86px;
+        border: 3px solid var(--baby-pink); border-radius: 50%;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 24px rgba(232,23,93,.25);
+        animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
+    }
+    .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+    .is-loading { opacity: .75; pointer-events: none; }
+
+    @keyframes pulseLogo {
+        0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
+        50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
+    }
+
+    .atd-pill-onduty  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+    .atd-pill-offduty { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
+
+    .atd-duration {
+        font-size: .72rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        background: var(--blush);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .15rem .55rem;
+        white-space: nowrap;
+    }
+
+    .atd-date-divider {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .35rem 0 .1rem;
+        position: sticky;
+        top: 0;
+        background: var(--soft-bg);
+        z-index: 2;
+    }
+
+    .atd-date-label {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        white-space: nowrap;
+        background: var(--petal);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .2rem .75rem;
+    }
+
+    .atd-date-line {
+        flex: 1;
+        height: 1px;
+        background: var(--pink-100);
+    }
+
+    .atd-day-count {
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        white-space: nowrap;
+    }
+
+    .atd-filter-bar {
+        display: flex;
+        gap: .5rem;
+        padding: .6rem 1.8rem .2rem;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .atd-filter-select {
+        padding: .38rem 1.6rem .38rem .65rem;
+        border-radius: 8px;
+        border: 1px solid var(--pink-100);
+        background: var(--white);
+        font-family: var(--ff-body);
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--ink);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right .5rem center;
+        transition: border-color .2s;
+    }
+
+    .atd-filter-select:focus { border-color: var(--bright-pink); }
+
+    .atd-card-login-time {
+        font-size: .72rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        margin-top: .55rem;
+        padding-top: .55rem;
+        border-top: 1px solid var(--pink-100);
+        display: flex;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .atd-card-login-time span { color: var(--bright-pink); font-weight: 600; }
+
+    .export-dropdown { position: relative; display: inline-flex; }
+    .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+    .export-menu.open { display: block; }
+    .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+    .export-menu button:hover { background: var(--blush); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -572,10 +751,16 @@
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
             </button>
-            <button class="btn-outline" onclick="exportStaff()">
-                <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
-                Export
-            </button>
+            <div class="export-dropdown" id="export-dropdown-main">
+                <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-main')">
+                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-main">
+                    <button onclick="exportStaffCsv(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportStaffPdf(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -623,7 +808,23 @@
                     <input type="text" id="search-input" placeholder="Search..." oninput="filterTable()">
                 </div>
                 <div class="filter-divider"></div>
-                <span class="filter-label">Sort By:</span>
+                <span class="filter-label">Role:</span>
+                <select class="sort-select" id="filter-role" onchange="filterTable()">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="secretary">Secretary</option>
+                    <option value="frontdesk">Front Desk</option>
+                </select>
+                <div class="filter-divider"></div>
+                <span class="filter-label">Duty:</span>
+                <select class="sort-select" id="filter-duty" onchange="filterTable()">
+                    <option value="">All Status</option>
+                    <option value="on_duty">On Duty</option>
+                    <option value="off_duty">Off Duty</option>
+                    <option value="on_leave">On Leave</option>
+                </select>
+                <div class="filter-divider"></div>
+                <span class="filter-label">Sort:</span>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
@@ -660,6 +861,14 @@
 @endsection
 
 @section('modals')
+<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
+    <div class="action-loading-box">
+        <span class="loading-logo-wrap">
+            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
+        </span>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
 
 <div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
 
@@ -667,9 +876,21 @@
     <div class="sad-header">
         <div>
             <div class="sad-title">Archive / History</div>
-            <div class="sad-sub">Record of deleted staff accounts</div>
+            <div class="sad-sub">Records of deleted and inactive staff</div>
         </div>
         <button class="sad-close" onclick="closeStaffArchive()">&#x2715;</button>
+    </div>
+
+    <div class="sad-tabs">
+        <button class="sad-tab active" id="stab-deleted" onclick="switchStaffArchiveTab('deleted')">
+            Deleted <span class="sad-tab-count" id="scount-deleted">0</span>
+        </button>
+        <button class="sad-tab" id="stab-inactive" onclick="switchStaffArchiveTab('inactive')">
+            Inactive <span class="sad-tab-count" id="scount-inactive">0</span>
+        </button>
+        <button class="sad-tab" id="stab-attendance" onclick="switchStaffArchiveTab('attendance')">
+            Attendance Log <span class="sad-tab-count" id="scount-attendance">0</span>
+        </button>
     </div>
 
     <div class="sad-search-bar">
@@ -679,14 +900,44 @@
         </div>
     </div>
 
+    <div class="atd-filter-bar" id="atd-filter-bar" style="display:none;">
+        <select class="atd-filter-select" id="atd-filter-role" onchange="renderStaffArchive()">
+            <option value="">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="secretary">Secretary</option>
+            <option value="frontdesk">Front Desk</option>
+        </select>
+        <select class="atd-filter-select" id="atd-filter-duty" onchange="renderStaffArchive()">
+            <option value="">All Status</option>
+            <option value="on_duty">On Duty</option>
+            <option value="off_duty">Off Duty</option>
+        </select>
+        <select class="atd-filter-select" id="atd-filter-shift" onchange="renderStaffArchive()">
+            <option value="">All Shifts</option>
+            <option value="Day">Day</option>
+            <option value="Night">Night</option>
+        </select>
+    </div>
+
     <div class="sad-list" id="sad-list"></div>
 
     <div class="sad-footer">
         <div class="sad-count-label" id="sad-count-label">0 records</div>
-        <button class="sad-export-btn" onclick="exportStaffArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <button id="clear-log-btn" style="display:none;padding:.35rem .85rem;border-radius:8px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onclick="confirmClearAttendanceLog()">
+                Clear Log
+            </button>
+            <div class="export-dropdown" id="export-dropdown-archive">
+                <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-archive">
+                    <button onclick="exportStaffArchive('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportStaffArchive('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -696,7 +947,7 @@
             <div class="modal-title">Add New Staff</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('staff.store') }}">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff...">
             @csrf
             <div class="modal-grid">
                 <div class="modal-field">
@@ -716,9 +967,8 @@
                     <select name="role" required>
                         <option value="">Select role</option>
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
+                        <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
-                        <option value="guard"     {{ old('role') === 'guard'     ? 'selected' : '' }}>Guard</option>
-                        <option value="staff"     {{ old('role') === 'staff'     ? 'selected' : '' }}>Staff</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -765,7 +1015,7 @@
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
             <div class="modal-grid">
@@ -785,9 +1035,8 @@
                     <label>Role</label>
                     <select name="role" id="edit-role">
                         <option value="admin">Admin</option>
+                        <option value="secretary">Secretary</option>
                         <option value="frontdesk">Front Desk</option>
-                        <option value="guard">Guard</option>
-                        <option value="staff">Staff</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -817,6 +1066,9 @@
                     </select>
                 </div>
             </div>
+            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;margin-bottom:.9rem;line-height:1.5;">
+                Setting status to <strong>Inactive</strong> will move this staff member to the archive.
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -841,7 +1093,7 @@
             Are you sure you want to delete
             <strong id="delete-name" style="color:var(--ink);"></strong>?
         </p>
-        <form method="POST" id="delete-form" action="">
+        <form method="POST" id="delete-form" action="" data-loading-message="Deleting staff...">
             @csrf
             @method('DELETE')
             <div class="modal-actions">
@@ -856,38 +1108,72 @@
 
 @section('scripts')
 <script>
-    const staffList  = @json($staffList);
-    const PER_PAGE   = 8;
-    let currentPage  = 1;
-    let filtered     = [...staffList];
-    let currentStaff = null;
+    function showActionLoading(message) {
+        var overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        var overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function setFormLoading(form, message) {
+        form.querySelectorAll('button[type="submit"]').forEach(function(btn) {
+            btn.textContent = 'Please wait...';
+            btn.disabled    = true;
+            btn.classList.add('is-loading');
+        });
+        form.querySelectorAll('button:not([type="submit"])').forEach(function(btn) {
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+        });
+        showActionLoading(message);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
+            });
+        });
+    });
+
+    var staffList  = @json($staffList);
+    var PER_PAGE   = 8;
+    var currentPage  = 1;
+    var filtered     = staffList.slice();
+    var currentStaff = null;
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
     function dutyBadge(status) {
-        const map = {
+        var map = {
             on_duty:  '<span class="badge badge-onduty">On Duty</span>',
             off_duty: '<span class="badge badge-offduty">Off Duty</span>',
             on_leave: '<span class="badge badge-leave">On Leave</span>',
         };
-        return map[status] ?? `<span class="badge badge-offduty">${status ?? '—'}</span>`;
+        return map[status] || ('<span class="badge badge-offduty">' + (status || '\u2014') + '</span>');
     }
 
     function roleBadge(role) {
-        const map = {
+        var map = {
             admin:     '<span class="badge badge-admin">Admin</span>',
+            secretary: '<span class="badge badge-admin">Secretary</span>',
             frontdesk: '<span class="badge badge-frontdesk">Front Desk</span>',
-            guard:     '<span class="badge badge-guard">Guard</span>',
             staff:     '<span class="badge badge-staff">Staff</span>',
         };
-        return map[role] ?? `<span class="badge badge-staff">${role ?? '—'}</span>`;
+        return map[role] || ('<span class="badge badge-staff">' + (role || '\u2014') + '</span>');
     }
 
     function shiftLabel(shift) {
-        if (!shift) return '—';
-        const cls = shift.toLowerCase() === 'night' ? 'night' : 'day';
-        return `<span class="shift-dot ${cls}">${shift}</span>`;
+        if (!shift) return '\u2014';
+        var cls = shift.toLowerCase() === 'night' ? 'night' : 'day';
+        return '<span class="shift-dot ' + cls + '">' + shift + '</span>';
     }
 
     function fmtStaffId(id) {
@@ -895,239 +1181,267 @@
     }
 
     function renderTable() {
-        const start    = (currentPage - 1) * PER_PAGE;
-        const pageData = filtered.slice(start, start + PER_PAGE);
-        const tbody    = document.getElementById('staff-tbody');
+        var start    = (currentPage - 1) * PER_PAGE;
+        var pageData = filtered.slice(start, start + PER_PAGE);
+        var tbody    = document.getElementById('staff-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No staff found.</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No staff found.</td></tr>';
         } else {
-            tbody.innerHTML = pageData.map(s => `
-                <tr>
-                    <td class="td-id">${fmtStaffId(s.staff_id)}</td>
-                    <td class="td-name">${s.first_name} ${s.last_name}</td>
-                    <td>${roleBadge(s.role)}</td>
-                    <td>${shiftLabel(s.shift_schedule)}</td>
-                    <td>${s.contact_number ?? '—'}</td>
-                    <td>${dutyBadge(s.duty_status)}</td>
-                    <td>
-                        <div class="action-group">
-                            <button class="act-btn" title="View" onclick='viewStaff(${JSON.stringify(s)})'>
-                                <img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">
-                            </button>
-                            <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(s)})'>
-                                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
-                            </button>
-                            <button class="act-btn delete" title="Delete" onclick="openDeleteModal(${s.staff_id}, '${s.first_name} ${s.last_name}')">
-                                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">
-                            </button>
-                            <button class="act-btn toggle" title="Reset Password" onclick='resetTempPassword(${JSON.stringify(s)})'>
-                                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = pageData.map(function(s) {
+                return '<tr>'
+                    + '<td class="td-id">' + fmtStaffId(s.staff_id) + '</td>'
+                    + '<td class="td-name">' + s.first_name + ' ' + s.last_name + '</td>'
+                    + '<td>' + roleBadge(s.role) + '</td>'
+                    + '<td>' + shiftLabel(s.shift_schedule) + '</td>'
+                    + '<td>' + (s.contact_number || '\u2014') + '</td>'
+                    + '<td>' + dutyBadge(s.duty_status) + '</td>'
+                    + '<td>'
+                        + '<div class="action-group">'
+                            + '<button class="act-btn" title="View" onclick=\'viewStaff(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
+                                + '<img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">'
+                            + '</button>'
+                            + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
+                                + '<img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">'
+                            + '</button>'
+                            + '<button class="act-btn delete" title="Delete" onclick="openDeleteModal(' + s.staff_id + ', \'' + (s.first_name + ' ' + s.last_name).replace(/'/g, "\\'") + '\')">'
+                                + '<img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">'
+                            + '</button>'
+                            + '<button class="act-btn toggle" title="Reset Password" onclick=\'resetTempPassword(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
+                                + '<img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">'
+                            + '</button>'
+                        + '</div>'
+                    + '</td>'
+                    + '</tr>';
+            }).join('');
         }
 
-        const total = filtered.length;
-        const from  = total === 0 ? 0 : start + 1;
-        const to    = Math.min(start + PER_PAGE, total);
+        var total = filtered.length;
+        var from  = total === 0 ? 0 : start + 1;
+        var to    = Math.min(start + PER_PAGE, total);
         document.getElementById('showing-label').textContent =
-            `Showing data ${from} to ${to} of ${total} entries`;
+            'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
 
         renderPagination();
     }
 
     function renderPagination() {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
-        const pg = document.getElementById('pagination');
-        let html = '';
-        html += `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&#8249;</button>`;
-        for (let i = 1; i <= totalPages; i++) {
+        var totalPages = Math.ceil(filtered.length / PER_PAGE);
+        var pg = document.getElementById('pagination');
+        var html = '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>&#8249;</button>';
+        for (var i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+                html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
             } else if (i === currentPage - 2 || i === currentPage + 2) {
-                html += `<span style="color:var(--ink-muted);padding:0 .2rem">&#8230;</span>`;
+                html += '<span style="color:var(--ink-muted);padding:0 .2rem">&#8230;</span>';
             }
         }
-        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>&#8250;</button>`;
+        html += '<button class="page-btn" onclick="goPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages || totalPages === 0 ? 'disabled' : '') + '>&#8250;</button>';
         pg.innerHTML = html;
     }
 
     function goPage(p) {
-        const totalPages = Math.ceil(filtered.length / PER_PAGE);
+        var totalPages = Math.ceil(filtered.length / PER_PAGE);
         if (p < 1 || p > totalPages) return;
         currentPage = p;
         renderTable();
     }
 
     function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        filtered = staffList.filter(s =>
-            (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
-            fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
-            (s.role           ?? '').toLowerCase().includes(q) ||
-            (s.contact_number ?? '').toLowerCase().includes(q) ||
-            (s.email          ?? '').toLowerCase().includes(q)
-        );
+        var q    = document.getElementById('search-input').value.toLowerCase();
+        var role = document.getElementById('filter-role').value;
+        var duty = document.getElementById('filter-duty').value;
+        filtered = staffList.filter(function(s) {
+            var matchSearch = (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
+                fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
+                (s.role           || '').toLowerCase().includes(q) ||
+                (s.contact_number || '').toLowerCase().includes(q) ||
+                (s.email          || '').toLowerCase().includes(q);
+            var matchRole = role === '' || s.role === role;
+            var matchDuty = duty === '' || s.duty_status === duty;
+            return matchSearch && matchRole && matchDuty;
+        });
         currentPage = 1;
         renderTable();
     }
 
     function sortTable() {
-        const val = document.getElementById('sort-select').value;
-        if (val === 'newest') filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        if (val === 'oldest') filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        if (val === 'name')   filtered.sort((a, b) => a.first_name.localeCompare(b.first_name));
-        if (val === 'role')   filtered.sort((a, b) => (a.role ?? '').localeCompare(b.role ?? ''));
+        var val = document.getElementById('sort-select').value;
+        if (val === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+        if (val === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+        if (val === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+        if (val === 'role')   filtered.sort(function(a, b) { return (a.role || '').localeCompare(b.role || ''); });
         currentPage = 1;
         renderTable();
     }
 
     function viewStaff(s) {
         currentStaff = s;
-        document.getElementById('view-content').innerHTML = `
-            <div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">${fmtStaffId(s.staff_id)}</span></div>
-            <div class="view-row"><span class="view-label">Full Name</span><span class="view-val">${s.first_name} ${s.last_name}</span></div>
-            <div class="view-row"><span class="view-label">Email</span><span class="view-val">${s.email}</span></div>
-            <div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">${s.contact_number ?? '—'}</span></div>
-            <div class="view-row"><span class="view-label">Role</span><span class="view-val">${roleBadge(s.role)}</span></div>
-            <div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">${shiftLabel(s.shift_schedule)}</span></div>
-            <div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">${dutyBadge(s.duty_status)}</span></div>
-            <div class="view-row"><span class="view-label">Account Status</span><span class="view-val">${s.is_active ? 'Active' : 'Inactive'}</span></div>
-        `;
+        document.getElementById('view-content').innerHTML =
+            '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (s.contact_number || '\u2014') + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">' + (s.is_active ? 'Active' : 'Inactive') + '</span></div>';
         openModal('view-modal');
     }
 
     function switchToEdit() {
         if (currentStaff) {
             closeModal('view-modal');
-            setTimeout(() => openEditModal(currentStaff), 200);
+            setTimeout(function() { openEditModal(currentStaff); }, 200);
         }
     }
 
     function openEditModal(s) {
         currentStaff = s;
-        document.getElementById('edit-form').action           = `/staff/${s.staff_id}`;
-        document.getElementById('edit-first-name').value      = s.first_name     ?? '';
-        document.getElementById('edit-last-name').value       = s.last_name      ?? '';
-        document.getElementById('edit-email').value           = s.email          ?? '';
-        document.getElementById('edit-role').value            = s.role           ?? '';
-        document.getElementById('edit-shift').value           = s.shift_schedule ?? '';
-        document.getElementById('edit-contact').value         = s.contact_number ?? '';
-        document.getElementById('edit-duty-status').value     = s.duty_status    ?? 'off_duty';
+        document.getElementById('edit-form').action           = '/staff/' + s.staff_id;
+        document.getElementById('edit-first-name').value      = s.first_name     || '';
+        document.getElementById('edit-last-name').value       = s.last_name      || '';
+        document.getElementById('edit-email').value           = s.email          || '';
+        document.getElementById('edit-role').value            = s.role           || '';
+        document.getElementById('edit-shift').value           = s.shift_schedule || '';
+        document.getElementById('edit-contact').value         = s.contact_number || '';
+        document.getElementById('edit-duty-status').value     = s.duty_status    || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         openModal('edit-modal');
     }
 
     function openDeleteModal(id, name) {
         document.getElementById('delete-name').textContent = name;
-        document.getElementById('delete-form').action = `/staff/${id}`;
+        document.getElementById('delete-form').action = '/staff/' + id;
         openModal('delete-modal');
     }
 
-    function exportStaff() {
-        const rows = [['Staff ID', 'First Name', 'Last Name', 'Email', 'Role', 'Shift', 'Contact', 'Duty Status']];
-        staffList.forEach(s => rows.push([
-            fmtStaffId(s.staff_id),
-            s.first_name, s.last_name, s.email,
-            s.role ?? '', s.shift_schedule ?? '',
-            s.contact_number ?? '', s.duty_status ?? ''
-        ]));
-        const csv  = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a    = document.createElement('a');
-        a.href     = URL.createObjectURL(blob);
+    function exportStaffCsv() {
+        var rows = [['Staff ID', 'First Name', 'Last Name', 'Email', 'Role', 'Shift', 'Contact', 'Duty Status']];
+        staffList.forEach(function(s) {
+            rows.push([
+                fmtStaffId(s.staff_id),
+                s.first_name, s.last_name, s.email,
+                s.role            || '',
+                s.shift_schedule  || '',
+                s.contact_number  || '',
+                s.duty_status     || '',
+            ]);
+        });
+        var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var blob = new Blob([csv], { type: 'text/csv' });
+        var a    = document.createElement('a');
+        a.href   = URL.createObjectURL(blob);
         a.download = 'dormease-staff.csv';
         a.click();
+        URL.revokeObjectURL(a.href);
         showToast('Staff list exported as CSV!', 'success');
+    }
+
+    function exportStaffPdf() {
+        if (!staffList.length) { showToast('No data to export.', 'error'); return; }
+        var win  = window.open('', '_blank');
+        var rows = staffList.map(function(s) {
+            return '<tr>'
+                + '<td>' + fmtStaffId(s.staff_id) + '</td>'
+                + '<td>' + s.first_name + ' ' + s.last_name + '</td>'
+                + '<td>' + (s.email || '') + '</td>'
+                + '<td>' + (s.role || '') + '</td>'
+                + '<td>' + (s.shift_schedule || '') + '</td>'
+                + '<td>' + (s.contact_number || '') + '</td>'
+                + '<td>' + (s.duty_status || '') + '</td>'
+                + '</tr>';
+        }).join('');
+        win.document.write('<!DOCTYPE html><html><head><title>Staff List</title>'
+            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<p>Staff List - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+            + '<table><thead><tr><th>Staff ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Contact</th><th>Duty Status</th></tr></thead>'
+            + '<tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) {
-        const el = document.getElementById(id);
+        var el = document.getElementById(id);
         if (el) el.classList.remove('open');
         if ((id === 'reset-credentials-modal' || id === 'reset-confirm-modal') && el) el.remove();
     }
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+
+    document.querySelectorAll('.modal-overlay').forEach(function(m) {
+        m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
     });
 
     function copyText(id, btn) {
-        const text = document.getElementById(id)?.innerText.trim();
+        var text = document.getElementById(id) ? document.getElementById(id).innerText.trim() : '';
         if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            const old = btn.innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            var old = btn.innerText;
             btn.innerText = 'Copied!';
-            setTimeout(() => btn.innerText = old, 1500);
+            setTimeout(function() { btn.innerText = old; }, 1500);
             showToast('Copied to clipboard!', 'success');
         });
     }
 
     function copyResetText(id, btn) {
-        const text = document.getElementById(id)?.innerText.trim();
+        var text = document.getElementById(id) ? document.getElementById(id).innerText.trim() : '';
         if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            const old = btn.innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            var old = btn.innerText;
             btn.innerText = 'Copied!';
-            setTimeout(() => btn.innerText = old, 1500);
+            setTimeout(function() { btn.innerText = old; }, 1500);
             showToast('Copied to clipboard!', 'success');
         });
     }
 
     function resetTempPassword(s) {
-        const existing = document.getElementById('reset-confirm-modal');
+        var existing = document.getElementById('reset-confirm-modal');
         if (existing) existing.remove();
-
-        const initials = (s.first_name[0] ?? '') + (s.last_name[0] ?? '');
-
-        document.body.insertAdjacentHTML('beforeend', `
-            <div class="modal-overlay open" id="reset-confirm-modal">
-                <div class="modal" style="max-width:420px;">
-                    <div class="modal-header">
-                        <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:38px;height:38px;border-radius:10px;background:var(--petal);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">
-                            </div>
-                            <div>
-                                <div class="modal-title">Reset password</div>
-                                <div style="font-size:.78rem;color:var(--ink-muted);">This will generate new credentials</div>
-                            </div>
-                        </div>
-                        <button class="modal-close" onclick="closeModal('reset-confirm-modal')">&#x2715;</button>
-                    </div>
-
-                    <div class="reset-staff-card">
-                        <div class="reset-staff-avatar">${initials}</div>
-                        <div>
-                            <div class="reset-staff-name">${s.first_name} ${s.last_name}</div>
-                            <div class="reset-staff-meta">${fmtStaffId(s.staff_id)} &middot; ${s.role ?? '—'}</div>
-                        </div>
-                    </div>
-
-                    <div class="reset-warning-box">
-                        <p>A new temporary password will be generated. Share it with the staff member immediately as it will not be shown again.</p>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button class="btn-cancel" onclick="closeModal('reset-confirm-modal')">Cancel</button>
-                        <button class="btn-submit" style="background:var(--bright-pink);" onclick="confirmReset(${s.staff_id})">Reset password</button>
-                    </div>
-                </div>
-            </div>
-        `);
-
-        document.getElementById('reset-confirm-modal').addEventListener('click', e => {
-            if (e.target === document.getElementById('reset-confirm-modal'))
-                closeModal('reset-confirm-modal');
+        var initials = (s.first_name[0] || '') + (s.last_name[0] || '');
+        document.body.insertAdjacentHTML('beforeend',
+            '<div class="modal-overlay open" id="reset-confirm-modal">'
+            + '<div class="modal" style="max-width:420px;">'
+                + '<div class="modal-header">'
+                    + '<div style="display:flex;align-items:center;gap:10px;">'
+                        + '<div style="width:38px;height:38px;border-radius:10px;background:var(--petal);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                            + '<img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">'
+                        + '</div>'
+                        + '<div>'
+                            + '<div class="modal-title">Reset password</div>'
+                            + '<div style="font-size:.78rem;color:var(--ink-muted);">This will generate new credentials</div>'
+                        + '</div>'
+                    + '</div>'
+                    + '<button class="modal-close" onclick="closeModal(\'reset-confirm-modal\')">&#x2715;</button>'
+                + '</div>'
+                + '<div class="reset-staff-card">'
+                    + '<div class="reset-staff-avatar">' + initials + '</div>'
+                    + '<div>'
+                        + '<div class="reset-staff-name">' + s.first_name + ' ' + s.last_name + '</div>'
+                        + '<div class="reset-staff-meta">' + fmtStaffId(s.staff_id) + ' &middot; ' + (s.role || '\u2014') + '</div>'
+                    + '</div>'
+                + '</div>'
+                + '<div class="reset-warning-box">'
+                    + '<p>A new temporary password will be generated. Share it with the staff member immediately as it will not be shown again.</p>'
+                + '</div>'
+                + '<div class="modal-actions">'
+                    + '<button class="btn-cancel" onclick="closeModal(\'reset-confirm-modal\')">Cancel</button>'
+                    + '<button class="btn-submit" style="background:var(--bright-pink);" onclick="confirmReset(' + s.staff_id + ')">Reset password</button>'
+                + '</div>'
+            + '</div>'
+            + '</div>'
+        );
+        document.getElementById('reset-confirm-modal').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('reset-confirm-modal')) closeModal('reset-confirm-modal');
         });
     }
 
     function confirmReset(id) {
         closeModal('reset-confirm-modal');
-
-        fetch(`/staff/${id}/reset-password`, {
+        showActionLoading('Resetting password...');
+        fetch('/staff/' + id + '/reset-password', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1135,79 +1449,70 @@
                 'Accept': 'application/json'
             }
         })
-        .then(res => res.json())
-        .then(data => {
-            const existing = document.getElementById('reset-credentials-modal');
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            hideActionLoading();
+            var existing = document.getElementById('reset-credentials-modal');
             if (existing) existing.remove();
-
-            document.body.insertAdjacentHTML('beforeend', `
-                <div class="modal-overlay open" id="reset-credentials-modal">
-                    <div class="modal" style="max-width:460px;">
-                        <div class="modal-header">
-                            <div class="modal-title">Password Reset Successful</div>
-                            <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
-                        </div>
-                        <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
-                            Share these credentials with the staff member immediately.
-                        </p>
-                        <div class="credentials-box">
-                            <h4>New Temporary Credentials</h4>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Email</div>
-                                    <div class="credential-value" id="reset-email">${data.reset_email}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-email', this)">Copy</button>
-                            </div>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Staff ID</div>
-                                    <div class="credential-value" id="reset-staff-id">${data.reset_staff_id}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-staff-id', this)">Copy</button>
-                            </div>
-                            <div class="credential-row">
-                                <div>
-                                    <div class="credential-label">Temporary Password</div>
-                                    <div class="credential-value" id="reset-temp-password">${data.reset_temp_password}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyResetText('reset-temp-password', this)">Copy</button>
-                            </div>
-                        </div>
-                        <div class="credentials-warning">
-                            This password will <strong>not be shown again</strong>.
-                        </div>
-                        <div class="modal-actions">
-                            <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it</button>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            document.getElementById('reset-credentials-modal').addEventListener('click', e => {
-                if (e.target === document.getElementById('reset-credentials-modal'))
-                    closeModal('reset-credentials-modal');
+            document.body.insertAdjacentHTML('beforeend',
+                '<div class="modal-overlay open" id="reset-credentials-modal">'
+                + '<div class="modal" style="max-width:460px;">'
+                    + '<div class="modal-header">'
+                        + '<div class="modal-title">Password Reset Successful</div>'
+                        + '<button class="modal-close" onclick="closeModal(\'reset-credentials-modal\')">&#x2715;</button>'
+                    + '</div>'
+                    + '<p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">Share these credentials with the staff member immediately.</p>'
+                    + '<div class="credentials-box">'
+                        + '<h4>New Temporary Credentials</h4>'
+                        + '<div class="credential-row">'
+                            + '<div><div class="credential-label">Email</div><div class="credential-value" id="reset-email">' + data.reset_email + '</div></div>'
+                            + '<button class="copy-btn" onclick="copyResetText(\'reset-email\', this)">Copy</button>'
+                        + '</div>'
+                        + '<div class="credential-row">'
+                            + '<div><div class="credential-label">Staff ID</div><div class="credential-value" id="reset-staff-id">' + data.reset_staff_id + '</div></div>'
+                            + '<button class="copy-btn" onclick="copyResetText(\'reset-staff-id\', this)">Copy</button>'
+                        + '</div>'
+                        + '<div class="credential-row">'
+                            + '<div><div class="credential-label">Temporary Password</div><div class="credential-value" id="reset-temp-password">' + data.reset_temp_password + '</div></div>'
+                            + '<button class="copy-btn" onclick="copyResetText(\'reset-temp-password\', this)">Copy</button>'
+                        + '</div>'
+                    + '</div>'
+                    + '<div class="credentials-warning">This password will <strong>not be shown again</strong>.</div>'
+                    + '<div class="modal-actions"><button class="btn-submit" onclick="closeModal(\'reset-credentials-modal\')">Got it</button></div>'
+                + '</div>'
+                + '</div>'
+            );
+            document.getElementById('reset-credentials-modal').addEventListener('click', function(e) {
+                if (e.target === document.getElementById('reset-credentials-modal')) closeModal('reset-credentials-modal');
             });
-
             showToast('Password reset successfully!', 'success');
         })
-        .catch(() => showToast('Failed to reset password.', 'error'));
+        .catch(function() {
+            hideActionLoading();
+            showToast('Failed to reset password.', 'error');
+        });
     }
 
-    const deletedStaffArchive = @json($deletedArchive);
+    var deletedStaffArchive   = @json($deletedArchive);
+    var inactiveStaffArchive  = @json($inactiveArchive);
+    var attendanceLogsArchive = @json($attendanceLogs);
+    var staffArchiveTab       = 'deleted';
 
     function fmtDatePlain(d) {
-        if (!d) return '—';
-        const dt   = new Date(d);
-        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        return `${date} ${time}`;
+        if (!d) return '\u2014';
+        var dt   = new Date(d);
+        var date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        var time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        return date + ' ' + time;
     }
 
     function openStaffArchive() {
         document.getElementById('sad-drawer').classList.add('open');
         document.getElementById('sad-backdrop').classList.add('open');
         document.getElementById('sad-search').value = '';
+        document.getElementById('scount-deleted').textContent    = deletedStaffArchive.length;
+        document.getElementById('scount-inactive').textContent   = inactiveStaffArchive.length;
+        document.getElementById('scount-attendance').textContent = attendanceLogsArchive.length;
         renderStaffArchive();
     }
 
@@ -1216,97 +1521,394 @@
         document.getElementById('sad-backdrop').classList.remove('open');
     }
 
+    function switchStaffArchiveTab(tab) {
+        staffArchiveTab = tab;
+        document.getElementById('stab-deleted').classList.toggle('active',    tab === 'deleted');
+        document.getElementById('stab-inactive').classList.toggle('active',   tab === 'inactive');
+        document.getElementById('stab-attendance').classList.toggle('active', tab === 'attendance');
+        document.getElementById('clear-log-btn').style.display   = tab === 'attendance' ? 'inline-flex' : 'none';
+        document.getElementById('atd-filter-bar').style.display  = tab === 'attendance' ? 'flex' : 'none';
+        document.getElementById('sad-search').placeholder = tab === 'attendance' ? 'Search by name...' : 'Search archived staff...';
+        document.getElementById('sad-search').value = '';
+        if (tab !== 'attendance') {
+            document.getElementById('atd-filter-role').value  = '';
+            document.getElementById('atd-filter-duty').value  = '';
+            document.getElementById('atd-filter-shift').value = '';
+        }
+        renderStaffArchive();
+    }
+
     function dutyPillClass(status) {
-        const map = {
-            on_duty:  'sad-pill-onduty',
-            off_duty: 'sad-pill-offduty',
-            on_leave: 'sad-pill-onleave',
-        };
-        return map[status] ?? 'sad-pill-offduty';
+        var map = { on_duty: 'sad-pill-onduty', off_duty: 'sad-pill-offduty', on_leave: 'sad-pill-onleave' };
+        return map[status] || 'sad-pill-offduty';
     }
 
     function renderStaffArchive() {
-        const q = document.getElementById('sad-search').value.toLowerCase();
+        var q = document.getElementById('sad-search').value.toLowerCase();
 
-        const data = deletedStaffArchive.filter(r =>
-            (r.account_id    ?? '').toLowerCase().includes(q) ||
-            (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
-            (r.email         ?? '').toLowerCase().includes(q) ||
-            (r.role          ?? '').toLowerCase().includes(q) ||
-            (r.shift_schedule ?? '').toLowerCase().includes(q)
-        );
-
-        const list = document.getElementById('sad-list');
-        document.getElementById('sad-count-label').textContent =
-            `${data.length} record${data.length !== 1 ? 's' : ''}`;
-
-        if (data.length === 0) {
-            list.innerHTML = `<div class="sad-empty">
-                <img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">
-                No archived staff found.
-            </div>`;
+        if (staffArchiveTab === 'attendance') {
+            renderAttendanceLog(q);
             return;
         }
 
-        list.innerHTML = data.map((r, i) => `
-            <div class="sad-card" style="animation-delay:${i * 0.04}s;">
-                <div class="sad-card-top">
-                    <div class="sad-card-id">${r.account_id ?? (r.staff_code ?? '—')}</div>
-                    <div class="sad-card-time">${r.archived_at ? fmtDatePlain(r.archived_at) : '—'}</div>
-                </div>
-                <div class="sad-card-name">${r.first_name} ${r.last_name}</div>
-                <div class="sad-card-email">${r.email ?? '—'}</div>
-                <div class="sad-card-meta">
-                    ${r.role
-                        ? `<span class="sad-pill sad-pill-role">${r.role}</span>`
-                        : ''}
-                    ${r.shift_schedule
-                        ? `<span class="sad-pill sad-pill-shift">${r.shift_schedule}</span>`
-                        : ''}
-                    ${r.duty_status
-                        ? `<span class="sad-pill ${dutyPillClass(r.duty_status)}">${r.duty_status.replace('_', ' ')}</span>`
-                        : ''}
-                </div>
-                <div class="sad-card-archived">
-                    Deleted on: <span>${fmtDatePlain(r.archived_at)}</span>
-                </div>
-            </div>
-        `).join('');
+        var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
+
+        var data = source.filter(function(r) {
+            return (r.account_id  || '').toLowerCase().includes(q) ||
+                (r.first_name + ' ' + r.last_name).toLowerCase().includes(q) ||
+                (r.email          || '').toLowerCase().includes(q) ||
+                (r.role           || '').toLowerCase().includes(q) ||
+                (r.shift_schedule || '').toLowerCase().includes(q);
+        });
+
+        var list = document.getElementById('sad-list');
+        document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+        if (data.length === 0) {
+            var labelMap = { deleted: 'deleted', inactive: 'inactive' };
+            list.innerHTML = '<div class="sad-empty">'
+                + '<img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">'
+                + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
+                + '</div>';
+            return;
+        }
+
+        var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on' };
+        var archiveLabel = archiveLabelMap[staffArchiveTab];
+
+        list.innerHTML = data.map(function(r, i) {
+            var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
+            var timeDisplay = fmtDatePlain(dateValue);
+            var archivedDisplay = fmtDatePlain(dateValue);
+
+            return '<div class="sad-card" style="animation-delay:' + (i * 0.04) + 's;">'
+                + '<div class="sad-card-top">'
+                    + '<div class="sad-card-id">' + (r.account_id || (r.staff_code || '\u2014')) + '</div>'
+                    + '<div class="sad-card-time">' + timeDisplay + '</div>'
+                + '</div>'
+                + '<div class="sad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
+                + '<div class="sad-card-email">' + (r.email || '\u2014') + '</div>'
+                + '<div class="sad-card-meta">'
+                    + (r.role         ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
+                    + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
+                    + (r.duty_status  ? '<span class="sad-pill ' + dutyPillClass(r.duty_status) + '">' + r.duty_status.replace('_', ' ') + '</span>' : '')
+                    + (staffArchiveTab === 'inactive' ? '<span class="sad-pill sad-pill-inactive">Inactive</span>' : '')
+                + '</div>'
+                + '<div class="sad-card-archived">' + archiveLabel + ': <span>' + archivedDisplay + '</span></div>'
+                + (staffArchiveTab === 'inactive'
+                    ? '<form method="POST" action="/staff/' + r.staff_id + '/reactivate" style="margin-top:.75rem;" onsubmit="this.querySelector(\'button\').disabled=true;showActionLoading(\'Reactivating staff...\');">'
+                        + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                        + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
+                        + '</form>'
+                    : '')
+                + '</div>';
+        }).join('');
     }
 
-    function exportStaffArchive() {
-        const rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', 'Deleted On']];
-        deletedStaffArchive.forEach(r => {
+    function renderAttendanceLog(q) {
+        var roleFilter  = document.getElementById('atd-filter-role')  ? document.getElementById('atd-filter-role').value  : '';
+        var dutyFilter  = document.getElementById('atd-filter-duty')  ? document.getElementById('atd-filter-duty').value  : '';
+        var shiftFilter = document.getElementById('atd-filter-shift') ? document.getElementById('atd-filter-shift').value : '';
+
+        var data = attendanceLogsArchive.filter(function(r) {
+            var matchSearch = (r.staff_name || '').toLowerCase().includes(q);
+            var matchRole   = roleFilter  === '' || (r.role           || '') === roleFilter;
+            var matchDuty   = dutyFilter  === '' || (r.duty_status    || '') === dutyFilter;
+            var matchShift  = shiftFilter === '' || (r.shift_schedule || '') === shiftFilter;
+            return matchSearch && matchRole && matchDuty && matchShift;
+        });
+
+        var list = document.getElementById('sad-list');
+        document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+        if (data.length === 0) {
+            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">No attendance records found.</div>';
+            return;
+        }
+
+        var grouped = {};
+        data.forEach(function(r) {
+            var dateKey = r.login_at ? new Date(r.login_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown Date';
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push(r);
+        });
+
+        var html = '';
+        var cardIndex = 0;
+
+        Object.keys(grouped).forEach(function(dateKey) {
+            var group = grouped[dateKey];
+            html += '<div class="atd-date-divider">'
+                + '<div class="atd-date-label">' + dateKey + '</div>'
+                + '<div class="atd-date-line"></div>'
+                + '<div class="atd-day-count">' + group.length + ' session' + (group.length !== 1 ? 's' : '') + '</div>'
+            + '</div>';
+
+            group.forEach(function(r) {
+                var dutyClass = r.duty_status === 'on_duty' ? 'atd-pill-onduty' : 'atd-pill-offduty';
+                var dutyLabel = r.duty_status === 'on_duty' ? 'On Duty' : 'Off Duty';
+                var loginTime  = r.login_at  ? new Date(r.login_at).toLocaleTimeString('en-US',  { hour: '2-digit', minute: '2-digit', hour12: true }) : '\u2014';
+                var logoutTime = r.logout_at ? new Date(r.logout_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Still logged in';
+
+                html += '<div class="sad-card" style="animation-delay:' + (cardIndex * 0.025) + 's;">'
+                    + '<div class="sad-card-top">'
+                        + '<div class="sad-card-id">ST-' + String(r.staff_id).padStart(3, '0') + '</div>'
+                        + (r.duration ? '<span class="atd-duration">' + r.duration + '</span>' : '')
+                    + '</div>'
+                    + '<div class="sad-card-name">' + r.staff_name + '</div>'
+                    + '<div class="sad-card-meta">'
+                        + (r.role           ? '<span class="sad-pill sad-pill-role">' + r.role + '</span>' : '')
+                        + (r.shift_schedule ? '<span class="sad-pill sad-pill-shift">' + r.shift_schedule + '</span>' : '')
+                        + '<span class="sad-pill ' + dutyClass + '">' + dutyLabel + '</span>'
+                    + '</div>'
+                    + '<div class="atd-card-login-time">'
+                        + 'Login: <span>' + loginTime + '</span>'
+                        + '&nbsp;&nbsp;&nbsp;Logout: <span>' + logoutTime + '</span>'
+                    + '</div>'
+                + '</div>';
+
+                cardIndex++;
+            });
+        });
+
+        list.innerHTML = html;
+    }
+
+    function exportStaffArchive(format) {
+        if (staffArchiveTab === 'attendance') {
+            exportAttendanceLogs(format);
+            return;
+        }
+
+        var source = staffArchiveTab === 'deleted' ? deletedStaffArchive : inactiveStaffArchive;
+        var tabLabel = staffArchiveTab === 'deleted' ? 'Deleted' : 'Inactive';
+        var archiveColLabel = staffArchiveTab === 'deleted' ? 'Deleted On' : 'Marked Inactive On';
+
+        if (!source.length) { showToast('No archive data to export.', 'error'); return; }
+
+        if (format === 'pdf') {
+            var win  = window.open('', '_blank');
+            var rows = source.map(function(r) {
+                var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
+                return '<tr>'
+                    + '<td>' + (r.account_id || r.staff_code || '') + '</td>'
+                    + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
+                    + '<td>' + (r.email || '') + '</td>'
+                    + '<td>' + (r.role || '') + '</td>'
+                    + '<td>' + (r.shift_schedule || '') + '</td>'
+                    + '<td>' + (r.duty_status || '') + '</td>'
+                    + '<td>' + fmtDatePlain(dateValue) + '</td>'
+                    + '</tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Staff Archive - ' + tabLabel + '</title>'
+                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+                + '</head><body>'
+                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+                + '<p>Staff Archive (' + tabLabel + ') - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+                + '<table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Duty Status</th><th>' + archiveColLabel + '</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table>'
+                + '</body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Role', 'Shift', 'Duty Status', archiveColLabel]];
+        source.forEach(function(r) {
+            var dateValue = staffArchiveTab === 'deleted' ? (r.archived_at || '') : (r.inactivated_at || '');
             rows.push([
-                r.account_id      ?? '',
+                r.account_id     || r.staff_code || '',
                 r.first_name,
                 r.last_name,
-                r.email           ?? '',
-                r.contact_number  ?? '',
-                r.role            ?? '',
-                r.shift_schedule  ?? '',
-                r.duty_status     ?? '',
-                r.archived_at     ?? '',
+                r.email          || '',
+                r.contact_number || '',
+                r.role           || '',
+                r.shift_schedule || '',
+                r.duty_status    || '',
+                dateValue,
             ]);
         });
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
-        const a   = document.createElement('a');
-        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'staff_deleted_archive.csv';
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'staff-' + staffArchiveTab + '-archive.csv';
         a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Archive exported as CSV!', 'success');
     }
 
+    function confirmClearAttendanceLog() {
+        var existing = document.getElementById('clear-log-confirm-modal');
+        if (existing) existing.remove();
+
+        document.body.insertAdjacentHTML('beforeend',
+            '<div class="modal-overlay open" id="clear-log-confirm-modal">'
+            + '<div class="modal" style="max-width:400px;">'
+                + '<div class="modal-header">'
+                    + '<div class="modal-title">Clear Attendance Log</div>'
+                    + '<button class="modal-close" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">&#x2715;</button>'
+                + '</div>'
+                + '<div class="delete-warning">This will permanently delete all attendance records. This action cannot be undone.</div>'
+                + '<p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to clear the entire attendance log?</p>'
+                + '<div class="modal-actions">'
+                    + '<button class="btn-cancel" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">Cancel</button>'
+                    + '<button class="btn-submit" style="background:var(--red);" onclick="executeClearAttendanceLog()">Clear All</button>'
+                + '</div>'
+            + '</div>'
+            + '</div>'
+        );
+
+        document.getElementById('clear-log-confirm-modal').addEventListener('click', function(e) {
+            if (e.target === this) this.remove();
+        });
+    }
+
+    function executeClearAttendanceLog() {
+        var modal = document.getElementById('clear-log-confirm-modal');
+        if (modal) modal.remove();
+
+        showActionLoading('Clearing attendance log...');
+
+        fetch('/staff/attendance/clear', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            hideActionLoading();
+            if (data.success) {
+                attendanceLogsArchive = [];
+                document.getElementById('scount-attendance').textContent = 0;
+                renderAttendanceLog('');
+                showToast(data.message, 'success');
+            } else {
+                showToast(data.message || 'Failed to clear.', 'error');
+            }
+        })
+        .catch(function() {
+            hideActionLoading();
+            showToast('Network error.', 'error');
+        });
+    }
+
+    function exportAttendanceLogs(format) {
+        if (!attendanceLogsArchive.length) { showToast('No attendance data to export.', 'error'); return; }
+
+        if (format === 'pdf') {
+            var win  = window.open('', '_blank');
+            var rows = attendanceLogsArchive.map(function(r) {
+                return '<tr>'
+                    + '<td>' + 'ST-' + String(r.staff_id).padStart(3, '0') + '</td>'
+                    + '<td>' + r.staff_name + '</td>'
+                    + '<td>' + (r.role || '') + '</td>'
+                    + '<td>' + (r.shift_schedule || '') + '</td>'
+                    + '<td>' + fmtDatePlain(r.login_at) + '</td>'
+                    + '<td>' + (r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in') + '</td>'
+                    + '<td>' + (r.duration || '') + '</td>'
+                    + '<td>' + (r.duty_status || '') + '</td>'
+                    + '</tr>';
+            }).join('');
+            win.document.write('<!DOCTYPE html><html><head><title>Staff Attendance Log</title>'
+                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
+                + '</head><body>'
+                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+                + '<p>Staff Attendance Log - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
+                + '<table><thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Shift</th><th>Login</th><th>Logout</th><th>Duration</th><th>Duty Status</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table>'
+                + '</body></html>');
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        var rows = [['Staff ID', 'Name', 'Role', 'Shift', 'Login', 'Logout', 'Duration', 'Duty Status']];
+        attendanceLogsArchive.forEach(function(r) {
+            rows.push([
+                'ST-' + String(r.staff_id).padStart(3, '0'),
+                r.staff_name,
+                r.role           || '',
+                r.shift_schedule || '',
+                r.login_at       || '',
+                r.logout_at      || 'Still logged in',
+                r.duration       || '',
+                r.duty_status    || '',
+            ]);
+        });
+        var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+        var a   = document.createElement('a');
+        a.href  = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = 'staff-attendance-log.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('Attendance log exported as CSV!', 'success');
+    }
+
+    function getMenuForDropdown(id) {
+        return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
+            return m._sourceDropdownId === id;
+        }) || document.querySelector('#' + id + ' .export-menu');
+    }
+
+    function positionExportMenu(dropdown) {
+        var btn  = dropdown.querySelector('button');
+        var menu = getMenuForDropdown(dropdown.id);
+        var rect = btn.getBoundingClientRect();
+        if (!menu._movedToBody) {
+            menu._sourceDropdownId = dropdown.id;
+            document.body.appendChild(menu);
+            menu._movedToBody = true;
+        }
+        menu.style.position = 'fixed';
+        menu.style.zIndex   = '99999';
+        menu.style.right    = (window.innerWidth - rect.right) + 'px';
+        menu.style.left     = 'auto';
+        menu.style.minWidth = rect.width + 'px';
+        var spaceBelow = window.innerHeight - rect.bottom;
+        if (spaceBelow >= (menu.offsetHeight || 80) + 6) {
+            menu.style.top    = (rect.bottom + 6) + 'px';
+            menu.style.bottom = 'auto';
+        } else {
+            menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+            menu.style.top    = 'auto';
+        }
+    }
+
+    function toggleExportDropdown(id) {
+        var dropdown = document.getElementById(id);
+        var menu     = getMenuForDropdown(id);
+        var isOpen   = menu.classList.contains('open');
+        closeAllExportDropdowns();
+        if (!isOpen) {
+            positionExportMenu(dropdown);
+            getMenuForDropdown(id).classList.add('open');
+        }
+    }
+
+    function closeAllExportDropdowns() {
+        document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.export-dropdown')) {
+            closeAllExportDropdowns();
+        }
+    });
+
     @if($errors->any())
-        document.addEventListener('DOMContentLoaded', () => openModal('add-modal'));
+        document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
     @endif
 
     @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () =>
-            showToast('{{ session("success") }}', 'success')
-        );
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ session("success") }}', 'success');
+        });
     @endif
 
-    filtered = [...staffList];
+    filtered = staffList.slice();
     renderTable();
 </script>
 @endsection

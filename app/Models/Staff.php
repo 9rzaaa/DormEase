@@ -9,10 +9,9 @@ class Staff extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'staff';
+    protected $table      = 'staff';
     protected $primaryKey = 'staff_id';
-
-    public $timestamps = false;
+    public $timestamps    = false;
 
     protected $fillable = [
         'staff_code',
@@ -26,10 +25,14 @@ class Staff extends Authenticatable
         'account_id',
         'contact_number',
         'shift_schedule',
+        'shift_start',
+        'shift_end',
+        'last_login_at',
         'duty_status',
         'attachment',
         'profile_picture',
         'is_active',
+        'inactivated_at',
     ];
 
     protected $hidden = [
@@ -40,6 +43,10 @@ class Staff extends Authenticatable
     protected $casts = [
         'is_temp_password' => 'boolean',
         'is_active'        => 'boolean',
+        'inactivated_at' => 'datetime',
+        'last_login_at'  => 'datetime',
+        'shift_start'    => 'string',
+        'shift_end'      => 'string',
     ];
 
     public function getAuthPassword()
@@ -50,9 +57,7 @@ class Staff extends Authenticatable
     protected static function booted(): void
     {
         static::created(function (Staff $staff) {
-
             if (! $staff->account_id) {
-
                 $staff->updateQuietly([
                     'account_id' => 'STF-' . str_pad($staff->staff_id, 4, '0', STR_PAD_LEFT),
                 ]);
