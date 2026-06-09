@@ -1488,6 +1488,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
     <div class="tab-panel" id="panel-reqs">
         <div class="toolbar">
@@ -2489,6 +2490,7 @@ async function submitUpdateDoc() {
         closeModal('update-doc-modal');
         showToast('Submission updated successfully.', 'success');
         fetchDocs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch (e) {
         showToast(e.message ?? 'Update failed.', 'error');
     } finally {
@@ -2517,6 +2519,7 @@ async function confirmDeleteDoc() {
         closeModal('delete-doc-modal');
         showToast('Submission archived.', 'success');
         fetchDocs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch {
         showToast('Archive failed.', 'error');
     } finally {
@@ -2531,6 +2534,8 @@ function reqApplyFilters() {
     const sort   = document.getElementById('req-sort').value;
 
     reqState.filtered = reqState.data.filter(r => {
+        if (r.status === 'denied')   return false;
+        if (r.status === 'resubmission') return false;
         const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
@@ -2692,6 +2697,7 @@ async function submitUpdateReq() {
         closeModal('update-req-modal');
         showToast('Request updated successfully.', 'success');
         fetchReqs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch (e) {
         showToast(e.message ?? 'Update failed.', 'error');
     } finally {
@@ -2720,6 +2726,7 @@ async function confirmDeleteReq() {
         closeModal('delete-req-modal');
         showToast('Request archived.', 'success');
         fetchReqs();
+        if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
     } catch {
         showToast('Archive failed.', 'error');
     } finally {
@@ -2741,10 +2748,11 @@ async function fetchArchive() {
             r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
         );
         areqState.data   = data.filter(r =>
-            r.archivable_type === 'document_request' && r.data?.category !== 'form'
+            r.archivable_type === 'document_request' && r.data?.category !== 'form' &&
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
         );
         adeniedState.data = data.filter(r =>
-            r.archivable_type === 'document_request' && r.data?.category === 'form' &&
+            r.archivable_type === 'document_request' &&
             (r.data?.status === 'denied' || r.data?.status === 'resubmission')
         );
 
