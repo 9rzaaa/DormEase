@@ -635,7 +635,34 @@ tbody tr:hover { background: var(--soft-bg); }
         <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="openAddRoomModal()">+ Add Room</button>
     </div>
 
-    <div style="padding:.5rem 1.8rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
+    <div style="padding:.4rem 1.8rem .2rem;flex-shrink:0;" id="rooms-stats-bar">
+        <button onclick="toggleRoomsStats()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;border-radius:12px;border:1px solid var(--pink-100);background:var(--white);cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s;" id="rooms-stats-toggle" onmouseover="this.style.background='var(--blush)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';">
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <span style="display:inline-block;width:3px;height:12px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>
+                <span style="font-size:.75rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;">Overview</span>
+                <span id="rooms-stats-summary-pill" style="font-size:.68rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-100);"></span>
+            </div>
+            <svg id="rooms-stats-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5" style="transition:transform .25s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="rooms-stats-panel" style="display:none;padding:.75rem 0 .35rem;display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;">
+            <div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.65rem .8rem;text-align:center;">
+                <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Total Rooms</div>
+                <div id="rstat-total" style="font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1;">0</div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.65rem .8rem;text-align:center;">
+                <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Occupied</div>
+                <div id="rstat-occupied" style="font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1;">0</div>
+                <div id="rstat-pct" style="font-size:.68rem;font-weight:700;color:var(--ink-muted);margin-top:.2rem;">0%</div>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.65rem .8rem;text-align:center;">
+                <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Available</div>
+                <div id="rstat-vacant" style="font-size:1.4rem;font-weight:800;color:#1f9d69;line-height:1;">0</div>
+                <div id="rstat-cap" style="font-size:.68rem;font-weight:700;color:var(--ink-muted);margin-top:.2rem;">of 0 beds</div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
         <button class="page-btn active" id="rfloor-all" onclick="setRoomFloor('')">All</button>
         <button class="page-btn" id="rfloor-2" onclick="setRoomFloor(2)">Floor 2</button>
         <button class="page-btn" id="rfloor-3" onclick="setRoomFloor(3)">Floor 3</button>
@@ -1439,6 +1466,44 @@ async function fetchRooms() {
     }
 }
 
+var roomsStatsOpen = false;
+
+function toggleRoomsStats() {
+    roomsStatsOpen = !roomsStatsOpen;
+    var panel   = document.getElementById('rooms-stats-panel');
+    var chevron = document.getElementById('rooms-stats-chevron');
+    if (roomsStatsOpen) {
+        panel.style.display = 'grid';
+        chevron.style.transform = 'rotate(180deg)';
+    } else {
+        panel.style.display = 'none';
+        chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+function updateRoomsStats(data) {
+    var totalRooms    = data.length;
+    var totalCap      = data.reduce(function(s, r) { return s + r.capacity; }, 0);
+    var totalOcc      = data.reduce(function(s, r) { return s + r.occupancy; }, 0);
+    var totalVacant   = totalCap - totalOcc;
+    var pct           = totalCap > 0 ? Math.round((totalOcc / totalCap) * 100) : 0;
+
+    var pill = document.getElementById('rooms-stats-summary-pill');
+    var pctColor = pct >= 100 ? '#e04867' : pct >= 75 ? '#c8960c' : '#E8175D';
+    if (pill) pill.textContent = totalOcc + '/' + totalCap + ' beds \u00b7 ' + pct + '%';
+
+    var el = document.getElementById('rstat-total');
+    if (el) el.textContent = totalRooms;
+    el = document.getElementById('rstat-occupied');
+    if (el) el.textContent = totalOcc;
+    el = document.getElementById('rstat-pct');
+    if (el) { el.textContent = pct + '%'; el.style.color = pctColor; }
+    el = document.getElementById('rstat-vacant');
+    if (el) { el.textContent = totalVacant; el.style.color = totalVacant === 0 ? '#e04867' : '#1f9d69'; }
+    el = document.getElementById('rstat-cap');
+    if (el) el.textContent = 'of ' + totalCap + ' beds';
+}
+
 function renderRooms() {
     const q    = document.getElementById('rooms-search').value.toLowerCase();
     const list = document.getElementById('rooms-list');
@@ -1454,6 +1519,7 @@ function renderRooms() {
 
     document.getElementById('rooms-count-label').textContent = data.length + ' room' + (data.length !== 1 ? 's' : '');
     document.getElementById('rooms-summary').textContent     = totalOccupancy + ' / ' + totalCapacity + ' occupied';
+    updateRoomsStats(data);
 
     if (!data.length) {
         list.innerHTML = '<div class="tad-empty">No rooms found.</div>';
@@ -1544,7 +1610,10 @@ function renderRooms() {
                     <span style="display:inline-block;width:3px;height:14px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>
                     <span style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.09em;">Floor ${floor}</span>
                 </div>
-                <span style="font-size:.68rem;font-weight:700;color:var(--ink-muted);">${floorOccupied}/${floorCapacity} occupied &nbsp;&middot;&nbsp; ${floorPct}%</span>
+                <span style="display:inline-flex;align-items:center;gap:.35rem;">
+                    <span style="font-size:.68rem;font-weight:800;padding:.18rem .55rem;border-radius:99px;letter-spacing:.02em;background:${floorPct >= 100 ? '#fff0f2' : floorPct >= 75 ? '#fffbf0' : floorPct === 0 ? '#f0faf6' : '#fce8f1'};color:${floorPct >= 100 ? '#e04867' : floorPct >= 75 ? '#c8960c' : floorPct === 0 ? '#1f9d69' : '#E8175D'};border:1px solid ${floorPct >= 100 ? '#ffc2ce' : floorPct >= 75 ? '#ffd88a' : floorPct === 0 ? '#8ce0bb' : '#f4b8d0'};">${floorOccupied}/${floorCapacity} occupied</span>
+                    <span style="font-size:.67rem;font-weight:700;color:var(--ink-muted);">${floorPct}%</span>
+                </span>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">${cards}</div>
         </div>`;
