@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('archive:clear')->dailyAt('02:00');
 Schedule::command('tenants:auto-moveout')->dailyAt('00:05');
+Schedule::command('tenants:activate-reserved')->dailyAt('00:05');
