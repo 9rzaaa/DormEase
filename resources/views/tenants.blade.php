@@ -410,6 +410,44 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar { height: 3px; width: 100%; }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
+.status-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .42rem .9rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--ink-muted);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
+    font-family: inherit;
+    white-space: nowrap;
+    letter-spacing: .01em;
+}
+.status-filter-btn:hover {
+    border-color: var(--bright-pink);
+    color: var(--hot-pink);
+    background: var(--petal);
+}
+.status-filter-btn.active {
+    background: var(--gradient-pink);
+    color: var(--white);
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(232,23,93,.22);
+}
+.status-filter-btn.active .sf-dot {
+    background: rgba(255,255,255,.85) !important;
+}
+.sf-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
@@ -587,6 +625,15 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="{{ $i }}">Floor {{ $i }}</option>
                     @endfor
                 </select>
+                <div id="status-filter-group" style="display:flex;align-items:center;gap:.35rem;">
+                    <button type="button" class="status-filter-btn active" id="sfbtn-all" onclick="setStatusFilter('')">All</button>
+                    <button type="button" class="status-filter-btn" id="sfbtn-active" onclick="setStatusFilter('active')">
+                        <span class="sf-dot" style="background:#1f9d69;"></span>Active
+                    </button>
+                    <button type="button" class="status-filter-btn" id="sfbtn-pending" onclick="setStatusFilter('pending')">
+                        <span class="sf-dot" style="background:#c8960c;"></span>Pending
+                    </button>
+                </div>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
         </div>
@@ -1030,7 +1077,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Stay Type</label>
                             <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
-                                <option value="">Select type</option>
+                                <option value="" disabled selected>Select type</option>
                                 <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
                                 <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
                             </select>
@@ -1144,7 +1191,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Stay Type</label>
                             <select name="stay_type" id="edit-stay-type">
-                                <option value="">Select type</option>
+                                <option value="" disabled>Select type</option>
                                 <option value="Solo Room">Solo Room</option>
                                 <option value="Shared Room">Shared Room</option>
                             </select>
@@ -1629,7 +1676,11 @@ function applyFilters() {
         return a;
     }
 
-    sectionData.active   = sortList(base.filter(function(t){ return t.status === 'active' || t.status === 'pending'; }));
+    sectionData.active   = sortList(base.filter(function(t){
+        if (t.status !== 'active' && t.status !== 'pending') return false;
+        if (statusFilter === '') return true;
+        return t.status === statusFilter;
+    }));
     sectionData.reserved = sortList(base.filter(function(t){ return t.status === 'reserved'; }));
     sectionPages.active   = 1;
     sectionPages.reserved = 1;
@@ -1742,6 +1793,15 @@ function copyText(elementId, btn) {
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
+
+var statusFilter = '';
+
+function setStatusFilter(val) {
+    statusFilter = val;
+    document.querySelectorAll('.status-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('sfbtn-' + (val === '' ? 'all' : val)).classList.add('active');
+    applyFilters();
+}
 
 var roomsData = [];
 var roomsFloorFilter = '';
