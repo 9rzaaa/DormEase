@@ -34,7 +34,7 @@
 
     /* ── notice bar ── */
     .top-notice {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      position: absolute; top: 0; left: 0; right: 0; z-index: 101;
       min-height: 34px; display: flex; align-items: center; justify-content: center;
       padding: 6px 5%; background: var(--gradient);
       color: white; font-family: var(--font-head); font-size: .86rem; font-weight: 800; text-align: center;
@@ -42,9 +42,9 @@
 
     /* ── nav ── */
     nav {
-      position: fixed; top: 54px; left: 50%; z-index: 200;
+      position: fixed; top: 54px; left: 50%; z-index: 100;
       width: min(1220px, calc(100% - 12%)); transform: translateX(-50%);
-      background: rgba(255,228,240,0.96); backdrop-filter: blur(16px);
+      background: rgba(255,228,240,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1.5px solid rgba(36,16,24,0.78); border-radius: 999px;
       padding: 0 38px; height: 86px;
       display: flex; align-items: center; justify-content: space-between;
@@ -62,6 +62,12 @@
     .nav-links a.nav-active::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 2.5px; border-radius: 99px; background: var(--gradient); }
     .nav-cta { background: var(--gradient) !important; color: white !important; padding: 11px 26px !important; border-radius: 100px !important; font-weight: 700 !important; box-shadow: 0 8px 18px rgba(232,23,93,0.24); transition: filter .2s, transform .15s !important; }
     .nav-cta:hover { filter: brightness(.94); transform: translateY(-1px); }
+    .nav-toggle { display: none; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--gradient); color: white; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 18px rgba(232,23,93,0.24); }
+    .nav-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+    .mobile-nav { display: none; position: absolute; top: calc(100% + 10px); left: 0; right: 0; padding: 10px; background: rgba(255,228,240,0.98); border: 1.5px solid rgba(36,16,24,0.55); border-radius: 24px; box-shadow: 0 18px 36px rgba(36,16,24,0.16); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .mobile-nav.open { display: grid; gap: 4px; }
+    .mobile-nav a { color: var(--brown); text-decoration: none; font-size: .95rem; font-weight: 800; padding: 12px 14px; border-radius: 16px; }
+    .mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
     /* ── hero carousel ── */
     .hero-carousel {
@@ -368,7 +374,8 @@
       .nav-logo img { height: 44px; }
       .nav-logo-fb { font-size: 1.22rem; }
       .nav-links { gap: 0; margin-left: auto; }
-      .nav-links li:not(:last-child) { display: none; }
+      .nav-links { display: none; }
+      .nav-toggle { display: inline-flex; flex-shrink: 0; }
       .masonry { columns: 2; }
       .carousel-thumbs { display: none; }
       .stats-strip { grid-template-columns: 1fr 1fr; }
@@ -406,6 +413,16 @@
     <li><a href="{{ route('faqs') }}">FAQs</a></li>
     <li><a href="{{ route('home') }}#contact" class="nav-cta">Contact Us</a></li>
   </ul>
+  <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+  </button>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="{{ route('gallery') }}" class="nav-active">Gallery</a>
+    <a href="{{ route('home') }}#how">How it Works</a>
+    <a href="{{ route('home') }}#about">About</a>
+    <a href="{{ route('faqs') }}">FAQs</a>
+    <a href="{{ route('home') }}#contact">Contact Us</a>
+  </div>
 </nav>
 
 {{-- ── hero carousel ── --}}
@@ -658,7 +675,7 @@
       <div class="masonry-item" data-cat="amenities">
         <div class="gal-card" data-title="CCTV & Security" data-badge="Amenity" data-desc="CCTV cameras throughout the building, monitored 24/7 by on-site security staff.">
           <div class="gal-img-wrap" style="aspect-ratio:16/9">
-            <img src="{{ asset('images/CCTV.png') }}" alt="CCTV" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:180px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>cctv.jpg</span></div>'">
+            <img src="{{ asset('images/cctv.jpg') }}" alt="CCTV" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:180px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>cctv.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Amenity</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
           </div>
           <div class="gal-label">
@@ -673,7 +690,7 @@
       <div class="masonry-item" data-cat="exterior">
         <div class="gal-card" data-title="Building Exterior" data-badge="Exterior" data-desc="Five-storey building at 1229 Navarra Street, Sampaloc, Manila — close to UST and the University Belt.">
           <div class="gal-img-wrap" style="aspect-ratio:3/4">
-            <img src="{{ asset('images/main.jpg') }}" alt="Building Exterior" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:280px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>main.jpg</span></div>'">
+            <img src="{{ asset('images/main.png') }}" alt="Building Exterior" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:280px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>main.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Exterior</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
           </div>
           <div class="gal-label">
@@ -732,8 +749,11 @@
     </div>
     <div class="footer-col">
       <h4>Features</h4>
-      <a href="#">Maintenance</a><a href="#">Announcements</a>
-      <a href="#">Water Billing</a><a href="#">Visitor Log</a><a href="#">Emergency</a>
+      <a href="{{ route('features') }}#maintenance">Maintenance</a>
+      <a href="{{ route('features') }}#announcements">Announcements</a>
+      <a href="{{ route('features') }}#water-bill">Water Billing</a>
+      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#emergency">Emergency</a>
     </div>
     <div class="footer-col">
       <h4>Dormitory</h4>
@@ -799,6 +819,24 @@
   // nav
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  if (navToggle && mobileNav) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobileNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    }));
+    document.addEventListener('click', (event) => {
+      if (!nav.contains(event.target)) {
+        mobileNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 
   // scroll top
   const scrollTopBtn = document.getElementById('scrollTopBtn');
