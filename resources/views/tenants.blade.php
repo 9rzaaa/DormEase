@@ -586,7 +586,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     @endfor
                 </select>
             </div>
-            <div class="table-date" id="table-date" style="font-size:.78rem;color:var(--bright-pink);flex-shrink:0;"></div>
+            <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
         </div>
 
         <div class="tenant-section" id="section-active">
@@ -1184,7 +1184,7 @@ tbody tr:hover { background: var(--soft-bg); }
             @csrf
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('reset-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:#f0c040;color:#1a1a2e;box-shadow:0 8px 20px rgba(240,192,64,.3);">Reset Password</button>
+                <button type="submit" class="btn-submit" style="background:var(--bright-pink);color:var(--white);box-shadow:0 8px 20px rgba(232,23,93,.3);">Reset Password</button>
             </div>
         </form>
     </div>
