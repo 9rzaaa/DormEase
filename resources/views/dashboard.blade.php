@@ -497,15 +497,17 @@
             </div>
             @if(($expectedAbsent ?? 0) > 0)
             <div class="shift-pill">
-                <div class="shift-pill-icon">
-                    <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
-                    <span class="shift-pill-count">{{ $expectedAbsent }}</span>
+                <div class="shift-pill-icon-wrap">         
+                    <div class="shift-pill-icon">
+                        <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
+                        <span class="shift-pill-count">{{ $expectedAbsent }}</span>
                 </div>
+            </div>                                     
                 <div class="shift-pill-content">
-                    <span class="shift-pill-label">Expected On Shift</span>
-                    <span class="shift-pill-sub">Not yet logged in</span>
-                </div>
+                <span class="shift-pill-label">Expected On Shift</span>
+                <span class="shift-pill-sub">Not yet logged in</span>
             </div>
+        </div>
             @endif
         </div>
 
