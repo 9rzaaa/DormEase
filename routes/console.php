@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('archive:clear')->dailyAt('02:00');
+Schedule::command('tenants:auto-moveout')->dailyAt('00:05');
