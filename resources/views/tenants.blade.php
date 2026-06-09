@@ -132,6 +132,8 @@
     box-sizing: border-box;
     min-width: 0;
 }
+.icon-sm { width: 16px; height: 16px; object-fit: contain; }
+
 .table-header {
     padding: 1.2rem 1.5rem;
     display: flex;
@@ -912,7 +914,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div class="modal-grid">
                         <div class="modal-field">
                             <label>Room No.</label>
-                            <input type="text" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                            <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
@@ -935,6 +937,9 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
+                        </div>
+                        <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
+                            <div id="add-room-hint"></div>
                         </div>
                     </div>
                 </div>
@@ -1023,6 +1028,9 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field">
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
+                        </div>
+                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
+                            <div id="edit-room-hint"></div>
                         </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
@@ -1152,7 +1160,27 @@ document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    if (id === 'add-modal') {
+        var w = document.getElementById('add-room-hint-wrap');
+        var h = document.getElementById('add-room-hint');
+        if (w) w.style.display = 'none';
+        if (h) h.innerHTML = '';
+        document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
+            b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+        });
+    }
+    if (id === 'edit-modal') {
+        var w2 = document.getElementById('edit-room-hint-wrap');
+        var h2 = document.getElementById('edit-room-hint');
+        if (w2) w2.style.display = 'none';
+        if (h2) h2.innerHTML = '';
+        document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+            b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+        });
+    }
+}
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
     m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
@@ -1312,6 +1340,10 @@ function openEditModal(t) {
     document.getElementById('edit-status').value      = t.status || 'pending';
     updateStatusDot(document.getElementById('edit-status'));
     openModal('edit-modal');
+    var editRoomInput = document.getElementById('edit-room');
+    if (editRoomInput && editRoomInput.value.trim()) {
+        setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
+    }
 }
 
 function openResetModal(id, name) {
@@ -1558,6 +1590,205 @@ async function submitDeleteRoom() {
         document.getElementById('action-loading').classList.remove('open');
     }
 }
+
+(function() {
+    var roomsCache = null;
+
+    function getRoomsCache(cb) {
+        if (roomsCache) { cb(roomsCache); return; }
+        fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } })
+            .then(function(r) { return r.json(); })
+            .then(function(data) { roomsCache = data; cb(data); })
+            .catch(function() { cb([]); });
+    }
+
+    function invalidateRoomsCache() {
+        roomsCache = null;
+    }
+
+    var origFetchRooms = window.fetchRooms;
+    window.fetchRooms = function() {
+        invalidateRoomsCache();
+        return origFetchRooms ? origFetchRooms() : undefined;
+    };
+
+    var originalSubmitAddRoom = window.submitAddRoom;
+    window.submitAddRoom = function() {
+        invalidateRoomsCache();
+        return originalSubmitAddRoom();
+    };
+    var originalSubmitEditRoom = window.submitEditRoom;
+    window.submitEditRoom = function() {
+        invalidateRoomsCache();
+        return originalSubmitEditRoom();
+    };
+    var originalSubmitDeleteRoom = window.submitDeleteRoom;
+    window.submitDeleteRoom = function() {
+        invalidateRoomsCache();
+        return originalSubmitDeleteRoom();
+    };
+
+    function buildHint(rooms, typedRoom, excludeTenantId) {
+        if (!typedRoom || typedRoom.trim() === '') {
+            return { state: 'empty', html: '' };
+        }
+        var q = typedRoom.trim().toLowerCase();
+        var room = rooms.find(function(r) {
+            return r.room_number.toLowerCase() === q;
+        });
+        if (!room) {
+            var suggestions = rooms.filter(function(r) {
+                return r.room_number.toLowerCase().indexOf(q) !== -1 && r.is_active;
+            }).slice(0, 3);
+            var suggHtml = '';
+            if (suggestions.length) {
+                suggHtml = '<div style="margin-top:.55rem;display:flex;flex-wrap:wrap;gap:.35rem;">'
+                    + suggestions.map(function(s) {
+                        return '<button type="button" class="room-hint-suggest-btn" data-room="' + s.room_number + '" style="padding:.28rem .7rem;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;" onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" onmouseout="this.style.background=\'var(--white)\';this.style.color=\'var(--hot-pink)\';this.style.borderColor=\'var(--pink-100)\';">'
+                            + 'Rm.' + s.room_number + ' (Fl.' + s.floor + ')'
+                            + '</button>';
+                    }).join('')
+                    + '</div>';
+            }
+            return {
+                state: 'notfound',
+                html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
+                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:.8rem;font-weight:700;color:#b0163a;line-height:1.4;">Room <span style="font-family:monospace;">' + typedRoom.trim() + '</span> does not exist.</div>'
+                    + '<div style="font-size:.74rem;color:#b0163a;margin-top:.2rem;">Open <strong>Manage Rooms</strong> to add it, then come back and assign the tenant.'
+                    + (suggHtml ? '<br>Or pick a nearby match:' : '') + '</div>'
+                    + suggHtml
+                    + '</div></div>'
+            };
+        }
+        if (!room.is_active) {
+            return {
+                state: 'inactive',
+                html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
+                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '<div><div style="font-size:.8rem;font-weight:700;color:#b0163a;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is currently closed.</div>'
+                    + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">Reopen it in <strong>Manage Rooms</strong> before assigning tenants.</div></div></div>'
+            };
+        }
+        var effectiveOccupancy = room.occupancy;
+        if (excludeTenantId) {
+            var currentTenantInRoom = tenants.find(function(t) {
+                return t.tenant_id === excludeTenantId && t.room_number && t.room_number.toLowerCase() === q;
+            });
+            if (!currentTenantInRoom) {
+            }
+        }
+        var remaining = room.capacity - effectiveOccupancy;
+        if (remaining <= 0) {
+            return {
+                state: 'full',
+                html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
+                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                    + '<div><div style="font-size:.8rem;font-weight:700;color:#b0163a;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is at full capacity.</div>'
+                    + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">' + room.occupancy + ' of ' + room.capacity + ' slots occupied. Choose a different room or increase capacity in <strong>Manage Rooms</strong>.</div></div></div>'
+            };
+        }
+        var barPct = Math.round((effectiveOccupancy / room.capacity) * 100);
+        var barColor = barPct >= 75 ? '#f0a500' : '#1f9d69';
+        return {
+            state: 'available',
+            html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#f0faf6;border:1.5px solid #8ce0bb;">'
+                + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+                + '<div style="flex:1;min-width:0;">'
+                + '<div style="font-size:.8rem;font-weight:700;color:#1a7a52;">Room <span style="font-family:monospace;">' + room.room_number + '</span> available &mdash; ' + remaining + ' of ' + room.capacity + ' slot' + (room.capacity !== 1 ? 's' : '') + ' free.</div>'
+                + '<div style="margin-top:.45rem;display:flex;align-items:center;gap:.6rem;">'
+                + '<div style="flex:1;height:5px;background:#c8f0de;border-radius:99px;overflow:hidden;"><div style="height:100%;width:' + barPct + '%;background:' + barColor + ';border-radius:99px;transition:width .3s;"></div></div>'
+                + '<span style="font-size:.7rem;font-weight:700;color:#1a7a52;">' + effectiveOccupancy + '/' + room.capacity + '</span>'
+                + '</div>'
+                + '<div style="font-size:.72rem;color:#2e9e68;margin-top:.2rem;">' + room.stay_type + ' &nbsp;&middot;&nbsp; Floor ' + room.floor + '</div>'
+                + '</div></div>'
+        };
+    }
+
+    function attachRoomHint(inputId, hintId, wrapId, submitBtnSelector, excludeTenantIdFn) {
+        var input = document.getElementById(inputId);
+        var hint  = document.getElementById(hintId);
+        var wrap  = document.getElementById(wrapId);
+        if (!input || !hint || !wrap) return;
+
+        var debounceTimer = null;
+        var lastVal = '';
+
+        input.addEventListener('input', function() {
+            var val = this.value.trim();
+            if (val === lastVal) return;
+            lastVal = val;
+            clearTimeout(debounceTimer);
+            if (!val) {
+                wrap.style.display = 'none';
+                hint.innerHTML = '';
+                enableSubmit(submitBtnSelector);
+                return;
+            }
+            debounceTimer = setTimeout(function() {
+                getRoomsCache(function(rooms) {
+                    var excludeId = excludeTenantIdFn ? excludeTenantIdFn() : null;
+                    var result = buildHint(rooms, val, excludeId);
+                    if (!result.html) {
+                        wrap.style.display = 'none';
+                        hint.innerHTML = '';
+                        enableSubmit(submitBtnSelector);
+                    } else {
+                        hint.innerHTML = result.html;
+                        wrap.style.display = 'block';
+                        if (result.state === 'full' || result.state === 'notfound' || result.state === 'inactive') {
+                            disableSubmit(submitBtnSelector);
+                        } else {
+                            enableSubmit(submitBtnSelector);
+                        }
+                        wrap.querySelectorAll('.room-hint-suggest-btn').forEach(function(btn) {
+                            btn.addEventListener('click', function() {
+                                input.value = this.dataset.room;
+                                input.dispatchEvent(new Event('input'));
+                            });
+                        });
+                    }
+                });
+            }, 320);
+        });
+    }
+
+    function disableSubmit(selector) {
+        document.querySelectorAll(selector).forEach(function(btn) {
+            btn.disabled = true;
+            btn.style.opacity = '.45';
+            btn.style.cursor  = 'not-allowed';
+            btn.title = 'Resolve the room issue before saving.';
+        });
+    }
+
+    function enableSubmit(selector) {
+        document.querySelectorAll(selector).forEach(function(btn) {
+            btn.disabled = false;
+            btn.style.opacity = '';
+            btn.style.cursor  = '';
+            btn.title = '';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        attachRoomHint(
+            'add-room-number-input',
+            'add-room-hint',
+            'add-room-hint-wrap',
+            '#add-modal .btn-submit',
+            null
+        );
+        attachRoomHint(
+            'edit-room',
+            'edit-room-hint',
+            'edit-room-hint-wrap',
+            '#edit-modal .btn-submit',
+            function() { return currentTenant ? currentTenant.tenant_id : null; }
+        );
+    });
+})();
 
 filtered = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
 renderTable();
