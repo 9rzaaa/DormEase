@@ -117,7 +117,7 @@ class TenantController extends Controller
         $accountId    = Tenant::generateAccountId();
         $tempPassword = Tenant::generateTempPassword();
 
-        $isReserved = $request->filled('room_number') && $request->filled('estimated_move_in_date');
+        $isReserved = $request->input('add_mode') === 'reservation';
 
         $tenant = Tenant::create([
             'account_id'             => $accountId,
