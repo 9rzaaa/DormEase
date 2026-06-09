@@ -418,12 +418,15 @@
         overflow: hidden;
         transition: all .3s cubic-bezier(.4,0,.2,1);
         cursor: default;
-        padding: 4px 0 4px 4px;
     }
-    .shift-pill-icon {
+    .shift-pill-icon-wrap {
+        padding: 5px 0 5px 5px;
+        flex-shrink: 0;
+    }
+   .shift-pill-icon {
         position: relative;
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         border-radius: 100px;
         background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
         display: flex;
@@ -439,8 +442,8 @@
     }
     .shift-pill-count {
         position: absolute;
-        top: -3px;
-        right: -3px;
+        top: -4px;
+        right: -4px;
         background: #C4003A;
         color: #fff;
         font-size: .6rem;
@@ -452,6 +455,7 @@
         align-items: center;
         justify-content: center;
         border: 1.5px solid var(--petal);
+        z-index: 1;
     }
     .shift-pill-content {
         display: flex;
