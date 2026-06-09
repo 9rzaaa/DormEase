@@ -1042,12 +1042,15 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full">
                             <label>Stay Type</label>
-                            <select name="stay_type">
+                            <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
                                 <option value="">Select type</option>
                                 <option value="Bed Spacer" {{ old('stay_type') === 'Bed Spacer' ? 'selected' : '' }}>Bed Spacer</option>
                                 <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
                                 <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
                             </select>
+                        </div>
+                        <div class="modal-field full" id="add-room-suggest-wrap" style="display:none;">
+                            <div id="add-room-suggest"></div>
                         </div>
                         <div class="modal-field full" id="add-movein-wrap">
                             <label>Move-In Date</label>
@@ -1436,6 +1439,10 @@ function closeModal(id) {
         var h = document.getElementById('add-room-hint');
         if (w) w.style.display = 'none';
         if (h) h.innerHTML = '';
+        var sw = document.getElementById('add-room-suggest-wrap');
+        var sb = document.getElementById('add-room-suggest');
+        if (sw) sw.style.display = 'none';
+        if (sb) sb.innerHTML = '';
         var aw = document.getElementById('add-est-movein-wrap');
         var an = document.getElementById('add-reservation-notes-wrap');
         var am = document.getElementById('add-movein-wrap');
@@ -2183,7 +2190,7 @@ async function submitDeleteRoom() {
             html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#f0faf6;border:1.5px solid #8ce0bb;">'
                 + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
                 + '<div style="flex:1;min-width:0;">'
-                + '<div style="font-size:.8rem;font-weight:700;color:#1a7a52;">Room <span style="font-family:monospace;">' + room.room_number + '</span> available &mdash; ' + remaining + ' of ' + room.capacity + ' slot' + (room.capacity !== 1 ? 's' : '') + ' free.</div>'
+                + '<div style="font-size:.8rem;font-weight:700;color:#1a7a52;">Room <span style="font-family:monospace;">' + room.room_number + '</span> available: ' + remaining + ' of ' + room.capacity + ' slot' + (room.capacity !== 1 ? 's' : '') + ' free.</div>'
                 + '<div style="margin-top:.45rem;display:flex;align-items:center;gap:.6rem;">'
                 + '<div style="flex:1;height:5px;background:#c8f0de;border-radius:99px;overflow:hidden;"><div style="height:100%;width:' + barPct + '%;background:' + barColor + ';border-radius:99px;transition:width .3s;"></div></div>'
                 + '<span style="font-size:.7rem;font-weight:700;color:#1a7a52;">' + effectiveOccupancy + '/' + room.capacity + '</span>'
@@ -2269,6 +2276,73 @@ async function submitDeleteRoom() {
             btn.title = '';
         });
     }
+
+    function renderRoomSuggestions(stayType) {
+        var wrap = document.getElementById('add-room-suggest-wrap');
+        var box  = document.getElementById('add-room-suggest');
+        if (!stayType || !wrap || !box) return;
+        getRoomsCache(function(rooms) {
+            var matched = rooms.filter(function(r) {
+                if (!r.is_active) return false;
+                var remaining = r.capacity - r.occupancy;
+                if (remaining <= 0) return false;
+                if (stayType === 'Solo Room')   return r.stay_type === 'Solo Room';
+                if (stayType === 'Shared Room') return r.stay_type === 'Shared Room';
+                if (stayType === 'Bed Spacer')  return r.stay_type === 'Shared Room' && remaining > 0;
+                return false;
+            }).sort(function(a, b) {
+                var remA = a.capacity - a.occupancy;
+                var remB = b.capacity - b.occupancy;
+                return remA - remB;
+            }).slice(0, 6);
+
+            if (!matched.length) {
+                wrap.style.display = 'none';
+                box.innerHTML = '';
+                return;
+            }
+
+            var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
+                + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">Available rooms for ' + stayType + '</div>'
+                + '<div style="display:flex;flex-wrap:wrap;gap:.4rem;">';
+
+            matched.forEach(function(r) {
+                var remaining = r.capacity - r.occupancy;
+                var pct = Math.round((r.occupancy / r.capacity) * 100);
+                var chipColor  = pct === 0 ? '#1f9d69' : pct >= 75 ? '#c8960c' : '#E8175D';
+                var chipBg     = pct === 0 ? '#e8faf5' : pct >= 75 ? '#fff9e6' : '#fff0f6';
+                var chipBorder = pct === 0 ? '#8ce0bb' : pct >= 75 ? '#f0c040' : 'var(--pink-100)';
+                html += '<button type="button" onclick="selectSuggestedRoom(\'' + r.room_number + '\')" '
+                    + 'style="display:inline-flex;align-items:center;gap:.4rem;padding:.32rem .7rem;border-radius:8px;border:1.5px solid ' + chipBorder + ';background:' + chipBg + ';cursor:pointer;font-family:inherit;transition:.15s;" '
+                    + 'onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" '
+                    + 'onmouseout="this.style.background=\'' + chipBg + '\';this.style.color=\'\';this.style.borderColor=\'' + chipBorder + '\';">'
+                    + '<span style="font-size:.78rem;font-weight:800;color:inherit;">Rm.' + r.room_number + '</span>'
+                    + '<span style="font-size:.68rem;font-weight:600;color:' + chipColor + ';">' + remaining + ' free</span>'
+                    + '</button>';
+            });
+
+            html += '</div></div>';
+            box.innerHTML = html;
+            wrap.style.display = 'block';
+        });
+    }
+
+    window.onAddStayTypeChange = function() {
+        var stayType = document.getElementById('add-stay-type-select').value;
+        var suggestWrap = document.getElementById('add-room-suggest-wrap');
+        if (!stayType) {
+            if (suggestWrap) suggestWrap.style.display = 'none';
+            return;
+        }
+        renderRoomSuggestions(stayType);
+    };
+
+    window.selectSuggestedRoom = function(roomNumber) {
+        var input = document.getElementById('add-room-number-input');
+        if (!input) return;
+        input.value = roomNumber;
+        input.dispatchEvent(new Event('input'));
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         attachRoomHint(
@@ -2421,7 +2495,7 @@ function exportTenantArchive(format) {
         var rows = source.map(function(r) {
             return '<tr><td>'+(r.account_id||'')+'</td><td>'+r.first_name+' '+r.last_name+'</td><td>'+(r.email||'')+'</td><td>'+(r.floor&&r.room_number?r.floor+'-'+r.room_number:(r.room_number||''))+'</td><td>'+(r.stay_type||'')+'</td><td>'+(r.status||'')+'</td><td>'+(r.archived_at||'')+'</td></tr>';
         }).join('');
-        win.document.write('<!DOCTYPE html><html><head><title>Archive - '+tabLabel[tenantArchiveTab]+'</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Tenant Archive - '+tabLabel[tenantArchiveTab]+'</h2><p>Sanctissimo Rosario Ladies Dormitory &mdash; exported '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'</p><table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Room</th><th>Stay Type</th><th>Status</th><th>'+labelMap[tenantArchiveTab]+'</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+        win.document.write('<!DOCTYPE html><html><head><title>Archive - '+tabLabel[tenantArchiveTab]+'</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Tenant Archive - '+tabLabel[tenantArchiveTab]+'</h2><p>Sanctissimo Rosario Ladies Dormitory, exported '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'</p><table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Room</th><th>Stay Type</th><th>Status</th><th>'+labelMap[tenantArchiveTab]+'</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
         win.document.close();
         win.print();
         return;
