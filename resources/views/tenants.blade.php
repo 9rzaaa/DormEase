@@ -134,6 +134,10 @@
 }
 .icon-sm { width: 16px; height: 16px; object-fit: contain; }
 
+.btn-outline .icon-sm {
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+
 .table-header {
     padding: 1.2rem 1.5rem;
     display: flex;
