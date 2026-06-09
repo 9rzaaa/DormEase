@@ -522,15 +522,14 @@
         width: 40px;
         height: 40px;
         object-fit: contain;
-        opacity: .25;
+        opacity: .3;
         display: block;
         margin: 0 auto .7rem;
-        filter: invert(27%) sepia(90%) saturate(1500%) hue-rotate(315deg) brightness(85%);
-        background: linear-gradient(135deg, #fff0f7, #fde8f0);
+        background: var(--blush);
         padding: .6rem;
         border-radius: 12px;
         box-sizing: content-box;
-        border: 1.5px solid rgba(232,23,93,.12);
+        border: 1.5px solid var(--baby-pink);
     }
 
     .vd-tab-bar {
