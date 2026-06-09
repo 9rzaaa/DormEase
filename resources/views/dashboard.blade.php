@@ -415,15 +415,12 @@
         background: var(--petal);
         border: 1.5px solid var(--baby-pink);
         border-radius: 100px;
-        overflow: hidden;
+        overflow: visible;
         transition: all .3s cubic-bezier(.4,0,.2,1);
         cursor: default;
+        padding: 4px 4px 4px 4px;
     }
-    .shift-pill-icon-wrap {
-        padding: 5px 0 5px 5px;
-        flex-shrink: 0;
-    }
-   .shift-pill-icon {
+    .shift-pill-icon {
         position: relative;
         width: 36px;
         height: 36px;
@@ -433,7 +430,6 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        overflow: visible;
     }
     .shift-pill-icon img {
         filter: brightness(0) invert(1);
@@ -442,8 +438,8 @@
     }
     .shift-pill-count {
         position: absolute;
-        top: -4px;
-        right: -4px;
+        top: -5px;
+        right: -5px;
         background: #C4003A;
         color: #fff;
         font-size: .6rem;
@@ -497,17 +493,15 @@
             </div>
             @if(($expectedAbsent ?? 0) > 0)
             <div class="shift-pill">
-                <div class="shift-pill-icon-wrap">         
-                    <div class="shift-pill-icon">
-                        <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
-                        <span class="shift-pill-count">{{ $expectedAbsent }}</span>
+                <div class="shift-pill-icon">
+                    <img src="{{ asset('icons/staff-2.png') }}" class="icon-md" alt="absent">
+                    <span class="shift-pill-count">{{ $expectedAbsent }}</span>
                 </div>
-            </div>                                     
                 <div class="shift-pill-content">
-                <span class="shift-pill-label">Expected On Shift</span>
-                <span class="shift-pill-sub">Not yet logged in</span>
+                    <span class="shift-pill-label">Expected On Shift</span>
+                    <span class="shift-pill-sub">Not yet logged in</span>
+                </div>
             </div>
-        </div>
             @endif
         </div>
 
