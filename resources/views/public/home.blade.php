@@ -357,9 +357,7 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 .reveal.visible { opacity:1; transform:translateY(0); }
 .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s} .d4{transition-delay:.40s}
 
-/* ════════════════════════════════════════
-   RESPONSIVE BREAKPOINTS
-   ════════════════════════════════════════ */
+/* RESPONSIVE BREAKPOINTS */
 
 /* ── 960px tablet ── */
 @media(max-width:960px){
