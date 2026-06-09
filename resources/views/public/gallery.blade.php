@@ -675,7 +675,7 @@
       <div class="masonry-item" data-cat="amenities">
         <div class="gal-card" data-title="CCTV & Security" data-badge="Amenity" data-desc="CCTV cameras throughout the building, monitored 24/7 by on-site security staff.">
           <div class="gal-img-wrap" style="aspect-ratio:16/9">
-            <img src="{{ asset('images/CCTV.png') }}" alt="CCTV" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:180px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>cctv.jpg</span></div>'">
+            <img src="{{ asset('images/cctv.jpg') }}" alt="CCTV" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:180px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>cctv.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Amenity</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
           </div>
           <div class="gal-label">
@@ -690,7 +690,7 @@
       <div class="masonry-item" data-cat="exterior">
         <div class="gal-card" data-title="Building Exterior" data-badge="Exterior" data-desc="Five-storey building at 1229 Navarra Street, Sampaloc, Manila — close to UST and the University Belt.">
           <div class="gal-img-wrap" style="aspect-ratio:3/4">
-            <img src="{{ asset('images/main.jpg') }}" alt="Building Exterior" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:280px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>main.jpg</span></div>'">
+            <img src="{{ asset('images/main.png') }}" alt="Building Exterior" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:280px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>main.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Exterior</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
           </div>
           <div class="gal-label">
