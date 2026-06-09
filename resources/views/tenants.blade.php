@@ -1459,38 +1459,89 @@ function renderRooms() {
 
     list.innerHTML = floors.map(floor => {
         const floorRooms = data.filter(r => r.floor === floor);
-        const cards = floorRooms.map(r => {
-            const pct     = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
-            const isFull  = r.occupancy >= r.capacity;
-            const barColor= isFull ? '#e04867' : pct >= 50 ? '#f0c040' : '#1f9d69';
-            const statusPill = r.is_active
-                ? '<span style="font-size:.65rem;font-weight:800;background:#e8faf5;color:#1f9d69;border:1px solid #8ce0bb;border-radius:99px;padding:.1rem .45rem;">Active</span>'
-                : '<span style="font-size:.65rem;font-weight:800;background:#fff0f0;color:#e04867;border:1px solid #ffc8d0;border-radius:99px;padding:.1rem .45rem;">Closed</span>';
+        const floorOccupied = floorRooms.reduce((s, r) => s + r.occupancy, 0);
+        const floorCapacity = floorRooms.reduce((s, r) => s + r.capacity, 0);
 
-            return `<div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.85rem 1rem;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--bright-pink)'" onmouseout="this.style.borderColor='var(--pink-100)'">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.5rem;">
-                    <div style="display:flex;align-items:center;gap:.5rem;">
-                        <span style="font-size:.9rem;font-weight:800;color:var(--ink);">Rm.${r.room_number}</span>
-                        ${statusPill}
+        const cards = floorRooms.map(r => {
+            const isFull    = r.occupancy >= r.capacity;
+            const isEmpty   = r.occupancy === 0;
+            const pct       = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+
+            const occupancyColor = isFull ? '#e04867' : pct >= 75 ? '#f0a500' : pct >= 40 ? '#c8960c' : '#1f9d69';
+            const occupancyBg    = isFull ? '#fff0f2' : pct >= 75 ? '#fffbf0' : pct >= 40 ? '#fffdf0' : '#f0faf6';
+            const occupancyBorder= isFull ? '#ffc2ce' : pct >= 75 ? '#ffd88a' : pct >= 40 ? '#f0e080' : '#8ce0bb';
+
+            const personIcons = Array.from({ length: r.capacity }, (_, i) => {
+                const occupied = i < r.occupancy;
+                const iconFilter = occupied
+                    ? (isFull
+                        ? 'brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%)'
+                        : pct >= 75
+                            ? 'brightness(0) saturate(100%) invert(60%) sepia(60%) saturate(600%) hue-rotate(5deg) brightness(95%)'
+                            : 'brightness(0) saturate(100%) invert(45%) sepia(60%) saturate(500%) hue-rotate(115deg) brightness(85%)')
+                    : 'brightness(0) saturate(100%) invert(85%) sepia(5%) saturate(200%) hue-rotate(0deg) brightness(105%)';
+                return `<img src="{{ asset('icons/person.png') }}" style="width:18px;height:18px;object-fit:contain;filter:${iconFilter};transition:filter .2s;flex-shrink:0;" title="${occupied ? 'Occupied' : 'Vacant'}">`;
+            }).join('');
+
+            const statusDot = r.is_active
+                ? `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2px #e8faf5;flex-shrink:0;"></span>`
+                : `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#e04867;box-shadow:0 0 0 2px #fff0f0;flex-shrink:0;"></span>`;
+
+            const statusLabel = r.is_active
+                ? `<span style="font-size:.67rem;font-weight:700;color:#1f9d69;letter-spacing:.03em;">Active</span>`
+                : `<span style="font-size:.67rem;font-weight:700;color:#e04867;letter-spacing:.03em;">Closed</span>`;
+
+            const vacantCount = r.capacity - r.occupancy;
+            const vacantLabel = isEmpty
+                ? `<span style="font-size:.68rem;font-weight:600;color:#1f9d69;">All vacant</span>`
+                : isFull
+                    ? `<span style="font-size:.68rem;font-weight:700;color:#e04867;">Full</span>`
+                    : `<span style="font-size:.68rem;font-weight:600;color:var(--ink-muted);">${vacantCount} slot${vacantCount !== 1 ? 's' : ''} free</span>`;
+
+            return `<div style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
+
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isFull ? 'linear-gradient(90deg,#e04867,#ff6b8a)' : pct >= 75 ? 'linear-gradient(90deg,#f0a500,#ffd060)' : isEmpty ? 'linear-gradient(90deg,#d0d0d8,#e8e8f0)' : 'linear-gradient(90deg,#1f9d69,#4ecb8d)'};border-radius:16px 16px 0 0;"></div>
+
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding-top:.15rem;">
+                    <div style="display:flex;flex-direction:column;gap:.2rem;">
+                        <div style="display:flex;align-items:center;gap:.45rem;">
+                            <span style="font-size:1rem;font-weight:900;color:var(--ink);letter-spacing:-.02em;">Rm.${r.room_number}</span>
+                            <div style="display:flex;align-items:center;gap:.25rem;">${statusDot}${statusLabel}</div>
+                        </div>
+                        <span style="font-size:.7rem;font-weight:600;color:var(--ink-muted);letter-spacing:.02em;">${r.stay_type}</span>
                     </div>
-                    <div style="display:flex;gap:.3rem;">
-                        <button class="act-btn" title="Edit" onclick='openEditRoomModal(${JSON.stringify(r)})'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
-                        <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
+                    <div style="display:flex;gap:.25rem;flex-shrink:0;">
+                        <button class="act-btn" title="Edit" onclick='openEditRoomModal(${JSON.stringify(r)})' style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
+                        <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
-                <div style="font-size:.73rem;color:var(--ink-muted);margin-bottom:.55rem;">${r.stay_type} &nbsp;·&nbsp; ${r.capacity} pax</div>
-                <div style="display:flex;align-items:center;gap:.6rem;">
-                    <div style="flex:1;height:6px;background:var(--petal);border-radius:99px;overflow:hidden;">
-                        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:99px;transition:width .3s;"></div>
-                    </div>
-                    <span style="font-size:.72rem;font-weight:700;color:${isFull ? '#e04867' : 'var(--ink-muted)'};">${r.occupancy}/${r.capacity}</span>
+
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;min-height:22px;">
+                    ${personIcons}
                 </div>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.45rem .6rem;border-radius:9px;background:${occupancyBg};border:1px solid ${occupancyBorder};">
+                    <div style="display:flex;align-items:baseline;gap:.3rem;">
+                        <span style="font-size:1.05rem;font-weight:800;color:${occupancyColor};line-height:1;">${r.occupancy}</span>
+                        <span style="font-size:.7rem;font-weight:600;color:${occupancyColor};opacity:.75;">/ ${r.capacity} occupied</span>
+                    </div>
+                    ${vacantLabel}
+                </div>
+
             </div>`;
         }).join('');
 
-        return `<div style="margin-bottom:.25rem;">
-            <div style="font-size:.7rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-top:.25rem;">Floor ${floor}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">${cards}</div>
+        const floorPct = floorCapacity > 0 ? Math.round((floorOccupied / floorCapacity) * 100) : 0;
+
+        return `<div style="margin-bottom:.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;padding-top:.1rem;">
+                <div style="display:flex;align-items:center;gap:.6rem;">
+                    <span style="display:inline-block;width:3px;height:14px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>
+                    <span style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.09em;">Floor ${floor}</span>
+                </div>
+                <span style="font-size:.68rem;font-weight:700;color:var(--ink-muted);">${floorOccupied}/${floorCapacity} occupied &nbsp;&middot;&nbsp; ${floorPct}%</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">${cards}</div>
         </div>`;
     }).join('');
 }
