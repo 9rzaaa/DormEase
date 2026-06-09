@@ -221,6 +221,8 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
+.tenant-section-pill-pink { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+.tenant-section-bar-pink  { background: var(--gradient-pink); }
 .action-group { display: flex; align-items: center; gap: .4rem; flex-wrap: nowrap; justify-content: center; }
 .act-btn {
     width: 32px; height: 32px;
@@ -588,12 +590,12 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
 
         <div class="tenant-section" id="section-active">
-            <div class="tenant-section-bar tenant-section-bar-active"></div>
+            <div class="tenant-section-bar tenant-section-bar-pink"></div>
             <div class="tenant-section-header" onclick="toggleSection('active')">
                 <div class="tenant-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     <span class="tenant-section-label">Active Tenants</span>
-                    <span class="tenant-section-pill tenant-section-pill-active" id="pill-active">0</span>
+                    <span class="tenant-section-pill tenant-section-pill-pink" id="pill-active">0</span>
                 </div>
                 <svg class="tenant-section-chevron open" id="chevron-active" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -623,12 +625,12 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
 
         <div class="tenant-section" id="section-pending">
-            <div class="tenant-section-bar tenant-section-bar-pending"></div>
+            <div class="tenant-section-bar tenant-section-bar-pink"></div>
             <div class="tenant-section-header" onclick="toggleSection('pending')">
                 <div class="tenant-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8960c" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <span class="tenant-section-label">Pending Tenants</span>
-                    <span class="tenant-section-pill tenant-section-pill-pending" id="pill-pending">0</span>
+                    <span class="tenant-section-pill tenant-section-pill-pink" id="pill-pending">0</span>
                 </div>
                 <svg class="tenant-section-chevron open" id="chevron-pending" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -921,6 +923,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
         <div class="modal-footer">
+            <button class="btn-cancel" onclick="printCredentialSlip('new')">Print / Save as PDF</button>
             <button class="btn-submit" onclick="closeModal('credentials-modal')">Got it, I've noted the credentials</button>
         </div>
     </div>
@@ -962,6 +965,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
         <div class="modal-footer">
+            <button class="btn-cancel" onclick="printCredentialSlip('reset')">Print / Save as PDF</button>
             <button class="btn-submit" onclick="closeModal('reset-credentials-modal')">Got it, I've noted the credentials</button>
         </div>
     </div>
@@ -1214,6 +1218,142 @@ tbody tr:hover { background: var(--soft-bg); }
 
 @section('scripts')
 <script>
+    function printCredentialSlip(type) {
+    var accountId, tempPassword, tenantName;
+    if (type === 'new') {
+        accountId    = document.getElementById('cred-account-id').textContent.trim();
+        tempPassword = document.getElementById('cred-temp-password').textContent.trim();
+        tenantName   = '{{ session("new_tenant_name") }}';
+    } else {
+        accountId    = document.getElementById('reset-account-id').textContent.trim();
+        tempPassword = document.getElementById('reset-temp-password').textContent.trim();
+        tenantName   = '{{ session("reset_tenant_name") }}';
+    }
+    var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    var win = window.open('', '_blank', 'width=400,height=520');
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DormEase Login Credentials</title>
+<style>
+  @page { size: 80mm 120mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #fff;
+    width: 80mm;
+    min-height: 120mm;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .slip {
+    width: 80mm;
+    min-height: 120mm;
+    padding: 7mm 7mm 6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px dashed #f4b8d0;
+  }
+  .header {
+    background: #E8175D;
+    color: #fff;
+    text-align: center;
+    padding: 5mm 4mm 4mm;
+    border-radius: 5px 5px 0 0;
+    margin: -7mm -7mm 4mm;
+  }
+  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
+  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
+  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
+  .tenant-name {
+    text-align: center;
+    font-size: 10pt;
+    font-weight: 700;
+    color: #3a0e22;
+    margin-bottom: 3.5mm;
+    padding-bottom: 3mm;
+    border-bottom: 1px dashed #f4b8d0;
+  }
+  .field { margin-bottom: 3mm; }
+  .field-label {
+    font-size: 6.5pt;
+    font-weight: 700;
+    color: #E8175D;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: .8mm;
+  }
+  .field-value {
+    font-size: 13pt;
+    font-weight: 800;
+    color: #1a1a2e;
+    font-family: 'Courier New', monospace;
+    background: #fff5f9;
+    border: 1.5px solid #f4b8d0;
+    border-radius: 4px;
+    padding: 2mm 3mm;
+    letter-spacing: .08em;
+    text-align: center;
+    word-break: break-all;
+  }
+  .warning {
+    background: #fff9e6;
+    border: 1px solid #f0c040;
+    border-radius: 4px;
+    padding: 2mm 2.5mm;
+    font-size: 6.5pt;
+    color: #7a5400;
+    line-height: 1.45;
+    margin-top: 1.5mm;
+  }
+  .footer {
+    margin-top: auto;
+    padding-top: 3mm;
+    border-top: 1px dashed #f4b8d0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-date { font-size: 6pt; color: #b06080; }
+  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
+  @media print {
+    body { margin: 0; }
+    .slip { border: none; }
+  }
+</style>
+</head>
+<body>
+<div class="slip">
+  <div class="header">
+    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
+    <div class="title">Login Credentials</div>
+    <div class="subtitle">DormEase Tenant Portal</div>
+  </div>
+  <div class="tenant-name">${tenantName}</div>
+  <div class="field">
+    <div class="field-label">Account ID</div>
+    <div class="field-value">${accountId}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Temporary Password</div>
+    <div class="field-value">${tempPassword}</div>
+  </div>
+  <div class="warning">
+    This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.
+  </div>
+  <div class="footer">
+    <div class="footer-date">Issued: ${today}</div>
+    <div class="footer-brand">DormEase</div>
+  </div>
+</div>
+<script>window.onload = function() { window.print(); };<\/script>
+</body>
+</html>`);
+    win.document.close();
+}
 var tenants = @json($tenants);
 var PER_PAGE = 8;
 var currentTenant = null;
