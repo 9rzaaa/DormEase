@@ -986,13 +986,23 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-info-banner">
                     <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .85rem;background:#fffafd;border:1.5px solid var(--pink-100);border-radius:12px;margin-bottom:.9rem;">
-                    <span class="add-mode-desc" style="font-size:.8rem;font-weight:700;color:var(--ink);flex:1;">This tenant has already moved in</span>
-                    <button type="button" id="add-mode-toggle" onclick="toggleAddMode()" style="position:relative;width:44px;height:24px;border-radius:99px;border:none;cursor:pointer;padding:0;transition:background .25s;background:var(--gradient-pink);flex-shrink:0;" aria-pressed="true">
-                        <span id="add-mode-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--white);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:transform .25s;transform:translateX(20px);display:block;"></span>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.9rem;" id="add-mode-selector">
+                    <button type="button" id="add-mode-btn-movedin" onclick="setAddMode('moved_in')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--bright-pink);background:linear-gradient(135deg,#fff0f6,#ffe4ef);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:.45rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span style="font-size:.78rem;font-weight:800;color:#E8175D;letter-spacing:.01em;">Moved In</span>
+                        </div>
+                        <span style="font-size:.7rem;color:#a0405e;font-weight:500;line-height:1.35;">Tenant is already occupying a room</span>
+                    </button>
+                    <button type="button" id="add-mode-btn-reservation" onclick="setAddMode('reservation')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--pink-100);background:var(--white);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
+                        <div style="display:flex;align-items:center;gap:.45rem;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span style="font-size:.78rem;font-weight:800;color:#9a6200;letter-spacing:.01em;">Reservation</span>
+                        </div>
+                        <span style="font-size:.7rem;color:#7a5200;font-weight:500;line-height:1.35;">Room held, tenant moves in later</span>
                     </button>
                 </div>
-                <div id="add-mode-label" style="text-align:center;font-size:.73rem;font-weight:700;color:var(--bright-pink);margin-top:-.5rem;margin-bottom:.5rem;letter-spacing:.03em;">MODE: MOVED IN</div>
+                <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
@@ -1051,7 +1061,6 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Reservation Notes</label>
                             <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
                         </div>
-                        <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
                         <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
                             <div id="add-room-hint"></div>
                         </div>
@@ -1434,15 +1443,8 @@ function closeModal(id) {
         if (an) an.style.display = 'none';
         if (am) am.style.display = '';
         var modeInput = document.getElementById('add-mode-input');
-        var modeToggle = document.getElementById('add-mode-toggle');
-        var modeKnob   = document.getElementById('add-mode-knob');
-        var modeLabel  = document.getElementById('add-mode-label');
         if (modeInput) modeInput.value = 'moved_in';
-        if (modeToggle) modeToggle.style.background = 'var(--gradient-pink)';
-        if (modeKnob)   modeKnob.style.transform    = 'translateX(20px)';
-        if (modeLabel)  modeLabel.textContent        = 'MODE: MOVED IN';
-        var modeDesc = document.querySelector('#add-modal .add-mode-desc');
-        if (modeDesc) modeDesc.textContent = 'This tenant has already moved in';
+        setAddMode('moved_in');
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
@@ -2292,27 +2294,24 @@ async function submitDeleteRoom() {
     });
 })();
 
-function toggleAddMode() {
-    var input  = document.getElementById('add-mode-input');
-    var toggle = document.getElementById('add-mode-toggle');
-    var knob   = document.getElementById('add-mode-knob');
-    var label  = document.getElementById('add-mode-label');
-    var desc   = document.querySelector('#add-modal .add-mode-desc');
-    if (input.value === 'moved_in') {
-        input.value             = 'reservation';
-        toggle.style.background = '#e8e0f0';
-        knob.style.transform    = 'translateX(0px)';
-        label.textContent       = 'MODE: RESERVATION';
-        label.style.color       = '#9a6200';
-        if (desc) desc.textContent = 'This tenant has a reserved room';
+function setAddMode(mode) {
+    document.getElementById('add-mode-input').value = mode;
+
+    var btnMovedIn     = document.getElementById('add-mode-btn-movedin');
+    var btnReservation = document.getElementById('add-mode-btn-reservation');
+
+    if (mode === 'moved_in') {
+        btnMovedIn.style.border     = '2px solid var(--bright-pink)';
+        btnMovedIn.style.background = 'linear-gradient(135deg,#fff0f6,#ffe4ef)';
+        btnReservation.style.border     = '2px solid var(--pink-100)';
+        btnReservation.style.background = 'var(--white)';
     } else {
-        input.value             = 'moved_in';
-        toggle.style.background = 'var(--gradient-pink)';
-        knob.style.transform    = 'translateX(20px)';
-        label.textContent       = 'MODE: MOVED IN';
-        label.style.color       = 'var(--bright-pink)';
-        if (desc) desc.textContent = 'This tenant has already moved in';
+        btnReservation.style.border     = '2px solid #f0c040';
+        btnReservation.style.background = 'linear-gradient(135deg,#fffdf0,#fff8dc)';
+        btnMovedIn.style.border     = '2px solid var(--pink-100)';
+        btnMovedIn.style.background = 'var(--white)';
     }
+
     toggleReservationFields('add');
 }
 
