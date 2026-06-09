@@ -21,12 +21,15 @@ class ArchivedTenant extends Model
         'stay_type',
         'move_in_date',
         'move_out_date',
+        'estimated_move_in_date',
+        'reservation_notes',
         'status',
         'archived_at',
     ];
     protected $casts = [
-        'move_in_date'  => 'date',
-        'move_out_date' => 'date',
-        'archived_at'   => 'datetime',
+        'move_in_date'           => 'date',
+        'move_out_date'          => 'date',
+        'estimated_move_in_date' => 'date',
+        'archived_at'            => 'datetime',
     ];
 }
