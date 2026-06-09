@@ -313,6 +313,11 @@
         gap: .4rem;
     }
     .file-preview-name img { width: 13px; height: 13px; opacity: .5; }
+    .file-preview-actions {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
     .file-preview-dl {
         display: inline-flex;
         align-items: center;
@@ -331,11 +336,14 @@
     .file-preview-body { padding: .8rem; }
     .file-preview-body img {
         width: 100%;
-        max-height: 280px;
-        object-fit: contain;
+        max-height: 260px;
+        object-fit: cover;
         border-radius: 8px;
         display: block;
+        cursor: zoom-in;
+        transition: opacity .2s;
     }
+    .file-preview-body img:hover { opacity: .88; }
     .file-preview-body iframe {
         width: 100%;
         height: 320px;
@@ -368,6 +376,70 @@
         text-align: center;
     }
     .no-files-state img { width: 36px; height: 36px; opacity: .25; margin-bottom: .25rem; }
+
+    .lightbox-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: rgba(0,0,0,.92);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        box-sizing: border-box;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-inner {
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .lightbox-inner img {
+        max-width: min(92vw, 1100px);
+        max-height: 88vh;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.6);
+        display: block;
+    }
+    .lightbox-close {
+        position: fixed;
+        top: 1.1rem;
+        right: 1.3rem;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+        border: 1.5px solid rgba(255,255,255,.25);
+        color: #fff;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .2s;
+        z-index: 2001;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.22); }
+    .lightbox-open-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 700;
+        color: var(--bright-pink);
+        text-decoration: none;
+        padding: .22rem .65rem;
+        border-radius: 7px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        transition: .2s;
+        cursor: pointer;
+    }
+    .lightbox-open-btn:hover { background: var(--pink-100); border-color: var(--bright-pink); }
 
     .fade-up { animation: fdFadeUp .45s ease both; }
     @keyframes fdFadeUp {
@@ -435,6 +507,13 @@
 @endsection
 
 @section('modals')
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+        <img id="lightbox-img" src="" alt="">
+    </div>
+</div>
 
 <div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
     <div class="modal" style="max-width:560px;padding:0;overflow:hidden;">
@@ -512,16 +591,37 @@
         return (path.split('.').pop() || '').toLowerCase();
     }
 
+    function openLightbox(url) {
+        document.getElementById('lightbox-img').src = url;
+        document.getElementById('lightbox').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+        document.getElementById('lightbox-img').src = '';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
     function buildFilePreview(filePath) {
         const name = filePath.split('/').pop();
         const ext  = fileExt(filePath);
-        const url = filePath.startsWith('http') ? filePath : `/storage/${filePath}`;
+        const url  = filePath.startsWith('http') ? filePath : `/storage/${filePath}`;
         const isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
         const isPdf   = ext === 'pdf';
 
         let previewHtml = '';
         if (isImage) {
-            previewHtml = `<div class="file-preview-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy"></div>`;
+            previewHtml = `
+                <div class="file-preview-body">
+                    <img src="${url}" alt="${escHtml(name)}" loading="lazy"
+                         onclick="openLightbox('${url}')"
+                         title="Click to view full size">
+                </div>`;
         } else if (isPdf) {
             previewHtml = `<div class="file-preview-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
         } else {
@@ -532,6 +632,10 @@
                 </div>`;
         }
 
+        const openBtnHtml = isImage
+            ? `<button class="lightbox-open-btn" onclick="openLightbox('${url}')">&#x26F6; Full Size</button>`
+            : `<a href="${url}" target="_blank" class="file-preview-dl">&#x2197; Open</a>`;
+
         return `
             <div class="file-preview-item">
                 <div class="file-preview-bar">
@@ -539,9 +643,10 @@
                         <img src="{{ asset('icons/attach.png') }}" alt="">
                         ${escHtml(name)}
                     </div>
-                    <a href="${url}" target="_blank" class="file-preview-dl" download>
-                        ↓ Download
-                    </a>
+                    <div class="file-preview-actions">
+                        ${openBtnHtml}
+                        <a href="${url}" target="_blank" class="file-preview-dl" download>↓ Download</a>
+                    </div>
                 </div>
                 ${previewHtml}
             </div>`;
