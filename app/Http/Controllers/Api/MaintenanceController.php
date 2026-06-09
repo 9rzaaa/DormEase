@@ -484,21 +484,28 @@ class MaintenanceController extends Controller
             'issue_type'  => 'nullable|string|max:255',
             'input_type'  => 'nullable|in:voice,text',
             'language'    => 'nullable|in:en,tl',
+            'photo'       => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
         $tenant             = $request->user();
         $cleanedDescription = $this->cleanText($validated['description']);
         $classification     = $this->classify($cleanedDescription, $validated['issue_type'] ?? null);
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('maintenance_photos', 'public');
+        }
+
         $maintenance = MaintenanceRequest::create([
-            'tenant_id'   => $tenant?->tenant_id,
-            'room_number' => $tenant?->room_number,
-            'input_type'  => $validated['input_type'] ?? 'text',
-            'issue_type'  => $classification['issue_type'],
-            'description' => $cleanedDescription,
+            'tenant_id'     => $tenant?->tenant_id,
+            'room_number'   => $tenant?->room_number,
+            'input_type'    => $validated['input_type'] ?? 'text',
+            'issue_type'    => $classification['issue_type'],
+            'description'   => $cleanedDescription,
             'urgency_level' => $classification['urgency_level'],
-            'status'      => 'pending',
-            'submitted_at' => now(),
+            'status'        => 'pending',
+            'photo_path'    => $photoPath,
+            'submitted_at'  => now(),
         ]);
 
         NotificationHelper::sendToAll(
@@ -516,7 +523,6 @@ class MaintenanceController extends Controller
     // -------------------------------------------------------------------------
     // Formatting
     // -------------------------------------------------------------------------
-
     private function formatRequest(MaintenanceRequest $maintenance): array
     {
         return [
@@ -529,6 +535,9 @@ class MaintenanceController extends Controller
             'status'         => $maintenance->status,
             'admin_notes'    => $maintenance->admin_notes,
             'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
+            'photo_url'      => $maintenance->photo_path
+                ? asset('storage/' . $maintenance->photo_path)
+                : null,
             'submitted_at'   => $this->formatApiDate($maintenance->submitted_at),
             'resolved_at'    => $this->formatApiDate($maintenance->resolved_at),
         ];

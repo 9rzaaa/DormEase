@@ -29,6 +29,9 @@ class MaintenanceController extends Controller
                     'urgency'       => $r->urgency_level,
                     'status'        => $r->status,
                     'admin_remarks' => $r->admin_notes,
+                    'photo_url'     => $r->photo_path
+                        ? asset('storage/' . $r->photo_path)
+                        : null,
                     'created_at'    => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
                 ];
             });
@@ -70,6 +73,9 @@ class MaintenanceController extends Controller
             'urgency'       => $r->urgency_level,
             'status'        => $r->status,
             'admin_remarks' => $r->admin_notes,
+            'photo_url'     => $r->photo_path
+                ? asset('storage/' . $r->photo_path)
+                : null,
             'created_at'    => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
             'archived_at'   => $r->archived_at ? $r->archived_at->format('Y-m-d H:i:s') : null,
         ];
@@ -188,6 +194,7 @@ class MaintenanceController extends Controller
             'status'        => $r->status,
             'admin_notes'   => $r->admin_notes,
             'assigned_to'   => $r->assigned_to,
+            'photo_path'    => $r->photo_path,
             'submitted_at'  => $r->submitted_at,
             'resolved_at'   => $r->resolved_at,
             'archived_at'   => now(),
