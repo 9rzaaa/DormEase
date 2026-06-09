@@ -1023,13 +1023,21 @@
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal" style="max-width:520px;">
-        <div class="modal-header">
-            <div class="modal-title">Request Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:560px;padding:0;overflow:hidden;border-radius:18px;">
+        <div style="background:var(--gradient-pink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img src="{{ asset('icons/nav-maint.png') }}" alt="" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) invert(1);">
+                </div>
+                <div>
+                    <div style="font-size:1rem;font-weight:800;color:#fff;line-height:1.2;">Request Details</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);font-weight:500;">Maintenance request information</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('view-modal')" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3);color:#fff;">&#x2715;</button>
         </div>
-        <div id="view-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;">
+        <div id="view-content" style="padding:1.2rem 1.5rem;max-height:72vh;overflow-y:auto;"></div>
+        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
@@ -1319,41 +1327,59 @@ document.addEventListener('DOMContentLoaded', () => {
     function viewReq(r) {
         currentReq = r;
         document.getElementById('view-content').innerHTML = `
-            <div class="view-detail-row">
-                <div class="view-detail-label">Request ID</div>
-                <div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#REQ-${String(r.id).padStart(3,'0')}</div>
+            <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
+                <span style="font-size:1.1rem;font-weight:800;color:var(--hot-pink);letter-spacing:-.01em;">#REQ-${String(r.id).padStart(3,'0')}</span>
+                ${statusBadge(r.status)}
+                ${urgencyBadge(r.urgency)}
             </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Tenant</div>
-                <div class="view-detail-val">${escHtml(r.tenant_name ?? '—')} — Room ${escHtml(r.room_number ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Issue Type</div>
-                <div class="view-detail-val">${issueBadge(r.issue_type)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Description</div>
-                <div class="view-detail-val" style="white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Urgency</div>
-                <div class="view-detail-val">${urgencyBadge(r.urgency)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Status</div>
-                <div class="view-detail-val">${statusBadge(r.status)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Date Submitted</div>
-                <div class="view-detail-val">${fmtDatePlain(r.created_at)}</div>
-            </div>
-            <div class="view-detail-row">
-                <div class="view-detail-label">Admin Remarks</div>
-                <div class="view-detail-val">
-                    ${r.admin_remarks
-                        ? `<div class="remark-box">${escHtml(r.admin_remarks)}</div>`
-                        : '<span style="color:var(--ink-muted);font-style:italic;">No remarks yet.</span>'}
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;">
+                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Tenant</div>
+                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
                 </div>
+                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Room</div>
+                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.room_number ?? '—')}</div>
+                </div>
+                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Issue Type</div>
+                    <div style="margin-top:.2rem;">${issueBadge(r.issue_type)}</div>
+                </div>
+                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Date Submitted</div>
+                    <div style="font-size:.82rem;color:var(--ink-muted);font-weight:500;">${fmtDatePlain(r.created_at)}</div>
+                </div>
+            </div>
+
+            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Description</div>
+                <div style="font-size:.875rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
+            </div>
+
+            ${r.photo_url ? `
+            <div style="margin-bottom:.6rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.45rem;">Attached Photo</div>
+                <div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">
+                    <img src="${escHtml(r.photo_url)}"
+                        alt="Maintenance photo"
+                        style="width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer;"
+                        onclick="window.open('${escHtml(r.photo_url)}','_blank')"
+                        onerror="this.closest('div').innerHTML='<div style=\'padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\'>Photo could not be loaded.</div>'"
+                    />
+                    <a href="${escHtml(r.photo_url)}" target="_blank"
+                    style="position:absolute;bottom:.55rem;right:.55rem;background:rgba(0,0,0,.52);color:#fff;font-size:.72rem;font-weight:700;padding:.3rem .65rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;backdrop-filter:blur(4px);">
+                        &#x2197; View full
+                    </a>
+                </div>
+            </div>
+            ` : ''}
+
+            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Admin Remarks</div>
+                ${r.admin_remarks
+                    ? `<div class="remark-box" style="margin-top:0;">${escHtml(r.admin_remarks)}</div>`
+                    : `<span style="font-size:.83rem;color:var(--ink-muted);font-style:italic;">No remarks yet.</span>`}
             </div>
         `;
         openModal('view-modal');
