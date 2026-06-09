@@ -1022,57 +1022,299 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     </div>
 
    <div class="how-img-main reveal">
-  <div class="app-screenshots">
-    <div class="app-screenshot-item">
-      <div class="app-screenshot-frame">
-        <img src="{{ asset('images/app_dashboard.png') }}"
-             alt="DormEase App - Home Screen"
-             class="app-screenshot-img"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="app-screenshot-fallback" style="display:none">
-          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
-          <span>screen1.png</span>
+  <style>
+    .de-mockup-wrap {
+      background: var(--pink-pale);
+      border-radius: 20px;
+      padding: 32px 16px 24px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 14px;
+    }
+    .de-phone {
+      background: #fff;
+      border-radius: 28px;
+      border: 2.5px solid var(--brown);
+      box-shadow: 0 12px 32px rgba(36,16,24,0.15);
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .de-phone.side { width: 128px; height: 272px; }
+    .de-phone.center {
+      width: 150px; height: 320px;
+      transform: translateY(-20px);
+      border-color: var(--pink);
+      box-shadow: 0 20px 48px rgba(232,23,93,0.22);
+    }
+    .de-notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 44px; height: 9px;
+      background: var(--brown); border-radius: 0 0 7px 7px; z-index: 10;
+    }
+    .de-screen { width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--cream); }
+    .de-statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 10px 3px;
+      font-size: 7.5px; font-weight: 700; color: var(--brown);
+      font-family: var(--font-head);
+    }
+    .de-bars { display: flex; gap: 2px; align-items: flex-end; }
+    .de-bar { width: 3px; border-radius: 1px; background: var(--brown); }
+    .de-header {
+      padding: 3px 10px 7px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .de-greeting { font-size: 7.5px; color: var(--brown-light); font-weight: 600; }
+    .de-name { font-size: 10px; font-weight: 800; color: var(--brown); font-family: var(--font-head); }
+    .de-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--gradient-pink);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px; font-weight: 800; color: #fff; font-family: var(--font-head);
+    }
+    .de-bill-card {
+      margin: 0 9px 7px;
+      background: var(--gradient-pink);
+      border-radius: 9px; padding: 9px 11px;
+    }
+    .de-bill-label { font-size: 6.5px; color: rgba(255,255,255,0.78); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+    .de-bill-amount { font-size: 15px; font-weight: 800; color: #fff; font-family: var(--font-head); line-height: 1; }
+    .de-stats-row { display: flex; gap: 5px; padding: 0 9px 7px; }
+    .de-stat { flex: 1; background: #fff; border-radius: 7px; padding: 6px 7px; border: 1px solid var(--border); }
+    .de-stat-lbl { font-size: 6px; color: var(--brown-light); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .de-stat-num { font-size: 12px; font-weight: 800; color: var(--brown); font-family: var(--font-head); line-height: 1; }
+    .de-section-lbl { font-size: 6.5px; font-weight: 700; color: var(--brown-light); text-transform: uppercase; letter-spacing: 0.07em; padding: 0 9px 4px; }
+    .de-activity { display: flex; flex-direction: column; gap: 4px; padding: 0 9px; }
+    .de-act-item { display: flex; align-items: center; gap: 5px; background: #fff; border-radius: 6px; padding: 5px 7px; border: 1px solid var(--border); }
+    .de-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .de-act-text { font-size: 6.5px; color: var(--brown); font-weight: 600; flex: 1; line-height: 1.3; }
+    .de-badge { font-size: 5px; font-weight: 700; padding: 2px 5px; border-radius: 99px; white-space: nowrap; }
+    .de-badge.prog { background: var(--pink-pale); color: var(--pink); }
+    .de-badge.done { background: #EAF3DE; color: #3B6D11; }
+    .de-navbar {
+      display: flex; margin-top: auto;
+      border-top: 1px solid var(--border);
+      background: #fff; padding: 6px 0 3px;
+    }
+    .de-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .de-nav-ico { width: 15px; height: 15px; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .de-nav-ico.active { background: var(--pink-pale); }
+    .de-nav-ico svg { width: 10px; height: 10px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .de-nav-lbl { font-size: 5px; font-weight: 700; color: var(--brown-light); }
+    .de-nav-item.active .de-nav-lbl { color: var(--pink); }
+    .de-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 0 9px; }
+    .de-grid-item { background: #fff; border-radius: 9px; padding: 9px 7px 7px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .de-grid-ico { width: 26px; height: 26px; border-radius: 7px; background: var(--pink-pale); display: flex; align-items: center; justify-content: center; }
+    .de-grid-ico svg { width: 13px; height: 13px; stroke: var(--pink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .de-grid-lbl { font-size: 6.5px; font-weight: 700; color: var(--brown); text-align: center; }
+    .de-topbar { display: flex; align-items: center; justify-content: space-between; padding: 5px 10px 7px; }
+    .de-topbar-title { font-size: 10px; font-weight: 800; color: var(--brown); font-family: var(--font-head); }
+    .de-topbar-bell { width: 18px; height: 18px; border-radius: 50%; background: var(--pink-pale); display: flex; align-items: center; justify-content: center; }
+    .de-topbar-bell svg { width: 10px; height: 10px; stroke: var(--pink); stroke-width: 2; fill: none; stroke-linecap: round; }
+    .de-notices { display: flex; flex-direction: column; gap: 4px; padding: 0 9px; }
+    .de-notice-item { background: #fff; border-radius: 7px; padding: 7px 8px; border: 1px solid var(--border); border-left: 3px solid var(--pink); }
+    .de-notice-title { font-size: 7.5px; font-weight: 800; color: var(--brown); margin-bottom: 2px; font-family: var(--font-head); }
+    .de-notice-body { font-size: 6px; color: var(--brown-light); line-height: 1.5; }
+    .de-notice-date { font-size: 5.5px; color: var(--pink-light); font-weight: 700; margin-top: 2px; }
+  </style>
+
+  <div class="de-mockup-wrap">
+
+    {{-- Left phone: Menu/Quick Access --}}
+    <div class="de-phone side">
+      <div class="de-notch"></div>
+      <div class="de-screen">
+        <div class="de-statusbar">
+          <span>9:41</span>
+          <div class="de-bars">
+            <div class="de-bar" style="height:4px"></div>
+            <div class="de-bar" style="height:6px"></div>
+            <div class="de-bar" style="height:8px"></div>
+            <div class="de-bar" style="height:10px"></div>
+          </div>
+        </div>
+        <div class="de-topbar" style="padding-top:9px">
+          <div class="de-topbar-title">Menu</div>
+          <div class="de-topbar-bell">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+        </div>
+        <div class="de-grid">
+          <div class="de-grid-item">
+            <div class="de-grid-ico">
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div class="de-grid-lbl">Dashboard</div>
+          </div>
+          <div class="de-grid-item">
+            <div class="de-grid-ico">
+              <svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            </div>
+            <div class="de-grid-lbl">Water Bill</div>
+          </div>
+          <div class="de-grid-item">
+            <div class="de-grid-ico">
+              <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <div class="de-grid-lbl">Maintenance</div>
+          </div>
+          <div class="de-grid-item">
+            <div class="de-grid-ico">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="de-grid-lbl">Documents</div>
+          </div>
+        </div>
+        <div class="de-navbar" style="margin-top:auto">
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="de-nav-lbl">Home</div>
+          </div>
+          <div class="de-nav-item active">
+            <div class="de-nav-ico active"><svg viewBox="0 0 24 24" stroke="#E8175D"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div>
+            <div class="de-nav-lbl">Menu</div>
+          </div>
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="de-nav-lbl">Profile</div>
+          </div>
         </div>
       </div>
-      <p class="app-screenshot-label">Home</p>
     </div>
 
-    <div class="app-screenshot-item center">
-      <div class="app-screenshot-frame featured">
-        <img src="{{ asset('images/app_announcements.png') }}"
-             alt="DormEase App - Announcements"
-             class="app-screenshot-img"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="app-screenshot-fallback" style="display:none">
-          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
-          <span>screen2.png</span>
+    {{-- Center phone: Dashboard --}}
+    <div class="de-phone center">
+      <div class="de-notch"></div>
+      <div class="de-screen">
+        <div class="de-statusbar">
+          <span>9:41</span>
+          <div class="de-bars">
+            <div class="de-bar" style="height:4px"></div>
+            <div class="de-bar" style="height:6px"></div>
+            <div class="de-bar" style="height:8px"></div>
+            <div class="de-bar" style="height:10px"></div>
+          </div>
+        </div>
+        <div class="de-header">
+          <div>
+            <div class="de-greeting">Welcome back,</div>
+            <div class="de-name">Hi, Maria 👋</div>
+          </div>
+          <div class="de-avatar">M</div>
+        </div>
+        <div class="de-bill-card">
+          <div class="de-bill-label">Current Water Bill</div>
+          <div class="de-bill-amount">₱ 320.00</div>
+        </div>
+        <div class="de-stats-row">
+          <div class="de-stat">
+            <div class="de-stat-lbl">Requests</div>
+            <div class="de-stat-num">2</div>
+          </div>
+          <div class="de-stat">
+            <div class="de-stat-lbl">Announcements</div>
+            <div class="de-stat-num">3</div>
+          </div>
+        </div>
+        <div class="de-section-lbl">Recent Activity</div>
+        <div class="de-activity">
+          <div class="de-act-item">
+            <div class="de-dot" style="background:#E8175D"></div>
+            <div class="de-act-text">Leaky faucet · Room 204</div>
+            <div class="de-badge prog">In Progress</div>
+          </div>
+          <div class="de-act-item">
+            <div class="de-dot" style="background:#639922"></div>
+            <div class="de-act-text">Water bill for May paid</div>
+            <div class="de-badge done">Done</div>
+          </div>
+        </div>
+        <div class="de-navbar">
+          <div class="de-nav-item active">
+            <div class="de-nav-ico active"><svg viewBox="0 0 24 24" stroke="#E8175D"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="de-nav-lbl">Home</div>
+          </div>
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div class="de-nav-lbl">Alerts</div>
+          </div>
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="de-nav-lbl">Visitor Log</div>
+          </div>
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div>
+            <div class="de-nav-lbl">Docs</div>
+          </div>
         </div>
       </div>
-      <p class="app-screenshot-label">Announcements</p>
     </div>
 
-    <div class="app-screenshot-item">
-      <div class="app-screenshot-frame">
-        <img src="{{ asset('images/app_waterbilling.png') }}"
-             alt="DormEase App - Water Bill"
-             class="app-screenshot-img"
-             onerror="this.style.display:'none';this.nextElementSibling.style.display='flex'">
-        <div class="app-screenshot-fallback" style="display:none">
-          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/></svg>
-          <span>screen3.png</span>
+    {{-- Right phone: Notices --}}
+    <div class="de-phone side">
+      <div class="de-notch"></div>
+      <div class="de-screen">
+        <div class="de-statusbar">
+          <span>9:41</span>
+          <div class="de-bars">
+            <div class="de-bar" style="height:4px"></div>
+            <div class="de-bar" style="height:6px"></div>
+            <div class="de-bar" style="height:8px"></div>
+            <div class="de-bar" style="height:10px"></div>
+          </div>
+        </div>
+        <div class="de-topbar" style="padding-top:9px">
+          <div class="de-topbar-title">Notices</div>
+          <div class="de-topbar-bell">
+            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+        </div>
+        <div class="de-notices">
+          <div class="de-notice-item">
+            <div class="de-notice-title">Water Interruption</div>
+            <div class="de-notice-body">No water supply on June 10, 8AM–12NN for maintenance.</div>
+            <div class="de-notice-date">Jun 9, 2026</div>
+          </div>
+          <div class="de-notice-item">
+            <div class="de-notice-title">Curfew Reminder</div>
+            <div class="de-notice-body">10PM curfew strictly enforced. Late arrivals must coordinate.</div>
+            <div class="de-notice-date">Jun 8, 2026</div>
+          </div>
+          <div class="de-notice-item">
+            <div class="de-notice-title">Room Inspection</div>
+            <div class="de-notice-body">Monthly check on June 15. Please keep rooms tidy.</div>
+            <div class="de-notice-date">Jun 7, 2026</div>
+          </div>
+        </div>
+        <div class="de-navbar" style="margin-top:auto">
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div class="de-nav-lbl">Home</div>
+          </div>
+          <div class="de-nav-item active">
+            <div class="de-nav-ico active"><svg viewBox="0 0 24 24" stroke="#E8175D"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div class="de-nav-lbl">Notices</div>
+          </div>
+          <div class="de-nav-item">
+            <div class="de-nav-ico"><svg viewBox="0 0 24 24" stroke="#744B5D"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="de-nav-lbl">Profile</div>
+          </div>
         </div>
       </div>
-      <p class="app-screenshot-label">Water Bill</p>
     </div>
+
   </div>
 
-<p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
-  Dorm life, <em style="color:var(--pink);font-style:italic;">simplified.</em>
-</p>
-<p style="font-size:.82rem;color:var(--brown-light);margin-top:6px;font-weight:600;letter-spacing:0.02em;">
-  Everything your tenants need is in one place.
-</p>
-
+  <p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
+    Dorm life, <em style="color:var(--pink);font-style:italic;">simplified.</em>
+  </p>
+  <p style="font-size:.82rem;color:var(--brown-light);margin-top:6px;font-weight:600;letter-spacing:0.02em;">
+    Everything your tenants need is in one place.
+  </p>
   <a href="{{ route('features') }}" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;">
     More Features
     <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:white;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;">
