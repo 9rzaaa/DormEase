@@ -418,6 +418,7 @@
         overflow: hidden;
         transition: all .3s cubic-bezier(.4,0,.2,1);
         cursor: default;
+        padding: 4px 0 4px 4px;
     }
     .shift-pill-icon {
         position: relative;
@@ -429,6 +430,7 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        overflow: visible;
     }
     .shift-pill-icon img {
         filter: brightness(0) invert(1);
@@ -437,8 +439,8 @@
     }
     .shift-pill-count {
         position: absolute;
-        top: 0px;
-        right: -2px;
+        top: -3px;
+        right: -3px;
         background: #C4003A;
         color: #fff;
         font-size: .6rem;
