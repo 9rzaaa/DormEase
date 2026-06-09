@@ -392,6 +392,21 @@ tbody tr:hover { background: var(--soft-bg); }
 .copy-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .credentials-warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 10px; padding: .75rem 1rem; font-size: .82rem; color: #7a5400; margin-bottom: 1rem; line-height: 1.5; }
 .delete-warning { background: #fff0f0; border: 1px solid var(--pink-200); border-radius: 10px; padding: .75rem 1rem; font-size: .85rem; color: #e04867; margin-bottom: 1rem; }
+.tenant-section { background: var(--white); border-radius: 18px; border: 1px solid var(--bright-pink); overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,.05), 0 18px 45px rgba(232,23,93,.15); box-sizing: border-box; min-width: 0; }
+.tenant-section-header { padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; transition: background .2s; gap: 1rem; }
+.tenant-section-header:hover { background: var(--blush); }
+.tenant-section-title { display: flex; align-items: center; gap: .65rem; }
+.tenant-section-label { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
+.tenant-section-pill { font-size: .7rem; font-weight: 800; padding: .22rem .6rem; border-radius: 99px; letter-spacing: .03em; }
+.tenant-section-pill-active { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tenant-section-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.tenant-section-chevron { transition: transform .25s cubic-bezier(.4,0,.2,1); flex-shrink: 0; }
+.tenant-section-chevron.open { transform: rotate(180deg); }
+.tenant-section-body { border-top: 1px solid var(--pink-100); }
+.tenant-section-empty { padding: 2rem; text-align: center; font-size: .85rem; color: var(--ink-muted); }
+.tenant-section-bar { height: 3px; width: 100%; }
+.tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
+.tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
@@ -548,15 +563,12 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
     </div>
 
-    <div class="table-card fade-up d3">
-        <div class="table-header">
-            <div>
-                <div class="table-title">All Tenants</div>
-                <div class="table-date" id="table-date"></div>
-            </div>
-            <div class="table-controls">
+    <div style="display:flex;flex-direction:column;gap:1rem;" class="fade-up d3">
+
+        <div style="background:var(--white);border-radius:18px;border:1px solid var(--pink-100);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;box-shadow:0 4px 12px rgba(0,0,0,.04);">
+            <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
                 <div class="search-wrap">
-                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                    <input type="text" id="search-input" placeholder="Search tenants..." oninput="applyFilters()">
                 </div>
                 <select class="sort-select" id="sort-select" onchange="applyFilters()">
                     <option value="newest">Sort by: Newest</option>
@@ -571,36 +583,80 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="{{ $i }}">Floor {{ $i }}</option>
                     @endfor
                 </select>
-                <select class="sort-select" id="status-filter" onchange="applyFilters()">
-                    <option value="">All Statuses</option>
-                    <option value="active">Active</option>
-                    <option value="pending">Pending</option>
-                </select>
+            </div>
+            <div class="table-date" id="table-date" style="font-size:.78rem;color:var(--bright-pink);flex-shrink:0;"></div>
+        </div>
+
+        <div class="tenant-section" id="section-active">
+            <div class="tenant-section-bar tenant-section-bar-active"></div>
+            <div class="tenant-section-header" onclick="toggleSection('active')">
+                <div class="tenant-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="tenant-section-label">Active Tenants</span>
+                    <span class="tenant-section-pill tenant-section-pill-active" id="pill-active">0</span>
+                </div>
+                <svg class="tenant-section-chevron open" id="chevron-active" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tenant-section-body" id="body-active">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account ID</th>
+                                <th>Tenant Name</th>
+                                <th>Floor &amp; Room No.</th>
+                                <th>Move-In Date</th>
+                                <th>Move-Out Date</th>
+                                <th>Contact No.</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-active"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer" style="border-top:1px solid var(--pink-100);">
+                    <div class="table-showing" id="showing-active"></div>
+                    <div class="pagination" id="pagination-active"></div>
+                </div>
             </div>
         </div>
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Account ID</th>
-                        <th>Tenant Name</th>
-                        <th>Floor &amp; Room No.</th>
-                        <th>Move-In Date</th>
-                        <th>Move-Out Date</th>
-                        <th>Contact No.</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tenant-tbody"></tbody>
-            </table>
+        <div class="tenant-section" id="section-pending">
+            <div class="tenant-section-bar tenant-section-bar-pending"></div>
+            <div class="tenant-section-header" onclick="toggleSection('pending')">
+                <div class="tenant-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8960c" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="tenant-section-label">Pending Tenants</span>
+                    <span class="tenant-section-pill tenant-section-pill-pending" id="pill-pending">0</span>
+                </div>
+                <svg class="tenant-section-chevron open" id="chevron-pending" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="tenant-section-body" id="body-pending">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account ID</th>
+                                <th>Tenant Name</th>
+                                <th>Floor &amp; Room No.</th>
+                                <th>Move-In Date</th>
+                                <th>Move-Out Date</th>
+                                <th>Contact No.</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-pending"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer" style="border-top:1px solid var(--pink-100);">
+                    <div class="table-showing" id="showing-pending"></div>
+                    <div class="pagination" id="pagination-pending"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="table-footer">
-            <div class="table-showing" id="showing-label"></div>
-            <div class="pagination" id="pagination"></div>
-        </div>
     </div>
 
 </div>
@@ -650,14 +706,14 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div id="rstat-total" style="font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1;">0</div>
             </div>
             <div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.65rem .8rem;text-align:center;">
-                <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Occupied</div>
+                <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Occupied Slots</div>
                 <div id="rstat-occupied" style="font-size:1.4rem;font-weight:800;color:var(--ink);line-height:1;">0</div>
                 <div id="rstat-pct" style="font-size:.68rem;font-weight:700;color:var(--ink-muted);margin-top:.2rem;">0%</div>
             </div>
             <div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.65rem .8rem;text-align:center;">
                 <div style="font-size:.67rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem;">Available</div>
                 <div id="rstat-vacant" style="font-size:1.4rem;font-weight:800;color:#1f9d69;line-height:1;">0</div>
-                <div id="rstat-cap" style="font-size:.68rem;font-weight:700;color:var(--ink-muted);margin-top:.2rem;">of 0 beds</div>
+                <div id="rstat-cap" style="font-size:.68rem;font-weight:700;color:var(--ink-muted);margin-top:.2rem;">of 0 slots</div>
             </div>
         </div>
     </div>
@@ -1160,9 +1216,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <script>
 var tenants = @json($tenants);
 var PER_PAGE = 8;
-var currentPage = 1;
-var filtered = [];
 var currentTenant = null;
+var sectionState = { active: true, pending: true };
+var sectionPages = { active: 1, pending: 1 };
+var sectionData  = { active: [], pending: [] };
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1252,69 +1309,87 @@ function escapeJs(str) {
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
-function renderTable() {
-    var start = (currentPage - 1) * PER_PAGE;
-    var pageData = filtered.slice(start, start + PER_PAGE);
-    var tbody = document.getElementById('tenant-tbody');
-    if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
-    } else {
-        tbody.innerHTML = pageData.map(function(t) {
-            var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-            var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
-            return '<tr>'
-                + '<td>' + (t.account_id || '\u2014') + '</td>'
-                + '<td>' + nameCell + '</td>'
-                + '<td>' + floorRoom + '</td>'
-                + '<td>' + fmtDate(t.move_in_date) + '</td>'
-                + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
-                + '<td>' + (t.contact_number || '\u2014') + '</td>'
-                + '<td>' + statusBadge(t.status) + '</td>'
-                + '<td><div class="action-group">'
-                    + '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
-                    + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
-                    + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
-                    + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '</div></td>'
-                + '</tr>';
-        }).join('');
+function buildRows(list) {
+    if (list.length === 0) {
+        return '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     }
-    var total = filtered.length;
-    var from  = total === 0 ? 0 : start + 1;
-    var to    = Math.min(start + PER_PAGE, total);
-    document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
-    renderPagination();
+    return list.map(function(t) {
+        var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
+        var nameCell  = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
+        return '<tr>'
+            + '<td>' + (t.account_id || '\u2014') + '</td>'
+            + '<td>' + nameCell + '</td>'
+            + '<td>' + floorRoom + '</td>'
+            + '<td>' + fmtDate(t.move_in_date) + '</td>'
+            + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
+            + '<td>' + (t.contact_number || '\u2014') + '</td>'
+            + '<td>' + statusBadge(t.status) + '</td>'
+            + '<td><div class="action-group">'
+                + '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
+            + '</div></td>'
+            + '</tr>';
+    }).join('');
 }
 
-function renderPagination() {
-    var totalPages = Math.ceil(filtered.length / PER_PAGE);
-    var pg = document.getElementById('pagination');
-    var html = '<button class="page-btn" onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>\u2039</button>';
+function buildPagination(group, currentPage, total) {
+    var totalPages = Math.ceil(total / PER_PAGE);
+    if (totalPages <= 1) return '';
+    var html = '<button class="page-btn" onclick="goPage(\'' + group + '\',' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '>\u2039</button>';
     for (var i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-            html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+            html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="goPage(\'' + group + '\',' + i + ')">' + i + '</button>';
         } else if (i === currentPage - 2 || i === currentPage + 2) {
             html += '<span style="color:var(--ink-muted);padding:0 .2rem">\u2026</span>';
         }
     }
-    html += '<button class="page-btn" onclick="goPage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages || totalPages === 0 ? 'disabled' : '') + '>\u203a</button>';
-    pg.innerHTML = html;
+    html += '<button class="page-btn" onclick="goPage(\'' + group + '\',' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '>\u203a</button>';
+    return html;
 }
 
-function goPage(p) {
-    var totalPages = Math.ceil(filtered.length / PER_PAGE);
+function renderSection(group) {
+    var data    = sectionData[group];
+    var page    = sectionPages[group];
+    var start   = (page - 1) * PER_PAGE;
+    var pageData= data.slice(start, start + PER_PAGE);
+    var total   = data.length;
+    var from    = total === 0 ? 0 : start + 1;
+    var to      = Math.min(start + PER_PAGE, total);
+
+    document.getElementById('tbody-' + group).innerHTML    = buildRows(pageData);
+    document.getElementById('showing-' + group).textContent= total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
+    document.getElementById('pagination-' + group).innerHTML = buildPagination(group, page, total);
+    document.getElementById('pill-' + group).textContent   = total;
+}
+
+function goPage(group, p) {
+    var totalPages = Math.ceil(sectionData[group].length / PER_PAGE);
     if (p < 1 || p > totalPages) return;
-    currentPage = p;
-    renderTable();
+    sectionPages[group] = p;
+    renderSection(group);
+}
+
+function toggleSection(group) {
+    sectionState[group] = !sectionState[group];
+    var body    = document.getElementById('body-' + group);
+    var chevron = document.getElementById('chevron-' + group);
+    if (sectionState[group]) {
+        body.style.display = '';
+        chevron.classList.add('open');
+    } else {
+        body.style.display = 'none';
+        chevron.classList.remove('open');
+    }
 }
 
 function applyFilters() {
-    var q      = document.getElementById('search-input').value.toLowerCase();
-    var sort   = document.getElementById('sort-select').value;
-    var floor  = document.getElementById('floor-filter').value;
-    var status = document.getElementById('status-filter').value;
+    var q     = document.getElementById('search-input').value.toLowerCase();
+    var sort  = document.getElementById('sort-select').value;
+    var floor = document.getElementById('floor-filter').value;
 
-    filtered = tenants.filter(function(t) {
+    var base = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
@@ -1322,19 +1397,26 @@ function applyFilters() {
             (t.room_number || '').toLowerCase().indexOf(q) !== -1 ||
             (t.email || '').toLowerCase().indexOf(q) !== -1 ||
             (t.contact_number || '').toLowerCase().indexOf(q) !== -1;
-        var matchesFloor  = floor  === '' || String(t.floor) === floor;
-        var matchesStatus = status === '' || t.status === status;
-        return matchesSearch && matchesFloor && matchesStatus;
+        var matchesFloor = floor === '' || String(t.floor) === floor;
+        return matchesSearch && matchesFloor;
     });
 
-    if (sort === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
-    if (sort === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
-    if (sort === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
-    if (sort === 'room')   filtered.sort(function(a, b) { return (a.room_number || '').localeCompare(b.room_number || ''); });
-    if (sort === 'floor')  filtered.sort(function(a, b) { return parseInt(a.floor || 0) - parseInt(b.floor || 0); });
+    function sortList(arr) {
+        var a = arr.slice();
+        if (sort === 'newest') a.sort(function(x,y){ return new Date(y.created_at)-new Date(x.created_at); });
+        if (sort === 'oldest') a.sort(function(x,y){ return new Date(x.created_at)-new Date(y.created_at); });
+        if (sort === 'name')   a.sort(function(x,y){ return x.first_name.localeCompare(y.first_name); });
+        if (sort === 'room')   a.sort(function(x,y){ return (x.room_number||'').localeCompare(y.room_number||''); });
+        if (sort === 'floor')  a.sort(function(x,y){ return parseInt(x.floor||0)-parseInt(y.floor||0); });
+        return a;
+    }
 
-    currentPage = 1;
-    renderTable();
+    sectionData.active  = sortList(base.filter(function(t){ return t.status === 'active'; }));
+    sectionData.pending = sortList(base.filter(function(t){ return t.status === 'pending'; }));
+    sectionPages.active  = 1;
+    sectionPages.pending = 1;
+    renderSection('active');
+    renderSection('pending');
 }
 
 function viewTenant(t) {
@@ -1490,7 +1572,7 @@ function updateRoomsStats(data) {
 
     var pill = document.getElementById('rooms-stats-summary-pill');
     var pctColor = pct >= 100 ? '#e04867' : pct >= 75 ? '#c8960c' : '#E8175D';
-    if (pill) pill.textContent = totalOcc + '/' + totalCap + ' beds \u00b7 ' + pct + '%';
+    if (pill) pill.textContent = totalOcc + '/' + totalCap + ' slots \u00b7 ' + pct + '%';
 
     var el = document.getElementById('rstat-total');
     if (el) el.textContent = totalRooms;
@@ -1501,7 +1583,7 @@ function updateRoomsStats(data) {
     el = document.getElementById('rstat-vacant');
     if (el) { el.textContent = totalVacant; el.style.color = totalVacant === 0 ? '#e04867' : '#1f9d69'; }
     el = document.getElementById('rstat-cap');
-    if (el) el.textContent = 'of ' + totalCap + ' beds';
+    if (el) el.textContent = 'of ' + totalCap + ' slots';
 }
 
 function renderRooms() {
@@ -1976,8 +2058,7 @@ async function submitDeleteRoom() {
     });
 })();
 
-filtered = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
-renderTable();
+applyFilters();
 
 var deletedTenantArchive  = @json($deletedArchive);
 var inactiveTenantArchive = @json($inactiveArchive);
