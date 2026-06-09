@@ -986,6 +986,13 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-info-banner">
                     <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
                 </div>
+                <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .85rem;background:#fffafd;border:1.5px solid var(--pink-100);border-radius:12px;margin-bottom:.9rem;">
+                    <span class="add-mode-desc" style="font-size:.8rem;font-weight:700;color:var(--ink);flex:1;">This tenant has already moved in</span>
+                    <button type="button" id="add-mode-toggle" onclick="toggleAddMode()" style="position:relative;width:44px;height:24px;border-radius:99px;border:none;cursor:pointer;padding:0;transition:background .25s;background:var(--gradient-pink);flex-shrink:0;" aria-pressed="true">
+                        <span id="add-mode-knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--white);box-shadow:0 1px 4px rgba(0,0,0,.18);transition:transform .25s;transform:translateX(20px);display:block;"></span>
+                    </button>
+                </div>
+                <div id="add-mode-label" style="text-align:center;font-size:.73rem;font-weight:700;color:var(--bright-pink);margin-top:-.5rem;margin-bottom:.5rem;letter-spacing:.03em;">MODE: MOVED IN</div>
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
@@ -1032,9 +1039,9 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
                             </select>
                         </div>
-                        <div class="modal-field full">
+                        <div class="modal-field full" id="add-movein-wrap">
                             <label>Move-In Date</label>
-                            <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
+                            <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                         </div>
                         <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
@@ -1044,6 +1051,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Reservation Notes</label>
                             <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
                         </div>
+                        <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
                         <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
                             <div id="add-room-hint"></div>
                         </div>
@@ -1421,8 +1429,20 @@ function closeModal(id) {
         if (h) h.innerHTML = '';
         var aw = document.getElementById('add-est-movein-wrap');
         var an = document.getElementById('add-reservation-notes-wrap');
+        var am = document.getElementById('add-movein-wrap');
         if (aw) aw.style.display = 'none';
         if (an) an.style.display = 'none';
+        if (am) am.style.display = '';
+        var modeInput = document.getElementById('add-mode-input');
+        var modeToggle = document.getElementById('add-mode-toggle');
+        var modeKnob   = document.getElementById('add-mode-knob');
+        var modeLabel  = document.getElementById('add-mode-label');
+        if (modeInput) modeInput.value = 'moved_in';
+        if (modeToggle) modeToggle.style.background = 'var(--gradient-pink)';
+        if (modeKnob)   modeKnob.style.transform    = 'translateX(20px)';
+        if (modeLabel)  modeLabel.textContent        = 'MODE: MOVED IN';
+        var modeDesc = document.querySelector('#add-modal .add-mode-desc');
+        if (modeDesc) modeDesc.textContent = 'This tenant has already moved in';
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
@@ -1444,10 +1464,16 @@ function closeModal(id) {
 
 function toggleReservationFields(context) {
     if (context === 'add') {
-        var roomVal = document.getElementById('add-room-number-input').value.trim();
-        var show = roomVal.length > 0;
-        document.getElementById('add-est-movein-wrap').style.display = show ? '' : 'none';
-        document.getElementById('add-reservation-notes-wrap').style.display = show ? '' : 'none';
+        var mode = document.getElementById('add-mode-input').value;
+        if (mode === 'reservation') {
+            document.getElementById('add-movein-wrap').style.display = 'none';
+            document.getElementById('add-est-movein-wrap').style.display = '';
+            document.getElementById('add-reservation-notes-wrap').style.display = '';
+        } else {
+            document.getElementById('add-movein-wrap').style.display = '';
+            document.getElementById('add-est-movein-wrap').style.display = 'none';
+            document.getElementById('add-reservation-notes-wrap').style.display = 'none';
+        }
     } else {
         var status = document.getElementById('edit-status').value;
         var show = status === 'reserved';
@@ -2265,6 +2291,30 @@ async function submitDeleteRoom() {
         );
     });
 })();
+
+function toggleAddMode() {
+    var input  = document.getElementById('add-mode-input');
+    var toggle = document.getElementById('add-mode-toggle');
+    var knob   = document.getElementById('add-mode-knob');
+    var label  = document.getElementById('add-mode-label');
+    var desc   = document.querySelector('#add-modal .add-mode-desc');
+    if (input.value === 'moved_in') {
+        input.value             = 'reservation';
+        toggle.style.background = '#e8e0f0';
+        knob.style.transform    = 'translateX(0px)';
+        label.textContent       = 'MODE: RESERVATION';
+        label.style.color       = '#9a6200';
+        if (desc) desc.textContent = 'This tenant has a reserved room';
+    } else {
+        input.value             = 'moved_in';
+        toggle.style.background = 'var(--gradient-pink)';
+        knob.style.transform    = 'translateX(20px)';
+        label.textContent       = 'MODE: MOVED IN';
+        label.style.color       = 'var(--bright-pink)';
+        if (desc) desc.textContent = 'This tenant has already moved in';
+    }
+    toggleReservationFields('add');
+}
 
 applyFilters();
 
