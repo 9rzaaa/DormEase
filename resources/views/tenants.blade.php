@@ -660,7 +660,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
-                    <select id="ar-floor">
+                    <select id="ar-floor" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
                         <option value="">Select</option>
                         <option value="2">Floor 2</option>
                         <option value="3">Floor 3</option>
@@ -922,7 +922,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
-                            <select name="floor" id="add-floor-select">
+                            <select name="floor" id="add-floor-select" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
                                 <option value="">Select floor</option>
                                 @for($i = 1; $i <= 5; $i++)
                                     <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
@@ -1013,7 +1013,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
-                            <select name="floor" id="edit-floor">
+                            <select name="floor" id="edit-floor" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
                                 <option value="">Select floor</option>
                                 @for($i = 1; $i <= 5; $i++)
                                     <option value="{{ $i }}">Floor {{ $i }}</option>
