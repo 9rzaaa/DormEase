@@ -1027,6 +1027,17 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
+                        <div class="modal-field full">
+                            <label>Stay Type</label>
+                            <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
+                                <option value="">Select type</option>
+                                <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
+                                <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full" id="add-room-suggest-wrap" style="display:none;">
+                            <div id="add-room-suggest"></div>
+                        </div>
                         <div class="modal-field">
                             <label>Room No.</label>
                             <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
@@ -1040,17 +1051,8 @@ tbody tr:hover { background: var(--soft-bg); }
                                 @endfor
                             </select>
                         </div>
-                        <div class="modal-field full">
-                            <label>Stay Type</label>
-                            <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
-                                <option value="">Select type</option>
-                                <option value="Bed Spacer" {{ old('stay_type') === 'Bed Spacer' ? 'selected' : '' }}>Bed Spacer</option>
-                                <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
-                                <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
-                            </select>
-                        </div>
-                        <div class="modal-field full" id="add-room-suggest-wrap" style="display:none;">
-                            <div id="add-room-suggest"></div>
+                        <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
+                            <div id="add-room-hint"></div>
                         </div>
                         <div class="modal-field full" id="add-movein-wrap">
                             <label>Move-In Date</label>
@@ -1063,9 +1065,6 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
                             <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
-                        </div>
-                        <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
-                            <div id="add-room-hint"></div>
                         </div>
                     </div>
                 </div>
@@ -1146,7 +1145,6 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Stay Type</label>
                             <select name="stay_type" id="edit-stay-type">
                                 <option value="">Select type</option>
-                                <option value="Bed Spacer">Bed Spacer</option>
                                 <option value="Solo Room">Solo Room</option>
                                 <option value="Shared Room">Shared Room</option>
                             </select>
@@ -2288,7 +2286,6 @@ async function submitDeleteRoom() {
                 if (remaining <= 0) return false;
                 if (stayType === 'Solo Room')   return r.stay_type === 'Solo Room';
                 if (stayType === 'Shared Room') return r.stay_type === 'Shared Room';
-                if (stayType === 'Bed Spacer')  return r.stay_type === 'Shared Room' && remaining > 0;
                 return false;
             }).sort(function(a, b) {
                 var remA = a.capacity - a.occupancy;
