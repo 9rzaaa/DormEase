@@ -247,7 +247,13 @@
     .activity-time  { font-size: .75rem; color: var(--ink-muted); margin-top: .2rem; }
     .activity-arrow { color: var(--hot-pink); font-size: 1rem; flex-shrink: 0; }
 
-    .announce-item { padding: .85rem .5rem; border-bottom: 1px solid var(--petal); border-radius: 8px; transition: background .15s; }
+    .announce-item {
+        padding: .85rem .5rem;
+        border-bottom: 1px solid var(--petal);
+        border-radius: 8px;
+        transition: background .15s;
+        cursor: pointer;
+    }
     .announce-item:last-child { border-bottom: none; }
     .announce-item:hover { background: var(--petal); }
     .announce-title { font-size: .9rem; font-weight: 700; color: var(--ink); }
@@ -298,19 +304,115 @@
         scrollbar-width: thin;
         scrollbar-color: var(--baby-pink) transparent;
     }
-    .emerg-modal-list::-webkit-scrollbar {
-        width: 5px;
+    .emerg-modal-list::-webkit-scrollbar { width: 5px; }
+    .emerg-modal-list::-webkit-scrollbar-track { background: transparent; }
+    .emerg-modal-list::-webkit-scrollbar-thumb { background: var(--baby-pink); border-radius: 99px; }
+    .emerg-modal-list::-webkit-scrollbar-thumb:hover { background: var(--bright-pink); }
+
+    .ann-modal-header { padding: 1.4rem 1.5rem 0; }
+    .ann-modal-top {
+        display: flex; align-items: flex-start;
+        justify-content: space-between; gap: 1rem; margin-bottom: 1rem;
     }
-    .emerg-modal-list::-webkit-scrollbar-track {
-        background: transparent;
+    .ann-modal-title-text { font-size: 1.1rem; font-weight: 800; color: var(--ink); line-height: 1.3; flex: 1; }
+    .ann-modal-badges { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .9rem; }
+    .ann-modal-meta-row {
+        display: flex; align-items: center; gap: 1.2rem;
+        font-size: .78rem; color: var(--ink-muted);
+        padding-bottom: .9rem; border-bottom: 1.5px solid var(--petal);
     }
-    .emerg-modal-list::-webkit-scrollbar-thumb {
-        background: var(--baby-pink);
-        border-radius: 99px;
+    .ann-modal-meta-item { display: flex; align-items: center; gap: .3rem; }
+    .ann-modal-meta-item img { width: 13px; height: 13px; opacity: .45; }
+
+    .ann-tabs {
+        display: flex; align-items: center; gap: 0;
+        padding: 0 1.5rem;
+        border-bottom: 1.5px solid var(--petal);
+        margin-top: .1rem;
     }
-    .emerg-modal-list::-webkit-scrollbar-thumb:hover {
-        background: var(--bright-pink);
+    .ann-tab {
+        padding: .65rem 1rem; font-size: .8rem; font-weight: 700;
+        color: var(--ink-muted); cursor: pointer; border: none;
+        background: transparent; border-bottom: 2.5px solid transparent;
+        margin-bottom: -1.5px; transition: color .2s, border-color .2s;
+        font-family: var(--ff-body); display: flex; align-items: center; gap: .35rem;
     }
+    .ann-tab:hover { color: var(--bright-pink); }
+    .ann-tab.active { color: var(--bright-pink); border-bottom-color: var(--bright-pink); }
+    .ann-tab-badge {
+        background: var(--petal); color: var(--hot-pink);
+        font-size: .65rem; font-weight: 800; padding: .1rem .4rem;
+        border-radius: 999px; border: 1px solid var(--baby-pink);
+    }
+    .ann-tab-pane { display: none; padding: 1.2rem 1.5rem 1.5rem; }
+    .ann-tab-pane.active { display: block; }
+    .ann-content-body { font-size: .875rem; color: var(--ink); line-height: 1.75; white-space: pre-wrap; }
+
+    .ann-priority {
+        display: inline-flex; align-items: center; padding: .18rem .55rem;
+        border-radius: 6px; font-size: .68rem; font-weight: 800;
+        letter-spacing: .04em; text-transform: uppercase; width: fit-content;
+    }
+    .ann-priority-low      { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .ann-priority-moderate { background: #fff8e1; color: #c07800; border: 1px solid #ffd54f; }
+    .ann-priority-high     { background: #fff0f0; color: #c0303a; border: 1px solid #ffc8d0; }
+
+    .file-preview-grid { display: flex; flex-direction: column; gap: .75rem; }
+    .file-preview-item { border: 1.5px solid var(--baby-pink); border-radius: 14px; overflow: hidden; background: var(--white); }
+    .file-preview-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: .6rem .9rem; background: var(--petal);
+        border-bottom: 1px solid var(--baby-pink);
+    }
+    .file-preview-name { font-size: .78rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
+    .file-preview-name img { width: 13px; height: 13px; opacity: .5; }
+    .file-preview-actions { display: flex; align-items: center; gap: .35rem; }
+    .file-action-btn {
+        width: 30px; height: 30px; border-radius: 7px;
+        border: 1.5px solid var(--baby-pink); background: var(--white);
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: .2s; text-decoration: none; flex-shrink: 0;
+    }
+    .file-action-btn:hover { border-color: var(--bright-pink); background: var(--petal); box-shadow: 0 3px 10px rgba(255,45,120,.15); }
+    .file-action-btn svg { width: 14px; height: 14px; stroke: var(--bright-pink); flex-shrink: 0; }
+    .file-preview-body { padding: .8rem; }
+    .file-preview-body img {
+        width: 100%; max-height: 260px; object-fit: cover;
+        border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s;
+    }
+    .file-preview-body img:hover { opacity: .88; }
+    .file-preview-body iframe { width: 100%; height: 320px; border: none; border-radius: 8px; display: block; }
+    .file-preview-unsupported {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: .5rem; padding: 1.5rem;
+        color: var(--ink-muted); font-size: .8rem; text-align: center;
+    }
+    .file-preview-unsupported img { width: 32px; height: 32px; opacity: .3; margin-bottom: .25rem; }
+    .no-files-state {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; padding: 2rem; gap: .5rem;
+        color: var(--ink-muted); font-size: .82rem; text-align: center;
+    }
+    .no-files-state img { width: 36px; height: 36px; opacity: .25; margin-bottom: .25rem; }
+
+    .lightbox-overlay {
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(0,0,0,.92); display: none;
+        align-items: center; justify-content: center;
+        padding: 1.5rem; box-sizing: border-box;
+    }
+    .lightbox-overlay.open { display: flex; }
+    .lightbox-inner { position: relative; max-width: 100%; max-height: 100%; display: flex; align-items: center; justify-content: center; }
+    .lightbox-inner img { max-width: min(92vw,1100px); max-height: 88vh; object-fit: contain; border-radius: 10px; box-shadow: 0 24px 64px rgba(0,0,0,.6); display: block; }
+    .lightbox-close {
+        position: fixed; top: 1.1rem; right: 1.3rem;
+        width: 38px; height: 38px; border-radius: 50%;
+        background: rgba(255,255,255,.12); border: 1.5px solid rgba(255,255,255,.25);
+        color: #fff; font-size: 1.1rem; display: flex;
+        align-items: center; justify-content: center;
+        cursor: pointer; transition: background .2s; z-index: 2001;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.22); }
 
     @media (max-width: 1100px) {
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -499,7 +601,16 @@
                         <div class="empty-state">No announcements yet.</div>
                     @else
                         @foreach($announcements as $ann)
-                            <div class="announce-item">
+                            <div class="announce-item"
+                                 onclick="openAnnModal(this)"
+                                 data-ann='{!! json_encode([
+                                     "title"      => $ann->title,
+                                     "content"    => $ann->content,
+                                     "priority"   => $ann->priority ?? "low",
+                                     "status"     => $ann->status ?? "active",
+                                     "posted_at"  => \Carbon\Carbon::parse($ann->posted_at)->format("F d, Y · g:i A"),
+                                     "attachment" => $ann->attachment ?? "",
+                                 ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
                                 <div style="display:flex;align-items:center;gap:.4rem;">
                                     <div class="announce-title">{{ $ann->title }}</div>
                                     <span class="priority-badge priority-{{ strtolower($ann->priority ?? 'low') }}">
@@ -569,6 +680,45 @@
 
 
 @section('modals')
+
+<div class="lightbox-overlay" id="dash-lightbox" onclick="closeDashLightbox()">
+    <button class="lightbox-close" onclick="closeDashLightbox()">&#x2715;</button>
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+        <img id="dash-lightbox-img" src="" alt="">
+    </div>
+</div>
+
+<div class="modal-overlay" id="ann-view-modal" onclick="handleOverlayClick(event,'ann-view-modal')">
+    <div class="modal" style="max-width:560px;padding:0;overflow:hidden;" onclick="event.stopPropagation()">
+        <div class="ann-modal-header">
+            <div class="ann-modal-top">
+                <div class="ann-modal-title-text" id="avm-title"></div>
+                <button class="modal-close" onclick="closeModal('ann-view-modal')" style="flex-shrink:0;">&#x2715;</button>
+            </div>
+            <div class="ann-modal-badges" id="avm-badges"></div>
+            <div class="ann-modal-meta-row" id="avm-meta"></div>
+        </div>
+
+        <div class="ann-tabs" id="avm-tabs">
+            <button class="ann-tab active" data-avmtab="content" onclick="switchAvmTab(this,'content')">
+                <img src="{{ asset('icons/eye.png') }}" style="width:13px;height:13px;opacity:.6;" alt="">
+                Content
+            </button>
+            <button class="ann-tab" data-avmtab="files" onclick="switchAvmTab(this,'files')">
+                <img src="{{ asset('icons/attach.png') }}" style="width:13px;height:13px;opacity:.6;" alt="">
+                Attachments
+                <span class="ann-tab-badge" id="avm-file-count">0</span>
+            </button>
+        </div>
+
+        <div class="ann-tab-pane active" id="avmtab-content">
+            <div class="ann-content-body" id="avm-body"></div>
+        </div>
+        <div class="ann-tab-pane" id="avmtab-files">
+            <div class="file-preview-grid" id="avm-files"></div>
+        </div>
+    </div>
+</div>
 
 <div class="modal-overlay" id="emergency-modal" onclick="handleOverlayClick(event, 'emergency-modal')">
     <div class="modal" onclick="event.stopPropagation()">
@@ -745,15 +895,11 @@
 
     function buildChart(key) {
         var cfg = CHARTS[key];
-
         document.getElementById('chart-title').textContent = cfg.title;
         document.getElementById('chart-sub').textContent   = cfg.sub;
         buildLegend(cfg.legend);
-
         if (activeChart) { activeChart.destroy(); activeChart = null; }
-
         var ctx = document.getElementById('mainChart').getContext('2d');
-
         var options = {
             responsive: true,
             maintainAspectRatio: false,
@@ -772,7 +918,6 @@
                 }
             }
         };
-
         if (cfg.useScales) {
             options.scales = {
                 x: {
@@ -788,9 +933,7 @@
                 }
             };
         }
-
         if (cfg.type === 'doughnut') { options.cutout = '62%'; }
-
         activeChart = new Chart(ctx, {
             type: cfg.type,
             data: { labels: cfg.labels, datasets: cfg.datasets },
@@ -805,7 +948,6 @@
     };
 
     buildChart('visitors');
-
 })();
 
 window.togglePanel = function(id) {
@@ -836,13 +978,11 @@ window.exportSummary = function() {
 window.openVisitorModal = function(el) {
     var data;
     try { data = JSON.parse(el.dataset.visitor); }
-    catch(e) { console.error('openVisitorModal: bad JSON', e); return; }
-
+    catch(e) { return; }
     document.getElementById('vd-name').textContent    = data.name;
     document.getElementById('vd-status').textContent  = data.status;
     document.getElementById('vd-tenant').textContent  = data.tenant;
     document.getElementById('vd-arrival').textContent = data.arrival;
-
     var depWrap = document.getElementById('vd-departure-wrap');
     if (data.departure) {
         document.getElementById('vd-departure').textContent = data.departure;
@@ -850,8 +990,122 @@ window.openVisitorModal = function(el) {
     } else {
         depWrap.style.display = 'none';
     }
-
     openModal('visitor-detail-modal');
+};
+
+function escHtml(str) {
+    return (str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getFiles(attachment) {
+    if (!attachment) return [];
+    return attachment.split(',').map(function(f){ return f.trim(); }).filter(Boolean);
+}
+
+function fileExt(path) {
+    return (path.split('.').pop() || '').toLowerCase();
+}
+
+function avmPriorityBadge(p) {
+    var map = {
+        low:      '<span class="ann-priority ann-priority-low">Low</span>',
+        moderate: '<span class="ann-priority ann-priority-moderate">Moderate</span>',
+        high:     '<span class="ann-priority ann-priority-high">High</span>',
+    };
+    return map[p] ?? '<span class="ann-priority ann-priority-low">Low</span>';
+}
+
+function avmStatusBadge(s) {
+    return s === 'closed'
+        ? '<span class="ann-priority" style="background:#f5f5f5;color:#666;border:1px solid #ddd;">Closed</span>'
+        : '<span class="ann-priority" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;">Active</span>';
+}
+
+window.openDashLightbox = function(url) {
+    document.getElementById('dash-lightbox-img').src = url;
+    document.getElementById('dash-lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeDashLightbox = function() {
+    document.getElementById('dash-lightbox').classList.remove('open');
+    document.getElementById('dash-lightbox-img').src = '';
+    document.body.style.overflow = '';
+};
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDashLightbox();
+});
+
+function buildAvmFilePreview(filePath) {
+    var name     = filePath.split('/').pop();
+    var ext      = fileExt(filePath);
+    var url      = filePath.startsWith('http') ? filePath : '/storage/' + filePath;
+    var isImage  = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
+    var isPdf    = ext === 'pdf';
+
+    var previewHtml = '';
+    if (isImage) {
+        previewHtml = '<div class="file-preview-body"><img src="' + url + '" alt="' + escHtml(name) + '" loading="lazy" onclick="openDashLightbox(\'' + url + '\')" title="Click to view full size"></div>';
+    } else if (isPdf) {
+        previewHtml = '<div class="file-preview-body"><iframe src="' + url + '" title="' + escHtml(name) + '"></iframe></div>';
+    } else {
+        previewHtml = '<div class="file-preview-unsupported"><img src="{{ asset("icons/attach.png") }}" alt=""><span>Preview not available for <strong>.' + ext + '</strong> files.</span></div>';
+    }
+
+    var expandIcon = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+    var openIcon   = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    var dlIcon     = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    var primaryBtn = isImage
+        ? '<button class="file-action-btn" onclick="openDashLightbox(\'' + url + '\')" title="View full size">' + expandIcon + '</button>'
+        : '<a href="' + url + '" target="_blank" class="file-action-btn" title="Open">' + openIcon + '</a>';
+
+    return '<div class="file-preview-item">'
+        + '<div class="file-preview-bar">'
+        + '<div class="file-preview-name"><img src="{{ asset("icons/attach.png") }}" alt="">' + escHtml(name) + '</div>'
+        + '<div class="file-preview-actions">' + primaryBtn + '<a href="' + url + '" download class="file-action-btn" title="Download">' + dlIcon + '</a></div>'
+        + '</div>'
+        + previewHtml
+        + '</div>';
+}
+
+window.switchAvmTab = function(btn, tabId) {
+    document.querySelectorAll('#ann-view-modal .ann-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('#ann-view-modal .ann-tab-pane').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('avmtab-' + tabId).classList.add('active');
+};
+
+window.openAnnModal = function(el) {
+    var data;
+    try { data = JSON.parse(el.dataset.ann); }
+    catch(e) { return; }
+
+    var files = getFiles(data.attachment);
+
+    document.getElementById('avm-title').textContent = data.title ?? '';
+    document.getElementById('avm-badges').innerHTML  = avmPriorityBadge(data.priority) + ' ' + avmStatusBadge(data.status);
+    document.getElementById('avm-meta').innerHTML    =
+        '<div class="ann-modal-meta-item"><img src="{{ asset("icons/eye.png") }}" alt=""><span>Posted ' + escHtml(data.posted_at) + '</span></div>'
+        + '<div class="ann-modal-meta-item"><img src="{{ asset("icons/attach.png") }}" alt=""><span>' + files.length + ' attachment' + (files.length !== 1 ? 's' : '') + '</span></div>';
+
+    document.getElementById('avm-body').textContent      = data.content ?? '';
+    document.getElementById('avm-file-count').textContent = files.length;
+    document.getElementById('avm-files').innerHTML        = files.length
+        ? files.map(buildAvmFilePreview).join('')
+        : '<div class="no-files-state"><img src="{{ asset("icons/attach.png") }}" alt=""><span>No attachments on this announcement.</span></div>';
+
+    document.querySelectorAll('#ann-view-modal .ann-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('#ann-view-modal .ann-tab-pane').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelector('#ann-view-modal .ann-tab[data-avmtab="content"]').classList.add('active');
+    document.getElementById('avmtab-content').classList.add('active');
+
+    openModal('ann-view-modal');
+};
+
+window.handleOverlayClick = function(e, modalId) {
+    if (e.target === document.getElementById(modalId)) closeModal(modalId);
 };
 
 @if(session('success'))
