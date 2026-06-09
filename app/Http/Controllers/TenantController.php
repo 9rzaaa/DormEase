@@ -35,6 +35,7 @@ class TenantController extends Controller
             'totalTenants'    => $tenants->count(),
             'activeCount'     => $tenants->where('status', 'active')->count(),
             'pendingCount'    => $tenants->where('status', 'pending')->count(),
+            'reservedCount'   => $tenants->where('status', 'reserved')->count(),
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'moveoutArchive'  => $moveoutArchive,
@@ -84,14 +85,16 @@ class TenantController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name'     => 'required|string|max:100',
-            'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email',
-            'contact_number' => 'nullable|string|max:20',
-            'room_number'    => 'nullable|string|max:20',
-            'floor'          => 'nullable|integer|min:1|max:5',
-            'stay_type'      => 'nullable|string|max:50',
-            'move_in_date'   => 'nullable|date',
+            'first_name'             => 'required|string|max:100',
+            'last_name'              => 'required|string|max:100',
+            'email'                  => 'required|email|unique:tenants,email',
+            'contact_number'         => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|max:20',
+            'floor'                  => 'nullable|integer|min:1|max:5',
+            'stay_type'              => 'nullable|string|max:50',
+            'move_in_date'           => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date',
+            'reservation_notes'      => 'nullable|string|max:500',
         ]);
 
         if ($request->filled('room_number')) {
@@ -114,20 +117,24 @@ class TenantController extends Controller
         $accountId    = Tenant::generateAccountId();
         $tempPassword = Tenant::generateTempPassword();
 
+        $isReserved = $request->filled('room_number') && $request->filled('estimated_move_in_date');
+
         $tenant = Tenant::create([
-            'account_id'       => $accountId,
-            'password_hash'    => Hash::make($tempPassword),
-            'is_temp_password' => true,
-            'first_name'       => $request->first_name,
-            'last_name'        => $request->last_name,
-            'email'            => $request->email,
-            'contact_number'   => $request->contact_number,
-            'room_number'      => $request->room_number,
-            'floor'            => $request->floor,
-            'stay_type'        => $request->stay_type,
-            'move_in_date'     => $request->move_in_date,
-            'status'           => 'pending',
-            'is_active'        => true,
+            'account_id'             => $accountId,
+            'password_hash'          => Hash::make($tempPassword),
+            'is_temp_password'       => true,
+            'first_name'             => $request->first_name,
+            'last_name'              => $request->last_name,
+            'email'                  => $request->email,
+            'contact_number'         => $request->contact_number,
+            'room_number'            => $request->room_number,
+            'floor'                  => $request->floor,
+            'stay_type'              => $request->stay_type,
+            'move_in_date'           => $request->move_in_date,
+            'estimated_move_in_date' => $request->estimated_move_in_date,
+            'reservation_notes'      => $request->reservation_notes,
+            'status'                 => $isReserved ? 'reserved' : 'pending',
+            'is_active'              => true,
         ]);
 
         NotificationHelper::sendToAll(
@@ -148,16 +155,18 @@ class TenantController extends Controller
         $tenant = Tenant::findOrFail($id);
 
         $request->validate([
-            'first_name'     => 'required|string|max:100',
-            'last_name'      => 'required|string|max:100',
-            'email'          => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
-            'contact_number' => 'nullable|string|max:20',
-            'room_number'    => 'nullable|string|max:20',
-            'floor'          => 'nullable|integer|min:1|max:5',
-            'stay_type'      => 'nullable|string|max:50',
-            'move_in_date'   => 'nullable|date',
-            'move_out_date'  => 'nullable|date',
-            'status'         => 'required|in:active,pending,move_out,inactive',
+            'first_name'             => 'required|string|max:100',
+            'last_name'              => 'required|string|max:100',
+            'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
+            'contact_number'         => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|max:20',
+            'floor'                  => 'nullable|integer|min:1|max:5',
+            'stay_type'              => 'nullable|string|max:50',
+            'move_in_date'           => 'nullable|date',
+            'move_out_date'          => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date',
+            'reservation_notes'      => 'nullable|string|max:500',
+            'status'                 => 'required|in:active,pending,reserved,move_out,inactive',
         ]);
 
         if ($request->filled('room_number')) {
@@ -181,17 +190,19 @@ class TenantController extends Controller
         $previousStatus = $tenant->status;
 
         $tenant->update([
-            'first_name'     => $request->first_name,
-            'last_name'      => $request->last_name,
-            'email'          => $request->email,
-            'contact_number' => $request->contact_number,
-            'room_number'    => $request->room_number,
-            'floor'          => $request->floor,
-            'stay_type'      => $request->stay_type,
-            'move_in_date'   => $request->move_in_date,
-            'move_out_date'  => $request->move_out_date,
-            'status'         => $request->status,
-            'is_active'      => $request->status !== 'inactive',
+            'first_name'             => $request->first_name,
+            'last_name'              => $request->last_name,
+            'email'                  => $request->email,
+            'contact_number'         => $request->contact_number,
+            'room_number'            => $request->room_number,
+            'floor'                  => $request->floor,
+            'stay_type'              => $request->stay_type,
+            'move_in_date'           => $request->move_in_date,
+            'move_out_date'          => $request->move_out_date,
+            'estimated_move_in_date' => $request->estimated_move_in_date,
+            'reservation_notes'      => $request->reservation_notes,
+            'status'                 => $request->status,
+            'is_active'              => $request->status !== 'inactive',
         ]);
 
         $fresh = $tenant->fresh();
@@ -401,18 +412,20 @@ class TenantController extends Controller
             'message'          => 'Login successful.',
             'token'            => $token,
             'is_temp_password' => $tenant->is_temp_password,
-            'tenant'           => [
-                'tenant_id'      => $tenant->tenant_id,
-                'account_id'     => $tenant->account_id,
-                'first_name'     => $tenant->first_name,
-                'last_name'      => $tenant->last_name,
-                'email'          => $tenant->email,
-                'contact_number' => $tenant->contact_number,
-                'profile_photo'  => $tenant->profile_photo,
-                'room_number'    => $tenant->room_number,
-                'floor'          => $tenant->floor,
-                'stay_type'      => $tenant->stay_type,
-                'status'         => $tenant->status,
+            'tenant' => [
+                'tenant_id'              => $tenant->tenant_id,
+                'account_id'             => $tenant->account_id,
+                'first_name'             => $tenant->first_name,
+                'last_name'              => $tenant->last_name,
+                'email'                  => $tenant->email,
+                'contact_number'         => $tenant->contact_number,
+                'profile_photo'          => $tenant->profile_photo,
+                'room_number'            => $tenant->room_number,
+                'floor'                  => $tenant->floor,
+                'stay_type'              => $tenant->stay_type,
+                'status'                 => $tenant->status,
+                'estimated_move_in_date' => $tenant->estimated_move_in_date,
+                'reservation_notes'      => $tenant->reservation_notes,
             ],
         ]);
     }
