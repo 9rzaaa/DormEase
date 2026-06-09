@@ -26,6 +26,8 @@ class Tenant extends Authenticatable
         'stay_type',
         'move_in_date',
         'move_out_date',
+        'estimated_move_in_date',
+        'reservation_notes',
         'status',
         'is_active',
         'last_login_at',

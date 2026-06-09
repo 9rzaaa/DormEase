@@ -17,14 +17,21 @@ class RoomController extends Controller
             ->groupBy('room_number')
             ->pluck('count', 'room_number');
 
+        $reservedOccupancy = Tenant::where('status', 'reserved')
+            ->whereNotNull('room_number')
+            ->selectRaw('room_number, COUNT(*) as count')
+            ->groupBy('room_number')
+            ->pluck('count', 'room_number');
+
         return response()->json($rooms->map(fn($r) => [
-            'id'          => $r->id,
-            'room_number' => $r->room_number,
-            'floor'       => $r->floor,
-            'capacity'    => $r->capacity,
-            'stay_type'   => $r->stay_type,
-            'is_active'   => $r->is_active,
-            'occupancy'   => $occupancy[$r->room_number] ?? 0,
+            'id'                => $r->id,
+            'room_number'       => $r->room_number,
+            'floor'             => $r->floor,
+            'capacity'          => $r->capacity,
+            'stay_type'         => $r->stay_type,
+            'is_active'         => $r->is_active,
+            'occupancy'         => $occupancy[$r->room_number] ?? 0,
+            'reserved_occupancy'=> $reservedOccupancy[$r->room_number] ?? 0,
         ]));
     }
 

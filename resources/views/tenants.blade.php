@@ -219,7 +219,8 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
-.badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
+.badge-moveout    { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
+.badge-reserved   { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
 .tenant-section-pill-pink { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
 .tenant-section-bar-pink  { background: var(--gradient-pink); }
@@ -468,8 +469,9 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-pill-stay     { background: var(--pink-100); color: var(--hot-pink);  border: 1px solid var(--pink-200); }
 .tad-pill-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
-.tad-pill-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
-.tad-pill-inactive { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-moveout    { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+.tad-pill-inactive   { background: var(--blush); color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-reserved   { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
 .tad-card-archived { display: flex; align-items: center; gap: .4rem; margin-top: .75rem; padding-top: .6rem; border-top: 1px solid var(--pink-100); font-size: .7rem; color: var(--ink-muted); font-weight: 500; }
 .tad-card-archived span { color: var(--bright-pink); font-weight: 600; }
 .tad-empty { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .85rem; }
@@ -555,12 +557,12 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="stat-box">
             <div class="stat-icon-circle">
-                <img src="{{ asset('icons/pending.png') }}" class="icon-md" alt="pending">
+                <img src="{{ asset('icons/pending.png') }}" class="icon-md" alt="reserved">
             </div>
             <div>
-                <div class="stat-label">Pending Tenants</div>
-                <div class="stat-num">{{ $pendingCount }}</div>
-                <div class="stat-sub">Not Yet Logged In</div>
+                <div class="stat-label">Reserved</div>
+                <div class="stat-num">{{ $reservedCount }}</div>
+                <div class="stat-sub">Room Held, Incoming</div>
             </div>
         </div>
     </div>
@@ -624,17 +626,17 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
 
-        <div class="tenant-section" id="section-pending">
+        <div class="tenant-section" id="section-reserved">
             <div class="tenant-section-bar tenant-section-bar-pink"></div>
-            <div class="tenant-section-header" onclick="toggleSection('pending')">
+            <div class="tenant-section-header" onclick="toggleSection('reserved')">
                 <div class="tenant-section-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span class="tenant-section-label">Pending Tenants</span>
-                    <span class="tenant-section-pill tenant-section-pill-pink" id="pill-pending">0</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span class="tenant-section-label">Reserved Tenants</span>
+                    <span class="tenant-section-pill tenant-section-pill-pink" id="pill-reserved">0</span>
                 </div>
-                <svg class="tenant-section-chevron open" id="chevron-pending" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg class="tenant-section-chevron open" id="chevron-reserved" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div class="tenant-section-body" id="body-pending">
+            <div class="tenant-section-body" id="body-reserved">
                 <div class="table-wrap">
                     <table>
                         <thead>
@@ -642,19 +644,19 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <th>Account ID</th>
                                 <th>Tenant Name</th>
                                 <th>Floor &amp; Room No.</th>
-                                <th>Move-In Date</th>
+                                <th>Est. Move-In</th>
                                 <th>Move-Out Date</th>
                                 <th>Contact No.</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody-pending"></tbody>
+                        <tbody id="tbody-reserved"></tbody>
                     </table>
                 </div>
                 <div class="table-footer" style="border-top:1px solid var(--pink-100);">
-                    <div class="table-showing" id="showing-pending"></div>
-                    <div class="pagination" id="pagination-pending"></div>
+                    <div class="table-showing" id="showing-reserved"></div>
+                    <div class="pagination" id="pagination-reserved"></div>
                 </div>
             </div>
         </div>
@@ -1034,6 +1036,14 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" value="{{ old('move_in_date') }}">
                         </div>
+                        <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
+                            <label>Estimated Move-In Date</label>
+                            <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                        </div>
+                        <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
+                            <label>Reservation Notes</label>
+                            <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
+                        </div>
                         <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
                             <div id="add-room-hint"></div>
                         </div>
@@ -1125,12 +1135,20 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
                         </div>
-                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
-                            <div id="edit-room-hint"></div>
-                        </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
                             <input type="date" name="move_out_date" id="edit-moveout">
+                        </div>
+                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
+                            <div id="edit-room-hint"></div>
+                        </div>
+                        <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
+                            <label>Estimated Move-In Date</label>
+                            <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in">
+                        </div>
+                        <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
+                            <label>Reservation Notes</label>
+                            <input type="text" name="reservation_notes" id="edit-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation">
                         </div>
                     </div>
                 </div>
@@ -1141,9 +1159,10 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Status</label>
                             <div class="status-select-wrap">
                                 <span class="status-dot" id="edit-status-dot"></span>
-                                <select name="status" id="edit-status" onchange="updateStatusDot(this)">
+                                <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
+                                    <option value="reserved">Reserved</option>
                                     <option value="move_out">Move Out</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
@@ -1152,7 +1171,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     </div>
                     <div class="modal-warn-banner" style="margin-top:.8rem;">
                         <span style="font-size:1rem;flex-shrink:0;"></span>
-                        <span>Setting status to <strong>Inactive</strong> will block the tenant from logging into the mobile app. Setting to <strong>Move Out</strong> saves a record to archive history.</span>
+                        <span>Setting to <strong>Reserved</strong> holds the assigned room and counts toward occupancy. Setting to <strong>Inactive</strong> blocks mobile login. Setting to <strong>Move Out</strong> archives the record.</span>
                     </div>
                 </div>
             </div>
@@ -1357,9 +1376,9 @@ tbody tr:hover { background: var(--soft-bg); }
 var tenants = @json($tenants);
 var PER_PAGE = 8;
 var currentTenant = null;
-var sectionState = { active: true, pending: true };
-var sectionPages = { active: 1, pending: 1 };
-var sectionData  = { active: [], pending: [] };
+var sectionState = { active: true, reserved: true };
+var sectionPages = { active: 1, reserved: 1 };
+var sectionData  = { active: [], reserved: [] };
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1400,6 +1419,10 @@ function closeModal(id) {
         var h = document.getElementById('add-room-hint');
         if (w) w.style.display = 'none';
         if (h) h.innerHTML = '';
+        var aw = document.getElementById('add-est-movein-wrap');
+        var an = document.getElementById('add-reservation-notes-wrap');
+        if (aw) aw.style.display = 'none';
+        if (an) an.style.display = 'none';
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
@@ -1409,9 +1432,27 @@ function closeModal(id) {
         var h2 = document.getElementById('edit-room-hint');
         if (w2) w2.style.display = 'none';
         if (h2) h2.innerHTML = '';
+        var ew = document.getElementById('edit-est-movein-wrap');
+        var en = document.getElementById('edit-reservation-notes-wrap');
+        if (ew) ew.style.display = 'none';
+        if (en) en.style.display = 'none';
         document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
+    }
+}
+
+function toggleReservationFields(context) {
+    if (context === 'add') {
+        var roomVal = document.getElementById('add-room-number-input').value.trim();
+        var show = roomVal.length > 0;
+        document.getElementById('add-est-movein-wrap').style.display = show ? '' : 'none';
+        document.getElementById('add-reservation-notes-wrap').style.display = show ? '' : 'none';
+    } else {
+        var status = document.getElementById('edit-status').value;
+        var show = status === 'reserved';
+        document.getElementById('edit-est-movein-wrap').style.display = show ? '' : 'none';
+        document.getElementById('edit-reservation-notes-wrap').style.display = show ? '' : 'none';
     }
 }
 
@@ -1422,7 +1463,7 @@ document.querySelectorAll('.modal-overlay').forEach(function(m) {
 function updateStatusDot(select) {
     var dot = document.getElementById('edit-status-dot');
     if (!dot) return;
-    var colors = { active:'#1f9d69', pending:'#c8960c', move_out:'#E8175D', inactive:'#e04867' };
+    var colors = { active:'#1f9d69', pending:'#c8960c', reserved:'#d4a000', move_out:'#E8175D', inactive:'#e04867' };
     dot.style.background = colors[select.value] || '#ccc';
 }
 
@@ -1430,6 +1471,7 @@ function statusBadge(status) {
     var map = {
         active:   '<span class="badge badge-active">Active</span>',
         pending:  '<span class="badge badge-pending">Pending</span>',
+        reserved: '<span class="badge badge-reserved">Reserved</span>',
         move_out: '<span class="badge badge-moveout">Move Out</span>',
         inactive: '<span class="badge badge-inactive">Inactive</span>',
     };
@@ -1456,11 +1498,14 @@ function buildRows(list) {
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
         var nameCell  = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
+        var col4 = t.status === 'reserved'
+            ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
+            : fmtDate(t.move_in_date);
         return '<tr>'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
             + '<td>' + nameCell + '</td>'
             + '<td>' + floorRoom + '</td>'
-            + '<td>' + fmtDate(t.move_in_date) + '</td>'
+            + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
@@ -1551,17 +1596,21 @@ function applyFilters() {
         return a;
     }
 
-    sectionData.active  = sortList(base.filter(function(t){ return t.status === 'active'; }));
-    sectionData.pending = sortList(base.filter(function(t){ return t.status === 'pending'; }));
-    sectionPages.active  = 1;
-    sectionPages.pending = 1;
+    sectionData.active   = sortList(base.filter(function(t){ return t.status === 'active' || t.status === 'pending'; }));
+    sectionData.reserved = sortList(base.filter(function(t){ return t.status === 'reserved'; }));
+    sectionPages.active   = 1;
+    sectionPages.reserved = 1;
     renderSection('active');
-    renderSection('pending');
+    renderSection('reserved');
 }
 
 function viewTenant(t) {
     currentTenant = t;
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
+    var reservationRows = t.status === 'reserved'
+        ? '<div class="view-row"><span class="view-label">Est. Move-In</span><span class="view-val" style="color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span></div>'
+          + (t.reservation_notes ? '<div class="view-row"><span class="view-label">Reservation Notes</span><span class="view-val">' + t.reservation_notes + '</span></div>' : '')
+        : '';
     document.getElementById('view-content').innerHTML =
         '<div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">' + (t.account_id || '\u2014') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>'
@@ -1571,6 +1620,7 @@ function viewTenant(t) {
         + '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>'
+        + reservationRows
         + '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Password Status</span><span class="view-val">' + (t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant') + '</span></div>';
     openModal('view-modal');
@@ -1585,18 +1635,21 @@ function switchToEdit() {
 
 function openEditModal(t) {
     currentTenant = t;
-    document.getElementById('edit-form').action       = '/tenants/' + t.tenant_id;
-    document.getElementById('edit-first-name').value  = t.first_name || '';
-    document.getElementById('edit-last-name').value   = t.last_name  || '';
-    document.getElementById('edit-email').value       = t.email      || '';
-    document.getElementById('edit-room').value        = t.room_number || '';
-    document.getElementById('edit-floor').value       = t.floor      || '';
-    document.getElementById('edit-stay-type').value   = t.stay_type  || '';
-    document.getElementById('edit-date').value        = t.move_in_date  || '';
-    document.getElementById('edit-moveout').value     = t.move_out_date || '';
-    document.getElementById('edit-contact').value     = t.contact_number || '';
-    document.getElementById('edit-status').value      = t.status || 'pending';
+    document.getElementById('edit-form').action                  = '/tenants/' + t.tenant_id;
+    document.getElementById('edit-first-name').value             = t.first_name || '';
+    document.getElementById('edit-last-name').value              = t.last_name  || '';
+    document.getElementById('edit-email').value                  = t.email      || '';
+    document.getElementById('edit-room').value                   = t.room_number || '';
+    document.getElementById('edit-floor').value                  = t.floor      || '';
+    document.getElementById('edit-stay-type').value              = t.stay_type  || '';
+    document.getElementById('edit-date').value                   = t.move_in_date  || '';
+    document.getElementById('edit-moveout').value                = t.move_out_date || '';
+    document.getElementById('edit-contact').value                = t.contact_number || '';
+    document.getElementById('edit-estimated-move-in').value      = t.estimated_move_in_date || '';
+    document.getElementById('edit-reservation-notes').value      = t.reservation_notes || '';
+    document.getElementById('edit-status').value                 = t.status || 'pending';
     updateStatusDot(document.getElementById('edit-status'));
+    toggleReservationFields('edit');
     openModal('edit-modal');
     var editRoomInput = document.getElementById('edit-room');
     if (editRoomInput && editRoomInput.value.trim()) {
@@ -1764,16 +1817,25 @@ function renderRooms() {
             const occupancyBg    = isFull ? '#fff0f2' : pct >= 75 ? '#fffbf0' : pct >= 40 ? '#fffdf0' : '#f0faf6';
             const occupancyBorder= isFull ? '#ffc2ce' : pct >= 75 ? '#ffd88a' : pct >= 40 ? '#f0e080' : '#8ce0bb';
 
-            const personIcons = Array.from({ length: r.capacity }, (_, i) => {
-                const occupied = i < r.occupancy;
-                const iconFilter = occupied
-                    ? (isFull
+            const reservedCount = r.reserved_occupancy || 0;
+            const activeCount   = r.occupancy - reservedCount;
+            var personIcons = Array.from({ length: r.capacity }, (_, i) => {
+                let iconFilter, titleText;
+                if (i < activeCount) {
+                    iconFilter = isFull
                         ? 'brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%)'
                         : pct >= 75
                             ? 'brightness(0) saturate(100%) invert(60%) sepia(60%) saturate(600%) hue-rotate(5deg) brightness(95%)'
-                            : 'brightness(0) saturate(100%) invert(45%) sepia(60%) saturate(500%) hue-rotate(115deg) brightness(85%)')
-                    : 'brightness(0) saturate(100%) invert(85%) sepia(5%) saturate(200%) hue-rotate(0deg) brightness(105%)';
-                return `<img src="{{ asset('icons/person.png') }}" style="width:18px;height:18px;object-fit:contain;filter:${iconFilter};transition:filter .2s;flex-shrink:0;" title="${occupied ? 'Occupied' : 'Vacant'}">`;
+                            : 'brightness(0) saturate(100%) invert(45%) sepia(60%) saturate(500%) hue-rotate(115deg) brightness(85%)';
+                    titleText = 'Occupied';
+                } else if (i < activeCount + reservedCount) {
+                    iconFilter = 'brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(600%) hue-rotate(5deg) brightness(105%)';
+                    titleText = 'Reserved';
+                } else {
+                    iconFilter = 'brightness(0) saturate(100%) invert(85%) sepia(5%) saturate(200%) hue-rotate(0deg) brightness(105%)';
+                    titleText = 'Vacant';
+                }
+                return `<img src="{{ asset('icons/person.png') }}" style="width:18px;height:18px;object-fit:contain;filter:${iconFilter};transition:filter .2s;flex-shrink:0;" title="${titleText}">`;
             }).join('');
 
             const statusDot = r.is_active
@@ -2187,6 +2249,12 @@ async function submitDeleteRoom() {
             null,
             'add-floor-select'
         );
+        var addRoomInput = document.getElementById('add-room-number-input');
+        if (addRoomInput) {
+            addRoomInput.addEventListener('input', function() {
+                toggleReservationFields('add');
+            });
+        }
         attachRoomHint(
             'edit-room',
             'edit-room-hint',
@@ -2236,7 +2304,7 @@ function switchTenantArchiveTab(tab) {
 }
 
 function statusPillClass(status) {
-    var map = { active:'tad-pill-active', pending:'tad-pill-pending', move_out:'tad-pill-moveout', inactive:'tad-pill-inactive' };
+    var map = { active:'tad-pill-active', pending:'tad-pill-pending', reserved:'tad-pill-reserved', move_out:'tad-pill-moveout', inactive:'tad-pill-inactive' };
     return map[status] || 'tad-pill-inactive';
 }
 
