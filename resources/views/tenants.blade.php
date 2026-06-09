@@ -679,7 +679,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
                 <div class="modal-field">
                     <label>Room Type</label>
-                    <select id="ar-stay-type">
+                    <select id="ar-stay-type" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
                         <option value="Solo Room">Solo Room</option>
                         <option value="Shared Room">Shared Room</option>
                     </select>
@@ -721,7 +721,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
                 <div class="modal-field">
                     <label>Room Type</label>
-                    <select id="er-stay-type">
+                    <select id="er-stay-type" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
                         <option value="Solo Room">Solo Room</option>
                         <option value="Shared Room">Shared Room</option>
                     </select>
