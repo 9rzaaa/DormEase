@@ -633,7 +633,7 @@
         }
 
         const openBtnHtml = isImage
-            ? `<button class="lightbox-open-btn" onclick="openLightbox('${url}')">&#x26F6; Full Size</button>`
+            ? `<button class="lightbox-open-btn" onclick="openLightbox('${url}')">&#x26F6;</button>`
             : `<a href="${url}" target="_blank" class="file-preview-dl">&#x2197; Open</a>`;
 
         return `
@@ -645,7 +645,7 @@
                     </div>
                     <div class="file-preview-actions">
                         ${openBtnHtml}
-                        <a href="${url}" target="_blank" class="file-preview-dl" download>↓ Download</a>
+                        <a href="${url}" target="_blank" class="file-preview-dl" download>↓</a>
                     </div>
                 </div>
                 ${previewHtml}
