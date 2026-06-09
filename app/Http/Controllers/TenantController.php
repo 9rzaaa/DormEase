@@ -95,6 +95,7 @@ class TenantController extends Controller
             'move_in_date'           => 'nullable|date',
             'estimated_move_in_date' => 'nullable|date',
             'reservation_notes'      => 'nullable|string|max:500',
+            'referred_by'            => 'nullable|string|max:150',
         ]);
 
         if ($request->filled('room_number')) {
@@ -133,6 +134,7 @@ class TenantController extends Controller
             'move_in_date'           => $request->move_in_date,
             'estimated_move_in_date' => $request->estimated_move_in_date,
             'reservation_notes'      => $request->reservation_notes,
+            'referred_by'            => $request->referred_by,
             'status'                 => $isReserved ? 'reserved' : 'pending',
             'is_active'              => true,
         ]);
@@ -166,6 +168,7 @@ class TenantController extends Controller
             'move_out_date'          => 'nullable|date',
             'estimated_move_in_date' => 'nullable|date',
             'reservation_notes'      => 'nullable|string|max:500',
+            'referred_by'            => 'nullable|string|max:150',
             'status'                 => 'required|in:active,pending,reserved,move_out,inactive',
         ]);
 
@@ -201,6 +204,7 @@ class TenantController extends Controller
             'move_out_date'          => $request->move_out_date,
             'estimated_move_in_date' => $request->estimated_move_in_date,
             'reservation_notes'      => $request->reservation_notes,
+            'referred_by'            => $request->referred_by,
             'status'                 => $request->status,
             'is_active'              => $request->status !== 'inactive',
         ]);

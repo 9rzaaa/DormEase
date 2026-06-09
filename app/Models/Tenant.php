@@ -20,6 +20,7 @@ class Tenant extends Authenticatable
         'last_name',
         'email',
         'contact_number',
+        'referred_by',
         'profile_photo',
         'room_number',
         'floor',
