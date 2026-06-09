@@ -1029,7 +1029,20 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
-                            <input type="text" name="referred_by" placeholder="e.g. Maria Santos (Room 304)" value="{{ old('referred_by') }}">
+                            <select id="add-referred-source" onchange="handleReferredSource('add')" style="margin-bottom:.4rem;">
+                                <option value="">Not referred / N/A</option>
+                                <option value="current">Current Tenant</option>
+                                <option value="former">Former Tenant</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="hidden" name="referred_by" id="add-referred-by-value" value="{{ old('referred_by') }}">
+                            <select id="add-referred-current-select" style="display:none;" onchange="syncReferredSelect('add-referred-current-select','add-referred-by-value')">
+                                <option value="">Select current tenant...</option>
+                            </select>
+                            <select id="add-referred-former-select" style="display:none;" onchange="syncReferredSelect('add-referred-former-select','add-referred-by-value')">
+                                <option value="">Select former tenant...</option>
+                            </select>
+                            <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('add-referred-by-value').value=this.value">
                         </div>
                     </div>
                 </div>
@@ -1134,7 +1147,20 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
-                            <input type="text" name="referred_by" id="edit-referred-by" placeholder="e.g. Maria Santos (Room 304)">
+                            <select id="edit-referred-source" onchange="handleReferredSource('edit')" style="margin-bottom:.4rem;">
+                                <option value="">Not referred / N/A</option>
+                                <option value="current">Current Tenant</option>
+                                <option value="former">Former Tenant</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <input type="hidden" name="referred_by" id="edit-referred-by-value">
+                            <select id="edit-referred-current-select" style="display:none;" onchange="syncReferredSelect('edit-referred-current-select','edit-referred-by-value')">
+                                <option value="">Select current tenant...</option>
+                            </select>
+                            <select id="edit-referred-former-select" style="display:none;" onchange="syncReferredSelect('edit-referred-former-select','edit-referred-by-value')">
+                                <option value="">Select former tenant...</option>
+                            </select>
+                            <input type="text" id="edit-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('edit-referred-by-value').value=this.value">
                         </div>
                     </div>
                 </div>
@@ -1463,6 +1489,18 @@ function closeModal(id) {
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
+        var addSrc = document.getElementById('add-referred-source');
+        if (addSrc) {
+            addSrc.value = '';
+            ['current-select','former-select'].forEach(function(s) {
+                var el = document.getElementById('add-referred-' + s);
+                if (el) { el.style.display = 'none'; el.selectedIndex = 0; }
+            });
+            var oi = document.getElementById('add-referred-other-input');
+            if (oi) { oi.style.display = 'none'; oi.value = ''; }
+            var hv = document.getElementById('add-referred-by-value');
+            if (hv) hv.value = '';
+        }
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
@@ -1696,7 +1734,7 @@ function openEditModal(t) {
     document.getElementById('edit-date').value                   = t.move_in_date  || '';
     document.getElementById('edit-moveout').value                = t.move_out_date || '';
     document.getElementById('edit-contact').value                = t.contact_number || '';
-    document.getElementById('edit-referred-by').value            = t.referred_by || '';
+    restoreReferredBy('edit', t.referred_by || '');
     document.getElementById('edit-estimated-move-in').value      = t.estimated_move_in_date || '';
     document.getElementById('edit-reservation-notes').value      = t.reservation_notes || '';
     document.getElementById('edit-status').value                 = t.status || 'pending';
@@ -1770,6 +1808,98 @@ function setStatusFilter(val) {
 }
 
 var roomsData = [];
+
+function syncReferredSelect(selectId, hiddenId) {
+    document.getElementById(hiddenId).value = document.getElementById(selectId).value;
+}
+
+function handleReferredSource(ctx) {
+    var source = document.getElementById(ctx + '-referred-source').value;
+    var ids = ['current-select', 'former-select', 'other-input'];
+    ids.forEach(function(s) {
+        document.getElementById(ctx + '-referred-' + s).style.display = 'none';
+    });
+    document.getElementById(ctx + '-referred-by-value').value = '';
+    if (source === 'current') {
+        var sel = document.getElementById(ctx + '-referred-current-select');
+        sel.style.display = '';
+        populateReferredSelect(sel, 'current');
+    } else if (source === 'former') {
+        var sel2 = document.getElementById(ctx + '-referred-former-select');
+        sel2.style.display = '';
+        populateReferredSelect(sel2, 'former');
+    } else if (source === 'other') {
+        document.getElementById(ctx + '-referred-other-input').style.display = '';
+    }
+}
+
+function populateReferredSelect(selectEl, type) {
+    var existing = Array.from(selectEl.options).map(function(o) { return o.value; });
+    if (existing.length > 1) return;
+    if (type === 'current') {
+        tenants.filter(function(t) {
+            return t.status === 'active' || t.status === 'pending' || t.status === 'reserved';
+        }).sort(function(a, b) {
+            return (a.first_name + ' ' + a.last_name).localeCompare(b.first_name + ' ' + b.last_name);
+        }).forEach(function(t) {
+            var opt = document.createElement('option');
+            var label = t.first_name + ' ' + t.last_name + (t.room_number ? ' (Rm.' + t.room_number + ')' : '');
+            opt.value = label;
+            opt.textContent = label;
+            selectEl.appendChild(opt);
+        });
+    } else {
+        var formerSource = (typeof deletedTenantArchive !== 'undefined' ? deletedTenantArchive : [])
+            .concat(typeof inactiveTenantArchive !== 'undefined' ? inactiveTenantArchive : [])
+            .concat(typeof moveoutTenantArchive  !== 'undefined' ? moveoutTenantArchive  : []);
+        formerSource.sort(function(a, b) {
+            return (a.first_name + ' ' + a.last_name).localeCompare(b.first_name + ' ' + b.last_name);
+        }).forEach(function(t) {
+            var opt = document.createElement('option');
+            var label = t.first_name + ' ' + t.last_name + (t.room_number ? ' (Rm.' + t.room_number + ', former)' : ' (former)');
+            opt.value = label;
+            opt.textContent = label;
+            selectEl.appendChild(opt);
+        });
+    }
+}
+
+function restoreReferredBy(ctx, val) {
+    var sourceEl  = document.getElementById(ctx + '-referred-source');
+    var hiddenEl  = document.getElementById(ctx + '-referred-by-value');
+    var curSel    = document.getElementById(ctx + '-referred-current-select');
+    var frmSel    = document.getElementById(ctx + '-referred-former-select');
+    var otherInp  = document.getElementById(ctx + '-referred-other-input');
+
+    hiddenEl.value = val;
+    curSel.style.display  = 'none';
+    frmSel.style.display  = 'none';
+    otherInp.style.display = 'none';
+
+    if (!val) { sourceEl.value = ''; return; }
+
+    var isCurrent = tenants.some(function(t) {
+        var label = t.first_name + ' ' + t.last_name + (t.room_number ? ' (Rm.' + t.room_number + ')' : '');
+        return label === val;
+    });
+    var isFormer = val.indexOf('(former)') !== -1;
+
+    if (isCurrent) {
+        sourceEl.value = 'current';
+        curSel.style.display = '';
+        populateReferredSelect(curSel, 'current');
+        curSel.value = val;
+    } else if (isFormer) {
+        sourceEl.value = 'former';
+        frmSel.style.display = '';
+        populateReferredSelect(frmSel, 'former');
+        frmSel.value = val;
+    } else {
+        sourceEl.value = 'other';
+        otherInp.style.display = '';
+        otherInp.value = val;
+    }
+}
 var roomsFloorFilter = '';
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
