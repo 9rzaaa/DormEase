@@ -22,6 +22,7 @@ use App\Http\Controllers\BillingHistoryController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ArchiveSettingsController;
+use App\Http\Controllers\RoomController; 
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -140,6 +141,8 @@ Route::post('/frontdesk/profile/dismiss-temp-password', function () {
     return response()->json(['ok' => true]);
 })->name('fdprofile.dismissTempPassword')->middleware('auth:staff');
 
+
+
 // forgot pass
 Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
@@ -156,6 +159,12 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
     Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
+    Route::middleware('auth:staff')->group(function () {
+        Route::get('/rooms',          [RoomController::class, 'index']);
+        Route::post('/rooms',         [RoomController::class, 'store']);
+        Route::put('/rooms/{id}',     [RoomController::class, 'update']);
+        Route::delete('/rooms/{id}',  [RoomController::class, 'destroy']);
+    });
 
     // announcements
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
