@@ -94,6 +94,23 @@ class TenantController extends Controller
             'move_in_date'   => 'nullable|date',
         ]);
 
+        if ($request->filled('room_number')) {
+            $room = \App\Models\Room::where('room_number', $request->room_number)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$room) {
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
+            }
+
+            $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                ->where('room_number', $request->room_number);
+
+            if ($occupancyQuery->count() >= $room->capacity) {
+                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
+            }
+        }
+
         $accountId    = Tenant::generateAccountId();
         $tempPassword = Tenant::generateTempPassword();
 
@@ -143,6 +160,24 @@ class TenantController extends Controller
             'status'         => 'required|in:active,pending,move_out,inactive',
         ]);
 
+        if ($request->filled('room_number')) {
+            $room = \App\Models\Room::where('room_number', $request->room_number)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$room) {
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
+            }
+
+            $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                ->where('room_number', $request->room_number)
+                ->where('tenant_id', '!=', $id);
+
+            if ($occupancyQuery->count() >= $room->capacity) {
+                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
+            }
+        }
+        
         $previousStatus = $tenant->status;
 
         $tenant->update([

@@ -483,6 +483,10 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
+            <button class="btn-outline" onclick="openRoomsDrawer()">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Rooms">
+                Manage Rooms
+            </button>
             <button class="btn-outline" onclick="openTenantArchive()">
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
@@ -598,6 +602,149 @@ tbody tr:hover { background: var(--soft-bg); }
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
         </span>
         <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
+<div class="tenant-archive-backdrop" id="rooms-backdrop" onclick="closeRoomsDrawer()"></div>
+
+<div class="tenant-archive-drawer" id="rooms-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Manage Rooms</div>
+            <div class="tad-sub">Room list, capacity, and occupancy</div>
+        </div>
+        <button class="tad-close" onclick="closeRoomsDrawer()">&#x2715;</button>
+    </div>
+
+    <div style="padding:.75rem 1.8rem .5rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
+        <div class="tad-search-inner" style="flex:1;max-width:260px;">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="rooms-search" placeholder="Search room..." oninput="renderRooms()">
+        </div>
+        <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="openAddRoomModal()">+ Add Room</button>
+    </div>
+
+    <div style="padding:.5rem 1.8rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
+        <button class="page-btn active" id="rfloor-all" onclick="setRoomFloor('')">All</button>
+        <button class="page-btn" id="rfloor-2" onclick="setRoomFloor(2)">Floor 2</button>
+        <button class="page-btn" id="rfloor-3" onclick="setRoomFloor(3)">Floor 3</button>
+        <button class="page-btn" id="rfloor-4" onclick="setRoomFloor(4)">Floor 4</button>
+        <button class="page-btn" id="rfloor-5" onclick="setRoomFloor(5)">Floor 5</button>
+    </div>
+
+    <div class="tad-list" id="rooms-list"></div>
+
+    <div class="tad-footer">
+        <div class="tad-count-label" id="rooms-count-label">0 rooms</div>
+        <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="add-room-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title">Add Room</div>
+            <button class="modal-close" onclick="closeModal('add-room-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-grid">
+                <div class="modal-field">
+                    <label>Room Number</label>
+                    <input type="text" id="ar-number" placeholder="e.g. 308">
+                </div>
+                <div class="modal-field">
+                    <label>Floor</label>
+                    <select id="ar-floor">
+                        <option value="">Select</option>
+                        <option value="2">Floor 2</option>
+                        <option value="3">Floor 3</option>
+                        <option value="4">Floor 4</option>
+                        <option value="5">Floor 5</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Capacity (pax)</label>
+                    <input type="number" id="ar-capacity" min="1" max="10" placeholder="e.g. 3">
+                </div>
+                <div class="modal-field">
+                    <label>Stay Type</label>
+                    <select id="ar-stay-type">
+                        <option value="Solo Room">Solo Room</option>
+                        <option value="Shared Room">Shared Room</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('add-room-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitAddRoom()">Add Room</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="edit-room-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title">Edit Room</div>
+            <button class="modal-close" onclick="closeModal('edit-room-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="er-id">
+            <div class="modal-grid">
+                <div class="modal-field">
+                    <label>Room Number</label>
+                    <input type="text" id="er-number">
+                </div>
+                <div class="modal-field">
+                    <label>Floor</label>
+                    <select id="er-floor">
+                        <option value="2">Floor 2</option>
+                        <option value="3">Floor 3</option>
+                        <option value="4">Floor 4</option>
+                        <option value="5">Floor 5</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Capacity (pax)</label>
+                    <input type="number" id="er-capacity" min="1" max="10">
+                </div>
+                <div class="modal-field">
+                    <label>Stay Type</label>
+                    <select id="er-stay-type">
+                        <option value="Solo Room">Solo Room</option>
+                        <option value="Shared Room">Shared Room</option>
+                    </select>
+                </div>
+                <div class="modal-field full">
+                    <label>Status</label>
+                    <select id="er-active">
+                        <option value="1">Active</option>
+                        <option value="0">Closed / Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('edit-room-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitEditRoom()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-room-modal">
+    <div class="modal" style="max-width:380px;">
+        <div class="modal-header">
+            <div class="modal-title">Delete Room</div>
+            <button class="modal-close" onclick="closeModal('delete-room-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-warning">This room will be permanently removed. This cannot be undone.</div>
+            <p style="font-size:.9rem;color:var(--ink-muted);margin:0;">Delete <strong id="dr-label" style="color:var(--ink);"></strong>?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('delete-room-modal')">Cancel</button>
+            <button class="btn-submit" style="background:#e04867;" onclick="submitDeleteRoom()">Delete</button>
+        </div>
     </div>
 </div>
 
@@ -1217,6 +1364,200 @@ function copyText(elementId, btn) {
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
+
+var roomsData = [];
+var roomsFloorFilter = '';
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+function openRoomsDrawer() {
+    document.getElementById('rooms-drawer').classList.add('open');
+    document.getElementById('rooms-backdrop').classList.add('open');
+    document.getElementById('rooms-search').value = '';
+    fetchRooms();
+}
+
+function closeRoomsDrawer() {
+    document.getElementById('rooms-drawer').classList.remove('open');
+    document.getElementById('rooms-backdrop').classList.remove('open');
+}
+
+function setRoomFloor(floor) {
+    roomsFloorFilter = floor;
+    document.querySelectorAll('[id^="rfloor-"]').forEach(b => b.classList.remove('active'));
+    document.getElementById('rfloor-' + (floor === '' ? 'all' : floor)).classList.add('active');
+    renderRooms();
+}
+
+async function fetchRooms() {
+    try {
+        const res  = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        roomsData  = await res.json();
+        renderRooms();
+    } catch {
+        document.getElementById('rooms-list').innerHTML = '<div class="tad-empty">Failed to load rooms.</div>';
+    }
+}
+
+function renderRooms() {
+    const q    = document.getElementById('rooms-search').value.toLowerCase();
+    const list = document.getElementById('rooms-list');
+
+    let data = roomsData.filter(r => {
+        const matchFloor  = roomsFloorFilter === '' || String(r.floor) === String(roomsFloorFilter);
+        const matchSearch = !q || r.room_number.includes(q) || String(r.floor).includes(q);
+        return matchFloor && matchSearch;
+    });
+
+    const totalCapacity  = data.reduce((s, r) => s + r.capacity, 0);
+    const totalOccupancy = data.reduce((s, r) => s + r.occupancy, 0);
+
+    document.getElementById('rooms-count-label').textContent = data.length + ' room' + (data.length !== 1 ? 's' : '');
+    document.getElementById('rooms-summary').textContent     = totalOccupancy + ' / ' + totalCapacity + ' occupied';
+
+    if (!data.length) {
+        list.innerHTML = '<div class="tad-empty">No rooms found.</div>';
+        return;
+    }
+
+    const floors = [...new Set(data.map(r => r.floor))].sort();
+
+    list.innerHTML = floors.map(floor => {
+        const floorRooms = data.filter(r => r.floor === floor);
+        const cards = floorRooms.map(r => {
+            const pct     = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+            const isFull  = r.occupancy >= r.capacity;
+            const barColor= isFull ? '#e04867' : pct >= 50 ? '#f0c040' : '#1f9d69';
+            const statusPill = r.is_active
+                ? '<span style="font-size:.65rem;font-weight:800;background:#e8faf5;color:#1f9d69;border:1px solid #8ce0bb;border-radius:99px;padding:.1rem .45rem;">Active</span>'
+                : '<span style="font-size:.65rem;font-weight:800;background:#fff0f0;color:#e04867;border:1px solid #ffc8d0;border-radius:99px;padding:.1rem .45rem;">Closed</span>';
+
+            return `<div style="background:var(--white);border:1px solid var(--pink-100);border-radius:12px;padding:.85rem 1rem;transition:border-color .2s;" onmouseover="this.style.borderColor='var(--bright-pink)'" onmouseout="this.style.borderColor='var(--pink-100)'">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:.5rem;">
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <span style="font-size:.9rem;font-weight:800;color:var(--ink);">Rm.${r.room_number}</span>
+                        ${statusPill}
+                    </div>
+                    <div style="display:flex;gap:.3rem;">
+                        <button class="act-btn" title="Edit" onclick='openEditRoomModal(${JSON.stringify(r)})'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
+                        <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
+                    </div>
+                </div>
+                <div style="font-size:.73rem;color:var(--ink-muted);margin-bottom:.55rem;">${r.stay_type} &nbsp;·&nbsp; ${r.capacity} pax</div>
+                <div style="display:flex;align-items:center;gap:.6rem;">
+                    <div style="flex:1;height:6px;background:var(--petal);border-radius:99px;overflow:hidden;">
+                        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:99px;transition:width .3s;"></div>
+                    </div>
+                    <span style="font-size:.72rem;font-weight:700;color:${isFull ? '#e04867' : 'var(--ink-muted)'};">${r.occupancy}/${r.capacity}</span>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div style="margin-bottom:.25rem;">
+            <div style="font-size:.7rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;padding-top:.25rem;">Floor ${floor}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">${cards}</div>
+        </div>`;
+    }).join('');
+}
+
+function openAddRoomModal() {
+    document.getElementById('ar-number').value   = '';
+    document.getElementById('ar-floor').value    = '';
+    document.getElementById('ar-capacity').value = '';
+    document.getElementById('ar-stay-type').value = 'Shared Room';
+    openModal('add-room-modal');
+}
+
+async function submitAddRoom() {
+    const number   = document.getElementById('ar-number').value.trim();
+    const floor    = document.getElementById('ar-floor').value;
+    const capacity = document.getElementById('ar-capacity').value;
+    const stayType = document.getElementById('ar-stay-type').value;
+
+    if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+
+    showActionLoading('Adding room...');
+    try {
+        const res = await fetch('/rooms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message ?? 'Failed to add room.');
+        closeModal('add-room-modal');
+        showToast('Room added successfully.', 'success');
+        fetchRooms();
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
+
+function openEditRoomModal(r) {
+    document.getElementById('er-id').value        = r.id;
+    document.getElementById('er-number').value    = r.room_number;
+    document.getElementById('er-floor').value     = r.floor;
+    document.getElementById('er-capacity').value  = r.capacity;
+    document.getElementById('er-stay-type').value = r.stay_type;
+    document.getElementById('er-active').value    = r.is_active ? '1' : '0';
+    openModal('edit-room-modal');
+}
+
+async function submitEditRoom() {
+    const id       = document.getElementById('er-id').value;
+    const number   = document.getElementById('er-number').value.trim();
+    const floor    = document.getElementById('er-floor').value;
+    const capacity = document.getElementById('er-capacity').value;
+    const stayType = document.getElementById('er-stay-type').value;
+    const isActive = document.getElementById('er-active').value === '1';
+
+    if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+
+    showActionLoading('Saving room...');
+    try {
+        const res = await fetch('/rooms/' + id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType, is_active: isActive }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message ?? 'Failed to update room.');
+        closeModal('edit-room-modal');
+        showToast('Room updated successfully.', 'success');
+        fetchRooms();
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
+
+let deleteRoomId = null;
+function openDeleteRoomModal(id, label) {
+    deleteRoomId = id;
+    document.getElementById('dr-label').textContent = label;
+    openModal('delete-room-modal');
+}
+
+async function submitDeleteRoom() {
+    showActionLoading('Deleting room...');
+    try {
+        const res = await fetch('/rooms/' + deleteRoomId, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message ?? 'Failed to delete room.');
+        closeModal('delete-room-modal');
+        showToast('Room deleted.', 'success');
+        fetchRooms();
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
 
 filtered = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
 renderTable();
