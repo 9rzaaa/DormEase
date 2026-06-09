@@ -410,44 +410,6 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar { height: 3px; width: 100%; }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
-.status-filter-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: .35rem;
-    padding: .42rem .9rem;
-    border-radius: 999px;
-    border: 1.5px solid var(--pink-100);
-    background: var(--white);
-    color: var(--ink-muted);
-    font-size: .78rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .18s, color .18s, border-color .18s, box-shadow .18s;
-    font-family: inherit;
-    white-space: nowrap;
-    letter-spacing: .01em;
-}
-.status-filter-btn:hover {
-    border-color: var(--bright-pink);
-    color: var(--hot-pink);
-    background: var(--petal);
-}
-.status-filter-btn.active {
-    background: var(--gradient-pink);
-    color: var(--white);
-    border-color: transparent;
-    box-shadow: 0 4px 14px rgba(232,23,93,.22);
-}
-.status-filter-btn.active .sf-dot {
-    background: rgba(255,255,255,.85) !important;
-}
-.sf-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
@@ -625,15 +587,11 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="{{ $i }}">Floor {{ $i }}</option>
                     @endfor
                 </select>
-                <div id="status-filter-group" style="display:flex;align-items:center;gap:.35rem;">
-                    <button type="button" class="status-filter-btn active" id="sfbtn-all" onclick="setStatusFilter('')">All</button>
-                    <button type="button" class="status-filter-btn" id="sfbtn-active" onclick="setStatusFilter('active')">
-                        <span class="sf-dot" style="background:#1f9d69;"></span>Active
-                    </button>
-                    <button type="button" class="status-filter-btn" id="sfbtn-pending" onclick="setStatusFilter('pending')">
-                        <span class="sf-dot" style="background:#c8960c;"></span>Pending
-                    </button>
-                </div>
+                <select class="sort-select" id="status-filter" onchange="setStatusFilter(this.value)">
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                </select>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
         </div>
@@ -1069,6 +1027,10 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Contact No.</label>
                             <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
                         </div>
+                        <div class="modal-field full">
+                            <label>Referred By</label>
+                            <input type="text" name="referred_by" placeholder="e.g. Maria Santos (Room 304)" value="{{ old('referred_by') }}">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-section">
@@ -1169,6 +1131,10 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Contact No.</label>
                             <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789">
+                        </div>
+                        <div class="modal-field full">
+                            <label>Referred By</label>
+                            <input type="text" name="referred_by" id="edit-referred-by" placeholder="e.g. Maria Santos (Room 304)">
                         </div>
                     </div>
                 </div>
@@ -1700,6 +1666,7 @@ function viewTenant(t) {
         + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>'
         + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + t.email + '</span></div>'
         + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Referred By</span><span class="view-val">' + (t.referred_by || '\u2014') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Floor &amp; Room No.</span><span class="view-val">' + floorRoom + '</span></div>'
         + '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>'
@@ -1729,6 +1696,7 @@ function openEditModal(t) {
     document.getElementById('edit-date').value                   = t.move_in_date  || '';
     document.getElementById('edit-moveout').value                = t.move_out_date || '';
     document.getElementById('edit-contact').value                = t.contact_number || '';
+    document.getElementById('edit-referred-by').value            = t.referred_by || '';
     document.getElementById('edit-estimated-move-in').value      = t.estimated_move_in_date || '';
     document.getElementById('edit-reservation-notes').value      = t.reservation_notes || '';
     document.getElementById('edit-status').value                 = t.status || 'pending';
@@ -1798,8 +1766,6 @@ var statusFilter = '';
 
 function setStatusFilter(val) {
     statusFilter = val;
-    document.querySelectorAll('.status-filter-btn').forEach(function(b) { b.classList.remove('active'); });
-    document.getElementById('sfbtn-' + (val === '' ? 'all' : val)).classList.add('active');
     applyFilters();
 }
 
