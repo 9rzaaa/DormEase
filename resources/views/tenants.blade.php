@@ -922,7 +922,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
-                            <select name="floor">
+                            <select name="floor" id="add-floor-select">
                                 <option value="">Select floor</option>
                                 @for($i = 1; $i <= 5; $i++)
                                     <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
@@ -1496,11 +1496,24 @@ function renderRooms() {
 }
 
 function openAddRoomModal() {
-    document.getElementById('ar-number').value   = '';
-    document.getElementById('ar-floor').value    = '';
-    document.getElementById('ar-capacity').value = '';
+    document.getElementById('ar-number').value    = '';
+    document.getElementById('ar-floor').value     = '';
+    document.getElementById('ar-capacity').value  = '';
     document.getElementById('ar-stay-type').value = 'Shared Room';
     openModal('add-room-modal');
+    setTimeout(function() {
+        var arNum = document.getElementById('ar-number');
+        if (arNum && !arNum._floorAutoSet) {
+            arNum._floorAutoSet = true;
+            arNum.addEventListener('input', function() {
+                var firstChar = this.value.trim().charAt(0);
+                var floorSel  = document.getElementById('ar-floor');
+                if (floorSel && firstChar >= '2' && firstChar <= '5') {
+                    floorSel.value = firstChar;
+                }
+            });
+        }
+    }, 0);
 }
 
 async function submitAddRoom() {
@@ -1710,7 +1723,7 @@ async function submitDeleteRoom() {
         };
     }
 
-    function attachRoomHint(inputId, hintId, wrapId, submitBtnSelector, excludeTenantIdFn) {
+    function attachRoomHint(inputId, hintId, wrapId, submitBtnSelector, excludeTenantIdFn, floorSelectId) {
         var input = document.getElementById(inputId);
         var hint  = document.getElementById(hintId);
         var wrap  = document.getElementById(wrapId);
@@ -1721,6 +1734,17 @@ async function submitDeleteRoom() {
 
         input.addEventListener('input', function() {
             var val = this.value.trim();
+
+            if (floorSelectId) {
+                var floorSelect = document.getElementById(floorSelectId);
+                if (floorSelect) {
+                    var firstChar = val.charAt(0);
+                    if (firstChar >= '2' && firstChar <= '5') {
+                        floorSelect.value = firstChar;
+                    }
+                }
+            }
+
             if (val === lastVal) return;
             lastVal = val;
             clearTimeout(debounceTimer);
@@ -1782,14 +1806,16 @@ async function submitDeleteRoom() {
             'add-room-hint',
             'add-room-hint-wrap',
             '#add-modal .btn-submit',
-            null
+            null,
+            'add-floor-select'
         );
         attachRoomHint(
             'edit-room',
             'edit-room-hint',
             'edit-room-hint-wrap',
             '#edit-modal .btn-submit',
-            function() { return currentTenant ? currentTenant.tenant_id : null; }
+            function() { return currentTenant ? currentTenant.tenant_id : null; },
+            'edit-floor'
         );
     });
 })();
