@@ -183,6 +183,11 @@
     padding-right: 2rem;
 }
 .sort-select:focus { box-shadow: 0 0 0 2px rgba(232,23,93,.25); }
+.modal-field select.auto-updated {
+    border-color: var(--bright-pink);
+    box-shadow: 0 0 0 3px rgba(232,23,93,.12);
+    transition: border-color .3s, box-shadow .3s;
+}
 .table-wrap { overflow-x: auto; background: var(--white); -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; background: var(--white); min-width: 700px; }
 thead tr { background: var(--blush); border-bottom: 1px solid var(--bright-pink); }
@@ -673,7 +678,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <input type="number" id="ar-capacity" min="1" max="10" placeholder="e.g. 3">
                 </div>
                 <div class="modal-field">
-                    <label>Stay Type</label>
+                    <label>Room Type</label>
                     <select id="ar-stay-type">
                         <option value="Solo Room">Solo Room</option>
                         <option value="Shared Room">Shared Room</option>
@@ -715,7 +720,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <input type="number" id="er-capacity" min="1" max="10">
                 </div>
                 <div class="modal-field">
-                    <label>Stay Type</label>
+                    <label>Room Type</label>
                     <select id="er-stay-type">
                         <option value="Solo Room">Solo Room</option>
                         <option value="Shared Room">Shared Room</option>
@@ -1546,6 +1551,36 @@ function renderRooms() {
     }).join('');
 }
 
+function syncRoomType(capacityId, stayTypeId) {
+    var cap = parseInt(document.getElementById(capacityId).value, 10);
+    var sel = document.getElementById(stayTypeId);
+    if (!sel || isNaN(cap)) return;
+    sel.value = cap === 1 ? 'Solo Room' : 'Shared Room';
+    sel.classList.add('auto-updated');
+    setTimeout(function() { sel.classList.remove('auto-updated'); }, 700);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var arCap = document.getElementById('ar-capacity');
+    if (arCap) {
+        arCap.addEventListener('input', function() {
+            syncRoomType('ar-capacity', 'ar-stay-type');
+        });
+        arCap.addEventListener('change', function() {
+            syncRoomType('ar-capacity', 'ar-stay-type');
+        });
+    }
+    var erCap = document.getElementById('er-capacity');
+    if (erCap) {
+        erCap.addEventListener('input', function() {
+            syncRoomType('er-capacity', 'er-stay-type');
+        });
+        erCap.addEventListener('change', function() {
+            syncRoomType('er-capacity', 'er-stay-type');
+        });
+    }
+});
+
 function openAddRoomModal() {
     document.getElementById('ar-number').value    = '';
     document.getElementById('ar-floor').value     = '';
@@ -1602,6 +1637,7 @@ function openEditRoomModal(r) {
     document.getElementById('er-stay-type').value = r.stay_type;
     document.getElementById('er-active').value    = r.is_active ? '1' : '0';
     openModal('edit-room-modal');
+    syncRoomType('er-capacity', 'er-stay-type');
 }
 
 async function submitEditRoom() {
