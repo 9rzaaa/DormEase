@@ -366,6 +366,20 @@ class TenantController extends Controller
         ]);
     }
 
+    public function billSlip($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        $bills = \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
+            ->whereIn('payment_status', ['unpaid', 'overdue'])
+            ->orderBy('billing_month', 'asc')
+            ->get();
+
+        $total = $bills->sum('room_share');
+
+        return view('tenant-bill-slip', compact('tenant', 'bills', 'total'));
+    }
+
     public function updateNotes(Request $request, $id)
     {
         $request->validate([

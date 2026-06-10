@@ -1598,6 +1598,7 @@ function buildRows(list) {
                 + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Bill Slip" onclick="window.open(\'/tenants/' + t.tenant_id + '/bill-slip\', \'_blank\')"><img src="{{ asset('icons/billing.png') }}" class="icon-sm"></button>'
             + '</div></td>'
             + '</tr>';
     }).join('');
