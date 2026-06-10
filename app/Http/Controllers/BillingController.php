@@ -496,4 +496,55 @@ class BillingController extends Controller
             'room_share' => $share
         ]);
     }
+
+    public function requestResubmission(Request $request)
+    {
+        $request->validate([
+            'billing_id' => 'required|integer|exists:water_billing,billing_id',
+            'reason'     => 'required|string|max:500',
+        ]);
+
+        $billing = WaterBilling::findOrFail($request->billing_id);
+
+        $oldProof = $billing->proof_of_payment;
+
+        $billing->update([
+            'proof_of_payment'       => null,
+            'payment_reference_code' => null,
+            'payment_submitted_at'   => null,
+            'payment_status'         => 'pending',
+            'rejection_reason'       => $request->reason,
+        ]);
+
+        if ($oldProof) {
+            Storage::disk('public')->delete($oldProof);
+        }
+
+        Payment::where('billing_id', $billing->billing_id)
+            ->where('tenant_id', $billing->tenant_id)
+            ->update(['status' => 'pending']);
+
+        $tenant     = Tenant::find($billing->tenant_id);
+        $reasonText = $request->reason;
+
+        NotificationHelper::sendToAll(
+            type: 'billing_overdue',
+            message: "Resubmission requested from {$tenant->first_name} {$tenant->last_name}. Reason: {$reasonText}",
+            ref_id: $billing->billing_id,
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $billing->tenant_id,
+            type: 'payment',
+            title: 'Proof resubmission required',
+            body: "Please resubmit your proof of payment. Reason: {$reasonText}",
+            refId: $billing->billing_id,
+            route: '/tenant/water-bill',
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Resubmission requested successfully.',
+        ]);
+    }
 }
