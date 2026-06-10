@@ -689,6 +689,303 @@
     .export-menu.open { display: block; }
     .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
     .export-menu button:hover { background: var(--blush); color: var(--hot-pink); }
+
+    .atdlog-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(232,23,93,.18);
+        backdrop-filter: blur(3px);
+        z-index: 499;
+        opacity: 0; pointer-events: none;
+        transition: opacity .38s ease;
+    }
+    .atdlog-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .atdlog-drawer {
+        position: fixed;
+        top: 0; right: 0; bottom: 0;
+        width: min(700px, 100vw);
+        background: var(--soft-bg);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform .38s cubic-bezier(.4,0,.2,1);
+        box-shadow: -8px 0 40px rgba(214,51,117,.15);
+    }
+    .atdlog-drawer.open { transform: translateX(0); }
+
+    .atdlog-header {
+        padding: 1.6rem 1.8rem 1.2rem;
+        border-bottom: 1px solid var(--pink-100);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+        background: var(--white);
+    }
+
+    .atdlog-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -.02em;
+        line-height: 1.2;
+    }
+
+    .atdlog-sub {
+        font-size: .78rem;
+        color: var(--ink-muted);
+        margin-top: .25rem;
+        font-weight: 500;
+    }
+
+    .atdlog-close {
+        width: 34px; height: 34px;
+        border-radius: 8px;
+        border: 1px solid var(--pink-100);
+        background: var(--petal);
+        color: var(--bright-pink);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background .2s, color .2s;
+        flex-shrink: 0;
+    }
+    .atdlog-close:hover { background: var(--pink-100); color: var(--hot-pink); }
+
+    .atdlog-toolbar {
+        padding: 1rem 1.8rem .6rem;
+        flex-shrink: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--pink-100);
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+    }
+
+    .atdlog-search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .atdlog-search-wrap input {
+        width: 100%;
+        padding: .55rem .9rem .55rem 2.2rem;
+        border-radius: 10px;
+        border: 1px solid var(--pink-100);
+        background: var(--soft-bg);
+        color: var(--ink);
+        font-size: .83rem;
+        font-family: var(--ff-body);
+        outline: none;
+        transition: border-color .2s, background .2s;
+        box-sizing: border-box;
+    }
+    .atdlog-search-wrap input::placeholder { color: var(--ink-muted); }
+    .atdlog-search-wrap input:focus { border-color: var(--bright-pink); background: var(--white); }
+
+    .atdlog-search-icon {
+        position: absolute; left: .75rem;
+        width: 13px; height: 13px;
+        color: var(--ink-muted);
+        pointer-events: none;
+    }
+
+    .atdlog-filters {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+
+    .atdlog-select {
+        padding: .38rem 1.6rem .38rem .65rem;
+        border-radius: 8px;
+        border: 1px solid var(--pink-100);
+        background: var(--soft-bg);
+        font-family: var(--ff-body);
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--ink);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right .5rem center;
+        transition: border-color .2s;
+    }
+    .atdlog-select:focus { border-color: var(--bright-pink); }
+
+    .atdlog-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.8rem 1.8rem;
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+    }
+    .atdlog-list::-webkit-scrollbar { width: 4px; }
+    .atdlog-list::-webkit-scrollbar-track { background: transparent; }
+    .atdlog-list::-webkit-scrollbar-thumb { background: var(--pink-200, #fbbdd1); border-radius: 99px; }
+
+    .atdlog-date-divider {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .5rem 0 .1rem;
+        position: sticky;
+        top: 0;
+        background: var(--soft-bg);
+        z-index: 2;
+    }
+    .atdlog-date-label {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        white-space: nowrap;
+        background: var(--petal);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .2rem .75rem;
+    }
+    .atdlog-date-line { flex: 1; height: 1px; background: var(--pink-100); }
+    .atdlog-day-count { font-size: .68rem; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
+
+    .atdlog-card {
+        background: var(--white);
+        border: 1px solid var(--pink-100);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        transition: background .2s, border-color .2s;
+        animation: atdCardIn .28s ease both;
+    }
+    @keyframes atdCardIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .atdlog-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+
+    .atdlog-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: .45rem;
+    }
+
+    .atdlog-card-id {
+        font-size: .75rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        font-family: monospace;
+        letter-spacing: .03em;
+    }
+
+    .atdlog-card-duration {
+        font-size: .7rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: var(--blush);
+        border: 1px solid var(--pink-100);
+        border-radius: 99px;
+        padding: .15rem .6rem;
+    }
+
+    .atdlog-card-name {
+        font-size: .92rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: .35rem;
+    }
+
+    .atdlog-card-pills {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        flex-wrap: wrap;
+        margin-bottom: .5rem;
+    }
+
+    .atdlog-pill {
+        font-size: .68rem;
+        font-weight: 700;
+        padding: .2rem .6rem;
+        border-radius: 99px;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+    }
+    .atdlog-pill-role   { background: var(--petal);   color: var(--hot-pink);  border: 1px solid var(--baby-pink); }
+    .atdlog-pill-shift  { background: var(--pink-100, #fce4ec); color: var(--hot-pink); border: 1px solid var(--pink-100); }
+    .atdlog-pill-on     { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+    .atdlog-pill-off    { background: var(--blush); color: var(--red); border: 1px solid var(--baby-pink); }
+
+    .atdlog-card-times {
+        display: flex;
+        gap: 1.5rem;
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        padding-top: .5rem;
+        border-top: 1px solid var(--pink-100);
+        flex-wrap: wrap;
+    }
+    .atdlog-card-times span { color: var(--bright-pink); font-weight: 700; }
+
+    .atdlog-empty {
+        text-align: center;
+        padding: 3.5rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
+    .atdlog-empty-icon {
+        font-size: 2.2rem;
+        color: var(--baby-pink);
+        display: block;
+        margin-bottom: .75rem;
+    }
+
+    .atdlog-footer {
+        padding: .9rem 1.8rem;
+        border-top: 1px solid var(--pink-100);
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .atdlog-foot-count {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+    }
+
+    .atdlog-clear-btn {
+        padding: .35rem .85rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--red);
+        background: #fff0f3;
+        color: var(--red);
+        font-size: .75rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: background .2s, color .2s;
+    }
+    .atdlog-clear-btn:hover { background: var(--red); color: var(--white); }
+
+    @media(max-width:900px) {
+        .atdlog-header { padding: 1.2rem 1rem .9rem; }
+        .atdlog-list   { padding: 0 1rem 1.2rem; }
+        .atdlog-toolbar { padding: .8rem 1rem .5rem; }
+        .atdlog-footer { padding: .75rem 1rem; }
+    }
 </style>
 @endsection
 
@@ -747,6 +1044,10 @@
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Staff</button>
+            <button class="btn-outline" onclick="openAttendanceLog()">
+                <img src="{{ asset('icons/clock.png') }}" class="icon-sm" alt="Attendance">
+                Attendance Log
+            </button>
             <button class="btn-outline" onclick="openStaffArchive()">
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
@@ -881,15 +1182,68 @@
         <button class="sad-close" onclick="closeStaffArchive()">&#x2715;</button>
     </div>
 
+    <div class="atdlog-backdrop" id="atdlog-backdrop" onclick="closeAttendanceLog()"></div>
+
+<div class="atdlog-drawer" id="atdlog-drawer">
+    <div class="atdlog-header">
+        <div>
+            <div class="atdlog-title">Attendance Log</div>
+            <div class="atdlog-sub" id="atdlog-count-sub">Loading records...</div>
+        </div>
+        <button class="atdlog-close" onclick="closeAttendanceLog()">&#x2715;</button>
+    </div>
+
+    <div class="atdlog-toolbar">
+        <div class="atdlog-search-wrap">
+            <svg class="atdlog-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="atdlog-search" placeholder="Search by name..." oninput="renderAtdLog()">
+        </div>
+        <div class="atdlog-filters">
+            <select class="atdlog-select" id="atdlog-role" onchange="renderAtdLog()">
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="secretary">Secretary</option>
+                <option value="frontdesk">Front Desk</option>
+            </select>
+            <select class="atdlog-select" id="atdlog-duty" onchange="renderAtdLog()">
+                <option value="">All Status</option>
+                <option value="on_duty">On Duty</option>
+                <option value="off_duty">Off Duty</option>
+            </select>
+            <select class="atdlog-select" id="atdlog-shift" onchange="renderAtdLog()">
+                <option value="">All Shifts</option>
+                <option value="Day">Day</option>
+                <option value="Night">Night</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="atdlog-list" id="atdlog-list"></div>
+
+    <div class="atdlog-footer">
+        <div class="atdlog-foot-count" id="atdlog-foot-count">0 records</div>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <button class="atdlog-clear-btn" onclick="confirmClearAttendanceLog()">Clear Log</button>
+            <div class="export-dropdown" id="export-dropdown-atdlog">
+                <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-atdlog')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-atdlog">
+                    <button onclick="exportAttendanceLogs('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportAttendanceLogs('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="sad-tabs">
         <button class="sad-tab active" id="stab-deleted" onclick="switchStaffArchiveTab('deleted')">
             Deleted <span class="sad-tab-count" id="scount-deleted">0</span>
         </button>
         <button class="sad-tab" id="stab-inactive" onclick="switchStaffArchiveTab('inactive')">
             Inactive <span class="sad-tab-count" id="scount-inactive">0</span>
-        </button>
-        <button class="sad-tab" id="stab-attendance" onclick="switchStaffArchiveTab('attendance')">
-            Attendance Log <span class="sad-tab-count" id="scount-attendance">0</span>
         </button>
     </div>
 
@@ -900,33 +1254,11 @@
         </div>
     </div>
 
-    <div class="atd-filter-bar" id="atd-filter-bar" style="display:none;">
-        <select class="atd-filter-select" id="atd-filter-role" onchange="renderStaffArchive()">
-            <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="secretary">Secretary</option>
-            <option value="frontdesk">Front Desk</option>
-        </select>
-        <select class="atd-filter-select" id="atd-filter-duty" onchange="renderStaffArchive()">
-            <option value="">All Status</option>
-            <option value="on_duty">On Duty</option>
-            <option value="off_duty">Off Duty</option>
-        </select>
-        <select class="atd-filter-select" id="atd-filter-shift" onchange="renderStaffArchive()">
-            <option value="">All Shifts</option>
-            <option value="Day">Day</option>
-            <option value="Night">Night</option>
-        </select>
-    </div>
-
     <div class="sad-list" id="sad-list"></div>
 
     <div class="sad-footer">
         <div class="sad-count-label" id="sad-count-label">0 records</div>
         <div style="display:flex;align-items:center;gap:.6rem;">
-            <button id="clear-log-btn" style="display:none;padding:.35rem .85rem;border-radius:8px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onclick="confirmClearAttendanceLog()">
-                Clear Log
-            </button>
             <div class="export-dropdown" id="export-dropdown-archive">
                 <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-archive')">
                     <img src="{{ asset('icons/export.png') }}" alt="">
@@ -1498,6 +1830,94 @@
     var attendanceLogsArchive = @json($attendanceLogs);
     var staffArchiveTab       = 'deleted';
 
+    function openAttendanceLog() {
+        document.getElementById('atdlog-drawer').classList.add('open');
+        document.getElementById('atdlog-backdrop').classList.add('open');
+        document.getElementById('atdlog-search').value  = '';
+        document.getElementById('atdlog-role').value    = '';
+        document.getElementById('atdlog-duty').value    = '';
+        document.getElementById('atdlog-shift').value   = '';
+        renderAtdLog();
+    }
+
+    function closeAttendanceLog() {
+        document.getElementById('atdlog-drawer').classList.remove('open');
+        document.getElementById('atdlog-backdrop').classList.remove('open');
+    }
+
+    function renderAtdLog() {
+        var q     = document.getElementById('atdlog-search').value.toLowerCase();
+        var role  = document.getElementById('atdlog-role').value;
+        var duty  = document.getElementById('atdlog-duty').value;
+        var shift = document.getElementById('atdlog-shift').value;
+
+        var data = attendanceLogsArchive.filter(function(r) {
+            var matchQ     = (r.staff_name || '').toLowerCase().includes(q);
+            var matchRole  = role  === '' || (r.role           || '') === role;
+            var matchDuty  = duty  === '' || (r.duty_status    || '') === duty;
+            var matchShift = shift === '' || (r.shift_schedule || '') === shift;
+            return matchQ && matchRole && matchDuty && matchShift;
+        });
+
+        document.getElementById('atdlog-foot-count').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+        document.getElementById('atdlog-count-sub').textContent  = data.length + ' session' + (data.length !== 1 ? 's' : '') + ' logged';
+
+        var list = document.getElementById('atdlog-list');
+
+        if (data.length === 0) {
+            list.innerHTML = '<div class="atdlog-empty"><span class="atdlog-empty-icon">&#128197;</span>No attendance records found.</div>';
+            return;
+        }
+
+        var grouped = {};
+        data.forEach(function(r) {
+            var dk = r.login_at
+                ? new Date(r.login_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+                : 'Unknown Date';
+            if (!grouped[dk]) grouped[dk] = [];
+            grouped[dk].push(r);
+        });
+
+        var html = '';
+        var idx  = 0;
+
+        Object.keys(grouped).forEach(function(dk) {
+            var grp = grouped[dk];
+            html += '<div class="atdlog-date-divider">'
+                + '<div class="atdlog-date-label">' + dk + '</div>'
+                + '<div class="atdlog-date-line"></div>'
+                + '<div class="atdlog-day-count">' + grp.length + ' session' + (grp.length !== 1 ? 's' : '') + '</div>'
+                + '</div>';
+
+            grp.forEach(function(r) {
+                var loginTime  = r.login_at  ? new Date(r.login_at).toLocaleTimeString('en-US',  { hour: '2-digit', minute: '2-digit', hour12: true }) : '\u2014';
+                var logoutTime = r.logout_at ? new Date(r.logout_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Still logged in';
+                var dutyClass  = r.duty_status === 'on_duty' ? 'atdlog-pill-on' : 'atdlog-pill-off';
+                var dutyLabel  = r.duty_status === 'on_duty' ? 'On Duty' : 'Off Duty';
+
+                html += '<div class="atdlog-card" style="animation-delay:' + (idx * 0.025) + 's;">'
+                    + '<div class="atdlog-card-top">'
+                        + '<div class="atdlog-card-id">ST-' + String(r.staff_id).padStart(3, '0') + '</div>'
+                        + (r.duration ? '<div class="atdlog-card-duration">' + r.duration + '</div>' : '')
+                    + '</div>'
+                    + '<div class="atdlog-card-name">' + r.staff_name + '</div>'
+                    + '<div class="atdlog-card-pills">'
+                        + (r.role           ? '<span class="atdlog-pill atdlog-pill-role">' + r.role + '</span>' : '')
+                        + (r.shift_schedule ? '<span class="atdlog-pill atdlog-pill-shift">' + r.shift_schedule + '</span>' : '')
+                        + '<span class="atdlog-pill ' + dutyClass + '">' + dutyLabel + '</span>'
+                    + '</div>'
+                    + '<div class="atdlog-card-times">'
+                        + 'Login: <span>' + loginTime + '</span>'
+                        + 'Logout: <span>' + logoutTime + '</span>'
+                    + '</div>'
+                + '</div>';
+                idx++;
+            });
+        });
+
+        list.innerHTML = html;
+    }
+
     function fmtDatePlain(d) {
         if (!d) return '\u2014';
         var dt   = new Date(d);
@@ -1510,9 +1930,8 @@
         document.getElementById('sad-drawer').classList.add('open');
         document.getElementById('sad-backdrop').classList.add('open');
         document.getElementById('sad-search').value = '';
-        document.getElementById('scount-deleted').textContent    = deletedStaffArchive.length;
-        document.getElementById('scount-inactive').textContent   = inactiveStaffArchive.length;
-        document.getElementById('scount-attendance').textContent = attendanceLogsArchive.length;
+        document.getElementById('scount-deleted').textContent  = deletedStaffArchive.length;
+        document.getElementById('scount-inactive').textContent = inactiveStaffArchive.length;
         renderStaffArchive();
     }
 
@@ -1523,18 +1942,10 @@
 
     function switchStaffArchiveTab(tab) {
         staffArchiveTab = tab;
-        document.getElementById('stab-deleted').classList.toggle('active',    tab === 'deleted');
-        document.getElementById('stab-inactive').classList.toggle('active',   tab === 'inactive');
-        document.getElementById('stab-attendance').classList.toggle('active', tab === 'attendance');
-        document.getElementById('clear-log-btn').style.display   = tab === 'attendance' ? 'inline-flex' : 'none';
-        document.getElementById('atd-filter-bar').style.display  = tab === 'attendance' ? 'flex' : 'none';
-        document.getElementById('sad-search').placeholder = tab === 'attendance' ? 'Search by name...' : 'Search archived staff...';
+        document.getElementById('stab-deleted').classList.toggle('active',  tab === 'deleted');
+        document.getElementById('stab-inactive').classList.toggle('active', tab === 'inactive');
+        document.getElementById('sad-search').placeholder = 'Search archived staff...';
         document.getElementById('sad-search').value = '';
-        if (tab !== 'attendance') {
-            document.getElementById('atd-filter-role').value  = '';
-            document.getElementById('atd-filter-duty').value  = '';
-            document.getElementById('atd-filter-shift').value = '';
-        }
         renderStaffArchive();
     }
 
@@ -1782,8 +2193,9 @@
             hideActionLoading();
             if (data.success) {
                 attendanceLogsArchive = [];
-                document.getElementById('scount-attendance').textContent = 0;
-                renderAttendanceLog('');
+                renderAtdLog();
+                document.getElementById('atdlog-foot-count').textContent = '0 records';
+                document.getElementById('atdlog-count-sub').textContent  = '0 sessions logged';
                 showToast(data.message, 'success');
             } else {
                 showToast(data.message || 'Failed to clear.', 'error');
