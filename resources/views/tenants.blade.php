@@ -999,19 +999,19 @@ tbody tr:hover { background: var(--soft-bg); }
             <input type="text" id="admin-log-search" placeholder="Search by name, room..." oninput="renderAdminLogDrawer()">
         </div>
     </div>
-    <div style="padding: 0 1.8rem .4rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
-        <button class="page-btn active" id="admin-log-filter-all"     onclick="setAdminLogFilter('')">All</button>
-        <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
-        <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
-    </div>
-    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <button class="page-btn active" id="admin-log-filter-all"     onclick="setAdminLogFilter('')">All</button>
+            <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
+            <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
+        </div>
         <div style="position:relative; display:inline-flex; align-items:center;">
             <button id="admin-date-dropdown-btn" onclick="toggleAdminDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span id="admin-date-dropdown-label">All Dates</span>
                 <svg id="admin-date-dropdown-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <div id="admin-date-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:150px;overflow:hidden;z-index:600;">
+            <div id="admin-date-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;left:auto;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:150px;overflow:hidden;z-index:600;">
                 <button onclick="setAdminDateFilter('all')"       class="addf-item active" data-val="all">All Dates</button>
                 <button onclick="setAdminDateFilter('today')"     class="addf-item"        data-val="today">Today</button>
                 <button onclick="setAdminDateFilter('yesterday')" class="addf-item"        data-val="yesterday">Yesterday</button>
@@ -3110,12 +3110,18 @@ function printBillSlip(t) {
 
     function fmtMonth(d) {
         if (!d) return '\u2014';
-        var dt = new Date(d + 'T00:00:00');
+        var s = String(d).trim();
+        if (s.length === 7) s = s + '-01';
+        var dt = new Date(s + 'T00:00:00');
+        if (isNaN(dt.getTime())) return '\u2014';
         return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
     function fmtDateSlip(d) {
         if (!d) return '\u2014';
-        var dt = new Date(d + 'T00:00:00');
+        var s = String(d).trim();
+        if (s.length === 7) s = s + '-01';
+        var dt = new Date(s + 'T00:00:00');
+        if (isNaN(dt.getTime())) return '\u2014';
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
@@ -3148,16 +3154,16 @@ function printBillSlip(t) {
             + '</div>';
 
     var signatureBlock = tenantBills.length > 0
-        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:4mm;">'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
+        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:0;">'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:7mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:3mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
             + '</div>'
         : '';
 
     var win = window.open('', '_blank', 'width=302,height=520');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
-        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (120 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
+        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (150 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
         + '* { box-sizing: border-box; margin: 0; padding: 0; }'
         + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
         + '.slip { width: 80mm; }'
