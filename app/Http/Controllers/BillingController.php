@@ -51,7 +51,7 @@ class BillingController extends Controller
             }, $months);
         }
 
-        $allTenants = Tenant::whereIn('status', ['active', 'pending', 'inactive'])
+        $allTenants = Tenant::whereIn('status', ['active', 'pending', 'inactive', 'reserved'])
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
@@ -102,10 +102,7 @@ class BillingController extends Controller
 
                 $billing = $billings->get($tenant->tenant_id);
 
-                if ($tenant->status === 'pending') {
-                    $paymentStatus = 'pending-tenant';
-                    $dotClass = 'dot-gray';
-                } elseif ($tenant->status === 'inactive') {
+                if ($tenant->status === 'inactive') {
                     $paymentStatus = 'inactive-tenant';
                     $dotClass = 'dot-gray';
                 } else {
@@ -126,6 +123,7 @@ class BillingController extends Controller
                     'billing_id'             => $billing?->billing_id,
                     'tenant_id'              => $tenant->tenant_id,
                     'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
+                    'is_temp_password'       => (bool) $tenant->is_temp_password,
                     'room_share'             => $billing?->room_share ?? 0,
                     'payment_status'         => $paymentStatus,
                     'proof_of_payment'       => $billing?->proof_of_payment,
@@ -240,7 +238,7 @@ class BillingController extends Controller
                     ['rate_per_m3'     => round($ratePerM3, 4)]
                 );
 
-                $tenantsByFloor = Tenant::where('status', 'active')
+                $tenantsByFloor = Tenant::whereIn('status', ['active', 'pending'])
                     ->whereIn('floor', $floors->all())
                     ->get()
                     ->groupBy('floor');
