@@ -185,8 +185,13 @@ class MaintenanceController extends Controller
     {
         $maintenance = MaintenanceRequest::findOrFail($id);
 
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
         $maintenance->update([
             'resubmission_requested_at' => now(),
+            'resubmission_reason'       => $request->reason,
         ]);
 
         $reqLabel = '#REQ-' . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT);
@@ -195,7 +200,7 @@ class MaintenanceController extends Controller
             tenant: $maintenance->tenant_id,
             type: 'maintenance',
             title: 'Photo resubmission requested',
-            body: "The admin has requested a clearer photo for your maintenance request {$reqLabel}. Please resubmit.",
+            body: "The admin has requested a new photo for your maintenance request {$reqLabel}. Reason: {$request->reason}. Please resubmit.",
             refId: $maintenance->request_id,
             route: '/tenant/maintenanceresubmit',
         );
