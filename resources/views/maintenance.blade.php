@@ -426,28 +426,29 @@
         gap: .5rem;
         width: 100%;
         margin-top: .5rem;
-        padding: .6rem 1rem;
+        padding: .65rem 1rem;
         border-radius: 10px;
-        border: 1.5px solid #ffd54f;
-        background: #fff8e1;
-        color: #c07800;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--blush);
+        color: var(--hot-pink);
         font-size: .82rem;
         font-weight: 700;
         cursor: pointer;
-        transition: background .2s, border-color .2s, color .2s;
+        transition: all .2s ease;
         font-family: var(--ff-body);
     }
 
     .btn-resubmit-request:hover {
-        background: #fff0c0;
-        border-color: #c07800;
-        color: #7a5400;
+        background: var(--petal);
+        border-color: var(--bright-pink);
+        color: var(--bright-pink);
+        box-shadow: 0 6px 16px rgba(232,23,93,.18);
     }
 
     .btn-resubmit-request.already-requested {
-        background: #e8f5e9;
-        border-color: #a5d6a7;
-        color: #2e7d32;
+        background: rgba(232,23,93,.08);
+        border-color: rgba(232,23,93,.25);
+        color: var(--bright-pink);
         cursor: default;
         pointer-events: none;
     }
@@ -469,7 +470,9 @@
         justify-content: center;
     }
 
-    .resubmit-confirm-overlay.open { display: flex; }
+    .resubmit-confirm-overlay.open {
+        display: flex;
+    }
 
     .resubmit-confirm-box {
         background: var(--white);
@@ -477,19 +480,15 @@
         padding: 1.8rem 1.8rem 1.4rem;
         width: 90%;
         max-width: 400px;
-        box-shadow: 0 20px 60px rgba(26,26,46,.22);
+        border: 1px solid var(--baby-pink);
+        box-shadow: 0 20px 60px rgba(232,23,93,.15);
         animation: rcFadeUp .28s ease both;
-    }
-
-    @keyframes rcFadeUp {
-        from { opacity: 0; transform: translateY(14px); }
-        to   { opacity: 1; transform: translateY(0); }
     }
 
     .resubmit-confirm-title {
         font-size: 1rem;
         font-weight: 800;
-        color: var(--ink);
+        color: var(--hot-pink);
         margin-bottom: .35rem;
         letter-spacing: -.01em;
     }
@@ -517,12 +516,13 @@
         font-weight: 600;
         cursor: pointer;
         font-family: var(--ff-body);
-        transition: border-color .2s, color .2s;
+        transition: all .2s ease;
     }
 
     .resubmit-confirm-cancel:hover {
         border-color: var(--bright-pink);
         color: var(--hot-pink);
+        background: var(--blush);
     }
 
     .resubmit-confirm-send {
@@ -536,10 +536,13 @@
         cursor: pointer;
         font-family: var(--ff-body);
         box-shadow: 0 4px 14px rgba(232,23,93,.28);
-        transition: opacity .2s;
+        transition: transform .15s ease, opacity .2s ease;
     }
 
-    .resubmit-confirm-send:hover { opacity: .88; }
+    .resubmit-confirm-send:hover {
+        transform: translateY(-1px);
+        opacity: .95;
+    }
 
     .empty-state { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .88rem; }
 
