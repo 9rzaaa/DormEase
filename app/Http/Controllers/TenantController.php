@@ -46,6 +46,7 @@ class TenantController extends Controller
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'moveoutArchive'  => $moveoutArchive,
+            'insideCount'     => \App\Models\Tenant::where('is_inside', true)->count(),
         ]);
     }
 
@@ -356,20 +357,20 @@ class TenantController extends Controller
 
         $totalUnits    = 25;
         $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
-        $vacantUnits   = $totalUnits - $occupiedUnits;
 
         return view('fdtenant', [
-            'tenants'         => $tenants,
-            'totalTenants'    => $tenants->count(),
-            'activeCount'     => $tenants->where('status', 'active')->count(),
-            'pendingCount'    => $tenants->where('status', 'pending')->count(),
-            'occupiedUnits'   => $occupiedUnits,
-            'vacantUnits'     => $vacantUnits,
-            'totalUnits'      => $totalUnits,
-            'activeOccupied'  => Tenant::where('status', 'active')->whereNotNull('room_number')->distinct('room_number')->count('room_number'),
-            'deletedArchive'  => $deletedArchive,
-            'inactiveArchive' => $inactiveArchive,
-            'moveoutArchive'  => $moveoutArchive,
+            'tenants'        => $tenants,
+            'totalTenants'   => $tenants->count(),
+            'activeCount'    => $tenants->where('status', 'active')->count(),
+            'pendingCount'   => $tenants->where('status', 'pending')->count(),
+            'occupiedUnits'  => $occupiedUnits,
+            'vacantUnits'    => $totalUnits - $occupiedUnits,
+            'totalUnits'     => $totalUnits,
+            'activeOccupied' => Tenant::where('status', 'active')->whereNotNull('room_number')->distinct('room_number')->count('room_number'),
+            'insideCount'    => Tenant::where('is_inside', true)->count(),
+            'deletedArchive' => $deletedArchive,
+            'inactiveArchive'=> $inactiveArchive,
+            'moveoutArchive' => $moveoutArchive,
         ]);
     }
 
