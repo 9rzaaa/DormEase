@@ -6,7 +6,7 @@
 @section('styles')
 <style>
 .page-body {
-    padding: 1.8rem 2rem;
+    padding: 1.8rem 1.8rem 1.8rem 2rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -527,9 +527,9 @@ tbody tr:hover { background: var(--soft-bg); }
 .is-loading { opacity: .75; pointer-events: none; }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
-@media (max-width: 900px) { .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
-@media (max-width: 680px) { .page-body { padding: 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
-@media (max-width: 480px) { .page-body { padding: .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
+@media (max-width: 900px) { .page-body { padding: 1.2rem 1rem 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
+@media (max-width: 680px) { .page-body { padding: 1rem .75rem 1rem 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
+@media (max-width: 480px) { .page-body { padding: .8rem .6rem .8rem .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
 @media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
@@ -3000,19 +3000,19 @@ function printBillSlip(t) {
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
 
     function fmtMonth(d) {
-        if (!d) return '—';
+        if (!d) return '\u2014';
         var dt = new Date(d + 'T00:00:00');
         return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
     function fmtDateSlip(d) {
-        if (!d) return '—';
+        if (!d) return '\u2014';
         var dt = new Date(d + 'T00:00:00');
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     var billRows = '';
     if (tenantBills.length === 0) {
-        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:6mm 0;">No outstanding balance.</td></tr>';
+        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:4mm 0;">No outstanding balance.</td></tr>';
     } else {
         tenantBills.forEach(function(b) {
             var badgeColor = b.payment_status === 'overdue'
@@ -3020,7 +3020,7 @@ function printBillSlip(t) {
                 : 'background:#fff6dc;color:#c58a00;border:1px solid #f2cd63;';
             billRows += '<tr>'
                 + '<td>' + fmtMonth(b.billing_month)
-                + '<br><span style="display:inline-block;font-size:5.5pt;font-weight:700;padding:.5mm 1.5mm;border-radius:3px;margin-top:.8mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
+                + '<br><span style="display:inline-block;font-size:5pt;font-weight:700;padding:.4mm 1.2mm;border-radius:3px;margin-top:.6mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
                 + '<td style="white-space:nowrap;">' + fmtDateSlip(b.due_date) + '</td>'
                 + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
                 + '</tr>';
@@ -3028,55 +3028,61 @@ function printBillSlip(t) {
     }
 
     var totalBlock = tenantBills.length > 0
-        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:3mm 3.5mm;background:#E8175D;border-radius:5px;margin-bottom:3.5mm;">'
-            + '<span style="font-size:8pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
-            + '<span style="font-size:13pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
+        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3mm;background:#E8175D;border-radius:4px;margin-bottom:2.5mm;">'
+            + '<span style="font-size:7.5pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
+            + '<span style="font-size:12pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
             + '</div>'
-            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:4px;padding:2mm 2.5mm;font-size:6.5pt;color:#7a5400;line-height:1.45;margin-bottom:3.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference. Continued non-payment may affect your tenancy status.</div>'
-        : '<div style="text-align:center;padding:4mm 3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:5px;margin-bottom:3.5mm;">'
-            + '<div style="font-size:10pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
-            + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All bills have been settled.</div>'
+            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:3px;padding:1.8mm 2mm;font-size:6pt;color:#7a5400;line-height:1.4;margin-bottom:2.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference.</div>'
+        : '<div style="text-align:center;padding:3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:4px;margin-bottom:2.5mm;">'
+            + '<div style="font-size:9.5pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
+            + '<div style="font-size:6.5pt;color:#2e9e68;margin-top:.8mm;">All bills have been settled.</div>'
             + '</div>';
 
-    var win = window.open('', '_blank', 'width=302,height=600');
+    var signatureBlock = tenantBills.length > 0
+        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:4mm;">'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
+            + '</div>'
+        : '';
+
+    var win = window.open('', '_blank', 'width=302,height=520');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
-        + '@page{size:80mm auto;margin:0}'
-        + '*{box-sizing:border-box;margin:0;padding:0}'
-        + 'body{font-family:"Segoe UI",Arial,sans-serif;background:#fff;width:80mm;margin:0 auto;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
-        + '.slip{width:80mm;padding:7mm 7mm 8mm;display:flex;flex-direction:column;gap:0}'
-        + '@media print{@page{size:80mm auto;margin:0}html,body{width:80mm;margin:0;padding:0}}'
-        + 'table{width:100%;border-collapse:collapse;margin-bottom:3mm}'
-        + 'thead th{font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.05em;padding:1.5mm 1mm;border-bottom:1.5px solid #f4b8d0;text-align:left}'
-        + 'thead th:last-child{text-align:right}'
-        + 'tbody td{font-size:7.5pt;color:#3a0e22;padding:2mm 1mm;border-bottom:1px dashed #fce8f1;vertical-align:top}'
-        + 'tbody tr:last-child td{border-bottom:none}'
-        + '@media print{body{margin:0}}'
+        + '@page { size: 80mm auto; margin: 0; }'
+        + '* { box-sizing: border-box; margin: 0; padding: 0; }'
+        + 'body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
+        + '.slip { width: 80mm; padding: 0; }'
+        + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
+        + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
+        + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
+        + 'thead th:last-child { text-align: right; }'
+        + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
+        + 'tbody tr:last-child td { border-bottom: none; }'
+        + '@media print { body { margin: 0; } }'
         + '</style></head><body>'
         + '<div class="slip">'
-        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:5mm 4mm 4mm;border-radius:5px 5px 0 0;margin:-7mm -7mm 4mm;">'
-            + '<div style="font-size:6.5pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
-            + '<div style="font-size:11pt;font-weight:800;margin-top:1mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
-            + '<div style="font-size:7pt;opacity:.82;margin-top:.5mm;">DormEase Billing System</div>'
+        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
+            + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
+            + '<div style="font-size:10.5pt;font-weight:800;margin-top:.8mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
+            + '<div style="font-size:6.5pt;opacity:.82;margin-top:.4mm;">DormEase Billing System</div>'
         + '</div>'
-        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:5px;padding:3mm 3.5mm;margin-bottom:3.5mm;">'
-            + '<div style="font-size:10.5pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
-            + '<div style="font-size:7pt;color:#a0405e;margin-top:1mm;display:flex;flex-direction:column;gap:.8mm;">'
-                + '<span>Account ID: <strong>' + (t.account_id || '—') + '</strong></span>'
+        + '<div class="slip-inner">'
+        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:4px;padding:2.5mm 3mm;margin-bottom:2.5mm;">'
+            + '<div style="font-size:10pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
+            + '<div style="font-size:6.5pt;color:#a0405e;margin-top:.8mm;display:flex;flex-direction:column;gap:.5mm;">'
+                + '<span>Account ID: <strong>' + (t.account_id || '\u2014') + '</strong></span>'
                 + '<span>Room: <strong>' + floorRoom + '</strong> &nbsp;&middot;&nbsp; ' + (t.stay_type || 'N/A') + '</span>'
-                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '—') + '</strong></span>'
+                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '\u2014') + '</strong></span>'
             + '</div>'
         + '</div>'
-        + (tenantBills.length > 0 ? '<div style="font-size:6.5pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2mm;padding-bottom:1.5mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
+        + (tenantBills.length > 0 ? '<div style="font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.8mm;padding-bottom:1.2mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
         + (tenantBills.length > 0 ? '<table><thead><tr><th>Billing Period</th><th>Due Date</th><th>Amount</th></tr></thead><tbody>' + billRows + '</tbody></table>' : billRows)
         + totalBlock
-        + '<div style="margin-bottom:3.5mm;display:flex;flex-direction:column;gap:5mm;">'
-            + '<div style="display:flex;flex-direction:column;gap:1mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:6pt;color:#b06080;text-align:center;letter-spacing:.04em;">Tenant Signature over Printed Name</div></div>'
-            + '<div style="display:flex;flex-direction:column;gap:1mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:6pt;color:#b06080;text-align:center;letter-spacing:.04em;">Admin / Staff Signature &amp; Date</div></div>'
+        + signatureBlock
+        + '<div style="padding-top:2.5mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
+            + '<div style="font-size:5.5pt;color:#b06080;">Issued: ' + today + '</div>'
+            + '<div style="font-size:5.5pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
         + '</div>'
-        + '<div style="padding-top:3mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
-            + '<div style="font-size:6pt;color:#b06080;">Issued: ' + today + '</div>'
-            + '<div style="font-size:6pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
         + '</div>'
         + '</div>'
         + '<script>window.onload = function() { window.print(); };<\/script>'

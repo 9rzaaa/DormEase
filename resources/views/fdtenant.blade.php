@@ -6,7 +6,7 @@
 @section('styles')
 <style>
 .page-body {
-    padding: 1.8rem 2rem;
+    padding: 1.8rem 1.8rem 1.8rem 2rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1229,7 +1229,7 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 @media (max-width: 900px) {
-    .page-body { padding: 1.2rem 1rem; }
+    .page-body { padding: 1.2rem .85rem 1.2rem 1rem; }
     .td-info-grid { grid-template-columns: 1fr; }
 }
 
