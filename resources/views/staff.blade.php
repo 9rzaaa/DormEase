@@ -693,7 +693,6 @@
     .atdlog-backdrop {
         position: fixed; inset: 0;
         background: rgba(232,23,93,.18);
-        backdrop-filter: blur(3px);
         z-index: 499;
         opacity: 0; pointer-events: none;
         transition: opacity .38s ease;
@@ -709,6 +708,7 @@
         display: flex;
         flex-direction: column;
         transform: translateX(100%);
+        will-change: transform;
         transition: transform .38s cubic-bezier(.4,0,.2,1);
         box-shadow: -8px 0 40px rgba(214,51,117,.15);
     }
