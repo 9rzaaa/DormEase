@@ -70,13 +70,14 @@
 
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.2rem;
     box-sizing: border-box;
 }
 
 .stat-box {
-    border-radius: 14px; padding: 1.1rem;
+    border-radius: 14px;
+    padding: 1.1rem;
     border: none;
     background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
     transition: transform .2s, box-shadow .2s;
@@ -218,11 +219,59 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 
+.inside-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.inside-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.dot-inside  { background: #1f9d69; box-shadow: 0 0 0 3px rgba(31,157,105,.2); animation: pulseGreen 2s infinite; }
+.dot-outside { background: #c8c8d4; }
+
+@keyframes pulseGreen {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
+    50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
+}
+
+.btn-timein {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .3rem .7rem; border-radius: 8px;
+    background: #e8faf5; color: #1a7a52;
+    border: 1.5px solid #8ce0bb;
+    font-size: .74rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-timein:hover { background: #1f9d69; color: var(--white); border-color: transparent; }
+
+.btn-timeout {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .3rem .7rem; border-radius: 8px;
+    background: #fff0f4; color: #b0163a;
+    border: 1.5px solid #ffc2d1;
+    font-size: .74rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-timeout:hover { background: #e04867; color: var(--white); border-color: transparent; }
+
 .action-group {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: .4rem;
+    flex-wrap: wrap;
 }
 
 .act-btn {
@@ -410,6 +459,7 @@ tbody tr:hover { background: var(--soft-bg); }
     border-bottom: 1px solid var(--pink-100);
     flex-shrink: 0;
     background: var(--white);
+    overflow-x: auto;
 }
 
 .tad-tab {
@@ -574,6 +624,8 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .tad-pill-moveout  { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
 .tad-pill-inactive { background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-timein   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-timeout  { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 
 .tad-card-archived {
     display: flex;
@@ -645,6 +697,7 @@ tbody tr:hover { background: var(--soft-bg); }
     display: none; align-items: center; justify-content: center;
     background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
 }
+
 .action-loading-overlay.open { display: flex; }
 
 .action-loading-box {
@@ -663,7 +716,9 @@ tbody tr:hover { background: var(--soft-bg); }
     box-shadow: 0 10px 24px rgba(232,23,93,.25);
     animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0;
 }
+
 .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+
 .is-loading { opacity: .75; pointer-events: none; }
 
 @keyframes pulseLogo {
@@ -672,10 +727,62 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 .export-dropdown { position: relative; display: inline-flex; }
-.export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
+
+.export-menu {
+    display: none;
+    background: var(--white);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(232,23,93,.15);
+    min-width: 160px;
+    overflow: hidden;
+}
+
 .export-menu.open { display: block; }
-.export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
+
+.export-menu button {
+    display: block; width: 100%;
+    padding: .65rem 1rem;
+    background: none; border: none;
+    text-align: left; font-size: .84rem; font-weight: 600;
+    color: var(--ink); cursor: pointer; transition: background .15s;
+    font-family: var(--ff-body);
+}
+
 .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
+
+.log-card {
+    background: var(--white);
+    border: 1px solid var(--pink-100);
+    border-radius: 12px;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    transition: background .2s, border-color .2s;
+    animation: tadSlideIn .3s ease both;
+}
+
+.log-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+
+.log-action-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+.log-action-icon.in  { background: #e8faf5; border: 1.5px solid #8ce0bb; }
+.log-action-icon.out { background: #fff0f4; border: 1.5px solid #ffc2d1; }
+
+.log-info { flex: 1; min-width: 0; }
+.log-name { font-size: .87rem; font-weight: 700; color: var(--ink); }
+.log-meta { font-size: .72rem; color: var(--ink-muted); margin-top: .15rem; }
+
+.log-time-col {
+    font-size: .7rem; font-weight: 600;
+    color: var(--ink-muted); text-align: right;
+    flex-shrink: 0; white-space: nowrap;
+}
 
 .td-modal {
     display: none;
@@ -881,8 +988,11 @@ tbody tr:hover { background: var(--soft-bg); }
     background: var(--petal);
 }
 
+@media (max-width: 1100px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 900px) {
-    .stats-row { grid-template-columns: 1fr; }
     .page-body { padding: 1.2rem 1rem; }
     .td-info-grid { grid-template-columns: 1fr; }
 }
@@ -897,6 +1007,7 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 @media (max-width: 600px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
     .table-card { margin: 0; }
     .search-wrap input { width: 140px; }
     .td-modal-card { border-radius: 16px; }
@@ -916,6 +1027,10 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
         <div class="header-actions">
+            <button class="btn-outline" onclick="openLogDrawer()">
+                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Log">
+                Entry / Exit Log
+            </button>
             <button class="btn-outline" onclick="openTenantArchive()">
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
@@ -958,6 +1073,14 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="stat-num">{{ $totalUnits - $activeOccupied }}</div>
             <div class="stat-sub">Out of {{ $totalUnits }} total units</div>
         </div>
+        <div class="stat-box">
+            <div class="stat-icon-circle">
+                <img src="{{ asset('icons/tenants.png') }}" alt="">
+            </div>
+            <div class="stat-label">Inside Now</div>
+            <div class="stat-num" id="stat-inside-count">{{ $insideCount }}</div>
+            <div class="stat-sub">Currently in building</div>
+        </div>
     </div>
 
     <div class="table-card fade-up d3">
@@ -988,6 +1111,11 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
                 </select>
+                <select class="sort-select" id="inside-filter" onchange="applyFilters()">
+                    <option value="">All Locations</option>
+                    <option value="inside">Inside</option>
+                    <option value="outside">Outside</option>
+                </select>
             </div>
         </div>
 
@@ -1000,6 +1128,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <th>Room No.</th>
                         <th>Contact No.</th>
                         <th class="th-center">Status</th>
+                        <th class="th-center">Location</th>
                         <th>Notes</th>
                         <th class="th-center">Action</th>
                     </tr>
@@ -1028,6 +1157,37 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="tenant-archive-backdrop" id="log-backdrop" onclick="closeLogDrawer()"></div>
+
+<div class="tenant-archive-drawer" id="log-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Entry / Exit Log</div>
+            <div class="tad-sub">Real-time record of tenant time-ins and time-outs</div>
+        </div>
+        <button class="tad-close" onclick="closeLogDrawer()">&#x2715;</button>
+    </div>
+    <div class="tad-search-bar">
+        <div class="tad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="log-search" placeholder="Search by name, room..." oninput="renderLogDrawer()">
+        </div>
+    </div>
+    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
+        <button class="page-btn active" id="log-filter-all"     onclick="setLogFilter('')">All</button>
+        <button class="page-btn"        id="log-filter-timein"  onclick="setLogFilter('time_in')">Time In</button>
+        <button class="page-btn"        id="log-filter-timeout" onclick="setLogFilter('time_out')">Time Out</button>
+    </div>
+    <div class="tad-list" id="log-list"></div>
+    <div class="tad-footer">
+        <div class="tad-count-label" id="log-count-label">0 records</div>
+        <button class="tad-export-btn" onclick="exportLog()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
+    </div>
+</div>
+
 <div class="tenant-archive-backdrop" id="tad-backdrop" onclick="closeTenantArchive()"></div>
 
 <div class="tenant-archive-drawer" id="tad-drawer">
@@ -1040,7 +1200,7 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 
     <div class="tad-tabs">
-        <button class="tad-tab active" id="ttab-deleted" onclick="switchTenantArchiveTab('deleted')">
+        <button class="tad-tab active" id="ttab-deleted"  onclick="switchTenantArchiveTab('deleted')">
             Deleted
             <span class="tad-tab-count" id="tcount-deleted">0</span>
         </button>
@@ -1048,7 +1208,7 @@ tbody tr:hover { background: var(--soft-bg); }
             Inactive
             <span class="tad-tab-count" id="tcount-inactive">0</span>
         </button>
-        <button class="tad-tab" id="ttab-moveout" onclick="switchTenantArchiveTab('move_out')">
+        <button class="tad-tab" id="ttab-moveout"  onclick="switchTenantArchiveTab('move_out')">
             Move Out
             <span class="tad-tab-count" id="tcount-moveout">0</span>
         </button>
@@ -1102,12 +1262,14 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-title">Add / Edit Note</div>
             <button class="modal-close" onclick="closeModal('notes-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;">
+        <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;padding:0 1.1rem;">
             Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
         </p>
-        <div class="modal-field">
-            <label>Note</label>
-            <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
+        <div style="padding: 0 1.1rem;">
+            <div class="modal-field">
+                <label>Note</label>
+                <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
+            </div>
         </div>
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
@@ -1128,10 +1290,12 @@ const moveoutTenantArchive  = @json($moveoutArchive);
 
 const CSRF      = document.querySelector('meta[name="csrf-token"]').content;
 const PER_PAGE  = 8;
-let currentPage = 1;
-let filtered    = tenants.filter(function(t) { return t.status !== 'inactive' && t.status !== 'move_out'; });
+let currentPage      = 1;
+let filtered         = [];
 let tenantArchiveTab = 'deleted';
 let currentNoteId    = null;
+let logData          = [];
+let logFilter        = '';
 
 document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -1154,6 +1318,13 @@ function fmtDate(d) {
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function fmtDateTime(d) {
+    if (!d) return '\u2014';
+    var dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
 function fmtDatePlain(d) {
     if (!d) return '\u2014';
     var dt   = new Date(d);
@@ -1172,6 +1343,13 @@ function statusBadge(status) {
     return map[status] || ('<span class="badge badge-inactive">' + status + '</span>');
 }
 
+function insideIndicator(isInside) {
+    if (isInside) {
+        return '<span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span>';
+    }
+    return '<span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span>';
+}
+
 function statusPillClass(status) {
     var map = {
         active:   'tad-pill-active',
@@ -1188,19 +1366,25 @@ function renderTable() {
     var tbody    = document.getElementById('tenant-tbody');
 
     if (pageData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     } else {
         tbody.innerHTML = pageData.map(function(t) {
-            return '<tr>' +
+            var timeBtnHtml = t.is_inside
+                ? '<button class="btn-timeout" onclick="doTimeOut(' + t.tenant_id + ', this)">Time Out</button>'
+                : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
+
+            return '<tr id="tenant-row-' + t.tenant_id + '">' +
                 '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + statusBadge(t.status) + '</td>' +
-                '<td style="color:var(--ink-muted);font-size:.85rem;">' + (t.notes || '\u2014') + '</td>' +
+                '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
+                '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
                     '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<span id="timebtn-' + t.tenant_id + '">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
@@ -1243,6 +1427,7 @@ function applyFilters() {
     var sort   = document.getElementById('sort-select').value;
     var floor  = document.getElementById('floor-filter').value;
     var status = document.getElementById('status-filter').value;
+    var inside = document.getElementById('inside-filter').value;
 
     filtered = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
@@ -1253,7 +1438,8 @@ function applyFilters() {
             String(t.floor || '').indexOf(q) !== -1;
         var matchesFloor  = floor  === '' || String(t.floor) === floor;
         var matchesStatus = status === '' || t.status === status;
-        return matchesSearch && matchesFloor && matchesStatus;
+        var matchesInside = inside === '' || (inside === 'inside' ? t.is_inside : !t.is_inside);
+        return matchesSearch && matchesFloor && matchesStatus && matchesInside;
     });
 
     if (sort === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
@@ -1264,6 +1450,156 @@ function applyFilters() {
 
     currentPage = 1;
     renderTable();
+}
+
+async function doTimeIn(id, btn) {
+    btn.disabled = true;
+    showActionLoading('Recording time in...');
+    try {
+        var res  = await fetch('/tenants/' + id + '/time-in', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed.');
+        updateTenantInsideState(id, true);
+        showToast(data.message, 'success');
+    } catch(e) {
+        showToast(e.message, 'error');
+        btn.disabled = false;
+    } finally {
+        hideActionLoading();
+    }
+}
+
+async function doTimeOut(id, btn) {
+    btn.disabled = true;
+    showActionLoading('Recording time out...');
+    try {
+        var res  = await fetch('/tenants/' + id + '/time-out', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed.');
+        updateTenantInsideState(id, false);
+        showToast(data.message, 'success');
+    } catch(e) {
+        showToast(e.message, 'error');
+        btn.disabled = false;
+    } finally {
+        hideActionLoading();
+    }
+}
+
+function updateTenantInsideState(id, isInside) {
+    var t = tenants.find(function(x) { return x.tenant_id === id; });
+    if (t) t.is_inside = isInside;
+
+    var cell = document.getElementById('inside-cell-' + id);
+    if (cell) cell.innerHTML = insideIndicator(isInside);
+
+    var btnWrap = document.getElementById('timebtn-' + id);
+    if (btnWrap) {
+        btnWrap.innerHTML = isInside
+            ? '<button class="btn-timeout" onclick="doTimeOut(' + id + ', this)">Time Out</button>'
+            : '<button class="btn-timein"  onclick="doTimeIn('  + id + ', this)">Time In</button>';
+    }
+
+    var insideCount = tenants.filter(function(x) { return x.is_inside; }).length;
+    var el = document.getElementById('stat-inside-count');
+    if (el) el.textContent = insideCount;
+}
+
+function openLogDrawer() {
+    document.getElementById('log-drawer').classList.add('open');
+    document.getElementById('log-backdrop').classList.add('open');
+    fetchLogs();
+}
+
+function closeLogDrawer() {
+    document.getElementById('log-drawer').classList.remove('open');
+    document.getElementById('log-backdrop').classList.remove('open');
+}
+
+function setLogFilter(val) {
+    logFilter = val;
+    document.getElementById('log-filter-all').classList.toggle('active',     val === '');
+    document.getElementById('log-filter-timein').classList.toggle('active',  val === 'time_in');
+    document.getElementById('log-filter-timeout').classList.toggle('active', val === 'time_out');
+    renderLogDrawer();
+}
+
+async function fetchLogs() {
+    document.getElementById('log-list').innerHTML = '<div class="tad-empty">Loading...</div>';
+    try {
+        var res = await fetch('/tenant-logs', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        logData = await res.json();
+        renderLogDrawer();
+    } catch(e) {
+        document.getElementById('log-list').innerHTML = '<div class="tad-empty">Failed to load logs.</div>';
+    }
+}
+
+function renderLogDrawer() {
+    var q    = document.getElementById('log-search').value.toLowerCase();
+    var data = logData.filter(function(l) {
+        var matchFilter = logFilter === '' || l.action === logFilter;
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1
+            || (l.account_id  || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchSearch;
+    });
+
+    document.getElementById('log-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+    var list = document.getElementById('log-list');
+
+    if (data.length === 0) {
+        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset("icons/tenants.png") }}" alt="">No log records found.</div>';
+        return;
+    }
+
+    var inSvg  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
+    var outSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0163a" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
+    list.innerHTML = data.map(function(l, i) {
+        var isIn      = l.action === 'time_in';
+        var roomLabel = (l.floor && l.room_number)
+            ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
+            : (l.room_number ? 'Rm ' + l.room_number : 'No room');
+
+        return '<div class="log-card" style="animation-delay:' + (i * 0.03) + 's;">' +
+            '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>' +
+            '<div class="log-info">' +
+                '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>' +
+                '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; ' +
+                    '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="log-time-col">' + fmtDateTime(l.logged_at) + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>' +
+        '</div>';
+    }).join('');
+}
+
+function exportLog() {
+    var q    = document.getElementById('log-search').value.toLowerCase();
+    var data = logData.filter(function(l) {
+        var matchFilter = logFilter === '' || l.action === logFilter;
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchSearch;
+    });
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+    data.forEach(function(l) {
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+    });
+    var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a   = document.createElement('a');
+    a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'tenant-entry-exit-log.csv';
+    a.click();
 }
 
 function infoItem(label, value, full) {
@@ -1291,6 +1627,7 @@ function viewTenant(t) {
 
     var statusLabel = { active: 'Active', pending: 'Pending', inactive: 'Inactive', move_out: 'Move Out' };
     var metaHtml = '';
+
     if (t.status) {
         metaHtml += '<span class="td-modal-pill ' + statusPillModalClass(t.status) + '">'
             + (statusLabel[t.status] || t.status)
@@ -1304,6 +1641,9 @@ function viewTenant(t) {
     if (t.stay_type) {
         metaHtml += '<span class="td-modal-pill">' + t.stay_type + '</span>';
     }
+    metaHtml += '<span class="td-modal-pill" style="' + (t.is_inside ? 'background:rgba(31,157,105,.3);border-color:rgba(140,224,187,.5);' : '') + '">'
+        + (t.is_inside ? 'Inside' : 'Outside') + '</span>';
+
     document.getElementById('td-modal-meta').innerHTML = metaHtml;
 
     var bodyHtml = '';
@@ -1433,17 +1773,19 @@ function renderTenantArchive() {
 
     if (data.length === 0) {
         var labelMap = { deleted: 'deleted', inactive: 'inactive', move_out: 'move out' };
-        var emptyIcon = '{{ asset("icons/tenants.png") }}';
-        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="' + emptyIcon + '" alt="">No ' + labelMap[tenantArchiveTab] + ' records found.</div>';
+        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset("icons/tenants.png") }}" alt="">No ' + labelMap[tenantArchiveTab] + ' records found.</div>';
         return;
     }
 
     var archiveLabelMap = { deleted: 'Deleted on', inactive: 'Marked inactive on', move_out: 'Moved out on' };
-    var archiveLabel = archiveLabelMap[tenantArchiveTab];
+    var archiveLabel    = archiveLabelMap[tenantArchiveTab];
 
     list.innerHTML = data.map(function(r, i) {
-        var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">' + r.floor + '-' + r.room_number + '</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">' + r.room_number + '</span>' : '');
+        var roomPill = (r.floor && r.room_number)
+            ? '<span class="tad-pill tad-pill-room">' + r.floor + '-' + r.room_number + '</span>'
+            : (r.room_number ? '<span class="tad-pill tad-pill-room">' + r.room_number + '</span>' : '');
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">' + r.stay_type + '</span>' : '';
+
         return '<div class="tad-card" style="animation-delay:' + (i * 0.04) + 's;">' +
             '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id || '\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>' +
             '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>' +
@@ -1455,9 +1797,17 @@ function renderTenantArchive() {
 }
 
 function exportTenants() {
-    var rows = [['Tenant Name','Floor No.','Room No.','Contact No.','Status','Notes']];
+    var rows = [['Tenant Name', 'Floor No.', 'Room No.', 'Contact No.', 'Status', 'Location', 'Notes']];
     filtered.forEach(function(t) {
-        rows.push([t.first_name + ' ' + t.last_name, t.floor || '', t.room_number || '', t.contact_number || '', t.status || '', t.notes || '']);
+        rows.push([
+            t.first_name + ' ' + t.last_name,
+            t.floor || '',
+            t.room_number || '',
+            t.contact_number || '',
+            t.status || '',
+            t.is_inside ? 'Inside' : 'Outside',
+            t.notes || '',
+        ]);
     });
     var csv  = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
     var blob = new Blob([csv], { type: 'text/csv' });
@@ -1470,9 +1820,9 @@ function exportTenants() {
 function exportTenantsPDF() {
     var win  = window.open('', '_blank');
     var rows = filtered.map(function(t) {
-        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.notes || '') + '</td></tr>';
+        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.is_inside ? 'Inside' : 'Outside') + '</td><td>' + (t.notes || '') + '</td></tr>';
     }).join('');
-    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
+    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Location</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
     win.document.close();
     win.print();
 }
@@ -1486,9 +1836,9 @@ function exportTenantArchive(format) {
     var labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
 
     if (format === 'pdf') {
-        var win = window.open('', '_blank');
+        var win      = window.open('', '_blank');
         var tabLabel = { deleted: 'Deleted', inactive: 'Inactive', move_out: 'Move Out' };
-        var rows = source.map(function(r) {
+        var rows     = source.map(function(r) {
             return '<tr><td>' + (r.account_id || '') + '</td><td>' + r.first_name + ' ' + r.last_name + '</td><td>' + (r.email || '') + '</td><td>' + (r.floor && r.room_number ? r.floor + '-' + r.room_number : (r.room_number || '')) + '</td><td>' + (r.stay_type || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.archived_at || '') + '</td></tr>';
         }).join('');
         win.document.write('<!DOCTYPE html><html><head><title>Archive - ' + tabLabel[tenantArchiveTab] + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Tenant Archive - ' + tabLabel[tenantArchiveTab] + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Room</th><th>Stay Type</th><th>Status</th><th>' + labelMap[tenantArchiveTab] + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
@@ -1497,7 +1847,7 @@ function exportTenantArchive(format) {
         return;
     }
 
-    var rows = [['Account ID','First Name','Last Name','Email','Contact','Floor','Room','Stay Type','Move-In','Move-Out','Status', labelMap[tenantArchiveTab]]];
+    var rows = [['Account ID', 'First Name', 'Last Name', 'Email', 'Contact', 'Floor', 'Room', 'Stay Type', 'Move-In', 'Move-Out', 'Status', labelMap[tenantArchiveTab]]];
     source.forEach(function(r) {
         rows.push([r.account_id || '', r.first_name, r.last_name, r.email || '', r.contact_number || '', r.floor || '', r.room_number || '', r.stay_type || '', r.move_in_date || '', r.move_out_date || '', r.status || '', r.archived_at || '']);
     });
@@ -1590,6 +1940,6 @@ document.querySelectorAll('.modal-overlay').forEach(function(m) {
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
 
-renderTable();
+applyFilters();
 </script>
 @endsection

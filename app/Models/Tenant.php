@@ -33,6 +33,7 @@ class Tenant extends Authenticatable
         'is_active',
         'last_login_at',
         'notes',
+        'is_inside',
     ];
 
     protected $hidden = [
