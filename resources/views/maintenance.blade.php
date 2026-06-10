@@ -1034,10 +1034,10 @@
                     <div style="font-size:.75rem;color:rgba(255,255,255,.78);font-weight:500;">Maintenance request information</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="closeModal('view-modal')" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3);color:#fff;">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('view-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
-        <div id="view-content" style="padding:1.2rem 1.5rem;max-height:72vh;overflow-y:auto;"></div>
-        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);">
+        <div id="view-content" style="padding:1.2rem 1.5rem;max-height:55vh;overflow-y:auto;"></div>
+        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
@@ -1045,43 +1045,82 @@
 </div>
 
 <div class="modal-overlay" id="edit-modal">
-    <div class="modal" style="max-width:540px;">
-        <div class="modal-header">
-            <div class="modal-title">Update Request</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:540px;padding:0;overflow:hidden;border-radius:18px;">
+        <!-- Header -->
+        <div style="background:var(--gradient-pink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img src="{{ asset('icons/edit.png') }}" alt="" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) invert(1);">
+                </div>
+                <div>
+                    <div style="font-size:1rem;font-weight:800;color:#fff;line-height:1.2;">Update Request</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);font-weight:500;">Edit status, urgency and remarks</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('edit-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
+
+        <!-- Body -->
         <form id="edit-form" method="POST" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
-            <div class="modal-two-col">
-                <div class="maint-modal-field">
-                    <label>Status</label>
-                    <select name="status" id="edit-status">
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In-Progress</option>
-                        <option value="resolved">Resolve &amp; Archive</option>
-                        <option value="closed">Close &amp; Archive</option>
-                    </select>
+            <div style="padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
+
+                <!-- Status + Urgency row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+                    <!-- Status -->
+                    <div style="display:flex;flex-direction:column;gap:.4rem;">
+                        <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
+                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In-Progress</option>
+                            <option value="resolved">Resolve &amp; Archive</option>
+                            <option value="closed">Close &amp; Archive</option>
+                        </select>
+                    </div>
+
+                    <!-- Urgency -->
+                    <div style="display:flex;flex-direction:column;gap:.4rem;">
+                        <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
+                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                            <option value="low">Low</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="maint-modal-field">
-                    <label>Urgency</label>
-                    <select name="urgency" id="edit-urgency">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="urgent">Urgent</option>
-                    </select>
+
+                <!-- Admin Remarks -->
+                <div style="display:flex;flex-direction:column;gap:.4rem;">
+                    <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Admin Remarks <span style="text-transform:none;font-weight:500;color:var(--ink-muted);">(visible to tenant)</span></label>
+                    <textarea name="admin_remarks" id="edit-remarks"
+                        placeholder="Add comments or updates for the tenant..."
+                        style="padding:.75rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);min-height:100px;resize:vertical;outline:none;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;line-height:1.6;"
+                        onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'"
+                        onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'"
+                    ></textarea>
                 </div>
+
+                <!-- Warning note -->
+                <div style="display:flex;align-items:flex-start;gap:.6rem;background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.7rem .9rem;">
+                    <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">⚠️</span>
+                    <span style="font-size:.78rem;color:#c07800;line-height:1.55;">Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this request to the archive permanently.</span>
+                </div>
+
             </div>
-            <div class="maint-modal-field">
-                <label>Admin Remarks (visible to tenant)</label>
-                <textarea name="admin_remarks" id="edit-remarks" placeholder="Add comments or update for the tenant..."></textarea>
-            </div>
-            <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#c07800;margin-bottom:.5rem;line-height:1.5;">
-                Setting status to <strong>Closed</strong> will move this request to the archive permanently.
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
+
+            <!-- Footer -->
+            <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;">
+                <button type="button" onclick="closeModal('edit-modal')"
+                    style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
+                    onmouseover="this.style.borderColor='var(--bright-pink)'"
+                    onmouseout="this.style.borderColor='var(--baby-pink)'"
+                >Cancel</button>
+                <button type="submit"
+                    style="padding:.6rem 1.6rem;border-radius:10px;border:none;background:var(--gradient-pink);color:#fff;font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);box-shadow:0 4px 14px rgba(232,23,93,.3);transition:.2s;"
+                    onmouseover="this.style.boxShadow='0 6px 18px rgba(232,23,93,.45)'"
+                    onmouseout="this.style.boxShadow='0 4px 14px rgba(232,23,93,.3)'"
+                >Save Changes</button>
             </div>
         </form>
     </div>
