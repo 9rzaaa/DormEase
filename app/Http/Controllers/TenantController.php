@@ -32,7 +32,8 @@ class TenantController extends Controller
 
         $billingData = \App\Models\WaterBilling::whereIn('payment_status', ['unpaid', 'overdue'])
             ->get()
-            ->groupBy('tenant_id');
+            ->groupBy('tenant_id')
+            ->map(fn($bills) => $bills->values()->toArray());
 
         return view('tenants', [
             'tenants'         => $tenants,

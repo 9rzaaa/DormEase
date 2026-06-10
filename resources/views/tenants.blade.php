@@ -1599,7 +1599,7 @@ function buildRows(list) {
                 + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" onclick="printBillSlip(' + JSON.stringify(t) + ')"><img src="{{ asset('icons/billing.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Bill Slip" onclick="printBillSlip(' + JSON.stringify(t) + ')"><img src="{{ asset(\'icons/billing.png\') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
             + '</div></td>'
             + '</tr>';
     }).join('');
@@ -2722,12 +2722,10 @@ document.addEventListener('click', function(e) {
 });
 
 function printBillSlip(t) {
-    var tenantBills = [];
-    Object.keys(billingData).forEach(function(tid) {
-        if (parseInt(tid) === parseInt(t.tenant_id)) {
-            tenantBills = billingData[tid];
-        }
-    });
+    var tenantBills = billingData[String(t.tenant_id)] || billingData[parseInt(t.tenant_id)] || [];
+    if (!Array.isArray(tenantBills)) {
+        tenantBills = Object.values(tenantBills);
+    }
 
     tenantBills.sort(function(a, b) {
         return new Date(a.billing_month) - new Date(b.billing_month);
