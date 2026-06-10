@@ -2721,10 +2721,8 @@ document.addEventListener('click', function(e) {
 });
 
 function printBillSlip(t) {
-    var tenantBills = billingData[String(t.tenant_id)] || billingData[parseInt(t.tenant_id)] || [];
-    if (!Array.isArray(tenantBills)) {
-        tenantBills = Object.values(tenantBills);
-    }
+    var tenantBills = billingData[String(t.tenant_id)] || [];
+    if (!Array.isArray(tenantBills)) { tenantBills = []; }
 
     tenantBills.sort(function(a, b) {
         return new Date(a.billing_month) - new Date(b.billing_month);
@@ -2739,7 +2737,7 @@ function printBillSlip(t) {
         var dt = new Date(d + 'T00:00:00');
         return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
-    function fmtDate(d) {
+    function fmtDateSlip(d) {
         if (!d) return '—';
         var dt = new Date(d + 'T00:00:00');
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -2756,7 +2754,7 @@ function printBillSlip(t) {
             billRows += '<tr>'
                 + '<td>' + fmtMonth(b.billing_month)
                 + '<br><span style="display:inline-block;font-size:5.5pt;font-weight:700;padding:.5mm 1.5mm;border-radius:3px;margin-top:.8mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
-                + '<td style="white-space:nowrap;">' + fmtDate(b.due_date) + '</td>'
+                + '<td style="white-space:nowrap;">' + fmtDateSlip(b.due_date) + '</td>'
                 + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
                 + '</tr>';
         });
@@ -2773,8 +2771,7 @@ function printBillSlip(t) {
             + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All water bills have been settled.</div>'
             + '</div>';
 
-    var win = window.open('', '_blank', 'width=420,height=700');
-    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
+    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
         + '@page{size:80mm auto;margin:0}'
         + '*{box-sizing:border-box;margin:0;padding:0}'
@@ -2812,9 +2809,31 @@ function printBillSlip(t) {
             + '<div style="font-size:6pt;color:#b06080;">Issued: ' + today + '</div>'
             + '<div style="font-size:6pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
         + '</div>'
-        + '</div>'
-        + '</body></html>');
-    win.document.close();
+        + '</div></body></html>';
+
+    var existing = document.getElementById('bill-slip-frame');
+    if (existing) existing.remove();
+
+    var iframe = document.createElement('iframe');
+    iframe.id = 'bill-slip-frame';
+    iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:#fff;';
+    document.body.appendChild(iframe);
+
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(html);
+    iframe.contentDocument.close();
+
+    var closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Close';
+    closeBtn.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:10000;padding:.5rem 1.2rem;background:#E8175D;color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(232,23,93,.35);font-family:inherit;';
+    closeBtn.onclick = function() { iframe.remove(); closeBtn.remove(); printBtn.remove(); };
+    document.body.appendChild(closeBtn);
+
+    var printBtn = document.createElement('button');
+    printBtn.textContent = 'Print';
+    printBtn.style.cssText = 'position:fixed;top:1rem;right:6rem;z-index:10000;padding:.5rem 1.2rem;background:#1f9d69;color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(31,157,105,.35);font-family:inherit;';
+    printBtn.onclick = function() { iframe.contentWindow.print(); };
+    document.body.appendChild(printBtn);
 }
 </script>
 @endsection
