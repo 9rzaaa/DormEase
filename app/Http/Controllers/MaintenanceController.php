@@ -31,8 +31,8 @@ class MaintenanceController extends Controller
                     'admin_remarks'             => $r->admin_notes,
                     'photo_url'                 => $r->photo_path ? asset('storage/' . $r->photo_path) : null,
                     'resubmission_requested_at' => $r->resubmission_requested_at
-                                                        ? $r->resubmission_requested_at->format('Y-m-d H:i:s')
-                                                        : null,
+                        ? $r->resubmission_requested_at->format('Y-m-d H:i:s')
+                        : null,
                     'created_at'                => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
                 ];
             });
@@ -202,7 +202,7 @@ class MaintenanceController extends Controller
             title: 'Photo resubmission requested',
             body: "The admin has requested a new photo for your maintenance request {$reqLabel}. Reason: {$request->reason}. Please resubmit.",
             refId: $maintenance->request_id,
-            route: '/tenant/maintenanceresubmit',
+            route: '/tenant/maintenancehistory',
         );
 
         NotificationHelper::sendToAll(
@@ -213,7 +213,7 @@ class MaintenanceController extends Controller
 
         return response()->json(['success' => true]);
     }
-    
+
     private function archiveRequest(MaintenanceRequest $r, string $type): void
     {
         ArchivedMaintReq::create([

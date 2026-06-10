@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // maintenance
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
+    Route::post('/maintenance/{id}/resubmit-photo', [MaintenanceController::class, 'resubmitPhoto']);
 
     // emergency
     Route::get('/emergency', [EmergencyController::class, 'index']);
