@@ -1599,8 +1599,8 @@ function buildRows(list) {
                 + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" onclick="printBillSlip(' + JSON.stringify(t) + ')"><img src="{{ asset('icons/billing.png') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
-            + '</tr>';
+                + '<button class="act-btn" title="Bill Slip" onclick=\'printBillSlip(' + JSON.stringify(t) + ')\'><img src="{{ asset(\'icons/billing.png\') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
+            + '</div></td></tr>';
     }).join('');
 }
 
@@ -2768,10 +2768,11 @@ function printBillSlip(t) {
             + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:4px;padding:2mm 2.5mm;font-size:6.5pt;color:#7a5400;line-height:1.45;margin-bottom:3.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference. Continued non-payment may affect your tenancy status.</div>'
         : '<div style="text-align:center;padding:4mm 3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:5px;margin-bottom:3.5mm;">'
             + '<div style="font-size:10pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
-            + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All water bills have been settled.</div>'
+            + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All bills have been settled.</div>'
             + '</div>';
 
-    var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
+    var win = window.open('', '_blank', 'width=420,height=640');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
         + '@page{size:80mm auto;margin:0}'
         + '*{box-sizing:border-box;margin:0;padding:0}'
@@ -2809,31 +2810,10 @@ function printBillSlip(t) {
             + '<div style="font-size:6pt;color:#b06080;">Issued: ' + today + '</div>'
             + '<div style="font-size:6pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
         + '</div>'
-        + '</div></body></html>';
-
-    var existing = document.getElementById('bill-slip-frame');
-    if (existing) existing.remove();
-
-    var iframe = document.createElement('iframe');
-    iframe.id = 'bill-slip-frame';
-    iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:none;z-index:9999;background:#fff;';
-    document.body.appendChild(iframe);
-
-    iframe.contentDocument.open();
-    iframe.contentDocument.write(html);
-    iframe.contentDocument.close();
-
-    var closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Close';
-    closeBtn.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:10000;padding:.5rem 1.2rem;background:#E8175D;color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(232,23,93,.35);font-family:inherit;';
-    closeBtn.onclick = function() { iframe.remove(); closeBtn.remove(); printBtn.remove(); };
-    document.body.appendChild(closeBtn);
-
-    var printBtn = document.createElement('button');
-    printBtn.textContent = 'Print';
-    printBtn.style.cssText = 'position:fixed;top:1rem;right:6rem;z-index:10000;padding:.5rem 1.2rem;background:#1f9d69;color:#fff;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(31,157,105,.35);font-family:inherit;';
-    printBtn.onclick = function() { iframe.contentWindow.print(); };
-    document.body.appendChild(printBtn);
+        + '</div>'
+        + '<script>window.onload = function() { window.print(); };<\/script>'
+        + '</body></html>');
+    win.document.close();
 }
 </script>
 @endsection
