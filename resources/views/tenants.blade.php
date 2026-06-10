@@ -214,6 +214,7 @@ td {
 th:nth-child(2), td:nth-child(2) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
+.td-center { text-align: center; }
 tbody tr:hover { background: var(--soft-bg); }
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
@@ -730,7 +731,6 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <th>Move-Out Date</th>
                                 <th>Contact No.</th>
                                 <th>Status</th>
-                                <th>Location</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -766,7 +766,6 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <th>Move-Out Date</th>
                                 <th>Contact No.</th>
                                 <th>Status</th>
-                                <th>Location</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -1721,42 +1720,40 @@ function escapeJs(str) {
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
-function insideIndicator(isInside) {
-    if (isInside) {
-        return '<span style="display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:700;">'
-            + '<span style="width:9px;height:9px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 3px rgba(31,157,105,.2);animation:pulseGreen 2s infinite;flex-shrink:0;display:inline-block;"></span>'
-            + '<span style="color:#1f9d69;">Inside</span></span>';
-    }
-    return '<span style="display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:700;">'
-        + '<span style="width:9px;height:9px;border-radius:50%;background:#c8c8d4;flex-shrink:0;display:inline-block;"></span>'
-        + '<span style="color:var(--ink-muted);">Outside</span></span>';
-}
-
 function buildRows(list) {
     if (list.length === 0) {
-        return '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
+        return '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-        var nameCell  = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
+
+        var insideDot = t.is_inside
+            ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
+            : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
+
+        var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
+            + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
+            + (t.is_temp_password ? tempBadge(true) : '')
+            + '</div>';
+
         var col4 = t.status === 'reserved'
             ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
             : fmtDate(t.move_in_date);
+
         return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
-            + '<td>' + nameCell + '</td>'
+            + '<td id="admin-inside-cell-' + t.tenant_id + '">' + nameCell + '</td>'
             + '<td>' + floorRoom + '</td>'
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
-            + '<td class="td-center" id="admin-inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>'
             + '<td><div class="action-group">'
-                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/billing.png') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
+                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/eye.png\') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/edit.png\') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset(\'icons/reset.png\') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset(\'icons/delete.png\') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/billing.png\') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
             + '</div></td></tr>';
     }).join('');
 }
