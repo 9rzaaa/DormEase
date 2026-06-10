@@ -1114,6 +1114,11 @@
                             <div class="tenant-left">
                                 <span class="dot {{ $t['dot_class'] }}"></span>
                                 <span class="tname">{{ $t['name'] }}</span>
+                                @if(!empty($t['is_temp_password']))
+                                <span title="Tenant hasn't activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:3px;vertical-align:middle;position:relative;top:-1px;">
+                                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                </span>
+                                @endif
                             </div>
                             <div class="tenant-right">
                                 <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '-' : '₱' . number_format($t['room_share'], 2) }}</span>
@@ -1341,7 +1346,7 @@ function resetButton(btn, originalText) {
 }
 
 @php
-    $tenantsByFloorData = $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
+    $tenantsByFloorData = $allTenants->whereIn('status', ['active', 'pending'])->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
             'name'        => $t->first_name . ' ' . $t->last_name,
             'room_number' => $t->room_number,
@@ -1943,7 +1948,7 @@ function openUpdateModal(room) {
                 <div style="padding:.7rem 1rem;background:var(--pink-bg-soft);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-pink-mid);">
                     <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
                     <div style="flex:1;">
-                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}${t.is_temp_password ? '<span title="Tenant hasn\'t activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:4px;vertical-align:middle;position:relative;top:-1px;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>' : ''}</div>
                         <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
                     </div>
                     <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${getBadgeLabel(t.payment_status)}</span>
