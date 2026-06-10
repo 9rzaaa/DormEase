@@ -520,26 +520,61 @@ class MaintenanceController extends Controller
         ], 201);
     }
 
+    public function resubmitPhoto(Request $request, $id)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+        ]);
+
+        $maintenance = MaintenanceRequest::where('request_id', $id)
+            ->where('tenant_id', $request->user()?->tenant_id)
+            ->firstOrFail();
+
+        $photoPath = $request->file('photo')->store('maintenance_photos', 'public');
+
+        $maintenance->update([
+            'photo_path'                => $photoPath,
+            'resubmission_requested_at' => null,
+            'resubmission_reason'       => null,
+        ]);
+
+        $tenant   = $request->user();
+        $reqLabel = '#REQ-' . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT);
+
+        NotificationHelper::sendToAll(
+            type: 'maintenance_resubmission',
+            message: "Tenant {$tenant?->first_name} {$tenant?->last_name} resubmitted a photo for {$reqLabel} in room {$tenant?->room_number}.",
+            ref_id: $maintenance->request_id,
+        );
+
+        return response()->json([
+            'message'   => 'Photo resubmitted successfully.',
+            'photo_url' => asset('storage/' . $photoPath),
+        ]);
+    }
+
     // -------------------------------------------------------------------------
     // Formatting
     // -------------------------------------------------------------------------
     private function formatRequest(MaintenanceRequest $maintenance): array
     {
         return [
-            'id'             => $maintenance->request_id,
-            'room_number'    => $maintenance->room_number,
-            'input_type'     => $maintenance->input_type,
-            'issue_type'     => $maintenance->issue_type,
-            'description'    => $maintenance->description,
-            'urgency_level'  => $maintenance->urgency_level,
-            'status'         => $maintenance->status,
-            'admin_notes'    => $maintenance->admin_notes,
-            'admin_notes_at' => $this->formatApiDate($maintenance->admin_notes_at),
-            'photo_url'      => $maintenance->photo_path
+            'id'                        => $maintenance->request_id,
+            'room_number'               => $maintenance->room_number,
+            'input_type'                => $maintenance->input_type,
+            'issue_type'                => $maintenance->issue_type,
+            'description'               => $maintenance->description,
+            'urgency_level'             => $maintenance->urgency_level,
+            'status'                    => $maintenance->status,
+            'admin_notes'               => $maintenance->admin_notes,
+            'admin_notes_at'            => $this->formatApiDate($maintenance->admin_notes_at),
+            'photo_url'                 => $maintenance->photo_path
                 ? asset('storage/' . $maintenance->photo_path)
                 : null,
-            'submitted_at'   => $this->formatApiDate($maintenance->submitted_at),
-            'resolved_at'    => $this->formatApiDate($maintenance->resolved_at),
+            'resubmission_requested_at' => $this->formatApiDate($maintenance->resubmission_requested_at),
+            'resubmission_reason'       => $maintenance->resubmission_reason,
+            'submitted_at'              => $this->formatApiDate($maintenance->submitted_at),
+            'resolved_at'               => $this->formatApiDate($maintenance->resolved_at),
         ];
     }
 
