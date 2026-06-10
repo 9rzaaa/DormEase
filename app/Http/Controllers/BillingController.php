@@ -74,7 +74,7 @@ class BillingController extends Controller
             ->get()
             ->keyBy('tenant_id');
 
-        $activeTenantIds = $allTenants->where('status', 'active')->pluck('tenant_id');
+        $activeTenantIds = $allTenants->whereIn('status', ['active', 'pending'])->pluck('tenant_id');
         $totalBill    = $billings->values()->unique('floor')->sum('total_floor_bill');
         $totalTenants = $activeTenantIds->count();
         $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count();
