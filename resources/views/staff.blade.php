@@ -1184,59 +1184,59 @@
 
     <div class="atdlog-backdrop" id="atdlog-backdrop" onclick="closeAttendanceLog()"></div>
 
-<div class="atdlog-drawer" id="atdlog-drawer">
-    <div class="atdlog-header">
-        <div>
-            <div class="atdlog-title">Attendance Log</div>
-            <div class="atdlog-sub" id="atdlog-count-sub">Loading records...</div>
+    <div class="atdlog-drawer" id="atdlog-drawer">
+        <div class="atdlog-header">
+            <div>
+                <div class="atdlog-title">Attendance Log</div>
+                <div class="atdlog-sub" id="atdlog-count-sub">Loading records...</div>
+            </div>
+            <button class="atdlog-close" onclick="closeAttendanceLog()">&#x2715;</button>
         </div>
-        <button class="atdlog-close" onclick="closeAttendanceLog()">&#x2715;</button>
-    </div>
 
-    <div class="atdlog-toolbar">
-        <div class="atdlog-search-wrap">
-            <svg class="atdlog-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" id="atdlog-search" placeholder="Search by name..." oninput="renderAtdLog()">
+        <div class="atdlog-toolbar">
+            <div class="atdlog-search-wrap">
+                <svg class="atdlog-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="atdlog-search" placeholder="Search by name..." oninput="renderAtdLog()">
+            </div>
+            <div class="atdlog-filters">
+                <select class="atdlog-select" id="atdlog-role" onchange="renderAtdLog()">
+                    <option value="">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="secretary">Secretary</option>
+                    <option value="frontdesk">Front Desk</option>
+                </select>
+                <select class="atdlog-select" id="atdlog-duty" onchange="renderAtdLog()">
+                    <option value="">All Status</option>
+                    <option value="on_duty">On Duty</option>
+                    <option value="off_duty">Off Duty</option>
+                </select>
+                <select class="atdlog-select" id="atdlog-shift" onchange="renderAtdLog()">
+                    <option value="">All Shifts</option>
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                </select>
+            </div>
         </div>
-        <div class="atdlog-filters">
-            <select class="atdlog-select" id="atdlog-role" onchange="renderAtdLog()">
-                <option value="">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="secretary">Secretary</option>
-                <option value="frontdesk">Front Desk</option>
-            </select>
-            <select class="atdlog-select" id="atdlog-duty" onchange="renderAtdLog()">
-                <option value="">All Status</option>
-                <option value="on_duty">On Duty</option>
-                <option value="off_duty">Off Duty</option>
-            </select>
-            <select class="atdlog-select" id="atdlog-shift" onchange="renderAtdLog()">
-                <option value="">All Shifts</option>
-                <option value="Day">Day</option>
-                <option value="Night">Night</option>
-            </select>
-        </div>
-    </div>
 
-    <div class="atdlog-list" id="atdlog-list"></div>
+        <div class="atdlog-list" id="atdlog-list"></div>
 
-    <div class="atdlog-footer">
-        <div class="atdlog-foot-count" id="atdlog-foot-count">0 records</div>
-        <div style="display:flex;align-items:center;gap:.6rem;">
-            <button class="atdlog-clear-btn" onclick="confirmClearAttendanceLog()">Clear Log</button>
-            <div class="export-dropdown" id="export-dropdown-atdlog">
-                <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-atdlog')">
-                    <img src="{{ asset('icons/export.png') }}" alt="">
-                    Export
-                </button>
-                <div class="export-menu" id="export-menu-atdlog">
-                    <button onclick="exportAttendanceLogs('csv'); closeAllExportDropdowns()">Export as CSV</button>
-                    <button onclick="exportAttendanceLogs('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+        <div class="atdlog-footer">
+            <div class="atdlog-foot-count" id="atdlog-foot-count">0 records</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="atdlog-clear-btn" onclick="confirmClearAttendanceLog()">Clear Log</button>
+                <div class="export-dropdown" id="export-dropdown-atdlog">
+                    <button class="sad-export-btn" onclick="toggleExportDropdown('export-dropdown-atdlog')">
+                        <img src="{{ asset('icons/export.png') }}" alt="">
+                        Export
+                    </button>
+                    <div class="export-menu" id="export-menu-atdlog">
+                        <button onclick="exportAttendanceLogs('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                        <button onclick="exportAttendanceLogs('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <div class="sad-tabs">
         <button class="sad-tab active" id="stab-deleted" onclick="switchStaffArchiveTab('deleted')">
