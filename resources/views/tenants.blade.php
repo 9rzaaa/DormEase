@@ -500,6 +500,70 @@ tbody tr:hover { background: var(--soft-bg); }
 @media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
+
+.status-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.status-legend-wrap svg {
+    display: block;
+    opacity: .75;
+    transition: opacity .2s;
+}
+.status-legend-wrap:hover svg { opacity: 1; }
+.status-legend-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 280px;
+    z-index: 600;
+    pointer-events: none;
+}
+.status-legend-wrap:hover .status-legend-popup,
+.status-legend-popup.open { display: block; }
+.slp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+.slp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+.slp-row:last-child { border-bottom: none; }
+.slp-row .badge { flex-shrink: 0; min-width: 72px; justify-content: center; }
+.slp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .15rem;
+}
+@media (max-width: 680px) {
+    .status-legend-popup {
+        left: auto;
+        right: 0;
+        transform: none;
+    }
+}
 </style>
 @endsection
 
@@ -592,6 +656,17 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
                 </select>
+                <div class="status-legend-wrap" id="status-legend-trigger">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8.01"/><path d="M12 12v4"/></svg>
+                    <div class="status-legend-popup" id="status-legend-popup">
+                        <div class="slp-title">Status Guide</div>
+                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Moved in but account setup or verification is incomplete.</span></div>
+                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
+                        <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
+                        <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
+                    </div>
+                </div>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
         </div>
@@ -2718,6 +2793,15 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown')) {
         closeAllExportDropdowns();
     }
+    var popup = document.getElementById('status-legend-popup');
+    var trigger = document.getElementById('status-legend-trigger');
+    if (popup && trigger) {
+        if (trigger.contains(e.target)) {
+            popup.classList.toggle('open');
+        } else {
+            popup.classList.remove('open');
+        }
+    }
 });
 
 function printBillSlip(t) {
@@ -2771,13 +2855,14 @@ function printBillSlip(t) {
             + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All bills have been settled.</div>'
             + '</div>';
 
-    var win = window.open('', '_blank', 'width=420,height=640');
+    var win = window.open('', '_blank', 'width=302,height=600');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
         + '@page{size:80mm auto;margin:0}'
         + '*{box-sizing:border-box;margin:0;padding:0}'
-        + 'body{font-family:"Segoe UI",Arial,sans-serif;background:#fff;width:80mm;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+        + 'body{font-family:"Segoe UI",Arial,sans-serif;background:#fff;width:80mm;margin:0 auto;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
         + '.slip{width:80mm;padding:7mm 7mm 8mm;display:flex;flex-direction:column;gap:0}'
+        + '@media print{@page{size:80mm auto;margin:0}html,body{width:80mm;margin:0;padding:0}}'
         + 'table{width:100%;border-collapse:collapse;margin-bottom:3mm}'
         + 'thead th{font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.05em;padding:1.5mm 1mm;border-bottom:1.5px solid #f4b8d0;text-align:left}'
         + 'thead th:last-child{text-align:right}'
