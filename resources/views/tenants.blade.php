@@ -980,10 +980,16 @@ tbody tr:hover { background: var(--soft-bg); }
             <input type="text" id="admin-log-search" placeholder="Search by name, room..." oninput="renderAdminLogDrawer()">
         </div>
     </div>
-    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
+    <div style="padding: 0 1.8rem .4rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
         <button class="page-btn active" id="admin-log-filter-all"     onclick="setAdminLogFilter('')">All</button>
         <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
         <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
+    </div>
+    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--pink-100); padding-bottom: .8rem; margin-bottom: .2rem;">
+        <button class="page-btn active" id="admin-date-filter-all"       onclick="setAdminDateFilter('all')">All Dates</button>
+        <button class="page-btn"        id="admin-date-filter-today"     onclick="setAdminDateFilter('today')">Today</button>
+        <button class="page-btn"        id="admin-date-filter-yesterday" onclick="setAdminDateFilter('yesterday')">Yesterday</button>
+        <button class="page-btn"        id="admin-date-filter-week"      onclick="setAdminDateFilter('week')">This Week</button>
     </div>
     <div class="tad-list" id="admin-log-list"></div>
     <div class="tad-footer">
@@ -2885,6 +2891,7 @@ document.addEventListener('click', function(e) {
 
 var adminLogData   = [];
 var adminLogFilter = '';
+var adminDateFilter = 'all';
 
 function openAdminLogDrawer() {
     document.getElementById('admin-log-drawer').classList.add('open');
@@ -2905,6 +2912,28 @@ function setAdminLogFilter(val) {
     renderAdminLogDrawer();
 }
 
+function setAdminDateFilter(val) {
+    adminDateFilter = val;
+    document.getElementById('admin-date-filter-all').classList.toggle('active',       val === 'all');
+    document.getElementById('admin-date-filter-today').classList.toggle('active',     val === 'today');
+    document.getElementById('admin-date-filter-yesterday').classList.toggle('active', val === 'yesterday');
+    document.getElementById('admin-date-filter-week').classList.toggle('active',      val === 'week');
+    renderAdminLogDrawer();
+}
+
+function matchesAdminDateFilter(loggedAt) {
+    if (adminDateFilter === 'all') return true;
+    var d     = new Date(loggedAt);
+    var now   = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+    var weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+    if (adminDateFilter === 'today')     return d >= today;
+    if (adminDateFilter === 'yesterday') return d >= yesterday && d < today;
+    if (adminDateFilter === 'week')      return d >= weekStart;
+    return true;
+}
+
 async function fetchAdminLogs() {
     document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Loading...</div>';
     try {
@@ -2920,11 +2949,12 @@ function renderAdminLogDrawer() {
     var q    = document.getElementById('admin-log-search').value.toLowerCase();
     var data = adminLogData.filter(function(l) {
         var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchDate   = matchesAdminDateFilter(l.logged_at);
         var matchSearch = !q
             || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
             || (l.room_number || '').toLowerCase().indexOf(q) !== -1
             || (l.account_id  || '').toLowerCase().indexOf(q) !== -1;
-        return matchFilter && matchSearch;
+        return matchFilter && matchDate && matchSearch;
     });
 
     document.getElementById('admin-log-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
@@ -2938,23 +2968,60 @@ function renderAdminLogDrawer() {
     var inSvg  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
     var outSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0163a" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
 
-    list.innerHTML = data.map(function(l, i) {
-        var isIn      = l.action === 'time_in';
-        var roomLabel = (l.floor && l.room_number)
-            ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
-            : (l.room_number ? 'Rm ' + l.room_number : 'No room');
+    var grouped = {};
+    var order   = [];
+    data.forEach(function(l) {
+        var dt  = new Date(l.logged_at);
+        var key = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        if (!grouped[key]) { grouped[key] = []; order.push(key); }
+        grouped[key].push(l);
+    });
 
-        return '<div class="log-card" style="animation-delay:' + (i * 0.03) + 's;">'
-            + '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>'
-            + '<div class="log-info">'
-                + '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>'
-                + '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; '
-                    + '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>'
+    var today     = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    var yesterday = new Date(Date.now() - 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+    var html = '';
+    var globalIdx = 0;
+    order.forEach(function(dateKey) {
+        var label = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
+        var inCount  = grouped[dateKey].filter(function(l) { return l.action === 'time_in'; }).length;
+        var outCount = grouped[dateKey].filter(function(l) { return l.action === 'time_out'; }).length;
+
+        html += '<div style="position:sticky;top:0;z-index:10;background:var(--soft-bg);padding:.55rem 0 .4rem;margin-bottom:.3rem;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">'
+                + '<div style="display:flex;align-items:center;gap:.5rem;">'
+                    + '<span style="display:inline-block;width:3px;height:13px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>'
+                    + '<span style="font-size:.72rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;">' + label + '</span>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.35rem;">'
+                    + (inCount  ? '<span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;background:#e8faf5;color:#1f9d69;border:1px solid #8ce0bb;">' + inCount  + ' in</span>'  : '')
+                    + (outCount ? '<span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;background:#fff0f4;color:#b0163a;border:1px solid #ffc2d1;">' + outCount + ' out</span>' : '')
                 + '</div>'
             + '</div>'
-            + '<div class="log-time-col">' + fmtDateTime(l.logged_at) + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>'
         + '</div>';
-    }).join('');
+
+        grouped[dateKey].forEach(function(l) {
+            var isIn      = l.action === 'time_in';
+            var roomLabel = (l.floor && l.room_number)
+                ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
+                : (l.room_number ? 'Rm ' + l.room_number : 'No room');
+            var timeOnly  = new Date(l.logged_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            html += '<div class="log-card" style="animation-delay:' + (globalIdx * 0.02) + 's;margin-bottom:.5rem;">'
+                + '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>'
+                + '<div class="log-info">'
+                    + '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>'
+                    + '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; '
+                        + '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>'
+                    + '</div>'
+                + '</div>'
+                + '<div class="log-time-col">' + timeOnly + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>'
+            + '</div>';
+            globalIdx++;
+        });
+    });
+
+    list.innerHTML = html;
 }
 
 function exportAdminLog() {
