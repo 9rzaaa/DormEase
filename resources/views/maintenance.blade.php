@@ -1101,7 +1101,21 @@
     <div class="resubmit-confirm-box">
         <div class="resubmit-confirm-title">Request photo resubmission?</div>
         <div class="resubmit-confirm-sub">
-            A notification will be sent to the tenant asking them to submit a clearer photo for this request.
+            A notification will be sent to the tenant asking them to resubmit a photo for this request.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;">
+            <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.04em;">Reason for resubmission</label>
+            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
+                <option value="">Select a reason...</option>
+                <option value="Photo is blurry or out of focus">Photo is blurry or out of focus</option>
+                <option value="Photo is too dark or poorly lit">Photo is too dark or poorly lit</option>
+                <option value="Photo does not show the issue clearly">Photo does not show the issue clearly</option>
+                <option value="Wrong area or location photographed">Wrong area or location photographed</option>
+                <option value="Photo is corrupted or unreadable">Photo is corrupted or unreadable</option>
+                <option value="Multiple issues shown — need focused photo">Multiple issues shown — need focused photo</option>
+                <option value="No photo was attached">No photo was attached</option>
+            </select>
+            <div id="resubmit-reason-error" style="display:none;font-size:.75rem;color:#c0303a;font-weight:600;margin-top:.15rem;">Please select a reason before sending.</div>
         </div>
         <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .85rem;font-size:.78rem;color:#c07800;margin-bottom:1.2rem;line-height:1.55;">
             The tenant will be notified via push notification and in-app message.
@@ -1592,10 +1606,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeResubmitConfirm() {
         document.getElementById('resubmit-confirm-overlay').classList.remove('open');
+        document.getElementById('resubmit-reason-select').value = '';
+        document.getElementById('resubmit-reason-error').style.display = 'none';
     }
 
     function executeResubmitRequest() {
         if (!currentReq) return;
+
+        const reasonSelect = document.getElementById('resubmit-reason-select');
+        const reasonError  = document.getElementById('resubmit-reason-error');
+        const reason       = reasonSelect.value;
+
+        if (!reason) {
+            reasonError.style.display = 'block';
+            reasonSelect.style.borderColor = '#ffc8d0';
+            reasonSelect.focus();
+            return;
+        }
+
+        reasonError.style.display = 'none';
+        reasonSelect.style.borderColor = '';
 
         const btn = document.getElementById('resubmit-confirm-btn');
         btn.textContent = 'Sending...';
@@ -1608,6 +1638,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
+            body: JSON.stringify({ reason: reason }),
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
