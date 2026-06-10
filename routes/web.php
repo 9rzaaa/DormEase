@@ -202,7 +202,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/log', [BillingController::class, 'log'])->name('log');
         Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
         Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-        Route::post('/billing/request-resubmission', [BillingController::class, 'requestResubmission'])->name('billing.requestResubmission');
+        Route::post('/request-resubmission', [BillingController::class, 'requestResubmission'])->name('requestResubmission');
         Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
         Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
