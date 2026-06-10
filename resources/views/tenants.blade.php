@@ -2922,16 +2922,6 @@ document.addEventListener('click', function(e) {
         if (c) { c.style.transform = ''; }
     }
 });
-    var popup = document.getElementById('status-legend-popup');
-    var trigger = document.getElementById('status-legend-trigger');
-    if (popup && trigger) {
-        if (trigger.contains(e.target)) {
-            popup.classList.toggle('open');
-        } else {
-            popup.classList.remove('open');
-        }
-    }
-});
 
 var adminLogData   = [];
 var adminLogFilter = '';
@@ -3167,18 +3157,19 @@ function printBillSlip(t) {
     var win = window.open('', '_blank', 'width=302,height=520');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
-        + '@page { size: 80mm auto; margin: 0; }'
+        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (120 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
         + '* { box-sizing: border-box; margin: 0; padding: 0; }'
-        + 'body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
-        + '.slip { width: 80mm; padding: 0; }'
+        + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
+        + '.slip { width: 80mm; }'
         + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
         + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
         + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
         + 'thead th:last-child { text-align: right; }'
         + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
         + 'tbody tr:last-child td { border-bottom: none; }'
-        + '@media print { body { margin: 0; } }'
-        + '</style></head><body>'
+        + '@media print { html, body { height: auto; } }'
+        + '</style>'
+        + '</head><body>'
         + '<div class="slip">'
         + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
             + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
