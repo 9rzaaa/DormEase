@@ -19,9 +19,7 @@ class DashboardController extends Controller
     {
         $staff = Auth::guard('staff')->user();
 
-        $activeTenantIds = Tenant::where('status', 'active')->pluck('tenant_id');
-
-    $activeTenantIds = Tenant::where('status', 'active')->pluck('tenant_id');
+        $activeTenantIds = Tenant::whereIn('status', ['active', 'pending'])->pluck('tenant_id');
 
     $monthlyBilling = DB::table('water_billing')
         ->select(
@@ -50,7 +48,7 @@ class DashboardController extends Controller
             $chartUnpaid[]    = $found ? (float) $found->unpaid    : 0;
         }
 
-        $tenantsByFloor = Tenant::where('status', 'active')
+        $tenantsByFloor = Tenant::whereIn('status', ['active', 'pending'])
             ->selectRaw('SUBSTRING(room_number, 1, 1) as floor, COUNT(*) as cnt')
             ->groupBy(DB::raw('SUBSTRING(room_number, 1, 1)'))
             ->orderBy(DB::raw('SUBSTRING(room_number, 1, 1)'))
@@ -95,7 +93,7 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'staff'                => $staff,
-            'totalTenants'         => Tenant::where('status', 'active')->count(),
+            'totalTenants'         => Tenant::whereIn('status', ['active', 'pending'])->count(),
             'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count(),
             'pendingMaintenance'   => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
             'unresolvedReports'    => EmergencyReport::where('status', '!=', 'resolved')->count(),
