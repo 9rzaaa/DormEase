@@ -657,7 +657,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="pending">Pending</option>
                 </select>
                 <div class="status-legend-wrap" id="status-legend-trigger">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8.01"/><path d="M12 12v4"/></svg>
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
                     <div class="status-legend-popup" id="status-legend-popup">
                         <div class="slp-title">Status Guide</div>
                         <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
@@ -2377,7 +2377,7 @@ async function submitDeleteRoom() {
             return {
                 state: 'notfound',
                 html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
-                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '<img src="/icons/info.png" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;margin-top:.1rem;filter:brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%);">'
                     + '<div style="flex:1;min-width:0;">'
                     + '<div style="font-size:.8rem;font-weight:700;color:#b0163a;line-height:1.4;">Room <span style="font-family:monospace;">' + typedRoom.trim() + '</span> does not exist.</div>'
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.2rem;">Open <strong>Manage Rooms</strong> to add it, then come back and assign the tenant.'
@@ -2408,7 +2408,7 @@ async function submitDeleteRoom() {
             return {
                 state: 'full',
                 html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
-                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                    + '<img src="/icons/info.png" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;margin-top:.1rem;filter:brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%);">'
                     + '<div><div style="font-size:.8rem;font-weight:700;color:#b0163a;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is at full capacity.</div>'
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">' + room.occupancy + ' of ' + room.capacity + ' slots occupied. Choose a different room or increase capacity in <strong>Manage Rooms</strong>.</div></div></div>'
             };
