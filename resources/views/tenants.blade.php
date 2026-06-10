@@ -1595,11 +1595,11 @@ function buildRows(list) {
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
             + '<td><div class="action-group">'
-                + '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" onclick=\'printBillSlip(' + JSON.stringify(t) + ')\'><img src="{{ asset(\'icons/billing.png\') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
+                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/billing.png') }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
             + '</div></td></tr>';
     }).join('');
 }
