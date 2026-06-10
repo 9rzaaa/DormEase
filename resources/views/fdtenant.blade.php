@@ -988,6 +988,242 @@ tbody tr:hover { background: var(--soft-bg); }
     background: var(--petal);
 }
 
+.quick-panel {
+    background: var(--white);
+    border-radius: 18px;
+    border: 1px solid var(--bright-pink);
+    box-shadow: 0 10px 20px rgba(0,0,0,.05), 0 18px 45px rgba(232,23,93,.15);
+    overflow: hidden;
+}
+
+.quick-panel-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: stretch;
+    min-height: 88px;
+}
+
+.quick-panel-left {
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .55rem;
+    border-right: 1px solid var(--pink-100);
+}
+
+.quick-panel-label {
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--bright-pink);
+}
+
+.quick-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.quick-search-icon {
+    position: absolute;
+    left: 1rem;
+    width: 16px; height: 16px;
+    opacity: .45;
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.quick-search-input {
+    width: 100%;
+    padding: .7rem 1rem .7rem 2.6rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--soft-bg);
+    font-size: .95rem;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: var(--ff-body);
+    outline: none;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+    box-sizing: border-box;
+}
+
+.quick-search-input::placeholder { color: var(--ink-muted); font-weight: 400; }
+
+.quick-search-input:focus {
+    border-color: var(--bright-pink);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+}
+
+.quick-results {
+    display: none;
+    flex-direction: column;
+    gap: .35rem;
+    margin-top: .6rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.quick-results.open { display: flex; }
+.quick-results::-webkit-scrollbar { width: 4px; }
+.quick-results::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+.quick-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .65rem .9rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    cursor: pointer;
+    transition: border-color .18s, background .18s, box-shadow .18s;
+    animation: qriFade .18s ease both;
+}
+
+@keyframes qriFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.quick-result-item:hover {
+    border-color: var(--bright-pink);
+    background: var(--blush);
+    box-shadow: 0 4px 14px rgba(232,23,93,.1);
+}
+
+.quick-result-item.is-inside {
+    border-color: #8ce0bb;
+    background: #f2fbf7;
+}
+
+.quick-result-item.is-inside:hover {
+    border-color: #1f9d69;
+    background: #e3f8ef;
+    box-shadow: 0 4px 14px rgba(31,157,105,.12);
+}
+
+.quick-result-left {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    min-width: 0;
+}
+
+.quick-result-avatar {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 800; color: var(--white);
+    flex-shrink: 0;
+    letter-spacing: -.01em;
+}
+
+.quick-result-avatar.avatar-inside {
+    background: linear-gradient(135deg, #1f9d69 0%, #2ec082 100%);
+}
+
+.quick-result-info { min-width: 0; }
+
+.quick-result-name {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-result-meta {
+    font-size: .72rem;
+    color: var(--ink-muted);
+    margin-top: .1rem;
+    white-space: nowrap;
+}
+
+.quick-result-right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-shrink: 0;
+}
+
+.quick-result-status {
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .2rem .55rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    white-space: nowrap;
+}
+
+.qrs-inside  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.qrs-outside { background: var(--petal); color: var(--ink-muted); border: 1px solid var(--pink-100); }
+
+.quick-action-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .32rem .8rem; border-radius: 8px;
+    font-size: .74rem; font-weight: 700;
+    cursor: pointer; transition: .18s; font-family: inherit;
+    white-space: nowrap; border: 1.5px solid;
+}
+
+.qab-in  { background: #e8faf5; color: #1a7a52; border-color: #8ce0bb; }
+.qab-in:hover  { background: #1f9d69; color: var(--white); border-color: transparent; }
+.qab-out { background: #fff0f4; color: #b0163a; border-color: #ffc2d1; }
+.qab-out:hover { background: #e04867; color: var(--white); border-color: transparent; }
+.qab-in:disabled, .qab-out:disabled { opacity: .5; cursor: default; pointer-events: none; }
+
+.quick-no-results {
+    padding: .9rem;
+    text-align: center;
+    font-size: .82rem;
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+.quick-panel-right {
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .3rem;
+    min-width: 120px;
+    background: linear-gradient(135deg, rgba(232,23,93,.04) 0%, rgba(232,23,93,.08) 100%);
+}
+
+.quick-live-num {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--hot-pink);
+    line-height: 1;
+    letter-spacing: -.04em;
+}
+
+.quick-live-label {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    text-align: center;
+}
+
+.quick-live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #1f9d69;
+    margin-top: .25rem;
+    animation: pulseGreen 2s infinite;
+}
+
 @media (max-width: 1100px) {
     .stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1083,7 +1319,32 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
     </div>
 
-    <div class="table-card fade-up d3">
+    <div class="quick-panel fade-up d3">
+        <div class="quick-panel-inner">
+            <div class="quick-panel-left">
+                <div class="quick-panel-label">Quick Time In / Out</div>
+                <div class="quick-search-wrap">
+                    <img src="{{ asset('icons/search.png') }}" class="quick-search-icon" alt="">
+                    <input
+                        type="text"
+                        id="quick-search-input"
+                        class="quick-search-input"
+                        placeholder="Type a tenant name or room number..."
+                        oninput="runQuickSearch()"
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="quick-results" id="quick-results"></div>
+            </div>
+            <div class="quick-panel-right">
+                <div class="quick-live-num" id="quick-live-num">{{ $insideCount }}</div>
+                <div class="quick-live-label">Inside Now</div>
+                <div class="quick-live-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-card fade-up" style="animation-delay:.28s;">
         <div class="table-header">
             <div>
                 <div class="table-title">All Tenants</div>
@@ -1509,6 +1770,8 @@ function updateTenantInsideState(id, isInside) {
     var insideCount = tenants.filter(function(x) { return x.is_inside; }).length;
     var el = document.getElementById('stat-inside-count');
     if (el) el.textContent = insideCount;
+    var ql = document.getElementById('quick-live-num');
+    if (ql) ql.textContent = insideCount;
 }
 
 function openLogDrawer() {
@@ -1939,6 +2202,107 @@ document.querySelectorAll('.modal-overlay').forEach(function(m) {
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
+
+function runQuickSearch() {
+    var q       = document.getElementById('quick-search-input').value.trim().toLowerCase();
+    var results = document.getElementById('quick-results');
+
+    if (q.length < 1) {
+        results.classList.remove('open');
+        results.innerHTML = '';
+        return;
+    }
+
+    var pool = tenants.filter(function(t) {
+        return t.status !== 'inactive' && t.status !== 'move_out';
+    });
+
+    var matches = pool.filter(function(t) {
+        return (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1
+            || (t.room_number || '').toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 6);
+
+    if (matches.length === 0) {
+        results.innerHTML = '<div class="quick-no-results">No tenants found for &ldquo;' + q + '&rdquo;</div>';
+        results.classList.add('open');
+        return;
+    }
+
+    results.innerHTML = matches.map(function(t, i) {
+        var initials  = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+        var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ' \u00b7 Rm ' + t.room_number : (t.room_number ? 'Rm ' + t.room_number : 'No room assigned');
+        var isInside  = !!t.is_inside;
+        var actionBtn = isInside
+            ? '<button class="quick-action-btn qab-out" onclick="quickTimeOut(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time Out</button>'
+            : '<button class="quick-action-btn qab-in"  onclick="quickTimeIn('  + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time In</button>';
+
+        return '<div class="quick-result-item ' + (isInside ? 'is-inside' : '') + '" style="animation-delay:' + (i * 0.04) + 's;">'
+            + '<div class="quick-result-left">'
+                + '<div class="quick-result-avatar ' + (isInside ? 'avatar-inside' : '') + '">' + initials + '</div>'
+                + '<div class="quick-result-info">'
+                    + '<div class="quick-result-name">' + t.first_name + ' ' + t.last_name + '</div>'
+                    + '<div class="quick-result-meta">' + roomLabel + '</div>'
+                + '</div>'
+            + '</div>'
+            + '<div class="quick-result-right">'
+                + '<span class="quick-result-status ' + (isInside ? 'qrs-inside' : 'qrs-outside') + '">' + (isInside ? 'Inside' : 'Outside') + '</span>'
+                + actionBtn
+            + '</div>'
+        + '</div>';
+    }).join('');
+
+    results.classList.add('open');
+}
+
+async function quickTimeIn(id, btn) {
+    btn.disabled = true;
+    showActionLoading('Recording time in...');
+    try {
+        var res  = await fetch('/tenants/' + id + '/time-in', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed.');
+        updateTenantInsideState(id, true);
+        runQuickSearch();
+        showToast(data.message, 'success');
+    } catch(e) {
+        showToast(e.message, 'error');
+        btn.disabled = false;
+    } finally {
+        hideActionLoading();
+    }
+}
+
+async function quickTimeOut(id, btn) {
+    btn.disabled = true;
+    showActionLoading('Recording time out...');
+    try {
+        var res  = await fetch('/tenants/' + id + '/time-out', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' }
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed.');
+        updateTenantInsideState(id, false);
+        runQuickSearch();
+        showToast(data.message, 'success');
+    } catch(e) {
+        showToast(e.message, 'error');
+        btn.disabled = false;
+    } finally {
+        hideActionLoading();
+    }
+}
+
+document.addEventListener('click', function(e) {
+    var panel = document.getElementById('quick-results');
+    var input = document.getElementById('quick-search-input');
+    if (panel && !panel.contains(e.target) && e.target !== input) {
+        panel.classList.remove('open');
+    }
+});
 
 applyFilters();
 </script>
