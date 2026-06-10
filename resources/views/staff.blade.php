@@ -942,10 +942,12 @@
         font-size: .85rem;
     }
     .atdlog-empty-icon {
-        font-size: 2.2rem;
-        color: var(--baby-pink);
+        width: 38px;
+        height: 38px;
         display: block;
-        margin-bottom: .75rem;
+        margin: 0 auto .75rem;
+        opacity: .35;
+        object-fit: contain;
     }
 
     .atdlog-footer {
@@ -1865,7 +1867,7 @@
         var list = document.getElementById('atdlog-list');
 
         if (data.length === 0) {
-            list.innerHTML = '<div class="atdlog-empty"><span class="atdlog-empty-icon">&#128197;</span>No attendance records found.</div>';
+            list.innerHTML = '<div class="atdlog-empty"><img src="{{ asset(\'icons/calendar.png\') }}" class="atdlog-empty-icon" alt="">No attendance records found.</div>';
             return;
         }
 

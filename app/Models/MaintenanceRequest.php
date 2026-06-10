@@ -27,12 +27,14 @@ class MaintenanceRequest extends Model
         'photo_path',
         'submitted_at',
         'resolved_at',
+        'resubmission_requested_at',
     ];
 
     protected $casts = [
-        'submitted_at' => 'datetime',
-        'resolved_at' => 'datetime',
-        'admin_notes_at' => 'datetime',
+        'submitted_at'              => 'datetime',
+        'resolved_at'               => 'datetime',
+        'admin_notes_at'            => 'datetime',
+        'resubmission_requested_at' => 'datetime',
     ];
 
     public function tenant()

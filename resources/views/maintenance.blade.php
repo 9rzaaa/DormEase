@@ -419,6 +419,128 @@
         font-size: .83rem; color: var(--ink-muted); line-height: 1.6; white-space: pre-wrap;
     }
 
+    .btn-resubmit-request {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+        margin-top: .5rem;
+        padding: .6rem 1rem;
+        border-radius: 10px;
+        border: 1.5px solid #ffd54f;
+        background: #fff8e1;
+        color: #c07800;
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .2s, border-color .2s, color .2s;
+        font-family: var(--ff-body);
+    }
+
+    .btn-resubmit-request:hover {
+        background: #fff0c0;
+        border-color: #c07800;
+        color: #7a5400;
+    }
+
+    .btn-resubmit-request.already-requested {
+        background: #e8f5e9;
+        border-color: #a5d6a7;
+        color: #2e7d32;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .btn-resubmit-request img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    .resubmit-confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26,26,46,.48);
+        backdrop-filter: blur(4px);
+        z-index: 1500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .resubmit-confirm-overlay.open { display: flex; }
+
+    .resubmit-confirm-box {
+        background: var(--white);
+        border-radius: 18px;
+        padding: 1.8rem 1.8rem 1.4rem;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 20px 60px rgba(26,26,46,.22);
+        animation: rcFadeUp .28s ease both;
+    }
+
+    @keyframes rcFadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .resubmit-confirm-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: .35rem;
+        letter-spacing: -.01em;
+    }
+
+    .resubmit-confirm-sub {
+        font-size: .83rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+    }
+
+    .resubmit-confirm-actions {
+        display: flex;
+        gap: .6rem;
+        justify-content: flex-end;
+    }
+
+    .resubmit-confirm-cancel {
+        padding: .55rem 1.2rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .85rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: border-color .2s, color .2s;
+    }
+
+    .resubmit-confirm-cancel:hover {
+        border-color: var(--bright-pink);
+        color: var(--hot-pink);
+    }
+
+    .resubmit-confirm-send {
+        padding: .55rem 1.3rem;
+        border-radius: 9px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .85rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        transition: opacity .2s;
+    }
+
+    .resubmit-confirm-send:hover { opacity: .88; }
+
     .empty-state { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .88rem; }
 
     .empty-state img {
@@ -972,6 +1094,22 @@
     </div>
 </div>
 
+<div class="resubmit-confirm-overlay" id="resubmit-confirm-overlay">
+    <div class="resubmit-confirm-box">
+        <div class="resubmit-confirm-title">Request photo resubmission?</div>
+        <div class="resubmit-confirm-sub">
+            A notification will be sent to the tenant asking them to submit a clearer photo for this request.
+        </div>
+        <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .85rem;font-size:.78rem;color:#c07800;margin-bottom:1.2rem;line-height:1.55;">
+            The tenant will be notified via push notification and in-app message.
+        </div>
+        <div class="resubmit-confirm-actions">
+            <button class="resubmit-confirm-cancel" onclick="closeResubmitConfirm()">Cancel</button>
+            <button class="resubmit-confirm-send" id="resubmit-confirm-btn" onclick="executeResubmitRequest()">Send Request</button>
+        </div>
+    </div>
+</div>
+
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
@@ -1364,64 +1502,140 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function viewReq(r) {
-        currentReq = r;
-        document.getElementById('view-content').innerHTML = `
-            <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
-                <span style="font-size:1.1rem;font-weight:800;color:var(--hot-pink);letter-spacing:-.01em;">#REQ-${String(r.id).padStart(3,'0')}</span>
-                ${statusBadge(r.status)}
-                ${urgencyBadge(r.urgency)}
-            </div>
+    currentReq = r;
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;">
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Tenant</div>
-                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Room</div>
-                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.room_number ?? '—')}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Issue Type</div>
-                    <div style="margin-top:.2rem;">${issueBadge(r.issue_type)}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Date Submitted</div>
-                    <div style="font-size:.82rem;color:var(--ink-muted);font-weight:500;">${fmtDatePlain(r.created_at)}</div>
-                </div>
-            </div>
+    const alreadyRequested = !!r.resubmission_requested_at;
+    const resubmitBtnHtml = `
+        <button
+            class="btn-resubmit-request${alreadyRequested ? ' already-requested' : ''}"
+            id="resubmit-request-btn"
+            onclick="openResubmitConfirm()"
+        >
+            <img src="{{ asset('icons/reset.png') }}" alt="">
+            ${alreadyRequested
+                ? 'Resubmission already requested on ' + fmtDatePlain(r.resubmission_requested_at)
+                : 'Request Photo Resubmission'}
+        </button>
+    `;
 
-            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Description</div>
-                <div style="font-size:.875rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
-            </div>
+    document.getElementById('view-content').innerHTML = `
+        <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:1.1rem;font-weight:800;color:var(--hot-pink);letter-spacing:-.01em;">#REQ-${String(r.id).padStart(3,'0')}</span>
+            ${statusBadge(r.status)}
+            ${urgencyBadge(r.urgency)}
+        </div>
 
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;">
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Tenant</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Room</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.room_number ?? '—')}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Issue Type</div>
+                <div style="margin-top:.2rem;">${issueBadge(r.issue_type)}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Date Submitted</div>
+                <div style="font-size:.82rem;color:var(--ink-muted);font-weight:500;">${fmtDatePlain(r.created_at)}</div>
+            </div>
+        </div>
+
+        <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Description</div>
+            <div style="font-size:.875rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
+        </div>
+
+        <div style="margin-bottom:.6rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.45rem;">Attached Photo</div>
             ${r.photo_url ? `
-            <div style="margin-bottom:.6rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.45rem;">Attached Photo</div>
-                <div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">
-                    <img src="${escHtml(r.photo_url)}"
-                        alt="Maintenance photo"
-                        style="width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer;"
-                        onclick="window.open('${escHtml(r.photo_url)}','_blank')"
-                        onerror="this.closest('div').innerHTML='<div style=\'padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\'>Photo could not be loaded.</div>'"
-                    />
-                    <a href="${escHtml(r.photo_url)}" target="_blank"
+            <div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">
+                <img src="${escHtml(r.photo_url)}"
+                    alt="Maintenance photo"
+                    style="width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer;"
+                    onclick="window.open('${escHtml(r.photo_url)}','_blank')"
+                    onerror="this.parentElement.innerHTML='<div style=\'padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\'>Photo could not be loaded.</div>'"
+                />
+                <a href="${escHtml(r.photo_url)}" target="_blank"
                     style="position:absolute;bottom:.55rem;right:.55rem;background:rgba(0,0,0,.52);color:#fff;font-size:.72rem;font-weight:700;padding:.3rem .65rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;backdrop-filter:blur(4px);">
-                        &#x2197; View full
-                    </a>
-                </div>
+                    &#x2197; View full
+                </a>
             </div>
-            ` : ''}
+            ` : `
+            <div style="background:var(--blush);border:1.5px dashed var(--baby-pink);border-radius:12px;padding:1.4rem 1rem;text-align:center;color:var(--ink-muted);font-size:.82rem;">
+                No photo attached to this request.
+            </div>
+            `}
+            ${resubmitBtnHtml}
+        </div>
 
-            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Admin Remarks</div>
-                ${r.admin_remarks
-                    ? `<div class="remark-box" style="margin-top:0;">${escHtml(r.admin_remarks)}</div>`
-                    : `<span style="font-size:.83rem;color:var(--ink-muted);font-style:italic;">No remarks yet.</span>`}
-            </div>
-        `;
-        openModal('view-modal');
+        <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Admin Remarks</div>
+            ${r.admin_remarks
+                ? `<div class="remark-box" style="margin-top:0;">${escHtml(r.admin_remarks)}</div>`
+                : `<span style="font-size:.83rem;color:var(--ink-muted);font-style:italic;">No remarks yet.</span>`}
+        </div>
+    `;
+    openModal('view-modal');
+}
+
+    function openResubmitConfirm() {
+        if (!currentReq) return;
+        document.getElementById('resubmit-confirm-overlay').classList.add('open');
+    }
+
+    function closeResubmitConfirm() {
+        document.getElementById('resubmit-confirm-overlay').classList.remove('open');
+    }
+
+    function executeResubmitRequest() {
+        if (!currentReq) return;
+
+        const btn = document.getElementById('resubmit-confirm-btn');
+        btn.textContent = 'Sending...';
+        btn.disabled    = true;
+
+        fetch('/maintenance/' + currentReq.id + '/request-resubmission', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            closeResubmitConfirm();
+
+            if (data.success) {
+                const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                currentReq.resubmission_requested_at = now;
+
+                const reqBtn = document.getElementById('resubmit-request-btn');
+                if (reqBtn) {
+                    reqBtn.classList.add('already-requested');
+                    reqBtn.innerHTML = '<img src="{{ asset("icons/reset.png") }}" alt=""> Resubmission already requested on ' + fmtDatePlain(now);
+                }
+
+                const idx = requests.findIndex(function(r) { return r.id === currentReq.id; });
+                if (idx !== -1) requests[idx].resubmission_requested_at = now;
+
+                showToast('Resubmission request sent to tenant.', 'success');
+            } else {
+                showToast('Failed to send resubmission request.', 'error');
+            }
+        })
+        .catch(function() {
+            closeResubmitConfirm();
+            showToast('Network error. Please try again.', 'error');
+        })
+        .finally(function() {
+            btn.textContent = 'Send Request';
+            btn.disabled    = false;
+        });
     }
 
     function switchToEdit() {
