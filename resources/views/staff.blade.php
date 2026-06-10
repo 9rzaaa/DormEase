@@ -2153,7 +2153,7 @@
         if (existing) existing.remove();
 
         document.body.insertAdjacentHTML('beforeend',
-            '<div class="modal-overlay open" id="clear-log-confirm-modal">'
+            '<div class="modal-overlay open" id="clear-log-confirm-modal" style="z-index:9999;">'
             + '<div class="modal" style="max-width:400px;">'
                 + '<div class="modal-header">'
                     + '<div class="modal-title">Clear Attendance Log</div>'
