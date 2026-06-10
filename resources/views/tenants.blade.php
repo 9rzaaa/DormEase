@@ -598,6 +598,25 @@ tbody tr:hover { background: var(--soft-bg); }
         transform: none;
     }
 }
+
+.addf-item {
+    display: block;
+    width: 100%;
+    padding: .6rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .15s;
+    font-family: var(--ff-body);
+    border-bottom: 1px solid var(--pink-100);
+}
+.addf-item:last-child { border-bottom: none; }
+.addf-item:hover { background: var(--blush); color: var(--hot-pink); }
+.addf-item.active { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -985,11 +1004,20 @@ tbody tr:hover { background: var(--soft-bg); }
         <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
         <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
     </div>
-    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--pink-100); padding-bottom: .8rem; margin-bottom: .2rem;">
-        <button class="page-btn active" id="admin-date-filter-all"       onclick="setAdminDateFilter('all')">All Dates</button>
-        <button class="page-btn"        id="admin-date-filter-today"     onclick="setAdminDateFilter('today')">Today</button>
-        <button class="page-btn"        id="admin-date-filter-yesterday" onclick="setAdminDateFilter('yesterday')">Yesterday</button>
-        <button class="page-btn"        id="admin-date-filter-week"      onclick="setAdminDateFilter('week')">This Week</button>
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
+        <div style="position:relative; display:inline-flex; align-items:center;">
+            <button id="admin-date-dropdown-btn" onclick="toggleAdminDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="admin-date-dropdown-label">All Dates</span>
+                <svg id="admin-date-dropdown-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="admin-date-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:150px;overflow:hidden;z-index:600;">
+                <button onclick="setAdminDateFilter('all')"       class="addf-item active" data-val="all">All Dates</button>
+                <button onclick="setAdminDateFilter('today')"     class="addf-item"        data-val="today">Today</button>
+                <button onclick="setAdminDateFilter('yesterday')" class="addf-item"        data-val="yesterday">Yesterday</button>
+                <button onclick="setAdminDateFilter('week')"      class="addf-item"        data-val="week">This Week</button>
+            </div>
+        </div>
     </div>
     <div class="tad-list" id="admin-log-list"></div>
     <div class="tad-footer">
@@ -2878,7 +2906,7 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown')) {
         closeAllExportDropdowns();
     }
-    var popup = document.getElementById('status-legend-popup');
+    var popup   = document.getElementById('status-legend-popup');
     var trigger = document.getElementById('status-legend-trigger');
     if (popup && trigger) {
         if (trigger.contains(e.target)) {
@@ -2886,6 +2914,12 @@ document.addEventListener('click', function(e) {
         } else {
             popup.classList.remove('open');
         }
+    }
+    if (!e.target.closest('#admin-date-dropdown-btn') && !e.target.closest('#admin-date-dropdown-menu')) {
+        var m = document.getElementById('admin-date-dropdown-menu');
+        var c = document.getElementById('admin-date-dropdown-chevron');
+        if (m) { m.style.display = 'none'; }
+        if (c) { c.style.transform = ''; }
     }
 });
 
@@ -2912,12 +2946,23 @@ function setAdminLogFilter(val) {
     renderAdminLogDrawer();
 }
 
+function toggleAdminDateDropdown() {
+    var menu    = document.getElementById('admin-date-dropdown-menu');
+    var chevron = document.getElementById('admin-date-dropdown-chevron');
+    var isOpen  = menu.style.display !== 'none';
+    menu.style.display      = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
 function setAdminDateFilter(val) {
     adminDateFilter = val;
-    document.getElementById('admin-date-filter-all').classList.toggle('active',       val === 'all');
-    document.getElementById('admin-date-filter-today').classList.toggle('active',     val === 'today');
-    document.getElementById('admin-date-filter-yesterday').classList.toggle('active', val === 'yesterday');
-    document.getElementById('admin-date-filter-week').classList.toggle('active',      val === 'week');
+    var labels = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+    document.getElementById('admin-date-dropdown-label').textContent = labels[val] || 'All Dates';
+    document.getElementById('admin-date-dropdown-menu').style.display = 'none';
+    document.getElementById('admin-date-dropdown-chevron').style.transform = '';
+    document.querySelectorAll('.addf-item').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.val === val);
+    });
     renderAdminLogDrawer();
 }
 
@@ -3112,18 +3157,19 @@ function printBillSlip(t) {
     var win = window.open('', '_blank', 'width=302,height=520');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
-        + '@page { size: 80mm auto; margin: 0; }'
+        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (120 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
         + '* { box-sizing: border-box; margin: 0; padding: 0; }'
-        + 'body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
-        + '.slip { width: 80mm; padding: 0; }'
+        + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
+        + '.slip { width: 80mm; }'
         + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
         + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
         + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
         + 'thead th:last-child { text-align: right; }'
         + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
         + 'tbody tr:last-child td { border-bottom: none; }'
-        + '@media print { body { margin: 0; } }'
-        + '</style></head><body>'
+        + '@media print { html, body { height: auto; } }'
+        + '</style>'
+        + '</head><body>'
         + '<div class="slip">'
         + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
             + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'

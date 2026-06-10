@@ -1251,6 +1251,25 @@ tbody tr:hover { background: var(--soft-bg); }
     .td-modal-body { padding: 1.1rem 1.4rem 1.4rem; }
     .td-modal-footer { padding: .75rem 1.4rem; }
 }
+
+.log-ddf-item {
+    display: block;
+    width: 100%;
+    padding: .6rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .15s;
+    font-family: var(--ff-body);
+    border-bottom: 1px solid var(--pink-100);
+}
+.log-ddf-item:last-child { border-bottom: none; }
+.log-ddf-item:hover { background: var(--blush); color: var(--hot-pink); }
+.log-ddf-item.active { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -1439,11 +1458,20 @@ tbody tr:hover { background: var(--soft-bg); }
         <button class="page-btn"        id="log-filter-timein"  onclick="setLogFilter('time_in')">Time In</button>
         <button class="page-btn"        id="log-filter-timeout" onclick="setLogFilter('time_out')">Time Out</button>
     </div>
-    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--pink-100); padding-bottom: .8rem; margin-bottom: .2rem;">
-        <button class="page-btn active" id="log-date-filter-all"       onclick="setLogDateFilter('all')">All Dates</button>
-        <button class="page-btn"        id="log-date-filter-today"     onclick="setLogDateFilter('today')">Today</button>
-        <button class="page-btn"        id="log-date-filter-yesterday" onclick="setLogDateFilter('yesterday')">Yesterday</button>
-        <button class="page-btn"        id="log-date-filter-week"      onclick="setLogDateFilter('week')">This Week</button>
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
+        <div style="position:relative; display:inline-flex; align-items:center;">
+            <button id="log-date-dropdown-btn" onclick="toggleLogDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="log-date-dropdown-label">All Dates</span>
+                <svg id="log-date-dropdown-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="log-date-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:150px;overflow:hidden;z-index:600;">
+                <button onclick="setLogDateFilter('all')"       class="log-ddf-item active" data-val="all">All Dates</button>
+                <button onclick="setLogDateFilter('today')"     class="log-ddf-item"        data-val="today">Today</button>
+                <button onclick="setLogDateFilter('yesterday')" class="log-ddf-item"        data-val="yesterday">Yesterday</button>
+                <button onclick="setLogDateFilter('week')"      class="log-ddf-item"        data-val="week">This Week</button>
+            </div>
+        </div>
     </div>
     <div class="tad-list" id="log-list"></div>
     <div class="tad-footer">
@@ -1800,12 +1828,23 @@ function setLogFilter(val) {
     renderLogDrawer();
 }
 
+function toggleLogDateDropdown() {
+    var menu    = document.getElementById('log-date-dropdown-menu');
+    var chevron = document.getElementById('log-date-dropdown-chevron');
+    var isOpen  = menu.style.display !== 'none';
+    menu.style.display    = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
 function setLogDateFilter(val) {
     logDateFilter = val;
-    document.getElementById('log-date-filter-all').classList.toggle('active',       val === 'all');
-    document.getElementById('log-date-filter-today').classList.toggle('active',     val === 'today');
-    document.getElementById('log-date-filter-yesterday').classList.toggle('active', val === 'yesterday');
-    document.getElementById('log-date-filter-week').classList.toggle('active',      val === 'week');
+    var labels = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+    document.getElementById('log-date-dropdown-label').textContent = labels[val] || 'All Dates';
+    document.getElementById('log-date-dropdown-menu').style.display = 'none';
+    document.getElementById('log-date-dropdown-chevron').style.transform = '';
+    document.querySelectorAll('.log-ddf-item').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.val === val);
+    });
     renderLogDrawer();
 }
 
@@ -2244,6 +2283,12 @@ function closeAllExportDropdowns() {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown')) {
         closeAllExportDropdowns();
+    }
+    if (!e.target.closest('#log-date-dropdown-btn') && !e.target.closest('#log-date-dropdown-menu')) {
+        var m = document.getElementById('log-date-dropdown-menu');
+        var c = document.getElementById('log-date-dropdown-chevron');
+        if (m) { m.style.display = 'none'; }
+        if (c) { c.style.transform = ''; }
     }
 });
 
