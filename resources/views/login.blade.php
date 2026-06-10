@@ -1160,12 +1160,12 @@
         <img src="{{ asset('images/girl.png') }}" alt="Student">
     </div>
 
-    <div class="left-logo">
+    <a href="{{ route('home') }}" class="left-logo" style="text-decoration: none;">
         <div class="logo-mark">
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
         </div>
         <div class="logo-text">Dorm<span>Ease</span></div>
-    </div>
+    </a>
 
     <div class="left-body">
         <h1>Manage with<br>ease &amp;<br><em>confidence.</em></h1>
