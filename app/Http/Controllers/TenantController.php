@@ -30,7 +30,13 @@ class TenantController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
+        $billingData = \App\Models\WaterBilling::whereIn('payment_status', ['unpaid', 'overdue'])
+            ->get()
+            ->groupBy('tenant_id');
+
         return view('tenants', [
+            'tenants'         => $tenants,
+            'billingData'     => $billingData,
             'tenants'         => $tenants,
             'totalTenants'    => $tenants->count(),
             'activeCount'     => $tenants->where('status', 'active')->count(),
@@ -364,20 +370,6 @@ class TenantController extends Controller
             'inactiveArchive' => $inactiveArchive,
             'moveoutArchive'  => $moveoutArchive,
         ]);
-    }
-
-    public function billSlip($id)
-    {
-        $tenant = Tenant::findOrFail($id);
-
-        $bills = \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
-            ->whereIn('payment_status', ['unpaid', 'overdue'])
-            ->orderBy('billing_month', 'asc')
-            ->get();
-
-        $total = $bills->sum('room_share');
-
-        return view('tenant-bill-slip', compact('tenant', 'bills', 'total'));
     }
 
     public function updateNotes(Request $request, $id)

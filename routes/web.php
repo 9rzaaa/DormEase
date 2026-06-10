@@ -283,5 +283,4 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
     
     Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
-    Route::get('/tenants/{id}/bill-slip', [TenantController::class, 'billSlip'])->name('tenants.bill-slip');
 });

@@ -1431,6 +1431,7 @@ tbody tr:hover { background: var(--soft-bg); }
     win.document.close();
 }
 var tenants = @json($tenants);
+var billingData = @json($billingData);
 var PER_PAGE = 8;
 var currentTenant = null;
 var sectionState = { active: true, reserved: true };
@@ -1598,7 +1599,7 @@ function buildRows(list) {
                 + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" onclick="window.open(\'/tenants/' + t.tenant_id + '/bill-slip\', \'_blank\')"><img src="{{ asset('icons/billing.png') }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Bill Slip" onclick="printBillSlip(' + JSON.stringify(t) + ')"><img src="{{ asset('icons/billing.png') }}" class="icon-sm"></button>'
             + '</div></td>'
             + '</tr>';
     }).join('');
@@ -2719,5 +2720,104 @@ document.addEventListener('click', function(e) {
         closeAllExportDropdowns();
     }
 });
+
+function printBillSlip(t) {
+    var tenantBills = [];
+    Object.keys(billingData).forEach(function(tid) {
+        if (parseInt(tid) === parseInt(t.tenant_id)) {
+            tenantBills = billingData[tid];
+        }
+    });
+
+    tenantBills.sort(function(a, b) {
+        return new Date(a.billing_month) - new Date(b.billing_month);
+    });
+
+    var total = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
+    var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
+
+    function fmtMonth(d) {
+        if (!d) return '—';
+        var dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+    function fmtDate(d) {
+        if (!d) return '—';
+        var dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    var billRows = '';
+    if (tenantBills.length === 0) {
+        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:6mm 0;">No outstanding balance.</td></tr>';
+    } else {
+        tenantBills.forEach(function(b) {
+            var badgeColor = b.payment_status === 'overdue'
+                ? 'background:#ffe9ee;color:#e04867;border:1px solid #ff9db0;'
+                : 'background:#fff6dc;color:#c58a00;border:1px solid #f2cd63;';
+            billRows += '<tr>'
+                + '<td>' + fmtMonth(b.billing_month)
+                + '<br><span style="display:inline-block;font-size:5.5pt;font-weight:700;padding:.5mm 1.5mm;border-radius:3px;margin-top:.8mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
+                + '<td style="white-space:nowrap;">' + fmtDate(b.due_date) + '</td>'
+                + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
+                + '</tr>';
+        });
+    }
+
+    var totalBlock = tenantBills.length > 0
+        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:3mm 3.5mm;background:#E8175D;border-radius:5px;margin-bottom:3.5mm;">'
+            + '<span style="font-size:8pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
+            + '<span style="font-size:13pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
+            + '</div>'
+            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:4px;padding:2mm 2.5mm;font-size:6.5pt;color:#7a5400;line-height:1.45;margin-bottom:3.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference. Continued non-payment may affect your tenancy status.</div>'
+        : '<div style="text-align:center;padding:4mm 3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:5px;margin-bottom:3.5mm;">'
+            + '<div style="font-size:10pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
+            + '<div style="font-size:7pt;color:#2e9e68;margin-top:1mm;">All water bills have been settled.</div>'
+            + '</div>';
+
+    var win = window.open('', '_blank', 'width=420,height=700');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
+        + '<style>'
+        + '@page{size:80mm auto;margin:0}'
+        + '*{box-sizing:border-box;margin:0;padding:0}'
+        + 'body{font-family:"Segoe UI",Arial,sans-serif;background:#fff;width:80mm;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+        + '.slip{width:80mm;padding:7mm 7mm 8mm;display:flex;flex-direction:column;gap:0}'
+        + 'table{width:100%;border-collapse:collapse;margin-bottom:3mm}'
+        + 'thead th{font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.05em;padding:1.5mm 1mm;border-bottom:1.5px solid #f4b8d0;text-align:left}'
+        + 'thead th:last-child{text-align:right}'
+        + 'tbody td{font-size:7.5pt;color:#3a0e22;padding:2mm 1mm;border-bottom:1px dashed #fce8f1;vertical-align:top}'
+        + 'tbody tr:last-child td{border-bottom:none}'
+        + '@media print{body{margin:0}}'
+        + '</style></head><body>'
+        + '<div class="slip">'
+        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:5mm 4mm 4mm;border-radius:5px 5px 0 0;margin:-7mm -7mm 4mm;">'
+            + '<div style="font-size:6.5pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
+            + '<div style="font-size:11pt;font-weight:800;margin-top:1mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
+            + '<div style="font-size:7pt;opacity:.82;margin-top:.5mm;">DormEase Billing System</div>'
+        + '</div>'
+        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:5px;padding:3mm 3.5mm;margin-bottom:3.5mm;">'
+            + '<div style="font-size:10.5pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
+            + '<div style="font-size:7pt;color:#a0405e;margin-top:1mm;display:flex;flex-direction:column;gap:.8mm;">'
+                + '<span>Account ID: <strong>' + (t.account_id || '—') + '</strong></span>'
+                + '<span>Room: <strong>' + floorRoom + '</strong> &nbsp;&middot;&nbsp; ' + (t.stay_type || 'N/A') + '</span>'
+                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '—') + '</strong></span>'
+            + '</div>'
+        + '</div>'
+        + (tenantBills.length > 0 ? '<div style="font-size:6.5pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2mm;padding-bottom:1.5mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
+        + (tenantBills.length > 0 ? '<table><thead><tr><th>Billing Period</th><th>Due Date</th><th>Amount</th></tr></thead><tbody>' + billRows + '</tbody></table>' : billRows)
+        + totalBlock
+        + '<div style="margin-bottom:3.5mm;display:flex;flex-direction:column;gap:5mm;">'
+            + '<div style="display:flex;flex-direction:column;gap:1mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:6pt;color:#b06080;text-align:center;letter-spacing:.04em;">Tenant Signature over Printed Name</div></div>'
+            + '<div style="display:flex;flex-direction:column;gap:1mm;"><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:6pt;color:#b06080;text-align:center;letter-spacing:.04em;">Admin / Staff Signature &amp; Date</div></div>'
+        + '</div>'
+        + '<div style="padding-top:3mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
+            + '<div style="font-size:6pt;color:#b06080;">Issued: ' + today + '</div>'
+            + '<div style="font-size:6pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
+        + '</div>'
+        + '</div>'
+        + '</body></html>');
+    win.document.close();
+}
 </script>
 @endsection
