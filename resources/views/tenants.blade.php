@@ -410,6 +410,10 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar { height: 3px; width: 100%; }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
+@keyframes pulseGreen {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
+    50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
+}
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
@@ -481,6 +485,35 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-export-btn { display: inline-flex; align-items: center; gap: .4rem; font-size: .75rem; font-weight: 700; color: var(--bright-pink); background: var(--petal); border: 1px solid var(--pink-100); border-radius: 8px; padding: .35rem .85rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; font-family: var(--ff-body); }
 .tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
+.log-card {
+    background: var(--white);
+    border: 1px solid var(--pink-100);
+    border-radius: 12px;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    transition: background .2s, border-color .2s;
+    animation: tadSlideIn .3s ease both;
+}
+.log-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+.log-action-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.log-action-icon.in  { background: #e8faf5; border: 1.5px solid #8ce0bb; }
+.log-action-icon.out { background: #fff0f4; border: 1.5px solid #ffc2d1; }
+.log-info { flex: 1; min-width: 0; }
+.log-name { font-size: .87rem; font-weight: 700; color: var(--ink); }
+.log-meta { font-size: .72rem; color: var(--ink-muted); margin-top: .15rem; }
+.log-time-col {
+    font-size: .7rem; font-weight: 600;
+    color: var(--ink-muted); text-align: right;
+    flex-shrink: 0; white-space: nowrap;
+}
+.tad-pill-timein  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-timeout { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 .export-dropdown { position: relative; display: inline-flex; }
 .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
 .export-menu.open { display: block; }
@@ -577,6 +610,10 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
+            <button class="btn-outline" onclick="openAdminLogDrawer()">
+                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Log">
+                Entry / Exit Log
+            </button>
             <button class="btn-outline" onclick="openRoomsDrawer()">
                 <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Rooms">
                 Manage Rooms
@@ -693,6 +730,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <th>Move-Out Date</th>
                                 <th>Contact No.</th>
                                 <th>Status</th>
+                                <th>Location</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -728,6 +766,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <th>Move-Out Date</th>
                                 <th>Contact No.</th>
                                 <th>Status</th>
+                                <th>Location</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -923,6 +962,37 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="btn-cancel" onclick="closeModal('delete-room-modal')">Cancel</button>
             <button class="btn-submit" style="background:#e04867;" onclick="submitDeleteRoom()">Delete</button>
         </div>
+    </div>
+</div>
+
+<div class="tenant-archive-backdrop" id="admin-log-backdrop" onclick="closeAdminLogDrawer()"></div>
+
+<div class="tenant-archive-drawer" id="admin-log-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Entry / Exit Log</div>
+            <div class="tad-sub">Real-time record of tenant time-ins and time-outs</div>
+        </div>
+        <button class="tad-close" onclick="closeAdminLogDrawer()">&#x2715;</button>
+    </div>
+    <div class="tad-search-bar">
+        <div class="tad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="admin-log-search" placeholder="Search by name, room..." oninput="renderAdminLogDrawer()">
+        </div>
+    </div>
+    <div style="padding: 0 1.8rem .6rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
+        <button class="page-btn active" id="admin-log-filter-all"     onclick="setAdminLogFilter('')">All</button>
+        <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
+        <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
+    </div>
+    <div class="tad-list" id="admin-log-list"></div>
+    <div class="tad-footer">
+        <div class="tad-count-label" id="admin-log-count-label">0 records</div>
+        <button class="tad-export-btn" onclick="exportAdminLog()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
     </div>
 </div>
 
@@ -1651,9 +1721,20 @@ function escapeJs(str) {
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
+function insideIndicator(isInside) {
+    if (isInside) {
+        return '<span style="display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:700;">'
+            + '<span style="width:9px;height:9px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 3px rgba(31,157,105,.2);animation:pulseGreen 2s infinite;flex-shrink:0;display:inline-block;"></span>'
+            + '<span style="color:#1f9d69;">Inside</span></span>';
+    }
+    return '<span style="display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:700;">'
+        + '<span style="width:9px;height:9px;border-radius:50%;background:#c8c8d4;flex-shrink:0;display:inline-block;"></span>'
+        + '<span style="color:var(--ink-muted);">Outside</span></span>';
+}
+
 function buildRows(list) {
     if (list.length === 0) {
-        return '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
+        return '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
@@ -1661,7 +1742,7 @@ function buildRows(list) {
         var col4 = t.status === 'reserved'
             ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
             : fmtDate(t.move_in_date);
-        return '<tr>'
+        return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
             + '<td>' + nameCell + '</td>'
             + '<td>' + floorRoom + '</td>'
@@ -1669,6 +1750,7 @@ function buildRows(list) {
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
+            + '<td class="td-center" id="admin-inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>'
             + '<td><div class="action-group">'
                 + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
@@ -2803,6 +2885,107 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+var adminLogData   = [];
+var adminLogFilter = '';
+
+function openAdminLogDrawer() {
+    document.getElementById('admin-log-drawer').classList.add('open');
+    document.getElementById('admin-log-backdrop').classList.add('open');
+    fetchAdminLogs();
+}
+
+function closeAdminLogDrawer() {
+    document.getElementById('admin-log-drawer').classList.remove('open');
+    document.getElementById('admin-log-backdrop').classList.remove('open');
+}
+
+function setAdminLogFilter(val) {
+    adminLogFilter = val;
+    document.getElementById('admin-log-filter-all').classList.toggle('active',     val === '');
+    document.getElementById('admin-log-filter-timein').classList.toggle('active',  val === 'time_in');
+    document.getElementById('admin-log-filter-timeout').classList.toggle('active', val === 'time_out');
+    renderAdminLogDrawer();
+}
+
+async function fetchAdminLogs() {
+    document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Loading...</div>';
+    try {
+        var res = await fetch('/tenant-logs', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        adminLogData = await res.json();
+        renderAdminLogDrawer();
+    } catch(e) {
+        document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Failed to load logs.</div>';
+    }
+}
+
+function renderAdminLogDrawer() {
+    var q    = document.getElementById('admin-log-search').value.toLowerCase();
+    var data = adminLogData.filter(function(l) {
+        var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1
+            || (l.account_id  || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchSearch;
+    });
+
+    document.getElementById('admin-log-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+    var list = document.getElementById('admin-log-list');
+
+    if (data.length === 0) {
+        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset("icons/tenants.png") }}" alt="">No log records found.</div>';
+        return;
+    }
+
+    var inSvg  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
+    var outSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0163a" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
+    list.innerHTML = data.map(function(l, i) {
+        var isIn      = l.action === 'time_in';
+        var roomLabel = (l.floor && l.room_number)
+            ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
+            : (l.room_number ? 'Rm ' + l.room_number : 'No room');
+
+        return '<div class="log-card" style="animation-delay:' + (i * 0.03) + 's;">'
+            + '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>'
+            + '<div class="log-info">'
+                + '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>'
+                + '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; '
+                    + '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>'
+                + '</div>'
+            + '</div>'
+            + '<div class="log-time-col">' + fmtDateTime(l.logged_at) + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>'
+        + '</div>';
+    }).join('');
+}
+
+function exportAdminLog() {
+    var q    = document.getElementById('admin-log-search').value.toLowerCase();
+    var data = adminLogData.filter(function(l) {
+        var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchSearch;
+    });
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+    data.forEach(function(l) {
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+    });
+    var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a   = document.createElement('a');
+    a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'tenant-entry-exit-log.csv';
+    a.click();
+}
+
+function fmtDateTime(d) {
+    if (!d) return '\u2014';
+    var dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
 
 function printBillSlip(t) {
     var tenantBills = billingData[String(t.tenant_id)] || [];
