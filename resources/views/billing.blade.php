@@ -384,7 +384,7 @@
     .badge-rejected   { background: #fff3eb; color: #c94a00; border: 1px solid #ffb380; }
     .badge-pending-tenant  { background: #edf1ff; color: #5570ff; border: 1px solid #b6c2ff; }
     .badge-inactive-tenant { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
-    
+
     .rejection-reason-wrap {
         overflow: hidden;
         max-height: 0;
@@ -918,6 +918,139 @@
         transform: translateY(-1px);
     }
 
+    .btn-preview-proof {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        width: 100%;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        background: var(--white);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--border-pink);
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: border-color .18s, background .18s, transform .15s;
+        box-sizing: border-box;
+        font-family: inherit;
+        margin-top: .6rem;
+    }
+
+    .btn-preview-proof:hover {
+        border-color: var(--hot-pink);
+        background: var(--pink-bg-soft);
+        transform: translateY(-1px);
+    }
+
+    .proof-lightbox-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(10,0,8,.88);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        animation: lbFadeIn .2s ease;
+    }
+
+    .proof-lightbox-overlay.open { display: flex; }
+
+    @keyframes lbFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    .proof-lightbox-inner {
+        position: relative;
+        max-width: 860px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        animation: lbSlideUp .28s cubic-bezier(.22,1,.36,1);
+    }
+
+    @keyframes lbSlideUp {
+        from { opacity: 0; transform: translateY(20px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .proof-lightbox-header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .proof-lightbox-name {
+        font-size: .9rem;
+        font-weight: 700;
+        color: rgba(255,255,255,.85);
+        letter-spacing: .01em;
+    }
+
+    .proof-lightbox-actions {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+    }
+
+    .lb-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .45rem .9rem;
+        border-radius: 8px;
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: opacity .15s, transform .15s;
+        text-decoration: none;
+        border: none;
+        font-family: inherit;
+    }
+
+    .lb-btn-open {
+        background: rgba(255,255,255,.15);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.25);
+    }
+
+    .lb-btn-open:hover { background: rgba(255,255,255,.25); }
+
+    .lb-btn-close {
+        background: var(--gradient-pink);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(232,23,93,.35);
+    }
+
+    .lb-btn-close:hover { opacity: .88; transform: translateY(-1px); }
+
+    .proof-lightbox-img-wrap {
+        width: 100%;
+        border-radius: 18px;
+        overflow: hidden;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-height: 75vh;
+    }
+
+    .proof-lightbox-img {
+        width: 100%;
+        max-height: 75vh;
+        object-fit: contain;
+        display: block;
+    }
+
     .action-loading-overlay {
         position: fixed;
         inset: 0;
@@ -1309,6 +1442,24 @@
   </div>
 </div>
 
+<div class="proof-lightbox-overlay" id="proof-lightbox" onclick="if(event.target===this)closeLightbox()">
+    <div class="proof-lightbox-inner">
+        <div class="proof-lightbox-header">
+            <span class="proof-lightbox-name" id="lb-tenant-name"></span>
+            <div class="proof-lightbox-actions">
+                <a id="lb-open-link" href="#" target="_blank" class="lb-btn lb-btn-open">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 12L12 1M12 1H5M12 1V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Open in new tab
+                </a>
+                <button class="lb-btn lb-btn-close" onclick="closeLightbox()">✕ Close</button>
+            </div>
+        </div>
+        <div class="proof-lightbox-img-wrap">
+            <img id="lb-img" src="" alt="Proof of payment" class="proof-lightbox-img">
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1537,7 +1688,7 @@ function recalcUpdateShare() {
     const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
     const consumption = Math.max(0, curr - prev);
     if (document.getElementById('edit-consumption'))
-        document.getElementById('edit-consumption').value = consumption.toFixed(2);
+        document.getElementById('edit-consumption').value = consumption.toFixed(2) + ' m³';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1551,10 +1702,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const prev_reading   = document.getElementById('edit-prev').value;
             const curr_reading   = document.getElementById('edit-curr').value;
             const due_date       = document.getElementById('edit-due-date').value;
-                const statusSelects  = updateForm.querySelectorAll('.status-select');
-                const firstSelect    = Array.from(statusSelects).find(s => s.value !== 'pending-tenant' && s.value !== 'inactive-tenant');
-                const payment_status = firstSelect ? firstSelect.value : 'unpaid';
-                const status_updates = Array.from(statusSelects)
+            const statusSelects  = updateForm.querySelectorAll('.status-select');
+            const firstSelect    = Array.from(statusSelects).find(s => s.value !== 'pending-tenant' && s.value !== 'inactive-tenant');
+            const payment_status = firstSelect ? firstSelect.value : 'unpaid';
+            const status_updates = Array.from(statusSelects)
                 .filter(select => select.value !== 'pending-tenant' && select.value !== 'inactive-tenant')
                 .map(select => {
                     const field = select.closest('.modal-field');
@@ -1903,6 +2054,24 @@ function umTab(name, btn) {
     if (activeIcon) activeIcon.style.filter = 'brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%)';
 }
 
+function openLightbox(proofUrl, tenantName) {
+    document.getElementById('lb-img').src         = proofUrl;
+    document.getElementById('lb-open-link').href  = proofUrl;
+    document.getElementById('lb-tenant-name').textContent = tenantName + ' — Proof of Payment';
+    document.getElementById('proof-lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('proof-lightbox').classList.remove('open');
+    document.getElementById('lb-img').src = '';
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+
 function openUpdateModal(room) {
     document.querySelectorAll('.um-panel').forEach(p => p.style.display = 'none');
     document.getElementById('um-tab-readings').style.display = 'block';
@@ -1923,6 +2092,8 @@ function openUpdateModal(room) {
     document.getElementById('edit-curr').value = parseFloat(room.curr_reading ?? 0).toFixed(2);
     document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
 
+    const initCons = Math.max(0, parseFloat(room.curr_reading ?? 0) - parseFloat(room.prev_reading ?? 0));
+    document.getElementById('um-disp-cons').textContent = initCons.toFixed(2) + ' m³';
     document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
     const firstBilledTenant = room.tenants.find(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
     document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '-';
@@ -1935,7 +2106,7 @@ function openUpdateModal(room) {
         const receiptBtn = isPaid && t.billing_id
             ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">
                    <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
-                   Download receipt
+                   Download invoice
                </a>`
             : '';
         paymentsHtml += `
@@ -1973,12 +2144,24 @@ function openUpdateModal(room) {
 
     let proofHtml = '';
     room.tenants.filter(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant').forEach(function(t) {
-        const refCode = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
-        const subAt   = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
-        const proofUrl = t.proof_of_payment_url  ? escapeHtml(t.proof_of_payment_url)   : '';
-        const imgHtml  = proofUrl
-            ? `<a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);"><img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;"></a>`
+        const refCode  = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
+        const subAt    = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
+        const proofUrl = t.proof_of_payment_url   ? escapeHtml(t.proof_of_payment_url)   : '';
+        const safeUrl  = t.proof_of_payment_url   ? t.proof_of_payment_url               : '';
+        const safeName = t.name;
+
+        const imgHtml = proofUrl
+            ? `<div style="position:relative;">
+                   <a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);">
+                       <img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;">
+                   </a>
+                   <button type="button" class="btn-preview-proof" onclick="openLightbox('${safeUrl.replace(/'/g,"\\'")}', '${safeName.replace(/'/g,"\\'")}')">
+                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                       Preview full image
+                   </button>
+               </div>`
             : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
+
         proofHtml += `
             <div style="margin-bottom:16px;">
                 <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);border-bottom:1px solid var(--border-pink-mid);padding-bottom:6px;margin-bottom:10px;">${escapeHtml(t.name)}</div>
