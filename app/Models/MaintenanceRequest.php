@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,7 @@ class MaintenanceRequest extends Model
         'admin_notes',
         'admin_notes_at',
         'assigned_to',
+        'photo_path',
         'submitted_at',
         'resolved_at',
     ];

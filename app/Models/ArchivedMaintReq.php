@@ -22,6 +22,7 @@ class ArchivedMaintReq extends Model
         'status',
         'admin_notes',
         'assigned_to',
+        'photo_path',
         'submitted_at',
         'resolved_at',
         'archived_at',
