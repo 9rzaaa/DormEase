@@ -355,8 +355,9 @@
         background-size: 100% 100%, 22px 22px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 3rem 3.5rem;
+        justify-content: flex-start;
+        padding: 2rem 3.5rem;
+        padding-top: 3.5rem;
         position: relative;
         overflow: hidden;
     }
@@ -1509,8 +1510,8 @@
             <span class="h1-line h1-line-2">ease &amp;</span>
             <span class="h1-line h1-line-3"><em>confidence.</em></span>
         </h1>
-        <p>The DormEase portal gives you full control over rooms, tenants, payments, and maintenance all in one place.</p>
-
+        <p>Keeping up with tenants, rooms, and requests has never been this straightforward. Everything in one place, the way it should be.</p>
+        
         <div class="feature-strip" id="feature-strip">
             <div class="feature-strip-icon" id="feature-icon">
                 <img src="{{ asset('icons/bed.png') }}" alt="" id="feature-img">
