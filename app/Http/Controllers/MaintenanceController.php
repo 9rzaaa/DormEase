@@ -228,10 +228,11 @@ class MaintenanceController extends Controller
             'status'        => $r->status,
             'admin_notes'   => $r->admin_notes,
             'assigned_to'   => $r->assigned_to,
-            'photo_path'    => $r->photo_path,
-            'submitted_at'  => $r->submitted_at,
-            'resolved_at'   => $r->resolved_at,
-            'archived_at'   => now(),
+            'photo_path'         => $r->photo_path,
+            'submitted_at'       => $r->submitted_at,
+            'resolved_at'        => $r->resolved_at,
+            'hidden_from_tenant' => $r->hidden_from_tenant,
+            'archived_at'        => now(),
         ]);
     }
 }

@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/maintenance', [MaintenanceController::class, 'index']);
     Route::post('/maintenance', [MaintenanceController::class, 'store']);
     Route::post('/maintenance/{id}/resubmit-photo', [MaintenanceController::class, 'resubmitPhoto']);
+    Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy']);
 
     // emergency
     Route::get('/emergency', [EmergencyController::class, 'index']);

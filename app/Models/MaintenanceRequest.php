@@ -29,6 +29,7 @@ class MaintenanceRequest extends Model
         'resolved_at',
         'resubmission_requested_at',
         'resubmission_reason',
+        'hidden_from_tenant',
     ];
 
     protected $casts = [
@@ -37,6 +38,7 @@ class MaintenanceRequest extends Model
         'admin_notes_at'            => 'datetime',
         'resubmission_requested_at' => 'datetime',
         'resubmission_reason'       => 'string',
+        'hidden_from_tenant'        => 'boolean',
     ];
 
     public function tenant()
