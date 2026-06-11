@@ -441,6 +441,50 @@
         display: inline-block;
     }
 
+    .form-header-title {
+        position: relative;
+        cursor: default;
+    }
+
+    .form-header-title .title-halo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.6);
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(ellipse at center, rgba(232,23,93,.13) 0%, transparent 70%);
+        border-radius: 50%;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .35s ease, transform .4s cubic-bezier(.22,1,.36,1);
+        z-index: -1;
+    }
+
+    .form-header-title .title-logo {
+        position: absolute;
+        top: 50%;
+        left: -18px;
+        transform: translateY(-50%) scale(0.5) rotate(-12deg);
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
+        filter: drop-shadow(0 2px 8px rgba(232,23,93,.3));
+    }
+
+    .form-header-title:hover .title-halo {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .form-header-title:hover .title-logo {
+        opacity: .55;
+        transform: translateY(-50%) scale(1) rotate(0deg);
+    }
+
     .form-header-sub {
         opacity: 0;
         animation: slideUp .5s cubic-bezier(.22,1,.36,1) .28s forwards;
@@ -452,21 +496,34 @@
         letter-spacing: .1em;
         text-transform: uppercase;
         color: var(--bright-pink);
-        margin-bottom: .55rem;
-        display: flex;
+        margin-bottom: .65rem;
+        display: inline-flex;
         align-items: center;
         gap: .45rem;
         position: relative;
-        overflow: hidden;
+        padding-bottom: .3rem;
     }
 
     .eyebrow::before {
+        display: none;
+    }
+
+    .eyebrow::after {
         content: '';
-        display: block;
-        width: 20px; height: 2px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        width: 100%;
         background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
         border-radius: 2px;
-        flex-shrink: 0;
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform .38s cubic-bezier(.22,1,.36,1);
+    }
+
+    .eyebrow.line-drawn::after {
+        transform: scaleX(1);
     }
 
     .eyebrow-inner {
@@ -554,10 +611,9 @@
 
     .role-btn:hover {
         border-color: var(--pink-light);
-        transform: translateY(-1px);
     }
 
-    .role-btn:active { transform: translateY(0) scale(.98); }
+    .role-btn:active { transform: scale(.97); }
 
     .role-btn.active {
         border-color: var(--bright-pink);
@@ -1496,7 +1552,11 @@
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
                 <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
             </div>
-            <h2 class="form-header-title">Welcome to<br><em>DormEase</em></h2>
+            <h2 class="form-header-title">
+                <span class="title-halo"></span>
+                <img class="title-logo" src="{{ asset('images/logo.png') }}" alt="">
+                Welcome to<br><em>DormEase</em>
+            </h2>
             <p class="form-header-sub">Select your role and sign in with your credentials to continue.</p>
         </div>
 
@@ -1897,14 +1957,19 @@
         });
         document.getElementById('role-input').value = role;
 
-        var textEl = document.getElementById('eyebrow-text');
-        var next   = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
+        var textEl   = document.getElementById('eyebrow-text');
+        var eyebrow  = document.getElementById('eyebrow-label');
+        var next     = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
 
         if (skipAnim) {
             textEl.textContent = next;
+            setTimeout(function () {
+                eyebrow.classList.add('line-drawn');
+            }, 320);
             return;
         }
 
+        eyebrow.classList.remove('line-drawn');
         textEl.classList.remove('entering');
         textEl.classList.add('switching');
 
@@ -1913,6 +1978,10 @@
             textEl.classList.remove('switching');
             textEl.classList.add('entering');
         }, 220);
+
+        setTimeout(function () {
+            eyebrow.classList.add('line-drawn');
+        }, 280);
     }
 
     (function () {
