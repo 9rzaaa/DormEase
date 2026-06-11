@@ -1243,6 +1243,7 @@
                         placeholder="you@example.com"
                         autocomplete="email"
                         value="{{ old('email') }}"
+                        maxlength="255"
                         required
                         autofocus
                     >
@@ -1261,6 +1262,7 @@
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         style="padding-right: 2.8rem;"
+                        maxlength="128"
                         required
                     >
                     <button
@@ -1477,6 +1479,11 @@
 
 
 <script>
+    (function () {
+    var saved = document.getElementById('role-input').value;
+    if (saved) setRole(saved);
+})();
+
     var fpAdminEmail = '';
 
     function setRole(role) {
