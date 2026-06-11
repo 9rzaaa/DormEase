@@ -110,6 +110,7 @@ class NotificationController extends Controller
         $type = $notification->type ?? '';
 
         $uiType = match (true) {
+            $type === 'tenant_reserved'            => 'reservation',
             str_starts_with($type, 'maintenance')  => 'maintenance',
             str_starts_with($type, 'emergency')    => 'emergency',
             str_starts_with($type, 'billing')      => 'billing',
@@ -121,6 +122,7 @@ class NotificationController extends Controller
         };
 
         $icon = match ($uiType) {
+            'reservation'  => 'pending',
             'maintenance'  => 'maintenance',
             'emergency'    => 'warn',
             'billing'      => 'billing',
