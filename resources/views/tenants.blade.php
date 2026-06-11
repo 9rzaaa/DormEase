@@ -2967,7 +2967,7 @@ function exportAdminLog(format) {
         var win = window.open('', '_blank');
         var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
         var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
-        var subtitle    = 'Filter: ' + (actionLabel[adminLogFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabel[adminDateFilter] || 'All Dates');
+        var subtitle    = 'Filter: ' + (actionLabel[adminLogFilter] || 'All') + '  \u2022  Date: ' + (dateLabel[adminDateFilter] || 'All Dates');
         var rows = data.map(function(l) {
             var isIn = l.action === 'time_in';
             return '<tr>'
