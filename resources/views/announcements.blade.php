@@ -1179,18 +1179,35 @@
         .aad-footer{padding:.75rem 1rem;}
     }
 
-
-    #edit-modal .modal{
+    #edit-modal .modal,
+    #post-modal .modal,
+    #view-modal .modal{
         max-width:560px;
         width:100%;
         padding:0;
         overflow:hidden;
+        max-height:92vh;
+        display:flex;
+        flex-direction:column;
+    }
+
+    #view-modal .em-panels,
+    #view-modal #vm-edit-panels{
+        overflow-y:auto;
+        flex:1;
+    }
+
+    #post-modal .em-panels,
+    #edit-modal .em-panels{
+        overflow-y:auto;
+        flex:1;
     }
 
     .em-header{
         padding:1.3rem 1.5rem 0;
         border-bottom:1px solid var(--pink-100);
         background:var(--white);
+        flex-shrink:0;
     }
 
     .em-header-top{
@@ -1327,11 +1344,13 @@
         to{opacity:1;transform:translateY(0);}
     }
 
-    #edit-modal .modal-field{
+    #edit-modal .modal-field,
+    #post-modal .modal-field{
         margin-bottom:0;
     }
 
-    #edit-modal .modal-grid-2{
+    #edit-modal .modal-grid-2,
+    #post-modal .modal-grid-2{
         margin-bottom:0;
     }
 
@@ -1423,6 +1442,7 @@
         align-items:center;
         justify-content:space-between;
         gap:.75rem;
+        flex-shrink:0;
     }
 
     .em-tab-nav{
@@ -1463,8 +1483,10 @@
         gap:.6rem;
     }
 
-    #edit-modal .schedule-toggle-row{ margin-bottom:0; }
-    #edit-modal .schedule-fields{ margin-bottom:0; }
+    #edit-modal .schedule-toggle-row,
+    #post-modal .schedule-toggle-row{ margin-bottom:0; }
+    #edit-modal .schedule-fields,
+    #post-modal .schedule-fields{ margin-bottom:0; }
 </style>
 @endsection
 
@@ -2061,7 +2083,7 @@
 
             <div class="em-panels" id="vm-edit-panels" style="display:none;">
 
-                <div class="em-panel active" id="vm-panel-1">
+                <div class="em-panel" id="vm-panel-1">
                     <div class="modal-field">
                         <label>Title *</label>
                         <input type="text" name="title" id="view-edit-title" required>
@@ -2145,6 +2167,7 @@
 
     </div>
 </div>
+
 <div class="modal-overlay" id="delete-modal">
     <div class="modal">
         <div class="modal-header">
@@ -2165,6 +2188,7 @@
 </div>
 
 @endsection
+
 @section('scripts')
 <script>
     const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
@@ -2294,10 +2318,6 @@
         overlay.setAttribute('aria-hidden', 'false');
     }
 
-    function schedIsOn(prefix) {
-        return document.getElementById(prefix + '-sched-switch').classList.contains('on');
-    }
-
     function toggleSchedule(prefix, forceState) {
         const sw     = document.getElementById(prefix + '-sched-switch');
         const fields = document.getElementById(prefix + '-sched-fields');
@@ -2309,34 +2329,29 @@
             sw.classList.add('on');
             fields.classList.add('open');
             input.required = true;
-
             if (prefix === 'post') {
-                const statusField = document.getElementById('post-status-field');
-                if (statusField) statusField.style.display = 'none';
+                const sf = document.getElementById('post-status-field');
+                if (sf) sf.style.display = 'none';
             }
             if (prefix === 'edit') {
-                const statusField = document.getElementById('edit-status-field');
-                if (statusField) statusField.style.display = 'none';
+                const sf = document.getElementById('edit-status-field');
+                if (sf) sf.style.display = 'none';
             }
         } else {
             sw.classList.remove('on');
             fields.classList.remove('open');
             input.required = false;
             input.value = '';
-
             if (prefix === 'post') {
-                const statusField = document.getElementById('post-status-field');
-                if (statusField) statusField.style.display = '';
+                const sf = document.getElementById('post-status-field');
+                if (sf) sf.style.display = '';
             }
             if (prefix === 'edit') {
-                const statusField = document.getElementById('edit-status-field');
-                if (statusField) statusField.style.display = '';
+                const sf = document.getElementById('edit-status-field');
+                if (sf) sf.style.display = '';
             }
         }
     }
-
-    function selectPill(type, val) {
-        const row = document.getElementById('edit-' + type + '-pills');
 
     window._pmTab = 0;
     const PM_TABS = 3;
@@ -2377,6 +2392,23 @@
         openModal('post-modal');
     }
 
+    window._emTab = 0;
+    const EM_TABS = 3;
+
+    function switchTab(idx) {
+        if (idx < 0 || idx >= EM_TABS) return;
+        window._emTab = idx;
+        for (let i = 0; i < EM_TABS; i++) {
+            document.getElementById('em-tab-' + i).classList.toggle('active', i === idx);
+            document.getElementById('em-panel-' + i).classList.toggle('active', i === idx);
+        }
+        document.getElementById('em-prev-btn').disabled = (idx === 0);
+        document.getElementById('em-next-btn').disabled = (idx === EM_TABS - 1);
+    }
+
+    function selectPill(type, val) {
+        const row = document.getElementById('edit-' + type + '-pills');
+        row.querySelectorAll('.em-pill-opt').forEach(p => {
             p.className = 'em-pill-opt';
             if (p.dataset.val === val) p.classList.add('sel-' + val);
         });
@@ -2388,23 +2420,6 @@
         selectPill('status',   ann.status   || 'active');
     }
 
-    window._emTab = 0;
-    const EM_TABS = 3;
-
-    function switchTab(idx) {
-        if (idx < 0 || idx >= EM_TABS) return;
-        window._emTab = idx;
-
-        for (let i = 0; i < EM_TABS; i++) {
-            document.getElementById('em-tab-' + i).classList.toggle('active', i === idx);
-            document.getElementById('em-panel-' + i).classList.toggle('active', i === idx);
-        }
-
-        document.getElementById('em-prev-btn').disabled = (idx === 0);
-        document.getElementById('em-next-btn').disabled = (idx === EM_TABS - 1);
-    }
-
-    /* ─── Edit Modal ─── */
     function openEditModal(id, e) {
         if (e) e.stopPropagation();
         const ann = annData[id];
@@ -2424,9 +2439,7 @@
         const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
         if (isScheduled) {
             const dt    = new Date(ann.scheduled_at);
-            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
+            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
             document.getElementById('edit-scheduled-at').value = local;
             toggleSchedule('edit', true);
         } else {
@@ -2449,8 +2462,7 @@
 
     function switchViewTab(idx) {
         if (idx < 0 || idx >= VM_TABS) return;
-        // tab 0 = details (read-only); tabs 1-3 = edit tabs
-        if (idx === 0 && _vmEditOn) return; // stay in edit mode
+        if (idx === 0 && _vmEditOn) return;
         window._vmTab = idx;
 
         for (let i = 0; i < VM_TABS; i++) {
@@ -2468,7 +2480,6 @@
             document.getElementById('vm-details-footer').style.display = 'none';
             document.getElementById('vm-edit-footer').style.display    = '';
 
-            // show correct edit panel
             for (let i = 1; i < VM_TABS; i++) {
                 document.getElementById('vm-panel-' + i).classList.toggle('active', i === idx);
             }
@@ -2496,11 +2507,18 @@
         const ann = annData[id];
         if (!ann) return;
 
-        _vmEditOn = false;
+        _vmEditOn     = false;
         window._vmTab = 0;
+
         for (let i = 0; i < VM_TABS; i++) {
             document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
         }
+
+        for (let i = 1; i < VM_TABS; i++) {
+            document.getElementById('vm-panel-' + i).classList.remove('active');
+        }
+
+        document.getElementById('vm-panel-0').classList.add('active');
         document.getElementById('vm-details-panel').style.display  = '';
         document.getElementById('vm-edit-panels').style.display    = 'none';
         document.getElementById('vm-details-footer').style.display = '';
@@ -2695,7 +2713,6 @@
         a.download = 'announcements_deleted_archive.csv';
         a.click();
     }
-
 
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
