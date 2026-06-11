@@ -27,9 +27,11 @@ class NotificationController extends Controller
 
     public function index(Request $request)
     {
+        $perPage = min(max((int) $request->query('per_page', 30), 1), 100);
+
         $paginator = Notification::where('tenant_id', $request->user()->tenant_id)
             ->orderByDesc('created_at')
-            ->paginate(30);
+            ->paginate($perPage);
 
         $paginator->getCollection()->transform(
             fn(Notification $n) => $this->formatNotif($n)

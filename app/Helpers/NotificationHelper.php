@@ -18,7 +18,7 @@ class NotificationHelper
 
     public static function send(int $staff_id, string $type, string $message, ?int $ref_id = null): void
     {
-        Notification::makeRoomFor();
+        Notification::makeRoomFor(1, staffId: $staff_id);
 
         Notification::create([
             'staff_id'   => $staff_id,
@@ -29,7 +29,7 @@ class NotificationHelper
             'created_at' => now(),
         ]);
 
-        Notification::pruneToLimit();
+        Notification::pruneToLimit(staffId: $staff_id);
     }
 
     public static function sendToAll(string $type, string $message, ?int $ref_id = null): void
