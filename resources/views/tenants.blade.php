@@ -216,7 +216,7 @@ th:nth-child(8), td:nth-child(8) { text-align: center; }
 tbody tr:hover { background: var(--soft-bg); }
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
-.badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.badge-pending  { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout    { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-reserved   { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
@@ -929,10 +929,16 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="tad-list" id="admin-log-list"></div>
     <div class="tad-footer">
         <div class="tad-count-label" id="admin-log-count-label">0 records</div>
-        <button class="tad-export-btn" onclick="exportAdminLog()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-admin-log">
+            <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-admin-log')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-admin-log">
+                <button onclick="exportAdminLog('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportAdminLog('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1698,7 +1704,7 @@ function buildRows(list) {
                 + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>'
                 + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
+                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/bill.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
             + '</div></td></tr>';
     }).join('');
 }
@@ -2946,18 +2952,63 @@ function renderAdminLogDrawer() {
     list.innerHTML = html;
 }
 
-function exportAdminLog() {
+function exportAdminLog(format) {
     var q    = document.getElementById('admin-log-search').value.toLowerCase();
     var data = adminLogData.filter(function(l) {
         var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchDate   = matchesAdminDateFilter(l.logged_at);
         var matchSearch = !q
             || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
             || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
-        return matchFilter && matchSearch;
+        return matchFilter && matchDate && matchSearch;
     });
-    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+
+    if (format === 'pdf') {
+        var win = window.open('', '_blank');
+        var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
+        var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle    = 'Filter: ' + (actionLabel[adminLogFilter] || 'All') + '  \u2022  Date: ' + (dateLabel[adminDateFilter] || 'All Dates');
+        var rows = data.map(function(l) {
+            var isIn = l.action === 'time_in';
+            return '<tr>'
+                + '<td>' + l.first_name + ' ' + l.last_name + '</td>'
+                + '<td>' + (l.account_id || '') + '</td>'
+                + '<td>' + (l.floor ? 'Floor ' + l.floor : '') + '</td>'
+                + '<td>' + (l.room_number || '') + '</td>'
+                + '<td style="color:' + (isIn ? '#1f9d69' : '#b0163a') + ';font-weight:700;">' + (isIn ? 'Time In' : 'Time Out') + '</td>'
+                + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
+                + '</tr>';
+        }).join('');
+        var dateLabelMap = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle  = 'Filter: ' + (actionLabel[adminLogFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabelMap[adminDateFilter] || 'All Dates');
+        win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
+            + '<style>'
+            + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
+            + 'h2{color:#E8175D;margin:0 0 2px;font-size:16px}'
+            + '.sub{color:#888;font-size:11px;margin-bottom:4px}'
+            + '.meta{color:#b06080;font-size:10px;margin-bottom:16px}'
+            + 'table{width:100%;border-collapse:collapse}'
+            + 'thead tr{background:#fce8f1}'
+            + 'th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#E8175D;letter-spacing:.04em}'
+            + 'td{padding:7px 10px;border-bottom:1px solid #fce4ec;font-size:11px}'
+            + 'tbody tr:nth-child(even){background:#fff8fb}'
+            + '</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<div class="sub">Entry / Exit Log</div>'
+            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</div>'
+            + '<table><thead><tr>'
+            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th>'
+            + '</tr></thead><tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
+        return;
+    }
+
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At']];
     data.forEach(function(l) {
-        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '']);
     });
     var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
     var a   = document.createElement('a');

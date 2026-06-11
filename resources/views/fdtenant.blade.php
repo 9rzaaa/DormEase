@@ -215,8 +215,9 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
-.badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.badge-pending  { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
+.badge-reserved { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 
 .inside-indicator {
@@ -624,6 +625,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .tad-pill-moveout  { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
 .tad-pill-inactive { background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-reserved { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .tad-pill-timein   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tad-pill-timeout  { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 
@@ -879,10 +881,30 @@ tbody tr:hover { background: var(--soft-bg); }
     text-transform: uppercase;
 }
 
-.td-modal-pill.pill-status-active   { background: rgba(31,157,105,.3); border-color: rgba(140,224,187,.5); }
-.td-modal-pill.pill-status-pending  { background: rgba(200,150,12,.3); border-color: rgba(240,192,64,.5); }
-.td-modal-pill.pill-status-inactive { background: rgba(224,72,103,.3); border-color: rgba(255,155,176,.5); }
-.td-modal-pill.pill-status-moveout  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+.td-modal-pill.pill-status-active {
+    background: rgba(31,157,105,.30);
+    border-color: rgba(140,224,187,.50);
+}
+
+.td-modal-pill.pill-status-pending {
+    background: rgba(200,150,12,.30);
+    border-color: rgba(240,192,64,.50);
+}
+
+.td-modal-pill.pill-status-inactive {
+    background: rgba(224,72,103,.30);
+    border-color: rgba(255,155,176,.50);
+}
+
+.td-modal-pill.pill-status-reserved {
+    background: rgba(154,98,0,.25);
+    border-color: rgba(240,200,64,.50);
+}
+
+.td-modal-pill.pill-status-moveout {
+    background: rgba(232,23,93,.18);
+    border-color: rgba(255,157,176,.40);
+}
 
 .td-modal-body {
     flex: 1;
@@ -1390,6 +1412,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="reserved">Reserved</option>
                 </select>
                 <select class="sort-select" id="inside-filter" onchange="applyFilters()">
                     <option value="">All Locations</option>
@@ -1453,12 +1476,10 @@ tbody tr:hover { background: var(--soft-bg); }
             <input type="text" id="log-search" placeholder="Search by name, room..." oninput="renderLogDrawer()">
         </div>
     </div>
-    <div style="padding: 0 1.8rem .4rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;">
         <button class="page-btn active" id="log-filter-all"     onclick="setLogFilter('')">All</button>
         <button class="page-btn"        id="log-filter-timein"  onclick="setLogFilter('time_in')">Time In</button>
         <button class="page-btn"        id="log-filter-timeout" onclick="setLogFilter('time_out')">Time Out</button>
-    </div>
-    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
         <div style="position:relative; display:inline-flex; align-items:center;">
             <button id="log-date-dropdown-btn" onclick="toggleLogDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -1476,10 +1497,16 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="tad-list" id="log-list"></div>
     <div class="tad-footer">
         <div class="tad-count-label" id="log-count-label">0 records</div>
-        <button class="tad-export-btn" onclick="exportLog()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-log">
+            <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-log')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-log">
+                <button onclick="exportLog('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportLog('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1633,6 +1660,7 @@ function statusBadge(status) {
     var map = {
         active:   '<span class="badge badge-active">Active</span>',
         pending:  '<span class="badge badge-pending">Pending</span>',
+        reserved: '<span class="badge badge-reserved">Reserved</span>',
         move_out: '<span class="badge badge-moveout">Move Out</span>',
         inactive: '<span class="badge badge-inactive">Inactive</span>',
     };
@@ -1650,6 +1678,7 @@ function statusPillClass(status) {
     var map = {
         active:   'tad-pill-active',
         pending:  'tad-pill-pending',
+        reserved: 'tad-pill-reserved',
         move_out: 'tad-pill-moveout',
         inactive: 'tad-pill-inactive',
     };
@@ -1727,6 +1756,7 @@ function applyFilters() {
 
     filtered = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
+        if (t.status === 'reserved' && !t.is_active) return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
             (t.room_number    || '').toLowerCase().indexOf(q) !== -1 ||
@@ -1951,18 +1981,62 @@ function renderLogDrawer() {
     list.innerHTML = html;
 }
 
-function exportLog() {
+function exportLog(format) {
     var q    = document.getElementById('log-search').value.toLowerCase();
     var data = logData.filter(function(l) {
         var matchFilter = logFilter === '' || l.action === logFilter;
+        var matchDate   = matchesLogDateFilter(l.logged_at);
         var matchSearch = !q
             || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
             || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
-        return matchFilter && matchSearch;
+        return matchFilter && matchDate && matchSearch;
     });
-    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+
+    if (format === 'pdf') {
+        var win  = window.open('', '_blank');
+        var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
+        var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle    = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  \u2022  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
+        var rows = data.map(function(l) {
+            var isIn = l.action === 'time_in';
+            return '<tr>'
+                + '<td>' + l.first_name + ' ' + l.last_name + '</td>'
+                + '<td>' + (l.account_id || '') + '</td>'
+                + '<td>' + (l.floor ? 'Floor ' + l.floor : '') + '</td>'
+                + '<td>' + (l.room_number || '') + '</td>'
+                + '<td style="color:' + (isIn ? '#1f9d69' : '#b0163a') + ';font-weight:700;">' + (isIn ? 'Time In' : 'Time Out') + '</td>'
+                + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
+                + '</tr>';
+        }).join('');
+        var exportedOn = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
+            + '<style>'
+            + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
+            + 'h2{color:#E8175D;margin:0 0 2px;font-size:16px}'
+            + '.sub{color:#888;font-size:11px;margin-bottom:4px}'
+            + '.meta{color:#b06080;font-size:10px;margin-bottom:16px}'
+            + 'table{width:100%;border-collapse:collapse}'
+            + 'thead tr{background:#fce8f1}'
+            + 'th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#E8175D;letter-spacing:.04em}'
+            + 'td{padding:7px 10px;border-bottom:1px solid #fce4ec;font-size:11px}'
+            + 'tbody tr:nth-child(even){background:#fff8fb}'
+            + '</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<div class="sub">Entry / Exit Log</div>'
+            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + exportedOn + '</div>'
+            + '<table><thead><tr>'
+            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th>'
+            + '</tr></thead><tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
+        return;
+    }
+
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At']];
     data.forEach(function(l) {
-        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '']);
     });
     var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
     var a   = document.createElement('a');
@@ -1985,6 +2059,7 @@ function statusPillModalClass(status) {
     var map = {
         active:   'pill-status-active',
         pending:  'pill-status-pending',
+        reserved: 'pill-status-reserved',
         inactive: 'pill-status-inactive',
         move_out: 'pill-status-moveout',
     };

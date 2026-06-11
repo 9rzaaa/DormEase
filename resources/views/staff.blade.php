@@ -1533,16 +1533,16 @@
                     + '<td>'
                         + '<div class="action-group">'
                             + '<button class="act-btn" title="View" onclick=\'viewStaff(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
-                                + '<img src="{{ asset('icons/eye.png') }}" class="icon-sm" alt="View">'
+                                + '<img src="{{ asset("icons/eye.png") }}" class="icon-sm" alt="View">'
                             + '</button>'
                             + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
-                                + '<img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">'
+                                + '<img src="{{ asset("icons/edit.png") }}" class="icon-sm" alt="Edit">'
                             + '</button>'
                             + '<button class="act-btn delete" title="Delete" onclick="openDeleteModal(' + s.staff_id + ', \'' + (s.first_name + ' ' + s.last_name).replace(/'/g, "\\'") + '\')">'
-                                + '<img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="Delete">'
+                                + '<img src="{{ asset("icons/delete.png") }}" class="icon-sm" alt="Delete">'
                             + '</button>'
                             + '<button class="act-btn toggle" title="Reset Password" onclick=\'resetTempPassword(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
-                                + '<img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="Reset">'
+                                + '<img src="{{ asset("icons/reset.png") }}" class="icon-sm" alt="Reset">'
                             + '</button>'
                         + '</div>'
                     + '</td>'
@@ -1741,7 +1741,7 @@
                 + '<div class="modal-header">'
                     + '<div style="display:flex;align-items:center;gap:10px;">'
                         + '<div style="width:38px;height:38px;border-radius:10px;background:var(--petal);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-                            + '<img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">'
+                            + '<img src="{{ asset("icons/reset.png") }}" style="width:18px;height:18px;" alt="">'
                         + '</div>'
                         + '<div>'
                             + '<div class="modal-title">Reset password</div>'
@@ -1867,7 +1867,7 @@
         var list = document.getElementById('atdlog-list');
 
         if (data.length === 0) {
-            list.innerHTML = '<div class="atdlog-empty"><img src="{{ asset(\'icons/calendar.png\') }}" class="atdlog-empty-icon" alt="">No attendance records found.</div>';
+            list.innerHTML = '<div class="atdlog-empty"><img src="{{ asset("icons/calendar.png") }}" class="atdlog-empty-icon" alt="">No attendance records found.</div>';
             return;
         }
 
@@ -1980,7 +1980,7 @@
         if (data.length === 0) {
             var labelMap = { deleted: 'deleted', inactive: 'inactive' };
             list.innerHTML = '<div class="sad-empty">'
-                + '<img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">'
+                + '<img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + '</div>';
             return;
@@ -2035,7 +2035,7 @@
         document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
 
         if (data.length === 0) {
-            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">No attendance records found.</div>';
+            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No attendance records found.</div>';
             return;
         }
 

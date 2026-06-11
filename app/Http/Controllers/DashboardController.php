@@ -60,14 +60,14 @@ class DashboardController extends Controller
             ->orderByRaw("FIELD(urgency_level, 'urgent', 'moderate', 'low')")
             ->get();
 
-        $visitorsByDay = VisitorLog::selectRaw('DAYNAME(arrival_time) as day, COUNT(*) as cnt')
+        $visitorsByDay = VisitorLog::selectRaw('DATE(arrival_time) as date_key, DAYNAME(arrival_time) as day, COUNT(*) as cnt')
             ->where('arrival_time', '>=', Carbon::now()->subDays(6)->startOfDay())
             ->groupBy(DB::raw('DATE(arrival_time)'), DB::raw('DAYNAME(arrival_time)'))
             ->orderBy(DB::raw('DATE(arrival_time)'))
             ->get()
             ->map(function ($row) {
                 return [
-                    'day' => $row->day,
+                    'day' => $row->day . ' ' . \Carbon\Carbon::parse($row->date_key)->format('d'),
                     'cnt' => $row->cnt,
                 ];
             });
@@ -75,19 +75,23 @@ class DashboardController extends Controller
         $now = now();
         $currentTime = Carbon::createFromTimeString($now->format('H:i:s'));
 
+        $nowTime = $now->format('H:i:s');
+
         $expectedAbsent = Staff::where('is_active', true)
             ->whereNotNull('shift_start')
             ->whereNotNull('shift_end')
             ->where('duty_status', '!=', 'on_duty')
-            ->get()
-            ->filter(function ($s) use ($currentTime) {
-                $shiftStart = Carbon::createFromTimeString($s->shift_start);
-                $shiftEnd   = Carbon::createFromTimeString($s->shift_end);
-                $isNight    = $shiftEnd->lessThan($shiftStart);
-                if ($isNight) {
-                    return $currentTime->greaterThanOrEqualTo($shiftStart) || $currentTime->lessThan($shiftEnd);
-                }
-                return $currentTime->between($shiftStart, $shiftEnd);
+            ->where(function ($q) use ($nowTime) {
+                $q->where(function ($q2) use ($nowTime) {
+                    $q2->whereRaw('shift_end > shift_start')
+                       ->whereRaw('? BETWEEN shift_start AND shift_end', [$nowTime]);
+                })->orWhere(function ($q2) use ($nowTime) {
+                    $q2->whereRaw('shift_end < shift_start')
+                       ->where(function ($q3) use ($nowTime) {
+                           $q3->whereRaw('? >= shift_start', [$nowTime])
+                              ->orWhereRaw('? < shift_end', [$nowTime]);
+                       });
+                });
             })
             ->count();
 
@@ -106,7 +110,7 @@ class DashboardController extends Controller
             'notifications'        => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->latest('created_at')->take(4)->get(),
             'unreadNotifCount'     => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'latestEmergency'      => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
-            'allEmergencies'       => EmergencyReport::latest('reported_at')->get(),
+            'allEmergencies'       => EmergencyReport::latest('reported_at')->take(50)->get(),
             'recentActivities'     => VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
             'chartLabels'          => $chartLabels,
             'chartCollected'       => $chartCollected,

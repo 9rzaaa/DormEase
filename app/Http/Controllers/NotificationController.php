@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\ViewComposers\NotificationComposer;
+use App\Models\EmergencyReport;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class NotificationController extends Controller
         $notifications = (clone $query)
             ->orderByDesc('created_at')
             ->orderByDesc('notif_id')
-            ->limit(20)
+            ->limit(Notification::MAX_ROWS)
             ->get()
             ->map(fn(Notification $notification) => $this->formatLiveNotification($notification))
             ->values();
@@ -47,6 +48,41 @@ class NotificationController extends Controller
             'notifications' => $notifications,
             'unread_count'  => (clone $query)->where('is_read', 0)->count(),
         ]);
+    }
+
+    public function liveAlerts(Request $request)
+    {
+        $payload = $this->live($request)->getData(true);
+
+        $latest = EmergencyReport::where('is_panic_alert', true)
+            ->where('status', 'active')
+            ->orderByDesc('reported_at')
+            ->first();
+
+        $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
+            ->where('status', 'active')
+            ->orderByDesc('reported_at')
+            ->take(5)
+            ->get()
+            ->map(fn ($report) => [
+                'report_id'      => $report->report_id,
+                'urgency_level'  => $report->urgency_level,
+                'emergency_type' => $report->emergency_type,
+                'location'       => $report->location,
+                'reported_at'    => $report->reported_at?->format('Y-m-d H:i:s'),
+            ])
+            ->values();
+
+        return response()->json(array_merge($payload, [
+            'panic' => [
+                'has_panic'   => (bool) $latest,
+                'report_id'   => $latest?->report_id,
+                'type'        => $latest?->emergency_type,
+                'location'    => $latest?->location,
+                'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
+            ],
+            'critical' => ['reports' => $reports],
+        ]));
     }
 
     public function markRead($id)

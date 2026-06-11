@@ -961,10 +961,10 @@ window.togglePanel = function(id) {
 window.exportSummary = function() {
     var rows = [
         ['Metric', 'Value'],
-        ['Total Tenants',      '{{ $totalTenants ?? 0 }}'],
-        ['Units Occupied',     '{{ $occupiedUnits ?? 0 }}'],
-        ['Visitors Today',     '{{ $visitorsToday ?? 0 }}'],
-        ['Active Emergencies', '{{ $activeEmergencies ?? 0 }}'],
+        ['Total Tenants',      {{ (int) ($totalTenants ?? 0) }}],
+        ['Units Occupied',     {{ (int) ($occupiedUnits ?? 0) }}],
+        ['Visitors Today',     {{ (int) ($visitorsToday ?? 0) }}],
+        ['Active Emergencies', {{ (int) ($activeEmergencies ?? 0) }}],
     ];
     var csv  = rows.map(function(r){ return r.join(','); }).join('\n');
     var blob = new Blob([csv], { type: 'text/csv' });
@@ -1046,7 +1046,7 @@ function buildAvmFilePreview(filePath) {
 
     var previewHtml = '';
     if (isImage) {
-        previewHtml = '<div class="file-preview-body"><img src="' + url + '" alt="' + escHtml(name) + '" loading="lazy" onclick="openDashLightbox(\'' + url + '\')" title="Click to view full size"></div>';
+        previewHtml = '<div class="file-preview-body"><img src="' + url + '" alt="' + escHtml(name) + '" loading="lazy" onclick="openDashLightbox(\'' + safeUrl + '\')" title="Click to view full size"></div>';
     } else if (isPdf) {
         previewHtml = '<div class="file-preview-body"><iframe src="' + url + '" title="' + escHtml(name) + '"></iframe></div>';
     } else {
@@ -1057,8 +1057,9 @@ function buildAvmFilePreview(filePath) {
     var openIcon   = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
     var dlIcon     = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
+    var safeUrl = url.replace(/'/g, '%27');
     var primaryBtn = isImage
-        ? '<button class="file-action-btn" onclick="openDashLightbox(\'' + url + '\')" title="View full size">' + expandIcon + '</button>'
+        ? '<button class="file-action-btn" onclick="openDashLightbox(\'' + safeUrl + '\')" title="View full size">' + expandIcon + '</button>'
         : '<a href="' + url + '" target="_blank" class="file-action-btn" title="Open">' + openIcon + '</a>';
 
     return '<div class="file-preview-item">'
@@ -1109,10 +1110,33 @@ window.handleOverlayClick = function(e, modalId) {
 };
 
 @if(session('success'))
-    showToast("{{ addslashes(session('success')) }}", 'success');
+    showToast({{ json_encode(session('success')) }}, 'success');
 @endif
 @if(session('error'))
-    showToast("{{ addslashes(session('error')) }}", 'error');
+    showToast({{ json_encode(session('error')) }}, 'error');
 @endif
+
+window.openNotifDetail = function(el) {
+    var data;
+    try { data = JSON.parse(el.dataset.notif); }
+    catch(e) { return; }
+
+    if (data.id && !data.isRead) {
+        fetch('/notifications/' + data.id + '/read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+    }
+
+    if (data.url) {
+        window.location = data.url;
+        return;
+    }
+
+    showToast(data.message, 'success');
+};
 </script>
 @endsection

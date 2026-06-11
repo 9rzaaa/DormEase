@@ -1,44 +1,67 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+
 class ForgotPasswordController extends Controller
 {
     public function verify(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|max:255',
         ]);
-        $staff = Staff::where('email', $request->email)
-            ->where('role', 'admin')
+
+        $email = trim(strtolower($request->email));
+
+        $staff = Staff::where('email', $email)
+            ->whereIn('role', ['admin', 'secretary'])
             ->where('is_active', true)
             ->first();
+
         if (!$staff) {
             return response()->json([
                 'success' => false,
-                'message' => 'No active admin account found with that email address.',
-            ], 404);
+                'message' => 'If that email belongs to an active admin account, you may proceed.',
+            ]);
         }
+
+        session(['fp_verified_email' => $email, 'fp_verified_at' => now()->timestamp]);
+
         return response()->json(['success' => true]);
     }
+
     public function reset(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email',
-            'password'              => 'required|min:8|confirmed',
-            'password_confirmation' => 'required',
+            'password' => 'required|min:8|confirmed',
         ]);
-        $staff = Staff::where('email', $request->email)
-            ->where('role', 'admin')
+
+        $email      = session('fp_verified_email');
+        $verifiedAt = session('fp_verified_at');
+
+        if (!$email || !$verifiedAt || (now()->timestamp - $verifiedAt) > 900) {
+            session()->forget(['fp_verified_email', 'fp_verified_at']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please start the reset process again.',
+            ]);
+        }
+
+        $staff = Staff::where('email', $email)
+            ->whereIn('role', ['admin', 'secretary'])
             ->where('is_active', true)
             ->first();
+
         if (!$staff) {
             return response()->json([
                 'success' => false,
                 'message' => 'Account not found.',
-            ], 404);
+            ]);
         }
+
         if (Hash::check($request->password, $staff->password_hash)) {
             return response()->json([
                 'success'       => false,
@@ -46,10 +69,14 @@ class ForgotPasswordController extends Controller
                 'message'       => 'This is your current password. Please choose a different one.',
             ]);
         }
-        $staff->update([
+
+        $staff->updateQuietly([
             'password_hash'    => Hash::make($request->password),
             'is_temp_password' => false,
         ]);
+
+        session()->forget('fp_verified_email');
+
         return response()->json(['success' => true]);
     }
 }

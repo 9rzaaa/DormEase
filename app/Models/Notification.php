@@ -6,7 +6,7 @@ class Notification extends Model
     protected $table = 'notifications';
     protected $primaryKey = 'notif_id';
     public $timestamps = false;
-    private const MAX_ROWS = 100;
+    public const MAX_ROWS = 500;
 
     protected $fillable = [
         'tenant_id', 'staff_id', 'type', 'message',

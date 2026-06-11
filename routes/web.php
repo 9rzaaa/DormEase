@@ -22,7 +22,7 @@ use App\Http\Controllers\BillingHistoryController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ArchiveSettingsController;
-use App\Http\Controllers\RoomController; 
+use App\Http\Controllers\RoomController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -41,38 +41,44 @@ Route::get('/login', function () {
             : redirect()->route('dashboard');
     }
     return view('login');
-})->name('login');
+})->name('login')->middleware('throttle:20,1');
 
 Route::post('/login', function () {
+    request()->validate([
+        'email'    => 'required|email|max:255',
+        'password' => 'required|string',
+        'role'     => 'required|in:admin,frontdesk',
+    ]);
     $email    = request('email');
     $password = request('password');
     $role     = request('role');
 
+    $email = trim(strtolower($email));
     $user = \App\Models\Staff::where('email', $email)->first();
 
-    if (!$user) {
-        return back()->withErrors(['email' => 'No account found with that email.'])->withInput();
-    }
-
-    if (!\Illuminate\Support\Facades\Hash::check($password, $user->password_hash)) {
-        return back()->withErrors(['email' => 'Incorrect password.'])->withInput();
+    if (!$user || !\Illuminate\Support\Facades\Hash::check($password, $user->password_hash)) {
+        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput(request()->only('email', 'role'));
     }
 
     $staffRoles = ['frontdesk'];
     $adminRoles = ['admin', 'secretary'];
     if (in_array($user->role, $adminRoles, true) && $role !== 'admin') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
     }
     if (in_array($user->role, $staffRoles, true) && $role !== 'frontdesk') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
     }
 
-    if (!$user->is_active) {
-        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput();
+    if (! ($user->is_active ?? false)) {
+        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput(request()->only('email', 'role'));
     }
 
     Auth::guard('staff')->login($user, request()->boolean('remember'));
     request()->session()->regenerate();
+    \Illuminate\Support\Facades\DB::table('sessions')
+        ->where('user_id', $user->staff_id)
+        ->where('id', '!=', request()->session()->getId())
+        ->delete();
 
     $now = now();
     $dutyStatus = $user->duty_status;
@@ -111,14 +117,14 @@ Route::post('/login', function () {
         'duty_status'    => $dutyStatus,
     ]);
 
-    if ($role === 'frontdesk' && $user->is_temp_password) {
+    if ($user->is_temp_password) {
         session()->flash('prompt_temp_password', true);
     }
 
     return in_array($user->role, $staffRoles, true)
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
-});
+})->middleware('throttle:5,1');
 
 Route::post('/logout', function () {
     $user = Auth::guard('staff')->user();
@@ -137,15 +143,9 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
-Route::post('/frontdesk/profile/dismiss-temp-password', function () {
-    return response()->json(['ok' => true]);
-})->name('fdprofile.dismissTempPassword')->middleware('auth:staff');
-
-
-
 // forgot pass
-Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
-Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
+Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify')->middleware('throttle:5,1');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
@@ -162,12 +162,10 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
     Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);
     Route::get('/tenant-logs',            [App\Http\Controllers\TenantLogController::class, 'logs']);
-    Route::middleware('auth:staff')->group(function () {
-        Route::get('/rooms',          [RoomController::class, 'index']);
-        Route::post('/rooms',         [RoomController::class, 'store']);
-        Route::put('/rooms/{id}',     [RoomController::class, 'update']);
-        Route::delete('/rooms/{id}',  [RoomController::class, 'destroy']);
-    });
+    Route::get('/rooms',          [RoomController::class, 'index']);
+    Route::post('/rooms',         [RoomController::class, 'store']);
+    Route::put('/rooms/{id}',     [RoomController::class, 'update']);
+    Route::delete('/rooms/{id}',  [RoomController::class, 'destroy']);
 
     // announcements
     Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
@@ -202,7 +200,6 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/log', [BillingController::class, 'log'])->name('log');
         Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
         Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-        Route::post('/request-resubmission', [BillingController::class, 'requestResubmission'])->name('requestResubmission');
         Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
         Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
@@ -275,6 +272,7 @@ Route::middleware('auth:staff')->group(function () {
 
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
+    Route::get('/live-alerts', [NotificationController::class, 'liveAlerts'])->name('live-alerts');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
@@ -286,6 +284,10 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
     Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
-    
+
     Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
+
+    Route::post('/frontdesk/profile/dismiss-temp-password', function () {
+        return response()->json(['ok' => true]);
+    })->name('fdprofile.dismissTempPassword');
 });
