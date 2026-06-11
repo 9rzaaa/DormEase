@@ -138,6 +138,20 @@
         transition: transform .1s ease-out;
     }
 
+    .student-img {
+        width: 100%;
+        display: block;
+        filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transition: opacity .4s ease;
+    }
+
+    .student-img-cover {
+        opacity: 0;
+    }
+
     .student-wrap::after {
         content: '';
         position: absolute;
@@ -202,7 +216,6 @@
     .left-body {
         position: relative;
         z-index: 2;
-        animation: leftSlide .6s ease .24s both;
     }
 
     .left-body h1 {
@@ -217,6 +230,14 @@
     .left-body h1 em {
         font-style: italic;
         color: var(--pink-light);
+        display: inline-block;
+        animation: confidenceBloom .9s cubic-bezier(.22,1,.36,1) .72s both;
+    }
+
+    @keyframes confidenceBloom {
+        0%   { opacity: 0; transform: translateY(12px); color: #fff; }
+        60%  { color: #fff; }
+        100% { opacity: 1; transform: translateY(0); color: var(--pink-light); }
     }
 
     .left-body p {
@@ -225,6 +246,28 @@
         line-height: 1.75;
         max-width: 310px;
         margin-bottom: 1.8rem;
+        opacity: 0;
+        animation: leftFadeUp .6s ease .88s forwards;
+    }
+
+    @keyframes leftFadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .h1-line {
+        display: block;
+        opacity: 0;
+        animation: h1LineIn .55s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .h1-line-1 { animation-delay: .18s; }
+    .h1-line-2 { animation-delay: .34s; }
+    .h1-line-3 { animation-delay: .52s; }
+
+    @keyframes h1LineIn {
+        from { opacity: 0; transform: translateX(-22px); }
+        to   { opacity: 1; transform: translateX(0); }
     }
 
     .feature-strip {
@@ -291,7 +334,9 @@
     .right {
         width: 500px;
         flex-shrink: 0;
-        background: var(--white);
+        background: #fdf6f9;
+        background-image: radial-gradient(circle, rgba(232,23,93,.09) 1px, transparent 1px);
+        background-size: 22px 22px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -337,12 +382,16 @@
         max-width: 380px;
         position: relative;
         z-index: 1;
-        background: rgba(255,255,255,.72);
-        backdrop-filter: blur(2px);
-        border-radius: 20px;
-        padding: 2.2rem 2rem;
-        box-shadow: 0 2px 32px rgba(232,23,93,.07), 0 1px 4px rgba(0,0,0,.04);
-        border: 1px solid rgba(255,176,206,.18);
+        background: rgba(255,255,255,.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 22px;
+        padding: 2.4rem 2.2rem;
+        box-shadow:
+            0 4px 40px rgba(232,23,93,.10),
+            0 1.5px 6px rgba(0,0,0,.05),
+            inset 0 1px 0 rgba(255,255,255,.95);
+        border: 1px solid rgba(255,176,206,.28);
     }
 
     .form-wrap > * {
@@ -359,6 +408,18 @@
     .form-wrap > *:nth-child(7) { animation-delay: .47s; }
 
     .form-header { margin-bottom: 1.8rem; }
+
+    .greeting-time {
+        font-family: var(--ff-display);
+        font-size: 1.05rem;
+        font-weight: 400;
+        font-style: italic;
+        color: var(--ink-muted);
+        margin-bottom: .22rem;
+        opacity: 0;
+        animation: slideUp .5s cubic-bezier(.22,1,.36,1) .05s forwards;
+        letter-spacing: -.01em;
+    }
 
     .form-header-eyebrow {
         opacity: 0;
@@ -469,10 +530,11 @@
         align-items: center;
         gap: .65rem;
         transition: border-color var(--transition), background var(--transition),
-                    box-shadow var(--transition), transform .2s cubic-bezier(.34,1.56,.64,1);
+                    box-shadow var(--transition);
         position: relative;
         overflow: hidden;
         cursor: pointer;
+        will-change: transform;
     }
 
     .role-btn::before {
@@ -1389,7 +1451,8 @@
     </div>
 
     <div class="student-wrap" id="student-wrap">
-        <img src="{{ asset('images/girl.png') }}" alt="Student">
+        <img src="{{ asset('images/girl.png') }}" alt="Student" class="student-img" id="student-normal">
+        <img src="{{ asset('images/girl-cover.png') }}" alt="Student covering eyes" class="student-img student-img-cover" id="student-cover">
     </div>
 
     <a href="{{ route('home') }}" class="left-logo" style="text-decoration:none;">
@@ -1400,7 +1463,11 @@
     </a>
 
     <div class="left-body">
-        <h1>Manage with<br>ease &amp;<br><em>confidence.</em></h1>
+        <h1>
+            <span class="h1-line h1-line-1">Manage with</span>
+            <span class="h1-line h1-line-2">ease &amp;</span>
+            <span class="h1-line h1-line-3"><em>confidence.</em></span>
+        </h1>
         <p>The DormEase portal gives you full control over rooms, tenants, payments, and maintenance all in one place.</p>
 
         <div class="feature-strip" id="feature-strip">
@@ -1422,6 +1489,7 @@
     <div class="form-wrap">
 
         <div class="form-header">
+            <div class="greeting-time" id="greeting-time"></div>
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
                 <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
             </div>
@@ -1772,6 +1840,58 @@
     leftPanel.addEventListener('mouseleave', function () {
         studentWrap.style.transform = '';
     });
+
+    (function () {
+        var h = new Date().getHours();
+        var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+        var el = document.getElementById('greeting-time');
+        if (el) el.textContent = greeting;
+    })();
+
+    (function () {
+        var cards = document.querySelectorAll('.role-btn');
+        cards.forEach(function (card) {
+            card.addEventListener('mousemove', function (e) {
+                var rect = card.getBoundingClientRect();
+                var cx = rect.left + rect.width  / 2;
+                var cy = rect.top  + rect.height / 2;
+                var dx = (e.clientX - cx) / (rect.width  / 2);
+                var dy = (e.clientY - cy) / (rect.height / 2);
+                var tx = dx * 6;
+                var ty = dy * 4;
+                card.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(1.03)';
+                card.style.boxShadow = '0 8px 28px rgba(232,23,93,.18)';
+            });
+            card.addEventListener('mouseleave', function () {
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            });
+            card.addEventListener('mousedown', function () {
+                card.style.transform = 'scale(.97)';
+            });
+            card.addEventListener('mouseup', function () {
+                card.style.transform = '';
+            });
+        });
+    })();
+
+    (function () {
+        var pwInput  = document.getElementById('password');
+        var normal   = document.getElementById('student-normal');
+        var cover    = document.getElementById('student-cover');
+
+        if (!pwInput || !normal || !cover) return;
+
+        pwInput.addEventListener('focus', function () {
+            normal.style.opacity = '0';
+            cover.style.opacity  = '1';
+        });
+
+        pwInput.addEventListener('blur', function () {
+            normal.style.opacity = '1';
+            cover.style.opacity  = '0';
+        });
+    })();
 
     var fpAdminEmail = '';
 
