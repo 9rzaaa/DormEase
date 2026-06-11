@@ -217,6 +217,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
+.badge-reserved { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 
 .inside-indicator {
@@ -624,6 +625,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-pill-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .tad-pill-moveout  { background: var(--petal);  color: var(--hot-pink);  border: 1px solid var(--pink-200); }
 .tad-pill-inactive { background: var(--blush);  color: var(--ink-muted); border: 1px solid var(--pink-100); }
+.tad-pill-reserved { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .tad-pill-timein   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tad-pill-timeout  { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 
@@ -882,6 +884,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .td-modal-pill.pill-status-active   { background: rgba(31,157,105,.3); border-color: rgba(140,224,187,.5); }
 .td-modal-pill.pill-status-pending  { background: rgba(200,150,12,.3); border-color: rgba(240,192,64,.5); }
 .td-modal-pill.pill-status-inactive { background: rgba(224,72,103,.3); border-color: rgba(255,155,176,.5); }
+.td-modal-pill.pill-status-reserved { background: rgba(59,111,212,.25); border-color: rgba(168,196,245,.5); }
 .td-modal-pill.pill-status-moveout  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
 
 .td-modal-body {
@@ -1390,6 +1393,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="reserved">Reserved</option>
                 </select>
                 <select class="sort-select" id="inside-filter" onchange="applyFilters()">
                     <option value="">All Locations</option>
@@ -1633,6 +1637,7 @@ function statusBadge(status) {
     var map = {
         active:   '<span class="badge badge-active">Active</span>',
         pending:  '<span class="badge badge-pending">Pending</span>',
+        reserved: '<span class="badge badge-reserved">Reserved</span>',
         move_out: '<span class="badge badge-moveout">Move Out</span>',
         inactive: '<span class="badge badge-inactive">Inactive</span>',
     };
@@ -1650,6 +1655,7 @@ function statusPillClass(status) {
     var map = {
         active:   'tad-pill-active',
         pending:  'tad-pill-pending',
+        reserved: 'tad-pill-reserved',
         move_out: 'tad-pill-moveout',
         inactive: 'tad-pill-inactive',
     };
@@ -1727,6 +1733,7 @@ function applyFilters() {
 
     filtered = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
+        if (t.status === 'reserved' && !t.is_active) return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
             (t.room_number    || '').toLowerCase().indexOf(q) !== -1 ||
@@ -1985,6 +1992,7 @@ function statusPillModalClass(status) {
     var map = {
         active:   'pill-status-active',
         pending:  'pill-status-pending',
+        reserved: 'pill-status-reserved',
         inactive: 'pill-status-inactive',
         move_out: 'pill-status-moveout',
     };
