@@ -1867,7 +1867,7 @@
         var list = document.getElementById('atdlog-list');
 
         if (data.length === 0) {
-            list.innerHTML = '<div class="atdlog-empty"><img src="{{ asset(\'icons/calendar.png\') }}" class="atdlog-empty-icon" alt="">No attendance records found.</div>';
+            list.innerHTML = '<div class="atdlog-empty"><img src="{{ asset("icons/calendar.png") }}" class="atdlog-empty-icon" alt="">No attendance records found.</div>';
             return;
         }
 
