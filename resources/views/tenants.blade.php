@@ -1477,6 +1477,7 @@ var sectionState = { active: true, reserved: true };
 var sectionPages = { active: 1, reserved: 1 };
 var sectionData  = { active: [], reserved: [] };
 var addCurrentStep = 1;
+var selectedRoomNumber = null;
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1556,7 +1557,8 @@ function closeModal(id) {
         var en = document.getElementById('edit-reservation-notes-wrap');
         if (ew) ew.style.display = 'none';
         if (en) en.style.display = 'none';
-        document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+        selectedRoomNumber = null;
+        document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
     }
@@ -2569,6 +2571,13 @@ async function submitDeleteRoom() {
             html += '</div></div>';
             box.innerHTML = html;
             wrap.style.display = 'block';
+            if (selectedRoomNumber) {
+                var sel = document.querySelector('#add-room-suggest [data-room="' + selectedRoomNumber + '"]');
+                if (sel) {
+                    sel.style.borderColor = '#f0c040';
+                    sel.style.background  = '#fffbf0';
+                }
+            }
         });
     }
 
