@@ -618,7 +618,7 @@
                         <div class="empty-state">No pending maintenance requests.</div>
                     @else
                         @foreach($maintenanceRequests as $req)
-                            <div class="maint-row" onclick="openMaintenanceModal({{ $req->request_id }}, '{{ addslashes($req->issue_type) }}', '{{ addslashes($req->description) }}', '{{ $req->urgency_level }}', '{{ $req->status }}', '{{ $req->assigned_to ?? 'Unassigned' }}', '{{ $req->tenant->room_number ?? 'N/A' }}')">
+                            <div class="maint-row" onclick="openMaintenanceModal({{ $req->request_id }}, {{ json_encode($req->issue_type) }}, {{ json_encode($req->description) }}, {{ json_encode($req->urgency_level) }}, {{ json_encode($req->status) }}, {{ json_encode($req->assigned_to ?? 'Unassigned') }}, {{ json_encode($req->tenant->room_number ?? 'N/A') }})">
                                 <div class="maint-type-icon">
                                     @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
                                         <img src="{{ asset('icons/plumbing.png') }}" alt="Plumbing" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
@@ -697,7 +697,7 @@
                                 </div>
                                 <div class="announce-actions">
                                     <button class="announce-action-btn"
-                                        onclick="openEditModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', '{{ addslashes($ann->content) }}', '{{ $ann->priority }}', '{{ $ann->status }}')">
+                                        onclick="openEditModal({{ $ann->announcement_id }}, {{ json_encode($ann->title) }}, {{ json_encode($ann->content) }}, {{ json_encode($ann->priority) }}, {{ json_encode($ann->status) }})">
                                         Edit
                                     </button>
                                     <button class="announce-action-btn delete"
@@ -722,7 +722,7 @@
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
                 @foreach($notifications as $notif)
-                    <div class="notif-item" onclick="openNotifModal('{{ addslashes($notif->message) }}', '{{ $notif->type ?? 'bell' }}', '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}')">
+                    <div class="notif-item" onclick="openNotifModal({{ json_encode($notif->message) }}, {{ json_encode($notif->type ?? 'bell') }}, {{ json_encode(\Carbon\Carbon::parse($notif->created_at)->diffForHumans()) }}, {{ $notif->id }})">
                         <div class="notif-ico">
                             <img src="{{ asset('icons/' . ($notif->type ?? 'bell') . '.png') }}" alt=""
                                  onerror="this.src='{{ asset('icons/bell.png') }}'">
@@ -748,7 +748,7 @@
                         </div>
                         <div>
                             <div class="activity-text">
-                                Visitor {{ $log->visitor_name }} logged {{ $log->departure_time ? 'out' : 'in' }}
+                                Visitor {{ $log->visitor_name ?? 'Unknown' }} logged {{ $log->departure_time ? 'out' : 'in' }}
                                 @if($log->tenant) for {{ $log->tenant->first_name }} {{ $log->tenant->last_name }} @endif
                             </div>
                             <div class="activity-time">{{ \Carbon\Carbon::parse($log->arrival_time)->diffForHumans() }}</div>
@@ -773,7 +773,7 @@
             <div class="modal-title">Post Announcement</div>
             <button class="modal-close" onclick="closeModal('announce-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('announcements.store') }}" id="post-ann-form">
+        <form method="POST" action="{{ route('announcements.store') }}" id="post-ann-form" onsubmit="this.querySelector('[type=submit]').disabled=true;">
             @csrf
             <div class="modal-field">
                 <label>Title *</label>
@@ -814,7 +814,7 @@
             <div class="modal-title">Edit Announcement</div>
             <button class="modal-close" onclick="closeModal('edit-ann-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-ann-form">
+        <form method="POST" id="edit-ann-form" onsubmit="this.querySelector('[type=submit]').disabled=true;">
             @csrf
             @method('PUT')
             <div class="modal-field">
@@ -859,12 +859,12 @@
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;padding:.2rem 0 .4rem;">
             Are you sure you want to delete this announcement? This cannot be undone.
         </p>
-        <form method="POST" id="delete-ann-form">
+        <form method="POST" id="delete-ann-form" onsubmit="this.querySelector('.delete-submit-btn').disabled=true;">
             @csrf
             @method('DELETE')
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('delete-ann-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+                <button type="submit" class="btn-submit delete-submit-btn" style="background:var(--red);">Delete</button>
             </div>
         </form>
     </div>
@@ -1179,7 +1179,7 @@ window.openDeleteModal = function(id) {
     openModal('delete-ann-modal');
 };
 
-window.openNotifModal = function(message, type, time) {
+window.openNotifModal = function(message, type, time, id) {
     document.getElementById('nd-message').textContent = message;
     document.getElementById('nd-time').textContent    = time;
     document.getElementById('nd-type').textContent    = type.charAt(0).toUpperCase() + type.slice(1);
@@ -1187,15 +1187,21 @@ window.openNotifModal = function(message, type, time) {
     icon.src = '{{ asset('icons/') }}' + type + '.png';
     icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
     openModal('notif-detail-modal');
+    if (id) {
+        fetch('/notifications/' + id + '/read', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' }
+        });
+    }
 };
 
 window.exportSummary = function() {
     var rows = [
         ['Metric', 'Value'],
-        ['Total Tenants',        '{{ $totalTenants }}'],
-        ['Unpaid Bills',         '{{ $pendingPayments }}'],
-        ['Maintenance Requests', '{{ $pendingMaintenance }}'],
-        ['Unresolved Reports',   '{{ $unresolvedReports }}'],
+        ['Total Tenants',        {{ (int) $totalTenants }}],
+        ['Unpaid Bills',         {{ (int) $pendingPayments }}],
+        ['Maintenance Requests', {{ (int) $pendingMaintenance }}],
+        ['Unresolved Reports',   {{ (int) $unresolvedReports }}],
     ];
     var csv  = rows.map(function(r){ return r.join(','); }).join('\n');
     var blob = new Blob([csv], { type: 'text/csv' });
