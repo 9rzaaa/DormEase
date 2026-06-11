@@ -133,11 +133,9 @@
     min-width: 0;
 }
 .icon-sm { width: 16px; height: 16px; object-fit: contain; }
-
 .btn-outline .icon-sm {
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
-
 .table-header {
     padding: 1.2rem 1.5rem;
     display: flex;
@@ -591,6 +589,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="reserved">Reserved</option>
                 </select>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
@@ -1294,7 +1293,7 @@ tbody tr:hover { background: var(--soft-bg); }
 
 @section('scripts')
 <script>
-    function printCredentialSlip(type) {
+function printCredentialSlip(type) {
     var accountId, tempPassword, tenantName;
     if (type === 'new') {
         accountId    = document.getElementById('cred-account-id').textContent.trim();
@@ -1315,90 +1314,21 @@ tbody tr:hover { background: var(--soft-bg); }
 <style>
   @page { size: 80mm 120mm; margin: 0; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #fff;
-    width: 80mm;
-    min-height: 120mm;
-    padding: 0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .slip {
-    width: 80mm;
-    min-height: 120mm;
-    padding: 7mm 7mm 6mm;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    border: 1px dashed #f4b8d0;
-  }
-  .header {
-    background: #E8175D;
-    color: #fff;
-    text-align: center;
-    padding: 5mm 4mm 4mm;
-    border-radius: 5px 5px 0 0;
-    margin: -7mm -7mm 4mm;
-  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 120mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slip { width: 80mm; min-height: 120mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
+  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
   .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
   .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
   .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
-  .tenant-name {
-    text-align: center;
-    font-size: 10pt;
-    font-weight: 700;
-    color: #3a0e22;
-    margin-bottom: 3.5mm;
-    padding-bottom: 3mm;
-    border-bottom: 1px dashed #f4b8d0;
-  }
+  .tenant-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
   .field { margin-bottom: 3mm; }
-  .field-label {
-    font-size: 6.5pt;
-    font-weight: 700;
-    color: #E8175D;
-    text-transform: uppercase;
-    letter-spacing: .07em;
-    margin-bottom: .8mm;
-  }
-  .field-value {
-    font-size: 13pt;
-    font-weight: 800;
-    color: #1a1a2e;
-    font-family: 'Courier New', monospace;
-    background: #fff5f9;
-    border: 1.5px solid #f4b8d0;
-    border-radius: 4px;
-    padding: 2mm 3mm;
-    letter-spacing: .08em;
-    text-align: center;
-    word-break: break-all;
-  }
-  .warning {
-    background: #fff9e6;
-    border: 1px solid #f0c040;
-    border-radius: 4px;
-    padding: 2mm 2.5mm;
-    font-size: 6.5pt;
-    color: #7a5400;
-    line-height: 1.45;
-    margin-top: 1.5mm;
-  }
-  .footer {
-    margin-top: auto;
-    padding-top: 3mm;
-    border-top: 1px dashed #f4b8d0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
+  .field-value { font-size: 13pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .08em; text-align: center; word-break: break-all; }
+  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 4px; padding: 2mm 2.5mm; font-size: 6.5pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
+  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
   .footer-date { font-size: 6pt; color: #b06080; }
   .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
-  @media print {
-    body { margin: 0; }
-    .slip { border: none; }
-  }
+  @media print { body { margin: 0; } .slip { border: none; } }
 </style>
 </head>
 <body>
@@ -1417,9 +1347,7 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="field-label">Temporary Password</div>
     <div class="field-value">${tempPassword}</div>
   </div>
-  <div class="warning">
-    This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.
-  </div>
+  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
   <div class="footer">
     <div class="footer-date">Issued: ${today}</div>
     <div class="footer-brand">DormEase</div>
@@ -1430,6 +1358,7 @@ tbody tr:hover { background: var(--soft-bg); }
 </html>`);
     win.document.close();
 }
+
 var tenants = @json($tenants);
 var PER_PAGE = 8;
 var currentTenant = null;
@@ -1627,10 +1556,10 @@ function renderSection(group) {
     var from    = total === 0 ? 0 : start + 1;
     var to      = Math.min(start + PER_PAGE, total);
 
-    document.getElementById('tbody-' + group).innerHTML    = buildRows(pageData);
-    document.getElementById('showing-' + group).textContent= total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
+    document.getElementById('tbody-' + group).innerHTML     = buildRows(pageData);
+    document.getElementById('showing-' + group).textContent = total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
     document.getElementById('pagination-' + group).innerHTML = buildPagination(group, page, total);
-    document.getElementById('pill-' + group).textContent   = total;
+    document.getElementById('pill-' + group).textContent    = total;
 }
 
 function goPage(group, p) {
@@ -1651,6 +1580,13 @@ function toggleSection(group) {
         body.style.display = 'none';
         chevron.classList.remove('open');
     }
+}
+
+var statusFilter = '';
+
+function setStatusFilter(val) {
+    statusFilter = val;
+    applyFilters();
 }
 
 function applyFilters() {
@@ -1680,12 +1616,20 @@ function applyFilters() {
         return a;
     }
 
-    sectionData.active   = sortList(base.filter(function(t){
+    sectionData.active = sortList(base.filter(function(t) {
         if (t.status !== 'active' && t.status !== 'pending') return false;
-        if (statusFilter === '') return true;
-        return t.status === statusFilter;
+        if (statusFilter === '' || statusFilter === 'active' || statusFilter === 'pending') {
+            return statusFilter === '' ? true : t.status === statusFilter;
+        }
+        return false;
     }));
-    sectionData.reserved = sortList(base.filter(function(t){ return t.status === 'reserved'; }));
+
+    sectionData.reserved = sortList(base.filter(function(t) {
+        if (t.status !== 'reserved') return false;
+        if (statusFilter === '' || statusFilter === 'reserved') return true;
+        return false;
+    }));
+
     sectionPages.active   = 1;
     sectionPages.reserved = 1;
     renderSection('active');
@@ -1800,13 +1744,6 @@ function copyText(elementId, btn) {
     document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
 @endif
 
-var statusFilter = '';
-
-function setStatusFilter(val) {
-    statusFilter = val;
-    applyFilters();
-}
-
 var roomsData = [];
 
 function syncReferredSelect(selectId, hiddenId) {
@@ -1872,8 +1809,8 @@ function restoreReferredBy(ctx, val) {
     var otherInp  = document.getElementById(ctx + '-referred-other-input');
 
     hiddenEl.value = val;
-    curSel.style.display  = 'none';
-    frmSel.style.display  = 'none';
+    curSel.style.display   = 'none';
+    frmSel.style.display   = 'none';
     otherInp.style.display = 'none';
 
     if (!val) { sourceEl.value = ''; return; }
@@ -1900,6 +1837,7 @@ function restoreReferredBy(ctx, val) {
         otherInp.value = val;
     }
 }
+
 var roomsFloorFilter = '';
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -1948,11 +1886,11 @@ function toggleRoomsStats() {
 }
 
 function updateRoomsStats(data) {
-    var totalRooms    = data.length;
-    var totalCap      = data.reduce(function(s, r) { return s + r.capacity; }, 0);
-    var totalOcc      = data.reduce(function(s, r) { return s + r.occupancy; }, 0);
-    var totalVacant   = totalCap - totalOcc;
-    var pct           = totalCap > 0 ? Math.round((totalOcc / totalCap) * 100) : 0;
+    var totalRooms  = data.length;
+    var totalCap    = data.reduce(function(s, r) { return s + r.capacity; }, 0);
+    var totalOcc    = data.reduce(function(s, r) { return s + r.occupancy; }, 0);
+    var totalVacant = totalCap - totalOcc;
+    var pct         = totalCap > 0 ? Math.round((totalOcc / totalCap) * 100) : 0;
 
     var pill = document.getElementById('rooms-stats-summary-pill');
     var pctColor = pct >= 100 ? '#e04867' : pct >= 75 ? '#c8960c' : '#E8175D';
@@ -1995,21 +1933,22 @@ function renderRooms() {
     const floors = [...new Set(data.map(r => r.floor))].sort();
 
     list.innerHTML = floors.map(floor => {
-        const floorRooms = data.filter(r => r.floor === floor);
+        const floorRooms    = data.filter(r => r.floor === floor);
         const floorOccupied = floorRooms.reduce((s, r) => s + r.occupancy, 0);
         const floorCapacity = floorRooms.reduce((s, r) => s + r.capacity, 0);
 
         const cards = floorRooms.map(r => {
-            const isFull    = r.occupancy >= r.capacity;
-            const isEmpty   = r.occupancy === 0;
-            const pct       = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+            const isFull  = r.occupancy >= r.capacity;
+            const isEmpty = r.occupancy === 0;
+            const pct     = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
 
-            const occupancyColor = isFull ? '#e04867' : pct >= 75 ? '#f0a500' : pct >= 40 ? '#c8960c' : '#1f9d69';
-            const occupancyBg    = isFull ? '#fff0f2' : pct >= 75 ? '#fffbf0' : pct >= 40 ? '#fffdf0' : '#f0faf6';
-            const occupancyBorder= isFull ? '#ffc2ce' : pct >= 75 ? '#ffd88a' : pct >= 40 ? '#f0e080' : '#8ce0bb';
+            const occupancyColor  = isFull ? '#e04867' : pct >= 75 ? '#f0a500' : pct >= 40 ? '#c8960c' : '#1f9d69';
+            const occupancyBg     = isFull ? '#fff0f2' : pct >= 75 ? '#fffbf0' : pct >= 40 ? '#fffdf0' : '#f0faf6';
+            const occupancyBorder = isFull ? '#ffc2ce' : pct >= 75 ? '#ffd88a' : pct >= 40 ? '#f0e080' : '#8ce0bb';
 
             const reservedCount = r.reserved_occupancy || 0;
             const activeCount   = r.occupancy - reservedCount;
+
             var personIcons = Array.from({ length: r.capacity }, (_, i) => {
                 let iconFilter, titleText;
                 if (i < activeCount) {
@@ -2045,9 +1984,7 @@ function renderRooms() {
                     : `<span style="font-size:.68rem;font-weight:600;color:var(--ink-muted);">${vacantCount} slot${vacantCount !== 1 ? 's' : ''} free</span>`;
 
             return `<div style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
-
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isFull ? 'linear-gradient(90deg,#e04867,#ff6b8a)' : pct >= 75 ? 'linear-gradient(90deg,#f0a500,#ffd060)' : isEmpty ? 'linear-gradient(90deg,#d0d0d8,#e8e8f0)' : 'linear-gradient(90deg,#1f9d69,#4ecb8d)'};border-radius:16px 16px 0 0;"></div>
-
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding-top:.15rem;">
                     <div style="display:flex;flex-direction:column;gap:.2rem;">
                         <div style="display:flex;align-items:center;gap:.45rem;">
@@ -2061,11 +1998,7 @@ function renderRooms() {
                         <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
-
-                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;min-height:22px;">
-                    ${personIcons}
-                </div>
-
+                <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;min-height:22px;">${personIcons}</div>
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:.45rem .6rem;border-radius:9px;background:${occupancyBg};border:1px solid ${occupancyBorder};">
                     <div style="display:flex;align-items:baseline;gap:.3rem;">
                         <span style="font-size:1.05rem;font-weight:800;color:${occupancyColor};line-height:1;">${r.occupancy}</span>
@@ -2073,7 +2006,6 @@ function renderRooms() {
                     </div>
                     ${vacantLabel}
                 </div>
-
             </div>`;
         }).join('');
 
@@ -2107,21 +2039,13 @@ function syncRoomType(capacityId, stayTypeId) {
 document.addEventListener('DOMContentLoaded', function() {
     var arCap = document.getElementById('ar-capacity');
     if (arCap) {
-        arCap.addEventListener('input', function() {
-            syncRoomType('ar-capacity', 'ar-stay-type');
-        });
-        arCap.addEventListener('change', function() {
-            syncRoomType('ar-capacity', 'ar-stay-type');
-        });
+        arCap.addEventListener('input',  function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
+        arCap.addEventListener('change', function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
     }
     var erCap = document.getElementById('er-capacity');
     if (erCap) {
-        erCap.addEventListener('input', function() {
-            syncRoomType('er-capacity', 'er-stay-type');
-        });
-        erCap.addEventListener('change', function() {
-            syncRoomType('er-capacity', 'er-stay-type');
-        });
+        erCap.addEventListener('input',  function() { syncRoomType('er-capacity', 'er-stay-type'); });
+        erCap.addEventListener('change', function() { syncRoomType('er-capacity', 'er-stay-type'); });
     }
 });
 
@@ -2250,9 +2174,7 @@ async function submitDeleteRoom() {
             .catch(function() { cb([]); });
     }
 
-    function invalidateRoomsCache() {
-        roomsCache = null;
-    }
+    function invalidateRoomsCache() { roomsCache = null; }
 
     var origFetchRooms = window.fetchRooms;
     window.fetchRooms = function() {
@@ -2261,29 +2183,16 @@ async function submitDeleteRoom() {
     };
 
     var originalSubmitAddRoom = window.submitAddRoom;
-    window.submitAddRoom = function() {
-        invalidateRoomsCache();
-        return originalSubmitAddRoom();
-    };
+    window.submitAddRoom = function() { invalidateRoomsCache(); return originalSubmitAddRoom(); };
     var originalSubmitEditRoom = window.submitEditRoom;
-    window.submitEditRoom = function() {
-        invalidateRoomsCache();
-        return originalSubmitEditRoom();
-    };
+    window.submitEditRoom = function() { invalidateRoomsCache(); return originalSubmitEditRoom(); };
     var originalSubmitDeleteRoom = window.submitDeleteRoom;
-    window.submitDeleteRoom = function() {
-        invalidateRoomsCache();
-        return originalSubmitDeleteRoom();
-    };
+    window.submitDeleteRoom = function() { invalidateRoomsCache(); return originalSubmitDeleteRoom(); };
 
     function buildHint(rooms, typedRoom, excludeTenantId) {
-        if (!typedRoom || typedRoom.trim() === '') {
-            return { state: 'empty', html: '' };
-        }
-        var q = typedRoom.trim().toLowerCase();
-        var room = rooms.find(function(r) {
-            return r.room_number.toLowerCase() === q;
-        });
+        if (!typedRoom || typedRoom.trim() === '') return { state: 'empty', html: '' };
+        var q    = typedRoom.trim().toLowerCase();
+        var room = rooms.find(function(r) { return r.room_number.toLowerCase() === q; });
         if (!room) {
             var suggestions = rooms.filter(function(r) {
                 return r.room_number.toLowerCase().indexOf(q) !== -1 && r.is_active;
@@ -2320,13 +2229,6 @@ async function submitDeleteRoom() {
             };
         }
         var effectiveOccupancy = room.occupancy;
-        if (excludeTenantId) {
-            var currentTenantInRoom = tenants.find(function(t) {
-                return t.tenant_id === excludeTenantId && t.room_number && t.room_number.toLowerCase() === q;
-            });
-            if (!currentTenantInRoom) {
-            }
-        }
         var remaining = room.capacity - effectiveOccupancy;
         if (remaining <= 0) {
             return {
@@ -2337,7 +2239,7 @@ async function submitDeleteRoom() {
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">' + room.occupancy + ' of ' + room.capacity + ' slots occupied. Choose a different room or increase capacity in <strong>Manage Rooms</strong>.</div></div></div>'
             };
         }
-        var barPct = Math.round((effectiveOccupancy / room.capacity) * 100);
+        var barPct   = Math.round((effectiveOccupancy / room.capacity) * 100);
         var barColor = barPct >= 75 ? '#f0a500' : '#1f9d69';
         return {
             state: 'available',
@@ -2370,9 +2272,7 @@ async function submitDeleteRoom() {
                 var floorSelect = document.getElementById(floorSelectId);
                 if (floorSelect) {
                     var firstChar = val.charAt(0);
-                    if (firstChar >= '2' && firstChar <= '5') {
-                        floorSelect.value = firstChar;
-                    }
+                    if (firstChar >= '2' && firstChar <= '5') floorSelect.value = firstChar;
                 }
             }
 
@@ -2415,19 +2315,14 @@ async function submitDeleteRoom() {
 
     function disableSubmit(selector) {
         document.querySelectorAll(selector).forEach(function(btn) {
-            btn.disabled = true;
-            btn.style.opacity = '.45';
-            btn.style.cursor  = 'not-allowed';
+            btn.disabled = true; btn.style.opacity = '.45'; btn.style.cursor = 'not-allowed';
             btn.title = 'Resolve the room issue before saving.';
         });
     }
 
     function enableSubmit(selector) {
         document.querySelectorAll(selector).forEach(function(btn) {
-            btn.disabled = false;
-            btn.style.opacity = '';
-            btn.style.cursor  = '';
-            btn.title = '';
+            btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; btn.title = '';
         });
     }
 
@@ -2440,28 +2335,20 @@ async function submitDeleteRoom() {
                 if (!r.is_active) return false;
                 var remaining = r.capacity - r.occupancy;
                 if (remaining <= 0) return false;
-                if (stayType === 'Solo Room')   return r.stay_type === 'Solo Room';
-                if (stayType === 'Shared Room') return r.stay_type === 'Shared Room';
-                return false;
+                return r.stay_type === stayType;
             }).sort(function(a, b) {
-                var remA = a.capacity - a.occupancy;
-                var remB = b.capacity - b.occupancy;
-                return remA - remB;
+                return (a.capacity - a.occupancy) - (b.capacity - b.occupancy);
             }).slice(0, 6);
 
-            if (!matched.length) {
-                wrap.style.display = 'none';
-                box.innerHTML = '';
-                return;
-            }
+            if (!matched.length) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
 
             var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
                 + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">Available rooms for ' + stayType + '</div>'
                 + '<div style="display:flex;flex-wrap:wrap;gap:.4rem;">';
 
             matched.forEach(function(r) {
-                var remaining = r.capacity - r.occupancy;
-                var pct = Math.round((r.occupancy / r.capacity) * 100);
+                var remaining  = r.capacity - r.occupancy;
+                var pct        = Math.round((r.occupancy / r.capacity) * 100);
                 var chipColor  = pct === 0 ? '#1f9d69' : pct >= 75 ? '#c8960c' : '#E8175D';
                 var chipBg     = pct === 0 ? '#e8faf5' : pct >= 75 ? '#fff9e6' : '#fff0f6';
                 var chipBorder = pct === 0 ? '#8ce0bb' : pct >= 75 ? '#f0c040' : 'var(--pink-100)';
@@ -2481,12 +2368,9 @@ async function submitDeleteRoom() {
     }
 
     window.onAddStayTypeChange = function() {
-        var stayType = document.getElementById('add-stay-type-select').value;
+        var stayType    = document.getElementById('add-stay-type-select').value;
         var suggestWrap = document.getElementById('add-room-suggest-wrap');
-        if (!stayType) {
-            if (suggestWrap) suggestWrap.style.display = 'none';
-            return;
-        }
+        if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
         renderRoomSuggestions(stayType);
     };
 
@@ -2499,23 +2383,15 @@ async function submitDeleteRoom() {
 
     document.addEventListener('DOMContentLoaded', function() {
         attachRoomHint(
-            'add-room-number-input',
-            'add-room-hint',
-            'add-room-hint-wrap',
-            '#add-modal .btn-submit',
-            null,
-            'add-floor-select'
+            'add-room-number-input', 'add-room-hint', 'add-room-hint-wrap',
+            '#add-modal .btn-submit', null, 'add-floor-select'
         );
         var addRoomInput = document.getElementById('add-room-number-input');
         if (addRoomInput) {
-            addRoomInput.addEventListener('input', function() {
-                toggleReservationFields('add');
-            });
+            addRoomInput.addEventListener('input', function() { toggleReservationFields('add'); });
         }
         attachRoomHint(
-            'edit-room',
-            'edit-room-hint',
-            'edit-room-hint-wrap',
+            'edit-room', 'edit-room-hint', 'edit-room-hint-wrap',
             '#edit-modal .btn-submit',
             function() { return currentTenant ? currentTenant.tenant_id : null; },
             'edit-floor'
@@ -2525,10 +2401,8 @@ async function submitDeleteRoom() {
 
 function setAddMode(mode) {
     document.getElementById('add-mode-input').value = mode;
-
     var btnMovedIn     = document.getElementById('add-mode-btn-movedin');
     var btnReservation = document.getElementById('add-mode-btn-reservation');
-
     if (mode === 'moved_in') {
         btnMovedIn.style.border     = '2px solid var(--bright-pink)';
         btnMovedIn.style.background = 'linear-gradient(135deg,#fff0f6,#ffe4ef)';
@@ -2540,7 +2414,6 @@ function setAddMode(mode) {
         btnMovedIn.style.border     = '2px solid var(--pink-100)';
         btnMovedIn.style.background = 'var(--white)';
     }
-
     toggleReservationFields('add');
 }
 
@@ -2714,9 +2587,7 @@ function closeAllExportDropdowns() {
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.export-dropdown')) {
-        closeAllExportDropdowns();
-    }
+    if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
 });
 </script>
 @endsection
