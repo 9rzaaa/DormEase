@@ -130,6 +130,7 @@
         position: absolute;
         bottom: 0; right: 0;
         width: 600px;
+        height: 700px;
         z-index: 1;
         pointer-events: none;
         animation: float 5s ease-in-out infinite;
@@ -146,6 +147,7 @@
         bottom: 0;
         left: 0;
         transition: opacity .4s ease;
+        z-index: 1;
     }
 
     .student-img-cover {
@@ -159,12 +161,7 @@
         height: 120px;
         background: linear-gradient(to top, #b0103f 0%, transparent 100%);
         pointer-events: none;
-    }
-
-    .student-wrap img {
-        width: 100%;
-        display: block;
-        filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
+        z-index: 2;
     }
 
     @keyframes float {
@@ -408,18 +405,6 @@
     .form-wrap > *:nth-child(7) { animation-delay: .47s; }
 
     .form-header { margin-bottom: 1.8rem; }
-
-    .greeting-time {
-        font-family: var(--ff-display);
-        font-size: 1.05rem;
-        font-weight: 400;
-        font-style: italic;
-        color: var(--ink-muted);
-        margin-bottom: .22rem;
-        opacity: 0;
-        animation: slideUp .5s cubic-bezier(.22,1,.36,1) .05s forwards;
-        letter-spacing: -.01em;
-    }
 
     .form-header-eyebrow {
         opacity: 0;
@@ -1489,7 +1474,6 @@
     <div class="form-wrap">
 
         <div class="form-header">
-            <div class="greeting-time" id="greeting-time"></div>
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
                 <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
             </div>
@@ -1842,13 +1826,6 @@
     });
 
     (function () {
-        var h = new Date().getHours();
-        var greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-        var el = document.getElementById('greeting-time');
-        if (el) el.textContent = greeting;
-    })();
-
-    (function () {
         var cards = document.querySelectorAll('.role-btn');
         cards.forEach(function (card) {
             card.addEventListener('mousemove', function (e) {
@@ -1895,7 +1872,7 @@
 
     var fpAdminEmail = '';
 
-    function setRole(role) {
+    function setRole(role, skipAnim) {
         ['admin', 'frontdesk'].forEach(function (r) {
             document.getElementById('role-' + r).classList.toggle('active', r === role);
         });
@@ -1903,6 +1880,11 @@
 
         var textEl = document.getElementById('eyebrow-text');
         var next   = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
+
+        if (skipAnim) {
+            textEl.textContent = next;
+            return;
+        }
 
         textEl.classList.remove('entering');
         textEl.classList.add('switching');
@@ -1916,7 +1898,7 @@
 
     (function () {
         var saved = document.getElementById('role-input').value;
-        if (saved) setRole(saved);
+        if (saved) setRole(saved, true);
     })();
 
     document.querySelectorAll('.role-btn').forEach(function (btn) {
