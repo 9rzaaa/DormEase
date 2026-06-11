@@ -56,6 +56,8 @@
         padding: 3rem;
         position: relative;
         overflow: hidden;
+        box-shadow: 8px 0 40px rgba(176,16,63,.28);
+        z-index: 1;
     }
 
     .left::before {
@@ -141,16 +143,30 @@
 
     .student-img {
         width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom;
         display: block;
         filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
         position: absolute;
         bottom: 0;
         left: 0;
+        top: 0;
         transition: opacity .4s ease;
         z-index: 1;
+        opacity: 1;
     }
 
     .student-img-cover {
+        opacity: 0;
+        top: 0;
+    }
+
+    #student-normal {
+        opacity: 1;
+    }
+
+    #student-cover {
         opacity: 0;
     }
 
@@ -331,15 +347,17 @@
     .right {
         width: 500px;
         flex-shrink: 0;
-        background: #fdf6f9;
-        background-image: radial-gradient(circle, rgba(232,23,93,.09) 1px, transparent 1px);
-        background-size: 22px 22px;
+        background-color: #fdf6f9;
+        background-image:
+            radial-gradient(ellipse at left center, rgba(232,23,93,.13) 0%, transparent 55%),
+            radial-gradient(circle, rgba(232,23,93,.07) 1px, transparent 1px);
+        background-size: 100% 100%, 22px 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 3rem 3.5rem;
         position: relative;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
     .right::before {
@@ -372,6 +390,17 @@
     @keyframes orbDrift2 {
         0%,100% { transform: translate(0,0) scale(1); }
         50%      { transform: translate(14px,-18px) scale(1.06); }
+    }
+
+    .right-edge-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to right, rgba(232,23,93,.18), transparent);
+        pointer-events: none;
+        z-index: 0;
     }
 
     .form-wrap {
@@ -1471,6 +1500,7 @@
 
 
 <div class="right">
+    <div class="right-edge-glow"></div>
     <div class="form-wrap">
 
         <div class="form-header">
