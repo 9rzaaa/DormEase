@@ -217,7 +217,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
-.badge-reserved { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
+.badge-reserved { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 
 .inside-indicator {
@@ -1476,12 +1476,10 @@ tbody tr:hover { background: var(--soft-bg); }
             <input type="text" id="log-search" placeholder="Search by name, room..." oninput="renderLogDrawer()">
         </div>
     </div>
-    <div style="padding: 0 1.8rem .4rem; flex-shrink: 0; display: flex; gap: .5rem; flex-wrap: wrap;">
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;">
         <button class="page-btn active" id="log-filter-all"     onclick="setLogFilter('')">All</button>
         <button class="page-btn"        id="log-filter-timein"  onclick="setLogFilter('time_in')">Time In</button>
         <button class="page-btn"        id="log-filter-timeout" onclick="setLogFilter('time_out')">Time Out</button>
-    </div>
-    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
         <div style="position:relative; display:inline-flex; align-items:center;">
             <button id="log-date-dropdown-btn" onclick="toggleLogDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
