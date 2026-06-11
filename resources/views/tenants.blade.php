@@ -281,9 +281,8 @@ tbody tr:hover { background: var(--soft-bg); }
     to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 .modal-header {
-    padding: .6rem .9rem .55rem;
+    padding: .6rem .9rem .6rem;
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1.5px solid var(--pink-100);
     flex-shrink: 0;
 }
 .modal-title {
@@ -1074,15 +1073,15 @@ tbody tr:hover { background: var(--soft-bg); }
         <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
             @csrf
             <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
-            <div style="flex-shrink:0;background:#fffafd;border-bottom:1.5px solid var(--pink-100);">
+            <div style="flex-shrink:0;background:#fffafd;border-top:1.5px solid var(--pink-100);border-bottom:1.5px solid var(--pink-100);">
     <div style="display:flex;">
-        <div id="add-step-btn-1" onclick="goAddStep(1)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--bright-pink);transition:border-color .2s,background .2s;">
+        <div id="add-step-btn-1" onclick="goAddStep(1)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.45rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--bright-pink);transition:border-color .2s,background .2s;">
             <div style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--gradient-pink);flex-shrink:0;" id="add-step-circle-1">
                 <span style="font-size:.6rem;font-weight:800;color:#fff;">1</span>
             </div>
             <span style="font-size:.72rem;font-weight:700;color:var(--bright-pink);white-space:nowrap;" id="add-step-label-1">Personal Info</span>
         </div>
-        <div id="add-step-btn-2" onclick="goAddStep(2)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--pink-100);transition:border-color .2s,background .2s;">
+        <div id="add-step-btn-2" onclick="goAddStep(2)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.45rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--pink-100);transition:border-color .2s,background .2s;">
             <div style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--pink-100);flex-shrink:0;" id="add-step-circle-2">
                 <span style="font-size:.6rem;font-weight:800;color:var(--hot-pink);">2</span>
             </div>
