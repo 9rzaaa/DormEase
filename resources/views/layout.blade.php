@@ -595,14 +595,15 @@
                                 @foreach($notifications as $notif)
                                     @php
                                         $notifIcon = match(true) {
-                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
-                                            str_starts_with($notif->type, 'emergency')    => 'warn',
-                                            str_starts_with($notif->type, 'billing')      => 'billing',
-                                            str_starts_with($notif->type, 'document')     => 'nav-docu',
-                                            str_starts_with($notif->type, 'announcement') => 'nav-announ',
-                                            str_starts_with($notif->type, 'visitor')      => 'nav-visit',
-                                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
-                                            default                                        => 'bell',
+                                        str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                        str_starts_with($notif->type, 'emergency')    => 'warn',
+                                        str_starts_with($notif->type, 'billing')      => 'billing',
+                                        str_starts_with($notif->type, 'document')     => 'nav-docu',
+                                        str_starts_with($notif->type, 'announcement') => 'nav-announ',
+                                        str_starts_with($notif->type, 'visitor')      => 'nav-visit',
+                                        $notif->type === 'tenant_reserved'            => 'pending',
+                                        str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                                        default                                        => 'bell',
                                         };
                                         $notifTypeLabel = match(true) {
                                             str_starts_with($notif->type, 'maintenance')  => 'maintenance',
@@ -618,6 +619,7 @@
                                         @endphp
 
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
+                                         style="{{ $notif->type === 'tenant_reserved' ? 'background:#fffbf0;border-left:3px solid #f0c840;' : '' }}"
                                          onclick="openNotifDetail({
                                              id:      {{ $notif->notif_id }},
                                              type:    '{{ $notifTypeLabel }}',
