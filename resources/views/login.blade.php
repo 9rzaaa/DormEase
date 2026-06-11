@@ -464,24 +464,22 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        right: -42px;
+        right: -44px;
         left: auto;
         transform: translateY(-60%) scale(0.4) rotate(18deg);
-        width: 32px;
-        height: 32px;
+        width: 38px;
+        height: 38px;
         object-fit: contain;
         opacity: 0;
         pointer-events: none;
         transition: opacity .35s ease, transform .45s cubic-bezier(.34,1.56,.64,1);
-        filter: drop-shadow(0 3px 12px rgba(232,23,93,.7));
+        filter: brightness(0) saturate(100%) invert(27%) sepia(85%) saturate(2000%) hue-rotate(320deg) brightness(1.1) drop-shadow(0 3px 14px rgba(232,23,93,.85));
         z-index: 2;
     }
-
     .form-header-title:hover .title-halo {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
     }
-
     .form-header-title:hover .title-logo {
         opacity: 1;
         transform: translateY(-50%) scale(1) rotate(0deg);
@@ -1660,7 +1658,10 @@
                         >
                     </button>
                 </div>
-                <div class="pw-hint" id="pw-hint">Must be at least 8 characters</div>
+                <div class="field-error" id="pw-field-error">
+                    <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6" stroke="#E8175D" stroke-width="1.2"/><path d="M6.5 4v3M6.5 9h.01" stroke="#E8175D" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    <span id="pw-error-text"></span>
+                </div>
                 <div class="caps-warn" id="caps-warn">
                     <svg viewBox="0 0 13 13" fill="none">
                         <path d="M6.5 1L1 10h11L6.5 1z" stroke="#b45309" stroke-width="1.3" stroke-linejoin="round"/>
@@ -2015,17 +2016,24 @@
     }
 
     document.getElementById('password').addEventListener('input', function () {
-        var hint = document.getElementById('pw-hint');
-        hint.style.display = (this.value.length > 0 && this.value.length < 8) ? 'block' : 'none';
+        var errEl   = document.getElementById('pw-field-error');
+        var errText = document.getElementById('pw-error-text');
+        if (this.value.length > 0 && this.value.length < 8) {
+            errText.textContent = 'Password must be at least 8 characters.';
+            errEl.classList.add('visible');
+        } else {
+            errEl.classList.remove('visible');
+        }
     });
 
     document.getElementById('password').addEventListener('keyup', function (e) {
         var caps = e.getModifierState && e.getModifierState('CapsLock');
-        var warn = document.getElementById('caps-warn');
-        if (caps) {
-            warn.classList.add('visible');
-        } else {
-            warn.classList.remove('visible');
+        document.getElementById('caps-warn').classList.toggle('visible', !!caps);
+    });
+
+    document.getElementById('password').addEventListener('focus', function (e) {
+        if (e.getModifierState && e.getModifierState('CapsLock')) {
+            document.getElementById('caps-warn').classList.add('visible');
         }
     });
 
@@ -2262,7 +2270,7 @@
         if (pw.length < 8)           { fpShowErr('fp-pw-err', 'Password must be at least 8 characters.'); return; }
         if (!confirm)                { fpShowErr('fp-pw-err', 'Please confirm your new password.'); return; }
         if (pw !== confirm)          { fpShowErr('fp-pw-err', 'Passwords do not match.'); return; }
-        if (fpCheckStrength(pw) < 2) { fpShowErr('fp-pw-err', 'Please choose a stronger password.'); return; }
+        if (fpCheckStrength(pw) < 3) { fpShowErr('fp-pw-err', 'Password must include uppercase, a number, and a special character.'); return; }
 
         fpResetInFlight = true;
         var txt    = document.getElementById('fp-reset-txt');
@@ -2285,6 +2293,15 @@
                 document.getElementById('fp-admin-done').style.display    = '';
             } else if (data.same_password) {
                 fpShowErr('fp-pw-err', 'This is your current password. Please choose a different one.');
+            } else if (data.message && data.message.toLowerCase().includes('session expired')) {
+                fpShowErr('fp-pw-err', 'Your session expired. Please close this and start again.');
+                setTimeout(function () {
+                    document.getElementById('fp-admin-pw-step').style.display    = 'none';
+                    document.getElementById('fp-admin-email-step').style.display = '';
+                    document.getElementById('fp-admin-email').value              = '';
+                    fpAdminEmail     = '';
+                    fpResetInFlight  = false;
+                }, 2200);
             } else {
                 fpShowErr('fp-pw-err', data.message || 'Could not update password. Please try again.');
             }

@@ -28,7 +28,7 @@ class ForgotPasswordController extends Controller
             ]);
         }
 
-        session(['fp_verified_email' => $email]);
+        session(['fp_verified_email' => $email, 'fp_verified_at' => now()->timestamp]);
 
         return response()->json(['success' => true]);
     }
@@ -39,9 +39,11 @@ class ForgotPasswordController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        $email = session('fp_verified_email');
+        $email      = session('fp_verified_email');
+        $verifiedAt = session('fp_verified_at');
 
-        if (!$email) {
+        if (!$email || !$verifiedAt || (now()->timestamp - $verifiedAt) > 900) {
+            session()->forget(['fp_verified_email', 'fp_verified_at']);
             return response()->json([
                 'success' => false,
                 'message' => 'Session expired. Please start the reset process again.',
