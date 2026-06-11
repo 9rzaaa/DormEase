@@ -464,15 +464,16 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        left: -40px;
-        transform: translateY(-60%) scale(0.4) rotate(-18deg);
-        width: 30px;
-        height: 30px;
+        right: -42px;
+        left: auto;
+        transform: translateY(-60%) scale(0.4) rotate(18deg);
+        width: 32px;
+        height: 32px;
         object-fit: contain;
         opacity: 0;
         pointer-events: none;
         transition: opacity .35s ease, transform .45s cubic-bezier(.34,1.56,.64,1);
-        filter: drop-shadow(0 3px 10px rgba(232,23,93,.4));
+        filter: drop-shadow(0 3px 12px rgba(232,23,93,.7));
         z-index: 2;
     }
 
@@ -482,7 +483,7 @@
     }
 
     .form-header-title:hover .title-logo {
-        opacity: .7;
+        opacity: 1;
         transform: translateY(-50%) scale(1) rotate(0deg);
     }
 
