@@ -48,7 +48,6 @@ class TenantController extends Controller
         return view('tenants', [
             'tenants'         => $tenants,
             'billingData'     => $billingData,
-            'tenants'         => $tenants,
             'totalTenants'    => $tenants->count(),
             'activeCount'     => $tenants->where('status', 'active')->count(),
             'pendingCount'    => $tenants->where('status', 'pending')->count(),
@@ -157,9 +156,13 @@ class TenantController extends Controller
             'is_active'              => true,
         ]);
 
+        $notifMessage = $isReserved
+            ? "New reservation: {$tenant->first_name} {$tenant->last_name} has reserved a room (Rm. {$tenant->room_number})."
+            : "New tenant {$tenant->first_name} {$tenant->last_name} has been added.";
+
         NotificationHelper::sendToAll(
-            type: 'tenant_new',
-            message: "New tenant {$tenant->first_name} {$tenant->last_name} has been added.",
+            type: $isReserved ? 'tenant_reserved' : 'tenant_new',
+            message: $notifMessage,
             ref_id: $tenant->tenant_id,
         );
 
@@ -207,7 +210,7 @@ class TenantController extends Controller
                 return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
             }
         }
-        
+
         $previousStatus = $tenant->status;
 
         $tenant->update([
