@@ -1544,6 +1544,7 @@ function closeModal(id) {
             var hv = document.getElementById('add-referred-by-value');
             if (hv) hv.value = '';
         }
+        selectedRoomNumber = null;
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
@@ -1557,8 +1558,7 @@ function closeModal(id) {
         var en = document.getElementById('edit-reservation-notes-wrap');
         if (ew) ew.style.display = 'none';
         if (en) en.style.display = 'none';
-        selectedRoomNumber = null;
-        document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
+        document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
     }
@@ -2591,6 +2591,7 @@ async function submitDeleteRoom() {
     window.selectSuggestedRoom = function(roomNumber) {
     var input = document.getElementById('add-room-number-input');
     if (!input) return;
+    selectedRoomNumber = roomNumber;
     input.value = roomNumber;
     input.dispatchEvent(new Event('input'));
     document.querySelectorAll('#add-room-suggest .room-chip-selectable').forEach(function(el) {
