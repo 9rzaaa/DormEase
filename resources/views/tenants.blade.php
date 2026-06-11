@@ -281,7 +281,7 @@ tbody tr:hover { background: var(--soft-bg); }
     to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 .modal-header {
-    padding: .85rem 1.1rem .75rem;
+    padding: .6rem .9rem .55rem;
     display: flex; align-items: center; justify-content: space-between;
     border-bottom: 1.5px solid var(--pink-100);
     flex-shrink: 0;
@@ -299,13 +299,13 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 .modal-close:hover { background: var(--bright-pink); color: var(--white); border-color: var(--bright-pink); }
 .modal-body {
-    flex: 1; overflow-y: auto; padding: .9rem 1.1rem;
+    flex: 1; overflow-y: auto; padding: .65rem .9rem;
     scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
 }
 .modal-body::-webkit-scrollbar { width: 5px; }
 .modal-body::-webkit-scrollbar-track { background: transparent; }
 .modal-body::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
-.modal-section { margin-bottom: .9rem; }
+.modal-section { margin-bottom: .65rem; }
 .modal-section-title {
     font-size: .7rem; font-weight: 800; color: var(--bright-pink);
     text-transform: uppercase; letter-spacing: .08em;
@@ -318,7 +318,7 @@ tbody tr:hover { background: var(--soft-bg); }
     display: inline-block; width: 3px; height: 12px;
     background: var(--gradient-pink); border-radius: 2px;
 }
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
 .modal-field { display: flex; flex-direction: column; gap: .25rem; }
 .modal-field.full { grid-column: 1 / -1; }
 .modal-field label {
@@ -359,7 +359,7 @@ tbody tr:hover { background: var(--soft-bg); }
     display: flex; gap: .55rem; align-items: flex-start;
 }
 .modal-footer {
-    padding: .7rem 1.1rem;
+    padding: .55rem .9rem;
     border-top: 1.5px solid var(--pink-100);
     display: flex; align-items: center; justify-content: flex-end; gap: .55rem;
     flex-shrink: 0; background: #fffafd;
@@ -484,33 +484,15 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-export-btn { display: inline-flex; align-items: center; gap: .4rem; font-size: .75rem; font-weight: 700; color: var(--bright-pink); background: var(--petal); border: 1px solid var(--pink-100); border-radius: 8px; padding: .35rem .85rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; font-family: var(--ff-body); }
 .tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
-.log-card {
-    background: var(--white);
-    border: 1px solid var(--pink-100);
-    border-radius: 12px;
-    padding: .75rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: .85rem;
-    transition: background .2s, border-color .2s;
-    animation: tadSlideIn .3s ease both;
-}
+.log-card { background: var(--white); border: 1px solid var(--pink-100); border-radius: 12px; padding: .75rem 1rem; display: flex; align-items: center; gap: .85rem; transition: background .2s, border-color .2s; animation: tadSlideIn .3s ease both; }
 .log-card:hover { background: var(--blush); border-color: var(--bright-pink); }
-.log-action-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-}
+.log-action-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .log-action-icon.in  { background: #e8faf5; border: 1.5px solid #8ce0bb; }
 .log-action-icon.out { background: #fff0f4; border: 1.5px solid #ffc2d1; }
 .log-info { flex: 1; min-width: 0; }
 .log-name { font-size: .87rem; font-weight: 700; color: var(--ink); }
 .log-meta { font-size: .72rem; color: var(--ink-muted); margin-top: .15rem; }
-.log-time-col {
-    font-size: .7rem; font-weight: 600;
-    color: var(--ink-muted); text-align: right;
-    flex-shrink: 0; white-space: nowrap;
-}
+.log-time-col { font-size: .7rem; font-weight: 600; color: var(--ink-muted); text-align: right; flex-shrink: 0; white-space: nowrap; }
 .tad-pill-timein  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tad-pill-timeout { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 .export-dropdown { position: relative; display: inline-flex; }
@@ -532,86 +514,18 @@ tbody tr:hover { background: var(--soft-bg); }
 @media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
-
-.status-legend-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.status-legend-wrap svg {
-    display: block;
-    opacity: .75;
-    transition: opacity .2s;
-}
+.status-legend-wrap { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+.status-legend-wrap svg { display: block; opacity: .75; transition: opacity .2s; }
 .status-legend-wrap:hover svg { opacity: 1; }
-.status-legend-popup {
-    display: none;
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--white);
-    border: 1.5px solid var(--pink-100);
-    border-radius: 14px;
-    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
-    padding: .75rem .9rem;
-    min-width: 280px;
-    z-index: 600;
-    pointer-events: none;
-}
-.status-legend-wrap:hover .status-legend-popup,
-.status-legend-popup.open { display: block; }
-.slp-title {
-    font-size: .67rem;
-    font-weight: 800;
-    color: var(--bright-pink);
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-bottom: .55rem;
-    padding-bottom: .4rem;
-    border-bottom: 1.5px solid var(--petal);
-}
-.slp-row {
-    display: flex;
-    align-items: flex-start;
-    gap: .6rem;
-    padding: .35rem 0;
-    border-bottom: 1px solid var(--pink-100);
-}
+.status-legend-popup { display: none; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 14px; box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07); padding: .75rem .9rem; min-width: 280px; z-index: 600; pointer-events: none; }
+.status-legend-wrap:hover .status-legend-popup, .status-legend-popup.open { display: block; }
+.slp-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .55rem; padding-bottom: .4rem; border-bottom: 1.5px solid var(--petal); }
+.slp-row { display: flex; align-items: flex-start; gap: .6rem; padding: .35rem 0; border-bottom: 1px solid var(--pink-100); }
 .slp-row:last-child { border-bottom: none; }
 .slp-row .badge { flex-shrink: 0; min-width: 72px; justify-content: center; }
-.slp-desc {
-    font-size: .75rem;
-    color: var(--ink-muted);
-    font-weight: 500;
-    line-height: 1.45;
-    padding-top: .15rem;
-}
-@media (max-width: 680px) {
-    .status-legend-popup {
-        left: auto;
-        right: 0;
-        transform: none;
-    }
-}
-
-.addf-item {
-    display: block;
-    width: 100%;
-    padding: .6rem 1rem;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: .82rem;
-    font-weight: 600;
-    color: var(--ink);
-    cursor: pointer;
-    transition: background .15s;
-    font-family: var(--ff-body);
-    border-bottom: 1px solid var(--pink-100);
-}
+.slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
+@media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
+.addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
 .addf-item:last-child { border-bottom: none; }
 .addf-item:hover { background: var(--blush); color: var(--hot-pink); }
 .addf-item.active { background: var(--petal); color: var(--hot-pink); }
@@ -822,7 +736,6 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <button class="tad-close" onclick="closeRoomsDrawer()">&#x2715;</button>
     </div>
-
     <div style="padding:.75rem 1.8rem .5rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
         <div class="tad-search-inner" style="flex:1;max-width:260px;">
             <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
@@ -830,7 +743,6 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="openAddRoomModal()">+ Add Room</button>
     </div>
-
     <div style="padding:.4rem 1.8rem .2rem;flex-shrink:0;" id="rooms-stats-bar">
         <button onclick="toggleRoomsStats()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:.55rem .85rem;border-radius:12px;border:1px solid var(--pink-100);background:var(--white);cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s;" id="rooms-stats-toggle" onmouseover="this.style.background='var(--blush)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';">
             <div style="display:flex;align-items:center;gap:.6rem;">
@@ -857,7 +769,6 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
     </div>
-
     <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
         <button class="page-btn active" id="rfloor-all" onclick="setRoomFloor('')">All</button>
         <button class="page-btn" id="rfloor-2" onclick="setRoomFloor(2)">Floor 2</button>
@@ -865,9 +776,7 @@ tbody tr:hover { background: var(--soft-bg); }
         <button class="page-btn" id="rfloor-4" onclick="setRoomFloor(4)">Floor 4</button>
         <button class="page-btn" id="rfloor-5" onclick="setRoomFloor(5)">Floor 5</button>
     </div>
-
     <div class="tad-list" id="rooms-list"></div>
-
     <div class="tad-footer">
         <div class="tad-count-label" id="rooms-count-label">0 rooms</div>
         <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
@@ -1164,113 +1073,135 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
             @csrf
+            <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
+            <div style="flex-shrink:0;background:#fffafd;border-bottom:1.5px solid var(--pink-100);">
+    <div style="display:flex;">
+        <div id="add-step-btn-1" onclick="goAddStep(1)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--bright-pink);transition:border-color .2s,background .2s;">
+            <div style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--gradient-pink);flex-shrink:0;" id="add-step-circle-1">
+                <span style="font-size:.6rem;font-weight:800;color:#fff;">1</span>
+            </div>
+            <span style="font-size:.72rem;font-weight:700;color:var(--bright-pink);white-space:nowrap;" id="add-step-label-1">Personal Info</span>
+        </div>
+        <div id="add-step-btn-2" onclick="goAddStep(2)" style="flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem .5rem .45rem;cursor:pointer;border-bottom:3px solid var(--pink-100);transition:border-color .2s,background .2s;">
+            <div style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--pink-100);flex-shrink:0;" id="add-step-circle-2">
+                <span style="font-size:.6rem;font-weight:800;color:var(--hot-pink);">2</span>
+            </div>
+            <span style="font-size:.72rem;font-weight:700;color:var(--ink-muted);white-space:nowrap;" id="add-step-label-2">Room &amp; Stay</span>
+        </div>
+    </div>
+</div>
             <div class="modal-body">
-                <div class="modal-info-banner">
-                    <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.9rem;" id="add-mode-selector">
-                    <button type="button" id="add-mode-btn-movedin" onclick="setAddMode('moved_in')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--bright-pink);background:linear-gradient(135deg,#fff0f6,#ffe4ef);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
-                        <div style="display:flex;align-items:center;gap:.45rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            <span style="font-size:.78rem;font-weight:800;color:#E8175D;letter-spacing:.01em;">Moved In</span>
-                        </div>
-                        <span style="font-size:.7rem;color:#a0405e;font-weight:500;line-height:1.35;">Tenant is already occupying a room</span>
-                    </button>
-                    <button type="button" id="add-mode-btn-reservation" onclick="setAddMode('reservation')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--pink-100);background:var(--white);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
-                        <div style="display:flex;align-items:center;gap:.45rem;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            <span style="font-size:.78rem;font-weight:800;color:#9a6200;letter-spacing:.01em;">Reservation</span>
-                        </div>
-                        <span style="font-size:.7rem;color:#7a5200;font-weight:500;line-height:1.35;">Room held, tenant moves in later</span>
-                    </button>
-                </div>
-                <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
-                <div class="modal-section">
-                    <div class="modal-section-title">Personal Information</div>
-                    <div class="modal-grid">
-                        <div class="modal-field">
-                            <label>First Name</label>
-                            <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}" autocomplete="given-name">
-                        </div>
-                        <div class="modal-field">
-                            <label>Last Name</label>
-                            <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}" autocomplete="family-name">
-                        </div>
-                        <div class="modal-field full">
-                            <label>Email Address</label>
-                            <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
-                        </div>
-                        <div class="modal-field full">
-                            <label>Contact No.</label>
-                            <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
-                        </div>
-                        <div class="modal-field full">
-                            <label>Referred By</label>
-                            <select id="add-referred-source" onchange="handleReferredSource('add')" style="margin-bottom:.4rem;">
-                                <option value="">Not referred / N/A</option>
-                                <option value="current">Current Tenant</option>
-                                <option value="former">Former Tenant</option>
-                                <option value="other">Other</option>
-                            </select>
-                            <input type="hidden" name="referred_by" id="add-referred-by-value" value="{{ old('referred_by') }}">
-                            <select id="add-referred-current-select" style="display:none;" onchange="syncReferredSelect('add-referred-current-select','add-referred-by-value')">
-                                <option value="">Select current tenant...</option>
-                            </select>
-                            <select id="add-referred-former-select" style="display:none;" onchange="syncReferredSelect('add-referred-former-select','add-referred-by-value')">
-                                <option value="">Select former tenant...</option>
-                            </select>
-                            <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('add-referred-by-value').value=this.value">
+                <div id="add-step-panel-1">
+                    <div class="modal-info-banner" style="margin-bottom:.75rem;">
+                        <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.9rem;" id="add-mode-selector">
+                        <button type="button" id="add-mode-btn-movedin" onclick="setAddMode('moved_in')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--bright-pink);background:linear-gradient(135deg,#fff0f6,#ffe4ef);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
+                            <div style="display:flex;align-items:center;gap:.45rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span style="font-size:.78rem;font-weight:800;color:#E8175D;letter-spacing:.01em;">Moved In</span>
+                            </div>
+                            <span style="font-size:.7rem;color:#a0405e;font-weight:500;line-height:1.35;">Tenant is already occupying a room</span>
+                        </button>
+                        <button type="button" id="add-mode-btn-reservation" onclick="setAddMode('reservation')" style="display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;padding:.7rem .9rem;border-radius:12px;border:2px solid var(--pink-100);background:var(--white);cursor:pointer;transition:all .2s;font-family:inherit;text-align:left;">
+                            <div style="display:flex;align-items:center;gap:.45rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <span style="font-size:.78rem;font-weight:800;color:#9a6200;letter-spacing:.01em;">Reservation</span>
+                            </div>
+                            <span style="font-size:.7rem;color:#7a5200;font-weight:500;line-height:1.35;">Room held, tenant moves in later</span>
+                        </button>
+                    </div>
+                    <div class="modal-section">
+                        <div class="modal-section-title">Personal Information</div>
+                        <div class="modal-grid">
+                            <div class="modal-field">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}" autocomplete="given-name">
+                            </div>
+                            <div class="modal-field">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}" autocomplete="family-name">
+                            </div>
+                            <div class="modal-field full">
+                                <label>Email Address</label>
+                                <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                            </div>
+                            <div class="modal-field full">
+                                <label>Contact No.</label>
+                                <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                            </div>
+                            <div class="modal-field full">
+                                <label>Referred By</label>
+                                <select id="add-referred-source" onchange="handleReferredSource('add')" style="margin-bottom:.4rem;">
+                                    <option value="">Not referred / N/A</option>
+                                    <option value="current">Current Tenant</option>
+                                    <option value="former">Former Tenant</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <input type="hidden" name="referred_by" id="add-referred-by-value" value="{{ old('referred_by') }}">
+                                <select id="add-referred-current-select" style="display:none;" onchange="syncReferredSelect('add-referred-current-select','add-referred-by-value')">
+                                    <option value="">Select current tenant...</option>
+                                </select>
+                                <select id="add-referred-former-select" style="display:none;" onchange="syncReferredSelect('add-referred-former-select','add-referred-by-value')">
+                                    <option value="">Select former tenant...</option>
+                                </select>
+                                <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('add-referred-by-value').value=this.value">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-section">
-                    <div class="modal-section-title">Room &amp; Stay Details</div>
-                    <div class="modal-grid">
-                        <div class="modal-field full">
-                            <label>Stay Type</label>
-                            <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
-                                <option value="" disabled selected>Select type</option>
-                                <option value="Solo Room"  {{ old('stay_type') === 'Solo Room'  ? 'selected' : '' }}>Solo Room</option>
-                                <option value="Shared Room"{{ old('stay_type') === 'Shared Room'? 'selected' : '' }}>Shared Room</option>
-                            </select>
-                        </div>
-                        <div class="modal-field full" id="add-room-suggest-wrap" style="display:none;">
-                            <div id="add-room-suggest"></div>
-                        </div>
-                        <div class="modal-field">
-                            <label>Room No.</label>
-                            <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
-                        </div>
-                        <div class="modal-field">
-                            <label>Floor</label>
-                            <select name="floor" id="add-floor-select" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
-                                <option value="">Select floor</option>
-                                @for($i = 1; $i <= 5; $i++)
-                                    <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
-                            <div id="add-room-hint"></div>
-                        </div>
-                        <div class="modal-field full" id="add-movein-wrap">
-                            <label>Move-In Date</label>
-                            <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
-                        </div>
-                        <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
-                            <label>Estimated Move-In Date</label>
-                            <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
-                        </div>
-                        <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
-                            <label>Reservation Notes</label>
-                            <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
+                <div id="add-step-panel-2" style="display:none;">
+                    <div class="modal-section">
+                        <div class="modal-section-title">Room &amp; Stay Details</div>
+                        <div class="modal-grid">
+                            <div class="modal-field full">
+                                <label>Stay Type</label>
+                                <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
+                                    <option value="" disabled selected>Select type</option>
+                                    <option value="Solo Room"   {{ old('stay_type') === 'Solo Room'   ? 'selected' : '' }}>Solo Room</option>
+                                    <option value="Shared Room" {{ old('stay_type') === 'Shared Room' ? 'selected' : '' }}>Shared Room</option>
+                                </select>
+                            </div>
+                            <div class="modal-field full" id="add-room-suggest-wrap" style="display:none;">
+                                <div id="add-room-suggest"></div>
+                            </div>
+                            <div class="modal-field">
+                                <label>Room No.</label>
+                                <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                            </div>
+                            <div class="modal-field">
+                                <label>Floor</label>
+                                <select name="floor" id="add-floor-select" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
+                                    <option value="">Select floor</option>
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <option value="{{ $i }}" {{ old('floor') == $i ? 'selected' : '' }}>Floor {{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
+                                <div id="add-room-hint"></div>
+                            </div>
+                            <div class="modal-field full" id="add-movein-wrap">
+                                <label>Move-In Date</label>
+                                <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
+                            </div>
+                            <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
+                                <label>Estimated Move-In Date</label>
+                                <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                            </div>
+                            <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
+                                <label>Reservation Notes</label>
+                                <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Add Tenant</button>
+                <button type="button" class="btn-cancel" id="add-footer-cancel" onclick="closeModal('add-modal')">Cancel</button>
+                <button type="button" class="btn-outline" id="add-btn-back" style="display:none;" onclick="goAddStep(1)">&#8592; Back</button>
+                <button type="button" class="btn-submit" id="add-btn-next" onclick="goAddStep(2)">Next &#8594;</button>
+                <button type="submit" class="btn-submit" id="add-btn-submit" style="display:none;">Add Tenant</button>
             </div>
         </form>
     </div>
@@ -1544,6 +1475,7 @@ var currentTenant = null;
 var sectionState = { active: true, reserved: true };
 var sectionPages = { active: 1, reserved: 1 };
 var sectionData  = { active: [], reserved: [] };
+var addCurrentStep = 1;
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1597,6 +1529,7 @@ function closeModal(id) {
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
+        goAddStep(1);
         var addSrc = document.getElementById('add-referred-source');
         if (addSrc) {
             addSrc.value = '';
@@ -1625,6 +1558,56 @@ function closeModal(id) {
         document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
+    }
+}
+
+function goAddStep(step) {
+    if (step === 2) {
+        var firstName = document.querySelector('#add-modal input[name="first_name"]');
+        var lastName  = document.querySelector('#add-modal input[name="last_name"]');
+        var email     = document.querySelector('#add-modal input[name="email"]');
+        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+            firstName.reportValidity();
+            lastName.reportValidity();
+            email.reportValidity();
+            return;
+        }
+    }
+    addCurrentStep = step;
+    document.getElementById('add-step-panel-1').style.display = step === 1 ? '' : 'none';
+    document.getElementById('add-step-panel-2').style.display = step === 2 ? '' : 'none';
+    document.getElementById('add-btn-next').style.display     = step === 1 ? '' : 'none';
+    document.getElementById('add-btn-back').style.display     = step === 2 ? '' : 'none';
+    document.getElementById('add-btn-submit').style.display   = step === 2 ? '' : 'none';
+
+    var circle1 = document.getElementById('add-step-circle-1');
+    var label1  = document.getElementById('add-step-label-1');
+    var btn1    = document.getElementById('add-step-btn-1');
+    var circle2 = document.getElementById('add-step-circle-2');
+    var label2  = document.getElementById('add-step-label-2');
+    var btn2    = document.getElementById('add-step-btn-2');
+
+    if (step === 1) {
+        btn1.style.borderBottomColor  = 'var(--bright-pink)';
+        circle1.style.background      = 'var(--gradient-pink)';
+        circle1.querySelector('span').style.color = '#fff';
+        label1.style.color            = 'var(--bright-pink)';
+        btn2.style.borderBottomColor  = 'var(--pink-100)';
+        circle2.style.background      = 'var(--pink-100)';
+        circle2.querySelector('span').style.color = 'var(--hot-pink)';
+        label2.style.color            = 'var(--ink-muted)';
+    } else {
+        btn1.style.borderBottomColor  = '#8ce0bb';
+        circle1.style.background      = '#8ce0bb';
+        circle1.querySelector('span').style.color = '#fff';
+        label1.style.color            = '#1f9d69';
+        btn2.style.borderBottomColor  = 'var(--bright-pink)';
+        circle2.style.background      = 'var(--gradient-pink)';
+        circle2.querySelector('span').style.color = '#fff';
+        label2.style.color            = 'var(--bright-pink)';
+        if (document.getElementById('add-stay-type-select').value) {
+            onAddStayTypeChange();
+        }
     }
 }
 
@@ -1689,20 +1672,16 @@ function buildRows(list) {
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-
         var insideDot = t.is_inside
             ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
             : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
-
         var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
             + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
             + (t.is_temp_password ? tempBadge(true) : '')
             + '</div>';
-
         var col4 = t.status === 'reserved'
             ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
             : fmtDate(t.move_in_date);
-
         return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
             + '<td id="admin-inside-cell-' + t.tenant_id + '">' + nameCell + '</td>'
@@ -1737,18 +1716,17 @@ function buildPagination(group, currentPage, total) {
 }
 
 function renderSection(group) {
-    var data    = sectionData[group];
-    var page    = sectionPages[group];
-    var start   = (page - 1) * PER_PAGE;
-    var pageData= data.slice(start, start + PER_PAGE);
-    var total   = data.length;
-    var from    = total === 0 ? 0 : start + 1;
-    var to      = Math.min(start + PER_PAGE, total);
-
-    document.getElementById('tbody-' + group).innerHTML     = buildRows(pageData);
-    document.getElementById('showing-' + group).textContent = total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
+    var data     = sectionData[group];
+    var page     = sectionPages[group];
+    var start    = (page - 1) * PER_PAGE;
+    var pageData = data.slice(start, start + PER_PAGE);
+    var total    = data.length;
+    var from     = total === 0 ? 0 : start + 1;
+    var to       = Math.min(start + PER_PAGE, total);
+    document.getElementById('tbody-' + group).innerHTML      = buildRows(pageData);
+    document.getElementById('showing-' + group).textContent  = total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
     document.getElementById('pagination-' + group).innerHTML = buildPagination(group, page, total);
-    document.getElementById('pill-' + group).textContent    = total;
+    document.getElementById('pill-' + group).textContent     = total;
 }
 
 function goPage(group, p) {
@@ -1782,7 +1760,6 @@ function applyFilters() {
     var q     = document.getElementById('search-input').value.toLowerCase();
     var sort  = document.getElementById('sort-select').value;
     var floor = document.getElementById('floor-filter').value;
-
     var base = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
         var matchesSearch =
@@ -1794,7 +1771,6 @@ function applyFilters() {
         var matchesFloor = floor === '' || String(t.floor) === floor;
         return matchesSearch && matchesFloor;
     });
-
     function sortList(arr) {
         var a = arr.slice();
         if (sort === 'newest') a.sort(function(x,y){ return new Date(y.created_at)-new Date(x.created_at); });
@@ -1804,7 +1780,6 @@ function applyFilters() {
         if (sort === 'floor')  a.sort(function(x,y){ return parseInt(x.floor||0)-parseInt(y.floor||0); });
         return a;
     }
-
     sectionData.active = sortList(base.filter(function(t) {
         if (t.status !== 'active' && t.status !== 'pending') return false;
         if (statusFilter === '' || statusFilter === 'active' || statusFilter === 'pending') {
@@ -1812,13 +1787,11 @@ function applyFilters() {
         }
         return false;
     }));
-
     sectionData.reserved = sortList(base.filter(function(t) {
         if (t.status !== 'reserved') return false;
         if (statusFilter === '' || statusFilter === 'reserved') return true;
         return false;
     }));
-
     sectionPages.active   = 1;
     sectionPages.reserved = 1;
     renderSection('active');
@@ -1857,20 +1830,20 @@ function switchToEdit() {
 
 function openEditModal(t) {
     currentTenant = t;
-    document.getElementById('edit-form').action                  = '/tenants/' + t.tenant_id;
-    document.getElementById('edit-first-name').value             = t.first_name || '';
-    document.getElementById('edit-last-name').value              = t.last_name  || '';
-    document.getElementById('edit-email').value                  = t.email      || '';
-    document.getElementById('edit-room').value                   = t.room_number || '';
-    document.getElementById('edit-floor').value                  = t.floor      || '';
-    document.getElementById('edit-stay-type').value              = t.stay_type  || '';
-    document.getElementById('edit-date').value                   = t.move_in_date  || '';
-    document.getElementById('edit-moveout').value                = t.move_out_date || '';
-    document.getElementById('edit-contact').value                = t.contact_number || '';
+    document.getElementById('edit-form').action             = '/tenants/' + t.tenant_id;
+    document.getElementById('edit-first-name').value        = t.first_name || '';
+    document.getElementById('edit-last-name').value         = t.last_name  || '';
+    document.getElementById('edit-email').value             = t.email      || '';
+    document.getElementById('edit-room').value              = t.room_number || '';
+    document.getElementById('edit-floor').value             = t.floor      || '';
+    document.getElementById('edit-stay-type').value         = t.stay_type  || '';
+    document.getElementById('edit-date').value              = t.move_in_date  || '';
+    document.getElementById('edit-moveout').value           = t.move_out_date || '';
+    document.getElementById('edit-contact').value           = t.contact_number || '';
     restoreReferredBy('edit', t.referred_by || '');
-    document.getElementById('edit-estimated-move-in').value      = t.estimated_move_in_date || '';
-    document.getElementById('edit-reservation-notes').value      = t.reservation_notes || '';
-    document.getElementById('edit-status').value                 = t.status || 'pending';
+    document.getElementById('edit-estimated-move-in').value = t.estimated_move_in_date || '';
+    document.getElementById('edit-reservation-notes').value = t.reservation_notes || '';
+    document.getElementById('edit-status').value            = t.status || 'pending';
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     openModal('edit-modal');
@@ -1996,20 +1969,16 @@ function restoreReferredBy(ctx, val) {
     var curSel    = document.getElementById(ctx + '-referred-current-select');
     var frmSel    = document.getElementById(ctx + '-referred-former-select');
     var otherInp  = document.getElementById(ctx + '-referred-other-input');
-
     hiddenEl.value = val;
     curSel.style.display   = 'none';
     frmSel.style.display   = 'none';
     otherInp.style.display = 'none';
-
     if (!val) { sourceEl.value = ''; return; }
-
     var isCurrent = tenants.some(function(t) {
         var label = t.first_name + ' ' + t.last_name + (t.room_number ? ' (Rm.' + t.room_number + ')' : '');
         return label === val;
     });
     var isFormer = val.indexOf('(former)') !== -1;
-
     if (isCurrent) {
         sourceEl.value = 'current';
         curSel.style.display = '';
@@ -2080,17 +2049,14 @@ function updateRoomsStats(data) {
     var totalOcc    = data.reduce(function(s, r) { return s + r.occupancy; }, 0);
     var totalVacant = totalCap - totalOcc;
     var pct         = totalCap > 0 ? Math.round((totalOcc / totalCap) * 100) : 0;
-
     var pill = document.getElementById('rooms-stats-summary-pill');
-    var pctColor = pct >= 100 ? '#e04867' : pct >= 75 ? '#c8960c' : '#E8175D';
     if (pill) pill.textContent = totalOcc + '/' + totalCap + ' slots \u00b7 ' + pct + '%';
-
     var el = document.getElementById('rstat-total');
     if (el) el.textContent = totalRooms;
     el = document.getElementById('rstat-occupied');
     if (el) el.textContent = totalOcc;
     el = document.getElementById('rstat-pct');
-    if (el) { el.textContent = pct + '%'; el.style.color = pctColor; }
+    if (el) { el.textContent = pct + '%'; el.style.color = pct >= 100 ? '#e04867' : pct >= 75 ? '#c8960c' : '#E8175D'; }
     el = document.getElementById('rstat-vacant');
     if (el) { el.textContent = totalVacant; el.style.color = totalVacant === 0 ? '#e04867' : '#1f9d69'; }
     el = document.getElementById('rstat-cap');
@@ -2122,9 +2088,11 @@ function renderRooms() {
     const floors = [...new Set(data.map(r => r.floor))].sort();
 
     list.innerHTML = floors.map(floor => {
-        const floorRooms    = data.filter(r => r.floor === floor);
-        const floorOccupied = floorRooms.reduce((s, r) => s + r.occupancy, 0);
-        const floorCapacity = floorRooms.reduce((s, r) => s + r.capacity, 0);
+        const floorRooms     = data.filter(r => r.floor === floor);
+        const floorOccupied  = floorRooms.reduce((s, r) => s + r.occupancy, 0);
+        const floorCapacity  = floorRooms.reduce((s, r) => s + r.capacity, 0);
+        const floorAvailable = floorRooms.filter(r => r.is_active && (r.capacity - r.occupancy) > 0).length;
+        const floorTotal     = floorRooms.length;
 
         const cards = floorRooms.map(r => {
             const isFull  = r.occupancy >= r.capacity;
@@ -2137,6 +2105,12 @@ function renderRooms() {
 
             const reservedCount = r.reserved_occupancy || 0;
             const activeCount   = r.occupancy - reservedCount;
+
+            const slotsAvailable = r.capacity - r.occupancy;
+            const availBg        = !r.is_active ? '#f5f5f5' : isFull ? '#fff0f2' : '#f0faf6';
+            const availBorder    = !r.is_active ? '#d0d0d0' : isFull ? '#ffc2ce' : '#8ce0bb';
+            const availColor     = !r.is_active ? '#999'    : isFull ? '#c0163a' : '#1a5a38';
+            const availText      = !r.is_active ? 'Closed'  : isFull ? '0 of ' + r.capacity + ' available' : slotsAvailable + ' of ' + r.capacity + ' available';
 
             var personIcons = Array.from({ length: r.capacity }, (_, i) => {
                 let iconFilter, titleText;
@@ -2195,21 +2169,34 @@ function renderRooms() {
                     </div>
                     ${vacantLabel}
                 </div>
+                <div style="display:flex;align-items:center;gap:.45rem;padding:.35rem .6rem;border-radius:8px;background:${availBg};border:1px solid ${availBorder};">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${availColor}" stroke-width="2.5" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span style="font-size:.7rem;font-weight:700;color:${availColor};">${availText}</span>
+                </div>
             </div>`;
         }).join('');
 
-        const floorPct = floorCapacity > 0 ? Math.round((floorOccupied / floorCapacity) * 100) : 0;
+        const floorPct        = floorCapacity > 0 ? Math.round((floorOccupied / floorCapacity) * 100) : 0;
+        const floorAvailColor = floorAvailable === 0 ? '#c0163a' : floorAvailable === floorTotal ? '#1a5a38' : '#7a5000';
+        const floorAvailBg    = floorAvailable === 0 ? '#fff0f2' : floorAvailable === floorTotal ? '#f0faf6' : '#fffbf0';
+        const floorAvailBorder= floorAvailable === 0 ? '#ffb3c0' : floorAvailable === floorTotal ? '#8ce0bb' : '#f0c040';
 
         return `<div style="margin-bottom:.5rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;padding-top:.1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;padding-top:.1rem;flex-wrap:wrap;gap:.4rem;">
                 <div style="display:flex;align-items:center;gap:.6rem;">
                     <span style="display:inline-block;width:3px;height:14px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>
                     <span style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.09em;">Floor ${floor}</span>
                 </div>
-                <span style="display:inline-flex;align-items:center;gap:.35rem;">
-                    <span style="font-size:.68rem;font-weight:800;padding:.18rem .55rem;border-radius:99px;letter-spacing:.02em;background:${floorPct >= 100 ? '#fff0f2' : floorPct >= 75 ? '#fffbf0' : floorPct === 0 ? '#f0faf6' : '#fce8f1'};color:${floorPct >= 100 ? '#e04867' : floorPct >= 75 ? '#c8960c' : floorPct === 0 ? '#1f9d69' : '#E8175D'};border:1px solid ${floorPct >= 100 ? '#ffc2ce' : floorPct >= 75 ? '#ffd88a' : floorPct === 0 ? '#8ce0bb' : '#f4b8d0'};">${floorOccupied}/${floorCapacity} occupied</span>
-                    <span style="font-size:.67rem;font-weight:700;color:var(--ink-muted);">${floorPct}%</span>
-                </span>
+                <div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;">
+                    <span style="display:inline-flex;align-items:center;gap:.35rem;">
+                        <span style="font-size:.68rem;font-weight:800;padding:.18rem .55rem;border-radius:99px;letter-spacing:.02em;background:${floorPct >= 100 ? '#fff0f2' : floorPct >= 75 ? '#fffbf0' : floorPct === 0 ? '#f0faf6' : '#fce8f1'};color:${floorPct >= 100 ? '#e04867' : floorPct >= 75 ? '#c8960c' : floorPct === 0 ? '#1f9d69' : '#E8175D'};border:1px solid ${floorPct >= 100 ? '#ffc2ce' : floorPct >= 75 ? '#ffd88a' : floorPct === 0 ? '#8ce0bb' : '#f4b8d0'};">${floorOccupied}/${floorCapacity} occupied</span>
+                        <span style="font-size:.67rem;font-weight:700;color:var(--ink-muted);">${floorPct}%</span>
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:.3rem;padding:.18rem .55rem;border-radius:99px;background:${floorAvailBg};border:1px solid ${floorAvailBorder};">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="${floorAvailColor}" stroke-width="2.8" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span style="font-size:.67rem;font-weight:800;color:${floorAvailColor};">${floorAvailable} of ${floorTotal} rooms available</span>
+                    </span>
+                </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">${cards}</div>
         </div>`;
@@ -2264,9 +2251,7 @@ async function submitAddRoom() {
     const floor    = document.getElementById('ar-floor').value;
     const capacity = document.getElementById('ar-capacity').value;
     const stayType = document.getElementById('ar-stay-type').value;
-
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
-
     showActionLoading('Adding room...');
     try {
         const res = await fetch('/rooms', {
@@ -2304,9 +2289,7 @@ async function submitEditRoom() {
     const capacity = document.getElementById('er-capacity').value;
     const stayType = document.getElementById('er-stay-type').value;
     const isActive = document.getElementById('er-active').value === '1';
-
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
-
     showActionLoading('Saving room...');
     try {
         const res = await fetch('/rooms/' + id, {
@@ -2450,13 +2433,10 @@ async function submitDeleteRoom() {
         var hint  = document.getElementById(hintId);
         var wrap  = document.getElementById(wrapId);
         if (!input || !hint || !wrap) return;
-
         var debounceTimer = null;
         var lastVal = '';
-
         input.addEventListener('input', function() {
             var val = this.value.trim();
-
             if (floorSelectId) {
                 var floorSelect = document.getElementById(floorSelectId);
                 if (floorSelect) {
@@ -2464,7 +2444,6 @@ async function submitDeleteRoom() {
                     if (firstChar >= '2' && firstChar <= '5') floorSelect.value = firstChar;
                 }
             }
-
             if (val === lastVal) return;
             lastVal = val;
             clearTimeout(debounceTimer);
@@ -2516,83 +2495,79 @@ async function submitDeleteRoom() {
     }
 
     function renderRoomSuggestions(stayType) {
-    var wrap = document.getElementById('add-room-suggest-wrap');
-    var box  = document.getElementById('add-room-suggest');
-    if (!stayType || !wrap || !box) return;
-    getRoomsCache(function(rooms) {
-        var matched = rooms.filter(function(r) {
-            return r.stay_type === stayType;
-        }).sort(function(a, b) {
-            var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
-            var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
-            if (aUnavail !== bUnavail) return aUnavail - bUnavail;
-            return parseInt(a.room_number) - parseInt(b.room_number);
+        var wrap = document.getElementById('add-room-suggest-wrap');
+        var box  = document.getElementById('add-room-suggest');
+        if (!stayType || !wrap || !box) return;
+        getRoomsCache(function(rooms) {
+            var matched = rooms.filter(function(r) {
+                return r.stay_type === stayType;
+            }).sort(function(a, b) {
+                var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
+                var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
+                if (aUnavail !== bUnavail) return aUnavail - bUnavail;
+                return parseInt(a.room_number) - parseInt(b.room_number);
+            });
+
+            if (!matched.length) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
+
+            var availCount = matched.filter(function(r) {
+                return r.is_active && (r.capacity - r.occupancy) > 0;
+            }).length;
+
+            var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
+                + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;">All rooms \u00b7 ' + stayType + '</div>'
+                + '<div style="font-size:.68rem;font-weight:700;color:#1f9d69;">' + availCount + ' available</div>'
+                + '</div>'
+                + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;">';
+
+            matched.forEach(function(r) {
+                var remaining  = r.capacity - r.occupancy;
+                var isFull     = remaining <= 0;
+                var isInactive = !r.is_active;
+                var unavail    = isFull || isInactive;
+                var pct        = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+                var chipBg, chipBorder, chipColor, badgeBg, badgeColor, badgeText, cursor, clickAttr;
+                if (isInactive) {
+                    chipBg = '#f5f5f5'; chipBorder = '#d0d0d0'; chipColor = '#999';
+                    badgeBg = '#efefef'; badgeColor = '#999'; badgeText = 'Closed';
+                    cursor = 'not-allowed'; clickAttr = '';
+                } else if (isFull) {
+                    chipBg = '#fff0f2'; chipBorder = '#ffb3c0'; chipColor = '#c0163a';
+                    badgeBg = '#ffe0e6'; badgeColor = '#c0163a'; badgeText = 'Full';
+                    cursor = 'not-allowed'; clickAttr = '';
+                } else if (pct >= 75) {
+                    chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
+                    badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                } else {
+                    chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
+                    badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                }
+                var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
+                var hoverOut = unavail ? '' : 'onmouseout="this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';"';
+                html += '<div ' + clickAttr + ' ' + hoverIn + ' ' + hoverOut
+                    + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
+                    + chipBorder + ';background:' + chipBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
+                    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
+                        + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
+                        + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
+                    + '</div>'
+                    + '<div style="display:inline-flex;align-items:center;justify-content:center;padding:.18rem .45rem;border-radius:6px;background:' + badgeBg + ';border:1px solid ' + chipBorder + ';">'
+                        + '<span style="font-size:.66rem;font-weight:800;color:' + badgeColor + ';letter-spacing:.02em;">' + badgeText + '</span>'
+                    + '</div>'
+                    + '<div style="height:3px;background:#e0e0e0;border-radius:99px;overflow:hidden;">'
+                        + '<div style="height:100%;width:' + pct + '%;background:' + (isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
+                    + '</div>'
+                    + '</div>';
+            });
+
+            html += '</div></div>';
+            box.innerHTML = html;
+            wrap.style.display = 'block';
         });
-
-        if (!matched.length) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
-
-        var availCount = matched.filter(function(r) {
-            return r.is_active && (r.capacity - r.occupancy) > 0;
-        }).length;
-
-        var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
-            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
-            + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;">All rooms · ' + stayType + '</div>'
-            + '<div style="font-size:.68rem;font-weight:700;color:#1f9d69;">' + availCount + ' available</div>'
-            + '</div>'
-            + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;">';
-
-        matched.forEach(function(r) {
-            var remaining  = r.capacity - r.occupancy;
-            var isFull     = remaining <= 0;
-            var isInactive = !r.is_active;
-            var unavail    = isFull || isInactive;
-            var pct        = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
-
-            var chipBg, chipBorder, chipColor, badgeBg, badgeColor, badgeText, cursor, clickAttr;
-
-            if (isInactive) {
-                chipBg = '#f5f5f5'; chipBorder = '#d0d0d0'; chipColor = '#999';
-                badgeBg = '#efefef'; badgeColor = '#999'; badgeText = 'Closed';
-                cursor = 'not-allowed'; clickAttr = '';
-            } else if (isFull) {
-                chipBg = '#fff0f2'; chipBorder = '#ffb3c0'; chipColor = '#c0163a';
-                badgeBg = '#ffe0e6'; badgeColor = '#c0163a'; badgeText = 'Full';
-                cursor = 'not-allowed'; clickAttr = '';
-            } else if (pct >= 75) {
-                chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
-                badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
-            } else {
-                chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
-                badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
-            }
-
-            var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
-            var hoverOut = unavail ? '' : 'onmouseout="this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';"';
-
-            html += '<div ' + clickAttr + ' ' + hoverIn + ' ' + hoverOut
-                + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
-                + chipBorder + ';background:' + chipBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
-                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
-                    + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
-                    + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
-                + '</div>'
-                + '<div style="display:inline-flex;align-items:center;justify-content:center;padding:.18rem .45rem;border-radius:6px;background:' + badgeBg + ';border:1px solid ' + chipBorder + ';">'
-                    + '<span style="font-size:.66rem;font-weight:800;color:' + badgeColor + ';letter-spacing:.02em;">' + badgeText + '</span>'
-                + '</div>'
-                + '<div style="height:3px;background:#e0e0e0;border-radius:99px;overflow:hidden;">'
-                    + '<div style="height:100%;width:' + pct + '%;background:' + (isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
-                + '</div>'
-                + '</div>';
-        });
-
-        html += '</div></div>';
-        box.innerHTML = html;
-        wrap.style.display = 'block';
-    });
-}
+    }
 
     window.onAddStayTypeChange = function() {
         var stayType    = document.getElementById('add-stay-type-select').value;
@@ -2631,15 +2606,15 @@ function setAddMode(mode) {
     var btnMovedIn     = document.getElementById('add-mode-btn-movedin');
     var btnReservation = document.getElementById('add-mode-btn-reservation');
     if (mode === 'moved_in') {
-        btnMovedIn.style.border     = '2px solid var(--bright-pink)';
-        btnMovedIn.style.background = 'linear-gradient(135deg,#fff0f6,#ffe4ef)';
+        btnMovedIn.style.border         = '2px solid var(--bright-pink)';
+        btnMovedIn.style.background     = 'linear-gradient(135deg,#fff0f6,#ffe4ef)';
         btnReservation.style.border     = '2px solid var(--pink-100)';
         btnReservation.style.background = 'var(--white)';
     } else {
         btnReservation.style.border     = '2px solid #f0c040';
         btnReservation.style.background = 'linear-gradient(135deg,#fffdf0,#fff8dc)';
-        btnMovedIn.style.border     = '2px solid var(--pink-100)';
-        btnMovedIn.style.background = 'var(--white)';
+        btnMovedIn.style.border         = '2px solid var(--pink-100)';
+        btnMovedIn.style.background     = 'var(--white)';
     }
     toggleReservationFields('add');
 }
@@ -2692,7 +2667,6 @@ function renderTenantArchive() {
     if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
     if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
     if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
-
     var data = source.filter(function(r) {
         return (r.account_id||'').toLowerCase().indexOf(q) !== -1 ||
                (r.first_name+' '+r.last_name).toLowerCase().indexOf(q) !== -1 ||
@@ -2700,19 +2674,15 @@ function renderTenantArchive() {
                (r.room_number||'').toLowerCase().indexOf(q) !== -1 ||
                (r.stay_type||'').toLowerCase().indexOf(q) !== -1;
     });
-
     var list = document.getElementById('tad-list');
     document.getElementById('tad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
-
     if (data.length === 0) {
         var labelMap = { deleted:'deleted', inactive:'inactive', move_out:'move out' };
         list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset('icons/tenants.png') }}" alt="">No ' + labelMap[tenantArchiveTab] + ' records found.</div>';
         return;
     }
-
     var archiveLabelMap = { deleted:'Deleted on', inactive:'Marked inactive on', move_out:'Moved out on' };
     var archiveLabel = archiveLabelMap[tenantArchiveTab];
-
     list.innerHTML = data.map(function(r, i) {
         var roomPill = (r.floor && r.room_number) ? '<span class="tad-pill tad-pill-room">'+r.floor+'-'+r.room_number+'</span>' : (r.room_number ? '<span class="tad-pill tad-pill-room">'+r.room_number+'</span>' : '');
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">'+r.stay_type+'</span>' : '';
@@ -2739,9 +2709,7 @@ function exportTenantArchive(format) {
     if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
     if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
     if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
-
     var labelMap = { deleted:'Deleted On', inactive:'Marked Inactive On', move_out:'Moved Out On' };
-
     if (format === 'pdf') {
         var win = window.open('', '_blank');
         var tabLabel = { deleted:'Deleted', inactive:'Inactive', move_out:'Move Out' };
@@ -2753,7 +2721,6 @@ function exportTenantArchive(format) {
         win.print();
         return;
     }
-
     var rows = [['Account ID','First Name','Last Name','Email','Contact','Floor','Room','Stay Type','Move-In','Move-Out','Status',labelMap[tenantArchiveTab]]];
     source.forEach(function(r) {
         rows.push([r.account_id||'',r.first_name,r.last_name,r.email||'',r.contact_number||'',r.floor||'',r.room_number||'',r.stay_type||'',r.move_in_date||'',r.move_out_date||'',r.status||'',r.archived_at||'']);
@@ -2817,8 +2784,8 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
 });
 
-var adminLogData   = [];
-var adminLogFilter = '';
+var adminLogData    = [];
+var adminLogFilter  = '';
 var adminDateFilter = 'all';
 
 function openAdminLogDrawer() {
@@ -2862,9 +2829,9 @@ function setAdminDateFilter(val) {
 
 function matchesAdminDateFilter(loggedAt) {
     if (adminDateFilter === 'all') return true;
-    var d     = new Date(loggedAt);
-    var now   = new Date();
-    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var d         = new Date(loggedAt);
+    var now       = new Date();
+    var today     = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
     var weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
     if (adminDateFilter === 'today')     return d >= today;
@@ -2895,18 +2862,14 @@ function renderAdminLogDrawer() {
             || (l.account_id  || '').toLowerCase().indexOf(q) !== -1;
         return matchFilter && matchDate && matchSearch;
     });
-
     document.getElementById('admin-log-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
     var list = document.getElementById('admin-log-list');
-
     if (data.length === 0) {
         list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset("icons/tenants.png") }}" alt="">No log records found.</div>';
         return;
     }
-
     var inSvg  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
     var outSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0163a" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-
     var grouped = {};
     var order   = [];
     data.forEach(function(l) {
@@ -2915,17 +2878,14 @@ function renderAdminLogDrawer() {
         if (!grouped[key]) { grouped[key] = []; order.push(key); }
         grouped[key].push(l);
     });
-
     var today     = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     var yesterday = new Date(Date.now() - 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
     var html = '';
     var globalIdx = 0;
     order.forEach(function(dateKey) {
-        var label = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
+        var label    = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
         var inCount  = grouped[dateKey].filter(function(l) { return l.action === 'time_in'; }).length;
         var outCount = grouped[dateKey].filter(function(l) { return l.action === 'time_out'; }).length;
-
         html += '<div style="position:sticky;top:0;z-index:10;background:var(--soft-bg);padding:.55rem 0 .4rem;margin-bottom:.3rem;">'
             + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">'
                 + '<div style="display:flex;align-items:center;gap:.5rem;">'
@@ -2938,14 +2898,12 @@ function renderAdminLogDrawer() {
                 + '</div>'
             + '</div>'
         + '</div>';
-
         grouped[dateKey].forEach(function(l) {
             var isIn      = l.action === 'time_in';
             var roomLabel = (l.floor && l.room_number)
                 ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
                 : (l.room_number ? 'Rm ' + l.room_number : 'No room');
             var timeOnly  = new Date(l.logged_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-
             html += '<div class="log-card" style="animation-delay:' + (globalIdx * 0.02) + 's;margin-bottom:.5rem;">'
                 + '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>'
                 + '<div class="log-info">'
@@ -2959,7 +2917,6 @@ function renderAdminLogDrawer() {
             globalIdx++;
         });
     });
-
     list.innerHTML = html;
 }
 
@@ -2993,15 +2950,10 @@ function fmtDateTime(d) {
 function printBillSlip(t) {
     var tenantBills = billingData[String(t.tenant_id)] || [];
     if (!Array.isArray(tenantBills)) { tenantBills = []; }
-
-    tenantBills.sort(function(a, b) {
-        return new Date(a.billing_month) - new Date(b.billing_month);
-    });
-
-    var total = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
-    var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    tenantBills.sort(function(a, b) { return new Date(a.billing_month) - new Date(b.billing_month); });
+    var total     = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
+    var today     = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
-
     function fmtMonth(d) {
         if (!d) return '\u2014';
         var s = String(d).trim();
@@ -3018,7 +2970,6 @@ function printBillSlip(t) {
         if (isNaN(dt.getTime())) return '\u2014';
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
-
     var billRows = '';
     if (tenantBills.length === 0) {
         billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:4mm 0;">No outstanding balance.</td></tr>';
@@ -3035,7 +2986,6 @@ function printBillSlip(t) {
                 + '</tr>';
         });
     }
-
     var totalBlock = tenantBills.length > 0
         ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3mm;background:#E8175D;border-radius:4px;margin-bottom:2.5mm;">'
             + '<span style="font-size:7.5pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
@@ -3046,14 +2996,12 @@ function printBillSlip(t) {
             + '<div style="font-size:9.5pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
             + '<div style="font-size:6.5pt;color:#2e9e68;margin-top:.8mm;">All bills have been settled.</div>'
             + '</div>';
-
     var signatureBlock = tenantBills.length > 0
         ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:0;">'
             + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:7mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
             + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:3mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
             + '</div>'
         : '';
-
     var win = window.open('', '_blank', 'width=302,height=520');
     win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
         + '<style>'
