@@ -1741,7 +1741,7 @@
                 + '<div class="modal-header">'
                     + '<div style="display:flex;align-items:center;gap:10px;">'
                         + '<div style="width:38px;height:38px;border-radius:10px;background:var(--petal);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
-                            + '<img src="{{ asset('icons/reset.png') }}" style="width:18px;height:18px;" alt="">'
+                            + '<img src="{{ asset("icons/reset.png") }}" style="width:18px;height:18px;" alt="">'
                         + '</div>'
                         + '<div>'
                             + '<div class="modal-title">Reset password</div>'
@@ -1980,7 +1980,7 @@
         if (data.length === 0) {
             var labelMap = { deleted: 'deleted', inactive: 'inactive' };
             list.innerHTML = '<div class="sad-empty">'
-                + '<img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">'
+                + '<img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + '</div>';
             return;
@@ -2035,7 +2035,7 @@
         document.getElementById('sad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
 
         if (data.length === 0) {
-            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset('icons/staff-2.png') }}" alt="">No attendance records found.</div>';
+            list.innerHTML = '<div class="sad-empty"><img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No attendance records found.</div>';
             return;
         }
 
