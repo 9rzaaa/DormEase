@@ -510,7 +510,7 @@ tbody tr:hover { background: var(--soft-bg); }
 @media (max-width: 900px) { .page-body { padding: 1.2rem 1rem 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
 @media (max-width: 680px) { .page-body { padding: 1rem .75rem 1rem 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
 @media (max-width: 480px) { .page-body { padding: .8rem .6rem .8rem .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
-@media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
+@media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75px; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
 .status-legend-wrap { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
@@ -2431,6 +2431,19 @@ async function submitDeleteRoom() {
         };
     }
 
+    function applySelectedHighlight() {
+        if (!selectedRoomNumber) return;
+        document.querySelectorAll('#add-room-suggest .room-chip-selectable').forEach(function(el) {
+            if (el.dataset.room === selectedRoomNumber) {
+                el.style.borderColor = '#f0c040';
+                el.style.background  = '#fffbf0';
+            } else {
+                el.style.borderColor = el.dataset.defaultBorder;
+                el.style.background  = el.dataset.defaultBg;
+            }
+        });
+    }
+
     function attachRoomHint(inputId, hintId, wrapId, submitBtnSelector, excludeTenantIdFn, floorSelectId) {
         var input = document.getElementById(inputId);
         var hint  = document.getElementById(hintId);
@@ -2548,13 +2561,16 @@ async function submitDeleteRoom() {
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
                     cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
                 }
+                var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
+                var displayBg     = isSelected ? '#fffbf0' : chipBg;
+                var displayBorder = isSelected ? '#f0c040' : chipBorder;
                 var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
-                var hoverOut = unavail ? '' : 'onmouseout="this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';"';
+                var hoverOut = unavail ? '' : 'onmouseout="if(\'' + r.room_number + '\'===selectedRoomNumber){this.style.borderColor=\'#f0c040\';this.style.background=\'#fffbf0\';}else{this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';}";';
                 var chipClass = unavail ? '' : 'room-chip-selectable';
                 var chipData  = unavail ? '' : 'data-room="' + r.room_number + '" data-default-border="' + chipBorder + '" data-default-bg="' + chipBg + '"';
                 html += '<div ' + clickAttr + ' ' + chipClass + ' ' + chipData + ' ' + hoverIn + ' ' + hoverOut
                     + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
-                    + chipBorder + ';background:' + chipBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
+                    + displayBorder + ';background:' + displayBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
                     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
                         + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
                         + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
@@ -2571,13 +2587,6 @@ async function submitDeleteRoom() {
             html += '</div></div>';
             box.innerHTML = html;
             wrap.style.display = 'block';
-            if (selectedRoomNumber) {
-                var sel = document.querySelector('#add-room-suggest [data-room="' + selectedRoomNumber + '"]');
-                if (sel) {
-                    sel.style.borderColor = '#f0c040';
-                    sel.style.background  = '#fffbf0';
-                }
-            }
         });
     }
 
@@ -2589,20 +2598,15 @@ async function submitDeleteRoom() {
     };
 
     window.selectSuggestedRoom = function(roomNumber) {
-    var input = document.getElementById('add-room-number-input');
-    if (!input) return;
-    selectedRoomNumber = roomNumber;
-    input.value = roomNumber;
-    input.dispatchEvent(new Event('input'));
-    document.querySelectorAll('#add-room-suggest .room-chip-selectable').forEach(function(el) {
-        el.style.borderColor = el.dataset.defaultBorder;
-        el.style.background  = el.dataset.defaultBg;
-    });
-    var selected = document.querySelector('#add-room-suggest [data-room="' + roomNumber + '"]');
-    if (selected) {
-        selected.style.borderColor = '#f0c040';
-        selected.style.background  = '#fffbf0';
-    }
+        var input = document.getElementById('add-room-number-input');
+        if (!input) return;
+        selectedRoomNumber = roomNumber;
+        input.value = roomNumber;
+        var stayType = document.getElementById('add-stay-type-select').value;
+        if (stayType) {
+            renderRoomSuggestions(stayType);
+        }
+        input.dispatchEvent(new Event('input'));
     };
 
     document.addEventListener('DOMContentLoaded', function() {
