@@ -2977,9 +2977,10 @@ function exportAdminLog(format) {
                 + '<td>' + (l.room_number || '') + '</td>'
                 + '<td style="color:' + (isIn ? '#1f9d69' : '#b0163a') + ';font-weight:700;">' + (isIn ? 'Time In' : 'Time Out') + '</td>'
                 + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
-                + '<td>' + (l.logged_by || '') + '</td>'
                 + '</tr>';
         }).join('');
+        var dateLabel = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle  = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
         win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
             + '<style>'
             + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
@@ -2997,7 +2998,7 @@ function exportAdminLog(format) {
             + '<div class="sub">Entry / Exit Log</div>'
             + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</div>'
             + '<table><thead><tr>'
-            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th><th>Logged By</th>'
+            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th>'
             + '</tr></thead><tbody>' + rows + '</tbody></table>'
             + '</body></html>');
         win.document.close();
@@ -3005,9 +3006,9 @@ function exportAdminLog(format) {
         return;
     }
 
-    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At']];
     data.forEach(function(l) {
-        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '']);
     });
     var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
     var a   = document.createElement('a');
