@@ -461,28 +461,9 @@
         z-index: 0;
     }
 
-    .form-header-title .title-logo {
-        position: absolute;
-        top: 50%;
-        right: -80px;
-        left: auto;
-        transform: translateY(-60%) scale(0.4) rotate(18deg);
-        width: 38px;
-        height: 38px;
-        object-fit: contain;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .35s ease, transform .45s cubic-bezier(.34,1.56,.64,1);
-        filter: brightness(0) saturate(100%) invert(27%) sepia(85%) saturate(2000%) hue-rotate(320deg) brightness(1.1) drop-shadow(0 3px 14px rgba(232,23,93,.85));
-        z-index: 2;
-    }
     .form-header-title:hover .title-halo {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
-    }
-    .form-header-title:hover .title-logo {
-        opacity: 0.35;
-        transform: translateY(-50%) scale(1) rotate(0deg);
     }
 
     .form-header-sub {
@@ -1554,7 +1535,6 @@
             </div>
             <h2 class="form-header-title">
                 <span class="title-halo"></span>
-                <img class="title-logo" src="{{ asset('images/logo.png') }}" alt="">
                 Welcome to<br><em>DormEase</em>
             </h2>
             <p class="form-header-sub">Select your role and sign in with your credentials to continue.</p>
