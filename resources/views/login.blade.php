@@ -360,6 +360,7 @@
         position: relative;
         overflow: hidden;
         overflow-y: auto;
+        min-height: 100vh;
     }
 
     .right::before {
@@ -900,6 +901,11 @@
         font-weight: 600;
         margin-bottom: .9rem;
         animation: slideDown .2s ease;
+        position: absolute;
+        top: -3.2rem;
+        left: 0;
+        right: 0;
+        z-index: 10;
     }
 
     .de-alert-error img {
