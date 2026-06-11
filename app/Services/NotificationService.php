@@ -17,7 +17,7 @@ class NotificationService
             if (!self::wantsNotification($member, $type)) {
                 continue;
             }
-            Notification::makeRoomFor();
+            Notification::makeRoomFor(1, staffId: $member->staff_id);
 
             Notification::create([
                 'staff_id' => $member->staff_id,
@@ -26,13 +26,13 @@ class NotificationService
                 'url'      => $url,
             ]);
 
-            Notification::pruneToLimit();
+            Notification::pruneToLimit(staffId: $member->staff_id);
         }
     }
 
     public static function sendTo(int $staffId, string $type, string $message, string $url = null): void
     {
-        Notification::makeRoomFor();
+        Notification::makeRoomFor(1, staffId: $staffId);
 
         Notification::create([
             'staff_id' => $staffId,
@@ -41,7 +41,7 @@ class NotificationService
             'url'      => $url,
         ]);
 
-        Notification::pruneToLimit();
+        Notification::pruneToLimit(staffId: $staffId);
     }
 
     private static function wantsNotification(Staff $member, string $type): bool
@@ -50,6 +50,7 @@ class NotificationService
 
         $adminDefaults = [
             'maintenance_new'  => true,
+            'maintenance_resubmission' => true,
             'emergency_new'    => true,
             'visitor_checkin'  => false,
             'visitor_checkout' => false,

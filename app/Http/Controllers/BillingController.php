@@ -51,7 +51,7 @@ class BillingController extends Controller
             }, $months);
         }
 
-        $allTenants = Tenant::whereIn('status', ['active', 'pending', 'inactive'])
+        $allTenants = Tenant::whereIn('status', ['active', 'pending', 'inactive', 'reserved'])
             ->whereNotNull('floor')
             ->orderBy('floor')
             ->orderBy('room_number')
@@ -74,7 +74,7 @@ class BillingController extends Controller
             ->get()
             ->keyBy('tenant_id');
 
-        $activeTenantIds = $allTenants->where('status', 'active')->pluck('tenant_id');
+        $activeTenantIds = $allTenants->whereIn('status', ['active', 'pending'])->pluck('tenant_id');
         $totalBill    = $billings->values()->unique('floor')->sum('total_floor_bill');
         $totalTenants = $activeTenantIds->count();
         $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count();
@@ -102,10 +102,7 @@ class BillingController extends Controller
 
                 $billing = $billings->get($tenant->tenant_id);
 
-                if ($tenant->status === 'pending') {
-                    $paymentStatus = 'pending-tenant';
-                    $dotClass = 'dot-gray';
-                } elseif ($tenant->status === 'inactive') {
+                if ($tenant->status === 'inactive') {
                     $paymentStatus = 'inactive-tenant';
                     $dotClass = 'dot-gray';
                 } else {
@@ -126,6 +123,7 @@ class BillingController extends Controller
                     'billing_id'             => $billing?->billing_id,
                     'tenant_id'              => $tenant->tenant_id,
                     'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
+                    'is_temp_password'       => (bool) $tenant->is_temp_password,
                     'room_share'             => $billing?->room_share ?? 0,
                     'payment_status'         => $paymentStatus,
                     'proof_of_payment'       => $billing?->proof_of_payment,
@@ -240,7 +238,7 @@ class BillingController extends Controller
                     ['rate_per_m3'     => round($ratePerM3, 4)]
                 );
 
-                $tenantsByFloor = Tenant::where('status', 'active')
+                $tenantsByFloor = Tenant::whereIn('status', ['active', 'pending'])
                     ->whereIn('floor', $floors->all())
                     ->get()
                     ->groupBy('floor');
@@ -496,6 +494,57 @@ class BillingController extends Controller
         return response()->json([
             'success'    => true,
             'room_share' => $share
+        ]);
+    }
+
+    public function requestResubmission(Request $request)
+    {
+        $request->validate([
+            'billing_id' => 'required|integer|exists:water_billing,billing_id',
+            'reason'     => 'required|string|max:500',
+        ]);
+
+        $billing = WaterBilling::findOrFail($request->billing_id);
+
+        $oldProof = $billing->proof_of_payment;
+
+        $billing->update([
+            'proof_of_payment'       => null,
+            'payment_reference_code' => null,
+            'payment_submitted_at'   => null,
+            'payment_status'         => 'pending',
+            'rejection_reason'       => $request->reason,
+        ]);
+
+        if ($oldProof) {
+            Storage::disk('public')->delete($oldProof);
+        }
+
+        Payment::where('billing_id', $billing->billing_id)
+            ->where('tenant_id', $billing->tenant_id)
+            ->update(['status' => 'pending']);
+
+        $tenant     = Tenant::find($billing->tenant_id);
+        $reasonText = $request->reason;
+
+        NotificationHelper::sendToAll(
+            type: 'billing_overdue',
+            message: "Resubmission requested from {$tenant->first_name} {$tenant->last_name}. Reason: {$reasonText}",
+            ref_id: $billing->billing_id,
+        );
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $billing->tenant_id,
+            type: 'payment',
+            title: 'Proof resubmission required',
+            body: "Please resubmit your proof of payment. Reason: {$reasonText}",
+            refId: $billing->billing_id,
+            route: '/tenant/water-bill',
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Resubmission requested successfully.',
         ]);
     }
 }

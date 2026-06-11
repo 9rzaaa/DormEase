@@ -1128,6 +1128,131 @@
     .um-tab[style*="var(--bright-pink)"] .tab-icon {
         filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
     }
+
+    .resubmit-panel {
+        margin-top: 1rem;
+        border: 1.5px solid #ffc7dc;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff8fb;
+    }
+
+    .resubmit-panel-head {
+        padding: .65rem 1rem;
+        background: linear-gradient(135deg, #fff0f6 0%, #ffe4f0 100%);
+        border-bottom: 1px solid #ffd6e8;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .resubmit-panel-head-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--hot-pink);
+        flex-shrink: 0;
+    }
+
+    .resubmit-panel-title {
+        font-size: .78rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .resubmit-panel-body {
+        padding: .9rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+    }
+
+    .resubmit-select {
+        width: 100%;
+        padding: .6rem .9rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        font-size: .83rem;
+        color: var(--ink-deep);
+        outline: none;
+        font-family: inherit;
+        transition: border-color .18s;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .resubmit-select:focus { border-color: var(--hot-pink); }
+
+    .resubmit-custom-wrap {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height .22s ease, opacity .22s ease;
+    }
+
+    .resubmit-custom-wrap.visible {
+        max-height: 80px;
+        opacity: 1;
+    }
+
+    .resubmit-custom-input {
+        width: 100%;
+        padding: .6rem .9rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        font-size: .83rem;
+        color: var(--ink-deep);
+        outline: none;
+        font-family: inherit;
+        resize: none;
+        box-sizing: border-box;
+        transition: border-color .18s;
+    }
+
+    .resubmit-custom-input:focus { border-color: var(--hot-pink); }
+
+    .btn-resubmit-confirm {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        width: 100%;
+        padding: .62rem 1rem;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        color: var(--white);
+        border: none;
+        font-size: .84rem;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity .18s, transform .15s;
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        box-sizing: border-box;
+    }
+
+    .btn-resubmit-confirm:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-resubmit-confirm:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .resubmit-success-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .55rem .9rem;
+        border-radius: 10px;
+        background: #e8faf5;
+        color: #1f9d69;
+        border: 1px solid #8ce0bb;
+        font-size: .82rem;
+        font-weight: 700;
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
 </style>
 @endsection
 
@@ -1247,6 +1372,11 @@
                             <div class="tenant-left">
                                 <span class="dot {{ $t['dot_class'] }}"></span>
                                 <span class="tname">{{ $t['name'] }}</span>
+                                @if(!empty($t['is_temp_password']))
+                                <span title="Tenant hasn't activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:3px;vertical-align:middle;position:relative;top:-1px;">
+                                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                </span>
+                                @endif
                             </div>
                             <div class="tenant-right">
                                 <span class="t-amount">{{ in_array($t['payment_status'], ['pending-tenant', 'inactive-tenant']) ? '-' : '₱' . number_format($t['room_share'], 2) }}</span>
@@ -1492,7 +1622,7 @@ function resetButton(btn, originalText) {
 }
 
 @php
-    $tenantsByFloorData = $allTenants->where('status', 'active')->groupBy('floor')->map(fn($tenants) =>
+    $tenantsByFloorData = $allTenants->whereIn('status', ['active', 'pending'])->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
             'name'        => $t->first_name . ' ' . $t->last_name,
             'room_number' => $t->room_number,
@@ -2114,7 +2244,7 @@ function openUpdateModal(room) {
                 <div style="padding:.7rem 1rem;background:var(--pink-bg-soft);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-pink-mid);">
                     <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
                     <div style="flex:1;">
-                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}${t.is_temp_password ? '<span title="Tenant hasn\'t activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:4px;vertical-align:middle;position:relative;top:-1px;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>' : ''}</div>
                         <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
                     </div>
                     <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${getBadgeLabel(t.payment_status)}</span>
@@ -2150,6 +2280,38 @@ function openUpdateModal(room) {
         const safeUrl  = t.proof_of_payment_url   ? t.proof_of_payment_url               : '';
         const safeName = t.name;
 
+        const resubmitPanelId = `resubmit-panel-${t.billing_id}`;
+        const resubmitSelectId = `resubmit-select-${t.billing_id}`;
+        const resubmitCustomId = `resubmit-custom-${t.billing_id}`;
+        const resubmitBtnId = `resubmit-btn-${t.billing_id}`;
+
+        const resubmitPanel = proofUrl ? `
+            <div class="resubmit-panel" id="${resubmitPanelId}">
+                <div class="resubmit-panel-head">
+                    <span class="resubmit-panel-head-dot"></span>
+                    <span class="resubmit-panel-title">Request Resubmission</span>
+                </div>
+                <div class="resubmit-panel-body">
+                    <select class="resubmit-select" id="${resubmitSelectId}" onchange="toggleResubmitCustom('${resubmitSelectId}','${resubmitCustomId}')">
+                        <option value="">Select a reason...</option>
+                        <option value="Image is blurry or unclear">Image is blurry or unclear</option>
+                        <option value="Wrong billing reference number">Wrong billing reference number</option>
+                        <option value="Amount does not match">Amount does not match</option>
+                        <option value="Proof appears to be edited or invalid">Proof appears to be edited or invalid</option>
+                        <option value="Screenshot is incomplete">Screenshot is incomplete</option>
+                        <option value="Other">Other (specify below)</option>
+                    </select>
+                    <div class="resubmit-custom-wrap" id="${resubmitCustomId}">
+                        <textarea class="resubmit-custom-input" rows="2" maxlength="500" placeholder="Describe the issue..."></textarea>
+                    </div>
+                    <button type="button" class="btn-resubmit-confirm" id="${resubmitBtnId}"
+                        onclick="confirmResubmit(${t.billing_id},'${resubmitSelectId}','${resubmitCustomId}','${resubmitBtnId}','${resubmitPanelId}')">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Send Resubmission Request
+                    </button>
+                </div>
+            </div>` : '';
+
         const imgHtml = proofUrl
             ? `<div style="position:relative;">
                    <a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);">
@@ -2159,7 +2321,8 @@ function openUpdateModal(room) {
                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                        Preview full image
                    </button>
-               </div>`
+               </div>
+               ${resubmitPanel}`
             : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
 
         proofHtml += `
@@ -2199,6 +2362,75 @@ function recalcUpdateShare() {
         dispShare.textContent = '~ recalculating on save';
         dispShare.style.fontSize = '11px';
         dispShare.style.color = 'var(--ink-soft)';
+    }
+}
+
+function toggleResubmitCustom(selectId, customWrapId) {
+    const select = document.getElementById(selectId);
+    const wrap   = document.getElementById(customWrapId);
+    if (!select || !wrap) return;
+    if (select.value === 'Other') {
+        wrap.classList.add('visible');
+        wrap.querySelector('textarea').focus();
+    } else {
+        wrap.classList.remove('visible');
+    }
+}
+
+async function confirmResubmit(billingId, selectId, customWrapId, btnId, panelId) {
+    const select     = document.getElementById(selectId);
+    const customWrap = document.getElementById(customWrapId);
+    const btn        = document.getElementById(btnId);
+    const panel      = document.getElementById(panelId);
+
+    if (!select.value) {
+        showToast('Please select a reason for resubmission.', 'error');
+        return;
+    }
+
+    let reason = select.value;
+    if (reason === 'Other') {
+        const customText = customWrap?.querySelector('textarea')?.value?.trim();
+        if (!customText) {
+            showToast('Please describe the reason for resubmission.', 'error');
+            return;
+        }
+        reason = customText;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    showActionLoading('Sending resubmission request...');
+
+    try {
+        const response = await fetch("{{ route('billing.requestResubmission') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ billing_id: billingId, reason: reason }),
+        });
+
+        const data = await response.json();
+        hideActionLoading();
+
+        if (response.ok && data.success) {
+            if (panel) {
+                panel.innerHTML = `<div class="resubmit-panel-body"><span class="resubmit-success-badge"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5l3 3 6-6" stroke="#1f9d69" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Resubmission request sent</span></div>`;
+            }
+            showToast('Resubmission request sent to tenant.', 'success');
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            showToast(data.message || 'Failed to send request.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Send Resubmission Request';
+        }
+    } catch (err) {
+        hideActionLoading();
+        showToast('Network error. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M6.5 1l5.5 5.5-5.5 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Send Resubmission Request';
     }
 }
 

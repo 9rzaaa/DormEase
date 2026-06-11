@@ -21,18 +21,19 @@ class MaintenanceController extends Controller
             ->get()
             ->map(function ($r) {
                 return [
-                    'id'            => $r->request_id,
-                    'tenant_name'   => trim(optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name),
-                    'room_number'   => $r->room_number,
-                    'issue_type'    => $r->issue_type,
-                    'description'   => $r->description,
-                    'urgency'       => $r->urgency_level,
-                    'status'        => $r->status,
-                    'admin_remarks' => $r->admin_notes,
-                    'photo_url'     => $r->photo_path
-                        ? asset('storage/' . $r->photo_path)
+                    'id'                        => $r->request_id,
+                    'tenant_name'               => trim(optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name),
+                    'room_number'               => $r->room_number,
+                    'issue_type'                => $r->issue_type,
+                    'description'               => $r->description,
+                    'urgency'                   => $r->urgency_level,
+                    'status'                    => $r->status,
+                    'admin_remarks'             => $r->admin_notes,
+                    'photo_url'                 => $r->photo_path ? asset('storage/' . $r->photo_path) : null,
+                    'resubmission_requested_at' => $r->resubmission_requested_at
+                        ? $r->resubmission_requested_at->format('Y-m-d H:i:s')
                         : null,
-                    'created_at'    => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
+                    'created_at'                => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
                 ];
             });
 
@@ -178,6 +179,39 @@ class MaintenanceController extends Controller
 
         return redirect()->route('maintenance.index')
             ->with('success', 'Maintenance request deleted and archived.');
+    }
+
+    public function requestResubmission(Request $request, $id)
+    {
+        $maintenance = MaintenanceRequest::findOrFail($id);
+
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $maintenance->update([
+            'resubmission_requested_at' => now(),
+            'resubmission_reason'       => $request->reason,
+        ]);
+
+        $reqLabel = '#REQ-' . str_pad($maintenance->request_id, 3, '0', STR_PAD_LEFT);
+
+        app(TenantPushNotificationService::class)->sendToTenant(
+            tenant: $maintenance->tenant_id,
+            type: 'maintenance',
+            title: 'Photo resubmission requested',
+            body: "The admin has requested a new photo for your maintenance request {$reqLabel}. Reason: {$request->reason}. Please resubmit.",
+            refId: $maintenance->request_id,
+            route: '/tenant/maintenancehistory',
+        );
+
+        NotificationHelper::sendToAll(
+            'maintenance_resubmission',
+            "Photo resubmission requested for {$reqLabel}.",
+            $maintenance->request_id
+        );
+
+        return response()->json(['success' => true]);
     }
 
     private function archiveRequest(MaintenanceRequest $r, string $type): void

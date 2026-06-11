@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -23,14 +24,19 @@ class MaintenanceRequest extends Model
         'admin_notes',
         'admin_notes_at',
         'assigned_to',
+        'photo_path',
         'submitted_at',
         'resolved_at',
+        'resubmission_requested_at',
+        'resubmission_reason',
     ];
 
     protected $casts = [
-        'submitted_at' => 'datetime',
-        'resolved_at' => 'datetime',
-        'admin_notes_at' => 'datetime',
+        'submitted_at'              => 'datetime',
+        'resolved_at'               => 'datetime',
+        'admin_notes_at'            => 'datetime',
+        'resubmission_requested_at' => 'datetime',
+        'resubmission_reason'       => 'string',
     ];
 
     public function tenant()

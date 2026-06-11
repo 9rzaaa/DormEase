@@ -419,6 +419,131 @@
         font-size: .83rem; color: var(--ink-muted); line-height: 1.6; white-space: pre-wrap;
     }
 
+    .btn-resubmit-request {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+        margin-top: .5rem;
+        padding: .65rem 1rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--blush);
+        color: var(--hot-pink);
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .2s ease;
+        font-family: var(--ff-body);
+    }
+
+    .btn-resubmit-request:hover {
+        background: var(--petal);
+        border-color: var(--bright-pink);
+        color: var(--bright-pink);
+        box-shadow: 0 6px 16px rgba(232,23,93,.18);
+    }
+
+    .btn-resubmit-request.already-requested {
+        background: rgba(232,23,93,.08);
+        border-color: rgba(232,23,93,.25);
+        color: var(--bright-pink);
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .btn-resubmit-request img {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    .resubmit-confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26,26,46,.48);
+        backdrop-filter: blur(4px);
+        z-index: 1500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .resubmit-confirm-overlay.open {
+        display: flex;
+    }
+
+    .resubmit-confirm-box {
+        background: var(--white);
+        border-radius: 18px;
+        padding: 1.8rem 1.8rem 1.4rem;
+        width: 90%;
+        max-width: 400px;
+        border: 1px solid var(--baby-pink);
+        box-shadow: 0 20px 60px rgba(232,23,93,.15);
+        animation: rcFadeUp .28s ease both;
+    }
+
+    .resubmit-confirm-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        margin-bottom: .35rem;
+        letter-spacing: -.01em;
+    }
+
+    .resubmit-confirm-sub {
+        font-size: .83rem;
+        color: var(--ink-muted);
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+    }
+
+    .resubmit-confirm-actions {
+        display: flex;
+        gap: .6rem;
+        justify-content: flex-end;
+    }
+
+    .resubmit-confirm-cancel {
+        padding: .55rem 1.2rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .85rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: all .2s ease;
+    }
+
+    .resubmit-confirm-cancel:hover {
+        border-color: var(--bright-pink);
+        color: var(--hot-pink);
+        background: var(--blush);
+    }
+
+    .resubmit-confirm-send {
+        padding: .55rem 1.3rem;
+        border-radius: 9px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .85rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        box-shadow: 0 4px 14px rgba(232,23,93,.28);
+        transition: transform .15s ease, opacity .2s ease;
+    }
+
+    .resubmit-confirm-send:hover {
+        transform: translateY(-1px);
+        opacity: .95;
+    }
+
     .empty-state { text-align: center; padding: 3rem 1rem; color: var(--ink-muted); font-size: .88rem; }
 
     .empty-state img {
@@ -972,6 +1097,36 @@
     </div>
 </div>
 
+<div class="resubmit-confirm-overlay" id="resubmit-confirm-overlay">
+    <div class="resubmit-confirm-box">
+        <div class="resubmit-confirm-title">Request photo resubmission?</div>
+        <div class="resubmit-confirm-sub">
+            A notification will be sent to the tenant asking them to resubmit a photo for this request.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;">
+            <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.04em;">Reason for resubmission</label>
+            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
+                <option value="">Select a reason...</option>
+                <option value="Photo is blurry or out of focus">Photo is blurry or out of focus</option>
+                <option value="Photo is too dark or poorly lit">Photo is too dark or poorly lit</option>
+                <option value="Photo does not show the issue clearly">Photo does not show the issue clearly</option>
+                <option value="Wrong area or location photographed">Wrong area or location photographed</option>
+                <option value="Photo is corrupted or unreadable">Photo is corrupted or unreadable</option>
+                <option value="Multiple issues shown — need focused photo">Multiple issues shown — need focused photo</option>
+                <option value="No photo was attached">No photo was attached</option>
+            </select>
+            <div id="resubmit-reason-error" style="display:none;font-size:.75rem;color:#c0303a;font-weight:600;margin-top:.15rem;">Please select a reason before sending.</div>
+        </div>
+        <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .85rem;font-size:.78rem;color:#c07800;margin-bottom:1.2rem;line-height:1.55;">
+            The tenant will be notified via push notification and in-app message.
+        </div>
+        <div class="resubmit-confirm-actions">
+            <button class="resubmit-confirm-cancel" onclick="closeResubmitConfirm()">Cancel</button>
+            <button class="resubmit-confirm-send" id="resubmit-confirm-btn" onclick="executeResubmitRequest()">Send Request</button>
+        </div>
+    </div>
+</div>
+
 <div class="archive-backdrop" id="archive-backdrop" onclick="closeArchive()"></div>
 
 <div class="archive-drawer" id="archive-drawer">
@@ -1034,10 +1189,10 @@
                     <div style="font-size:.75rem;color:rgba(255,255,255,.78);font-weight:500;">Maintenance request information</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="closeModal('view-modal')" style="background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3);color:#fff;">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('view-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
-        <div id="view-content" style="padding:1.2rem 1.5rem;max-height:72vh;overflow-y:auto;"></div>
-        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);">
+        <div id="view-content" style="padding:1.2rem 1.5rem;max-height:55vh;overflow-y:auto;"></div>
+        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;">
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
@@ -1045,43 +1200,82 @@
 </div>
 
 <div class="modal-overlay" id="edit-modal">
-    <div class="modal" style="max-width:540px;">
-        <div class="modal-header">
-            <div class="modal-title">Update Request</div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:540px;padding:0;overflow:hidden;border-radius:18px;">
+        <!-- Header -->
+        <div style="background:var(--gradient-pink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img src="{{ asset('icons/edit.png') }}" alt="" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) invert(1);">
+                </div>
+                <div>
+                    <div style="font-size:1rem;font-weight:800;color:#fff;line-height:1.2;">Update Request</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);font-weight:500;">Edit status, urgency and remarks</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('edit-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
+
+        <!-- Body -->
         <form id="edit-form" method="POST" data-loading-message="Saving changes...">
             @csrf
             @method('PUT')
-            <div class="modal-two-col">
-                <div class="maint-modal-field">
-                    <label>Status</label>
-                    <select name="status" id="edit-status">
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In-Progress</option>
-                        <option value="resolved">Resolve &amp; Archive</option>
-                        <option value="closed">Close &amp; Archive</option>
-                    </select>
+            <div style="padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
+
+                <!-- Status + Urgency row -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
+                    <!-- Status -->
+                    <div style="display:flex;flex-direction:column;gap:.4rem;">
+                        <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
+                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In-Progress</option>
+                            <option value="resolved">Resolve &amp; Archive</option>
+                            <option value="closed">Close &amp; Archive</option>
+                        </select>
+                    </div>
+
+                    <!-- Urgency -->
+                    <div style="display:flex;flex-direction:column;gap:.4rem;">
+                        <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
+                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                            <option value="low">Low</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="maint-modal-field">
-                    <label>Urgency</label>
-                    <select name="urgency" id="edit-urgency">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="urgent">Urgent</option>
-                    </select>
+
+                <!-- Admin Remarks -->
+                <div style="display:flex;flex-direction:column;gap:.4rem;">
+                    <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Admin Remarks <span style="text-transform:none;font-weight:500;color:var(--ink-muted);">(visible to tenant)</span></label>
+                    <textarea name="admin_remarks" id="edit-remarks"
+                        placeholder="Add comments or updates for the tenant..."
+                        style="padding:.75rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);min-height:100px;resize:vertical;outline:none;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;line-height:1.6;"
+                        onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'"
+                        onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'"
+                    ></textarea>
                 </div>
+
+                <!-- Warning note -->
+                <div style="display:flex;align-items:flex-start;gap:.6rem;background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.7rem .9rem;">
+                    <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">⚠️</span>
+                    <span style="font-size:.78rem;color:#c07800;line-height:1.55;">Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this request to the archive permanently.</span>
+                </div>
+
             </div>
-            <div class="maint-modal-field">
-                <label>Admin Remarks (visible to tenant)</label>
-                <textarea name="admin_remarks" id="edit-remarks" placeholder="Add comments or update for the tenant..."></textarea>
-            </div>
-            <div style="background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#c07800;margin-bottom:.5rem;line-height:1.5;">
-                Setting status to <strong>Closed</strong> will move this request to the archive permanently.
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
+
+            <!-- Footer -->
+            <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;">
+                <button type="button" onclick="closeModal('edit-modal')"
+                    style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
+                    onmouseover="this.style.borderColor='var(--bright-pink)'"
+                    onmouseout="this.style.borderColor='var(--baby-pink)'"
+                >Cancel</button>
+                <button type="submit"
+                    style="padding:.6rem 1.6rem;border-radius:10px;border:none;background:var(--gradient-pink);color:#fff;font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);box-shadow:0 4px 14px rgba(232,23,93,.3);transition:.2s;"
+                    onmouseover="this.style.boxShadow='0 6px 18px rgba(232,23,93,.45)'"
+                    onmouseout="this.style.boxShadow='0 4px 14px rgba(232,23,93,.3)'"
+                >Save Changes</button>
             </div>
         </form>
     </div>
@@ -1325,64 +1519,157 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function viewReq(r) {
-        currentReq = r;
-        document.getElementById('view-content').innerHTML = `
-            <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
-                <span style="font-size:1.1rem;font-weight:800;color:var(--hot-pink);letter-spacing:-.01em;">#REQ-${String(r.id).padStart(3,'0')}</span>
-                ${statusBadge(r.status)}
-                ${urgencyBadge(r.urgency)}
-            </div>
+    currentReq = r;
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;">
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Tenant</div>
-                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Room</div>
-                    <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.room_number ?? '—')}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Issue Type</div>
-                    <div style="margin-top:.2rem;">${issueBadge(r.issue_type)}</div>
-                </div>
-                <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
-                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Date Submitted</div>
-                    <div style="font-size:.82rem;color:var(--ink-muted);font-weight:500;">${fmtDatePlain(r.created_at)}</div>
-                </div>
-            </div>
+    const alreadyRequested = !!r.resubmission_requested_at;
+    const resubmitBtnHtml = `
+        <button
+            class="btn-resubmit-request${alreadyRequested ? ' already-requested' : ''}"
+            id="resubmit-request-btn"
+            onclick="openResubmitConfirm()"
+        >
+            <img src="{{ asset('icons/reset.png') }}" alt="">
+            ${alreadyRequested
+                ? 'Resubmission already requested on ' + fmtDatePlain(r.resubmission_requested_at)
+                : 'Request Photo Resubmission'}
+        </button>
+    `;
 
-            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Description</div>
-                <div style="font-size:.875rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
-            </div>
+    document.getElementById('view-content').innerHTML = `
+        <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:1.1rem;font-weight:800;color:var(--hot-pink);letter-spacing:-.01em;">#REQ-${String(r.id).padStart(3,'0')}</span>
+            ${statusBadge(r.status)}
+            ${urgencyBadge(r.urgency)}
+        </div>
 
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;">
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Tenant</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Room</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.room_number ?? '—')}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Issue Type</div>
+                <div style="margin-top:.2rem;">${issueBadge(r.issue_type)}</div>
+            </div>
+            <div style="background:var(--blush);border-radius:10px;padding:.65rem .85rem;">
+                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem;">Date Submitted</div>
+                <div style="font-size:.82rem;color:var(--ink-muted);font-weight:500;">${fmtDatePlain(r.created_at)}</div>
+            </div>
+        </div>
+
+        <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Description</div>
+            <div style="font-size:.875rem;color:var(--ink);line-height:1.65;white-space:pre-wrap;">${escHtml(r.description ?? '—')}</div>
+        </div>
+
+        <div style="margin-bottom:.6rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.45rem;">Attached Photo</div>
             ${r.photo_url ? `
-            <div style="margin-bottom:.6rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.45rem;">Attached Photo</div>
-                <div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">
-                    <img src="${escHtml(r.photo_url)}"
-                        alt="Maintenance photo"
-                        style="width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer;"
-                        onclick="window.open('${escHtml(r.photo_url)}','_blank')"
-                        onerror="this.closest('div').innerHTML='<div style=\'padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\'>Photo could not be loaded.</div>'"
-                    />
-                    <a href="${escHtml(r.photo_url)}" target="_blank"
+            <div style="border-radius:12px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">
+                <img src="${escHtml(r.photo_url)}"
+                    alt="Maintenance photo"
+                    style="width:100%;max-height:260px;object-fit:cover;display:block;cursor:pointer;"
+                    onclick="window.open('${escHtml(r.photo_url)}','_blank')"
+                    onerror="this.parentElement.innerHTML='<div style=\'padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\'>Photo could not be loaded.</div>'"
+                />
+                <a href="${escHtml(r.photo_url)}" target="_blank"
                     style="position:absolute;bottom:.55rem;right:.55rem;background:rgba(0,0,0,.52);color:#fff;font-size:.72rem;font-weight:700;padding:.3rem .65rem;border-radius:6px;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;backdrop-filter:blur(4px);">
-                        &#x2197; View full
-                    </a>
-                </div>
+                    &#x2197; View full
+                </a>
             </div>
-            ` : ''}
+            ` : `
+            <div style="background:var(--blush);border:1.5px dashed var(--baby-pink);border-radius:12px;padding:1.4rem 1rem;text-align:center;color:var(--ink-muted);font-size:.82rem;">
+                No photo attached to this request.
+            </div>
+            `}
+            ${resubmitBtnHtml}
+        </div>
 
-            <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;">
-                <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Admin Remarks</div>
-                ${r.admin_remarks
-                    ? `<div class="remark-box" style="margin-top:0;">${escHtml(r.admin_remarks)}</div>`
-                    : `<span style="font-size:.83rem;color:var(--ink-muted);font-style:italic;">No remarks yet.</span>`}
-            </div>
-        `;
-        openModal('view-modal');
+        <div style="background:var(--blush);border-radius:10px;padding:.75rem .85rem;">
+            <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Admin Remarks</div>
+            ${r.admin_remarks
+                ? `<div class="remark-box" style="margin-top:0;">${escHtml(r.admin_remarks)}</div>`
+                : `<span style="font-size:.83rem;color:var(--ink-muted);font-style:italic;">No remarks yet.</span>`}
+        </div>
+    `;
+    openModal('view-modal');
+}
+
+    function openResubmitConfirm() {
+        if (!currentReq) return;
+        document.getElementById('resubmit-confirm-overlay').classList.add('open');
+    }
+
+    function closeResubmitConfirm() {
+        document.getElementById('resubmit-confirm-overlay').classList.remove('open');
+        document.getElementById('resubmit-reason-select').value = '';
+        document.getElementById('resubmit-reason-error').style.display = 'none';
+    }
+
+    function executeResubmitRequest() {
+        if (!currentReq) return;
+
+        const reasonSelect = document.getElementById('resubmit-reason-select');
+        const reasonError  = document.getElementById('resubmit-reason-error');
+        const reason       = reasonSelect.value;
+
+        if (!reason) {
+            reasonError.style.display = 'block';
+            reasonSelect.style.borderColor = '#ffc8d0';
+            reasonSelect.focus();
+            return;
+        }
+
+        reasonError.style.display = 'none';
+        reasonSelect.style.borderColor = '';
+
+        const btn = document.getElementById('resubmit-confirm-btn');
+        btn.textContent = 'Sending...';
+        btn.disabled    = true;
+
+        fetch('/maintenance/' + currentReq.id + '/request-resubmission', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ reason: reason }),
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            closeResubmitConfirm();
+
+            if (data.success) {
+                const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                currentReq.resubmission_requested_at = now;
+
+                const reqBtn = document.getElementById('resubmit-request-btn');
+                if (reqBtn) {
+                    reqBtn.classList.add('already-requested');
+                    reqBtn.innerHTML = '<img src="{{ asset("icons/reset.png") }}" alt=""> Resubmission already requested on ' + fmtDatePlain(now);
+                }
+
+                const idx = requests.findIndex(function(r) { return r.id === currentReq.id; });
+                if (idx !== -1) requests[idx].resubmission_requested_at = now;
+
+                showToast('Resubmission request sent to tenant.', 'success');
+            } else {
+                showToast('Failed to send resubmission request.', 'error');
+            }
+        })
+        .catch(function() {
+            closeResubmitConfirm();
+            showToast('Network error. Please try again.', 'error');
+        })
+        .finally(function() {
+            btn.textContent = 'Send Request';
+            btn.disabled    = false;
+        });
     }
 
     function switchToEdit() {

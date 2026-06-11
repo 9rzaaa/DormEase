@@ -159,6 +159,9 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
     Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
+    Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
+    Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);
+    Route::get('/tenant-logs',            [App\Http\Controllers\TenantLogController::class, 'logs']);
     Route::middleware('auth:staff')->group(function () {
         Route::get('/rooms',          [RoomController::class, 'index']);
         Route::post('/rooms',         [RoomController::class, 'store']);
@@ -199,6 +202,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/log', [BillingController::class, 'log'])->name('log');
         Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
         Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
+        Route::post('/request-resubmission', [BillingController::class, 'requestResubmission'])->name('requestResubmission');
         Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
         Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
@@ -231,6 +235,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
     Route::put('/maintenance/{id}', [MaintenanceController::class, 'update'])->name('maintenance.update');
     Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
+    Route::post('/maintenance/{id}/request-resubmission', [MaintenanceController::class, 'requestResubmission']);
 
     // emergency
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');

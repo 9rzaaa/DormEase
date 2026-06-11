@@ -6,7 +6,7 @@
 @section('styles')
 <style>
 .page-body {
-    padding: 1.8rem 2rem;
+    padding: 1.8rem 1.8rem 1.8rem 2rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -212,6 +212,7 @@ td {
 th:nth-child(2), td:nth-child(2) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
+.td-center { text-align: center; }
 tbody tr:hover { background: var(--soft-bg); }
 .badge { display: inline-flex; align-items: center; padding: .28rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
@@ -408,6 +409,10 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar { height: 3px; width: 100%; }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
+@keyframes pulseGreen {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
+    50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
+}
 .fade-up { animation: fadeIn .45s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 .d1 { animation-delay: .05s; }
@@ -479,6 +484,35 @@ tbody tr:hover { background: var(--soft-bg); }
 .tad-export-btn { display: inline-flex; align-items: center; gap: .4rem; font-size: .75rem; font-weight: 700; color: var(--bright-pink); background: var(--petal); border: 1px solid var(--pink-100); border-radius: 8px; padding: .35rem .85rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; font-family: var(--ff-body); }
 .tad-export-btn:hover { background: var(--gradient-pink); color: var(--white); border-color: transparent; }
 .tad-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .7; }
+.log-card {
+    background: var(--white);
+    border: 1px solid var(--pink-100);
+    border-radius: 12px;
+    padding: .75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    transition: background .2s, border-color .2s;
+    animation: tadSlideIn .3s ease both;
+}
+.log-card:hover { background: var(--blush); border-color: var(--bright-pink); }
+.log-action-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.log-action-icon.in  { background: #e8faf5; border: 1.5px solid #8ce0bb; }
+.log-action-icon.out { background: #fff0f4; border: 1.5px solid #ffc2d1; }
+.log-info { flex: 1; min-width: 0; }
+.log-name { font-size: .87rem; font-weight: 700; color: var(--ink); }
+.log-meta { font-size: .72rem; color: var(--ink-muted); margin-top: .15rem; }
+.log-time-col {
+    font-size: .7rem; font-weight: 600;
+    color: var(--ink-muted); text-align: right;
+    flex-shrink: 0; white-space: nowrap;
+}
+.tad-pill-timein  { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.tad-pill-timeout { background: #fff0f4; color: #b0163a; border: 1px solid #ffc2d1; }
 .export-dropdown { position: relative; display: inline-flex; }
 .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
 .export-menu.open { display: block; }
@@ -492,12 +526,95 @@ tbody tr:hover { background: var(--soft-bg); }
 .is-loading { opacity: .75; pointer-events: none; }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
-@media (max-width: 900px) { .page-body { padding: 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
-@media (max-width: 680px) { .page-body { padding: 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
-@media (max-width: 480px) { .page-body { padding: .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
+@media (max-width: 900px) { .page-body { padding: 1.2rem 1rem 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
+@media (max-width: 680px) { .page-body { padding: 1rem .75rem 1rem 1rem; gap: 1rem; } .page-header h1 { font-size: 1.5rem; } .stats-row { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.2rem; } .stat-num { font-size: 1.75rem; } .table-header { padding: 1rem; flex-direction: column; align-items: flex-start; } .table-controls { width: 100%; } .search-wrap { flex: 1; } .search-wrap input { width: 100%; } .sort-select { flex: 1; min-width: 0; } .table-footer { flex-direction: column; align-items: flex-start; gap: .6rem; } .pagination { width: 100%; justify-content: center; } .btn-primary, .btn-outline { font-size: .82rem; padding: .55rem 1rem; } }
+@media (max-width: 480px) { .page-body { padding: .8rem .6rem .8rem .8rem; gap: .9rem; } .page-header { gap: .6rem; } .page-header h1 { font-size: 1.3rem; } .header-actions { width: 100%; } .header-actions .btn-primary, .header-actions .btn-outline { flex: 1; justify-content: center; } .stat-box { gap: .75rem; padding: .9rem 1rem; } .stat-label { font-size: .72rem; } .stat-sub { font-size: .67rem; } .credentials-box { padding: .75rem .9rem; } .table-controls { flex-direction: column; align-items: stretch; } .search-wrap input { width: 100%; } .sort-select { width: 100%; } .tad-tabs { padding: 0 1rem; } .tad-tab { padding: .75rem .75rem; font-size: .76rem; } .modal-grid { grid-template-columns: 1fr; } .modal-footer { flex-direction: column-reverse; } .btn-cancel, .btn-submit { width: 100%; justify-content: center; } }
 @media (max-width: 360px) { .stat-icon-circle { display: none; } .act-btn { width: 28px; height: 28px; } .stat-num { font-size: 1.4rem; } .stat-box { padding: .75rem; } }
 @media (max-width: 768px) { .action-group { flex-direction: column; gap: .25rem; } .act-btn { width: 28px; height: 28px; } }
 @media (max-width: 700px) { .tad-header { padding: 1.2rem 1rem .9rem; } .tad-list { padding: 0 1rem 1.2rem; } .tad-search-bar { padding: .8rem 1rem .6rem; } .tad-footer { padding: .75rem 1rem; } }
+
+.status-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.status-legend-wrap svg {
+    display: block;
+    opacity: .75;
+    transition: opacity .2s;
+}
+.status-legend-wrap:hover svg { opacity: 1; }
+.status-legend-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 280px;
+    z-index: 600;
+    pointer-events: none;
+}
+.status-legend-wrap:hover .status-legend-popup,
+.status-legend-popup.open { display: block; }
+.slp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+.slp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+.slp-row:last-child { border-bottom: none; }
+.slp-row .badge { flex-shrink: 0; min-width: 72px; justify-content: center; }
+.slp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .15rem;
+}
+@media (max-width: 680px) {
+    .status-legend-popup {
+        left: auto;
+        right: 0;
+        transform: none;
+    }
+}
+
+.addf-item {
+    display: block;
+    width: 100%;
+    padding: .6rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .15s;
+    font-family: var(--ff-body);
+    border-bottom: 1px solid var(--pink-100);
+}
+.addf-item:last-child { border-bottom: none; }
+.addf-item:hover { background: var(--blush); color: var(--hot-pink); }
+.addf-item.active { background: var(--petal); color: var(--hot-pink); }
 </style>
 @endsection
 
@@ -511,6 +628,10 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
+            <button class="btn-outline" onclick="openAdminLogDrawer()">
+                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Log">
+                Entry / Exit Log
+            </button>
             <button class="btn-outline" onclick="openRoomsDrawer()">
                 <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Rooms">
                 Manage Rooms
@@ -591,6 +712,17 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="pending">Pending</option>
                     <option value="reserved">Reserved</option>
                 </select>
+                <div class="status-legend-wrap" id="status-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                    <div class="status-legend-popup" id="status-legend-popup">
+                        <div class="slp-title">Status Guide</div>
+                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Moved in but account setup or verification is incomplete.</span></div>
+                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
+                        <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
+                        <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
+                    </div>
+                </div>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
         </div>
@@ -847,6 +979,52 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="btn-cancel" onclick="closeModal('delete-room-modal')">Cancel</button>
             <button class="btn-submit" style="background:#e04867;" onclick="submitDeleteRoom()">Delete</button>
         </div>
+    </div>
+</div>
+
+<div class="tenant-archive-backdrop" id="admin-log-backdrop" onclick="closeAdminLogDrawer()"></div>
+
+<div class="tenant-archive-drawer" id="admin-log-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Entry / Exit Log</div>
+            <div class="tad-sub">Real-time record of tenant time-ins and time-outs</div>
+        </div>
+        <button class="tad-close" onclick="closeAdminLogDrawer()">&#x2715;</button>
+    </div>
+    <div class="tad-search-bar">
+        <div class="tad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="admin-log-search" placeholder="Search by name, room..." oninput="renderAdminLogDrawer()">
+        </div>
+    </div>
+    <div style="padding: 0 1.8rem .75rem; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid var(--pink-100); margin-bottom: .2rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <button class="page-btn active" id="admin-log-filter-all"     onclick="setAdminLogFilter('')">All</button>
+            <button class="page-btn"        id="admin-log-filter-timein"  onclick="setAdminLogFilter('time_in')">Time In</button>
+            <button class="page-btn"        id="admin-log-filter-timeout" onclick="setAdminLogFilter('time_out')">Time Out</button>
+        </div>
+        <div style="position:relative; display:inline-flex; align-items:center;">
+            <button id="admin-date-dropdown-btn" onclick="toggleAdminDateDropdown()" style="display:inline-flex;align-items:center;gap:.45rem;padding:.38rem .85rem;border-radius:99px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s;white-space:nowrap;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="admin-date-dropdown-label">All Dates</span>
+                <svg id="admin-date-dropdown-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="admin-date-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 6px);right:0;left:auto;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:150px;overflow:hidden;z-index:600;">
+                <button onclick="setAdminDateFilter('all')"       class="addf-item active" data-val="all">All Dates</button>
+                <button onclick="setAdminDateFilter('today')"     class="addf-item"        data-val="today">Today</button>
+                <button onclick="setAdminDateFilter('yesterday')" class="addf-item"        data-val="yesterday">Yesterday</button>
+                <button onclick="setAdminDateFilter('week')"      class="addf-item"        data-val="week">This Week</button>
+            </div>
+        </div>
+    </div>
+    <div class="tad-list" id="admin-log-list"></div>
+    <div class="tad-footer">
+        <div class="tad-count-label" id="admin-log-count-label">0 records</div>
+        <button class="tad-export-btn" onclick="exportAdminLog()">
+            <img src="{{ asset('icons/export.png') }}" alt="">
+            Export CSV
+        </button>
     </div>
 </div>
 
@@ -1360,6 +1538,7 @@ function printCredentialSlip(type) {
 }
 
 var tenants = @json($tenants);
+var billingData = @json($billingData);
 var PER_PAGE = 8;
 var currentTenant = null;
 var sectionState = { active: true, reserved: true };
@@ -1510,25 +1689,35 @@ function buildRows(list) {
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-        var nameCell  = '<div style="display:flex;flex-direction:column;align-items:center;gap:.25rem;"><span>' + t.first_name + ' ' + t.last_name + '</span>' + (t.is_temp_password ? tempBadge(true) : '') + '</div>';
+
+        var insideDot = t.is_inside
+            ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
+            : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
+
+        var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
+            + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
+            + (t.is_temp_password ? tempBadge(true) : '')
+            + '</div>';
+
         var col4 = t.status === 'reserved'
             ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
             : fmtDate(t.move_in_date);
-        return '<tr>'
+
+        return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
-            + '<td>' + nameCell + '</td>'
+            + '<td id="admin-inside-cell-' + t.tenant_id + '">' + nameCell + '</td>'
             + '<td>' + floorRoom + '</td>'
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
             + '<td><div class="action-group">'
-                + '<button class="act-btn" title="View" onclick=\'viewTenant(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/eye.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(t) + ')\'><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/reset.png') }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>'
-            + '</div></td>'
-            + '</tr>';
+                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>'
+                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
+            + '</div></td></tr>';
     }).join('');
 }
 
@@ -2210,7 +2399,7 @@ async function submitDeleteRoom() {
             return {
                 state: 'notfound',
                 html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
-                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '<img src="/icons/info.png" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;margin-top:.1rem;filter:brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%);">'
                     + '<div style="flex:1;min-width:0;">'
                     + '<div style="font-size:.8rem;font-weight:700;color:#b0163a;line-height:1.4;">Room <span style="font-family:monospace;">' + typedRoom.trim() + '</span> does not exist.</div>'
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.2rem;">Open <strong>Manage Rooms</strong> to add it, then come back and assign the tenant.'
@@ -2234,7 +2423,7 @@ async function submitDeleteRoom() {
             return {
                 state: 'full',
                 html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">'
-                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                    + '<img src="/icons/info.png" style="width:16px;height:16px;object-fit:contain;flex-shrink:0;margin-top:.1rem;filter:brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(800%) hue-rotate(315deg) brightness(90%);">'
                     + '<div><div style="font-size:.8rem;font-weight:700;color:#b0163a;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is at full capacity.</div>'
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">' + room.occupancy + ' of ' + room.capacity + ' slots occupied. Choose a different room or increase capacity in <strong>Manage Rooms</strong>.</div></div></div>'
             };
@@ -2589,5 +2778,288 @@ function closeAllExportDropdowns() {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
 });
+
+var adminLogData   = [];
+var adminLogFilter = '';
+var adminDateFilter = 'all';
+
+function openAdminLogDrawer() {
+    document.getElementById('admin-log-drawer').classList.add('open');
+    document.getElementById('admin-log-backdrop').classList.add('open');
+    fetchAdminLogs();
+}
+
+function closeAdminLogDrawer() {
+    document.getElementById('admin-log-drawer').classList.remove('open');
+    document.getElementById('admin-log-backdrop').classList.remove('open');
+}
+
+function setAdminLogFilter(val) {
+    adminLogFilter = val;
+    document.getElementById('admin-log-filter-all').classList.toggle('active',     val === '');
+    document.getElementById('admin-log-filter-timein').classList.toggle('active',  val === 'time_in');
+    document.getElementById('admin-log-filter-timeout').classList.toggle('active', val === 'time_out');
+    renderAdminLogDrawer();
+}
+
+function toggleAdminDateDropdown() {
+    var menu    = document.getElementById('admin-date-dropdown-menu');
+    var chevron = document.getElementById('admin-date-dropdown-chevron');
+    var isOpen  = menu.style.display !== 'none';
+    menu.style.display      = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+function setAdminDateFilter(val) {
+    adminDateFilter = val;
+    var labels = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+    document.getElementById('admin-date-dropdown-label').textContent = labels[val] || 'All Dates';
+    document.getElementById('admin-date-dropdown-menu').style.display = 'none';
+    document.getElementById('admin-date-dropdown-chevron').style.transform = '';
+    document.querySelectorAll('.addf-item').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.val === val);
+    });
+    renderAdminLogDrawer();
+}
+
+function matchesAdminDateFilter(loggedAt) {
+    if (adminDateFilter === 'all') return true;
+    var d     = new Date(loggedAt);
+    var now   = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+    var weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+    if (adminDateFilter === 'today')     return d >= today;
+    if (adminDateFilter === 'yesterday') return d >= yesterday && d < today;
+    if (adminDateFilter === 'week')      return d >= weekStart;
+    return true;
+}
+
+async function fetchAdminLogs() {
+    document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Loading...</div>';
+    try {
+        var res = await fetch('/tenant-logs', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        adminLogData = await res.json();
+        renderAdminLogDrawer();
+    } catch(e) {
+        document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Failed to load logs.</div>';
+    }
+}
+
+function renderAdminLogDrawer() {
+    var q    = document.getElementById('admin-log-search').value.toLowerCase();
+    var data = adminLogData.filter(function(l) {
+        var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchDate   = matchesAdminDateFilter(l.logged_at);
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1
+            || (l.account_id  || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchDate && matchSearch;
+    });
+
+    document.getElementById('admin-log-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+    var list = document.getElementById('admin-log-list');
+
+    if (data.length === 0) {
+        list.innerHTML = '<div class="tad-empty"><img class="tad-empty-icon" src="{{ asset("icons/tenants.png") }}" alt="">No log records found.</div>';
+        return;
+    }
+
+    var inSvg  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>';
+    var outSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0163a" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
+    var grouped = {};
+    var order   = [];
+    data.forEach(function(l) {
+        var dt  = new Date(l.logged_at);
+        var key = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        if (!grouped[key]) { grouped[key] = []; order.push(key); }
+        grouped[key].push(l);
+    });
+
+    var today     = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    var yesterday = new Date(Date.now() - 86400000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+    var html = '';
+    var globalIdx = 0;
+    order.forEach(function(dateKey) {
+        var label = dateKey === today ? 'Today' : dateKey === yesterday ? 'Yesterday' : dateKey;
+        var inCount  = grouped[dateKey].filter(function(l) { return l.action === 'time_in'; }).length;
+        var outCount = grouped[dateKey].filter(function(l) { return l.action === 'time_out'; }).length;
+
+        html += '<div style="position:sticky;top:0;z-index:10;background:var(--soft-bg);padding:.55rem 0 .4rem;margin-bottom:.3rem;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">'
+                + '<div style="display:flex;align-items:center;gap:.5rem;">'
+                    + '<span style="display:inline-block;width:3px;height:13px;background:var(--gradient-pink);border-radius:2px;flex-shrink:0;"></span>'
+                    + '<span style="font-size:.72rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;">' + label + '</span>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.35rem;">'
+                    + (inCount  ? '<span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;background:#e8faf5;color:#1f9d69;border:1px solid #8ce0bb;">' + inCount  + ' in</span>'  : '')
+                    + (outCount ? '<span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;background:#fff0f4;color:#b0163a;border:1px solid #ffc2d1;">' + outCount + ' out</span>' : '')
+                + '</div>'
+            + '</div>'
+        + '</div>';
+
+        grouped[dateKey].forEach(function(l) {
+            var isIn      = l.action === 'time_in';
+            var roomLabel = (l.floor && l.room_number)
+                ? 'Floor ' + l.floor + ' \u00b7 Rm ' + l.room_number
+                : (l.room_number ? 'Rm ' + l.room_number : 'No room');
+            var timeOnly  = new Date(l.logged_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            html += '<div class="log-card" style="animation-delay:' + (globalIdx * 0.02) + 's;margin-bottom:.5rem;">'
+                + '<div class="log-action-icon ' + (isIn ? 'in' : 'out') + '">' + (isIn ? inSvg : outSvg) + '</div>'
+                + '<div class="log-info">'
+                    + '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>'
+                    + '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; '
+                        + '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>'
+                    + '</div>'
+                + '</div>'
+                + '<div class="log-time-col">' + timeOnly + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>'
+            + '</div>';
+            globalIdx++;
+        });
+    });
+
+    list.innerHTML = html;
+}
+
+function exportAdminLog() {
+    var q    = document.getElementById('admin-log-search').value.toLowerCase();
+    var data = adminLogData.filter(function(l) {
+        var matchFilter = adminLogFilter === '' || l.action === adminLogFilter;
+        var matchSearch = !q
+            || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
+            || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
+        return matchFilter && matchSearch;
+    });
+    var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
+    data.forEach(function(l) {
+        rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
+    });
+    var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a   = document.createElement('a');
+    a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'tenant-entry-exit-log.csv';
+    a.click();
+}
+
+function fmtDateTime(d) {
+    if (!d) return '\u2014';
+    var dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function printBillSlip(t) {
+    var tenantBills = billingData[String(t.tenant_id)] || [];
+    if (!Array.isArray(tenantBills)) { tenantBills = []; }
+
+    tenantBills.sort(function(a, b) {
+        return new Date(a.billing_month) - new Date(b.billing_month);
+    });
+
+    var total = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
+    var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
+
+    function fmtMonth(d) {
+        if (!d) return '\u2014';
+        var s = String(d).trim();
+        if (s.length === 7) s = s + '-01';
+        var dt = new Date(s + 'T00:00:00');
+        if (isNaN(dt.getTime())) return '\u2014';
+        return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+    function fmtDateSlip(d) {
+        if (!d) return '\u2014';
+        var s = String(d).trim();
+        if (s.length === 7) s = s + '-01';
+        var dt = new Date(s + 'T00:00:00');
+        if (isNaN(dt.getTime())) return '\u2014';
+        return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    var billRows = '';
+    if (tenantBills.length === 0) {
+        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:4mm 0;">No outstanding balance.</td></tr>';
+    } else {
+        tenantBills.forEach(function(b) {
+            var badgeColor = b.payment_status === 'overdue'
+                ? 'background:#ffe9ee;color:#e04867;border:1px solid #ff9db0;'
+                : 'background:#fff6dc;color:#c58a00;border:1px solid #f2cd63;';
+            billRows += '<tr>'
+                + '<td>' + fmtMonth(b.billing_month)
+                + '<br><span style="display:inline-block;font-size:5pt;font-weight:700;padding:.4mm 1.2mm;border-radius:3px;margin-top:.6mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
+                + '<td style="white-space:nowrap;">' + fmtDateSlip(b.due_date) + '</td>'
+                + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
+                + '</tr>';
+        });
+    }
+
+    var totalBlock = tenantBills.length > 0
+        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3mm;background:#E8175D;border-radius:4px;margin-bottom:2.5mm;">'
+            + '<span style="font-size:7.5pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
+            + '<span style="font-size:12pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
+            + '</div>'
+            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:3px;padding:1.8mm 2mm;font-size:6pt;color:#7a5400;line-height:1.4;margin-bottom:2.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference.</div>'
+        : '<div style="text-align:center;padding:3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:4px;margin-bottom:2.5mm;">'
+            + '<div style="font-size:9.5pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
+            + '<div style="font-size:6.5pt;color:#2e9e68;margin-top:.8mm;">All bills have been settled.</div>'
+            + '</div>';
+
+    var signatureBlock = tenantBills.length > 0
+        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:0;">'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:7mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
+            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:3mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
+            + '</div>'
+        : '';
+
+    var win = window.open('', '_blank', 'width=302,height=520');
+    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
+        + '<style>'
+        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (150 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
+        + '* { box-sizing: border-box; margin: 0; padding: 0; }'
+        + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
+        + '.slip { width: 80mm; }'
+        + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
+        + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
+        + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
+        + 'thead th:last-child { text-align: right; }'
+        + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
+        + 'tbody tr:last-child td { border-bottom: none; }'
+        + '@media print { html, body { height: auto; } }'
+        + '</style>'
+        + '</head><body>'
+        + '<div class="slip">'
+        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
+            + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
+            + '<div style="font-size:10.5pt;font-weight:800;margin-top:.8mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
+            + '<div style="font-size:6.5pt;opacity:.82;margin-top:.4mm;">DormEase Billing System</div>'
+        + '</div>'
+        + '<div class="slip-inner">'
+        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:4px;padding:2.5mm 3mm;margin-bottom:2.5mm;">'
+            + '<div style="font-size:10pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
+            + '<div style="font-size:6.5pt;color:#a0405e;margin-top:.8mm;display:flex;flex-direction:column;gap:.5mm;">'
+                + '<span>Account ID: <strong>' + (t.account_id || '\u2014') + '</strong></span>'
+                + '<span>Room: <strong>' + floorRoom + '</strong> &nbsp;&middot;&nbsp; ' + (t.stay_type || 'N/A') + '</span>'
+                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '\u2014') + '</strong></span>'
+            + '</div>'
+        + '</div>'
+        + (tenantBills.length > 0 ? '<div style="font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.8mm;padding-bottom:1.2mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
+        + (tenantBills.length > 0 ? '<table><thead><tr><th>Billing Period</th><th>Due Date</th><th>Amount</th></tr></thead><tbody>' + billRows + '</tbody></table>' : billRows)
+        + totalBlock
+        + signatureBlock
+        + '<div style="padding-top:2.5mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
+            + '<div style="font-size:5.5pt;color:#b06080;">Issued: ' + today + '</div>'
+            + '<div style="font-size:5.5pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
+        + '</div>'
+        + '</div>'
+        + '</div>'
+        + '<script>window.onload = function() { window.print(); };<\/script>'
+        + '</body></html>');
+    win.document.close();
+}
 </script>
 @endsection

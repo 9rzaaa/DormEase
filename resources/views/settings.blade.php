@@ -475,6 +475,11 @@
                                 'desc'  => 'When a tenant submits a new maintenance or repair request.',
                                 'icon'  => 'maintenance',
                             ],
+                            'maintenance_resubmission' => [
+                                'label' => 'Maintenance Photo Resubmission',
+                                'desc'  => 'When a tenant resubmits a photo for an existing maintenance request.',
+                                'icon'  => 'maintenance',
+                            ],
                             'emergency_new'    => [
                                 'label' => 'Emergency Report Filed',
                                 'desc'  => 'When a front desk staff or tenant logs a new emergency alert.',
@@ -725,6 +730,7 @@
     }
     const DEFAULTS = {
         maintenance_new:  true,
+        maintenance_resubmission: true,
         emergency_new:    true,
         visitor_checkin:  false,
         visitor_checkout: false,
