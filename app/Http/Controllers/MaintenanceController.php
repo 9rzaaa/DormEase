@@ -59,7 +59,12 @@ class MaintenanceController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'resolvedArchive', 'deletedArchive'));
+        $cancelledArchive = ArchivedMaintReq::where('archive_type', 'cancelled')
+            ->orderByDesc('archived_at')
+            ->get()
+            ->map(fn($r) => $this->formatArchive($r));
+
+        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'resolvedArchive', 'deletedArchive', 'cancelledArchive'));
     }
 
     private function formatArchive(ArchivedMaintReq $r): array
