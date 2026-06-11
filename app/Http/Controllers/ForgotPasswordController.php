@@ -25,9 +25,8 @@ class ForgotPasswordController extends Controller
     public function reset(Request $request)
     {
         $request->validate([
-            'email'                 => 'required|email',
-            'password'              => 'required|min:8|confirmed',
-            'password_confirmation' => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|min:8|confirmed',
         ]);
         $staff = Staff::where('email', $request->email)
             ->where('role', 'admin')
@@ -46,7 +45,7 @@ class ForgotPasswordController extends Controller
                 'message'       => 'This is your current password. Please choose a different one.',
             ]);
         }
-        $staff->update([
+        $staff->updateQuietly([
             'password_hash'    => Hash::make($request->password),
             'is_temp_password' => false,
         ]);

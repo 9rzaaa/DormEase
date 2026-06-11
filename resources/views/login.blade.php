@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>DormEase: Login</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -1197,7 +1198,7 @@
         <span class="role-label">Sign in as</span>
 
         <div class="role-row">
-            <button type="button" class="role-btn active" id="role-admin" onclick="setRole('admin')">
+            <button type="button" class="role-btn {{ old('role', 'admin') === 'admin' ? 'active' : '' }}" id="role-admin" onclick="setRole('admin')">
                 <div class="role-icon">
                     <img src="{{ asset('icons/admin.png') }}" alt="Admin">
                 </div>
@@ -1207,7 +1208,7 @@
                 </div>
             </button>
 
-            <button type="button" class="role-btn" id="role-frontdesk" onclick="setRole('frontdesk')">
+            <button type="button" class="role-btn {{ old('role') === 'frontdesk' ? 'active' : '' }}" id="role-frontdesk" onclick="setRole('frontdesk')">
                 <div class="role-icon">
                     <img src="{{ asset('icons/staff.png') }}" alt="Front Desk">
                 </div>
@@ -1221,7 +1222,7 @@
         <form method="POST" action="/login">
             @csrf
 
-            <input type="hidden" name="role" id="role-input" value="admin">
+            <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
 
             @if ($errors->any())
                 <div class="de-alert-error">
@@ -1491,7 +1492,7 @@
         var icon  = document.getElementById('pw-eye-icon');
         var show  = input.type === 'password';
         input.type = show ? 'text' : 'password';
-        icon.src   = show ? "{{ asset('icons/eye.png') }}" : "{{ asset('icons/eye-off.png') }}";
+        icon.src   = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
     }
 
     function openFP() {
