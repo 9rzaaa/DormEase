@@ -41,7 +41,7 @@ Route::get('/login', function () {
             : redirect()->route('dashboard');
     }
     return view('login');
-})->name('login');
+})->name('login')->middleware('throttle:20,1');
 
 Route::post('/login', function () {
     request()->validate([
@@ -57,20 +57,20 @@ Route::post('/login', function () {
     $user = \App\Models\Staff::where('email', $email)->first();
 
     if (!$user || !\Illuminate\Support\Facades\Hash::check($password, $user->password_hash)) {
-        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
+        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput(request()->only('email', 'role'));
     }
 
     $staffRoles = ['frontdesk'];
     $adminRoles = ['admin', 'secretary'];
     if (in_array($user->role, $adminRoles, true) && $role !== 'admin') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
     }
     if (in_array($user->role, $staffRoles, true) && $role !== 'frontdesk') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput();
+        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
     }
 
     if (! ($user->is_active ?? false)) {
-        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput();
+        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput(request()->only('email', 'role'));
     }
 
     Auth::guard('staff')->login($user, request()->boolean('remember'));
@@ -117,7 +117,7 @@ Route::post('/login', function () {
         'duty_status'    => $dutyStatus,
     ]);
 
-    if ($role === 'frontdesk' && $user->is_temp_password) {
+    if ($user->is_temp_password) {
         session()->flash('prompt_temp_password', true);
     }
 

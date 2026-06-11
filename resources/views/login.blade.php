@@ -1246,6 +1246,8 @@
                         maxlength="255"
                         required
                         autofocus
+                        oninvalid="this.setCustomValidity('Please enter a valid email address (e.g. you@example.com)')"
+                        oninput="this.setCustomValidity('')"
                     >
                 </div>
             </div>
@@ -1280,6 +1282,9 @@
                         >
                     </button>
                 </div>
+                <div id="pw-hint" style="font-size:.73rem;color:var(--gray);margin-top:.3rem;display:none;">
+                    Must be at least 8 characters
+                </div>
             </div>
 
             <div class="field-row">
@@ -1290,8 +1295,7 @@
                 <a href="#" class="forgot" onclick="event.preventDefault(); openFP()">Forgot password?</a>
             </div>
 
-            <button type="submit" class="de-btn-primary">
-                <span>&#8594;</span>
+            <button type="submit" class="de-btn-primary" id="login-btn">
                 Sign In
             </button>
         </form>
@@ -1479,11 +1483,6 @@
 
 
 <script>
-    (function () {
-    var saved = document.getElementById('role-input').value;
-    if (saved) setRole(saved);
-})();
-
     var fpAdminEmail = '';
 
     function setRole(role) {
@@ -1493,6 +1492,11 @@
         document.getElementById('role-input').value = role;
         document.querySelector('.eyebrow').textContent = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
     }
+
+    (function () {
+        var saved = document.getElementById('role-input').value;
+        if (saved) setRole(saved);
+    })();
 
     function togglePw() {
         var input = document.getElementById('password');
@@ -1701,6 +1705,49 @@
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
+    document.getElementById('email').addEventListener('blur', function () {
+        var val = this.value.trim();
+        if (!val) return;
+        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        if (!valid) {
+            var errorBox = document.getElementById('js-email-error');
+            if (!errorBox) {
+                errorBox = document.createElement('div');
+                errorBox.id = 'js-email-error';
+                errorBox.className = 'de-alert-error';
+                errorBox.innerHTML = '<img src="{{ asset("icons/warning.png") }}" alt="Error"><span></span>';
+                this.closest('form').insertBefore(errorBox, this.closest('form').firstChild);
+            }
+            errorBox.querySelector('span').textContent = 'Please enter a valid email address (e.g. you@example.com)';
+            errorBox.style.display = 'flex';
+        }
+    });
+
+    document.getElementById('email').addEventListener('input', function () {
+        var errorBox = document.getElementById('js-email-error');
+        if (errorBox) errorBox.style.display = 'none';
+    });
+
+    document.getElementById('password').addEventListener('input', function () {
+        var hint = document.getElementById('pw-hint');
+        if (this.value.length > 0 && this.value.length < 8) {
+            hint.style.display = 'block';
+            hint.style.color = 'var(--red)';
+        } else {
+            hint.style.display = 'none';
+        }
+    });
+
+    document.getElementById('login-btn').addEventListener('click', function (e) {
+        var form = this.closest('form');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        this.disabled = true;
+        this.innerHTML = '<span>Signing in\u2026</span>';
+        form.submit();
+    });
 </script>
 
 </body>
