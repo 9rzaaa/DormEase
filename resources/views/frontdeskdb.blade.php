@@ -649,7 +649,7 @@
                         };
                     @endphp
                     <div class="notif-item"
-                         onclick="openNotifDetail(this)"
+                         onclick="handleNotifClick(event, this)"
                          data-notif='{!! json_encode([
                              "id"      => $notif->notif_id,
                              "type"    => $notifTypeLabel,
