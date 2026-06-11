@@ -246,6 +246,8 @@
     .notif-dd-item:hover { background: var(--blush); }
     .notif-dd-item.unread { background: var(--pink-50); }
     .notif-dd-item.unread:hover { background: var(--pink-100); }
+    .notif-dd-item.reservation { background: #fffbf0; border-left: 3px solid #f0c840; }
+    .notif-dd-item.reservation:hover { background: #fff7e0; }
     .notif-unread-dot {
         width: 7px; height: 7px; border-radius: 50%;
         background: var(--hot-pink); flex-shrink: 0; margin-top: .35rem;
@@ -255,9 +257,16 @@
         background: var(--petal); border: 1.5px solid var(--baby-pink);
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
+    .notif-dd-icon.reservation-icon {
+        background: #fff8e0;
+        border-color: #f0c840;
+    }
     .notif-dd-icon img {
         width: 14px; height: 14px; object-fit: contain;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .notif-dd-icon.reservation-icon img {
+        filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(95%);
     }
     .notif-dd-body { flex: 1; min-width: 0; }
     .notif-dd-msg {
@@ -265,6 +274,12 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .notif-dd-time { font-size: .71rem; color: var(--ink-muted); margin-top: .15rem; }
+    .notif-dd-type-label {
+        display: inline-block; font-size: .65rem; font-weight: 800;
+        letter-spacing: .05em; text-transform: uppercase;
+        padding: .1rem .4rem; border-radius: 4px; margin-bottom: .2rem;
+    }
+    .notif-dd-type-label.reservation { background: #fff0c0; color: #9a6200; border: 1px solid #f0c840; }
     .notif-dropdown-footer {
         padding: .6rem 1rem; border-top: 1.5px solid var(--petal); text-align: center;
     }
@@ -412,9 +427,16 @@
         display: flex; align-items: center; justify-content: center;
         margin-bottom: 1rem; flex-shrink: 0;
     }
+    .notif-detail-icon-wrap.reservation {
+        background: #fff8e0;
+        border-color: #f0c840;
+    }
     .notif-detail-icon-wrap img {
         width: 26px; height: 26px; object-fit: contain;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .notif-detail-icon-wrap.reservation img {
+        filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(95%);
     }
     .notif-detail-message {
         font-size: 1rem; font-weight: 600; color: var(--ink); line-height: 1.55;
@@ -425,6 +447,10 @@
         background: var(--blush); border-radius: 10px;
         padding: .85rem 1rem; margin-bottom: 1.2rem;
         border: 1.5px solid var(--baby-pink);
+    }
+    .notif-detail-meta.reservation {
+        background: #fffbf0;
+        border-color: #f0c840;
     }
     .notif-detail-meta-row {
         display: flex; align-items: center; gap: .6rem;
@@ -438,6 +464,10 @@
         color: var(--white); font-size: .87rem; font-weight: 800; cursor: pointer;
         transition: opacity .2s, transform .15s; text-decoration: none;
         display: inline-flex; align-items: center; gap: .4rem;
+    }
+    .notif-view-btn.reservation {
+        background: linear-gradient(135deg, #f0c840, #c8960c);
+        color: #2d1a00;
     }
     .notif-view-btn:hover { opacity: .9; transform: translateY(-1px); }
 
@@ -594,32 +624,34 @@
                             @if(isset($notifications) && $notifications->count())
                                 @foreach($notifications as $notif)
                                     @php
+                                        $isReservation = $notif->type === 'tenant_reserved';
+
                                         $notifIcon = match(true) {
-                                        str_starts_with($notif->type, 'maintenance')  => 'maintenance',
-                                        str_starts_with($notif->type, 'emergency')    => 'warn',
-                                        str_starts_with($notif->type, 'billing')      => 'billing',
-                                        str_starts_with($notif->type, 'document')     => 'nav-docu',
-                                        str_starts_with($notif->type, 'announcement') => 'nav-announ',
-                                        str_starts_with($notif->type, 'visitor')      => 'nav-visit',
-                                        $notif->type === 'tenant_reserved'            => 'pending',
-                                        str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
-                                        default                                        => 'bell',
+                                            $notif->type === 'tenant_reserved'            => 'pending',
+                                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                                            str_starts_with($notif->type, 'emergency')    => 'warn',
+                                            str_starts_with($notif->type, 'billing')      => 'billing',
+                                            str_starts_with($notif->type, 'document')     => 'nav-docu',
+                                            str_starts_with($notif->type, 'announcement') => 'nav-announ',
+                                            str_starts_with($notif->type, 'visitor')      => 'nav-visit',
+                                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                                            default                                        => 'bell',
                                         };
+
                                         $notifTypeLabel = match(true) {
+                                            $notif->type === 'tenant_reserved'            => 'reservation',
                                             str_starts_with($notif->type, 'maintenance')  => 'maintenance',
                                             str_starts_with($notif->type, 'emergency')    => 'emergency',
                                             str_starts_with($notif->type, 'billing')      => 'billing',
                                             str_starts_with($notif->type, 'document')     => 'document',
                                             str_starts_with($notif->type, 'announcement') => 'announcement',
                                             str_starts_with($notif->type, 'visitor')      => 'visitor',
-                                            $notif->type === 'tenant_reserved'            => 'reservation',
                                             str_starts_with($notif->type, 'tenant')       => 'tenant',
                                             default                                        => 'general',
                                         };
-                                        @endphp
+                                    @endphp
 
-                                    <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
-                                         style="{{ $notif->type === 'tenant_reserved' ? 'background:#fffbf0;border-left:3px solid #f0c840;' : '' }}"
+                                    <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
                                          onclick="openNotifDetail({
                                              id:      {{ $notif->notif_id }},
                                              type:    '{{ $notifTypeLabel }}',
@@ -635,12 +667,15 @@
                                         @else
                                             <div style="width:7px;flex-shrink:0;"></div>
                                         @endif
-                                        <div class="notif-dd-icon">
+                                        <div class="notif-dd-icon {{ $isReservation ? 'reservation-icon' : '' }}">
                                             <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
                                                  alt=""
                                                  onerror="this.src='{{ asset('icons/bell.png') }}'">
                                         </div>
                                         <div class="notif-dd-body">
+                                            @if($isReservation)
+                                                <div class="notif-dd-type-label reservation">New Reservation</div>
+                                            @endif
                                             <div class="notif-dd-msg">{{ $notif->message }}</div>
                                             <div class="notif-dd-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
                                         </div>
@@ -729,13 +764,13 @@
         <div id="notif-detail-badge" class="notif-detail-type-badge general">General</div>
 
         <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;">
-            <div class="notif-detail-icon-wrap">
+            <div class="notif-detail-icon-wrap" id="notif-detail-icon-wrap">
                 <img id="notif-detail-icon" src="" alt="">
             </div>
             <div id="notif-detail-message" class="notif-detail-message" style="padding-top:.3rem;"></div>
         </div>
 
-        <div class="notif-detail-meta">
+        <div class="notif-detail-meta" id="notif-detail-meta">
             <div class="notif-detail-meta-row">
                 <strong>When</strong>
                 <span id="notif-detail-time"></span>
@@ -788,14 +823,19 @@
         announcement: 'Announcement',
         visitor:      'Visitor',
         tenant:       'Tenant',
-        reservation:  'Reservation',
+        reservation:  'New Reservation',
         general:      'General',
     };
 
     function openNotifDetail(notif) {
+        var isReservation = notif.type === 'reservation';
+
         var badge = document.getElementById('notif-detail-badge');
         badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
         badge.textContent = typeLabels[notif.type] || 'General';
+
+        var iconWrap = document.getElementById('notif-detail-icon-wrap');
+        iconWrap.className = 'notif-detail-icon-wrap' + (isReservation ? ' reservation' : '');
 
         var icon = document.getElementById('notif-detail-icon');
         icon.src = notif.icon;
@@ -803,6 +843,9 @@
 
         document.getElementById('notif-detail-message').textContent = notif.message;
         document.getElementById('notif-detail-time').textContent = notif.time + ' (' + notif.ago + ')';
+
+        var metaEl = document.getElementById('notif-detail-meta');
+        metaEl.className = 'notif-detail-meta' + (isReservation ? ' reservation' : '');
 
         var statusEl = document.getElementById('notif-detail-status');
         if (notif.isRead) {
@@ -818,6 +861,7 @@
             document.getElementById('notif-detail-url-text').textContent = notif.url;
             viewBtn.style.display = 'inline-flex';
             viewBtn.href = notif.url;
+            viewBtn.className = 'notif-view-btn' + (isReservation ? ' reservation' : '');
         } else {
             urlRow.style.display = 'none';
             viewBtn.style.display = 'none';
