@@ -45,19 +45,19 @@
         display: flex;
         min-height: 100vh;
         overflow: hidden;
-        background: linear-gradient(125deg, #FF2D78 0%, #E8175D 30%, #c0124f 55%, #fdf0f5 100%);
+        background: #fff;
     }
 
     .left {
         flex: 1;
-        background: transparent;
+        background: linear-gradient(160deg, #FF2D78 0%, #E8175D 45%, #a50e37 100%);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         padding: 3rem;
         position: relative;
         overflow: hidden;
-        z-index: 1;
+        z-index: 2;
     }
 
     .left::before {
@@ -68,6 +68,17 @@
         background: transparent;
         top: -120px; left: -120px;
         pointer-events: none;
+    }
+
+    .panel-bleed {
+        position: absolute;
+        top: 0;
+        right: -120px;
+        width: 220px;
+        height: 100%;
+        background: linear-gradient(to right, #a50e37 0%, rgba(165,14,55,.55) 35%, rgba(232,23,93,.18) 65%, transparent 100%);
+        pointer-events: none;
+        z-index: 3;
     }
 
     .left::after {
@@ -91,19 +102,19 @@
 
     .ring-1 {
         width: 220px; height: 220px;
-        border: 1.5px dashed rgba(255,255,255,.65);
+        border: 1.5px dashed rgba(255,255,255,.8);
         animation: spinSlow 22s linear infinite;
     }
 
     .ring-2 {
         width: 360px; height: 360px;
-        border: 1px dashed rgba(255,255,255,.38);
+        border: 1px dashed rgba(255,255,255,.55);
         animation: spinSlow 38s linear infinite reverse;
     }
 
     .ring-3 {
         width: 500px; height: 500px;
-        border: 1px dashed rgba(255,255,255,.22);
+        border: 1px dashed rgba(255,255,255,.35);
         animation: spinSlow 55s linear infinite;
     }
 
@@ -147,7 +158,6 @@
         object-fit: contain;
         object-position: bottom;
         display: block;
-        filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
         position: absolute;
         bottom: 0;
         left: 0;
@@ -174,8 +184,8 @@
         content: '';
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        height: 140px;
-        background: linear-gradient(to top, #c0124f 0%, transparent 100%);
+        height: 160px;
+        background: linear-gradient(to top, #a50e37 0%, #a50e3700 100%);
         pointer-events: none;
         z-index: 2;
     }
@@ -347,11 +357,11 @@
     .right {
         width: 500px;
         flex-shrink: 0;
-        background:
-            radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px),
-            linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 30%, rgba(255,255,255,.82) 100%);
-        background-size: 22px 22px, 100% 100%;
-        backdrop-filter: blur(0px);
+        background-color: #fdf6f9;
+        background-image:
+            radial-gradient(ellipse at 0% 50%, rgba(232,23,93,.11) 0%, transparent 52%),
+            radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
+        background-size: 100% 100%, 22px 22px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -363,9 +373,9 @@
     .right::before {
         content: '';
         position: absolute;
-        top: -40px; right: -40px;
-        width: 360px; height: 360px;
-        background: radial-gradient(ellipse at center, rgba(255,255,255,.18) 0%, transparent 65%);
+        top: -60px; right: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(ellipse at center, rgba(255,176,206,.2) 0%, transparent 68%);
         border-radius: 50%;
         pointer-events: none;
         animation: orbDrift1 12s ease-in-out infinite;
@@ -374,9 +384,9 @@
     .right::after {
         content: '';
         position: absolute;
-        bottom: -40px; left: -40px;
-        width: 300px; height: 300px;
-        background: radial-gradient(ellipse at center, rgba(255,255,255,.12) 0%, transparent 65%);
+        bottom: -60px; left: -60px;
+        width: 280px; height: 280px;
+        background: radial-gradient(ellipse at center, rgba(232,23,93,.08) 0%, transparent 68%);
         border-radius: 50%;
         pointer-events: none;
         animation: orbDrift2 16s ease-in-out infinite;
@@ -1443,6 +1453,7 @@
 
 <div class="left" id="left-panel">
 
+    <div class="panel-bleed"></div>
     <div class="ring ring-1"></div>
     <div class="ring ring-2"></div>
     <div class="ring ring-3"></div>
