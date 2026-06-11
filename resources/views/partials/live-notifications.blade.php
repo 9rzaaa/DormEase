@@ -67,24 +67,39 @@
 
             list.innerHTML = '';
             notifications.forEach(function(notif) {
+                var isReservation = notif.type === 'reservation';
+
                 var item = document.createElement('div');
-                item.className = 'notif-dd-item' + (notif.isRead ? '' : ' unread');
-                item.innerHTML =
-                    (notif.isRead
-                        ? '<div style="width:7px;flex-shrink:0;"></div>'
-                        : '<div class="notif-unread-dot"></div>') +
-                    '<div class="notif-dd-icon">' +
-                        '<img src="' + escapeHtml(notif.icon) + '" alt="" onerror="this.src=\'{{ asset("icons/bell.png") }}\'">' +
-                    '</div>' +
-                    '<div class="notif-dd-body">' +
-                        '<div class="notif-dd-msg">' + escapeHtml(notif.message) + '</div>' +
-                        '<div class="notif-dd-time">' + escapeHtml(notif.ago) + '</div>' +
-                    '</div>';
+                item.className = 'notif-dd-item'
+                    + (notif.isRead ? '' : ' unread')
+                    + (isReservation ? ' reservation' : '');
+
+                var dotHtml = notif.isRead
+                    ? '<div style="width:7px;flex-shrink:0;"></div>'
+                    : '<div class="notif-unread-dot"></div>';
+
+                var iconHtml = '<div class="notif-dd-icon' + (isReservation ? ' reservation-icon' : '') + '">'
+                    + '<img src="' + escapeHtml(notif.icon) + '" alt="" onerror="this.src=\'{{ asset("icons/bell.png") }}\'">'
+                    + '</div>';
+
+                var typeLabelHtml = isReservation
+                    ? '<div class="notif-dd-type-label reservation">New Reservation</div>'
+                    : '';
+
+                var bodyHtml = '<div class="notif-dd-body">'
+                    + typeLabelHtml
+                    + '<div class="notif-dd-msg">' + escapeHtml(notif.message) + '</div>'
+                    + '<div class="notif-dd-time">' + escapeHtml(notif.ago) + '</div>'
+                    + '</div>';
+
+                item.innerHTML = dotHtml + iconHtml + bodyHtml;
+
                 item.addEventListener('click', function() {
                     openNotifDetail(notif);
                     notif.isRead = true;
                     item.classList.remove('unread');
                 });
+
                 list.appendChild(item);
             });
         }
