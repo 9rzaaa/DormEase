@@ -881,11 +881,30 @@ tbody tr:hover { background: var(--soft-bg); }
     text-transform: uppercase;
 }
 
-.td-modal-pill.pill-status-active   { background: rgba(31,157,105,.3); border-color: rgba(140,224,187,.5); }
-.td-modal-pill.pill-status-pending  { background: rgba(200,150,12,.3); border-color: rgba(240,192,64,.5); }
-.td-modal-pill.pill-status-inactive { background: rgba(224,72,103,.3); border-color: rgba(255,155,176,.5); }
-.td-modal-pill.pill-status-reserved { background: rgba(59,111,212,.25); border-color: rgba(168,196,245,.5); }
-.td-modal-pill.pill-status-moveout  { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.3); }
+.td-modal-pill.pill-status-active {
+    background: rgba(31,157,105,.30);
+    border-color: rgba(140,224,187,.50);
+}
+
+.td-modal-pill.pill-status-pending {
+    background: rgba(200,150,12,.30);
+    border-color: rgba(240,192,64,.50);
+}
+
+.td-modal-pill.pill-status-inactive {
+    background: rgba(224,72,103,.30);
+    border-color: rgba(255,155,176,.50);
+}
+
+.td-modal-pill.pill-status-reserved {
+    background: rgba(154,98,0,.25);
+    border-color: rgba(240,200,64,.50);
+}
+
+.td-modal-pill.pill-status-moveout {
+    background: rgba(232,23,93,.18);
+    border-color: rgba(255,157,176,.40);
+}
 
 .td-modal-body {
     flex: 1;
@@ -1480,10 +1499,16 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="tad-list" id="log-list"></div>
     <div class="tad-footer">
         <div class="tad-count-label" id="log-count-label">0 records</div>
-        <button class="tad-export-btn" onclick="exportLog()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
-        </button>
+        <div class="export-dropdown" id="export-dropdown-log">
+            <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-log')">
+                <img src="{{ asset('icons/export.png') }}" alt="">
+                Export
+            </button>
+            <div class="export-menu" id="export-menu-log">
+                <button onclick="exportLog('csv'); closeAllExportDropdowns()">Export as CSV</button>
+                <button onclick="exportLog('pdf'); closeAllExportDropdowns()">Export as PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1958,15 +1983,59 @@ function renderLogDrawer() {
     list.innerHTML = html;
 }
 
-function exportLog() {
+function exportLog(format) {
     var q    = document.getElementById('log-search').value.toLowerCase();
     var data = logData.filter(function(l) {
         var matchFilter = logFilter === '' || l.action === logFilter;
+        var matchDate   = matchesLogDateFilter(l.logged_at);
         var matchSearch = !q
             || (l.first_name + ' ' + l.last_name).toLowerCase().indexOf(q) !== -1
             || (l.room_number || '').toLowerCase().indexOf(q) !== -1;
-        return matchFilter && matchSearch;
+        return matchFilter && matchDate && matchSearch;
     });
+
+    if (format === 'pdf') {
+        var win  = window.open('', '_blank');
+        var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
+        var rows = data.map(function(l) {
+            var isIn = l.action === 'time_in';
+            return '<tr>'
+                + '<td>' + l.first_name + ' ' + l.last_name + '</td>'
+                + '<td>' + (l.account_id || '') + '</td>'
+                + '<td>' + (l.floor ? 'Floor ' + l.floor : '') + '</td>'
+                + '<td>' + (l.room_number || '') + '</td>'
+                + '<td style="color:' + (isIn ? '#1f9d69' : '#b0163a') + ';font-weight:700;">' + (isIn ? 'Time In' : 'Time Out') + '</td>'
+                + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
+                + '<td>' + (l.logged_by || '') + '</td>'
+                + '</tr>';
+        }).join('');
+        var dateLabel = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle  = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
+        win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
+            + '<style>'
+            + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
+            + 'h2{color:#E8175D;margin:0 0 2px;font-size:16px}'
+            + '.sub{color:#888;font-size:11px;margin-bottom:4px}'
+            + '.meta{color:#b06080;font-size:10px;margin-bottom:16px}'
+            + 'table{width:100%;border-collapse:collapse}'
+            + 'thead tr{background:#fce8f1}'
+            + 'th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#E8175D;letter-spacing:.04em}'
+            + 'td{padding:7px 10px;border-bottom:1px solid #fce4ec;font-size:11px}'
+            + 'tbody tr:nth-child(even){background:#fff8fb}'
+            + '</style>'
+            + '</head><body>'
+            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
+            + '<div class="sub">Entry / Exit Log</div>'
+            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</div>'
+            + '<table><thead><tr>'
+            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th><th>Logged By</th>'
+            + '</tr></thead><tbody>' + rows + '</tbody></table>'
+            + '</body></html>');
+        win.document.close();
+        win.print();
+        return;
+    }
+
     var rows = [['Name', 'Account ID', 'Floor', 'Room', 'Action', 'Logged At', 'Logged By']];
     data.forEach(function(l) {
         rows.push([l.first_name + ' ' + l.last_name, l.account_id || '', l.floor || '', l.room_number || '', l.action, l.logged_at || '', l.logged_by || '']);
