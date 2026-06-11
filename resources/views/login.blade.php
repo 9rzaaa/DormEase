@@ -45,18 +45,18 @@
         display: flex;
         min-height: 100vh;
         overflow: hidden;
+        background: linear-gradient(125deg, #FF2D78 0%, #E8175D 30%, #c0124f 55%, #fdf0f5 100%);
     }
 
     .left {
         flex: 1;
-        background: linear-gradient(160deg, var(--bright-pink) 0%, var(--hot-pink) 45%, #b0103f 100%);
+        background: transparent;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         padding: 3rem;
         position: relative;
         overflow: hidden;
-        box-shadow: 8px 0 40px rgba(176,16,63,.28);
         z-index: 1;
     }
 
@@ -91,19 +91,19 @@
 
     .ring-1 {
         width: 220px; height: 220px;
-        border: 1.5px dashed rgba(255,255,255,.8);
+        border: 1.5px dashed rgba(255,255,255,.65);
         animation: spinSlow 22s linear infinite;
     }
 
     .ring-2 {
         width: 360px; height: 360px;
-        border: 1px dashed rgba(255,255,255,.55);
+        border: 1px dashed rgba(255,255,255,.38);
         animation: spinSlow 38s linear infinite reverse;
     }
 
     .ring-3 {
         width: 500px; height: 500px;
-        border: 1px dashed rgba(255,255,255,.35);
+        border: 1px dashed rgba(255,255,255,.22);
         animation: spinSlow 55s linear infinite;
     }
 
@@ -174,8 +174,8 @@
         content: '';
         position: absolute;
         bottom: 0; left: 0; right: 0;
-        height: 120px;
-        background: linear-gradient(to top, #b0103f 0%, transparent 100%);
+        height: 140px;
+        background: linear-gradient(to top, #c0124f 0%, transparent 100%);
         pointer-events: none;
         z-index: 2;
     }
@@ -347,11 +347,11 @@
     .right {
         width: 500px;
         flex-shrink: 0;
-        background-color: #fdf6f9;
-        background-image:
-            radial-gradient(ellipse at left center, rgba(232,23,93,.13) 0%, transparent 55%),
-            radial-gradient(circle, rgba(232,23,93,.07) 1px, transparent 1px);
-        background-size: 100% 100%, 22px 22px;
+        background:
+            radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1px),
+            linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 30%, rgba(255,255,255,.82) 100%);
+        background-size: 22px 22px, 100% 100%;
+        backdrop-filter: blur(0px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -363,9 +363,9 @@
     .right::before {
         content: '';
         position: absolute;
-        top: -60px; right: -60px;
-        width: 320px; height: 320px;
-        background: radial-gradient(ellipse at center, rgba(255,176,206,.22) 0%, transparent 68%);
+        top: -40px; right: -40px;
+        width: 360px; height: 360px;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,.18) 0%, transparent 65%);
         border-radius: 50%;
         pointer-events: none;
         animation: orbDrift1 12s ease-in-out infinite;
@@ -374,9 +374,9 @@
     .right::after {
         content: '';
         position: absolute;
-        bottom: -60px; left: -60px;
-        width: 280px; height: 280px;
-        background: radial-gradient(ellipse at center, rgba(232,23,93,.10) 0%, transparent 68%);
+        bottom: -40px; left: -40px;
+        width: 300px; height: 300px;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,.12) 0%, transparent 65%);
         border-radius: 50%;
         pointer-events: none;
         animation: orbDrift2 16s ease-in-out infinite;
@@ -392,32 +392,21 @@
         50%      { transform: translate(14px,-18px) scale(1.06); }
     }
 
-    .right-edge-glow {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 6px;
-        height: 100%;
-        background: linear-gradient(to right, rgba(232,23,93,.18), transparent);
-        pointer-events: none;
-        z-index: 0;
-    }
-
     .form-wrap {
         width: 100%;
         max-width: 380px;
         position: relative;
         z-index: 1;
-        background: rgba(255,255,255,.92);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        background: rgba(255,255,255,.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-radius: 22px;
         padding: 2.4rem 2.2rem;
         box-shadow:
-            0 4px 40px rgba(232,23,93,.10),
-            0 1.5px 6px rgba(0,0,0,.05),
-            inset 0 1px 0 rgba(255,255,255,.95);
-        border: 1px solid rgba(255,176,206,.28);
+            0 8px 48px rgba(232,23,93,.14),
+            0 2px 8px rgba(0,0,0,.06),
+            inset 0 1px 0 rgba(255,255,255,1);
+        border: 1px solid rgba(255,255,255,.7);
     }
 
     .form-wrap > * {
@@ -1500,7 +1489,6 @@
 
 
 <div class="right">
-    <div class="right-edge-glow"></div>
     <div class="form-wrap">
 
         <div class="form-header">
