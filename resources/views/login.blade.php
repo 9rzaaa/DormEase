@@ -359,8 +359,6 @@
         padding: 1.5rem 3.5rem 3rem;
         position: relative;
         overflow: hidden;
-        overflow-y: auto;
-        min-height: 100vh;
     }
 
     .right::before {
@@ -426,7 +424,7 @@
     .form-wrap > *:nth-child(6) { animation-delay: .40s; }
     .form-wrap > *:nth-child(7) { animation-delay: .47s; }
 
-    .form-header { margin-bottom: 1.8rem; }
+    .form-header { margin-bottom: 1.2rem; }
 
     .form-header-eyebrow {
         opacity: 0;
@@ -561,7 +559,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: .6rem;
-        margin-bottom: 1.6rem;
+        margin-bottom: 1.1rem;
     }
 
     .role-btn {
@@ -681,7 +679,7 @@
 
     .role-btn.active .role-name { color: var(--hot-pink); }
 
-    .field { margin-bottom: 1.15rem; }
+    .field { margin-bottom: .9rem; }
 
     .field label {
         display: block;
@@ -754,7 +752,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1.2rem;
+        margin-bottom: .9rem;
     }
 
     .remember {
@@ -901,11 +899,6 @@
         font-weight: 600;
         margin-bottom: .9rem;
         animation: slideDown .2s ease;
-        position: absolute;
-        top: -3.2rem;
-        left: 0;
-        right: 0;
-        z-index: 10;
     }
 
     .de-alert-error img {
