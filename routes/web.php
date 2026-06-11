@@ -272,6 +272,7 @@ Route::middleware('auth:staff')->group(function () {
 
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
+    Route::get('/live-alerts', [NotificationController::class, 'liveAlerts'])->name('live-alerts');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
