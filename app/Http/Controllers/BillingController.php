@@ -100,44 +100,44 @@ class BillingController extends Controller
 
                 $tenantRows = $roomTenants->map(function ($tenant) use ($billings) {
 
-                $billing = $billings->get($tenant->tenant_id);
+                    $billing = $billings->get($tenant->tenant_id);
 
-                if ($tenant->status === 'inactive') {
-                    $paymentStatus = 'inactive-tenant';
-                    $dotClass = 'dot-gray';
-                } else {
-                    $paymentStatus = $billing
-                        ? strtolower($billing->payment_status ?? 'unpaid')
-                        : 'not billed';
+                    if ($tenant->status === 'inactive') {
+                        $paymentStatus = 'inactive-tenant';
+                        $dotClass = 'dot-gray';
+                    } else {
+                        $paymentStatus = $billing
+                            ? strtolower($billing->payment_status ?? 'unpaid')
+                            : 'not billed';
 
-                    $dotClass = match ($paymentStatus) {
-                        'paid'       => 'dot-green',
-                        'overdue'    => 'dot-red',
-                        'rejected'   => 'dot-red',
-                        'not billed' => 'dot-gray',
-                        default      => 'dot-orange',
-                    };
-                }
+                        $dotClass = match ($paymentStatus) {
+                            'paid'       => 'dot-green',
+                            'overdue'    => 'dot-red',
+                            'rejected'   => 'dot-red',
+                            'not billed' => 'dot-gray',
+                            default      => 'dot-orange',
+                        };
+                    }
 
-                return [
-                    'billing_id'             => $billing?->billing_id,
-                    'tenant_id'              => $tenant->tenant_id,
-                    'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
-                    'is_temp_password'       => (bool) $tenant->is_temp_password,
-                    'room_share'             => $billing?->room_share ?? 0,
-                    'payment_status'         => $paymentStatus,
-                    'proof_of_payment'       => $billing?->proof_of_payment,
-                    'proof_of_payment_url'   => $billing?->proof_of_payment
-                        ? Storage::disk('public')->url($billing->proof_of_payment)
-                        : null,
-                    'payment_reference_code' => $billing?->payment_reference_code,
-                    'payment_submitted_at'   => $billing?->payment_submitted_at
-                        ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
-                        : null,
-                    'rejection_reason'       => $billing?->rejection_reason,
-                    'dot_class'              => $dotClass,
-                ];
-            })->values()->toArray();
+                    return [
+                        'billing_id'             => $billing?->billing_id,
+                        'tenant_id'              => $tenant->tenant_id,
+                        'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
+                        'is_temp_password'       => (bool) $tenant->is_temp_password,
+                        'room_share'             => $billing?->room_share ?? 0,
+                        'payment_status'         => $paymentStatus,
+                        'proof_of_payment'       => $billing?->proof_of_payment,
+                        'proof_of_payment_url'   => $billing?->proof_of_payment
+                            ? Storage::disk('public')->url($billing->proof_of_payment)
+                            : null,
+                        'payment_reference_code' => $billing?->payment_reference_code,
+                        'payment_submitted_at'   => $billing?->payment_submitted_at
+                            ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
+                            : null,
+                        'rejection_reason'       => $billing?->rejection_reason,
+                        'dot_class'              => $dotClass,
+                    ];
+                })->values()->toArray();
 
                 if (
                     $isDueDatePassed
@@ -324,7 +324,6 @@ class BillingController extends Controller
                 'success' => true,
                 'message' => 'Water billing logged successfully.'
             ]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -494,57 +493,6 @@ class BillingController extends Controller
         return response()->json([
             'success'    => true,
             'room_share' => $share
-        ]);
-    }
-
-    public function requestResubmission(Request $request)
-    {
-        $request->validate([
-            'billing_id' => 'required|integer|exists:water_billing,billing_id',
-            'reason'     => 'required|string|max:500',
-        ]);
-
-        $billing = WaterBilling::findOrFail($request->billing_id);
-
-        $oldProof = $billing->proof_of_payment;
-
-        $billing->update([
-            'proof_of_payment'       => null,
-            'payment_reference_code' => null,
-            'payment_submitted_at'   => null,
-            'payment_status'         => 'pending',
-            'rejection_reason'       => $request->reason,
-        ]);
-
-        if ($oldProof) {
-            Storage::disk('public')->delete($oldProof);
-        }
-
-        Payment::where('billing_id', $billing->billing_id)
-            ->where('tenant_id', $billing->tenant_id)
-            ->update(['status' => 'pending']);
-
-        $tenant     = Tenant::find($billing->tenant_id);
-        $reasonText = $request->reason;
-
-        NotificationHelper::sendToAll(
-            type: 'billing_overdue',
-            message: "Resubmission requested from {$tenant->first_name} {$tenant->last_name}. Reason: {$reasonText}",
-            ref_id: $billing->billing_id,
-        );
-
-        app(TenantPushNotificationService::class)->sendToTenant(
-            tenant: $billing->tenant_id,
-            type: 'payment',
-            title: 'Proof resubmission required',
-            body: "Please resubmit your proof of payment. Reason: {$reasonText}",
-            refId: $billing->billing_id,
-            route: '/tenant/water-bill',
-        );
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Resubmission requested successfully.',
         ]);
     }
 }
