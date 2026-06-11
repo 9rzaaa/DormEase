@@ -729,13 +729,13 @@
         <div id="notif-detail-badge" class="notif-detail-type-badge general">General</div>
 
         <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;">
-            <div class="notif-detail-icon-wrap">
+            <div class="notif-detail-icon-wrap" id="notif-detail-icon-wrap">
                 <img id="notif-detail-icon" src="" alt="">
             </div>
             <div id="notif-detail-message" class="notif-detail-message" style="padding-top:.3rem;"></div>
         </div>
 
-        <div class="notif-detail-meta">
+        <div class="notif-detail-meta" id="notif-detail-meta">
             <div class="notif-detail-meta-row">
                 <strong>When</strong>
                 <span id="notif-detail-time"></span>
