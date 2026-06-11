@@ -464,7 +464,7 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        right: -40px;
+        right: -80px;
         left: auto;
         transform: translateY(-60%) scale(0.4) rotate(18deg);
         width: 38px;
