@@ -58,6 +58,7 @@
         position: relative;
         overflow: hidden;
         z-index: 2;
+        box-shadow: 6px 0 48px rgba(232,23,93,.22);
     }
 
     .left::before {
@@ -70,16 +71,6 @@
         pointer-events: none;
     }
 
-    .panel-bleed {
-        position: absolute;
-        top: 0;
-        right: -120px;
-        width: 220px;
-        height: 100%;
-        background: linear-gradient(to right, #a50e37 0%, rgba(165,14,55,.55) 35%, rgba(232,23,93,.18) 65%, transparent 100%);
-        pointer-events: none;
-        z-index: 3;
-    }
 
     .left::after {
         content: '';
@@ -359,7 +350,7 @@
         flex-shrink: 0;
         background-color: #fdf6f9;
         background-image:
-            radial-gradient(ellipse at 0% 50%, rgba(232,23,93,.11) 0%, transparent 52%),
+            linear-gradient(to right, rgba(232,23,93,.08) 0%, transparent 38%),
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         display: flex;
@@ -1453,7 +1444,6 @@
 
 <div class="left" id="left-panel">
 
-    <div class="panel-bleed"></div>
     <div class="ring ring-1"></div>
     <div class="ring ring-2"></div>
     <div class="ring ring-3"></div>
