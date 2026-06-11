@@ -118,7 +118,7 @@ Route::post('/login', function () {
     return in_array($user->role, $staffRoles, true)
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
-});
+})->middleware('throttle:5,1');
 
 Route::post('/logout', function () {
     $user = Auth::guard('staff')->user();
@@ -144,8 +144,8 @@ Route::post('/frontdesk/profile/dismiss-temp-password', function () {
 
 
 // forgot pass
-Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify');
-Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset');
+Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify')->middleware('throttle:5,1');
+Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
 Route::middleware('auth:staff')->group(function () {
