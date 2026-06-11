@@ -1484,7 +1484,7 @@
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
-            <button class="btn-post" onclick="openModal('post-modal')">
+            <button class="btn-post" onclick="openPostModal()">
                 <img src="{{ asset('icons/announce.png') }}" alt=""> Post New Announcement
             </button>
         </div>
@@ -1499,25 +1499,25 @@
                     {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
                 @endif
             </div>
-            <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openModal('post-modal')" readonly>
-            <button class="compose-close" onclick="openModal('post-modal')">
+            <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openPostModal()" readonly>
+            <button class="compose-close" onclick="openPostModal()">
                 <img src="{{ asset('icons/edit.png') }}" style="width:16px;height:16px;opacity:.5;" alt="">
             </button>
         </div>
-        <textarea class="compose-body-input" id="quick-desc" placeholder="What do you want to announce?" rows="2" onclick="openModal('post-modal')" readonly></textarea>
+        <textarea class="compose-body-input" id="quick-desc" placeholder="What do you want to announce?" rows="2" onclick="openPostModal()" readonly></textarea>
         <div class="compose-footer">
             <div class="compose-tools">
-                <button class="compose-tool-btn" title="Priority" onclick="openModal('post-modal')">
+                <button class="compose-tool-btn" title="Priority" onclick="openPostModal()">
                     <img src="{{ asset('icons/flag.png') }}" alt="">
                 </button>
-                <button class="compose-tool-btn" title="Attach file" onclick="openModal('post-modal')">
+                <button class="compose-tool-btn" title="Attach file" onclick="openPostModal()">
                     <img src="{{ asset('icons/attach.png') }}" alt="">
                 </button>
-                <button class="compose-tool-btn" onclick="openModal('post-modal')" title="Schedule announcement">
+                <button class="compose-tool-btn" onclick="openPostModal()" title="Schedule announcement">
                     <img src="{{ asset('icons/clock.png') }}" alt="">
                 </button>
             </div>
-            <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openModal('post-modal')">
+            <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openPostModal()">
                 <img src="{{ asset('icons/announce.png') }}" alt=""> Post
             </button>
         </div>
@@ -1805,62 +1805,106 @@
 
 <div class="modal-overlay" id="post-modal">
     <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Post New Announcement</div>
-            <button class="modal-close" onclick="closeModal('post-modal')">&#x2715;</button>
+
+        <div class="em-header">
+            <div class="em-header-top">
+                <div class="em-title-group">
+                    <div class="em-icon">
+                        <img src="{{ asset('icons/announce.png') }}" alt="">
+                    </div>
+                    <div>
+                        <div class="em-title">Post New Announcement</div>
+                        <div class="em-sub">Sanctissimo Rosario Ladies Dormitory</div>
+                    </div>
+                </div>
+                <button class="em-close" onclick="closeModal('post-modal')">&#x2715;</button>
+            </div>
+            <div class="em-tabs">
+                <button class="em-tab active" onclick="switchPostTab(0)" id="pm-tab-0">
+                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
+                </button>
+                <button class="em-tab" onclick="switchPostTab(1)" id="pm-tab-1">
+                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
+                </button>
+                <button class="em-tab" onclick="switchPostTab(2)" id="pm-tab-2">
+                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
+                </button>
+            </div>
         </div>
-        <form method="POST" action="{{ route('announcements.store') }}" enctype="multipart/form-data" data-loading-message="Please wait...">
+
+        <form method="POST" action="{{ route('announcements.store') }}" id="post-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
-            <div class="modal-field">
-                <label>Title *</label>
-                <input type="text" name="title" placeholder="e.g. Water Interruption Notice" required>
-            </div>
-            <div class="modal-field">
-                <label>Content *</label>
-                <textarea name="content" placeholder="Write your announcement here..." required></textarea>
-            </div>
-            <div class="modal-grid-2">
-                <div class="modal-field">
-                    <label>Priority</label>
-                    <select name="priority">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="high">High</option>
-                    </select>
+
+            <div class="em-panels">
+
+                <div class="em-panel active" id="pm-panel-0">
+                    <div class="modal-field">
+                        <label>Title *</label>
+                        <input type="text" name="title" id="post-title" placeholder="e.g. Water Interruption Notice" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Content *</label>
+                        <textarea name="content" id="post-content" placeholder="Write your announcement here..." required></textarea>
+                    </div>
                 </div>
-                <div class="modal-field" id="post-status-field">
-                    <label>Status</label>
-                    <select name="status" id="post-status-select">
-                        <option value="active">Active</option>
-                        <option value="closed">Closed</option>
-                    </select>
+
+                <div class="em-panel" id="pm-panel-1">
+                    <div class="modal-field">
+                        <label>Priority</label>
+                        <div class="em-pill-row" id="post-priority-pills">
+                            <span class="em-pill-opt sel-low" data-val="low"      onclick="selectPostPill('priority','low')">Low</span>
+                            <span class="em-pill-opt"         data-val="moderate" onclick="selectPostPill('priority','moderate')">Moderate</span>
+                            <span class="em-pill-opt"         data-val="high"     onclick="selectPostPill('priority','high')">High</span>
+                        </div>
+                        <input type="hidden" name="priority" id="post-priority" value="low">
+                    </div>
+
+                    <div class="modal-field" id="post-status-field">
+                        <label>Status</label>
+                        <div class="em-pill-row" id="post-status-pills">
+                            <span class="em-pill-opt sel-active" data-val="active" onclick="selectPostPill('status','active')">Active</span>
+                            <span class="em-pill-opt"            data-val="closed" onclick="selectPostPill('status','closed')">Closed</span>
+                        </div>
+                        <input type="hidden" name="status" id="post-status" value="active">
+                    </div>
+
+                    <div class="schedule-toggle-row" onclick="toggleSchedule('post')">
+                        <span class="schedule-toggle-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Schedule for later
+                        </span>
+                        <span class="schedule-toggle-switch" id="post-sched-switch"></span>
+                    </div>
+
+                    <div class="schedule-fields" id="post-sched-fields">
+                        <div class="modal-field">
+                            <label>Publish Date &amp; Time</label>
+                            <input type="datetime-local" name="scheduled_at" id="post-scheduled-at">
+                            <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="em-panel" id="pm-panel-2">
+                    <div class="em-file-zone">
+                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <div class="em-file-note">Attach images, PDFs, or documents (optional).</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="em-footer">
+                <div class="em-tab-nav">
+                    <button type="button" class="em-nav-btn" id="pm-prev-btn" onclick="switchPostTab(window._pmTab - 1)" disabled>&#8592; Prev</button>
+                    <button type="button" class="em-nav-btn" id="pm-next-btn" onclick="switchPostTab(window._pmTab + 1)">Next &#8594;</button>
+                </div>
+                <div class="em-footer-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('post-modal')">Cancel</button>
+                    <button type="button" class="btn-submit" id="post-submit-btn" onclick="submitPostModal()">Post Announcement</button>
                 </div>
             </div>
 
-            <div class="schedule-toggle-row" onclick="toggleSchedule('post')">
-                <span class="schedule-toggle-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Schedule for later
-                </span>
-                <span class="schedule-toggle-switch" id="post-sched-switch"></span>
-            </div>
-
-            <div class="schedule-fields" id="post-sched-fields">
-                <div class="modal-field">
-                    <label>Publish Date &amp; Time</label>
-                    <input type="datetime-local" name="scheduled_at" id="post-scheduled-at">
-                    <div class="schedule-note">The announcement will go live automatically at this time.</div>
-                </div>
-            </div>
-
-            <div class="modal-field">
-                <label>Attach Files (optional)</label>
-                <input type="file" name="files[]" multiple style="padding:.5rem .85rem;">
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('post-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="post-submit-btn">Post Announcement</button>
-            </div>
         </form>
     </div>
 </div>
@@ -1978,79 +2022,132 @@
 
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title" id="view-modal-title">Announcement</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+
+        <div class="em-header">
+            <div class="em-header-top">
+                <div class="em-title-group">
+                    <div class="em-icon" id="view-em-icon">
+                        <img src="{{ asset('icons/announce.png') }}" alt="">
+                    </div>
+                    <div>
+                        <div class="em-title" id="view-modal-title">Announcement</div>
+                        <div class="em-sub" id="view-em-sub">View details</div>
+                    </div>
+                </div>
+                <button class="em-close" onclick="closeModal('view-modal')">&#x2715;</button>
+            </div>
+            <div class="em-tabs">
+                <button class="em-tab active" onclick="switchViewTab(0)" id="vm-tab-0">
+                    <img src="{{ asset('icons/announce.png') }}" alt=""> Details
+                </button>
+                <button class="em-tab" onclick="switchViewTab(1)" id="vm-tab-1">
+                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
+                </button>
+                <button class="em-tab" onclick="switchViewTab(2)" id="vm-tab-2">
+                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
+                </button>
+                <button class="em-tab" onclick="switchViewTab(3)" id="vm-tab-3">
+                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
+                </button>
+            </div>
         </div>
-        <div id="view-modal-content"></div>
-        <form method="POST" id="view-edit-form" class="inline-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
+
+        <div id="vm-details-panel" class="em-panels">
+            <div class="em-panel active" id="vm-panel-0">
+                <div id="view-modal-content"></div>
+            </div>
+        </div>
+
+        <form method="POST" id="view-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             @method('PUT')
-            <div class="modal-field">
-                <label>Title *</label>
-                <input type="text" name="title" id="view-edit-title" required>
-            </div>
-            <div class="modal-field">
-                <label>Content *</label>
-                <textarea name="content" id="view-edit-content" required></textarea>
-            </div>
-            <div class="modal-grid-2">
-                <div class="modal-field">
-                    <label>Priority</label>
-                    <select name="priority" id="view-edit-priority">
-                        <option value="low">Low</option>
-                        <option value="moderate">Moderate</option>
-                        <option value="high">High</option>
-                    </select>
+
+            <div class="em-panels" id="vm-edit-panels" style="display:none;">
+
+                <div class="em-panel active" id="vm-panel-1">
+                    <div class="modal-field">
+                        <label>Title *</label>
+                        <input type="text" name="title" id="view-edit-title" required>
+                    </div>
+                    <div class="modal-field">
+                        <label>Content *</label>
+                        <textarea name="content" id="view-edit-content" required></textarea>
+                    </div>
                 </div>
-                <div class="modal-field">
-                    <label>Status</label>
-                    <select name="status" id="view-edit-status">
-                        <option value="active">Active</option>
-                        <option value="closed">Closed</option>
-                    </select>
+
+                <div class="em-panel" id="vm-panel-2">
+                    <div class="modal-field">
+                        <label>Priority</label>
+                        <div class="em-pill-row" id="view-edit-priority-pills">
+                            <span class="em-pill-opt" data-val="low"      onclick="selectViewPill('priority','low')">Low</span>
+                            <span class="em-pill-opt" data-val="moderate" onclick="selectViewPill('priority','moderate')">Moderate</span>
+                            <span class="em-pill-opt" data-val="high"     onclick="selectViewPill('priority','high')">High</span>
+                        </div>
+                        <input type="hidden" name="priority" id="view-edit-priority">
+                    </div>
+
+                    <div class="modal-field">
+                        <label>Status</label>
+                        <div class="em-pill-row" id="view-edit-status-pills">
+                            <span class="em-pill-opt" data-val="active" onclick="selectViewPill('status','active')">Active</span>
+                            <span class="em-pill-opt" data-val="closed" onclick="selectViewPill('status','closed')">Closed</span>
+                        </div>
+                        <input type="hidden" name="status" id="view-edit-status">
+                    </div>
+
+                    <div class="schedule-toggle-row" onclick="toggleSchedule('view-edit')">
+                        <span class="schedule-toggle-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Schedule for later
+                        </span>
+                        <span class="schedule-toggle-switch" id="view-edit-sched-switch"></span>
+                    </div>
+
+                    <div class="schedule-fields" id="view-edit-sched-fields">
+                        <div class="modal-field">
+                            <label>Publish Date &amp; Time</label>
+                            <input type="datetime-local" name="scheduled_at" id="view-edit-scheduled-at">
+                            <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="em-panel" id="vm-panel-3">
+                    <div class="em-file-zone">
+                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <div class="em-file-note" id="view-current-files">No existing files.</div>
+                    </div>
+                    <label class="em-replace-row">
+                        <input type="checkbox" name="replace_attachments" value="1">
+                        <span>Replace existing files with the new upload</span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="em-footer" id="vm-edit-footer" style="display:none;">
+                <div class="em-tab-nav">
+                    <button type="button" class="em-nav-btn" id="vm-prev-btn" onclick="switchViewTab(window._vmTab - 1)" disabled>&#8592; Prev</button>
+                    <button type="button" class="em-nav-btn" id="vm-next-btn" onclick="switchViewTab(window._vmTab + 1)">Next &#8594;</button>
+                </div>
+                <div class="em-footer-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('view-modal')">Cancel</button>
+                    <button type="button" class="btn-submit" onclick="submitViewEditModal()">Save Changes</button>
                 </div>
             </div>
 
-            <div class="schedule-toggle-row" onclick="toggleSchedule('view-edit')">
-                <span class="schedule-toggle-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Schedule for later
-                </span>
-                <span class="schedule-toggle-switch" id="view-edit-sched-switch"></span>
-            </div>
-
-            <div class="schedule-fields" id="view-edit-sched-fields">
-                <div class="modal-field">
-                    <label>Publish Date &amp; Time</label>
-                    <input type="datetime-local" name="scheduled_at" id="view-edit-scheduled-at">
-                    <div class="schedule-note">The announcement will go live automatically at this time.</div>
-                </div>
-            </div>
-
-            <div class="modal-field">
-                <label>Add Image / Files (optional)</label>
-                <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx" style="padding:.5rem .85rem;">
-                <div class="current-files-note" id="view-current-files"></div>
-            </div>
-            <div class="modal-field">
-                <label style="display:flex;align-items:center;gap:.45rem;font-weight:600;">
-                    <input type="checkbox" name="replace_attachments" value="1" style="width:auto;">
-                    Replace existing files with the new upload
-                </label>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('view-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
         </form>
-        <div class="modal-actions">
-            <button class="btn-cancel" id="view-close-btn" onclick="closeModal('view-modal')">Close</button>
-            <button class="btn-submit" id="view-edit-btn">Edit</button>
+
+        <div class="em-footer" id="vm-details-footer">
+            <div></div>
+            <div class="em-footer-actions">
+                <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+                <button class="btn-submit" onclick="enableViewEdit()">Edit</button>
+            </div>
         </div>
+
     </div>
 </div>
-
 <div class="modal-overlay" id="delete-modal">
     <div class="modal">
         <div class="modal-header">
@@ -2071,7 +2168,6 @@
 </div>
 
 @endsection
-
 @section('scripts')
 <script>
     const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
@@ -2242,10 +2338,48 @@
         }
     }
 
-    /* ─── Pill select helpers ─── */
     function selectPill(type, val) {
         const row = document.getElementById('edit-' + type + '-pills');
+
+    window._pmTab = 0;
+    const PM_TABS = 3;
+
+    function switchPostTab(idx) {
+        if (idx < 0 || idx >= PM_TABS) return;
+        window._pmTab = idx;
+        for (let i = 0; i < PM_TABS; i++) {
+            document.getElementById('pm-tab-' + i).classList.toggle('active', i === idx);
+            document.getElementById('pm-panel-' + i).classList.toggle('active', i === idx);
+        }
+        document.getElementById('pm-prev-btn').disabled = (idx === 0);
+        document.getElementById('pm-next-btn').disabled = (idx === PM_TABS - 1);
+    }
+
+    function selectPostPill(type, val) {
+        const row = document.getElementById('post-' + type + '-pills');
         row.querySelectorAll('.em-pill-opt').forEach(p => {
+            p.className = 'em-pill-opt';
+            if (p.dataset.val === val) p.classList.add('sel-' + val);
+        });
+        document.getElementById('post-' + type).value = val;
+    }
+
+    function submitPostModal() {
+        const form = document.getElementById('post-form');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        setFormLoading(form, 'Posting...');
+        form.submit();
+    }
+
+    function openPostModal() {
+        document.getElementById('post-form').reset();
+        selectPostPill('priority', 'low');
+        selectPostPill('status', 'active');
+        toggleSchedule('post', false);
+        switchPostTab(0);
+        openModal('post-modal');
+    }
+
             p.className = 'em-pill-opt';
             if (p.dataset.val === val) p.classList.add('sel-' + val);
         });
@@ -2257,7 +2391,6 @@
         selectPill('status',   ann.status   || 'active');
     }
 
-    /* ─── Tab switching ─── */
     window._emTab = 0;
     const EM_TABS = 3;
 
@@ -2313,15 +2446,74 @@
         form.submit();
     }
 
+    window._vmTab   = 0;
+    const VM_TABS   = 4;
+    let   _vmEditOn = false;
+
+    function switchViewTab(idx) {
+        if (idx < 0 || idx >= VM_TABS) return;
+        // tab 0 = details (read-only); tabs 1-3 = edit tabs
+        if (idx === 0 && _vmEditOn) return; // stay in edit mode
+        window._vmTab = idx;
+
+        for (let i = 0; i < VM_TABS; i++) {
+            document.getElementById('vm-tab-' + i).classList.toggle('active', i === idx);
+        }
+
+        if (idx === 0) {
+            document.getElementById('vm-details-panel').style.display  = '';
+            document.getElementById('vm-edit-panels').style.display    = 'none';
+            document.getElementById('vm-details-footer').style.display = '';
+            document.getElementById('vm-edit-footer').style.display    = 'none';
+        } else {
+            document.getElementById('vm-details-panel').style.display  = 'none';
+            document.getElementById('vm-edit-panels').style.display    = '';
+            document.getElementById('vm-details-footer').style.display = 'none';
+            document.getElementById('vm-edit-footer').style.display    = '';
+
+            // show correct edit panel
+            for (let i = 1; i < VM_TABS; i++) {
+                document.getElementById('vm-panel-' + i).classList.toggle('active', i === idx);
+            }
+            document.getElementById('vm-prev-btn').disabled = (idx === 1);
+            document.getElementById('vm-next-btn').disabled = (idx === VM_TABS - 1);
+        }
+    }
+
+    function enableViewEdit() {
+        _vmEditOn = true;
+        document.getElementById('vm-tab-0').classList.remove('active');
+        switchViewTab(1);
+    }
+
+    function selectViewPill(type, val) {
+        const row = document.getElementById('view-edit-' + type + '-pills');
+        row.querySelectorAll('.em-pill-opt').forEach(p => {
+            p.className = 'em-pill-opt';
+            if (p.dataset.val === val) p.classList.add('sel-' + val);
+        });
+        document.getElementById('view-edit-' + type).value = val;
+    }
+
     function openViewModal(id) {
         const ann = annData[id];
         if (!ann) return;
+
+        _vmEditOn = false;
+        window._vmTab = 0;
+        for (let i = 0; i < VM_TABS; i++) {
+            document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
+        }
+        document.getElementById('vm-details-panel').style.display  = '';
+        document.getElementById('vm-edit-panels').style.display    = 'none';
+        document.getElementById('vm-details-footer').style.display = '';
+        document.getElementById('vm-edit-footer').style.display    = 'none';
+
         document.getElementById('view-modal-title').textContent = ann.title;
-        hideInlineEdit();
-        fillInlineEditForm(ann, id);
+        document.getElementById('view-em-sub').textContent =
+            ucFirst(ann.priority || 'low') + ' priority · ' + ucFirst(ann.status || 'active');
 
         const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
-
         document.getElementById('view-modal-content').innerHTML = `
             <div class="view-title">${escapeHtml(ann.title || '')}</div>
             <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
@@ -2333,8 +2525,31 @@
             <div class="view-content">${escapeHtml(ann.content || '')}</div>
             ${renderAttachments(ann.attachment)}
         `;
-        document.getElementById('view-edit-btn').onclick = () => showInlineEdit();
+
+        document.getElementById('view-edit-form').action   = `/announcements/${id}`;
+        document.getElementById('view-edit-title').value   = ann.title   || '';
+        document.getElementById('view-edit-content').value = ann.content || '';
+        document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
+        selectViewPill('priority', ann.priority || 'low');
+        selectViewPill('status',   ann.status   || 'active');
+
+        if (isScheduled) {
+            const dt    = new Date(ann.scheduled_at);
+            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('view-edit-scheduled-at').value = local;
+            toggleSchedule('view-edit', true);
+        } else {
+            toggleSchedule('view-edit', false);
+        }
+
         openModal('view-modal');
+    }
+
+    function submitViewEditModal() {
+        const form = document.getElementById('view-edit-form');
+        if (!form.checkValidity()) { form.reportValidity(); return; }
+        setFormLoading(form, 'Saving changes...');
+        form.submit();
     }
 
     function openDeleteModal(id, name, e) {
@@ -2346,43 +2561,6 @@
 
     function ucFirst(str) {
         return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-    }
-
-    function fillInlineEditForm(ann, id) {
-        document.getElementById('view-edit-form').action       = `/announcements/${id}`;
-        document.getElementById('view-edit-title').value       = ann.title   || '';
-        document.getElementById('view-edit-content').value     = ann.content || '';
-        document.getElementById('view-edit-priority').value    = ann.priority || 'low';
-        document.getElementById('view-edit-status').value      = ann.status   || 'active';
-        document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
-
-        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
-        if (isScheduled) {
-            const dt = new Date(ann.scheduled_at);
-            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16);
-            document.getElementById('view-edit-scheduled-at').value = local;
-            toggleSchedule('view-edit', true);
-        } else {
-            toggleSchedule('view-edit', false);
-        }
-    }
-
-    function showInlineEdit() {
-        document.getElementById('view-edit-form').classList.add('open');
-        document.getElementById('view-edit-btn').style.display  = 'none';
-        document.getElementById('view-close-btn').style.display = 'none';
-    }
-
-    function hideInlineEdit() {
-        const form = document.getElementById('view-edit-form');
-        if (!form) return;
-        form.classList.remove('open');
-        form.reset();
-        toggleSchedule('view-edit', false);
-        document.getElementById('view-edit-btn').style.display  = '';
-        document.getElementById('view-close-btn').style.display = '';
     }
 
     function getAttachments(attachment) {
@@ -2521,9 +2699,6 @@
         a.click();
     }
 
-    document.getElementById('post-modal').addEventListener('shown', () => {
-        toggleSchedule('post', false);
-    });
 
     @if(session('success'))
         showToast("{{ session('success') }}", 'success');
