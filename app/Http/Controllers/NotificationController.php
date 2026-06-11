@@ -39,7 +39,7 @@ class NotificationController extends Controller
         $notifications = (clone $query)
             ->orderByDesc('created_at')
             ->orderByDesc('notif_id')
-            ->limit(20)
+            ->limit(Notification::MAX_ROWS)
             ->get()
             ->map(fn(Notification $notification) => $this->formatLiveNotification($notification))
             ->values();
