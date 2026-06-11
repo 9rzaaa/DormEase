@@ -2008,6 +2008,7 @@ function exportLog(format) {
                 + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
                 + '</tr>';
         }).join('');
+        var exportedOn = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
             + '<style>'
             + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
@@ -2023,7 +2024,7 @@ function exportLog(format) {
             + '</head><body>'
             + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
             + '<div class="sub">Entry / Exit Log</div>'
-            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</div>'
+            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + exportedOn + '</div>'
             + '<table><thead><tr>'
             + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th>'
             + '</tr></thead><tbody>' + rows + '</tbody></table>'
