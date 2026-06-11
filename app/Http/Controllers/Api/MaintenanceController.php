@@ -501,8 +501,8 @@ class MaintenanceController extends Controller
 
         if ($maintenance) {
             if ($maintenance->status === 'pending') {
-                // Archive as deleted
-                $this->archiveRequest($maintenance, 'deleted');
+                // Archive as cancelled
+                $this->archiveRequest($maintenance, 'cancelled');
                 $maintenance->delete();
 
                 $tenant     = $request->user();
