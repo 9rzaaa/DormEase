@@ -464,7 +464,7 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        right: 0;
+        right: -40px;
         left: auto;
         transform: translateY(-60%) scale(0.4) rotate(18deg);
         width: 38px;
@@ -1673,8 +1673,8 @@
 
             <div class="field-row">
                 <label class="remember">
-                    <input type="checkbox" name="remember" id="remember-cb">
-                    <div class="toggle-track">
+                    <input type="checkbox" name="remember" id="remember-cb" aria-label="Remember me">
+                    <div class="toggle-track" role="switch" aria-checked="false" aria-label="Remember me" id="remember-track">
                         <div class="toggle-knob"></div>
                     </div>
                     <span class="remember-label">Remember me</span>
@@ -2112,9 +2112,22 @@
             return;
         }
 
-        this.disabled = true;
+        var btn = this;
+        btn.disabled = true;
         document.getElementById('login-btn-text').style.display = 'none';
         document.getElementById('login-spinner').style.display  = 'inline-block';
+
+        var timeout = setTimeout(function () {
+            btn.disabled = false;
+            document.getElementById('login-btn-text').style.display = 'inline';
+            document.getElementById('login-spinner').style.display  = 'none';
+            showEmailErr('Connection timed out. Please check your network and try again.');
+        }, 12000);
+
+        form.addEventListener('submit', function () {
+            clearTimeout(timeout);
+        }, { once: true });
+
         form.submit();
     });
 
@@ -2122,11 +2135,49 @@
         document.getElementById('fp-overlay').style.display = 'flex';
         document.body.style.overflow = 'hidden';
         fpResetAll();
+        document.addEventListener('keydown', fpKeyHandler);
+        setTimeout(function () {
+            var first = getFocusable()[0];
+            if (first) first.focus();
+        }, 50);
     }
 
     function closeFP() {
         document.getElementById('fp-overlay').style.display = 'none';
         document.body.style.overflow = '';
+        document.removeEventListener('keydown', fpKeyHandler);
+    }
+
+    function getFocusable() {
+        var sheet = document.getElementById('fp-sheet');
+        return Array.from(sheet.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(function (el) {
+            return el.offsetParent !== null;
+        });
+    }
+
+    function fpKeyHandler(e) {
+        if (e.key === 'Escape') {
+            closeFP();
+            return;
+        }
+        if (e.key !== 'Tab') return;
+        var focusable = getFocusable();
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last  = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
     }
 
     function fpResetAll() {
@@ -2294,14 +2345,21 @@
             } else if (data.same_password) {
                 fpShowErr('fp-pw-err', 'This is your current password. Please choose a different one.');
             } else if (data.message && data.message.toLowerCase().includes('session expired')) {
-                fpShowErr('fp-pw-err', 'Your session expired. Please close this and start again.');
-                setTimeout(function () {
-                    document.getElementById('fp-admin-pw-step').style.display    = 'none';
-                    document.getElementById('fp-admin-email-step').style.display = '';
-                    document.getElementById('fp-admin-email').value              = '';
-                    fpAdminEmail     = '';
-                    fpResetInFlight  = false;
-                }, 2200);
+                var count = 3;
+                function fpExpiredTick() {
+                    fpShowErr('fp-pw-err', 'Session expired. Restarting in ' + count + '...');
+                    if (count <= 0) {
+                        document.getElementById('fp-admin-pw-step').style.display    = 'none';
+                        document.getElementById('fp-admin-email-step').style.display = '';
+                        document.getElementById('fp-admin-email').value              = '';
+                        fpAdminEmail    = '';
+                        fpResetInFlight = false;
+                        return;
+                    }
+                    count--;
+                    setTimeout(fpExpiredTick, 1000);
+                }
+                fpExpiredTick();
             } else {
                 fpShowErr('fp-pw-err', data.message || 'Could not update password. Please try again.');
             }
@@ -2313,6 +2371,9 @@
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
+    document.getElementById('remember-cb').addEventListener('change', function () {
+        document.getElementById('remember-track').setAttribute('aria-checked', this.checked ? 'true' : 'false');
+    });
 </script>
 
 </body>
