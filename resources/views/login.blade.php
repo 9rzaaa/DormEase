@@ -26,6 +26,7 @@
         --ink:         #1a1a2e;
         --ink-muted:   #7a5f6e;
         --red:         #DF0404;
+        --green:       #16a34a;
         --ff-display:  'DM Serif Display', Georgia, serif;
         --ff-body:     'DM Sans', sans-serif;
         --transition:  .2s cubic-bezier(.4, 0, .2, 1);
@@ -88,31 +89,31 @@
 
     .ring-1 {
         width: 220px; height: 220px;
-        border: 1.5px dashed rgba(255, 255, 255, .8);
+        border: 1.5px dashed rgba(255,255,255,.8);
         animation: spinSlow 22s linear infinite;
     }
 
     .ring-2 {
         width: 360px; height: 360px;
-        border: 1px dashed rgba(255, 255, 255, .55);
+        border: 1px dashed rgba(255,255,255,.55);
         animation: spinSlow 38s linear infinite reverse;
     }
 
     .ring-3 {
         width: 500px; height: 500px;
-        border: 1px dashed rgba(255, 255, 255, .35);
+        border: 1px dashed rgba(255,255,255,.35);
         animation: spinSlow 55s linear infinite;
     }
 
     @keyframes spinSlow {
-        to { transform: translate(-50%, -50%) rotate(360deg); }
+        to { transform: translate(-50%,-50%) rotate(360deg); }
     }
 
     .dot-grid {
         position: absolute;
         bottom: 130px; left: 3rem;
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(6,1fr);
         gap: 10px;
         opacity: .18;
         pointer-events: none;
@@ -133,6 +134,8 @@
         pointer-events: none;
         animation: float 5s ease-in-out infinite;
         opacity: .85;
+        will-change: transform;
+        transition: transform .1s ease-out;
     }
 
     .student-wrap::after {
@@ -147,12 +150,12 @@
     .student-wrap img {
         width: 100%;
         display: block;
-        filter: drop-shadow(-8px 0 32px rgba(0, 0, 0, .25));
+        filter: drop-shadow(-8px 0 32px rgba(0,0,0,.25));
     }
 
     @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50%       { transform: translateY(-14px); }
+        0%,100% { transform: translateY(0) translateX(0); }
+        50%      { transform: translateY(-14px) translateX(0); }
     }
 
     .left-logo {
@@ -166,8 +169,8 @@
 
     .logo-mark {
         width: 44px; height: 44px;
-        background: rgba(255, 255, 255, .2);
-        border: 2px solid rgba(255, 255, 255, .4);
+        background: rgba(255,255,255,.2);
+        border: 2px solid rgba(255,255,255,.4);
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -177,7 +180,7 @@
         transition: background var(--transition);
     }
 
-    .logo-mark:hover { background: rgba(255, 255, 255, .32); }
+    .logo-mark:hover { background: rgba(255,255,255,.32); }
 
     .logo-mark img {
         width: 26px; height: 26px;
@@ -204,7 +207,7 @@
 
     .left-body h1 {
         font-family: var(--ff-display);
-        font-size: clamp(2.2rem, 3.4vw, 3.3rem);
+        font-size: clamp(2.2rem,3.4vw,3.3rem);
         color: #fff;
         line-height: 1.12;
         letter-spacing: -.02em;
@@ -218,49 +221,70 @@
 
     .left-body p {
         font-size: .94rem;
-        color: rgba(255, 255, 255, .72);
+        color: rgba(255,255,255,.72);
         line-height: 1.75;
         max-width: 310px;
+        margin-bottom: 1.8rem;
     }
 
-    .pills {
-        display: flex;
-        gap: .5rem;
-        flex-wrap: wrap;
-        margin-top: 1.8rem;
-    }
-
-    .pill {
-        background: rgba(255, 255, 255, .15);
-        border: 1px solid rgba(255, 255, 255, .25);
-        color: #fff;
-        font-size: .76rem;
-        font-weight: 500;
-        padding: .32rem .8rem;
-        border-radius: var(--radius-pill);
+    .feature-strip {
         display: flex;
         align-items: center;
-        gap: .4rem;
-        backdrop-filter: blur(4px);
-        transition: background var(--transition), border-color var(--transition);
-        cursor: default;
+        gap: .65rem;
+        background: rgba(255,255,255,.1);
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: var(--radius-pill);
+        padding: .45rem .9rem .45rem .6rem;
+        width: fit-content;
+        backdrop-filter: blur(6px);
+        animation: leftSlide .6s ease .32s both;
     }
 
-    .pill:hover {
-        background: rgba(255, 255, 255, .25);
-        border-color: rgba(255, 255, 255, .45);
+    .feature-strip-icon {
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .3s;
     }
 
-    .pill img {
-        width: 13px; height: 13px;
+    .feature-strip-icon img {
+        width: 14px; height: 14px;
         filter: brightness(0) invert(1);
+        object-fit: contain;
+    }
+
+    .feature-strip-text {
+        font-size: .82rem;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: .01em;
+        min-width: 170px;
+    }
+
+    .feature-cursor {
+        display: inline-block;
+        width: 2px;
+        height: .85em;
+        background: rgba(255,255,255,.8);
+        margin-left: 2px;
+        vertical-align: middle;
+        animation: blink .75s step-end infinite;
+    }
+
+    @keyframes blink {
+        0%,100% { opacity: 1; }
+        50%      { opacity: 0; }
     }
 
     .left-footer {
         position: relative;
         z-index: 2;
         font-size: .75rem;
-        color: rgba(255, 255, 255, .38);
+        color: rgba(255,255,255,.38);
         animation: leftSlide .6s ease .38s both;
     }
 
@@ -382,7 +406,7 @@
         align-items: center;
         gap: .65rem;
         transition: border-color var(--transition), background var(--transition),
-                    box-shadow var(--transition), transform .15s;
+                    box-shadow var(--transition), transform .2s cubic-bezier(.34,1.56,.64,1);
         position: relative;
         overflow: hidden;
         cursor: pointer;
@@ -392,7 +416,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(255, 45, 120, .07) 0%, transparent 60%);
+        background: linear-gradient(135deg,rgba(255,45,120,.07) 0%,transparent 60%);
         opacity: 0;
         transition: opacity var(--transition);
     }
@@ -404,12 +428,26 @@
         transform: translateY(-1px);
     }
 
-    .role-btn:active { transform: translateY(0); }
+    .role-btn:active { transform: translateY(0) scale(.98); }
 
     .role-btn.active {
         border-color: var(--bright-pink);
         background: var(--pink-tint);
-        box-shadow: 0 0 0 3px rgba(255, 45, 120, .12);
+        box-shadow: 0 0 0 3px rgba(255,45,120,.12);
+        transform: scale(1.03);
+    }
+
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,45,120,.18);
+        transform: scale(0);
+        animation: rippleAnim .5s linear;
+        pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+        to { transform: scale(4); opacity: 0; }
     }
 
     .role-icon {
@@ -421,18 +459,45 @@
         align-items: center;
         justify-content: center;
         transition: background var(--transition);
+        position: relative;
     }
 
     .role-icon img {
         width: 20px; height: 20px;
         object-fit: contain;
+        position: relative;
+        z-index: 1;
     }
 
     .role-btn.active .role-icon {
-        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        background: linear-gradient(135deg,var(--hot-pink),var(--bright-pink));
     }
 
     .role-btn.active .role-icon img { filter: brightness(0) invert(1); }
+
+    .role-icon::after {
+        content: '';
+        position: absolute;
+        top: -3px; right: -3px;
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: var(--bright-pink);
+        border: 2px solid var(--white);
+        opacity: 0;
+        transform: scale(0);
+        transition: opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .role-btn.active .role-icon::after {
+        opacity: 1;
+        transform: scale(1);
+        animation: pulseDot 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+        0%,100% { box-shadow: 0 0 0 0 rgba(255,45,120,.5); }
+        50%      { box-shadow: 0 0 0 5px rgba(255,45,120,0); }
+    }
 
     .role-name {
         font-size: .84rem;
@@ -466,16 +531,13 @@
         bottom: 1px;
         left: 50%; right: 50%;
         height: 2px;
-        background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
+        background: linear-gradient(90deg,var(--hot-pink),var(--bright-pink));
         border-radius: 0 0 var(--radius-md) var(--radius-md);
         transition: left .25s ease, right .25s ease;
         pointer-events: none;
     }
 
-    .input-wrap:focus-within::after {
-        left: 1px;
-        right: 1px;
-    }
+    .input-wrap:focus-within::after { left: 1px; right: 1px; }
 
     .input-icon {
         position: absolute;
@@ -503,6 +565,22 @@
     }
 
     .toggle-pw:hover { opacity: .85; }
+
+    .email-check {
+        position: absolute;
+        right: .9rem; top: 50%;
+        transform: translateY(-50%);
+        width: 18px; height: 18px;
+        opacity: 0;
+        transition: opacity .25s;
+        pointer-events: none;
+    }
+
+    .email-check.visible { opacity: 1; }
+
+    .email-check svg {
+        width: 18px; height: 18px;
+    }
 
     .field-row {
         display: flex;
@@ -555,23 +633,81 @@
 
     .de-input::placeholder { color: var(--gray); }
 
+    .de-input.input-valid {
+        border-color: var(--green);
+        padding-right: 2.6rem;
+    }
+
+    @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        15%      { transform: translateX(-6px); }
+        30%      { transform: translateX(6px); }
+        45%      { transform: translateX(-4px); }
+        60%      { transform: translateX(4px); }
+        75%      { transform: translateX(-2px); }
+        90%      { transform: translateX(2px); }
+    }
+
+    .input-shake { animation: shake .45s ease; }
+
+    .field-error {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--hot-pink);
+        margin-top: .35rem;
+        padding-left: .1rem;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height .25s ease, opacity .2s ease, margin-top .2s ease;
+    }
+
+    .field-error.visible {
+        max-height: 2rem;
+        opacity: 1;
+        margin-top: .35rem;
+    }
+
+    .field-error svg {
+        flex-shrink: 0;
+        width: 13px; height: 13px;
+    }
+
     .de-alert-error {
         display: flex;
         align-items: center;
         gap: .5rem;
         background: #fff0f3;
-        border: 1.5px solid var(--pink-light);
-        border-radius: 10px;
-        padding: .65rem .9rem;
-        font-size: .83rem;
+        border-left: 3px solid var(--hot-pink);
+        border-radius: 8px;
+        padding: .55rem .85rem;
+        font-size: .81rem;
         color: var(--hot-pink);
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: .9rem;
+        animation: slideDown .2s ease;
     }
 
     .de-alert-error img {
-        width: 16px; height: 16px;
+        width: 14px; height: 14px;
         flex-shrink: 0;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .pw-hint {
+        font-size: .73rem;
+        color: var(--red);
+        margin-top: .3rem;
+        display: none;
+        padding-left: .1rem;
+        animation: slideDown .2s ease;
     }
 
     .de-btn-primary {
@@ -579,7 +715,7 @@
         padding: .75rem 1.4rem;
         border-radius: 12px;
         border: none;
-        background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+        background: linear-gradient(135deg,var(--hot-pink) 0%,var(--bright-pink) 100%);
         color: var(--white);
         font-family: var(--ff-body);
         font-size: .93rem;
@@ -589,9 +725,11 @@
         justify-content: center;
         gap: .5rem;
         cursor: pointer;
-        box-shadow: 0 6px 20px rgba(232, 23, 93, .35);
+        box-shadow: 0 6px 20px rgba(232,23,93,.35);
         transition: opacity var(--transition), transform .15s;
         margin-top: .2rem;
+        position: relative;
+        overflow: hidden;
     }
 
     .de-btn-primary:hover {
@@ -600,6 +738,19 @@
     }
 
     .de-btn-primary:active { transform: translateY(0); }
+
+    .btn-spinner {
+        width: 16px; height: 16px;
+        border: 2.5px solid rgba(255,255,255,.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spinBtn .6s linear infinite;
+        display: none;
+    }
+
+    @keyframes spinBtn {
+        to { transform: rotate(360deg); }
+    }
 
     @keyframes slideUp {
         from { opacity: 0; transform: translateY(18px); }
@@ -622,7 +773,7 @@
     #fp-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(26, 10, 20, .55);
+        background: rgba(26,10,20,.55);
         backdrop-filter: blur(6px);
         z-index: 9999;
         display: flex;
@@ -639,8 +790,8 @@
         max-width: 440px;
         padding: 2.2rem 2.4rem 2.4rem;
         position: relative;
-        box-shadow: 0 32px 80px rgba(232, 23, 93, .18), 0 8px 24px rgba(0, 0, 0, .12);
-        animation: fpSlideUp .3s cubic-bezier(.22, 1, .36, 1);
+        box-shadow: 0 32px 80px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.12);
+        animation: fpSlideUp .3s cubic-bezier(.22,1,.36,1);
         max-height: 90vh;
         overflow-y: auto;
     }
@@ -682,7 +833,7 @@
         content: '';
         display: block;
         width: 16px; height: 2px;
-        background: linear-gradient(90deg, #E8175D, #FF2D78);
+        background: linear-gradient(90deg,#E8175D,#FF2D78);
         border-radius: 2px;
     }
 
@@ -696,10 +847,7 @@
         margin-bottom: .6rem;
     }
 
-    .fp-title em {
-        font-style: italic;
-        color: #E8175D;
-    }
+    .fp-title em { font-style: italic; color: #E8175D; }
 
     .fp-sub {
         font-size: .85rem;
@@ -708,11 +856,7 @@
         margin-bottom: 1.4rem;
     }
 
-    .fp-role-row {
-        display: flex;
-        flex-direction: column;
-        gap: .7rem;
-    }
+    .fp-role-row { display: flex; flex-direction: column; gap: .7rem; }
 
     .fp-role-btn {
         display: flex;
@@ -733,7 +877,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(135deg, rgba(255, 45, 120, .06) 0%, transparent 60%);
+        background: linear-gradient(135deg,rgba(255,45,120,.06) 0%,transparent 60%);
         opacity: 0;
         transition: opacity .2s;
     }
@@ -741,7 +885,7 @@
     .fp-role-btn:hover {
         border-color: #FFB0CE;
         transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(232, 23, 93, .12);
+        box-shadow: 0 4px 16px rgba(232,23,93,.12);
     }
 
     .fp-role-btn:hover::before { opacity: 1; }
@@ -751,7 +895,7 @@
         width: 42px; height: 42px;
         flex-shrink: 0;
         border-radius: 11px;
-        background: linear-gradient(135deg, #E8175D, #FF2D78);
+        background: linear-gradient(135deg,#E8175D,#FF2D78);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -763,17 +907,8 @@
         filter: brightness(0) invert(1);
     }
 
-    .fp-role-name {
-        font-size: .86rem;
-        font-weight: 700;
-        color: #1a1a2e;
-    }
-
-    .fp-role-desc {
-        font-size: .72rem;
-        color: #7a5f6e;
-        margin-top: .1rem;
-    }
+    .fp-role-name { font-size: .86rem; font-weight: 700; color: #1a1a2e; }
+    .fp-role-desc { font-size: .72rem; color: #7a5f6e; margin-top: .1rem; }
 
     .fp-arrow {
         margin-left: auto;
@@ -782,10 +917,7 @@
         transition: transform .2s, opacity .2s;
     }
 
-    .fp-role-btn:hover .fp-arrow {
-        transform: translateX(3px);
-        opacity: .7;
-    }
+    .fp-role-btn:hover .fp-arrow { transform: translateX(3px); opacity: .7; }
 
     .fp-back {
         display: inline-flex;
@@ -822,16 +954,13 @@
         bottom: 1px;
         left: 50%; right: 50%;
         height: 2px;
-        background: linear-gradient(90deg, #E8175D, #FF2D78);
+        background: linear-gradient(90deg,#E8175D,#FF2D78);
         border-radius: 0 0 10px 10px;
         transition: left .25s ease, right .25s ease;
         pointer-events: none;
     }
 
-    .fp-input-wrap:focus-within::after {
-        left: 1px;
-        right: 1px;
-    }
+    .fp-input-wrap:focus-within::after { left: 1px; right: 1px; }
 
     .fp-input-icon {
         position: absolute;
@@ -855,11 +984,7 @@
         transition: border-color .2s, background .2s;
     }
 
-    .fp-input:focus {
-        border-color: #FF2D78;
-        background: #fff;
-    }
-
+    .fp-input:focus { border-color: #FF2D78; background: #fff; }
     .fp-input::placeholder { color: #B5B7C0; }
 
     .fp-eye-btn {
@@ -925,8 +1050,7 @@
     .fp-req.met { color: #16a34a; }
 
     .fp-req-dot {
-        width: 7px;
-        height: 7px;
+        width: 7px; height: 7px;
         border-radius: 50%;
         background: #e5ecf6;
         flex-shrink: 0;
@@ -940,13 +1064,13 @@
         padding: .75rem 1.2rem;
         border-radius: 12px;
         border: none;
-        background: linear-gradient(135deg, #E8175D 0%, #FF2D78 100%);
+        background: linear-gradient(135deg,#E8175D 0%,#FF2D78 100%);
         color: #fff;
         font-family: 'DM Sans', sans-serif;
         font-size: .9rem;
         font-weight: 800;
         cursor: pointer;
-        box-shadow: 0 6px 20px rgba(232, 23, 93, .32);
+        box-shadow: 0 6px 20px rgba(232,23,93,.32);
         transition: opacity .2s, transform .15s;
         display: flex;
         align-items: center;
@@ -955,11 +1079,7 @@
         margin-top: .4rem;
     }
 
-    .fp-btn-primary:hover {
-        opacity: .9;
-        transform: translateY(-1px);
-    }
-
+    .fp-btn-primary:hover { opacity: .9; transform: translateY(-1px); }
     .fp-btn-primary:active { transform: translateY(0); }
 
     .fp-btn-outline {
@@ -977,12 +1097,7 @@
         margin-top: .6rem;
     }
 
-    .fp-btn-outline:hover {
-        background: #E8175D;
-        color: #fff;
-        transform: translateY(-1px);
-    }
-
+    .fp-btn-outline:hover { background: #E8175D; color: #fff; transform: translateY(-1px); }
     .fp-btn-outline:active { transform: translateY(0); }
 
     .fp-alert {
@@ -999,35 +1114,29 @@
         margin-bottom: .9rem;
     }
 
-    .fp-alert img {
-        width: 15px; height: 15px;
-        flex-shrink: 0;
-    }
+    .fp-alert img { width: 15px; height: 15px; flex-shrink: 0; }
 
     .fp-loader {
         width: 16px; height: 16px;
-        border: 2.5px solid rgba(255, 255, 255, .35);
+        border: 2.5px solid rgba(255,255,255,.35);
         border-top-color: #fff;
         border-radius: 50%;
         animation: fpSpin .7s linear infinite;
         display: inline-block;
     }
 
-    .fp-success-wrap {
-        text-align: center;
-        padding: .8rem 0 .4rem;
-    }
+    .fp-success-wrap { text-align: center; padding: .8rem 0 .4rem; }
 
     .fp-success-icon {
         width: 64px; height: 64px;
-        background: linear-gradient(135deg, #E8175D, #FF2D78);
+        background: linear-gradient(135deg,#E8175D,#FF2D78);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 1.3rem;
-        box-shadow: 0 10px 32px rgba(232, 23, 93, .35);
-        animation: fpPop .4s cubic-bezier(.22, 1, .36, 1);
+        box-shadow: 0 10px 32px rgba(232,23,93,.35);
+        animation: fpPop .4s cubic-bezier(.22,1,.36,1);
     }
 
     .fp-done-title {
@@ -1058,7 +1167,7 @@
     .fp-fd-icon-wrap {
         width: 40px; height: 40px;
         flex-shrink: 0;
-        background: linear-gradient(135deg, #E8175D, #FF2D78);
+        background: linear-gradient(135deg,#E8175D,#FF2D78);
         border-radius: 10px;
         display: flex;
         align-items: center;
@@ -1072,71 +1181,34 @@
         filter: brightness(0) invert(1);
     }
 
-    .fp-fd-card-title {
-        font-size: .85rem;
-        font-weight: 700;
-        color: #1a1a2e;
-        margin-bottom: .25rem;
-    }
+    .fp-fd-card-title { font-size: .85rem; font-weight: 700; color: #1a1a2e; margin-bottom: .25rem; }
+    .fp-fd-card-desc  { font-size: .78rem; color: #7a5f6e; line-height: 1.6; }
 
-    .fp-fd-card-desc {
-        font-size: .78rem;
-        color: #7a5f6e;
-        line-height: 1.6;
-    }
+    .fp-fd-steps { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.2rem; }
 
-    .fp-fd-steps {
-        display: flex;
-        flex-direction: column;
-        gap: .75rem;
-        margin-bottom: 1.2rem;
-    }
-
-    .fp-fd-step {
-        display: flex;
-        align-items: flex-start;
-        gap: .85rem;
-    }
+    .fp-fd-step { display: flex; align-items: flex-start; gap: .85rem; }
 
     .fp-fd-step-num {
         width: 26px; height: 26px;
         flex-shrink: 0;
         border-radius: 50%;
-        background: linear-gradient(135deg, #E8175D, #FF2D78);
+        background: linear-gradient(135deg,#E8175D,#FF2D78);
         color: #fff;
         font-size: .75rem;
         font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 3px 10px rgba(232, 23, 93, .3);
+        box-shadow: 0 3px 10px rgba(232,23,93,.3);
         margin-top: .05rem;
     }
 
-    .fp-fd-step-text {
-        font-size: .82rem;
-        color: #7a5f6e;
-        line-height: 1.6;
-    }
+    .fp-fd-step-text { font-size: .82rem; color: #7a5f6e; line-height: 1.6; }
 
-    @keyframes fpFadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
-
-    @keyframes fpSlideUp {
-        from { opacity: 0; transform: translateY(24px) scale(.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes fpSpin {
-        to { transform: rotate(360deg); }
-    }
-
-    @keyframes fpPop {
-        from { transform: scale(.5); opacity: 0; }
-        to   { transform: scale(1); opacity: 1; }
-    }
+    @keyframes fpFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fpSlideUp { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes fpSpin    { to { transform: rotate(360deg); } }
+    @keyframes fpPop     { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     @media (max-width: 480px) {
         #fp-sheet { padding: 1.8rem 1.5rem 2rem; border-radius: 18px; }
@@ -1145,7 +1217,7 @@
 </style>
 
 
-<div class="left">
+<div class="left" id="left-panel">
 
     <div class="ring ring-1"></div>
     <div class="ring ring-2"></div>
@@ -1157,11 +1229,11 @@
         @endfor
     </div>
 
-    <div class="student-wrap">
+    <div class="student-wrap" id="student-wrap">
         <img src="{{ asset('images/girl.png') }}" alt="Student">
     </div>
 
-    <a href="{{ route('home') }}" class="left-logo" style="text-decoration: none;">
+    <a href="{{ route('home') }}" class="left-logo" style="text-decoration:none;">
         <div class="logo-mark">
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
         </div>
@@ -1172,12 +1244,13 @@
         <h1>Manage with<br>ease &amp;<br><em>confidence.</em></h1>
         <p>The DormEase portal gives you full control over rooms, tenants, payments, and maintenance all in one place.</p>
 
-        <div class="pills">
-            <span class="pill"><img src="{{ asset('icons/bed.png') }}" alt="">Room Management</span>
-            <span class="pill"><img src="{{ asset('icons/tenants.png') }}" alt="">Tenant Records</span>
-            <span class="pill"><img src="{{ asset('icons/billing.png') }}" alt="">Billing &amp; Payments</span>
-            <span class="pill"><img src="{{ asset('icons/announce.png') }}" alt="">Announcements</span>
-            <span class="pill"><img src="{{ asset('icons/maintenance.png') }}" alt="">Maintenance</span>
+        <div class="feature-strip" id="feature-strip">
+            <div class="feature-strip-icon" id="feature-icon">
+                <img src="{{ asset('icons/bed.png') }}" alt="" id="feature-img">
+            </div>
+            <div class="feature-strip-text">
+                <span id="feature-text"></span><span class="feature-cursor"></span>
+            </div>
         </div>
     </div>
 
@@ -1190,7 +1263,7 @@
     <div class="form-wrap">
 
         <div class="form-header">
-            <div class="eyebrow">Admin Portal</div>
+            <div class="eyebrow" id="eyebrow-label">Admin Portal</div>
             <h2>Welcome to<br><em>DormEase</em></h2>
             <p>Select your role and sign in with your credentials to continue.</p>
         </div>
@@ -1219,7 +1292,7 @@
             </button>
         </div>
 
-        <form method="POST" action="/login">
+        <form method="POST" action="/login" id="login-form">
             @csrf
 
             <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
@@ -1249,6 +1322,16 @@
                         oninvalid="this.setCustomValidity('Please enter a valid email address (e.g. you@example.com)')"
                         oninput="this.setCustomValidity('')"
                     >
+                    <span class="email-check" id="email-check">
+                        <svg viewBox="0 0 18 18" fill="none">
+                            <circle cx="9" cy="9" r="8.5" stroke="#16a34a" stroke-width="1.2"/>
+                            <path d="M5.5 9l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="field-error" id="email-field-error">
+                    <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6" stroke="#E8175D" stroke-width="1.2"/><path d="M6.5 4v3M6.5 9h.01" stroke="#E8175D" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    <span id="email-error-text"></span>
                 </div>
             </div>
 
@@ -1278,13 +1361,11 @@
                             id="pw-eye-icon"
                             src="{{ asset('icons/eye.png') }}"
                             alt="Toggle Password"
-                            style="width: 18px; height: 18px;"
+                            style="width:18px;height:18px;"
                         >
                     </button>
                 </div>
-                <div id="pw-hint" style="font-size:.73rem;color:var(--gray);margin-top:.3rem;display:none;">
-                    Must be at least 8 characters
-                </div>
+                <div class="pw-hint" id="pw-hint">Must be at least 8 characters</div>
             </div>
 
             <div class="field-row">
@@ -1296,7 +1377,8 @@
             </div>
 
             <button type="submit" class="de-btn-primary" id="login-btn">
-                Sign In
+                <span id="login-btn-text">Sign In</span>
+                <span class="btn-spinner" id="login-spinner"></span>
             </button>
         </form>
 
@@ -1304,7 +1386,7 @@
 </div>
 
 
-<div id="fp-overlay" style="display: none;" onclick="if (event.target === this) closeFP()">
+<div id="fp-overlay" style="display:none;" onclick="if(event.target===this)closeFP()">
     <div id="fp-sheet">
 
         <button id="fp-close" type="button" onclick="closeFP()" aria-label="Close">
@@ -1320,9 +1402,7 @@
 
             <div class="fp-role-row">
                 <button type="button" class="fp-role-btn" onclick="fpSetRole('admin')">
-                    <div class="fp-role-icon">
-                        <img src="{{ asset('icons/admin.png') }}" alt="Admin">
-                    </div>
+                    <div class="fp-role-icon"><img src="{{ asset('icons/admin.png') }}" alt="Admin"></div>
                     <div>
                         <div class="fp-role-name">Admin</div>
                         <div class="fp-role-desc">Full access account</div>
@@ -1333,9 +1413,7 @@
                 </button>
 
                 <button type="button" class="fp-role-btn" onclick="fpSetRole('frontdesk')">
-                    <div class="fp-role-icon">
-                        <img src="{{ asset('icons/staff.png') }}" alt="Front Desk">
-                    </div>
+                    <div class="fp-role-icon"><img src="{{ asset('icons/staff.png') }}" alt="Front Desk"></div>
                     <div>
                         <div class="fp-role-name">Front Desk</div>
                         <div class="fp-role-desc">Staff access account</div>
@@ -1347,7 +1425,7 @@
             </div>
         </div>
 
-        <div id="fp-step-admin" style="display: none;">
+        <div id="fp-step-admin" style="display:none;">
             <button type="button" class="fp-back" onclick="fpBack('admin')">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M12 7H2M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1360,9 +1438,8 @@
 
             <div id="fp-admin-email-step">
                 <p class="fp-sub">Enter your admin email address to verify your account.</p>
-                <div id="fp-admin-err" class="fp-alert" style="display: none;">
-                    <img src="{{ asset('icons/warning.png') }}" alt="Error">
-                    <span></span>
+                <div id="fp-admin-err" class="fp-alert" style="display:none;">
+                    <img src="{{ asset('icons/warning.png') }}" alt="Error"><span></span>
                 </div>
                 <div class="fp-field">
                     <label>Email Address</label>
@@ -1373,59 +1450,50 @@
                 </div>
                 <button type="button" class="fp-btn-primary" onclick="fpVerifyAdmin()">
                     <span id="fp-verify-txt">Verify Account</span>
-                    <span id="fp-verify-loader" class="fp-loader" style="display: none;"></span>
+                    <span id="fp-verify-loader" class="fp-loader" style="display:none;"></span>
                 </button>
             </div>
 
-            <div id="fp-admin-pw-step" style="display: none;">
+            <div id="fp-admin-pw-step" style="display:none;">
                 <p class="fp-sub">Choose a strong new password for your account.</p>
-                <div id="fp-pw-err" class="fp-alert" style="display: none;">
-                    <img src="{{ asset('icons/warning.png') }}" alt="Error">
-                    <span></span>
+                <div id="fp-pw-err" class="fp-alert" style="display:none;">
+                    <img src="{{ asset('icons/warning.png') }}" alt="Error"><span></span>
                 </div>
                 <div class="fp-field">
                     <label>New Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right: 2.8rem;">
-                        <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-new-pw', this)">
+                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right:2.8rem;">
+                        <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-new-pw',this)">
                             <img id="fp-eye-new" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
                     </div>
                     <div class="fp-strength-bar"><div id="fp-strength-fill"></div></div>
                     <div id="fp-strength-label" class="fp-strength-label"></div>
                     <div class="fp-requirements" id="fp-requirements">
-                        <div class="fp-req" id="req-length">
-                            <span class="fp-req-dot"></span>At least 8 characters
-                        </div>
-                        <div class="fp-req" id="req-upper">
-                            <span class="fp-req-dot"></span>One uppercase letter
-                        </div>
-                        <div class="fp-req" id="req-number">
-                            <span class="fp-req-dot"></span>One number
-                        </div>
-                        <div class="fp-req" id="req-special">
-                            <span class="fp-req-dot"></span>One special character
-                        </div>
+                        <div class="fp-req" id="req-length"><span class="fp-req-dot"></span>At least 8 characters</div>
+                        <div class="fp-req" id="req-upper"><span class="fp-req-dot"></span>One uppercase letter</div>
+                        <div class="fp-req" id="req-number"><span class="fp-req-dot"></span>One number</div>
+                        <div class="fp-req" id="req-special"><span class="fp-req-dot"></span>One special character</div>
                     </div>
                 </div>
                 <div class="fp-field">
                     <label>Confirm Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right: 2.8rem;">
-                        <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-confirm-pw', this)">
+                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right:2.8rem;">
+                        <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-confirm-pw',this)">
                             <img id="fp-eye-confirm" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
                     </div>
                 </div>
                 <button type="button" class="fp-btn-primary" onclick="fpResetAdminPassword()">
                     <span id="fp-reset-txt">Update Password</span>
-                    <span id="fp-reset-loader" class="fp-loader" style="display: none;"></span>
+                    <span id="fp-reset-loader" class="fp-loader" style="display:none;"></span>
                 </button>
             </div>
 
-            <div id="fp-admin-done" style="display: none;">
+            <div id="fp-admin-done" style="display:none;">
                 <div class="fp-success-wrap">
                     <div class="fp-success-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1439,7 +1507,7 @@
             </div>
         </div>
 
-        <div id="fp-step-frontdesk" style="display: none;">
+        <div id="fp-step-frontdesk" style="display:none;">
             <button type="button" class="fp-back" onclick="fpBack('frontdesk')">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M12 7H2M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1451,9 +1519,7 @@
             <h3 class="fp-title">Contact your<br><em>Admin</em></h3>
 
             <div class="fp-fd-card">
-                <div class="fp-fd-icon-wrap">
-                    <img src="{{ asset('icons/lock.png') }}" alt="">
-                </div>
+                <div class="fp-fd-icon-wrap"><img src="{{ asset('icons/lock.png') }}" alt=""></div>
                 <div class="fp-fd-card-body">
                     <div class="fp-fd-card-title">Request a temporary password</div>
                     <div class="fp-fd-card-desc">Ask your admin to reset your account. They will generate a temporary password for you to use.</div>
@@ -1483,20 +1549,87 @@
 
 
 <script>
+    var features = [
+        { text: 'Room Management',     icon: "{{ asset('icons/bed.png') }}" },
+        { text: 'Tenant Records',       icon: "{{ asset('icons/tenants.png') }}" },
+        { text: 'Billing & Payments',   icon: "{{ asset('icons/billing.png') }}" },
+        { text: 'Announcements',        icon: "{{ asset('icons/announce.png') }}" },
+        { text: 'Maintenance Reports',  icon: "{{ asset('icons/maintenance.png') }}" },
+    ];
+    var fIdx = 0, fCharIdx = 0, fDeleting = false, fPause = 0;
+    var fTextEl = document.getElementById('feature-text');
+    var fImgEl  = document.getElementById('feature-img');
+
+    function typeFeature() {
+        var current = features[fIdx].text;
+        if (fPause > 0) { fPause--; setTimeout(typeFeature, 80); return; }
+
+        if (!fDeleting) {
+            fTextEl.textContent = current.slice(0, fCharIdx + 1);
+            fCharIdx++;
+            if (fCharIdx === current.length) { fDeleting = true; fPause = 22; }
+            setTimeout(typeFeature, 75);
+        } else {
+            fTextEl.textContent = current.slice(0, fCharIdx - 1);
+            fCharIdx--;
+            if (fCharIdx === 0) {
+                fDeleting = false;
+                fIdx = (fIdx + 1) % features.length;
+                fImgEl.src = features[fIdx].icon;
+                fPause = 4;
+            }
+            setTimeout(typeFeature, 38);
+        }
+    }
+    setTimeout(typeFeature, 900);
+
+    var leftPanel  = document.getElementById('left-panel');
+    var studentWrap = document.getElementById('student-wrap');
+    var parallaxBase = 0;
+
+    leftPanel.addEventListener('mousemove', function (e) {
+        var rect = leftPanel.getBoundingClientRect();
+        var cx   = rect.width  / 2;
+        var cy   = rect.height / 2;
+        var dx   = (e.clientX - rect.left - cx) / cx;
+        var dy   = (e.clientY - rect.top  - cy) / cy;
+        var tx   = dx * 14;
+        var ty   = dy * 8;
+        studentWrap.style.transform = 'translateX(' + tx + 'px) translateY(calc(' + ty + 'px))';
+    });
+
+    leftPanel.addEventListener('mouseleave', function () {
+        studentWrap.style.transform = '';
+    });
+
     var fpAdminEmail = '';
 
     function setRole(role) {
-        ['admin', 'frontdesk'].forEach(function(r) {
+        ['admin', 'frontdesk'].forEach(function (r) {
             document.getElementById('role-' + r).classList.toggle('active', r === role);
         });
         document.getElementById('role-input').value = role;
-        document.querySelector('.eyebrow').textContent = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
+        document.getElementById('eyebrow-label').textContent = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
     }
 
     (function () {
         var saved = document.getElementById('role-input').value;
         if (saved) setRole(saved);
     })();
+
+    document.querySelectorAll('.role-btn').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            var r = document.createElement('span');
+            r.className = 'ripple';
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            r.style.width  = r.style.height = size + 'px';
+            r.style.left   = (e.clientX - rect.left  - size / 2) + 'px';
+            r.style.top    = (e.clientY - rect.top   - size / 2) + 'px';
+            btn.appendChild(r);
+            setTimeout(function () { r.remove(); }, 500);
+        });
+    });
 
     function togglePw() {
         var input = document.getElementById('password');
@@ -1505,6 +1638,88 @@
         input.type = show ? 'text' : 'password';
         icon.src   = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
     }
+
+    document.getElementById('password').addEventListener('input', function () {
+        var hint = document.getElementById('pw-hint');
+        hint.style.display = (this.value.length > 0 && this.value.length < 8) ? 'block' : 'none';
+    });
+
+    var emailInput = document.getElementById('email');
+    var emailCheck = document.getElementById('email-check');
+    var emailFieldErr = document.getElementById('email-field-error');
+    var emailErrText  = document.getElementById('email-error-text');
+
+    function isValidEmail(v) {
+        return /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v);
+    }
+
+    function showEmailErr(msg) {
+        emailErrText.textContent = msg;
+        emailFieldErr.classList.add('visible');
+        emailCheck.classList.remove('visible');
+        emailInput.classList.remove('input-valid');
+    }
+
+    function clearEmailErr() {
+        emailFieldErr.classList.remove('visible');
+    }
+
+    emailInput.addEventListener('input', function () {
+        var val = this.value.trim();
+        clearEmailErr();
+        if (val && isValidEmail(val)) {
+            emailCheck.classList.add('visible');
+            emailInput.classList.add('input-valid');
+        } else {
+            emailCheck.classList.remove('visible');
+            emailInput.classList.remove('input-valid');
+        }
+    });
+
+    emailInput.addEventListener('blur', function () {
+        var val = this.value.trim();
+        if (!val) { clearEmailErr(); return; }
+        if (!isValidEmail(val)) {
+            showEmailErr('Please enter a valid email address (e.g. you@example.com)');
+        }
+    });
+
+    @if ($errors->any())
+        (function () {
+            var inputs = document.querySelectorAll('.de-input');
+            inputs.forEach(function (inp) {
+                inp.classList.add('input-shake');
+                inp.addEventListener('animationend', function () {
+                    inp.classList.remove('input-shake');
+                }, { once: true });
+            });
+        })();
+    @endif
+
+    document.getElementById('login-btn').addEventListener('click', function (e) {
+        var form = document.getElementById('login-form');
+        var emailVal = emailInput.value.trim();
+
+        if (!emailVal) {
+            showEmailErr('Email address is required.');
+            emailInput.focus();
+            return;
+        }
+        if (!isValidEmail(emailVal)) {
+            showEmailErr('Please enter a valid email address (e.g. you@example.com)');
+            emailInput.focus();
+            return;
+        }
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        this.disabled = true;
+        document.getElementById('login-btn-text').style.display = 'none';
+        document.getElementById('login-spinner').style.display  = 'inline-block';
+        form.submit();
+    });
 
     function openFP() {
         document.getElementById('fp-overlay').style.display = 'flex';
@@ -1533,13 +1748,13 @@
     }
 
     function fpSetRole(role) {
-        document.getElementById('fp-step-role').style.display = 'none';
-        document.getElementById('fp-step-' + role).style.display = '';
+        document.getElementById('fp-step-role').style.display      = 'none';
+        document.getElementById('fp-step-' + role).style.display   = '';
     }
 
     function fpBack(role) {
         document.getElementById('fp-step-' + role).style.display = 'none';
-        document.getElementById('fp-step-role').style.display = '';
+        document.getElementById('fp-step-role').style.display     = '';
     }
 
     function fpShowErr(id, msg) {
@@ -1550,9 +1765,7 @@
         el.style.display = 'flex';
     }
 
-    function fpHideErr(id) {
-        document.getElementById(id).style.display = 'none';
-    }
+    function fpHideErr(id) { document.getElementById(id).style.display = 'none'; }
 
     function fpTogglePw(inputId, btn) {
         var input = document.getElementById(inputId);
@@ -1571,13 +1784,13 @@
         return score;
     }
 
-    document.getElementById('fp-new-pw').addEventListener('input', function() {
+    document.getElementById('fp-new-pw').addEventListener('input', function () {
         var val    = this.value;
         var score  = fpCheckStrength(val);
         var fill   = document.getElementById('fp-strength-fill');
         var label  = document.getElementById('fp-strength-label');
-        var colors = ['#DF0404', '#FF8C00', '#f0c040', '#22c55e'];
-        var labels = ['Weak', 'Fair', 'Good', 'Strong'];
+        var colors = ['#DF0404','#FF8C00','#f0c040','#22c55e'];
+        var labels = ['Weak','Fair','Good','Strong'];
 
         if (!val) {
             fill.style.width  = '0%';
@@ -1589,10 +1802,8 @@
             label.style.color     = colors[score - 1] || colors[0];
         }
 
-        var toggle = function(id, met) {
-            var el = document.getElementById(id);
-            if (met) el.classList.add('met');
-            else el.classList.remove('met');
+        var toggle = function (id, met) {
+            document.getElementById(id).classList.toggle('met', met);
         };
         toggle('req-length',  val.length >= 8);
         toggle('req-upper',   /[A-Z]/.test(val));
@@ -1610,10 +1821,7 @@
         var email = document.getElementById('fp-admin-email').value.trim();
         fpHideErr('fp-admin-err');
 
-        if (!email) {
-            fpShowErr('fp-admin-err', 'Please enter your email address.');
-            return;
-        }
+        if (!email) { fpShowErr('fp-admin-err', 'Please enter your email address.'); return; }
 
         var txt    = document.getElementById('fp-verify-txt');
         var loader = document.getElementById('fp-verify-loader');
@@ -1622,18 +1830,13 @@
 
         fetch('/forgot-password/verify', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': fpGetCsrf(),
-                'Accept':       'application/json'
-            },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
             body: JSON.stringify({ email: email })
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
             txt.style.display    = 'inline';
             loader.style.display = 'none';
-
             if (data.success) {
                 fpAdminEmail = email;
                 document.getElementById('fp-admin-email-step').style.display = 'none';
@@ -1642,7 +1845,7 @@
                 fpShowErr('fp-admin-err', data.message || 'No admin account found with that email.');
             }
         })
-        .catch(function() {
+        .catch(function () {
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             fpShowErr('fp-admin-err', 'Something went wrong. Please try again.');
@@ -1654,18 +1857,9 @@
         var confirm = document.getElementById('fp-confirm-pw').value;
         fpHideErr('fp-pw-err');
 
-        if (pw.length < 8) {
-            fpShowErr('fp-pw-err', 'Password must be at least 8 characters.');
-            return;
-        }
-        if (pw !== confirm) {
-            fpShowErr('fp-pw-err', 'Passwords do not match.');
-            return;
-        }
-        if (fpCheckStrength(pw) < 2) {
-            fpShowErr('fp-pw-err', 'Please choose a stronger password.');
-            return;
-        }
+        if (pw.length < 8)        { fpShowErr('fp-pw-err', 'Password must be at least 8 characters.'); return; }
+        if (pw !== confirm)       { fpShowErr('fp-pw-err', 'Passwords do not match.'); return; }
+        if (fpCheckStrength(pw) < 2) { fpShowErr('fp-pw-err', 'Please choose a stronger password.'); return; }
 
         var txt    = document.getElementById('fp-reset-txt');
         var loader = document.getElementById('fp-reset-loader');
@@ -1674,22 +1868,13 @@
 
         fetch('/forgot-password/reset', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': fpGetCsrf(),
-                'Accept':       'application/json'
-            },
-            body: JSON.stringify({
-                email:                 fpAdminEmail,
-                password:              pw,
-                password_confirmation: confirm
-            })
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
+            body: JSON.stringify({ email: fpAdminEmail, password: pw, password_confirmation: confirm })
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
             txt.style.display    = 'inline';
             loader.style.display = 'none';
-
             if (data.success) {
                 document.getElementById('fp-admin-pw-step').style.display = 'none';
                 document.getElementById('fp-admin-done').style.display    = '';
@@ -1699,55 +1884,12 @@
                 fpShowErr('fp-pw-err', data.message || 'Could not update password. Please try again.');
             }
         })
-        .catch(function() {
+        .catch(function () {
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
-    document.getElementById('email').addEventListener('blur', function () {
-        var val = this.value.trim();
-        if (!val) return;
-        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-        if (!valid) {
-            var errorBox = document.getElementById('js-email-error');
-            if (!errorBox) {
-                errorBox = document.createElement('div');
-                errorBox.id = 'js-email-error';
-                errorBox.className = 'de-alert-error';
-                errorBox.innerHTML = '<img src="{{ asset("icons/warning.png") }}" alt="Error"><span></span>';
-                this.closest('form').insertBefore(errorBox, this.closest('form').firstChild);
-            }
-            errorBox.querySelector('span').textContent = 'Please enter a valid email address (e.g. you@example.com)';
-            errorBox.style.display = 'flex';
-        }
-    });
-
-    document.getElementById('email').addEventListener('input', function () {
-        var errorBox = document.getElementById('js-email-error');
-        if (errorBox) errorBox.style.display = 'none';
-    });
-
-    document.getElementById('password').addEventListener('input', function () {
-        var hint = document.getElementById('pw-hint');
-        if (this.value.length > 0 && this.value.length < 8) {
-            hint.style.display = 'block';
-            hint.style.color = 'var(--red)';
-        } else {
-            hint.style.display = 'none';
-        }
-    });
-
-    document.getElementById('login-btn').addEventListener('click', function (e) {
-        var form = this.closest('form');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-        this.disabled = true;
-        this.innerHTML = '<span>Signing in\u2026</span>';
-        form.submit();
-    });
 </script>
 
 </body>
