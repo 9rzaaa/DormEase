@@ -649,7 +649,7 @@
                         };
                     @endphp
                     <div class="notif-item"
-                         onclick="handleNotifClick(event, this)"
+                         onclick="event.stopPropagation(); openNotifDetail(this)"       
                          data-notif='{!! json_encode([
                              "id"      => $notif->notif_id,
                              "type"    => $notifTypeLabel,
