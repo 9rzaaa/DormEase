@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRequest;
+use App\Models\ArchivedMaintReq;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -467,13 +468,23 @@ class MaintenanceController extends Controller
     {
         $tenantId = $request->user()?->tenant_id;
 
-        $requests = MaintenanceRequest::where('tenant_id', $tenantId)
+        $activeRequests = MaintenanceRequest::where('tenant_id', $tenantId)
             ->latest('submitted_at')
             ->get()
             ->map(fn($maintenance) => $this->formatRequest($maintenance));
 
+        $archivedRequests = ArchivedMaintReq::where('tenant_id', $tenantId)
+            ->where('archive_type', 'resolved')
+            ->latest('submitted_at')
+            ->get()
+            ->map(fn($archived) => $this->formatArchivedRequest($archived));
+
+        $allRequests = $activeRequests->concat($archivedRequests)
+            ->sortByDesc('submitted_at')
+            ->values();
+
         return response()->json([
-            'requests' => $requests,
+            'requests' => $allRequests,
         ]);
     }
 
@@ -575,6 +586,28 @@ class MaintenanceController extends Controller
             'resubmission_reason'       => $maintenance->resubmission_reason,
             'submitted_at'              => $this->formatApiDate($maintenance->submitted_at),
             'resolved_at'               => $this->formatApiDate($maintenance->resolved_at),
+        ];
+    }
+
+    private function formatArchivedRequest(ArchivedMaintReq $archived): array
+    {
+        return [
+            'id'                        => $archived->original_id,
+            'room_number'               => $archived->room_number,
+            'input_type'                => 'text',
+            'issue_type'                => $archived->issue_type,
+            'description'               => $archived->description,
+            'urgency_level'             => $archived->urgency_level,
+            'status'                    => $archived->status,
+            'admin_notes'               => $archived->admin_notes,
+            'admin_notes_at'            => $this->formatApiDate($archived->resolved_at ?? $archived->archived_at),
+            'photo_url'                 => $archived->photo_path
+                ? asset('storage/' . $archived->photo_path)
+                : null,
+            'resubmission_requested_at' => null,
+            'resubmission_reason'       => null,
+            'submitted_at'              => $this->formatApiDate($archived->submitted_at),
+            'resolved_at'               => $this->formatApiDate($archived->resolved_at),
         ];
     }
 
