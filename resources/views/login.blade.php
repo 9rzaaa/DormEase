@@ -464,7 +464,7 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        right: -44px;
+        right: 0;
         left: auto;
         transform: translateY(-60%) scale(0.4) rotate(18deg);
         width: 38px;
@@ -481,7 +481,7 @@
         transform: translate(-50%, -50%) scale(1);
     }
     .form-header-title:hover .title-logo {
-        opacity: 1;
+        opacity: 0.35;
         transform: translateY(-50%) scale(1) rotate(0deg);
     }
 
