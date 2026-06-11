@@ -41,7 +41,7 @@ class SettingsController extends Controller
 
         $keys = [
             'maintenance_new',
-            'maintenance_resubmission' => true,
+            'maintenance_resubmission',
             'emergency_new',
             'visitor_checkin',
             'visitor_checkout',

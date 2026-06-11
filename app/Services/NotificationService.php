@@ -50,6 +50,7 @@ class NotificationService
 
         $adminDefaults = [
             'maintenance_new'  => true,
+            'maintenance_resubmission' => true,
             'emergency_new'    => true,
             'visitor_checkin'  => false,
             'visitor_checkout' => false,

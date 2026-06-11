@@ -16,6 +16,7 @@ class NotificationComposer
         'emergency_new',
         'emergency_updated',
         'maintenance_new',
+        'maintenance_resubmission',
         'maintenance_update',
         'maintenance_updated',
         'maintenance_deleted',
