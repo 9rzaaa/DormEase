@@ -491,10 +491,6 @@
         outline:none;
     }
 
-    #edit-modal .modal-close{
-        display:none;
-    }
-
     .modal-field textarea{
         resize:vertical;
         min-height:100px;
@@ -1183,60 +1179,38 @@
         .aad-footer{padding:.75rem 1rem;}
     }
 
-    .edit-drawer-backdrop{
-        position:fixed;
-        inset:0;
-        background:rgba(232,23,93,.15);
-        backdrop-filter:blur(3px);
-        z-index:598;
-        opacity:0;
-        pointer-events:none;
-        transition:opacity .35s ease;
+
+    #edit-modal .modal{
+        max-width:560px;
+        width:100%;
+        padding:0;
+        overflow:hidden;
     }
 
-    .edit-drawer-backdrop.open{
-        opacity:1;
-        pointer-events:auto;
-    }
-
-    .edit-drawer{
-        position:fixed;
-        top:0;right:0;bottom:0;
-        width:min(540px,100vw);
-        background:var(--white);
-        z-index:599;
-        display:flex;
-        flex-direction:column;
-        transform:translateX(100%);
-        transition:transform .38s cubic-bezier(.4,0,.2,1);
-        box-shadow:-10px 0 48px rgba(214,51,117,.13);
-    }
-
-    .edit-drawer.open{
-        transform:translateX(0);
-    }
-
-    .ed-header{
-        padding:1.4rem 1.6rem 1.1rem;
+    .em-header{
+        padding:1.3rem 1.5rem 0;
         border-bottom:1px solid var(--pink-100);
+        background:var(--white);
+    }
+
+    .em-header-top{
         display:flex;
         align-items:flex-start;
         justify-content:space-between;
-        gap:1rem;
-        flex-shrink:0;
-        background:var(--white);
+        gap:.75rem;
+        margin-bottom:1rem;
     }
 
-    .ed-header-left{
+    .em-title-group{
         display:flex;
         align-items:center;
-        gap:.75rem;
+        gap:.65rem;
     }
 
-    .ed-icon{
-        width:38px;
-        height:38px;
-        border-radius:10px;
+    .em-icon{
+        width:34px;
+        height:34px;
+        border-radius:9px;
         background:var(--gradient-pink);
         display:flex;
         align-items:center;
@@ -1244,135 +1218,131 @@
         flex-shrink:0;
     }
 
-    .ed-icon img{
-        width:18px;
-        height:18px;
+    .em-icon img{
+        width:16px;
+        height:16px;
         object-fit:contain;
         filter:brightness(10);
     }
 
-    .ed-header-text{}
-
-    .ed-title{
-        font-size:1.1rem;
+    .em-title{
+        font-size:1rem;
         font-weight:800;
         color:var(--ink);
         letter-spacing:-.02em;
         line-height:1.2;
     }
 
-    .ed-sub{
-        font-size:.73rem;
+    .em-sub{
+        font-size:.7rem;
         color:var(--ink-muted);
-        margin-top:.18rem;
         font-weight:500;
+        margin-top:.1rem;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        max-width:280px;
     }
 
-    .ed-close{
-        width:32px;height:32px;
-        border-radius:8px;
+    .em-close{
+        width:30px;height:30px;
+        border-radius:7px;
         border:1px solid var(--pink-100);
         background:var(--petal);
         color:var(--bright-pink);
-        font-size:.85rem;
+        font-size:.8rem;
         cursor:pointer;
         display:flex;align-items:center;justify-content:center;
         transition:background .2s,color .2s;
         flex-shrink:0;
     }
 
-    .ed-close:hover{background:var(--pink-100);color:var(--hot-pink);}
+    .em-close:hover{background:var(--pink-100);color:var(--hot-pink);}
 
-    .ed-body{
-        flex:1;
-        overflow-y:auto;
-        padding:1.4rem 1.6rem;
+    .em-tabs{
         display:flex;
-        flex-direction:column;
-        gap:1.4rem;
+        gap:0;
     }
 
-    .ed-body::-webkit-scrollbar{width:4px;}
-    .ed-body::-webkit-scrollbar-track{background:transparent;}
-    .ed-body::-webkit-scrollbar-thumb{background:var(--pink-200);border-radius:99px;}
-
-    .ed-section{
-        display:flex;
-        flex-direction:column;
-        gap:.75rem;
-    }
-
-    .ed-section-label{
-        display:flex;
-        align-items:center;
-        gap:.5rem;
-        font-size:.7rem;
-        font-weight:800;
-        color:var(--hot-pink);
-        letter-spacing:.08em;
-        text-transform:uppercase;
-    }
-
-    .ed-section-label::after{
-        content:'';
-        flex:1;
-        height:1px;
-        background:var(--pink-100);
-    }
-
-    .ed-body .modal-field{
-        margin-bottom:0;
-    }
-
-    .ed-body .modal-field label{
-        font-size:.75rem;
+    .em-tab{
+        padding:.62rem 1.1rem;
+        font-size:.8rem;
         font-weight:700;
         color:var(--ink-muted);
-        text-transform:uppercase;
-        letter-spacing:.05em;
-        margin-bottom:.35rem;
-        display:block;
-    }
-
-    .ed-body .modal-field input[type="text"],
-    .ed-body .modal-field textarea{
-        width:100%;
-        box-sizing:border-box;
-        border:1.5px solid var(--border);
-        border-radius:10px;
-        padding:.65rem .9rem;
-        font-size:.9rem;
-        color:var(--ink);
-        background:var(--soft-bg, #fafafa);
+        cursor:pointer;
+        border:none;
+        background:none;
+        border-bottom:2.5px solid transparent;
+        transition:color .18s, border-color .18s;
+        display:flex;
+        align-items:center;
+        gap:.38rem;
+        white-space:nowrap;
         font-family:var(--ff-body);
-        transition:border-color .15s, background .15s;
+        margin-bottom:-1px;
     }
 
-    .ed-body .modal-field input[type="text"]:focus,
-    .ed-body .modal-field textarea:focus{
-        border-color:var(--hot-pink);
-        background:var(--white);
-        outline:none;
+    .em-tab img{
+        width:13px;height:13px;
+        object-fit:contain;
+        opacity:.5;
+        transition:opacity .18s;
     }
 
-    .ed-body .modal-field textarea{
-        min-height:110px;
-        resize:vertical;
-        line-height:1.65;
+    .em-tab:hover{
+        color:var(--hot-pink);
     }
 
-    .ed-body .modal-grid-2{
+    .em-tab:hover img{
+        opacity:.8;
+    }
+
+    .em-tab.active{
+        color:var(--hot-pink);
+        border-bottom-color:var(--hot-pink);
+    }
+
+    .em-tab.active img{
+        opacity:1;
+    }
+
+    .em-panels{
+        padding:1.3rem 1.5rem;
+        min-height:240px;
+    }
+
+    .em-panel{
+        display:none;
+        flex-direction:column;
+        gap:.9rem;
+        animation:emFadeIn .18s ease both;
+    }
+
+    .em-panel.active{
+        display:flex;
+    }
+
+    @keyframes emFadeIn{
+        from{opacity:0;transform:translateY(5px);}
+        to{opacity:1;transform:translateY(0);}
+    }
+
+    #edit-modal .modal-field{
         margin-bottom:0;
     }
 
-    .ed-pill-row{
+    #edit-modal .modal-grid-2{
+        margin-bottom:0;
+    }
+
+    .em-pill-row{
         display:flex;
-        gap:.5rem;
+        gap:.45rem;
         flex-wrap:wrap;
     }
 
-    .ed-pill-opt{
-        padding:.38rem .9rem;
+    .em-pill-opt{
+        padding:.36rem .85rem;
         border-radius:99px;
         border:1.5px solid var(--border);
         font-size:.78rem;
@@ -1384,45 +1354,45 @@
         background:var(--white);
     }
 
-    .ed-pill-opt:hover{
+    .em-pill-opt:hover{
         border-color:var(--hot-pink);
         color:var(--hot-pink);
         background:var(--petal);
     }
 
-    .ed-pill-opt.sel-low    { border-color:var(--green); color:var(--green);   background:#f0fdf8; }
-    .ed-pill-opt.sel-moderate{ border-color:#f59e0b;  color:#c8960c;   background:#fff8eb; }
-    .ed-pill-opt.sel-high   { border-color:var(--red);   color:var(--red);     background:#fff0f0; }
-    .ed-pill-opt.sel-active { border-color:var(--hot-pink); color:var(--hot-pink); background:var(--petal); }
-    .ed-pill-opt.sel-closed { border-color:var(--ink-muted); color:var(--ink-muted); background:var(--gray-light,#f3f4f6); }
+    .em-pill-opt.sel-low     { border-color:var(--green);      color:var(--green);      background:#f0fdf8; }
+    .em-pill-opt.sel-moderate{ border-color:#f59e0b;            color:#c8960c;           background:#fff8eb; }
+    .em-pill-opt.sel-high    { border-color:var(--red);         color:var(--red);        background:#fff0f0; }
+    .em-pill-opt.sel-active  { border-color:var(--hot-pink);    color:var(--hot-pink);   background:var(--petal); }
+    .em-pill-opt.sel-closed  { border-color:var(--ink-muted);   color:var(--ink-muted);  background:var(--gray-light,#f3f4f6); }
 
-    .ed-file-zone{
+    .em-file-zone{
         border:1.5px dashed var(--pink-200);
         border-radius:12px;
         padding:1rem 1.1rem;
         background:var(--blush);
         display:flex;
         flex-direction:column;
-        gap:.5rem;
+        gap:.45rem;
     }
 
-    .ed-file-zone input[type="file"]{
+    .em-file-zone input[type="file"]{
         font-size:.82rem;
         color:var(--ink-muted);
         font-family:var(--ff-body);
     }
 
-    .ed-file-note{
-        font-size:.73rem;
+    .em-file-note{
+        font-size:.72rem;
         color:var(--ink-muted);
         line-height:1.5;
     }
 
-    .ed-replace-row{
+    .em-replace-row{
         display:flex;
         align-items:center;
         gap:.5rem;
-        padding:.55rem .75rem;
+        padding:.5rem .75rem;
         border-radius:9px;
         border:1px solid var(--pink-100);
         background:var(--petal);
@@ -1430,68 +1400,71 @@
         transition:background .2s;
     }
 
-    .ed-replace-row:hover{
-        background:var(--blush);
-    }
+    .em-replace-row:hover{ background:var(--blush); }
 
-    .ed-replace-row input[type="checkbox"]{
-        width:15px;height:15px;
+    .em-replace-row input[type="checkbox"]{
+        width:14px;height:14px;
         accent-color:var(--hot-pink);
         cursor:pointer;
         flex-shrink:0;
     }
 
-    .ed-replace-row span{
-        font-size:.78rem;
+    .em-replace-row span{
+        font-size:.77rem;
         font-weight:600;
         color:var(--hot-pink);
         line-height:1.4;
     }
 
-    .ed-body .schedule-toggle-row{
-        margin-bottom:0;
-    }
-
-    .ed-body .schedule-fields{
-        margin-bottom:0;
-    }
-
-    .ed-footer{
-        padding:1rem 1.6rem;
+    .em-footer{
+        padding:.9rem 1.5rem;
         border-top:1px solid var(--pink-100);
-        background:var(--white);
         display:flex;
         align-items:center;
-        justify-content:flex-end;
+        justify-content:space-between;
         gap:.75rem;
-        flex-shrink:0;
     }
 
-    .ed-footer .btn-cancel{
-        padding:.62rem 1.3rem;
-    }
-
-    .ed-footer .btn-submit{
-        padding:.62rem 1.6rem;
+    .em-tab-nav{
         display:flex;
         align-items:center;
-        gap:.45rem;
-        font-size:.88rem;
+        gap:.5rem;
     }
 
-    .ed-footer .btn-submit img{
-        width:15px;height:15px;
-        object-fit:contain;
-        filter:brightness(10);
+    .em-nav-btn{
+        padding:.45rem .9rem;
+        border-radius:8px;
+        border:1.5px solid var(--border);
+        background:var(--white);
+        font-size:.78rem;
+        font-weight:600;
+        color:var(--ink-muted);
+        cursor:pointer;
+        transition:.2s;
+        font-family:var(--ff-body);
+        display:flex;
+        align-items:center;
+        gap:.3rem;
     }
 
-    @media(max-width:700px){
-        .edit-drawer{width:100vw;}
-        .ed-header{padding:1.1rem 1rem .9rem;}
-        .ed-body{padding:1.1rem 1rem;}
-        .ed-footer{padding:.85rem 1rem;}
-        .ed-body .modal-grid-2{grid-template-columns:1fr;}
+    .em-nav-btn:hover{
+        border-color:var(--hot-pink);
+        color:var(--hot-pink);
+        background:var(--pink-bg);
     }
+
+    .em-nav-btn:disabled{
+        opacity:.35;
+        pointer-events:none;
+    }
+
+    .em-footer-actions{
+        display:flex;
+        gap:.6rem;
+    }
+
+    #edit-modal .schedule-toggle-row{ margin-bottom:0; }
+    #edit-modal .schedule-fields{ margin-bottom:0; }
 </style>
 @endsection
 
@@ -1583,7 +1556,7 @@
                             <div class="ann-menu-wrap">
                                 <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-all-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditDrawer({{ $ann->announcement_id }}, event)">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
                                     </button>
                                     @if($ann->status !== 'closed')
@@ -1644,7 +1617,7 @@
                             <div class="ann-menu-wrap">
                                 <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-act-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditDrawer({{ $ann->announcement_id }}, event)">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
                                     </button>
                                     <button class="ann-dropdown-item" onclick="submitForm('close-{{ $ann->announcement_id }}', event)">
@@ -1695,7 +1668,7 @@
                             <div class="ann-menu-wrap">
                                 <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-cls-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditDrawer({{ $ann->announcement_id }}, event)">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
                                     </button>
                                     <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
@@ -1744,7 +1717,7 @@
                             <div class="ann-menu-wrap">
                                 <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-sched-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
                                 <div class="ann-dropdown" id="menu-sched-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditDrawer({{ $ann->announcement_id }}, event)">
+                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
                                         <img src="{{ asset('icons/edit.png') }}" alt=""> Edit / Reschedule
                                     </button>
                                     <button class="ann-dropdown-item" onclick="submitForm('publish-now-{{ $ann->announcement_id }}', event)">
@@ -1889,110 +1862,115 @@
     </div>
 </div>
 
-<div class="edit-drawer-backdrop" id="edit-drawer-backdrop" onclick="closeEditDrawer()"></div>
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal">
 
-<div class="edit-drawer" id="edit-drawer">
-
-    <div class="ed-header">
-        <div class="ed-header-left">
-            <div class="ed-icon">
-                <img src="{{ asset('icons/edit.png') }}" alt="">
+        <div class="em-header">
+            <div class="em-header-top">
+                <div class="em-title-group">
+                    <div class="em-icon">
+                        <img src="{{ asset('icons/edit.png') }}" alt="">
+                    </div>
+                    <div>
+                        <div class="em-title">Edit Announcement</div>
+                        <div class="em-sub" id="em-sub-label">Editing announcement</div>
+                    </div>
+                </div>
+                <button class="em-close" onclick="closeModal('edit-modal')">&#x2715;</button>
             </div>
-            <div class="ed-header-text">
-                <div class="ed-title">Edit Announcement</div>
-                <div class="ed-sub" id="ed-sub-label">Editing announcement</div>
+            <div class="em-tabs">
+                <button class="em-tab active" onclick="switchTab(0)" id="em-tab-0">
+                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
+                </button>
+                <button class="em-tab" onclick="switchTab(1)" id="em-tab-1">
+                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
+                </button>
+                <button class="em-tab" onclick="switchTab(2)" id="em-tab-2">
+                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
+                </button>
             </div>
         </div>
-        <button class="ed-close" onclick="closeEditDrawer()">&#x2715;</button>
-    </div>
 
-    <div class="ed-body">
         <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
             @method('PUT')
 
-            <div class="ed-section">
-                <div class="ed-section-label">Content</div>
+            <div class="em-panels">
 
-                <div class="modal-field">
-                    <label>Title</label>
-                    <input type="text" name="title" id="edit-title" required placeholder="Announcement title">
-                </div>
-
-                <div class="modal-field">
-                    <label>Body</label>
-                    <textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea>
-                </div>
-            </div>
-
-            <div class="ed-section">
-                <div class="ed-section-label">Settings</div>
-
-                <div class="modal-field">
-                    <label>Priority</label>
-                    <div class="ed-pill-row" id="edit-priority-pills">
-                        <span class="ed-pill-opt" data-val="low"      onclick="selectPill('priority','low')">Low</span>
-                        <span class="ed-pill-opt" data-val="moderate" onclick="selectPill('priority','moderate')">Moderate</span>
-                        <span class="ed-pill-opt" data-val="high"     onclick="selectPill('priority','high')">High</span>
-                    </div>
-                    <input type="hidden" name="priority" id="edit-priority">
-                </div>
-
-                <div class="modal-field" id="edit-status-field">
-                    <label>Status</label>
-                    <div class="ed-pill-row" id="edit-status-pills">
-                        <span class="ed-pill-opt" data-val="active" onclick="selectPill('status','active')">Active</span>
-                        <span class="ed-pill-opt" data-val="closed" onclick="selectPill('status','closed')">Closed</span>
-                    </div>
-                    <input type="hidden" name="status" id="edit-status">
-                </div>
-            </div>
-
-            <div class="ed-section">
-                <div class="ed-section-label">Schedule</div>
-
-                <div class="schedule-toggle-row" onclick="toggleSchedule('edit')">
-                    <span class="schedule-toggle-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Schedule for later
-                    </span>
-                    <span class="schedule-toggle-switch" id="edit-sched-switch"></span>
-                </div>
-
-                <div class="schedule-fields" id="edit-sched-fields">
+                <div class="em-panel active" id="em-panel-0">
                     <div class="modal-field">
-                        <label>Publish Date &amp; Time</label>
-                        <input type="datetime-local" name="scheduled_at" id="edit-scheduled-at">
-                        <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                        <label>Title *</label>
+                        <input type="text" name="title" id="edit-title" required placeholder="Announcement title">
+                    </div>
+                    <div class="modal-field">
+                        <label>Content *</label>
+                        <textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea>
                     </div>
                 </div>
-            </div>
 
-            <div class="ed-section">
-                <div class="ed-section-label">Attachments</div>
+                <div class="em-panel" id="em-panel-1">
+                    <div class="modal-field">
+                        <label>Priority</label>
+                        <div class="em-pill-row" id="edit-priority-pills">
+                            <span class="em-pill-opt" data-val="low"      onclick="selectPill('priority','low')">Low</span>
+                            <span class="em-pill-opt" data-val="moderate" onclick="selectPill('priority','moderate')">Moderate</span>
+                            <span class="em-pill-opt" data-val="high"     onclick="selectPill('priority','high')">High</span>
+                        </div>
+                        <input type="hidden" name="priority" id="edit-priority">
+                    </div>
 
-                <div class="ed-file-zone">
-                    <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
-                    <div class="ed-file-note" id="edit-current-files">No existing files.</div>
+                    <div class="modal-field" id="edit-status-field">
+                        <label>Status</label>
+                        <div class="em-pill-row" id="edit-status-pills">
+                            <span class="em-pill-opt" data-val="active" onclick="selectPill('status','active')">Active</span>
+                            <span class="em-pill-opt" data-val="closed" onclick="selectPill('status','closed')">Closed</span>
+                        </div>
+                        <input type="hidden" name="status" id="edit-status">
+                    </div>
+
+                    <div class="schedule-toggle-row" onclick="toggleSchedule('edit')">
+                        <span class="schedule-toggle-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Schedule for later
+                        </span>
+                        <span class="schedule-toggle-switch" id="edit-sched-switch"></span>
+                    </div>
+
+                    <div class="schedule-fields" id="edit-sched-fields">
+                        <div class="modal-field">
+                            <label>Publish Date &amp; Time</label>
+                            <input type="datetime-local" name="scheduled_at" id="edit-scheduled-at">
+                            <div class="schedule-note">The announcement will go live automatically at this time.</div>
+                        </div>
+                    </div>
                 </div>
 
-                <label class="ed-replace-row">
-                    <input type="checkbox" name="replace_attachments" value="1">
-                    <span>Replace existing files with the new upload</span>
-                </label>
+                <div class="em-panel" id="em-panel-2">
+                    <div class="em-file-zone">
+                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <div class="em-file-note" id="edit-current-files">No existing files.</div>
+                    </div>
+                    <label class="em-replace-row">
+                        <input type="checkbox" name="replace_attachments" value="1">
+                        <span>Replace existing files with the new upload</span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="em-footer">
+                <div class="em-tab-nav">
+                    <button type="button" class="em-nav-btn" id="em-prev-btn" onclick="switchTab(window._emTab - 1)" disabled>&#8592; Prev</button>
+                    <button type="button" class="em-nav-btn" id="em-next-btn" onclick="switchTab(window._emTab + 1)">Next &#8594;</button>
+                </div>
+                <div class="em-footer-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+                    <button type="button" class="btn-submit" id="edit-submit-btn" onclick="submitEditModal()">Save Changes</button>
+                </div>
             </div>
 
         </form>
     </div>
-
-    <div class="ed-footer">
-        <button type="button" class="btn-cancel" onclick="closeEditDrawer()">Cancel</button>
-        <button type="button" class="btn-submit" id="edit-submit-btn" onclick="submitEditDrawer()">
-            <img src="{{ asset('icons/edit.png') }}" alt="">
-            Save Changes
-        </button>
-    </div>
-
 </div>
 
 <div class="modal-overlay" id="view-modal">
@@ -2261,10 +2239,11 @@
         }
     }
 
+    /* ─── Pill select helpers ─── */
     function selectPill(type, val) {
         const row = document.getElementById('edit-' + type + '-pills');
-        row.querySelectorAll('.ed-pill-opt').forEach(p => {
-            p.className = 'ed-pill-opt';
+        row.querySelectorAll('.em-pill-opt').forEach(p => {
+            p.className = 'em-pill-opt';
             if (p.dataset.val === val) p.classList.add('sel-' + val);
         });
         document.getElementById('edit-' + type).value = val;
@@ -2275,7 +2254,25 @@
         selectPill('status',   ann.status   || 'active');
     }
 
-    function openEditDrawer(id, e) {
+    /* ─── Tab switching ─── */
+    window._emTab = 0;
+    const EM_TABS = 3;
+
+    function switchTab(idx) {
+        if (idx < 0 || idx >= EM_TABS) return;
+        window._emTab = idx;
+
+        for (let i = 0; i < EM_TABS; i++) {
+            document.getElementById('em-tab-' + i).classList.toggle('active', i === idx);
+            document.getElementById('em-panel-' + i).classList.toggle('active', i === idx);
+        }
+
+        document.getElementById('em-prev-btn').disabled = (idx === 0);
+        document.getElementById('em-next-btn').disabled = (idx === EM_TABS - 1);
+    }
+
+    /* ─── Edit Modal ─── */
+    function openEditModal(id, e) {
         if (e) e.stopPropagation();
         const ann = annData[id];
         if (!ann) return;
@@ -2285,9 +2282,11 @@
         document.getElementById('edit-title').value   = ann.title   || '';
         document.getElementById('edit-content').value = ann.content || '';
         document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
-        document.getElementById('ed-sub-label').textContent = `#${id} · ${ann.title ? ann.title.slice(0, 38) + (ann.title.length > 38 ? '…' : '') : ''}`;
+        document.getElementById('em-sub-label').textContent =
+            `#${id} · ${ann.title ? ann.title.slice(0, 42) + (ann.title.length > 42 ? '…' : '') : ''}`;
 
         initPills(ann);
+        switchTab(0);
 
         const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
         if (isScheduled) {
@@ -2301,23 +2300,15 @@
             toggleSchedule('edit', false);
         }
 
-        document.getElementById('edit-drawer').classList.add('open');
-        document.getElementById('edit-drawer-backdrop').classList.add('open');
+        openModal('edit-modal');
     }
 
-    function closeEditDrawer() {
-        document.getElementById('edit-drawer').classList.remove('open');
-        document.getElementById('edit-drawer-backdrop').classList.remove('open');
-    }
-
-    function submitEditDrawer() {
+    function submitEditModal() {
         const form = document.getElementById('edit-form');
         if (!form.checkValidity()) { form.reportValidity(); return; }
         setFormLoading(form, 'Saving changes...');
         form.submit();
     }
-
-    function openEditModal(id, e) { openEditDrawer(id, e); }
 
     function openViewModal(id) {
         const ann = annData[id];
