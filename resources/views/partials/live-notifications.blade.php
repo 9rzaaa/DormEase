@@ -67,7 +67,12 @@
 
             list.innerHTML = '';
             notifications.forEach(function(notif) {
-                var isReservation = notif.type === 'reservation';
+                var isReservation = notif.type === 'tenant_reserved';
+
+                var resolvedIcon = notif.icon;
+                if (isReservation && (!resolvedIcon || resolvedIcon === '')) {
+                    resolvedIcon = '{{ asset("icons/pending.png") }}';
+                }
 
                 var item = document.createElement('div');
                 item.className = 'notif-dd-item'
@@ -79,7 +84,7 @@
                     : '<div class="notif-unread-dot"></div>';
 
                 var iconHtml = '<div class="notif-dd-icon' + (isReservation ? ' reservation-icon' : '') + '">'
-                    + '<img src="' + escapeHtml(notif.icon) + '" alt="" onerror="this.src=\'{{ asset("icons/bell.png") }}\'">'
+                    + '<img src="' + escapeHtml(resolvedIcon) + '" alt="" onerror="this.src=\'{{ asset("icons/bell.png") }}\'">'
                     + '</div>';
 
                 var typeLabelHtml = isReservation
@@ -94,11 +99,43 @@
 
                 item.innerHTML = dotHtml + iconHtml + bodyHtml;
 
-                item.addEventListener('click', function() {
-                    openNotifDetail(notif);
-                    notif.isRead = true;
-                    item.classList.remove('unread');
-                });
+                item.addEventListener('click', (function(n, ri) {
+                    return function() {
+                        var typeMap = {
+                            'tenant_reserved':  'reservation',
+                            'maintenance':      'maintenance',
+                            'emergency':        'emergency',
+                            'billing':          'billing',
+                            'document':         'document',
+                            'announcement':     'announcement',
+                            'visitor':          'visitor',
+                            'tenant':           'tenant',
+                        };
+                        var mappedType = typeMap[n.type];
+                        if (!mappedType) {
+                            var keys = Object.keys(typeMap);
+                            for (var i = 0; i < keys.length; i++) {
+                                if (n.type && n.type.indexOf(keys[i]) === 0) {
+                                    mappedType = typeMap[keys[i]];
+                                    break;
+                                }
+                            }
+                        }
+                        var notifForModal = {
+                            id:      n.id,
+                            type:    mappedType || n.type || 'general',
+                            icon:    ri,
+                            message: n.message,
+                            time:    n.time || '',
+                            ago:     n.ago || '',
+                            url:     n.url || '',
+                            isRead:  n.isRead,
+                        };
+                        openNotifDetail(notifForModal);
+                        n.isRead = true;
+                        item.classList.remove('unread');
+                    };
+                })(notif, resolvedIcon));
 
                 list.appendChild(item);
             });
