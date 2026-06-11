@@ -2979,8 +2979,8 @@ function exportAdminLog(format) {
                 + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
                 + '</tr>';
         }).join('');
-        var dateLabel = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
-        var subtitle  = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
+        var dateLabelMap = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
+        var subtitle  = 'Filter: ' + (actionLabel[adminLogFilter] || 'All') + '  &nbsp;&bull;&nbsp;  Date: ' + (dateLabelMap[adminDateFilter] || 'All Dates');
         win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
             + '<style>'
             + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
