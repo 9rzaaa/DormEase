@@ -70,13 +70,34 @@ class BillingController extends Controller
             ->get()
             ->keyBy('billing_id');
 
+        // ── Past due billing (older unpaid/overdue/rejected records) ──────────
+        $pastDueBillings = WaterBilling::where('tenant_id', $tenant->tenant_id)
+            ->where('billing_month', '<', $currentBilling->billing_month)
+            ->whereIn('payment_status', ['unpaid', 'overdue', 'rejected'])
+            ->orderBy('billing_month')
+            ->get();
+
+        $totalPastDue = $pastDueBillings->sum('room_share');
+
+        $pastDueBillsData = $pastDueBillings->map(function ($b) {
+            return [
+                'id'             => $b->billing_id,
+                'billing_period' => Carbon::parse($b->billing_month)->format('F Y'),
+                'due_date'       => $b->due_date
+                    ? Carbon::parse($b->due_date)->format('F d, Y')
+                    : '—',
+                'amount'         => number_format($b->room_share, 2),
+                'status'         => ucfirst($b->payment_status ?? 'unpaid'),
+            ];
+        })->values()->toArray();
+
         // ── Build response ────────────────────────────────────────────────────
         $currentBillingData = [
             'id'             => $currentBilling->billing_id,
             'room_number'    => $tenant->room_number,
             'billing_period' => Carbon::parse($currentBilling->billing_month)->format('F Y'),
             'as_of'          => now()->format('F d, Y'),
-            'amount_due'     => number_format($currentBilling->room_share, 2),
+            'amount_due'     => number_format($currentBilling->room_share + $totalPastDue, 2),
             'due_date'       => $currentBilling->due_date
                 ? Carbon::parse($currentBilling->due_date)->format('F d, Y')
                 : '—',
@@ -88,6 +109,9 @@ class BillingController extends Controller
             'payment_submitted_at' => $currentBilling->payment_submitted_at
                 ? Carbon::parse($currentBilling->payment_submitted_at)->format('F d, Y h:i A')
                 : null,
+            'current_charges' => number_format($currentBilling->room_share, 2),
+            'past_due_amount' => number_format($totalPastDue, 2),
+            'past_due_bills'  => $pastDueBillsData,
         ];
 
         $breakdownData = [
