@@ -215,7 +215,7 @@ tbody tr:hover { background: var(--soft-bg); }
 }
 
 .badge-active   { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
-.badge-pending  { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
+.badge-pending  { background: #eef4ff; color: #3b6fd4; border: 1px solid #a8c4f5; }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-reserved { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
 .badge-moveout  { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
