@@ -444,6 +444,7 @@
     .form-header-title {
         position: relative;
         cursor: default;
+        isolation: isolate;
     }
 
     .form-header-title .title-halo {
@@ -451,28 +452,29 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%) scale(0.6);
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
         background: radial-gradient(ellipse at center, rgba(232,23,93,.13) 0%, transparent 70%);
         border-radius: 50%;
         opacity: 0;
         pointer-events: none;
         transition: opacity .35s ease, transform .4s cubic-bezier(.22,1,.36,1);
-        z-index: -1;
+        z-index: 0;
     }
 
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        left: -18px;
+        left: -32px;
         transform: translateY(-50%) scale(0.5) rotate(-12deg);
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         object-fit: contain;
         opacity: 0;
         pointer-events: none;
         transition: opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
-        filter: drop-shadow(0 2px 8px rgba(232,23,93,.3));
+        filter: drop-shadow(0 2px 8px rgba(232,23,93,.35));
+        z-index: 1;
     }
 
     .form-header-title:hover .title-halo {
