@@ -206,11 +206,7 @@
             pointer-events: none;
             transition: opacity .2s ease, transform .2s ease;
         }
-        #notif-wrap:hover .notif-dropdown {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
+        #notif-wrap:hover .notif-dropdown,
         .notif-dropdown.locked {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -581,7 +577,7 @@
         <div class="topbar-right">
 
             <div id="notif-wrap">
-                <div class="notif-bell" id="notif-bell" title="Notifications">
+                <div class="notif-bell" id="notif-bell" title="Notifications" onclick="toggleNotifDropdown(event)">
                     <img src="{{ asset('icons/bell.png') }}" class="icon-sm" alt="Notifications">
                     @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
                         <span class="notif-badge" id="notif-badge">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
@@ -625,7 +621,7 @@
                                     @endphp
 
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
-                                         onclick="openNotifDetail(this)"
+                                         onclick="handleNotifClick(event, this)"
                                          data-notif='{!! json_encode([
                                              "id"      => $notif->notif_id,
                                              "type"    => $notifTypeLabel,
@@ -867,6 +863,28 @@
         if (e.target === document.getElementById(id)) closeModal(id);
     }
 
+    function toggleNotifDropdown(e) {
+        e.stopPropagation();
+        var dd = document.getElementById('notif-dropdown');
+        if (!dd) return;
+        dd.classList.toggle('locked');
+    }
+
+    document.addEventListener('click', function(e) {
+        var wrap = document.getElementById('notif-wrap');
+        if (wrap && !wrap.contains(e.target)) {
+            var dd = document.getElementById('notif-dropdown');
+            if (dd) dd.classList.remove('locked');
+        }
+    });
+
+    window.handleNotifClick = function(e, el) {
+        e.stopPropagation();
+        var dd = document.getElementById('notif-dropdown');
+        if (dd) dd.classList.remove('locked');
+        openNotifDetail(el);
+    };
+
     function showToast(msg, type) {
         type = type || '';
         var t = document.getElementById('toast');
@@ -956,7 +974,6 @@
                         if (current <= 1) { b.remove(); }
                         else              { b.textContent = current - 1; }
                     }
-                    /* If source was a DOM element, update its visual state */
                     if (source && source.nodeType) {
                         source.classList.remove('unread');
                         var dot = source.querySelector('.notif-unread-dot');
