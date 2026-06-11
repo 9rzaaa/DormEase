@@ -402,6 +402,7 @@
     .notif-detail-type-badge.document     { background: var(--blush); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .notif-detail-type-badge.announcement { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
     .notif-detail-type-badge.tenant       { background: var(--blush); color: var(--bright-pink); border: 1.5px solid var(--baby-pink); }
+    .notif-detail-type-badge.reservation  { background: #fff8e0; color: #9a6200; border: 1.5px solid #f0c840; }
     .notif-detail-type-badge.visitor      { background: #f5f3ff; color: #6d28d9; border: 1.5px solid #ddd6fe; }
     .notif-detail-type-badge.general      { background: var(--petal); color: var(--ink-muted); border: 1.5px solid var(--baby-pink); }
 
@@ -610,10 +611,11 @@
                                             str_starts_with($notif->type, 'document')     => 'document',
                                             str_starts_with($notif->type, 'announcement') => 'announcement',
                                             str_starts_with($notif->type, 'visitor')      => 'visitor',
+                                            $notif->type === 'tenant_reserved'            => 'reservation',
                                             str_starts_with($notif->type, 'tenant')       => 'tenant',
                                             default                                        => 'general',
                                         };
-                                    @endphp
+                                        @endphp
 
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }}"
                                          onclick="openNotifDetail({
@@ -784,6 +786,7 @@
         announcement: 'Announcement',
         visitor:      'Visitor',
         tenant:       'Tenant',
+        reservation:  'Reservation',
         general:      'General',
     };
 
