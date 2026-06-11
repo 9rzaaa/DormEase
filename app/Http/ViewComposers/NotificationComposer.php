@@ -26,6 +26,7 @@ class NotificationComposer
         'tenant_updated',
         'tenant_reactivated',
         'tenant_deleted',
+        'tenant_reserved',
     ];
 
     const FRONTDESK_TYPES = [
@@ -39,6 +40,7 @@ class NotificationComposer
         'tenant_updated',
         'tenant_reactivated',
         'tenant_deleted',
+        'tenant_reserved',
     ];
 
     public static function visibleTypesFor(?string $role): array
