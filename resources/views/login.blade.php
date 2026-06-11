@@ -303,19 +303,33 @@
     .right::before {
         content: '';
         position: absolute;
-        top: 0; right: 0;
-        width: 220px; height: 220px;
-        background: radial-gradient(ellipse at top right, var(--pink-100) 0%, transparent 70%);
+        top: -60px; right: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(ellipse at center, rgba(255,176,206,.22) 0%, transparent 68%);
+        border-radius: 50%;
         pointer-events: none;
+        animation: orbDrift1 12s ease-in-out infinite;
     }
 
     .right::after {
         content: '';
         position: absolute;
-        bottom: 0; left: 0;
-        width: 180px; height: 180px;
-        background: radial-gradient(ellipse at bottom left, var(--pink-100) 0%, transparent 70%);
+        bottom: -60px; left: -60px;
+        width: 280px; height: 280px;
+        background: radial-gradient(ellipse at center, rgba(232,23,93,.10) 0%, transparent 68%);
+        border-radius: 50%;
         pointer-events: none;
+        animation: orbDrift2 16s ease-in-out infinite;
+    }
+
+    @keyframes orbDrift1 {
+        0%,100% { transform: translate(0,0) scale(1); }
+        50%      { transform: translate(-18px, 22px) scale(1.08); }
+    }
+
+    @keyframes orbDrift2 {
+        0%,100% { transform: translate(0,0) scale(1); }
+        50%      { transform: translate(14px,-18px) scale(1.06); }
     }
 
     .form-wrap {
@@ -323,6 +337,12 @@
         max-width: 380px;
         position: relative;
         z-index: 1;
+        background: rgba(255,255,255,.72);
+        backdrop-filter: blur(2px);
+        border-radius: 20px;
+        padding: 2.2rem 2rem;
+        box-shadow: 0 2px 32px rgba(232,23,93,.07), 0 1px 4px rgba(0,0,0,.04);
+        border: 1px solid rgba(255,176,206,.18);
     }
 
     .form-wrap > * {
@@ -340,6 +360,27 @@
 
     .form-header { margin-bottom: 1.8rem; }
 
+    .form-header-eyebrow {
+        opacity: 0;
+        animation: slideUp .5s cubic-bezier(.22,1,.36,1) .08s forwards;
+    }
+
+    .form-header-title {
+        opacity: 0;
+        animation: slideUp .55s cubic-bezier(.34,1.56,.64,1) .18s forwards;
+    }
+
+    .form-header-title em {
+        font-style: italic;
+        color: var(--hot-pink);
+        display: inline-block;
+    }
+
+    .form-header-sub {
+        opacity: 0;
+        animation: slideUp .5s cubic-bezier(.22,1,.36,1) .28s forwards;
+    }
+
     .eyebrow {
         font-size: .72rem;
         font-weight: 700;
@@ -350,6 +391,8 @@
         display: flex;
         align-items: center;
         gap: .45rem;
+        position: relative;
+        overflow: hidden;
     }
 
     .eyebrow::before {
@@ -358,6 +401,26 @@
         width: 20px; height: 2px;
         background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
         border-radius: 2px;
+        flex-shrink: 0;
+    }
+
+    .eyebrow-inner {
+        display: inline-block;
+        transition: opacity .22s ease, transform .22s cubic-bezier(.4,0,.2,1);
+    }
+
+    .eyebrow-inner.switching {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    .eyebrow-inner.entering {
+        animation: eyebrowEnter .28s cubic-bezier(.22,1,.36,1) forwards;
+    }
+
+    @keyframes eyebrowEnter {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
 
     .form-header h2 {
@@ -592,15 +655,59 @@
     .remember {
         display: flex;
         align-items: center;
-        gap: .4rem;
+        gap: .55rem;
         font-size: .82rem;
         color: var(--ink-muted);
         cursor: pointer;
+        user-select: none;
     }
 
     .remember input[type="checkbox"] {
-        accent-color: var(--bright-pink);
-        width: 15px; height: 15px;
+        display: none;
+    }
+
+    .toggle-track {
+        width: 34px;
+        height: 19px;
+        border-radius: 999px;
+        background: var(--gray-light);
+        border: 1.5px solid #d1d5db;
+        position: relative;
+        flex-shrink: 0;
+        transition: background .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .toggle-knob {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,.18);
+        transition: transform .22s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .remember input[type="checkbox"]:checked ~ .toggle-track {
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        border-color: var(--hot-pink);
+        box-shadow: 0 0 0 3px rgba(255,45,120,.15);
+    }
+
+    .remember input[type="checkbox"]:checked ~ .toggle-track .toggle-knob {
+        transform: translateX(15px);
+    }
+
+    .remember-label {
+        font-size: .82rem;
+        color: var(--ink-muted);
+        transition: color .2s;
+    }
+
+    .remember:has(input:checked) .remember-label {
+        color: var(--hot-pink);
+        font-weight: 600;
     }
 
     .forgot {
@@ -710,6 +817,31 @@
         animation: slideDown .2s ease;
     }
 
+    .caps-warn {
+        display: none;
+        align-items: center;
+        gap: .35rem;
+        font-size: .73rem;
+        font-weight: 600;
+        color: #b45309;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 6px;
+        padding: .3rem .6rem;
+        margin-top: .35rem;
+        animation: slideDown .2s ease;
+    }
+
+    .caps-warn.visible {
+        display: flex;
+    }
+
+    .caps-warn svg {
+        flex-shrink: 0;
+        width: 13px;
+        height: 13px;
+    }
+
     .de-btn-primary {
         width: 100%;
         padding: .75rem 1.4rem;
@@ -726,18 +858,45 @@
         gap: .5rem;
         cursor: pointer;
         box-shadow: 0 6px 20px rgba(232,23,93,.35);
-        transition: opacity var(--transition), transform .15s;
+        transition: box-shadow .22s ease, transform .15s ease;
         margin-top: .2rem;
         position: relative;
         overflow: hidden;
     }
 
-    .de-btn-primary:hover {
-        opacity: .92;
-        transform: translateY(-1px);
+    .de-btn-primary::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255,255,255,.0) 30%,
+            rgba(255,255,255,.38) 50%,
+            rgba(255,255,255,.0) 70%,
+            transparent 100%
+        );
+        transform: skewX(-18deg);
+        transition: left .52s cubic-bezier(.4,0,.2,1);
+        pointer-events: none;
     }
 
-    .de-btn-primary:active { transform: translateY(0); }
+    .de-btn-primary:hover::after {
+        left: 160%;
+    }
+
+    .de-btn-primary:hover {
+        box-shadow: 0 10px 32px rgba(232,23,93,.48);
+        transform: translateY(-2px);
+    }
+
+    .de-btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(232,23,93,.3);
+    }
 
     .btn-spinner {
         width: 16px; height: 16px;
@@ -1263,9 +1422,11 @@
     <div class="form-wrap">
 
         <div class="form-header">
-            <div class="eyebrow" id="eyebrow-label">Admin Portal</div>
-            <h2>Welcome to<br><em>DormEase</em></h2>
-            <p>Select your role and sign in with your credentials to continue.</p>
+            <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
+                <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
+            </div>
+            <h2 class="form-header-title">Welcome to<br><em>DormEase</em></h2>
+            <p class="form-header-sub">Select your role and sign in with your credentials to continue.</p>
         </div>
 
         <span class="role-label">Sign in as</span>
@@ -1366,12 +1527,22 @@
                     </button>
                 </div>
                 <div class="pw-hint" id="pw-hint">Must be at least 8 characters</div>
+                <div class="caps-warn" id="caps-warn">
+                    <svg viewBox="0 0 13 13" fill="none">
+                        <path d="M6.5 1L1 10h11L6.5 1z" stroke="#b45309" stroke-width="1.3" stroke-linejoin="round"/>
+                        <path d="M6.5 5.5v2.5M6.5 9.5h.01" stroke="#b45309" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                    Caps Lock is on
+                </div>
             </div>
 
             <div class="field-row">
                 <label class="remember">
-                    <input type="checkbox" name="remember">
-                    Remember me
+                    <input type="checkbox" name="remember" id="remember-cb">
+                    <div class="toggle-track">
+                        <div class="toggle-knob"></div>
+                    </div>
+                    <span class="remember-label">Remember me</span>
                 </label>
                 <a href="#" class="forgot" onclick="event.preventDefault(); openFP()">Forgot password?</a>
             </div>
@@ -1609,7 +1780,18 @@
             document.getElementById('role-' + r).classList.toggle('active', r === role);
         });
         document.getElementById('role-input').value = role;
-        document.getElementById('eyebrow-label').textContent = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
+
+        var textEl = document.getElementById('eyebrow-text');
+        var next   = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
+
+        textEl.classList.remove('entering');
+        textEl.classList.add('switching');
+
+        setTimeout(function () {
+            textEl.textContent = next;
+            textEl.classList.remove('switching');
+            textEl.classList.add('entering');
+        }, 220);
     }
 
     (function () {
@@ -1642,6 +1824,20 @@
     document.getElementById('password').addEventListener('input', function () {
         var hint = document.getElementById('pw-hint');
         hint.style.display = (this.value.length > 0 && this.value.length < 8) ? 'block' : 'none';
+    });
+
+    document.getElementById('password').addEventListener('keyup', function (e) {
+        var caps = e.getModifierState && e.getModifierState('CapsLock');
+        var warn = document.getElementById('caps-warn');
+        if (caps) {
+            warn.classList.add('visible');
+        } else {
+            warn.classList.remove('visible');
+        }
+    });
+
+    document.getElementById('password').addEventListener('blur', function () {
+        document.getElementById('caps-warn').classList.remove('visible');
     });
 
     var emailInput = document.getElementById('email');
