@@ -13,6 +13,7 @@ class SettingsController extends Controller
 
         $defaultPrefs = [
             'maintenance_new'    => true,
+            'maintenance_resubmission' => true,
             'emergency_new'      => true,
             'visitor_checkin'    => false,
             'visitor_checkout'   => false,
@@ -40,6 +41,7 @@ class SettingsController extends Controller
 
         $keys = [
             'maintenance_new',
+            'maintenance_resubmission' => true,
             'emergency_new',
             'visitor_checkin',
             'visitor_checkout',
