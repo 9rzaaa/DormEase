@@ -2516,45 +2516,83 @@ async function submitDeleteRoom() {
     }
 
     function renderRoomSuggestions(stayType) {
-        var wrap = document.getElementById('add-room-suggest-wrap');
-        var box  = document.getElementById('add-room-suggest');
-        if (!stayType || !wrap || !box) return;
-        getRoomsCache(function(rooms) {
-            var matched = rooms.filter(function(r) {
-                if (!r.is_active) return false;
-                var remaining = r.capacity - r.occupancy;
-                if (remaining <= 0) return false;
-                return r.stay_type === stayType;
-            }).sort(function(a, b) {
-                return (a.capacity - a.occupancy) - (b.capacity - b.occupancy);
-            }).slice(0, 6);
-
-            if (!matched.length) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
-
-            var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
-                + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">Available rooms for ' + stayType + '</div>'
-                + '<div style="display:flex;flex-wrap:wrap;gap:.4rem;">';
-
-            matched.forEach(function(r) {
-                var remaining  = r.capacity - r.occupancy;
-                var pct        = Math.round((r.occupancy / r.capacity) * 100);
-                var chipColor  = pct === 0 ? '#1f9d69' : pct >= 75 ? '#c8960c' : '#E8175D';
-                var chipBg     = pct === 0 ? '#e8faf5' : pct >= 75 ? '#fff9e6' : '#fff0f6';
-                var chipBorder = pct === 0 ? '#8ce0bb' : pct >= 75 ? '#f0c040' : 'var(--pink-100)';
-                html += '<button type="button" onclick="selectSuggestedRoom(\'' + r.room_number + '\')" '
-                    + 'style="display:inline-flex;align-items:center;gap:.4rem;padding:.32rem .7rem;border-radius:8px;border:1.5px solid ' + chipBorder + ';background:' + chipBg + ';cursor:pointer;font-family:inherit;transition:.15s;" '
-                    + 'onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" '
-                    + 'onmouseout="this.style.background=\'' + chipBg + '\';this.style.color=\'\';this.style.borderColor=\'' + chipBorder + '\';">'
-                    + '<span style="font-size:.78rem;font-weight:800;color:inherit;">Rm.' + r.room_number + '</span>'
-                    + '<span style="font-size:.68rem;font-weight:600;color:' + chipColor + ';">' + remaining + ' free</span>'
-                    + '</button>';
-            });
-
-            html += '</div></div>';
-            box.innerHTML = html;
-            wrap.style.display = 'block';
+    var wrap = document.getElementById('add-room-suggest-wrap');
+    var box  = document.getElementById('add-room-suggest');
+    if (!stayType || !wrap || !box) return;
+    getRoomsCache(function(rooms) {
+        var matched = rooms.filter(function(r) {
+            return r.stay_type === stayType;
+        }).sort(function(a, b) {
+            var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
+            var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
+            if (aUnavail !== bUnavail) return aUnavail - bUnavail;
+            return parseInt(a.room_number) - parseInt(b.room_number);
         });
-    }
+
+        if (!matched.length) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
+
+        var availCount = matched.filter(function(r) {
+            return r.is_active && (r.capacity - r.occupancy) > 0;
+        }).length;
+
+        var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
+            + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;">All rooms · ' + stayType + '</div>'
+            + '<div style="font-size:.68rem;font-weight:700;color:#1f9d69;">' + availCount + ' available</div>'
+            + '</div>'
+            + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;">';
+
+        matched.forEach(function(r) {
+            var remaining  = r.capacity - r.occupancy;
+            var isFull     = remaining <= 0;
+            var isInactive = !r.is_active;
+            var unavail    = isFull || isInactive;
+            var pct        = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+
+            var chipBg, chipBorder, chipColor, badgeBg, badgeColor, badgeText, cursor, clickAttr;
+
+            if (isInactive) {
+                chipBg = '#f5f5f5'; chipBorder = '#d0d0d0'; chipColor = '#999';
+                badgeBg = '#efefef'; badgeColor = '#999'; badgeText = 'Closed';
+                cursor = 'not-allowed'; clickAttr = '';
+            } else if (isFull) {
+                chipBg = '#fff0f2'; chipBorder = '#ffb3c0'; chipColor = '#c0163a';
+                badgeBg = '#ffe0e6'; badgeColor = '#c0163a'; badgeText = 'Full';
+                cursor = 'not-allowed'; clickAttr = '';
+            } else if (pct >= 75) {
+                chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
+                badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
+                cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+            } else {
+                chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
+                badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
+                cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+            }
+
+            var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
+            var hoverOut = unavail ? '' : 'onmouseout="this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';"';
+
+            html += '<div ' + clickAttr + ' ' + hoverIn + ' ' + hoverOut
+                + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
+                + chipBorder + ';background:' + chipBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
+                    + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
+                    + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
+                + '</div>'
+                + '<div style="display:inline-flex;align-items:center;justify-content:center;padding:.18rem .45rem;border-radius:6px;background:' + badgeBg + ';border:1px solid ' + chipBorder + ';">'
+                    + '<span style="font-size:.66rem;font-weight:800;color:' + badgeColor + ';letter-spacing:.02em;">' + badgeText + '</span>'
+                + '</div>'
+                + '<div style="height:3px;background:#e0e0e0;border-radius:99px;overflow:hidden;">'
+                    + '<div style="height:100%;width:' + pct + '%;background:' + (isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
+                + '</div>'
+                + '</div>';
+        });
+
+        html += '</div></div>';
+        box.innerHTML = html;
+        wrap.style.display = 'block';
+    });
+}
 
     window.onAddStayTypeChange = function() {
         var stayType    = document.getElementById('add-stay-type-select').value;
