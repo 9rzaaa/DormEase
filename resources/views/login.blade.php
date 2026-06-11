@@ -408,6 +408,7 @@
             0 2px 8px rgba(0,0,0,.06),
             inset 0 1px 0 rgba(255,255,255,1);
         border: 1px solid rgba(255,255,255,.7);
+        overflow: visible;
     }
 
     .form-wrap > * {
@@ -433,18 +434,16 @@
     .form-header-title {
         opacity: 0;
         animation: slideUp .55s cubic-bezier(.34,1.56,.64,1) .18s forwards;
+        position: relative;
+        cursor: default;
+        isolation: isolate;
+        overflow: visible;
     }
 
     .form-header-title em {
         font-style: italic;
         color: var(--hot-pink);
         display: inline-block;
-    }
-
-    .form-header-title {
-        position: relative;
-        cursor: default;
-        isolation: isolate;
     }
 
     .form-header-title .title-halo {
@@ -465,16 +464,16 @@
     .form-header-title .title-logo {
         position: absolute;
         top: 50%;
-        left: -32px;
-        transform: translateY(-50%) scale(0.5) rotate(-12deg);
-        width: 26px;
-        height: 26px;
+        left: -40px;
+        transform: translateY(-60%) scale(0.4) rotate(-18deg);
+        width: 30px;
+        height: 30px;
         object-fit: contain;
         opacity: 0;
         pointer-events: none;
-        transition: opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
-        filter: drop-shadow(0 2px 8px rgba(232,23,93,.35));
-        z-index: 1;
+        transition: opacity .35s ease, transform .45s cubic-bezier(.34,1.56,.64,1);
+        filter: drop-shadow(0 3px 10px rgba(232,23,93,.4));
+        z-index: 2;
     }
 
     .form-header-title:hover .title-halo {
@@ -483,7 +482,7 @@
     }
 
     .form-header-title:hover .title-logo {
-        opacity: .55;
+        opacity: .7;
         transform: translateY(-50%) scale(1) rotate(0deg);
     }
 
@@ -1641,6 +1640,7 @@
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         style="padding-right: 2.8rem;"
+                        minlength="8"
                         maxlength="128"
                         required
                     >
@@ -2132,7 +2132,9 @@
         document.getElementById('fp-confirm-pw').value               = '';
         document.getElementById('fp-admin-err').style.display        = 'none';
         document.getElementById('fp-pw-err').style.display           = 'none';
-        fpAdminEmail = '';
+        fpAdminEmail        = '';
+        fpVerifyInFlight    = false;
+        fpResetInFlight     = false;
     }
 
     function fpSetRole(role) {
@@ -2205,12 +2207,19 @@
         return meta ? meta.content : (input ? input.value : '');
     }
 
+    var fpVerifyInFlight = false;
     function fpVerifyAdmin() {
+        if (fpVerifyInFlight) return;
         var email = document.getElementById('fp-admin-email').value.trim();
         fpHideErr('fp-admin-err');
 
         if (!email) { fpShowErr('fp-admin-err', 'Please enter your email address.'); return; }
+        if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+            fpShowErr('fp-admin-err', 'Please enter a valid email address.');
+            return;
+        }
 
+        fpVerifyInFlight = true;
         var txt    = document.getElementById('fp-verify-txt');
         var loader = document.getElementById('fp-verify-loader');
         txt.style.display    = 'none';
@@ -2223,6 +2232,7 @@
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
+            fpVerifyInFlight = false;
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             if (data.success) {
@@ -2234,21 +2244,26 @@
             }
         })
         .catch(function () {
+            fpVerifyInFlight = false;
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             fpShowErr('fp-admin-err', 'Something went wrong. Please try again.');
         });
     }
 
+    var fpResetInFlight = false;
     function fpResetAdminPassword() {
+        if (fpResetInFlight) return;
         var pw      = document.getElementById('fp-new-pw').value;
         var confirm = document.getElementById('fp-confirm-pw').value;
         fpHideErr('fp-pw-err');
 
-        if (pw.length < 8)        { fpShowErr('fp-pw-err', 'Password must be at least 8 characters.'); return; }
-        if (pw !== confirm)       { fpShowErr('fp-pw-err', 'Passwords do not match.'); return; }
+        if (pw.length < 8)           { fpShowErr('fp-pw-err', 'Password must be at least 8 characters.'); return; }
+        if (!confirm)                { fpShowErr('fp-pw-err', 'Please confirm your new password.'); return; }
+        if (pw !== confirm)          { fpShowErr('fp-pw-err', 'Passwords do not match.'); return; }
         if (fpCheckStrength(pw) < 2) { fpShowErr('fp-pw-err', 'Please choose a stronger password.'); return; }
 
+        fpResetInFlight = true;
         var txt    = document.getElementById('fp-reset-txt');
         var loader = document.getElementById('fp-reset-loader');
         txt.style.display    = 'none';
@@ -2257,10 +2272,11 @@
         fetch('/forgot-password/reset', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
-            body: JSON.stringify({ email: fpAdminEmail, password: pw, password_confirmation: confirm })
+            body: JSON.stringify({ password: pw, password_confirmation: confirm })
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
+            fpResetInFlight = false;
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             if (data.success) {
@@ -2273,6 +2289,7 @@
             }
         })
         .catch(function () {
+            fpResetInFlight = false;
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');

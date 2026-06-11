@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (\Illuminate\Http\Exceptions\ThrottleRequestsException $e, $request) {
             return back()->withErrors([
                 'email' => 'Too many login attempts. Please wait 1 minute and try again.',
-            ])->withInput($request->only('email'));
+            ])->withInput($request->only('email', 'role'));
         });
 
         $exceptions->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
