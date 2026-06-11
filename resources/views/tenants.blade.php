@@ -1196,11 +1196,13 @@ tbody tr:hover { background: var(--soft-bg); }
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="add-footer-cancel" onclick="closeModal('add-modal')">Cancel</button>
+            <div class="modal-footer" style="justify-content:space-between;">
                 <button type="button" class="btn-outline" id="add-btn-back" style="display:none;" onclick="goAddStep(1)">&#8592; Back</button>
-                <button type="button" class="btn-submit" id="add-btn-next" onclick="goAddStep(2)">Next &#8594;</button>
-                <button type="submit" class="btn-submit" id="add-btn-submit" style="display:none;">Add Tenant</button>
+                <div style="display:flex;align-items:center;gap:.55rem;margin-left:auto;">
+                    <button type="button" class="btn-cancel" id="add-footer-cancel" onclick="closeModal('add-modal')">Cancel</button>
+                    <button type="button" class="btn-submit" id="add-btn-next" onclick="goAddStep(2)">Next &#8594;</button>
+                    <button type="submit" class="btn-submit" id="add-btn-submit" style="display:none;">Add Tenant</button>
+                </div>
             </div>
         </form>
     </div>
@@ -2546,7 +2548,9 @@ async function submitDeleteRoom() {
                 }
                 var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
                 var hoverOut = unavail ? '' : 'onmouseout="this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';"';
-                html += '<div ' + clickAttr + ' ' + hoverIn + ' ' + hoverOut
+                var chipClass = unavail ? '' : 'room-chip-selectable';
+                var chipData  = unavail ? '' : 'data-room="' + r.room_number + '" data-default-border="' + chipBorder + '" data-default-bg="' + chipBg + '"';
+                html += '<div ' + clickAttr + ' ' + chipClass + ' ' + chipData + ' ' + hoverIn + ' ' + hoverOut
                     + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
                     + chipBorder + ';background:' + chipBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
                     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
@@ -2576,10 +2580,19 @@ async function submitDeleteRoom() {
     };
 
     window.selectSuggestedRoom = function(roomNumber) {
-        var input = document.getElementById('add-room-number-input');
-        if (!input) return;
-        input.value = roomNumber;
-        input.dispatchEvent(new Event('input'));
+    var input = document.getElementById('add-room-number-input');
+    if (!input) return;
+    input.value = roomNumber;
+    input.dispatchEvent(new Event('input'));
+    document.querySelectorAll('#add-room-suggest .room-chip-selectable').forEach(function(el) {
+        el.style.borderColor = el.dataset.defaultBorder;
+        el.style.background  = el.dataset.defaultBg;
+    });
+    var selected = document.querySelector('#add-room-suggest [data-room="' + roomNumber + '"]');
+    if (selected) {
+        selected.style.borderColor = '#f0c040';
+        selected.style.background  = '#fffbf0';
+    }
     };
 
     document.addEventListener('DOMContentLoaded', function() {
