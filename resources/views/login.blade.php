@@ -355,11 +355,11 @@
         background-size: 100% 100%, 22px 22px;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        padding: 2rem 3.5rem;
-        padding-top: 3.5rem;
+        justify-content: center;
+        padding: 1.5rem 3.5rem 3rem;
         position: relative;
         overflow: hidden;
+        overflow-y: auto;
     }
 
     .right::before {
@@ -1027,10 +1027,35 @@
 
     @media (max-width: 820px) {
         body { flex-direction: column; overflow: auto; }
-        .left { min-height: 240px; padding: 2rem; }
-        .left-body h1 { font-size: 2rem; }
-        .right { width: 100%; padding: 2.5rem 1.5rem; }
+        .left { min-height: 200px; padding: 1.8rem 1.5rem; }
+        .left-body h1 { font-size: 1.8rem; }
+        .left-body p { font-size: .85rem; max-width: 100%; }
+        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: flex-start; overflow-y: visible; }
         .ring, .dot-grid, .student-wrap { display: none; }
+        .form-wrap { padding: 2rem 1.5rem; }
+    }
+
+    @media (max-width: 540px) {
+        .left { min-height: 180px; padding: 1.5rem 1.2rem; }
+        .left-body h1 { font-size: 1.5rem; }
+        .left-body p { display: none; }
+        .feature-strip { display: none; }
+        .right { padding: 1.5rem 1rem 2.5rem; }
+        .form-wrap { padding: 1.6rem 1.2rem; border-radius: 16px; }
+        .form-header h2 { font-size: 1.7rem; }
+        .role-row { gap: .4rem; }
+        .role-btn { padding: .7rem .8rem; }
+        .de-input { font-size: .85rem; }
+        .de-btn-primary { font-size: .88rem; padding: .7rem 1rem; }
+    }
+
+    @media (max-width: 380px) {
+        .left { min-height: 160px; padding: 1.2rem 1rem; }
+        .logo-text { font-size: 1.2rem; }
+        .form-wrap { padding: 1.4rem 1rem; }
+        .form-header h2 { font-size: 1.5rem; }
+        .role-row { grid-template-columns: 1fr; }
+        .field-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
     }
 
     #fp-overlay {
@@ -1511,7 +1536,7 @@
             <span class="h1-line h1-line-3"><em>confidence.</em></span>
         </h1>
         <p>Keeping up with tenants, rooms, and requests has never been this straightforward. Everything in one place, the way it should be.</p>
-        
+
         <div class="feature-strip" id="feature-strip">
             <div class="feature-strip-icon" id="feature-icon">
                 <img src="{{ asset('icons/bed.png') }}" alt="" id="feature-img">
