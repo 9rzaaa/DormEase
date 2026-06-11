@@ -22,7 +22,7 @@ use App\Http\Controllers\BillingHistoryController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ArchiveSettingsController;
-use App\Http\Controllers\RoomController; 
+use App\Http\Controllers\RoomController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -200,7 +200,6 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/log', [BillingController::class, 'log'])->name('log');
         Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
         Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
-        Route::post('/request-resubmission', [BillingController::class, 'requestResubmission'])->name('requestResubmission');
         Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
         Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
     });
@@ -284,7 +283,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/settings', [SettingsController::class, 'frontdeskIndex'])->name('frontdesk.settings.index');
     Route::put('/frontdesk/settings/notifications', [SettingsController::class, 'frontdeskUpdateNotifications'])->name('frontdesk.settings.updateNotifications');
     Route::put('/frontdesk/profile/avatar', [FDProfileController::class, 'updateAvatar'])->name('fdprofile.avatar');
-    
+
     Route::patch('/tenants/{id}/notes', [TenantController::class, 'updateNotes'])->name('tenants.notes');
 
     Route::post('/frontdesk/profile/dismiss-temp-password', function () {
