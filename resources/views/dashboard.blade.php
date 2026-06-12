@@ -939,29 +939,46 @@
 
 <div class="modal-overlay" id="maint-detail-modal" onclick="handleOverlayClick(event, 'maint-detail-modal')">
     <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div class="modal-title" id="md-title"></div>
+
+        <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem 0.9rem;border-bottom:1px solid var(--petal);">
+            <div style="display:flex;align-items:center;gap:.7rem;">
+                <div id="md-type-icon" style="width:38px;height:38px;border-radius:10px;background:var(--petal);border:1.5px solid var(--baby-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <img id="md-icon-img" src="" style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
+                </div>
+                <div>
+                    <div class="modal-title" id="md-title" style="font-size:.98rem;font-weight:700;color:var(--ink);line-height:1.2;"></div>
+                    <div id="md-req-id" style="font-size:.72rem;color:var(--ink-muted);margin-top:2px;font-weight:600;"></div>
+                </div>
+            </div>
             <button class="modal-close" onclick="closeModal('maint-detail-modal')">&#x2715;</button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:.75rem;padding:.2rem 0 .4rem;">
-            <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Room</span>
-                <div id="md-room" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
+
+        <div style="padding:1.1rem 1.4rem;display:flex;flex-direction:column;gap:.9rem;">
+
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;" id="md-tags"></div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+                <div style="background:var(--blush);border:1px solid var(--petal);border-radius:10px;padding:.65rem .8rem;">
+                    <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.25rem;">Room</div>
+                    <div id="md-room" style="font-size:.87rem;font-weight:600;color:var(--ink);"></div>
+                </div>
+                <div style="background:var(--blush);border:1px solid var(--petal);border-radius:10px;padding:.65rem .8rem;">
+                    <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.25rem;">Assigned To</div>
+                    <div id="md-assign" style="font-size:.87rem;font-weight:600;color:var(--ink);"></div>
+                </div>
+                <div style="background:var(--blush);border:1px solid var(--petal);border-radius:10px;padding:.65rem .8rem;grid-column:1/-1;">
+                    <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.25rem;">Description</div>
+                    <div id="md-desc" style="font-size:.87rem;font-weight:500;color:#555;line-height:1.5;"></div>
+                </div>
             </div>
-            <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Description</span>
-                <div id="md-desc" style="font-size:.9rem;color:var(--ink);margin-top:.2rem;line-height:1.5;"></div>
-            </div>
-            <div>
-                <span style="font-size:.75rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;">Assigned To</span>
-                <div id="md-assign" style="font-size:.9rem;font-weight:600;color:var(--ink);margin-top:.2rem;"></div>
-            </div>
-            <div style="display:flex;gap:.5rem;" id="md-tags"></div>
+
         </div>
+
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('maint-detail-modal')">Close</button>
-            <button class="btn-submit" id="md-view-btn">View Full Request</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('maint-detail-modal')">Close</button>
+            <button type="button" class="btn-submit" id="md-view-btn">View Full Request</button>
         </div>
+
     </div>
 </div>
 
@@ -1220,10 +1237,18 @@ window.exportSummary = function() {
 @endif
 
 window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned, room) {
-    document.getElementById('md-title').textContent  = type;
-    document.getElementById('md-room').textContent   = room;
-    document.getElementById('md-desc').textContent   = desc;
-    document.getElementById('md-assign').textContent = assigned;
+    document.getElementById('md-title').textContent   = type + (room !== 'N/A' ? ' — Room ' + room : '');
+    document.getElementById('md-req-id').textContent  = 'REQ-' + String(id).padStart(3, '0');
+    document.getElementById('md-room').textContent    = room;
+    document.getElementById('md-desc').textContent    = desc;
+    document.getElementById('md-assign').textContent  = assigned;
+
+    var iconMap = { plumb: 'plumbing', elec: 'electrical', hvac: 'hvac' };
+    var iconKey = Object.keys(iconMap).find(k => type.toLowerCase().includes(k)) || null;
+    var iconSrc = '{{ asset('icons/') }}' + (iconKey ? iconMap[iconKey] : 'maintenance') + '.png';
+    var iconEl  = document.getElementById('md-icon-img');
+    iconEl.src  = iconSrc;
+    iconEl.onerror = function() { this.src = '{{ asset('icons/maintenance.png') }}'; };
 
     var urgencyClass = { urgent: 'tag-urgent', moderate: 'tag-moderate' }[urgency.toLowerCase()] || 'tag-low';
     var statusClass  = status.toLowerCase() === 'in_progress' ? 'tag-progress' : 'tag-pending';
