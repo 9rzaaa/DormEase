@@ -480,16 +480,16 @@
 
     #maint-detail-modal .modal-overlay,
     #maint-detail-modal {
-    padding: 1rem;
+        padding: 1rem;
     }
 
     #maint-detail-modal .modal {
-    padding: 1rem;
-    max-width: 460px;
+        padding: 1rem;
+        max-width: 460px;
     }
 
     #maint-detail-modal .modal-actions {
-    padding: .5rem 1rem .8rem;
+        padding: .5rem 1rem .8rem;
     }
 </style>
 @endsection
@@ -632,7 +632,7 @@
                         <div class="empty-state">No pending maintenance requests.</div>
                     @else
                         @foreach($maintenanceRequests as $req)
-                            <div class="maint-row" onclick="openMaintenanceModal({{ $req->request_id }}, {{ json_encode($req->issue_type) }}, {{ json_encode($req->description) }}, {{ json_encode($req->urgency_level) }}, {{ json_encode($req->status) }}, {{ json_encode($req->assigned_to ?? 'Unassigned') }}, {{ json_encode($req->tenant->room_number ?? 'N/A') }})">
+                            <div class="maint-row" onclick="openMaintenanceModal({{ $req->request_id }}, {{ json_encode($req->issue_type) }}, {{ json_encode($req->description) }}, {{ json_encode($req->urgency_level) }}, {{ json_encode($req->status) }}, {{ json_encode($req->assigned_to ?? 'Unassigned') }}, {{ json_encode($req->tenant->room_number ?? 'N/A') }}, {{ json_encode($req->photo_url ?? null) }})">
                                 <div class="maint-type-icon">
                                     @if(str_contains(strtolower($req->issue_type ?? ''), 'plumb'))
                                         <img src="{{ asset('icons/plumbing.png') }}" alt="Plumbing" onerror="this.src='{{ asset('icons/maintenance.png') }}'">
@@ -984,6 +984,10 @@
                     <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.25rem;">Description</div>
                     <div id="md-desc" style="font-size:.87rem;font-weight:500;color:#555;line-height:1.5;"></div>
                 </div>
+                <div style="background:var(--blush);border:1px solid var(--petal);border-radius:10px;padding:.65rem .8rem;grid-column:1/-1;">
+                    <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.4rem;">Attached Photo</div>
+                    <div id="md-photo"></div>
+                </div>
             </div>
 
         </div>
@@ -1250,7 +1254,7 @@ window.exportSummary = function() {
     showToast("{{ session('error') }}", 'error');
 @endif
 
-window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned, room) {
+window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned, room, photoUrl) {
     document.getElementById('md-title').textContent   = type + (room !== 'N/A' ? ' — Room ' + room : '');
     document.getElementById('md-req-id').textContent  = 'REQ-' + String(id).padStart(3, '0');
     document.getElementById('md-room').textContent    = room;
@@ -1270,6 +1274,27 @@ window.openMaintenanceModal = function(id, type, desc, urgency, status, assigned
     document.getElementById('md-tags').innerHTML =
         '<span class="tag ' + urgencyClass + '">' + urgency + '</span>' +
         '<span class="tag ' + statusClass  + '">' + status.replace('_', ' ') + '</span>';
+
+    var photoEl = document.getElementById('md-photo');
+    if (photoUrl) {
+        photoEl.innerHTML =
+            '<div style="border-radius:10px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--blush);position:relative;">' +
+                '<img src="' + photoUrl + '" alt="Maintenance photo"' +
+                    ' style="width:100%;max-height:220px;object-fit:cover;display:block;cursor:pointer;"' +
+                    ' onclick="window.open(\'' + photoUrl + '\',\'_blank\')"' +
+                    ' onerror="this.parentElement.innerHTML=\'<div style=\\\"padding:1rem;text-align:center;font-size:.8rem;color:var(--ink-muted);\\\">Photo could not be loaded.</div>\'"' +
+                '/>' +
+                '<a href="' + photoUrl + '" target="_blank"' +
+                    ' style="position:absolute;bottom:.5rem;right:.5rem;background:rgba(0,0,0,.52);color:#fff;font-size:.7rem;font-weight:700;padding:.28rem .6rem;border-radius:6px;text-decoration:none;backdrop-filter:blur(4px);">' +
+                    '&#x2197; View full' +
+                '</a>' +
+            '</div>';
+    } else {
+        photoEl.innerHTML =
+            '<div style="background:var(--blush);border:1.5px dashed var(--baby-pink);border-radius:10px;padding:1.2rem 1rem;text-align:center;color:var(--ink-muted);font-size:.8rem;">' +
+                'No photo attached to this request.' +
+            '</div>';
+    }
 
     document.getElementById('md-view-btn').onclick = function() {
         window.location = '{{ route('maintenance.index') }}';
