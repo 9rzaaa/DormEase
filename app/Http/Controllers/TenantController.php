@@ -122,7 +122,7 @@ class TenantController extends Controller
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
             if ($request->move_out_date < $request->move_in_date) {
-                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput()->with('edit_tenant_id', $id);
+                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput();
             }
         }
 
@@ -132,42 +132,70 @@ class TenantController extends Controller
                 ->first();
 
             if (!$room) {
-                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput()->with('edit_tenant_id', $id);
-            }
-
-            $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
-                ->where('room_number', trim($request->room_number));
-
-            if ($occupancyQuery->count() >= $room->capacity) {
-                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
             }
 
             $request->merge(['floor' => $room->floor]);
         }
 
-        $accountId    = Tenant::generateAccountId();
-        $tempPassword = Tenant::generateTempPassword();
-
         $isReserved = $request->input('add_mode') === 'reservation';
 
-        $tenant = Tenant::create([
-            'account_id'             => $accountId,
-            'password_hash'          => Hash::make($tempPassword),
-            'is_temp_password'       => true,
-            'first_name'             => $request->first_name,
-            'last_name'              => $request->last_name,
-            'email'                  => $request->email,
-            'contact_number'         => $request->contact_number,
-            'room_number'            => $request->room_number,
-            'floor'                  => $request->floor,
-            'stay_type'              => $request->stay_type,
-            'move_in_date'           => $request->move_in_date,
-            'estimated_move_in_date' => $request->estimated_move_in_date,
-            'reservation_notes'      => $request->reservation_notes,
-            'referred_by'            => $request->referred_by,
-            'status'                 => $isReserved ? 'reserved' : 'pending',
-            'is_active'              => true,
-        ]);
+        try {
+            [$tenant, $accountId, $tempPassword] = \Illuminate\Support\Facades\DB::transaction(function () use ($request, $isReserved) {
+                if ($request->filled('room_number')) {
+                    $room = \App\Models\Room::where('room_number', trim($request->room_number))
+                        ->where('is_active', true)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$room) {
+                        throw new \RuntimeException('ROOM_NOT_FOUND');
+                    }
+
+                    $occupancy = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                        ->where('room_number', trim($request->room_number))
+                        ->lockForUpdate()
+                        ->count();
+
+                    if ($occupancy >= $room->capacity) {
+                        throw new \RuntimeException("ROOM_FULL:{$room->capacity}");
+                    }
+                }
+
+                $accountId    = Tenant::generateAccountId();
+                $tempPassword = Tenant::generateTempPassword();
+
+                $tenant = Tenant::create([
+                    'account_id'             => $accountId,
+                    'password_hash'          => Hash::make($tempPassword),
+                    'is_temp_password'       => true,
+                    'first_name'             => $request->first_name,
+                    'last_name'              => $request->last_name,
+                    'email'                  => $request->email,
+                    'contact_number'         => $request->contact_number,
+                    'room_number'            => $request->room_number,
+                    'floor'                  => $request->floor,
+                    'stay_type'              => $request->stay_type,
+                    'move_in_date'           => $request->move_in_date,
+                    'estimated_move_in_date' => $request->estimated_move_in_date,
+                    'reservation_notes'      => $request->reservation_notes,
+                    'referred_by'            => $request->referred_by,
+                    'status'                 => $isReserved ? 'reserved' : 'pending',
+                    'is_active'              => true,
+                ]);
+
+                return [$tenant, $accountId, $tempPassword];
+            });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'ROOM_NOT_FOUND') {
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
+            }
+            if (str_starts_with($e->getMessage(), 'ROOM_FULL:')) {
+                $cap = substr($e->getMessage(), 10);
+                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$cap} pax)."])->withInput();
+            }
+            throw $e;
+        }
 
         $notifMessage = $isReserved
             ? "New reservation: {$tenant->first_name} {$tenant->last_name} has reserved a room (Rm. {$tenant->room_number})."
@@ -221,20 +249,28 @@ class TenantController extends Controller
         }
 
         if ($request->filled('room_number')) {
-            $room = \App\Models\Room::where('room_number', $request->room_number)
+            $roomNumber = trim($request->room_number);
+            $request->merge(['room_number' => $roomNumber]);
+
+            $room = \App\Models\Room::where('room_number', $roomNumber)
                 ->where('is_active', true)
+                ->lockForUpdate()
                 ->first();
 
             if (!$room) {
-                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput()->with('edit_tenant_id', $id);
             }
 
-            $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
-                ->where('room_number', $request->room_number)
-                ->where('tenant_id', '!=', $id);
+            if ($request->status !== 'inactive' && $request->status !== 'move_out') {
+                $occupancyCount = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                    ->where('room_number', $roomNumber)
+                    ->where('tenant_id', '!=', $id)
+                    ->lockForUpdate()
+                    ->count();
 
-            if ($occupancyQuery->count() >= $room->capacity) {
-                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput()->with('edit_tenant_id', $id);
+                if ($occupancyCount >= $room->capacity) {
+                    return back()->withErrors(['room_number' => "Room {$roomNumber} is already at full capacity ({$room->capacity} pax)."])->withInput()->with('edit_tenant_id', $id);
+                }
             }
 
             $request->merge(['floor' => $room->floor]);
