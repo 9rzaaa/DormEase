@@ -115,8 +115,14 @@ class TenantController extends Controller
             'referred_by'            => 'nullable|string|max:150',
         ]);
 
+        if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
+            if ($request->move_out_date < $request->move_in_date) {
+                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput();
+            }
+        }
+
         if ($request->filled('room_number')) {
-            $room = \App\Models\Room::where('room_number', $request->room_number)
+            $room = \App\Models\Room::where('room_number', trim($request->room_number))
                 ->where('is_active', true)
                 ->first();
 
@@ -125,11 +131,13 @@ class TenantController extends Controller
             }
 
             $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
-                ->where('room_number', $request->room_number);
+                ->where('room_number', trim($request->room_number));
 
             if ($occupancyQuery->count() >= $room->capacity) {
                 return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
             }
+
+            $request->merge(['floor' => $room->floor]);
         }
 
         $accountId    = Tenant::generateAccountId();
@@ -191,7 +199,21 @@ class TenantController extends Controller
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
             'status'                 => 'required|in:active,pending,reserved,move_out,inactive',
+        ], [], [
+            'first_name'    => 'first name',
+            'last_name'     => 'last name',
+            'email'         => 'email address',
+            'floor'         => 'floor',
+            'stay_type'     => 'stay type',
+            'move_in_date'  => 'move-in date',
+            'move_out_date' => 'move-out date',
         ]);
+
+        if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
+            if ($request->move_out_date < $request->move_in_date) {
+                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput();
+            }
+        }
 
         if ($request->filled('room_number')) {
             $room = \App\Models\Room::where('room_number', $request->room_number)
