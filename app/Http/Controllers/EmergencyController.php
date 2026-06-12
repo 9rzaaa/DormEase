@@ -109,8 +109,8 @@ class EmergencyController extends Controller
                 app(TenantPushNotificationService::class)->sendToTenant(
                     tenant: $report->tenant_id,
                     type: 'emergency',
-                    title: 'Emergency report closed',
-                    body: "Your emergency report #{$report->report_id} has been closed.",
+                    title: 'Emergency Report Closed',
+                    body: "Your emergency report ({$report->emergency_type}) has been closed.",
                     refId: $report->report_id,
                     route: '/tenant/emergency',
                 );
@@ -125,8 +125,8 @@ class EmergencyController extends Controller
                 app(TenantPushNotificationService::class)->sendToTenant(
                     tenant: $report->tenant_id,
                     type: 'emergency',
-                    title: 'Emergency report resolved',
-                    body: "Your emergency report #{$report->report_id} has been resolved.",
+                    title: 'Emergency Report Resolved',
+                    body: "Your emergency report ({$report->emergency_type}) has been resolved.",
                     refId: $report->report_id,
                     route: '/tenant/emergency',
                 );
@@ -270,6 +270,39 @@ class EmergencyController extends Controller
                 'resolved_at' => $report->resolved_at,
             ];
         })->values();
+    }
+
+    public function acknowledge($id)
+    {
+        $report = EmergencyReport::find($id);
+        if (!$report) {
+            return response()->json(['success' => false, 'message' => 'Report not found'], 404);
+        }
+
+        if (!$report->tenant_id) {
+            return response()->json(['success' => true, 'message' => 'No tenant associated with this report']);
+        }
+
+        $alreadySent = \App\Models\Notification::where('tenant_id', $report->tenant_id)
+            ->where('type', 'emergency')
+            ->where('ref_id', $report->report_id)
+            ->where('message', 'like', '%acknowledged%')
+            ->exists();
+
+        if (!$alreadySent) {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $report->tenant_id,
+                type: 'emergency',
+                title: 'Emergency Report Acknowledged',
+                body: "Staff has acknowledged your emergency report ({$report->emergency_type}) and is responding.",
+                refId: $report->report_id,
+                route: '/tenant/emergency',
+            );
+
+            return response()->json(['success' => true, 'notified' => true]);
+        }
+
+        return response()->json(['success' => true, 'notified' => false]);
     }
 
     public function pollPanic()
