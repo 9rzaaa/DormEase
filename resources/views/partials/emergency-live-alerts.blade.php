@@ -75,6 +75,14 @@
             if (banner) banner.remove();
             if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
             sessionStorage.setItem('panicDismissed_' + __panicLastId, '1');
+
+            if (__panicLastId) {
+                var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+                fetch('/emergency/' + __panicLastId + '/acknowledge', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+                }).catch(function(e) {});
+            }
         };
 
         function __firePanicBrowserNotification(type, location) {
@@ -184,11 +192,20 @@
         window.__dismissCritical = function() {
             var overlay = document.getElementById('__critical-alert-overlay');
             if (!overlay) return;
+            var reportId = overlay.__reportId;
             if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
-            sessionStorage.setItem('criticalDismissed_' + overlay.__reportId, '1');
+            sessionStorage.setItem('criticalDismissed_' + reportId, '1');
             overlay.remove();
             __criticalActive = false;
             __showNextCritical();
+
+            if (reportId) {
+                var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+                fetch('/emergency/' + reportId + '/acknowledge', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+                }).catch(function(e) {});
+            }
         };
 
         function __handleCriticalData(data) {

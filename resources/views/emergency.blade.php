@@ -1481,6 +1481,14 @@
             </div>
         `;
         openModal('view-modal');
+
+        if (r && r.report_id) {
+            var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+            fetch('/emergency/' + r.report_id + '/acknowledge', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+            }).catch(function(e) {});
+        }
     }
 
     function switchToEdit() {
