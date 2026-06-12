@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\NotificationHelper;
+use Illuminate\Support\Facades\Auth;
 
 class TenantController extends Controller
 {
@@ -317,8 +318,12 @@ class TenantController extends Controller
 
     public function reactivate($id)
     {
-        if (\Illuminate\Support\Facades\Auth::guard('staff')->user()?->role !== 'admin') {
-            return redirect()->route('tenants.index')->with('error', 'Unauthorized.');
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        if (Auth::guard('staff')->user()->role !== 'admin') {
+            return redirect()->route('tenants.index')->with('error', 'Unauthorized. Admin access required.');
         }
 
         $tenant = Tenant::findOrFail($id);
@@ -353,7 +358,7 @@ class TenantController extends Controller
 
         $request->validate([
             'email'          => 'required|email|unique:tenants,email,' . $tenant->tenant_id . ',tenant_id',
-            'contact_number' => ['required', 'string', 'regex:/^[0-9\-\+\s]{7,20}$/'],
+            'contact_number' => ['required', 'string', 'regex:/^(?=.*\d)[0-9\-\+\s]{7,20}$/'],
         ]);
 
         $tenant->update([
@@ -376,12 +381,20 @@ class TenantController extends Controller
             'profile_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ]);
 
-        if ($tenant->profile_photo) {
-            Storage::disk('public')->delete($tenant->profile_photo);
-        }
+        $oldPhoto = $tenant->profile_photo;
 
         $path = $request->file('profile_photo')->store('profile_photos', 'public');
-        $tenant->update(['profile_photo' => $path]);
+
+        try {
+            $tenant->update(['profile_photo' => $path]);
+        } catch (\Exception $e) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['message' => 'Failed to update profile photo.'], 500);
+        }
+
+        if ($oldPhoto && $oldPhoto !== $path) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
 
         return response()->json([
             'message'       => 'Profile photo updated successfully.',
@@ -409,15 +422,18 @@ class TenantController extends Controller
     public function destroy($id)
     {
         $tenant = Tenant::findOrFail($id);
-        $this->archiveTenant($tenant, 'deleted');
 
-        \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
-        \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
-            ->whereIn('payment_status', ['unpaid', 'overdue'])
-            ->update(['tenant_id' => null]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($tenant) {
+            $this->archiveTenant($tenant, 'deleted');
 
-        $tenant->tokens()->delete();
-        $tenant->delete();
+            \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
+            \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
+                ->whereIn('payment_status', ['unpaid', 'overdue'])
+                ->update(['tenant_id' => null]);
+
+            $tenant->tokens()->delete();
+            $tenant->delete();
+        });
 
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant account deleted and archived.');
@@ -465,6 +481,10 @@ class TenantController extends Controller
 
     public function updateNotes(Request $request, $id)
     {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
         $request->validate([
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -484,7 +504,9 @@ class TenantController extends Controller
 
         $tenant = Tenant::where('account_id', $request->account_id)->first();
 
-        if (!$tenant || !Hash::check($request->password, $tenant->password_hash)) {
+        $passwordHash = $tenant ? $tenant->password_hash : '$2y$10$invalidsaltinvalidsaltinvalidsalt.';
+
+        if (!$tenant || !Hash::check($request->password, $passwordHash)) {
             return response()->json([
                 'error'   => 'invalid_credentials',
                 'message' => 'Account ID or password is incorrect.',
