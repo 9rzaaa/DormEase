@@ -26,11 +26,13 @@ class ArchivedMaintReq extends Model
         'submitted_at',
         'resolved_at',
         'archived_at',
+        'hidden_from_tenant',
     ];
 
     protected $casts = [
-        'submitted_at' => 'datetime',
-        'resolved_at'  => 'datetime',
-        'archived_at'  => 'datetime',
+        'submitted_at'       => 'datetime',
+        'resolved_at'        => 'datetime',
+        'archived_at'        => 'datetime',
+        'hidden_from_tenant' => 'boolean',
     ];
 }
