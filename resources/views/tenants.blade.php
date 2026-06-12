@@ -1988,9 +1988,6 @@ function toggleSection(group) {
 
 var statusFilter = '';
 
-function setStatusFilter(val) {
-    statusFilter = val;
-
 function enforceRoomNumberInput(input) {
     input.addEventListener('keydown', function(e) {
         var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End'];
@@ -2029,6 +2026,8 @@ document.addEventListener('DOMContentLoaded', function() {
         inp.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
     });
 });
+    function setStatusFilter(val) {
+    statusFilter = val;
     applyFilters();
 }
 
