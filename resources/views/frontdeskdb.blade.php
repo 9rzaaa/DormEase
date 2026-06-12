@@ -1116,27 +1116,5 @@ window.handleOverlayClick = function(e, modalId) {
     showToast({{ json_encode(session('error')) }}, 'error');
 @endif
 
-window.openNotifDetail = function(el) {
-    var data;
-    try { data = JSON.parse(el.dataset.notif); }
-    catch(e) { return; }
-
-    if (data.id && !data.isRead) {
-        fetch('/notifications/' + data.id + '/read', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        });
-    }
-
-    if (data.url) {
-        window.location = data.url;
-        return;
-    }
-
-    showToast(data.message, 'success');
-};
 </script>
 @endsection
