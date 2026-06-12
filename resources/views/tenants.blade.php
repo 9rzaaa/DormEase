@@ -339,6 +339,12 @@ tbody tr:hover { background: var(--soft-bg); }
     background: var(--white);
 }
 .modal-field input::placeholder { color: #c4a0af; }
+.modal-field input.field-invalid {
+    border-color: #e04867;
+    box-shadow: 0 0 0 3px rgba(224,72,103,.12);
+    background: #fff5f6;
+}
+.field-error { line-height: 1.4; }
 .status-select-wrap { position: relative; }
 .status-dot {
     position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
@@ -1075,7 +1081,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-title">Add New Tenant</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
+        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;" onsubmit="return validateAddTenantForm(event)">
             @csrf
             <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
             <div style="flex-shrink:0;background:#fffafd;border-top:1.5px solid var(--pink-100);border-bottom:1.5px solid var(--pink-100);">
@@ -1128,11 +1134,13 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field full">
                                 <label>Email Address</label>
-                                <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                                <input type="email" name="email" id="add-email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                                <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
                                 <label>Contact No.</label>
-                                <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789" maxlength="13" value="{{ old('contact_number') }}">
+                                <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
                                 <label>Referred By</label>
@@ -1189,6 +1197,11 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <label>Move-In Date</label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                             </div>
+                            <div class="modal-field full" id="add-moveout-wrap">
+                                <label>Move-Out Date (Optional)</label>
+                                <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
+                                <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            </div>
                             <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
                                 <label>Estimated Move-In Date</label>
                                 <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
@@ -1236,7 +1249,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return validateEditTenantForm(event)">
             @csrf
             @method('PUT')
             <div class="modal-body">
@@ -1254,10 +1267,12 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Email Address</label>
                             <input type="email" name="email" id="edit-email" placeholder="Email address" required>
+                            <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789">
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789" maxlength="13">
+                            <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
@@ -1490,6 +1505,189 @@ var sectionData  = { active: [], reserved: [] };
 var addCurrentStep = 1;
 var selectedRoomNumber = null;
 
+var EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+function validateEmailField(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value.trim();
+    var msg = '';
+    if (!val) {
+        msg = input.required ? 'Email address is required.' : '';
+    } else if (val.indexOf('@') === -1) {
+        msg = 'Email must contain an "@" symbol.';
+    } else if (val.indexOf(' ') !== -1) {
+        msg = 'Email cannot contain spaces.';
+    } else if ((val.match(/@/g) || []).length > 1) {
+        msg = 'Email cannot contain more than one "@".';
+    } else if (!EMAIL_REGEX.test(val)) {
+        msg = 'Please enter a valid email address (e.g. name@example.com).';
+    }
+    if (msg) {
+        input.classList.add('field-invalid');
+        error.textContent = msg;
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function formatPhoneNumber(rawValue) {
+    var digits = rawValue.replace(/\D/g, '');
+    if (digits.length > 11) digits = digits.substring(0, 11);
+    var formatted = digits;
+    if (digits.length > 4 && digits.length <= 7) {
+        formatted = digits.substring(0, 4) + '-' + digits.substring(4);
+    } else if (digits.length > 7) {
+        formatted = digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7);
+    }
+    return formatted;
+}
+
+function validatePhoneField(inputId, errorId, required) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value.trim();
+    var digits = val.replace(/\D/g, '');
+    var msg = '';
+    if (!val) {
+        msg = required ? 'Contact number is required.' : '';
+    } else if (digits.length !== 11) {
+        msg = 'Contact number must be 11 digits (e.g. 0912-345-6789).';
+    } else if (digits.charAt(0) !== '0') {
+        msg = 'Contact number must start with 0 (e.g. 0912-345-6789).';
+    } else if (!/^[0-9-]+$/.test(val)) {
+        msg = 'Contact number can only contain numbers and dashes.';
+    }
+    if (msg) {
+        input.classList.add('field-invalid');
+        error.textContent = msg;
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachPhoneFormatter(inputId, errorId, required) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('input', function() {
+        var cursorAtEnd = this.selectionStart === this.value.length;
+        var formatted = formatPhoneNumber(this.value);
+        this.value = formatted;
+        if (cursorAtEnd) {
+            this.setSelectionRange(this.value.length, this.value.length);
+        }
+        validatePhoneField(inputId, errorId, required);
+    });
+    input.addEventListener('blur', function() {
+        validatePhoneField(inputId, errorId, required);
+    });
+    input.addEventListener('keypress', function(e) {
+        var char = String.fromCharCode(e.which);
+        if (!/[0-9]/.test(char) && e.which !== 8) {
+            e.preventDefault();
+        }
+    });
+}
+
+function attachEmailValidator(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('input', function() {
+        validateEmailField(inputId, errorId);
+    });
+    input.addEventListener('blur', function() {
+        validateEmailField(inputId, errorId);
+    });
+}
+
+function validateMoveOutDate(moveInId, moveOutId, errorId) {
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    var error   = document.getElementById(errorId);
+    if (!moveIn || !moveOut || !error) return true;
+    var moveInVal  = moveIn.value;
+    var moveOutVal = moveOut.value;
+    if (!moveOutVal) {
+        moveOut.classList.remove('field-invalid');
+        error.style.display = 'none';
+        error.textContent = '';
+        return true;
+    }
+    if (moveInVal && moveOutVal < moveInVal) {
+        moveOut.classList.add('field-invalid');
+        error.textContent = 'Move-out date cannot be earlier than move-in date.';
+        error.style.display = 'block';
+        return false;
+    }
+    moveOut.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachMoveOutValidator(moveInId, moveOutId, errorId) {
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    if (!moveIn || !moveOut) return;
+    moveOut.addEventListener('change', function() { validateMoveOutDate(moveInId, moveOutId, errorId); });
+    moveIn.addEventListener('change', function() { validateMoveOutDate(moveInId, moveOutId, errorId); });
+}
+
+function validateAddTenantForm(e) {
+    var emailOk    = validateEmailField('add-email', 'add-email-error');
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    if (!emailOk || !contactOk || !moveOutOk) {
+        e.preventDefault();
+        if (!emailOk) {
+            document.getElementById('add-email').focus();
+        } else if (!contactOk) {
+            document.getElementById('add-contact').focus();
+        } else if (!moveOutOk) {
+            document.getElementById('add-move-out-date').focus();
+        }
+        return false;
+    }
+    return true;
+}
+
+function validateEditTenantForm(e) {
+    var emailOk   = validateEmailField('edit-email', 'edit-email-error');
+    var contactOk = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var moveOutOk = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    if (!emailOk || !contactOk || !moveOutOk) {
+        e.preventDefault();
+        if (!emailOk) {
+            document.getElementById('edit-email').focus();
+        } else if (!contactOk) {
+            document.getElementById('edit-contact').focus();
+        } else if (!moveOutOk) {
+            document.getElementById('edit-moveout').focus();
+        }
+        return false;
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachEmailValidator('add-email', 'add-email-error');
+    attachEmailValidator('edit-email', 'edit-email-error');
+    attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
+});
+
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
     document.getElementById('action-loading-text').textContent = message || 'Please wait...';
@@ -1539,6 +1737,18 @@ function closeModal(id) {
         if (aw) aw.style.display = 'none';
         if (an) an.style.display = 'none';
         if (am) am.style.display = '';
+        var amo = document.getElementById('add-move-out-date');
+        var amoErr = document.getElementById('add-moveout-error');
+        if (amo) { amo.value = ''; amo.classList.remove('field-invalid'); }
+        if (amoErr) { amoErr.style.display = 'none'; amoErr.textContent = ''; }
+        var ae = document.getElementById('add-email');
+        var aeErr = document.getElementById('add-email-error');
+        if (ae) ae.classList.remove('field-invalid');
+        if (aeErr) { aeErr.style.display = 'none'; aeErr.textContent = ''; }
+        var ac = document.getElementById('add-contact');
+        var acErr = document.getElementById('add-contact-error');
+        if (ac) ac.classList.remove('field-invalid');
+        if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
@@ -1584,6 +1794,19 @@ function goAddStep(step) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            return;
+        }
+        if (!validateEmailField('add-email', 'add-email-error')) {
+            document.getElementById('add-email').focus();
+            return;
+        }
+        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+            document.getElementById('add-contact').focus();
+            return;
+        }
+    }
+    if (step === 1) {
+        if (!validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error')) {
             return;
         }
     }
