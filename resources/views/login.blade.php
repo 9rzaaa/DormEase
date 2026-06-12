@@ -880,7 +880,7 @@
         90%      { transform: translateX(2px); }
     }
 
-    .input-shake { animation: shake .45s ease; }
+    .input-error-state { border-color: var(--hot-pink) !important; }
 
     .field-error {
         font-size: .74rem;
@@ -1571,19 +1571,12 @@
 
             <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
 
-            @if ($errors->any())
-                <div class="de-alert-error">
-                    <img src="{{ asset('icons/warning.png') }}" alt="Error">
-                    <span>{{ $errors->first('email') }}</span>
-                </div>
-            @endif
-
             <div class="field">
                 <label for="email">Email Address</label>
                 <div class="input-wrap">
                     <img class="input-icon" src="{{ asset('icons/email.png') }}" alt="">
                     <input
-                        class="de-input"
+                        class="de-input{{ $errors->has('email') ? ' input-error-state' : '' }}"
                         type="email"
                         id="email"
                         name="email"
@@ -1597,8 +1590,8 @@
                         oninput="this.setCustomValidity('')"
                     >
                 </div>
-                <div class="field-error" id="email-field-error">
-                    <span id="email-error-text"></span>
+                <div class="field-error{{ $errors->has('email') ? ' visible' : '' }}" id="email-field-error">
+                    <span id="email-error-text">{{ $errors->first('email') }}</span>
                 </div>
             </div>
 
@@ -2016,15 +2009,14 @@
         clearPwErr();
     });
 
-    @if ($errors->any())
+    @if ($errors->has('email'))
         (function () {
-            var inputs = document.querySelectorAll('.de-input');
-            inputs.forEach(function (inp) {
-                inp.classList.add('input-shake');
-                inp.addEventListener('animationend', function () {
-                    inp.classList.remove('input-shake');
-                }, { once: true });
-            });
+            var inp = document.getElementById('email');
+            if (!inp) return;
+            inp.classList.add('input-shake');
+            inp.addEventListener('animationend', function () {
+                inp.classList.remove('input-shake');
+            }, { once: true });
         })();
     @endif
 
