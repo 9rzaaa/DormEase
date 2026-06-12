@@ -2560,6 +2560,8 @@ async function submitAddRoom() {
     const stayType = document.getElementById('ar-stay-type').value;
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
+    const duplicate = roomsData.find(function(r) { return r.room_number.toLowerCase() === number.toLowerCase(); });
+    if (duplicate) { showToast('Room ' + number + ' already exists on Floor ' + duplicate.floor + '.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     showActionLoading('Adding room...');
     try {
         const res = await fetch('/rooms', {
