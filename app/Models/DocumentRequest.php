@@ -22,12 +22,14 @@ class DocumentRequest extends Model
         'fulfilled_file',
         'submitted_at',
         'processed_at',
+        'hidden_from_tenant',
     ];
 
     protected $casts = [
         'submitted_at' => 'datetime',
         'processed_at' => 'datetime',
         'date_needed'  => 'date',
+        'hidden_from_tenant' => 'boolean',
     ];
 
     public function tenant()

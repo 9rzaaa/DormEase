@@ -15,10 +15,89 @@ class DocumentRequestController extends Controller
     public function index(Request $request)
     {
         $records = DocumentRequest::where('tenant_id', $request->user()->tenant_id)
+            ->where('hidden_from_tenant', false)
             ->orderBy('submitted_at', 'desc')
             ->get();
 
         return response()->json($records);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $tenantId = $request->user()?->tenant_id;
+        $documentRequest = DocumentRequest::where('tenant_id', $tenantId)
+            ->where('doc_request_id', $id)
+            ->first();
+
+        if (!$documentRequest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Document request not found.',
+            ], 404);
+        }
+
+        if ($documentRequest->status === 'pending') {
+            $tenant = $request->user();
+            $tenantName = trim($tenant?->first_name . ' ' . $tenant?->last_name);
+
+            \App\Models\ArchiveDocu::create([
+                'archivable_type' => 'document_request',
+                'original_id'     => $documentRequest->doc_request_id,
+                'archived_by'     => null,
+                'archived_at'     => now(),
+                'data'            => [
+                    'doc_request_id' => $documentRequest->doc_request_id,
+                    'tenant_id'      => $documentRequest->tenant_id,
+                    'tenant_name'    => $tenantName,
+                    'document_type'  => $documentRequest->document_type,
+                    'category'       => $documentRequest->category,
+                    'purpose'        => $documentRequest->purpose,
+                    'delivery_type'  => $documentRequest->delivery_type,
+                    'date_needed'    => $documentRequest->date_needed,
+                    'attachment'     => $documentRequest->attachment,
+                    'status'         => 'cancelled',
+                    'admin_remarks'  => $documentRequest->admin_remarks,
+                    'fulfilled_file' => $documentRequest->fulfilled_file,
+                    'submitted_at'   => $documentRequest->submitted_at,
+                    'processed_at'   => now(),
+                ],
+            ]);
+
+            $documentRequest->delete();
+
+            $reqLabel = '#DRQ-' . str_pad($id, 3, '0', STR_PAD_LEFT);
+            NotificationHelper::sendToAll(
+                type: 'document_request',
+                message: "{$tenantName} cancelled pending document request {$reqLabel}.",
+                ref_id: $id,
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pending request cancelled successfully.',
+            ]);
+        }
+
+        if ($documentRequest->status === 'processing') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Processing requests cannot be cancelled by the tenant.',
+            ], 403);
+        }
+
+        if (in_array($documentRequest->status, ['approved', 'ready', 'denied'])) {
+            $documentRequest->update(['hidden_from_tenant' => true]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Document request hidden.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'This request cannot be deleted.',
+        ], 400);
     }
 
     public function store(Request $request)
