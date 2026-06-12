@@ -881,30 +881,11 @@ tbody tr:hover { background: var(--soft-bg); }
     text-transform: uppercase;
 }
 
-.td-modal-pill.pill-status-active {
-    background: rgba(31,157,105,.30);
-    border-color: rgba(140,224,187,.50);
-}
-
-.td-modal-pill.pill-status-pending {
-    background: rgba(200,150,12,.30);
-    border-color: rgba(240,192,64,.50);
-}
-
-.td-modal-pill.pill-status-inactive {
-    background: rgba(224,72,103,.30);
-    border-color: rgba(255,155,176,.50);
-}
-
-.td-modal-pill.pill-status-reserved {
-    background: rgba(154,98,0,.25);
-    border-color: rgba(240,200,64,.50);
-}
-
-.td-modal-pill.pill-status-moveout {
-    background: rgba(232,23,93,.18);
-    border-color: rgba(255,157,176,.40);
-}
+.td-modal-pill.pill-status-active   { background: rgba(31,157,105,.30);  border-color: rgba(140,224,187,.50); }
+.td-modal-pill.pill-status-pending  { background: rgba(200,150,12,.30);  border-color: rgba(240,192,64,.50); }
+.td-modal-pill.pill-status-inactive { background: rgba(224,72,103,.30);  border-color: rgba(255,155,176,.50); }
+.td-modal-pill.pill-status-reserved { background: rgba(154,98,0,.25);    border-color: rgba(240,200,64,.50); }
+.td-modal-pill.pill-status-moveout  { background: rgba(232,23,93,.18);   border-color: rgba(255,157,176,.40); }
 
 .td-modal-body {
     flex: 1;
@@ -1246,6 +1227,29 @@ tbody tr:hover { background: var(--soft-bg); }
     animation: pulseGreen 2s infinite;
 }
 
+.reserved-collapse-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--bright-pink);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .2s, border-color .2s;
+}
+
+.reserved-collapse-btn:hover {
+    background: var(--petal);
+    border-color: var(--bright-pink);
+}
+
+.reserved-collapse-btn svg {
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+
 @media (max-width: 1100px) {
     .stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1412,7 +1416,6 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
-                    <option value="reserved">Reserved</option>
                 </select>
                 <select class="sort-select" id="inside-filter" onchange="applyFilters()">
                     <option value="">All Locations</option>
@@ -1443,6 +1446,66 @@ tbody tr:hover { background: var(--soft-bg); }
         <div class="table-footer">
             <div class="table-showing" id="showing-label"></div>
             <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <div class="table-card fade-up" style="animation-delay:.34s;">
+        <div class="table-header" style="cursor:pointer;" onclick="toggleReservedTable()">
+            <div>
+                <div class="table-title">Reserved Tenants</div>
+                <div class="table-date" id="reserved-table-date"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <div class="table-controls" id="reserved-table-controls" onclick="event.stopPropagation()">
+                    <div class="search-wrap">
+                        <input type="text" id="reserved-search-input" placeholder="Search..." oninput="applyReservedFilters()">
+                    </div>
+                    <select class="sort-select" id="reserved-sort-select" onchange="applyReservedFilters()">
+                        <option value="newest">Sort by: Newest</option>
+                        <option value="oldest">Sort by: Oldest</option>
+                        <option value="floor">Sort by: Floor</option>
+                        <option value="name">Sort by: Name</option>
+                        <option value="room">Sort by: Room</option>
+                    </select>
+                    <select class="sort-select" id="reserved-floor-filter" onchange="applyReservedFilters()">
+                        <option value="">All Floors</option>
+                        @for($i = 2; $i <= 5; $i++)
+                            <option value="{{ $i }}">Floor {{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <button
+                    class="reserved-collapse-btn"
+                    id="reserved-collapse-btn"
+                    onclick="event.stopPropagation(); toggleReservedTable()"
+                    title="Collapse / Expand"
+                >
+                    <svg id="reserved-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="reserved-table-body">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tenant Name</th>
+                            <th>Floor No.</th>
+                            <th>Room No.</th>
+                            <th>Contact No.</th>
+                            <th class="th-center">Status</th>
+                            <th>Notes</th>
+                            <th class="th-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reserved-tenant-tbody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-showing" id="reserved-showing-label"></div>
+                <div class="pagination" id="reserved-pagination"></div>
+            </div>
         </div>
     </div>
 
@@ -1562,19 +1625,15 @@ tbody tr:hover { background: var(--soft-bg); }
 
 <div class="td-modal" id="view-modal">
     <div class="td-modal-card">
-
         <div class="td-modal-hero">
             <button class="td-modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
             <div class="td-modal-name" id="td-modal-name">—</div>
             <div class="td-modal-meta" id="td-modal-meta"></div>
         </div>
-
         <div class="td-modal-body" id="td-modal-body"></div>
-
         <div class="td-modal-footer">
             <button class="td-modal-close-btn" onclick="closeModal('view-modal')">Close</button>
         </div>
-
     </div>
 </div>
 
@@ -1619,19 +1678,23 @@ let currentNoteId    = null;
 let logData          = [];
 let logFilter        = '';
 let logDateFilter    = 'all';
+let reservedTableOpen = true;
 
 document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+document.getElementById('reserved-table-date').textContent =
+    'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
 function showActionLoading(message) {
-    const overlay = document.getElementById('action-loading');
+    var overlay = document.getElementById('action-loading');
     document.getElementById('action-loading-text').textContent = message || 'Please wait...';
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 }
 
 function hideActionLoading() {
-    const overlay = document.getElementById('action-loading');
+    var overlay = document.getElementById('action-loading');
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
 }
@@ -1683,6 +1746,22 @@ function statusPillClass(status) {
         inactive: 'tad-pill-inactive',
     };
     return map[status] || 'tad-pill-inactive';
+}
+
+function toggleReservedTable() {
+    reservedTableOpen = !reservedTableOpen;
+    var body     = document.getElementById('reserved-table-body');
+    var chevron  = document.getElementById('reserved-chevron');
+    var controls = document.getElementById('reserved-table-controls');
+    if (reservedTableOpen) {
+        body.style.display     = '';
+        controls.style.display = '';
+        chevron.style.transform = '';
+    } else {
+        body.style.display     = 'none';
+        controls.style.display = 'none';
+        chevron.style.transform = 'rotate(-90deg)';
+    }
 }
 
 function renderTable() {
@@ -1740,6 +1819,91 @@ function renderPagination() {
     pg.innerHTML = html;
 }
 
+let reservedFiltered    = [];
+let reservedCurrentPage = 1;
+
+function renderReservedTable() {
+    var start    = (reservedCurrentPage - 1) * PER_PAGE;
+    var pageData = reservedFiltered.slice(start, start + PER_PAGE);
+    var tbody    = document.getElementById('reserved-tenant-tbody');
+
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--ink-muted);">No reserved tenants found.</td></tr>';
+    } else {
+        tbody.innerHTML = pageData.map(function(t) {
+            return '<tr id="reserved-tenant-row-' + t.tenant_id + '">' +
+                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
+                '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
+                '<td>' + (t.room_number || '\u2014') + '</td>' +
+                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
+                '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
+                '<td class="td-center"><div class="action-group">' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                '</div></td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    var total = reservedFiltered.length;
+    var from  = total === 0 ? 0 : start + 1;
+    var to    = Math.min(start + PER_PAGE, total);
+    document.getElementById('reserved-showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
+
+    renderReservedPagination();
+}
+
+function renderReservedPagination() {
+    var totalPages = Math.ceil(reservedFiltered.length / PER_PAGE);
+    var pg   = document.getElementById('reserved-pagination');
+    var html = '<button class="page-btn" onclick="goReservedPage(' + (reservedCurrentPage - 1) + ')" ' + (reservedCurrentPage === 1 ? 'disabled' : '') + '>\u2039</button>';
+
+    for (var i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= reservedCurrentPage - 1 && i <= reservedCurrentPage + 1)) {
+            html += '<button class="page-btn ' + (i === reservedCurrentPage ? 'active' : '') + '" onclick="goReservedPage(' + i + ')">' + i + '</button>';
+        } else if (i === reservedCurrentPage - 2 || i === reservedCurrentPage + 2) {
+            html += '<button class="page-btn" disabled>...</button>';
+        }
+    }
+
+    html += '<button class="page-btn" onclick="goReservedPage(' + (reservedCurrentPage + 1) + ')" ' + (reservedCurrentPage === totalPages || totalPages === 0 ? 'disabled' : '') + '>\u203a</button>';
+    pg.innerHTML = html;
+}
+
+function goReservedPage(p) {
+    var totalPages = Math.ceil(reservedFiltered.length / PER_PAGE);
+    if (p < 1 || p > totalPages) return;
+    reservedCurrentPage = p;
+    renderReservedTable();
+}
+
+function applyReservedFilters() {
+    var q     = document.getElementById('reserved-search-input').value.toLowerCase();
+    var sort  = document.getElementById('reserved-sort-select').value;
+    var floor = document.getElementById('reserved-floor-filter').value;
+
+    reservedFiltered = tenants.filter(function(t) {
+        if (t.status !== 'reserved') return false;
+        var matchesSearch =
+            (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
+            (t.room_number    || '').toLowerCase().indexOf(q) !== -1 ||
+            (t.contact_number || '').toLowerCase().indexOf(q) !== -1 ||
+            String(t.floor || '').indexOf(q) !== -1;
+        var matchesFloor = floor === '' || String(t.floor) === floor;
+        return matchesSearch && matchesFloor;
+    });
+
+    if (sort === 'newest') reservedFiltered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+    if (sort === 'oldest') reservedFiltered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+    if (sort === 'name')   reservedFiltered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+    if (sort === 'room')   reservedFiltered.sort(function(a, b) { return (a.room_number || '').localeCompare(b.room_number || ''); });
+    if (sort === 'floor')  reservedFiltered.sort(function(a, b) { return parseInt(a.floor || 0) - parseInt(b.floor || 0); });
+
+    reservedCurrentPage = 1;
+    renderReservedTable();
+}
+
 function goPage(p) {
     var totalPages = Math.ceil(filtered.length / PER_PAGE);
     if (p < 1 || p > totalPages) return;
@@ -1755,8 +1919,7 @@ function applyFilters() {
     var inside = document.getElementById('inside-filter').value;
 
     filtered = tenants.filter(function(t) {
-        if (t.status === 'inactive' || t.status === 'move_out') return false;
-        if (t.status === 'reserved' && !t.is_active) return false;
+        if (t.status === 'inactive' || t.status === 'move_out' || t.status === 'reserved') return false;
         var matchesSearch =
             (t.first_name + ' ' + t.last_name).toLowerCase().indexOf(q) !== -1 ||
             (t.room_number    || '').toLowerCase().indexOf(q) !== -1 ||
@@ -1862,7 +2025,7 @@ function toggleLogDateDropdown() {
     var menu    = document.getElementById('log-date-dropdown-menu');
     var chevron = document.getElementById('log-date-dropdown-chevron');
     var isOpen  = menu.style.display !== 'none';
-    menu.style.display    = isOpen ? 'none' : 'block';
+    menu.style.display      = isOpen ? 'none' : 'block';
     chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
 }
 
@@ -1993,7 +2156,7 @@ function exportLog(format) {
     });
 
     if (format === 'pdf') {
-        var win  = window.open('', '_blank');
+        var win         = window.open('', '_blank');
         var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
         var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
         var subtitle    = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  \u2022  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
@@ -2130,8 +2293,8 @@ function openNotesModal(id, name, currentNote) {
 async function submitNote() {
     if (!currentNoteId) return;
 
-    const note = document.getElementById('notes-input').value.trim();
-    const btn  = document.getElementById('notes-save-btn');
+    var note = document.getElementById('notes-input').value.trim();
+    var btn  = document.getElementById('notes-save-btn');
 
     btn.disabled    = true;
     btn.textContent = 'Saving...';
@@ -2139,7 +2302,7 @@ async function submitNote() {
     showActionLoading('Saving note...');
 
     try {
-        const res = await fetch('/tenants/' + currentNoteId + '/notes', {
+        var res = await fetch('/tenants/' + currentNoteId + '/notes', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -2150,20 +2313,20 @@ async function submitNote() {
         });
 
         if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
+            var err = await res.json().catch(function() { return {}; });
             throw new Error(err.message || 'Failed to save note.');
         }
 
-        const idx = tenants.findIndex(function(t) { return t.tenant_id === currentNoteId; });
+        var idx = tenants.findIndex(function(t) { return t.tenant_id === currentNoteId; });
         if (idx !== -1) tenants[idx].notes = note;
 
-        const filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
+        var filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
         if (filteredIdx !== -1) filtered[filteredIdx].notes = note;
 
         renderTable();
         closeModal('notes-modal');
         showToast('Note saved successfully.', 'success');
-    } catch (e) {
+    } catch(e) {
         showToast(e.message || 'Failed to save note.', 'error');
     } finally {
         hideActionLoading();
@@ -2492,5 +2655,6 @@ document.addEventListener('click', function(e) {
 });
 
 applyFilters();
+applyReservedFilters();
 </script>
 @endsection
