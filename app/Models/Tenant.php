@@ -49,19 +49,20 @@ class Tenant extends Authenticatable
     {
         $year   = now()->year;
         $prefix = "TNT-{$year}-";
-
-        $last = self::where('account_id', 'like', "{$prefix}%")
-            ->orderBy('account_id', 'desc')
-            ->first();
-
-        if (!$last) {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($prefix) {
+            $last = self::where('account_id', 'like', "{$prefix}%")
+                ->lockForUpdate()
+                ->orderBy('account_id', 'desc')
+                ->first();
             $nextNumber = 1;
-        } else {
-            $lastNumber = (int) substr($last->account_id, -3);
-            $nextNumber = $lastNumber + 1;
-        }
-
-        return $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            if ($last) {
+                $matches = [];
+                if (preg_match('/(\d{3})$/', $last->account_id, $matches)) {
+                    $nextNumber = (int) $matches[1] + 1;
+                }
+            }
+            return $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        });
     }
     public static function generateTempPassword(): string
     {
