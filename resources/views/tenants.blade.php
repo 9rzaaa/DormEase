@@ -1480,8 +1480,8 @@ function printCredentialSlip(type) {
     win.document.close();
 }
 
-var tenants = @json($tenants);
-var billingData = @json($billingData);
+var tenants = {!! json_encode($tenants, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var billingData = {!! json_encode($billingData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 var PER_PAGE = 8;
 var currentTenant = null;
 var sectionState = { active: true, reserved: true };
@@ -2690,9 +2690,9 @@ function setAddMode(mode) {
 
 applyFilters();
 
-var deletedTenantArchive  = @json($deletedArchive);
-var inactiveTenantArchive = @json($inactiveArchive);
-var moveoutTenantArchive  = @json($moveoutArchive);
+var deletedTenantArchive  = {!! json_encode($deletedArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var inactiveTenantArchive = {!! json_encode($inactiveArchive, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var moveoutTenantArchive  = {!! json_encode($moveoutArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 var tenantArchiveTab = 'deleted';
 
 function fmtDatePlain(d) {

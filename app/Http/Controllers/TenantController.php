@@ -374,6 +374,13 @@ class TenantController extends Controller
     {
         $tenant = Tenant::findOrFail($id);
         $this->archiveTenant($tenant, 'deleted');
+
+        \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
+        \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
+            ->whereIn('payment_status', ['unpaid', 'overdue'])
+            ->update(['tenant_id' => null]);
+
+        $tenant->tokens()->delete();
         $tenant->delete();
 
         return redirect()->route('tenants.index')
