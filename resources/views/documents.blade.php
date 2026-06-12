@@ -1608,6 +1608,10 @@
                 Denied Submissions
                 <span class="drawer-tab-badge" id="dtab-denied-count">0</span>
             </button>
+            <button class="drawer-tab-btn" id="dtab-cancelled-btn" onclick="switchDrawerTab('cancelled')">
+                Cancelled Requests
+                <span class="drawer-tab-badge" id="dtab-cancelled-count">0</span>
+            </button>
         </div>
 
         <div class="drawer-body">
@@ -1755,6 +1759,50 @@
                 <div class="table-footer">
                     <div class="table-info" id="adenied-info">Showing 0 entries</div>
                     <div class="pagination" id="adenied-pagination"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-panel" id="dpanel-cancelled">
+            <div class="drawer-toolbar">
+                <span class="toolbar-label">Sort:</span>
+                <select class="toolbar-select" id="acancelled-sort" onchange="acancelledApplyFilters()">
+                    <option value="newest">Newest Archived</option>
+                    <option value="oldest">Oldest Archived</option>
+                </select>
+                <div class="search-wrap" style="margin-left:auto;">
+                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                    <input type="text" id="acancelled-search" placeholder="Search tenant, document type..." oninput="acancelledApplyFilters()">
+                </div>
+            </div>
+            <div class="table-card" style="flex:unset;">
+                <div class="table-card-header">
+                    <div>
+                        <div class="table-card-title">Cancelled Requests</div>
+                        <div class="table-card-sub">Document requests and form submissions cancelled by tenants</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Tenant</th>
+                                <th>Document/Form Type</th>
+                                <th>Purpose</th>
+                                <th>Delivery/File</th>
+                                <th class="th-center">Status</th>
+                                <th>Submitted</th>
+                                <th>Cancelled On</th>
+                                <th class="th-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="acancelled-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-info" id="acancelled-info">Showing 0 entries</div>
+                    <div class="pagination" id="acancelled-pagination"></div>
                 </div>
             </div>
         </div>
@@ -2745,24 +2793,30 @@ async function fetchArchive() {
 
         adocState.data   = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category === 'form' &&
-            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission' && r.data?.status !== 'cancelled'
         );
         areqState.data   = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category !== 'form' &&
-            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission' && r.data?.status !== 'cancelled'
         );
         adeniedState.data = data.filter(r =>
             r.archivable_type === 'document_request' &&
-            (r.data?.status === 'denied' || r.data?.status === 'resubmission')
+            (r.data?.status === 'denied' || r.data?.status === 'resubmission') && r.data?.status !== 'cancelled'
+        );
+        acancelledState.data = data.filter(r =>
+            r.archivable_type === 'document_request' &&
+            r.data?.status === 'cancelled'
         );
 
         document.getElementById('dtab-docs-count').textContent   = adocState.data.length;
         document.getElementById('dtab-reqs-count').textContent   = areqState.data.length;
         document.getElementById('dtab-denied-count').textContent = adeniedState.data.length;
+        document.getElementById('dtab-cancelled-count').textContent = acancelledState.data.length;
 
         adocApplyFilters();
         areqApplyFilters();
         adeniedApplyFilters();
+        acancelledApplyFilters();
     } catch {
         document.getElementById('adoc-tbody').innerHTML =
             `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load archive.</div></td></tr>`;
@@ -3167,6 +3221,7 @@ async function confirmDeleteForm() {
 
 let approvedState = { search: '', page: 1, perPage: 8, data: [], filtered: [] };
 let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function toggleApprovedPanel() {
     const body = document.getElementById('approved-panel-body');
@@ -3307,6 +3362,75 @@ function renderAdeniedTable() {
     renderPagination('adenied-pagination', adeniedState.page,
         Math.ceil(total / adeniedState.perPage),
         p => { adeniedState.page = p; renderAdeniedTable(); });
+}
+
+function acancelledApplyFilters() {
+    const q    = document.getElementById('acancelled-search').value.toLowerCase();
+    const sort = document.getElementById('acancelled-sort').value;
+
+    acancelledState.filtered = acancelledState.data.filter(r => {
+        const d = r.data ?? {};
+        return !q ||
+            (d.document_type ?? '').toLowerCase().includes(q) ||
+            (d.tenant_name   ?? '').toLowerCase().includes(q) ||
+            (d.full_name     ?? '').toLowerCase().includes(q);
+    });
+
+    if (sort === 'newest') acancelledState.filtered.sort((a, b) => new Date(b.archived_at) - new Date(a.archived_at));
+    if (sort === 'oldest') acancelledState.filtered.sort((a, b) => new Date(a.archived_at) - new Date(b.archived_at));
+
+    acancelledState.page = 1;
+    renderAcancelledTable();
+}
+
+function renderAcancelledTable() {
+    const start = (acancelledState.page - 1) * acancelledState.perPage;
+    const page  = acancelledState.filtered.slice(start, start + acancelledState.perPage);
+    const tbody = document.getElementById('acancelled-tbody');
+
+    if (!page.length) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">No cancelled requests found.</div></td></tr>`;
+        document.getElementById('acancelled-info').textContent = 'Showing 0 entries';
+        document.getElementById('acancelled-pagination').innerHTML = '';
+        return;
+    }
+
+    tbody.innerHTML = page.map(r => {
+        const d     = r.data ?? {};
+        const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
+        const prefix = d.category === 'form' ? 'FSB' : 'DRQ';
+        const isForm = d.category === 'form';
+        const deliveryOrFile = isForm ? fileTypeBadge(d.attachment) : escHtml(d.delivery_type ?? '—');
+        
+        return `<tr>
+            <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
+            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td>${escHtml(d.purpose ?? '—')}</td>
+            <td>${deliveryOrFile}</td>
+            <td class="td-center"><span class="req-status-badge" style="background:#FEE2E2;color:#EF4444;">Cancelled</span></td>
+            <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
+            <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
+            <td class="td-center">
+                <div class="action-group">
+                    <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
+                        <img src="${eyeIcon}" alt="View">
+                    </button>
+                    <button class="act-btn danger" title="Remove" onclick="promptRemoveAdoc(${r.archive_id}, '#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}')">
+                        <img src="${deleteIcon}" alt="Remove">
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+
+    const total  = acancelledState.filtered.length;
+    const endIdx = Math.min(start + acancelledState.perPage, total);
+    document.getElementById('acancelled-info').textContent =
+        `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+    renderPagination('acancelled-pagination', acancelledState.page,
+        Math.ceil(total / acancelledState.perPage),
+        p => { acancelledState.page = p; renderAcancelledTable(); });
 }
 
 fetchDocs();
