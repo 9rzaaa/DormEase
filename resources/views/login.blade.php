@@ -1611,10 +1611,7 @@
                         required
                     >
                     <span class="caps-icon" id="caps-icon">
-                        <svg viewBox="0 0 15 15" fill="none">
-                            <path d="M7.5 2L2 8h3v5h5V8h3L7.5 2z" stroke="#b45309" stroke-width="1.4" stroke-linejoin="round"/>
-                            <rect x="5" y="14" width="5" height="1.2" rx=".6" fill="#b45309"/>
-                        </svg>
+                        <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
                     </span>
                     <button
                         type="button"
@@ -1734,7 +1731,10 @@
                     <label>New Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right:2.8rem;">
+                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right:5rem;">
+                        <span class="fp-caps-icon" id="fp-caps-icon" style="display:none;position:absolute;right:2.8rem;top:50%;transform:translateY(-50%);pointer-events:none;">
+                            <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                        </span>
                         <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-new-pw',this)">
                             <img id="fp-eye-new" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
@@ -1752,7 +1752,10 @@
                     <label>Confirm Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right:2.8rem;">
+                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right:5rem;">
+                        <span class="fp-caps-icon" id="fp-confirm-caps-icon" style="display:none;position:absolute;right:2.8rem;top:50%;transform:translateY(-50%);pointer-events:none;">
+                            <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                        </span>
                         <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-confirm-pw',this)">
                             <img id="fp-eye-confirm" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
@@ -2279,6 +2282,34 @@
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
+
+   (function () {
+        var fpNewPw      = document.getElementById('fp-new-pw');
+        var fpConfirmPw  = document.getElementById('fp-confirm-pw');
+        var fpCapsNew    = document.getElementById('fp-caps-icon');
+        var fpCapsConf   = document.getElementById('fp-confirm-caps-icon');
+
+        function checkFpCaps(e, iconEl) {
+            var caps = e.getModifierState && e.getModifierState('CapsLock');
+            iconEl.style.display = caps ? 'inline-flex' : 'none';
+        }
+
+        ['keyup', 'keydown', 'focus'].forEach(function(evt) {
+            if (fpNewPw && fpCapsNew) {
+                fpNewPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsNew); });
+            }
+            if (fpConfirmPw && fpCapsConf) {
+                fpConfirmPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsConf); });
+            }
+        });
+
+        if (fpNewPw && fpCapsNew) {
+            fpNewPw.addEventListener('blur', function() { fpCapsNew.style.display = 'none'; });
+        }
+        if (fpConfirmPw && fpCapsConf) {
+            fpConfirmPw.addEventListener('blur', function() { fpCapsConf.style.display = 'none'; });
+        }
+    })();
 
     document.getElementById('remember-cb').addEventListener('change', function () {
         document.getElementById('remember-track').setAttribute('aria-checked', this.checked ? 'true' : 'false');
