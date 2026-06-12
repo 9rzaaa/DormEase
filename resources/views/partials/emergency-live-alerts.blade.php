@@ -15,17 +15,24 @@
         function __buildPanicAudio() {
             try {
                 var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                function beep(freq, start, dur) {
+                function sirenPulse(freqLow, freqHigh, start, dur) {
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
                     o.connect(g); g.connect(ctx.destination);
-                    o.frequency.value = freq; o.type = 'sine';
-                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    o.type = 'sawtooth';
+                    o.frequency.setValueAtTime(freqLow, ctx.currentTime + start);
+                    o.frequency.linearRampToValueAtTime(freqHigh, ctx.currentTime + start + dur * 0.5);
+                    o.frequency.linearRampToValueAtTime(freqLow, ctx.currentTime + start + dur);
+                    g.gain.setValueAtTime(0.85, ctx.currentTime + start);
+                    g.gain.setValueAtTime(0.85, ctx.currentTime + start + dur - 0.03);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
                     o.start(ctx.currentTime + start);
                     o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+                sirenPulse(660, 1100, 0.00, 0.25);
+                sirenPulse(660, 1100, 0.28, 0.25);
+                sirenPulse(660, 1100, 0.56, 0.25);
+                sirenPulse(660, 1100, 0.84, 0.30);
             } catch (e) {}
         }
 
@@ -102,17 +109,24 @@
         function __criticalBeep() {
             try {
                 var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                function beep(freq, start, dur) {
+                function sirenPulse(freqLow, freqHigh, start, dur) {
                     var o = ctx.createOscillator();
                     var g = ctx.createGain();
                     o.connect(g); g.connect(ctx.destination);
-                    o.frequency.value = freq; o.type = 'sine';
-                    g.gain.setValueAtTime(0.4, ctx.currentTime + start);
+                    o.type = 'sawtooth';
+                    o.frequency.setValueAtTime(freqLow, ctx.currentTime + start);
+                    o.frequency.linearRampToValueAtTime(freqHigh, ctx.currentTime + start + dur * 0.5);
+                    o.frequency.linearRampToValueAtTime(freqLow, ctx.currentTime + start + dur);
+                    g.gain.setValueAtTime(0.85, ctx.currentTime + start);
+                    g.gain.setValueAtTime(0.85, ctx.currentTime + start + dur - 0.03);
                     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
                     o.start(ctx.currentTime + start);
                     o.stop(ctx.currentTime + start + dur + 0.05);
                 }
-                beep(880, 0, 0.18); beep(880, 0.22, 0.18); beep(1100, 0.44, 0.28);
+                sirenPulse(660, 1100, 0.00, 0.25);
+                sirenPulse(660, 1100, 0.28, 0.25);
+                sirenPulse(660, 1100, 0.56, 0.25);
+                sirenPulse(660, 1100, 0.84, 0.30);
             } catch (e) {}
         }
 
