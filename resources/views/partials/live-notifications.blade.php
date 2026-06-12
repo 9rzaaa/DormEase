@@ -3,9 +3,6 @@
         var latestSeenNotificationId = null;
         var firstLiveNotificationLoad = true;
         var pollTimer = null;
-        var POLL_INTERVAL_MS = 6000;
-        var pollInFlight = false;
-        var pollAgainAfterCurrent = false;
         var notificationAudioContext = null;
         var notificationSoundUnlocked = false;
         var queuedNotificationSound = false;
@@ -213,20 +210,12 @@
             } catch (e) {}
         }
 
-        function requestBrowserNotificationPermission() {
-            if (typeof Notification === 'undefined' || Notification.permission !== 'default') return;
-
-            try {
-                var permissionRequest = Notification.requestPermission();
-                if (permissionRequest && typeof permissionRequest.catch === 'function') {
-                    permissionRequest.catch(function() {});
-                }
-            } catch (e) {}
-        }
-
         function showLiveNotice(notifications) {
             var newest = notifications[0];
-            if (!newest || newest.isRead) return;
+            if (!newest) return;
+            if (newest.isRead) return;
+            if (!latestSeenNotificationId) return;
+            if (Number(newest.id) <= latestSeenNotificationId) return;
 
             playNotificationSound();
 
@@ -244,15 +233,8 @@
             }
         }
 
-        function pollLiveAlerts(allowNotice) {
-            if (pollInFlight) {
-                pollAgainAfterCurrent = pollAgainAfterCurrent || !!allowNotice;
-                return;
-            }
-
-            pollInFlight = true;
-
-            fetch('{{ route("live-alerts") }}', {
+        function renderLiveNotifications(allowNotice) {
+            fetch('{{ route("notifications.live") }}', {
                 headers: {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '',
@@ -270,17 +252,13 @@
                     setBadge(Number(payload.unread_count || 0));
                     setHeader(Number(payload.unread_count || 0));
 
-                    if (typeof window.__processLiveEmergencyAlerts === 'function') {
-                        window.__processLiveEmergencyAlerts(payload.panic, payload.critical);
-                    }
-
                     if (firstLiveNotificationLoad) {
                         latestSeenNotificationId = newestId;
                         firstLiveNotificationLoad = false;
                         return;
                     }
 
-                    if (allowNotice && newestId && (!latestSeenNotificationId || newestId > latestSeenNotificationId)) {
+                    if (allowNotice && newestId && latestSeenNotificationId && newestId > latestSeenNotificationId) {
                         showLiveNotice(notifications);
                     }
 
@@ -288,18 +266,7 @@
                         latestSeenNotificationId = Math.max(latestSeenNotificationId || 0, newestId);
                     }
                 })
-                .catch(function() {})
-                .finally(function() {
-                    var runQueuedPoll = pollAgainAfterCurrent;
-                    pollInFlight = false;
-                    pollAgainAfterCurrent = false;
-
-                    if (runQueuedPoll) {
-                        setTimeout(function() {
-                            pollLiveAlerts(true);
-                        }, 0);
-                    }
-                });
+                .catch(function() {});
         }
 
         window.markAllRead = function() {
@@ -310,47 +277,23 @@
                     'Accept': 'application/json',
                 }
             }).then(function() {
-                pollLiveAlerts(false);
+                renderLiveNotifications(false);
             });
         };
 
-        function startPollTimer() {
-            if (pollTimer) clearInterval(pollTimer);
-            pollTimer = setInterval(function() {
-                pollLiveAlerts(true);
-            }, POLL_INTERVAL_MS);
-        }
-
-        function stopPollTimer() {
-            if (pollTimer) {
-                clearInterval(pollTimer);
-                pollTimer = null;
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             ['click', 'keydown', 'touchstart'].forEach(function(eventName) {
-                document.addEventListener(eventName, function() {
-                    unlockNotificationSound();
-                    requestBrowserNotificationPermission();
-                }, { once: true, passive: true });
+                document.addEventListener(eventName, unlockNotificationSound, { once: true, passive: true });
             });
 
-            pollLiveAlerts(false);
-            startPollTimer();
-        });
-
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                pollLiveAlerts(true);
-                startPollTimer();
-            } else {
-                startPollTimer();
-            }
+            renderLiveNotifications(false);
+            pollTimer = setInterval(function() {
+                renderLiveNotifications(true);
+            }, 5000);
         });
 
         window.addEventListener('beforeunload', function() {
-            stopPollTimer();
+            if (pollTimer) clearInterval(pollTimer);
         });
     })();
 </script>
