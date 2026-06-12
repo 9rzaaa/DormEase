@@ -797,7 +797,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="ar-number" placeholder="e.g. 308">
+                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="10" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -840,7 +840,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="er-number">
+                    <input type="text" id="er-number" inputmode="numeric" maxlength="10" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -1179,7 +1179,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field">
                                 <label>Room No.</label>
-                                <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                                <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input" value="{{ old('room_number') }}">
                             </div>
                             <div class="modal-field">
                                 <label>Floor</label>
@@ -1193,6 +1193,10 @@ tbody tr:hover { background: var(--soft-bg); }
                             <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
                                 <div id="add-room-hint"></div>
                             </div>
+                            <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
+                                <label>Estimated Move-In Date</label>
+                                <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                            </div>
                             <div class="modal-field full" id="add-movein-wrap">
                                 <label>Move-In Date</label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
@@ -1201,10 +1205,6 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <label>Move-Out Date (Optional)</label>
                                 <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
                                 <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
-                            </div>
-                            <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
-                                <label>Estimated Move-In Date</label>
-                                <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
                             </div>
                             <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                                 <label>Reservation Notes</label>
@@ -1298,7 +1298,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div class="modal-grid">
                         <div class="modal-field">
                             <label>Room No.</label>
-                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304" @error('room_number') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input" @error('room_number') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
                             @error('room_number')
                                 <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
                             @enderror
@@ -1990,6 +1990,45 @@ var statusFilter = '';
 
 function setStatusFilter(val) {
     statusFilter = val;
+
+function enforceRoomNumberInput(input) {
+    input.addEventListener('keydown', function(e) {
+        var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End'];
+        if (allowed.indexOf(e.key) !== -1) return;
+        if (e.ctrlKey || e.metaKey) return;
+        if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    input.addEventListener('input', function() {
+        var clean = this.value.replace(/\D/g, '');
+        if (this.value !== clean) this.value = clean;
+    });
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        var maxLen = parseInt(this.getAttribute('maxlength')) || 10;
+        var combined = (this.value + pasted).substring(0, maxLen);
+        this.value = combined;
+        this.dispatchEvent(new Event('input'));
+    });
+}
+
+function validateRoomNumberField(input) {
+    var val = input.value.trim();
+    if (val.length > 0 && val.length < 3) {
+        input.classList.add('field-invalid');
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.room-number-input').forEach(function(inp) {
+        enforceRoomNumberInput(inp);
+        inp.addEventListener('blur', function() { validateRoomNumberField(this); });
+        inp.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
+    });
+});
     applyFilters();
 }
 
@@ -2521,6 +2560,7 @@ async function submitAddRoom() {
     const capacity = document.getElementById('ar-capacity').value;
     const stayType = document.getElementById('ar-stay-type').value;
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     showActionLoading('Adding room...');
     try {
         const res = await fetch('/rooms', {
@@ -2559,6 +2599,7 @@ async function submitEditRoom() {
     const stayType = document.getElementById('er-stay-type').value;
     const isActive = document.getElementById('er-active').value === '1';
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('er-number').classList.add('field-invalid'); return; }
     showActionLoading('Saving room...');
     try {
         const res = await fetch('/rooms/' + id, {
