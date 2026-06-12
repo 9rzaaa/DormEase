@@ -477,6 +477,20 @@
         color: var(--bright-pink);
         margin-top: .1rem;
     }
+
+    #maint-detail-modal .modal-overlay,
+    #maint-detail-modal {
+    padding: 1rem;
+    }
+
+    #maint-detail-modal .modal {
+    padding: 1rem;
+    max-width: 460px;
+    }
+
+    #maint-detail-modal .modal-actions {
+    padding: .5rem 1rem .8rem;
+    }
 </style>
 @endsection
 
@@ -940,7 +954,7 @@
 <div class="modal-overlay" id="maint-detail-modal" onclick="handleOverlayClick(event, 'maint-detail-modal')">
     <div class="modal" onclick="event.stopPropagation()">
 
-        <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem 0.9rem;border-bottom:1px solid var(--petal);">
+        <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem .6rem;border-bottom:1px solid var(--petal);">
             <div style="display:flex;align-items:center;gap:.7rem;">
                 <div id="md-type-icon" style="width:38px;height:38px;border-radius:10px;background:var(--petal);border:1.5px solid var(--baby-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <img id="md-icon-img" src="" style="width:18px;height:18px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
@@ -953,11 +967,11 @@
             <button class="modal-close" onclick="closeModal('maint-detail-modal')">&#x2715;</button>
         </div>
 
-        <div style="padding:1.1rem 1.4rem;display:flex;flex-direction:column;gap:.9rem;">
+        <div style="padding:.7rem 1rem;display:flex;flex-direction:column;gap:.7rem;">
 
             <div style="display:flex;gap:.4rem;flex-wrap:wrap;" id="md-tags"></div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;">
                 <div style="background:var(--blush);border:1px solid var(--petal);border-radius:10px;padding:.65rem .8rem;">
                     <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:.25rem;">Room</div>
                     <div id="md-room" style="font-size:.87rem;font-weight:600;color:var(--ink);"></div>
