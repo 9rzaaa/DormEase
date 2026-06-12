@@ -297,6 +297,10 @@ class TenantController extends Controller
             'is_active' => true,
         ]);
 
+        ArchivedTenant::where('original_id', $tenant->tenant_id)
+            ->where('archive_type', 'inactive')
+            ->delete();
+
         NotificationHelper::sendToAll(
             type: 'tenant_reactivated',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} account has been reactivated.",
