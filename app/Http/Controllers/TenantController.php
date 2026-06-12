@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tenant;
 use App\Models\ArchivedTenant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\NotificationHelper;
@@ -104,7 +105,11 @@ class TenantController extends Controller
         $request->validate([
             'first_name'             => 'required|string|max:100',
             'last_name'              => 'required|string|max:100',
-            'email'                  => 'required|email|unique:tenants,email',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('tenants', 'email')->where(fn ($q) => $q->where('status', '!=', 'inactive')),
+            ],
             'contact_number'         => 'nullable|string|max:20',
             'room_number'            => 'nullable|string|max:20',
             'floor'                  => 'nullable|integer|min:1|max:5',
@@ -292,6 +297,10 @@ class TenantController extends Controller
             'is_active' => true,
         ]);
 
+        ArchivedTenant::where('original_id', $tenant->tenant_id)
+            ->where('archive_type', 'inactive')
+            ->delete();
+
         NotificationHelper::sendToAll(
             type: 'tenant_reactivated',
             message: "Tenant {$tenant->first_name} {$tenant->last_name} account has been reactivated.",
@@ -308,7 +317,7 @@ class TenantController extends Controller
 
         $request->validate([
             'email'          => 'required|email|unique:tenants,email,' . $tenant->tenant_id . ',tenant_id',
-            'contact_number' => 'required|string|digits:11',
+            'contact_number' => ['required', 'string', 'regex:/^[0-9\-\+\s]{7,20}$/'],
         ]);
 
         $tenant->update([
