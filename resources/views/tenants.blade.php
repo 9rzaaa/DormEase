@@ -1283,7 +1283,10 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div class="modal-grid">
                         <div class="modal-field">
                             <label>Room No.</label>
-                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304">
+                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304" @error('room_number') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            @error('room_number')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
@@ -1308,7 +1311,10 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
-                            <input type="date" name="move_out_date" id="edit-moveout">
+                            <input type="date" name="move_out_date" id="edit-moveout" @error('move_out_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            @error('move_out_date')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
                             <div id="edit-room-hint"></div>
@@ -1838,20 +1844,45 @@ function switchToEdit() {
 
 function openEditModal(t) {
     currentTenant = t;
+    document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+        b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+    });
+    var ew = document.getElementById('edit-room-hint-wrap');
+    var eh = document.getElementById('edit-room-hint');
+    if (ew) ew.style.display = 'none';
+    if (eh) eh.innerHTML = '';
+
+    var old = {
+        first_name:             '{{ old("first_name") }}',
+        last_name:              '{{ old("last_name") }}',
+        email:                  '{{ old("email") }}',
+        contact_number:         '{{ old("contact_number") }}',
+        room_number:            '{{ old("room_number") }}',
+        floor:                  '{{ old("floor") }}',
+        stay_type:              '{{ old("stay_type") }}',
+        move_in_date:           '{{ old("move_in_date") }}',
+        move_out_date:          '{{ old("move_out_date") }}',
+        estimated_move_in_date: '{{ old("estimated_move_in_date") }}',
+        reservation_notes:      '{{ old("reservation_notes") }}',
+        referred_by:            '{{ old("referred_by") }}',
+        status:                 '{{ old("status") }}',
+    };
+    var hasOld = {{ session('edit_tenant_id') ? 'true' : 'false' }} && String(t.tenant_id) === '{{ session("edit_tenant_id", "") }}';
+
     document.getElementById('edit-form').action             = '/tenants/' + t.tenant_id;
-    document.getElementById('edit-first-name').value        = t.first_name || '';
-    document.getElementById('edit-last-name').value         = t.last_name  || '';
-    document.getElementById('edit-email').value             = t.email      || '';
-    document.getElementById('edit-room').value              = t.room_number || '';
-    document.getElementById('edit-floor').value             = t.floor      || '';
-    document.getElementById('edit-stay-type').value         = t.stay_type  || '';
-    document.getElementById('edit-date').value              = t.move_in_date  || '';
-    document.getElementById('edit-moveout').value           = t.move_out_date || '';
-    document.getElementById('edit-contact').value           = t.contact_number || '';
-    restoreReferredBy('edit', t.referred_by || '');
-    document.getElementById('edit-estimated-move-in').value = t.estimated_move_in_date || '';
-    document.getElementById('edit-reservation-notes').value = t.reservation_notes || '';
-    document.getElementById('edit-status').value            = t.status || 'pending';
+    document.getElementById('edit-first-name').value        = hasOld && old.first_name             ? old.first_name             : (t.first_name || '');
+    document.getElementById('edit-last-name').value         = hasOld && old.last_name              ? old.last_name              : (t.last_name  || '');
+    document.getElementById('edit-email').value             = hasOld && old.email                  ? old.email                  : (t.email      || '');
+    document.getElementById('edit-room').value              = hasOld && old.room_number            ? old.room_number            : (t.room_number || '');
+    document.getElementById('edit-floor').value             = hasOld && old.floor                  ? old.floor                  : (t.floor      || '');
+    document.getElementById('edit-stay-type').value         = hasOld && old.stay_type              ? old.stay_type              : (t.stay_type  || '');
+    document.getElementById('edit-date').value              = hasOld && old.move_in_date           ? old.move_in_date           : (t.move_in_date  || '');
+    document.getElementById('edit-moveout').value           = hasOld && old.move_out_date          ? old.move_out_date          : (t.move_out_date || '');
+    document.getElementById('edit-contact').value           = hasOld && old.contact_number         ? old.contact_number         : (t.contact_number || '');
+    document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
+    document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
+    document.getElementById('edit-status').value            = hasOld && old.status                 ? old.status                 : (t.status || 'pending');
+    restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     openModal('edit-modal');
@@ -1907,7 +1938,14 @@ function copyText(elementId, btn) {
 }
 
 @if($errors->any())
-    document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('edit_tenant_id'))
+            var t = tenants.find(function(x) { return x.tenant_id == {{ session('edit_tenant_id') }}; });
+            if (t) { openEditModal(t); }
+        @else
+            openModal('add-modal');
+        @endif
+    });
 @endif
 
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))

@@ -117,7 +117,7 @@ class TenantController extends Controller
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
             if ($request->move_out_date < $request->move_in_date) {
-                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput();
+                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput()->with('edit_tenant_id', $id);
             }
         }
 
@@ -127,7 +127,7 @@ class TenantController extends Controller
                 ->first();
 
             if (!$room) {
-                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput();
+                return back()->withErrors(['room_number' => 'This room does not exist or is inactive.'])->withInput()->with('edit_tenant_id', $id);
             }
 
             $occupancyQuery = \App\Models\Tenant::whereNotIn('status', ['inactive', 'move_out'])
@@ -229,8 +229,10 @@ class TenantController extends Controller
                 ->where('tenant_id', '!=', $id);
 
             if ($occupancyQuery->count() >= $room->capacity) {
-                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput();
+                return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$room->capacity} pax)."])->withInput()->with('edit_tenant_id', $id);
             }
+
+            $request->merge(['floor' => $room->floor]);
         }
 
         $previousStatus = $tenant->status;
