@@ -1066,7 +1066,12 @@
         <div class="ann-list-panel" id="ann-list-panel">
             @php
                 $merged = $announcements->merge($scheduled)
-                    ->sortByDesc(fn($a) => $a->posted_at ?? $a->scheduled_at ?? $a->created_at);
+                    ->unique('announcement_id')
+                    ->sortByDesc(function($a) {
+                        return \Carbon\Carbon::parse(
+                            $a->posted_at ?? $a->scheduled_at ?? $a->created_at
+                        )->timestamp;
+                    });
             @endphp
             @forelse($merged as $ann)
                 @php $isScheduled = $ann->status === 'scheduled'; @endphp
