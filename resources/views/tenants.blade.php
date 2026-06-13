@@ -429,6 +429,33 @@ tbody tr:hover { background: var(--soft-bg); }
 .tv-item.full { grid-column: 1 / -1; }
 .tv-item-label { font-size: .68rem; font-weight: 800; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
 .tv-item-value { font-size: .9rem; font-weight: 600; color: #5a1e38; word-break: break-word; line-height: 1.4; }
+.room-occupant-card {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .85rem;
+    background: #fffafd;
+    border: 1.5px solid var(--pink-100);
+    border-radius: 12px;
+    transition: border-color .2s, background .2s;
+}
+.room-occupant-card:hover { border-color: var(--pink-200); background: #fff5f9; }
+.room-occupant-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(232,23,93,.2);
+}
+.room-occupant-name { font-size: .88rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.room-occupant-sub  { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
 .overdue-date {
     color: #e04867;
     font-weight: 700;
@@ -942,6 +969,23 @@ tbody tr:hover { background: var(--soft-bg); }
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('edit-room-modal')">Cancel</button>
             <button class="btn-submit" onclick="submitEditRoom()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="view-room-modal">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="">
+                Room Details
+            </div>
+            <button class="modal-close" onclick="closeModal('view-room-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body" id="view-room-content"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('view-room-modal')">Close</button>
+            <button class="btn-submit" id="view-room-edit-btn" onclick="">Edit Room</button>
         </div>
     </div>
 </div>
@@ -2763,7 +2807,7 @@ function renderRooms() {
                     ? `<span style="font-size:.68rem;font-weight:700;color:#e04867;">Full</span>`
                     : `<span style="font-size:.68rem;font-weight:600;color:var(--ink-muted);">${vacantCount} slot${vacantCount !== 1 ? 's' : ''} free</span>`;
 
-            return `<div style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
+            return `<div onclick="openViewRoomModal(${JSON.stringify(r)})" style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;cursor:pointer;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isFull ? 'linear-gradient(90deg,#e04867,#ff6b8a)' : pct >= 75 ? 'linear-gradient(90deg,#f0a500,#ffd060)' : isEmpty ? 'linear-gradient(90deg,#d0d0d8,#e8e8f0)' : 'linear-gradient(90deg,#1f9d69,#4ecb8d)'};border-radius:16px 16px 0 0;"></div>
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding-top:.15rem;">
                     <div style="display:flex;flex-direction:column;gap:.2rem;">
@@ -2774,8 +2818,8 @@ function renderRooms() {
                         <span style="font-size:.7rem;font-weight:600;color:var(--ink-muted);letter-spacing:.02em;">${r.stay_type}</span>
                     </div>
                     <div style="display:flex;gap:.25rem;flex-shrink:0;">
-                        <button class="act-btn" title="Edit" onclick='openEditRoomModal(${JSON.stringify(r)})' style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
-                        <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
+                       <button class="act-btn" title="Edit" onclick="event.stopPropagation();openEditRoomModal(${JSON.stringify(r).replace(/'/g, '&#39;')})" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
+                        <button class="act-btn" title="Delete" onclick="event.stopPropagation();openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;min-height:22px;">${personIcons}</div>
@@ -2889,6 +2933,87 @@ async function submitAddRoom() {
     } finally {
         document.getElementById('action-loading').classList.remove('open');
     }
+}
+
+function openViewRoomModal(r) {
+    var occupants = tenants.filter(function(t) {
+        return t.room_number === r.room_number
+            && t.status !== 'inactive'
+            && t.status !== 'move_out';
+    });
+
+    var isFull    = r.occupancy >= r.capacity;
+    var pct       = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+    var slotsLeft = r.capacity - r.occupancy;
+
+    var barColor  = isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69';
+    var statusDot = r.is_active
+        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2px #e8faf5;flex-shrink:0;"></span><span style="font-size:.75rem;font-weight:700;color:#1f9d69;">Active</span>'
+        : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#e04867;box-shadow:0 0 0 2px #fff0f0;flex-shrink:0;"></span><span style="font-size:.75rem;font-weight:700;color:#e04867;">Closed</span>';
+
+    var occupantRows = '';
+    if (occupants.length === 0) {
+        occupantRows = '<div style="text-align:center;padding:1.5rem 1rem;color:var(--ink-muted);font-size:.85rem;background:#fffafd;border:1.5px dashed var(--pink-100);border-radius:12px;">No tenants currently assigned to this room.</div>';
+    } else {
+        occupantRows = '<div style="display:flex;flex-direction:column;gap:.5rem;">'
+            + occupants.map(function(t) {
+                var av  = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+                var sub = (t.stay_type || '') + (t.move_in_date ? ' &nbsp;&middot;&nbsp; Moved in ' + fmtDate(t.move_in_date) : '') + (t.estimated_move_in_date && t.status === 'reserved' ? ' &nbsp;&middot;&nbsp; Est. ' + fmtDate(t.estimated_move_in_date) : '');
+                var overdueTag = '';
+                if (t.status === 'reserved' && isOverdue(t.estimated_move_in_date)) {
+                    var ov = daysOverdue(t.estimated_move_in_date);
+                    overdueTag = ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);">' + ov + 'd overdue</span>';
+                }
+                return '<div class="room-occupant-card">'
+                    + '<div class="room-occupant-avatar">' + av + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                        + '<div class="room-occupant-name">' + t.first_name + ' ' + t.last_name + overdueTag + '</div>'
+                        + '<div class="room-occupant-sub">' + sub + '</div>'
+                    + '</div>'
+                    + statusBadge(t.status)
+                    + '</div>';
+            }).join('')
+            + '</div>';
+    }
+
+    document.getElementById('view-room-content').innerHTML =
+        '<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1.5px solid var(--petal);">'
+            + '<div style="width:52px;height:52px;border-radius:14px;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 16px rgba(232,23,93,.22);">'
+                + '<img src="{{ asset("icons/bed.png") }}" style="width:26px;height:26px;object-fit:contain;filter:brightness(0) invert(1);">'
+            + '</div>'
+            + '<div style="flex:1;min-width:0;">'
+                + '<div style="font-size:1.3rem;font-weight:900;color:var(--ink);letter-spacing:-.02em;line-height:1.1;">Room ' + r.room_number + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.5rem;margin-top:.3rem;">' + statusDot + '</div>'
+            + '</div>'
+        + '</div>'
+
+        + '<div class="modal-section-title">Room Info</div>'
+        + '<div class="tv-grid" style="margin-bottom:1rem;">'
+            + '<div class="tv-item"><div class="tv-item-label">Floor</div><div class="tv-item-value">Floor ' + r.floor + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Type</div><div class="tv-item-value">' + (r.stay_type || 'N/A') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Capacity</div><div class="tv-item-value">' + r.capacity + ' pax</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Available Slots</div><div class="tv-item-value" style="color:' + (isFull ? '#e04867' : '#1f9d69') + ';font-weight:700;">' + (isFull ? 'Full' : slotsLeft + ' of ' + r.capacity + ' free') + '</div></div>'
+        + '</div>'
+
+        + '<div style="margin-bottom:1rem;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">'
+                + '<span style="font-size:.72rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.04em;">Occupancy</span>'
+                + '<span style="font-size:.75rem;font-weight:700;color:var(--ink);">' + r.occupancy + ' / ' + r.capacity + ' &nbsp;(' + pct + '%)</span>'
+            + '</div>'
+            + '<div style="height:6px;background:var(--pink-100);border-radius:99px;overflow:hidden;">'
+                + '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:99px;transition:width .4s;"></div>'
+            + '</div>'
+        + '</div>'
+
+        + '<div class="modal-section-title">Tenants (' + occupants.length + ')</div>'
+        + occupantRows;
+
+    document.getElementById('view-room-edit-btn').onclick = function() {
+        closeModal('view-room-modal');
+        setTimeout(function() { openEditRoomModal(r); }, 180);
+    };
+
+    openModal('view-room-modal');
 }
 
 function openEditRoomModal(r) {
