@@ -1888,8 +1888,8 @@
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title">
-                <img src="{{ asset('icons/pending.png') }}" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
+            <div class="modal-title" style="display:flex;align-items:center;gap:.5rem;">
+                <img src="{{ asset('icons/pending.png') }}" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);flex-shrink:0;" alt="">
                 Request Details
             </div>
             <button class="modal-close" onclick="closeModal('view-req-modal')">&#x2715;</button>
@@ -2666,8 +2666,8 @@ function viewReq(r) {
     `;
 
     document.getElementById('view-req-actions').innerHTML = `
-        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
+        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
     openModal('view-req-modal');
 }
