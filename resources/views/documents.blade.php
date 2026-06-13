@@ -2667,7 +2667,9 @@ function viewReq(r) {
         </div>
     `;
 
-    document.getElementById('view-req-actions').innerHTML = `
+    const footer = document.getElementById('view-req-actions');
+    footer.style.justifyContent = 'space-between';
+    footer.innerHTML = `
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
