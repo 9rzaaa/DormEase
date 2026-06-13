@@ -1507,7 +1507,7 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 
     <div class="table-card fade-up" style="animation-delay:.34s;">
-        <div class="table-header" style="cursor:pointer;" onclick="toggleReservedTable()">
+        <div class="table-header" style="cursor:pointer;" onclick="if(event.target===this||event.target.closest('.table-title')||event.target.closest('.table-date')){toggleReservedTable();}">
             <div>
                 <div class="table-title">Reserved Tenants</div>
                 <div class="table-date" id="reserved-table-date"></div>
@@ -1756,6 +1756,16 @@ function hideActionLoading() {
     overlay.setAttribute('aria-hidden', 'true');
 }
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1858,8 +1868,8 @@ function renderTable() {
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/eye.png\') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset(\'icons/edit.png\') }}" alt="Note"></button>' +
                     '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
@@ -1912,7 +1922,7 @@ function renderReservedTable() {
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset(\'icons/edit.png\') }}" alt="Note"></button>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
@@ -2283,9 +2293,9 @@ function exportLog(format) {
 function infoItem(label, value, full) {
     var isEmpty  = !value || String(value).trim() === '' || value === '\u2014';
     var valClass = isEmpty ? 'td-info-value empty' : 'td-info-value';
-    var display  = isEmpty ? 'Not provided' : value;
+    var display  = isEmpty ? 'Not provided' : escapeHtml(String(value));
     return '<div class="td-info-item' + (full ? ' full' : '') + '">'
-        + '<div class="td-info-label">' + label + '</div>'
+        + '<div class="td-info-label">' + escapeHtml(label) + '</div>'
         + '<div class="' + valClass + '">' + display + '</div>'
         + '</div>';
 }
@@ -2362,6 +2372,13 @@ function viewTenant(t) {
     document.getElementById('view-modal').style.display = 'flex';
 }
 
+function openNotesModalFromBtn(btn) {
+    var id   = parseInt(btn.dataset.tid, 10);
+    var name = btn.dataset.tname || '';
+    var note = btn.dataset.tnote || '';
+    openNotesModal(id, name, note);
+}
+
 function openNotesModal(id, name, currentNote) {
     currentNoteId = id;
     document.getElementById('notes-tenant-name').textContent = name;
@@ -2398,12 +2415,6 @@ async function submitNote() {
 
         var idx = tenants.findIndex(function(t) { return t.tenant_id === currentNoteId; });
         if (idx !== -1) tenants[idx].notes = note;
-
-        var filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
-        if (filteredIdx !== -1) filtered[filteredIdx].notes = note;
-
-        var reservedIdx = reservedFiltered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
-        if (reservedIdx !== -1) reservedFiltered[reservedIdx].notes = note;
 
         renderTable();
         renderReservedTable();
@@ -2549,60 +2560,77 @@ function exportTenantArchive(format) {
     a.click();
 }
 
-function getMenuForDropdown(id) {
-    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
-        return m._sourceDropdownId === id;
-    }) || document.querySelector('#' + id + ' .export-menu');
+var _exportMenuPortal = null;
+
+function getExportPortal() {
+    if (!_exportMenuPortal) {
+        _exportMenuPortal = document.createElement('div');
+        _exportMenuPortal.id = 'export-menu-portal';
+        _exportMenuPortal.style.cssText = 'position:fixed;z-index:99999;top:0;left:0;width:0;height:0;overflow:visible;';
+        document.body.appendChild(_exportMenuPortal);
+    }
+    return _exportMenuPortal;
 }
 
-function positionExportMenu(dropdown) {
-    var btn  = dropdown.querySelector('button');
-    var menu = getMenuForDropdown(dropdown.id);
-    var rect = btn.getBoundingClientRect();
-
-    if (!menu._movedToBody) {
-        menu._sourceDropdownId = dropdown.id;
-        document.body.appendChild(menu);
-        menu._movedToBody = true;
-    }
-
-    menu.style.position = 'fixed';
-    menu.style.zIndex   = '99999';
-    menu.style.right    = (window.innerWidth - rect.right) + 'px';
-    menu.style.left     = 'auto';
-    menu.style.minWidth = rect.width + 'px';
-    menu.style.top      = 'auto';
-    menu.style.bottom   = 'auto';
-
-    var menuHeight = menu.offsetHeight || 80;
-    var spaceBelow = window.innerHeight - rect.bottom;
-
-    if (spaceBelow >= menuHeight + 6) {
-        menu.style.top    = (rect.bottom + 6) + 'px';
-        menu.style.bottom = 'auto';
-    } else {
-        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
-        menu.style.top    = 'auto';
-    }
-}
+var _activeExportDropdownId = null;
+var _portalMenuEl = null;
 
 function toggleExportDropdown(id) {
-    var dropdown = document.getElementById(id);
-    var menu     = getMenuForDropdown(id);
-    var isOpen   = menu.classList.contains('open');
+    if (_activeExportDropdownId === id && _portalMenuEl) {
+        closeAllExportDropdowns();
+        return;
+    }
     closeAllExportDropdowns();
-    if (!isOpen) {
-        positionExportMenu(dropdown);
-        getMenuForDropdown(id).classList.add('open');
+    var dropdown   = document.getElementById(id);
+    var sourceMenu = dropdown.querySelector('.export-menu');
+    if (!sourceMenu) return;
+
+    _portalMenuEl = sourceMenu.cloneNode(true);
+    _portalMenuEl.classList.add('open');
+    _portalMenuEl.style.cssText = 'display:block;position:fixed;z-index:99999;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.15);min-width:160px;overflow:hidden;';
+    _portalMenuEl.setAttribute('data-portal-for', id);
+
+    _portalMenuEl.querySelectorAll('button').forEach(function(btn, i) {
+        var original = sourceMenu.querySelectorAll('button')[i];
+        if (original) btn.onclick = original.onclick;
+    });
+
+    getExportPortal().appendChild(_portalMenuEl);
+    _activeExportDropdownId = id;
+
+    var btnEl = dropdown.querySelector('button');
+    var rect  = btnEl.getBoundingClientRect();
+
+    _portalMenuEl.style.visibility = 'hidden';
+    _portalMenuEl.style.top = '-9999px';
+    document.body.offsetHeight;
+    var menuHeight = _portalMenuEl.offsetHeight || 80;
+    _portalMenuEl.style.visibility = '';
+
+    var spaceBelow = window.innerHeight - rect.bottom;
+    _portalMenuEl.style.right    = (window.innerWidth - rect.right) + 'px';
+    _portalMenuEl.style.left     = 'auto';
+    _portalMenuEl.style.minWidth = rect.width + 'px';
+
+    if (spaceBelow >= menuHeight + 6) {
+        _portalMenuEl.style.top    = (rect.bottom + 6) + 'px';
+        _portalMenuEl.style.bottom = 'auto';
+    } else {
+        _portalMenuEl.style.top    = 'auto';
+        _portalMenuEl.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
     }
 }
 
 function closeAllExportDropdowns() {
-    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    if (_portalMenuEl) {
+        _portalMenuEl.remove();
+        _portalMenuEl = null;
+    }
+    _activeExportDropdownId = null;
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.export-dropdown')) {
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
         closeAllExportDropdowns();
     }
     if (!e.target.closest('#log-date-dropdown-btn') && !e.target.closest('#log-date-dropdown-menu')) {
@@ -2701,6 +2729,7 @@ async function quickTimeIn(id, btn) {
         document.getElementById('quick-search-input').value = '';
         document.getElementById('quick-results').classList.remove('open');
         document.getElementById('quick-results').innerHTML = '';
+        applyFilters();
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
@@ -2724,6 +2753,7 @@ async function quickTimeOut(id, btn) {
         document.getElementById('quick-search-input').value = '';
         document.getElementById('quick-results').classList.remove('open');
         document.getElementById('quick-results').innerHTML = '';
+        applyFilters();
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
