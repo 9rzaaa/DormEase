@@ -1406,7 +1406,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
                             <div id="edit-room-hint"></div>
                         </div>
-                        <div class="modal-field">
+                        <div class="modal-field" id="edit-movein-wrap">
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
                         </div>
@@ -2050,8 +2050,8 @@ function toggleReservationFields(context) {
         var show = status === 'reserved';
         document.getElementById('edit-est-movein-wrap').style.display = show ? '' : 'none';
         document.getElementById('edit-reservation-notes-wrap').style.display = show ? '' : 'none';
+        document.getElementById('edit-movein-wrap').style.display = show ? 'none' : '';
     }
-}
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
     m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
