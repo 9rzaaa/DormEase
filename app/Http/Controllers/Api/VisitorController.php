@@ -190,7 +190,8 @@ class VisitorController extends Controller
         }
 
         $visitor->update([
-            'status' => 'cancelled',
+            'status'       => 'cancelled',
+            'cancelled_at' => now(),
         ]);
 
         $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? '')) ?: 'Unknown';
