@@ -469,22 +469,18 @@ tbody tr:hover { background: var(--soft-bg); }
 .overdue-date:hover { color: #b0163a; }
 .overdue-date-tooltip {
     display: none;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed;
     background: var(--ink);
     color: #fff;
     font-size: .72rem;
     font-weight: 600;
     padding: .5rem .75rem;
     border-radius: 8px;
-    white-space: nowrap;
     max-width: 280px;
     white-space: normal;
     line-height: 1.45;
     box-shadow: 0 8px 20px rgba(0,0,0,.18);
-    z-index: 50;
+    z-index: 9999;
     pointer-events: none;
 }
 .overdue-date-tooltip::after {
@@ -496,7 +492,6 @@ tbody tr:hover { background: var(--soft-bg); }
     border: 5px solid transparent;
     border-top-color: var(--ink);
 }
-.overdue-date:hover .overdue-date-tooltip { display: block; }
 
 @keyframes pulseGreen {
     0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
@@ -3423,6 +3418,60 @@ function setAddMode(mode) {
     }
     toggleReservationFields('add');
 }
+
+(function() {
+    var activeTooltip = null;
+
+    document.addEventListener('mouseover', function(e) {
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        var tooltip = el.querySelector('.overdue-date-tooltip');
+        if (!tooltip) return;
+        activeTooltip = tooltip;
+        tooltip.style.display = 'block';
+        positionOverdueTooltip(el, tooltip);
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!activeTooltip) return;
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        positionOverdueTooltip(el, activeTooltip);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        var tooltip = el.querySelector('.overdue-date-tooltip');
+        if (tooltip) tooltip.style.display = 'none';
+        activeTooltip = null;
+    });
+
+    function positionOverdueTooltip(el, tooltip) {
+        var rect       = el.getBoundingClientRect();
+        var tipWidth   = tooltip.offsetWidth  || 280;
+        var tipHeight  = tooltip.offsetHeight || 60;
+        var spaceAbove = rect.top;
+        var spaceBelow = window.innerHeight - rect.bottom;
+        var left       = rect.left + (rect.width / 2) - (tipWidth / 2);
+
+        left = Math.max(8, Math.min(left, window.innerWidth - tipWidth - 8));
+
+        var top;
+        var arrow = tooltip.querySelector('::after');
+
+        if (spaceAbove >= tipHeight + 12) {
+            top = rect.top - tipHeight - 10;
+            tooltip.style.setProperty('--arrow-top', '100%');
+        } else {
+            top = rect.bottom + 10;
+            tooltip.style.setProperty('--arrow-top', '-10px');
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top  + 'px';
+    }
+})();
 
 applyFilters();
 
