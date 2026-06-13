@@ -78,7 +78,7 @@ class VisitorController extends Controller
                     }
                 }
             ],
-            'contact_no'    => 'required|digits:11',
+            'contact_no'    => ['required', 'digits:11', 'regex:/^09\d{9}$/'],
             'purpose'       => 'required|string|max:255',
             'id_type'       => 'required|string|max:255',
             'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
