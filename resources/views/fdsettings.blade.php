@@ -270,6 +270,11 @@
                             'desc'  => 'When a visitor departs and is logged out.',
                             'icon'  => 'nav-visit',
                         ],
+                        'visitor_cancelled' => [
+                            'label' => 'Visitor Registration Cancelled',
+                            'desc'  => 'When a tenant cancels a pending visitor registration.',
+                            'icon'  => 'nav-visit',
+                        ],
                         'announcement_new' => [
                             'label' => 'New Announcement Posted',
                             'desc'  => 'When an announcement has been successfully posted.',
@@ -321,6 +326,7 @@
         visitor_registration: true,
         visitor_checkin:  true,
         visitor_checkout: true,
+        visitor_cancelled: true,
         announcement_new: true,
     };
 

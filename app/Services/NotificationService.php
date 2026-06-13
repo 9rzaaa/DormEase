@@ -54,6 +54,7 @@ class NotificationService
             'emergency_new'    => true,
             'visitor_checkin'  => false,
             'visitor_checkout' => false,
+            'visitor_cancelled' => true,
             'billing_overdue'  => true,
             'document_request' => true,
             'announcement_new' => false,
@@ -64,6 +65,7 @@ class NotificationService
             'visitor_registration' => true,
             'visitor_checkin'  => true,
             'visitor_checkout' => true,
+            'visitor_cancelled' => true,
             'announcement_new' => true,
         ];
 

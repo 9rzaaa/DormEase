@@ -12,6 +12,7 @@ class NotificationHelper
         'visitor_registration',
         'visitor_checkin',
         'visitor_checkout',
+        'visitor_cancelled',
         'emergency_new',
         'emergency_updated',
     ];
