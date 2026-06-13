@@ -414,6 +414,21 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar { height: 3px; width: 100%; }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
+
+.tv-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1.5px solid var(--petal); }
+.tv-avatar { width: 58px; height: 58px; border-radius: 50%; background: var(--gradient-pink); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.3rem; letter-spacing: .02em; flex-shrink: 0; box-shadow: 0 8px 20px rgba(232,23,93,.25); }
+.tv-header-info { flex: 1; min-width: 0; }
+.tv-name { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -.01em; line-height: 1.25; }
+.tv-account-id { font-size: .78rem; color: var(--bright-pink); font-family: monospace; font-weight: 700; margin-top: .2rem; letter-spacing: .03em; }
+.tv-header-badges { display: flex; gap: .4rem; margin-top: .55rem; flex-wrap: wrap; }
+.tv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-bottom: 1.1rem; }
+.tv-grid:last-child { margin-bottom: 0; }
+.tv-item { background: #fffafd; border: 1.5px solid var(--pink-100); border-radius: 12px; padding: .65rem .85rem; transition: border-color .2s, background .2s; }
+.tv-item:hover { border-color: var(--pink-200); background: #fff5f9; }
+.tv-item.full { grid-column: 1 / -1; }
+.tv-item-label { font-size: .68rem; font-weight: 800; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+.tv-item-value { font-size: .9rem; font-weight: 600; color: #5a1e38; word-break: break-word; line-height: 1.4; }
+
 @keyframes pulseGreen {
     0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
     50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
@@ -1227,7 +1242,7 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal">
+    <div class="modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">Tenant Details</div>
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
@@ -2073,26 +2088,47 @@ function applyFilters() {
     renderSection('reserved');
 }
 
+function initials(t) {
+    return (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+}
+
 function viewTenant(t) {
     currentTenant = t;
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-    var reservationRows = t.status === 'reserved'
-        ? '<div class="view-row"><span class="view-label">Est. Move-In</span><span class="view-val" style="color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span></div>'
-          + (t.reservation_notes ? '<div class="view-row"><span class="view-label">Reservation Notes</span><span class="view-val">' + t.reservation_notes + '</span></div>' : '')
-        : '';
+    var reservationItems = '';
+    if (t.status === 'reserved') {
+        reservationItems += '<div class="tv-item"><div class="tv-item-label">Est. Move-In</div><div class="tv-item-value" style="color:#9a6200;">' + fmtDate(t.estimated_move_in_date) + '</div></div>';
+        if (t.reservation_notes) {
+            reservationItems += '<div class="tv-item full"><div class="tv-item-label">Reservation Notes</div><div class="tv-item-value">' + t.reservation_notes + '</div></div>';
+        }
+    }
     document.getElementById('view-content').innerHTML =
-        '<div class="view-row"><span class="view-label">Account ID</span><span class="view-val" style="font-family:monospace">' + (t.account_id || '\u2014') + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + t.first_name + ' ' + t.last_name + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + t.email + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (t.contact_number || '\u2014') + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Referred By</span><span class="view-val">' + (t.referred_by || '\u2014') + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Floor &amp; Room No.</span><span class="view-val">' + floorRoom + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Stay Type</span><span class="view-val">' + (t.stay_type || '\u2014') + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Move-In Date</span><span class="view-val">' + fmtDate(t.move_in_date) + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Move-Out Date</span><span class="view-val">' + fmtDate(t.move_out_date) + '</span></div>'
-        + reservationRows
-        + '<div class="view-row"><span class="view-label">Status</span><span class="view-val">' + statusBadge(t.status) + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Password Status</span><span class="view-val">' + (t.is_temp_password ? tempBadge(true) + ' Not yet changed' : 'Changed by tenant') + '</span></div>';
+        '<div class="tv-header">'
+            + '<div class="tv-avatar">' + initials(t) + '</div>'
+            + '<div class="tv-header-info">'
+                + '<div class="tv-name">' + t.first_name + ' ' + t.last_name + '</div>'
+                + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
+                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password ? tempBadge(true) : '') + '</div>'
+            + '</div>'
+        + '</div>'
+        + '<div class="modal-section-title">Personal Information</div>'
+        + '<div class="tv-grid">'
+            + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + (t.contact_number || '\u2014') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + (t.referred_by || '\u2014') + '</div></div>'
+        + '</div>'
+        + '<div class="modal-section-title">Room &amp; Stay Details</div>'
+        + '<div class="tv-grid">'
+            + '<div class="tv-item"><div class="tv-item-label">Floor &amp; Room</div><div class="tv-item-value">' + floorRoom + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Stay Type</div><div class="tv-item-value">' + (t.stay_type || '\u2014') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Move-In Date</div><div class="tv-item-value">' + fmtDate(t.move_in_date) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Move-Out Date</div><div class="tv-item-value">' + fmtDate(t.move_out_date) + '</div></div>'
+            + reservationItems
+        + '</div>'
+        + '<div class="modal-section-title">Account Status</div>'
+        + '<div class="tv-grid">'
+            + '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary \u2014 not yet changed by tenant' : 'Changed by tenant') + '</div></div>'
+        + '</div>';
     openModal('view-modal');
 }
 
