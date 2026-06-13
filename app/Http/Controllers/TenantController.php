@@ -116,7 +116,8 @@ class TenantController extends Controller
             'floor'                  => 'nullable|integer|min:1|max:5',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
-            'estimated_move_in_date' => 'nullable|date',
+            'move_out_date'          => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
         ]);
@@ -229,7 +230,7 @@ class TenantController extends Controller
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
             'move_out_date'          => 'nullable|date',
-            'estimated_move_in_date' => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
             'status'                 => 'required|in:active,pending,reserved,move_out,inactive',
@@ -370,6 +371,33 @@ class TenantController extends Controller
             ->with('new_account_id',    $accountId)
             ->with('new_temp_password', $tempPassword)
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
+    }
+
+    public function reschedule(Request $request, $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        if ($tenant->status !== 'reserved') {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Tenant is not in reserved status.');
+        }
+
+        $request->validate([
+            'estimated_move_in_date' => 'required|date',
+        ]);
+
+        $tenant->update([
+            'estimated_move_in_date' => $request->estimated_move_in_date,
+        ]);
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_reservation_rescheduled',
+            message: "Reservation for {$tenant->first_name} {$tenant->last_name} has been rescheduled to " . \Carbon\Carbon::parse($request->estimated_move_in_date)->format('M d, Y') . ".",
+            ref_id: $tenant->tenant_id,
+        );
+
+        return redirect()->route('tenants.index')
+            ->with('success', 'Reservation rescheduled successfully.');
     }
 
     public function reactivate($id)
