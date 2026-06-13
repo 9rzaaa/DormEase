@@ -17,7 +17,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -26,6 +26,10 @@ class VisitorController extends Controller
 
         $deletedVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'deleted')
+        );
+
+        $cancelledVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'cancelled')
         );
 
         $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
@@ -41,6 +45,7 @@ class VisitorController extends Controller
             'visitors',
             'completedVisitors',
             'deletedVisitors',
+            'cancelledVisitors',
             'visitorsToday',
             'currentlyInside',
             'tenants'
@@ -54,7 +59,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -63,6 +68,10 @@ class VisitorController extends Controller
 
         $deletedVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'deleted')
+        );
+
+        $cancelledVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'cancelled')
         );
 
         $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
@@ -79,6 +88,7 @@ class VisitorController extends Controller
             'logs'              => $visitors,
             'completedVisitors' => $completedVisitors,
             'deletedVisitors'   => $deletedVisitors,
+            'cancelledVisitors' => $cancelledVisitors,
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,
