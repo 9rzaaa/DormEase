@@ -212,16 +212,33 @@
       opacity: 0; animation: fadeUp 0.7s 0.8s ease forwards;
     }
     .hero-stat-item {
-      display: flex; flex-direction: column; gap: 2px;
+      display: flex; flex-direction: column; gap: 4px;
       padding: 14px 16px; background: white;
       border: 1px solid var(--border); border-radius: 16px;
-      cursor: default;
+      cursor: pointer;
+      position: relative; overflow: hidden;
       transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
     }
+    .hero-stat-item::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--gradient-pink);
+      opacity: 0; transition: opacity 0.3s ease;
+      z-index: 0;
+    }
     .hero-stat-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(232,23,93,0.14);
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 14px 32px rgba(232,23,93,0.22);
       border-color: var(--pink-light);
+    }
+    .hero-stat-item:hover::before { opacity: 1; }
+    .hero-stat-item:hover .hero-stat-number,
+    .hero-stat-item:hover .hero-stat-label {
+      color: white;
+    }
+    .hero-stat-number, .hero-stat-label {
+      position: relative; z-index: 1;
+      transition: color 0.3s ease;
     }
     .hero-stat-number {
       font-family: var(--font-head); font-size: 1.6rem; font-weight: 800;
@@ -240,18 +257,17 @@
       position: absolute; top: 12%; right: 4%; width: 220px; height: 200px;
       background: var(--pink-light); border-radius: 60% 80% 40% 70% / 50% 60% 80% 40%;
       opacity: 0.40; z-index: 0;
-      animation: blobFloat 8s ease-in-out infinite;
+      animation: blobFloat 18s ease-in-out infinite;
     }
     .hero-blob-bottom {
       position: absolute; bottom: 14%; left: 2%; width: 160px; height: 150px;
       background: var(--pink-pale); border-radius: 70% 40% 60% 50% / 60% 80% 40% 70%;
       opacity: 0.75; z-index: 0;
-      animation: blobFloat 11s ease-in-out infinite reverse;
+      animation: blobFloat 24s ease-in-out infinite reverse;
     }
     @keyframes blobFloat {
       0%, 100% { transform: translate(0,0) scale(1); }
-      33% { transform: translate(8px,-12px) scale(1.04); }
-      66% { transform: translate(-6px,8px) scale(0.97); }
+      50% { transform: translate(14px,-18px) scale(1.06); }
     }
 
     .hero-arch {
@@ -297,7 +313,8 @@
       box-shadow:var(--shadow-card);
       transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease;
     }
-    .gal-item:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(36,16,24,0.14); }
+    .gal-item { cursor: pointer; }
+    .gal-item:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(36,16,24,0.14); border-color: var(--pink-light); }
     .gal-img-wrap { overflow:hidden; width:100%; aspect-ratio:1/1; }
     .gal-img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; transition:transform .6s cubic-bezier(0.22,1,0.36,1); }
     .gal-item:hover .gal-img { transform:scale(1.08); }
@@ -308,14 +325,7 @@
     .gal-title { font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--brown); margin-bottom:4px; }
     .gal-desc { font-size:0.85rem; color:var(--brown-light); line-height:1.7; }
 
-    .gal-item-overlay {
-      position: absolute; inset: 0 0 auto 0;
-      height: 100%;
-      background: linear-gradient(to top, rgba(36,16,24,0.55) 0%, transparent 50%);
-      opacity: 0; transition: opacity 0.4s ease;
-      pointer-events: none; border-radius: var(--r-lg) var(--r-lg) 0 0;
-    }
-    .gal-item:hover .gal-item-overlay { opacity: 1; }
+    .gal-item-overlay { display: none; }
 
     .how { background:var(--cream); position:relative; overflow:hidden; }
     .how::before { content:''; position:absolute; top:-200px; right:-200px; width:500px; height:500px; border-radius:50%; background:rgba(214,56,104,0.04); }
@@ -554,12 +564,87 @@
 
     .cursor-glow {
       position: fixed; pointer-events: none; z-index: 9999;
-      width: 320px; height: 320px;
+      width: 180px; height: 180px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(232,23,93,0.07) 0%, transparent 70%);
       transform: translate(-50%, -50%);
       transition: left 0.12s ease, top 0.12s ease;
       mix-blend-mode: multiply;
+    }
+
+    .room-modal-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(36,16,24,0.55);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .room-modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .room-modal {
+      background: var(--cream); border-radius: var(--r-xl);
+      max-width: 880px; width: 100%; max-height: 88vh; overflow: hidden;
+      display: grid; grid-template-columns: 1fr 1fr;
+      box-shadow: 0 40px 90px rgba(36,16,24,0.30);
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+      position: relative;
+    }
+    .room-modal-overlay.open .room-modal { transform: scale(1) translateY(0); }
+
+    .room-modal-img-wrap { position: relative; overflow: hidden; min-height: 320px; }
+    .room-modal-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .room-modal-badge {
+      position: absolute; top: 20px; left: 20px;
+      background: var(--gradient-pink); color: white;
+      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 100px;
+      box-shadow: 0 8px 18px rgba(232,23,93,0.30);
+    }
+
+    .room-modal-body { padding: 40px 36px; display: flex; flex-direction: column; overflow-y: auto; }
+    .room-modal-occupants {
+      font-size: 0.82rem; font-weight: 700; color: var(--pink);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
+    }
+    .room-modal-title {
+      font-family: var(--font-head); font-size: 1.8rem; font-weight: 800;
+      color: var(--brown); letter-spacing: -0.02em; margin-bottom: 16px;
+    }
+    .room-modal-desc { font-size: 0.95rem; color: var(--brown-light); line-height: 1.8; margin-bottom: 24px; }
+
+    .room-modal-features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .room-modal-feature {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 0.88rem; color: var(--brown); font-weight: 600;
+    }
+    .room-modal-feature-icon {
+      width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+      background: var(--pink-pale); color: var(--pink);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .room-modal-feature-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .room-modal-actions { display: flex; gap: 12px; margin-top: auto; flex-wrap: wrap; }
+
+    .room-modal-close {
+      position: absolute; top: 18px; right: 18px; z-index: 5;
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.92); color: var(--brown);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 6px 18px rgba(36,16,24,0.18);
+      transition: background 0.2s, transform 0.2s, color 0.2s;
+    }
+    .room-modal-close:hover { background: var(--pink); color: white; transform: rotate(90deg); }
+    .room-modal-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+
+    @media(max-width:760px){
+      .room-modal { grid-template-columns: 1fr; max-height: 92vh; }
+      .room-modal-img-wrap { min-height: 200px; }
+      .room-modal-body { padding: 28px 24px; }
+      .room-modal-title { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -683,7 +768,7 @@
     <p class="section-sub">Choose the setup that fits your lifestyle, safe, clean, and near UST and the University Belt.</p>
   </div>
   <div class="gallery-grid">
-    <div class="gal-item reveal from-bottom d1">
+    <div class="gal-item reveal from-bottom d1" data-room="solo">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/solo.jpg') }}" alt="Solo Room" class="gal-img">
@@ -694,7 +779,7 @@
         <p class="gal-desc">Semi-furnished private room ideal for one student. Includes a bed, wardrobe, and study desk.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d2">
+    <div class="gal-item reveal from-bottom d2" data-room="double">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/two.jpg') }}" alt="Double Room" class="gal-img">
@@ -705,7 +790,7 @@
         <p class="gal-desc">Semi-furnished room for two. Each occupant gets a bed, individual wardrobe, and shared study area.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d3">
+    <div class="gal-item reveal from-bottom d3" data-room="triple">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="gal-img">
@@ -716,7 +801,7 @@
         <p class="gal-desc">Spacious room for three students. Comes with three beds, wardrobes, and a shared study corner.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d4">
+    <div class="gal-item reveal from-bottom d4" data-room="quad">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/four.jpg') }}" alt="Quad Room" class="gal-img">
@@ -957,6 +1042,31 @@
   <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </button>
 
+<div class="room-modal-overlay" id="roomModalOverlay">
+  <div class="room-modal" role="dialog" aria-modal="true" aria-labelledby="roomModalTitle">
+    <button class="room-modal-close" id="roomModalClose" aria-label="Close">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+    </button>
+    <div class="room-modal-img-wrap">
+      <span class="room-modal-badge" id="roomModalBadge"></span>
+      <img src="" alt="" class="room-modal-img" id="roomModalImg">
+    </div>
+    <div class="room-modal-body">
+      <div class="room-modal-occupants" id="roomModalOccupants"></div>
+      <h3 class="room-modal-title" id="roomModalTitle"></h3>
+      <p class="room-modal-desc" id="roomModalDesc"></p>
+      <div class="room-modal-features" id="roomModalFeatures"></div>
+      <div class="room-modal-actions">
+        <a href="tel:+639175359723" class="btn-primary">
+          <svg viewBox="0 0 20 20" style="width:18px;height:18px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          Inquire Now
+        </a>
+        <button class="btn-outline" id="roomModalCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
@@ -1034,6 +1144,110 @@
     });
   }, { threshold: 0.5 });
   counterEls.forEach(el => counterObs.observe(el));
+
+  const roomData = {
+    solo: {
+      title: 'Solo Room',
+      occupants: '1 Occupant',
+      badge: 'Solo',
+      img: "{{ asset('images/solo.jpg') }}",
+      desc: 'A semi-furnished private room ideal for one student who values quiet, focus, and personal space. Comes with a comfortable bed, a dedicated wardrobe, and a study desk set up for long sessions.',
+      features: [
+        { icon: 'bed', label: '1 bed, 1 wardrobe' },
+        { icon: 'desk', label: 'Private study desk' },
+        { icon: 'bath', label: 'Own bathroom' },
+        { icon: 'snow', label: 'Aircon slot included' }
+      ]
+    },
+    double: {
+      title: 'Double Room',
+      occupants: '2 Occupants',
+      badge: 'Double',
+      img: "{{ asset('images/two.jpg') }}",
+      desc: 'A semi-furnished room designed for two students. Each occupant gets their own bed and individual wardrobe, with a shared study area that keeps things organized and comfortable.',
+      features: [
+        { icon: 'bed', label: '2 beds, 2 wardrobes' },
+        { icon: 'desk', label: 'Shared study area' },
+        { icon: 'bath', label: 'Own bathroom' },
+        { icon: 'snow', label: 'Aircon slot included' }
+      ]
+    },
+    triple: {
+      title: 'Triple Room',
+      occupants: '3 Occupants',
+      badge: 'Triple',
+      img: "{{ asset('images/three.jpg') }}",
+      desc: 'A spacious room built for three students. Three individual beds and wardrobes are paired with a shared study corner, giving everyone enough room to settle in comfortably.',
+      features: [
+        { icon: 'bed', label: '3 beds, 3 wardrobes' },
+        { icon: 'desk', label: 'Shared study corner' },
+        { icon: 'bath', label: 'Own bathroom' },
+        { icon: 'snow', label: 'Aircon slot included' }
+      ]
+    },
+    quad: {
+      title: 'Quad Room',
+      occupants: '4 Occupants',
+      badge: 'Quad',
+      img: "{{ asset('images/four.jpg') }}",
+      desc: 'The best value option for groups of four. This room makes the most of shared space with four beds and communal storage, perfect for students who want to stay close to friends.',
+      features: [
+        { icon: 'bed', label: '4 beds, communal storage' },
+        { icon: 'desk', label: 'Shared study space' },
+        { icon: 'bath', label: 'Own bathroom' },
+        { icon: 'snow', label: 'Aircon slot included' }
+      ]
+    }
+  };
+
+  const roomIcons = {
+    bed: '<svg viewBox="0 0 24 24"><path d="M2 17h20"/><path d="M4 17v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5"/><path d="M4 12V7a1 1 0 0 1 1-1h6v6"/></svg>',
+    desk: '<svg viewBox="0 0 24 24"><path d="M3 8h18"/><path d="M3 8v11"/><path d="M21 8v11"/><path d="M3 19h18"/><path d="M9 8v4"/></svg>',
+    bath: '<svg viewBox="0 0 24 24"><path d="M9 6V4a2 2 0 0 1 4 0v2"/><path d="M4 10h16v2a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6v-2z"/><path d="M5 20h14"/></svg>',
+    snow: '<svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>'
+  };
+
+  const roomModalOverlay = document.getElementById('roomModalOverlay');
+  const roomModalImg = document.getElementById('roomModalImg');
+  const roomModalBadge = document.getElementById('roomModalBadge');
+  const roomModalOccupants = document.getElementById('roomModalOccupants');
+  const roomModalTitle = document.getElementById('roomModalTitle');
+  const roomModalDesc = document.getElementById('roomModalDesc');
+  const roomModalFeatures = document.getElementById('roomModalFeatures');
+
+  function openRoomModal(key) {
+    const data = roomData[key];
+    if (!data) return;
+    roomModalImg.src = data.img;
+    roomModalImg.alt = data.title;
+    roomModalBadge.textContent = data.badge;
+    roomModalOccupants.textContent = data.occupants;
+    roomModalTitle.textContent = data.title;
+    roomModalDesc.textContent = data.desc;
+    roomModalFeatures.innerHTML = data.features.map(f =>
+      `<div class="room-modal-feature"><span class="room-modal-feature-icon">${roomIcons[f.icon]}</span>${f.label}</div>`
+    ).join('');
+    roomModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeRoomModal() {
+    roomModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.gal-item[data-room]').forEach(item => {
+    item.addEventListener('click', () => openRoomModal(item.dataset.room));
+  });
+
+  document.getElementById('roomModalClose').addEventListener('click', closeRoomModal);
+  document.getElementById('roomModalCloseBtn').addEventListener('click', closeRoomModal);
+  roomModalOverlay.addEventListener('click', (e) => {
+    if (e.target === roomModalOverlay) closeRoomModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && roomModalOverlay.classList.contains('open')) closeRoomModal();
+  });
 
   const cursorGlow = document.getElementById('cursorGlow');
   if (window.matchMedia('(pointer: fine)').matches) {
