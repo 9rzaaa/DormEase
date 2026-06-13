@@ -47,51 +47,94 @@
     .mobile-nav a:hover { color:var(--pink); background:rgba(255,255,255,.62); }
     .header-spacer { height:154px; background:var(--cream); }
 
-    .privacy-hero { padding:70px 6% 52px; background:var(--cream); }
-    .privacy-hero-inner { max-width:1180px; margin:0 auto; }
-    .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
-    h1 { font-family:var(--font-head); font-size:clamp(2.35rem,4.6vw,4.4rem); line-height:1.08; color:var(--brown); letter-spacing:-.03em; max-width:880px; }
-    h1 em { color:var(--pink); font-style:italic; }
-    .hero-copy { color:var(--brown-light); font-size:1.05rem; line-height:1.8; max-width:680px; margin-top:22px; }
-    .hero-meta { display:flex; align-items:center; gap:24px; margin-top:28px; flex-wrap:wrap; }
-    .hero-meta-item { display:flex; align-items:center; gap:8px; font-size:.82rem; font-weight:700; color:var(--brown-light); }
-    .hero-meta-item svg { width:15px; height:15px; stroke:var(--pink); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    .progress-bar { position:fixed; top:0; left:0; z-index:200; height:3px; background:var(--gradient-pink); width:0%; transition:width .1s linear; }
 
-    .privacy-section { padding:0 6% 100px; background:var(--cream); }
-    .privacy-inner { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:260px 1fr; gap:72px; align-items:start; }
-
-    .privacy-nav { position:sticky; top:160px; }
-    .privacy-nav-label { font-size:.66rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink-light); margin-bottom:14px; }
-    .privacy-nav-list { display:flex; flex-direction:column; gap:4px; }
-    .privacy-nav-link {
-      display:block; text-decoration:none; font-size:.88rem; font-weight:700;
-      color:var(--brown-light); padding:10px 14px; border-radius:12px;
-      border-left:2.5px solid transparent; transition:all .2s;
+    .priv-hero {
+      position:relative; overflow:hidden;
+      background:var(--brown); padding:80px 6% 100px;
     }
-    .privacy-nav-link:hover { color:var(--pink); background:var(--pink-pale); border-left-color:var(--pink-light); }
-    .privacy-nav-link.active { color:var(--pink); background:var(--pink-pale); border-left-color:var(--pink); }
+    .priv-hero-orb {
+      position:absolute; border-radius:50%; pointer-events:none;
+    }
+    .priv-hero-orb-1 { width:600px; height:600px; top:-200px; right:-140px; background:radial-gradient(circle,rgba(232,23,93,.28) 0%,transparent 70%); }
+    .priv-hero-orb-2 { width:400px; height:400px; bottom:-100px; left:-80px; background:radial-gradient(circle,rgba(255,45,120,.20) 0%,transparent 70%); }
+    .priv-hero-inner { max-width:1180px; margin:0 auto; position:relative; z-index:1; }
+    .priv-eyebrow { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:100px; padding:6px 18px; margin-bottom:28px; }
+    .priv-eyebrow-dot { width:6px; height:6px; background:var(--pink-light); border-radius:50%; animation:pulse 2s infinite; flex-shrink:0; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+    .priv-eyebrow span { font-size:.70rem; font-weight:700; letter-spacing:.10em; text-transform:uppercase; color:rgba(255,255,255,.72); }
+    .priv-hero-title { font-family:var(--font-head); font-size:clamp(3rem,6vw,5.5rem); line-height:1.0; font-weight:800; color:white; letter-spacing:-.04em; margin-bottom:24px; }
+    .priv-hero-title em { color:var(--pink-light); font-style:italic; display:block; }
+    .priv-hero-sub { color:rgba(255,255,255,.56); font-size:1.05rem; line-height:1.8; max-width:560px; margin-bottom:36px; }
+    .priv-meta-row { display:flex; gap:28px; flex-wrap:wrap; }
+    .priv-meta-item { display:flex; align-items:center; gap:9px; font-size:.82rem; font-weight:700; color:rgba(255,255,255,.52); }
+    .priv-meta-item svg { width:14px; height:14px; stroke:var(--pink-light); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
 
-    .privacy-content { display:flex; flex-direction:column; gap:48px; }
+    .priv-scroll-hint { position:absolute; bottom:0; left:6%; right:6%; height:1px; background:rgba(255,255,255,.06); }
+    .priv-scroll-hint::after { content:'scroll'; position:absolute; bottom:16px; right:0; font-size:.60rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.22); }
 
-    .privacy-block { background:white; border:1.5px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow .25s; }
-    .privacy-block:hover { box-shadow:0 4px 28px rgba(232,23,93,.10); }
-    .privacy-block-header { padding:28px 32px 22px; border-bottom:1px solid rgba(232,23,93,.08); display:flex; align-items:center; gap:16px; }
-    .privacy-block-icon { width:44px; height:44px; border-radius:12px; background:var(--pink-pale); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .privacy-block-icon svg { width:20px; height:20px; stroke:var(--pink); fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
-    .privacy-block-title { font-family:var(--font-head); font-size:1.1rem; font-weight:800; color:var(--brown); }
-    .privacy-block-body { padding:24px 32px 30px; color:var(--brown-light); font-size:.95rem; line-height:1.82; }
-    .privacy-block-body p + p { margin-top:14px; }
-    .privacy-block-body ul { margin:14px 0 0 0; display:flex; flex-direction:column; gap:9px; list-style:none; }
-    .privacy-block-body ul li { display:flex; gap:10px; }
-    .privacy-block-body ul li::before { content:''; width:7px; height:7px; margin-top:9px; border-radius:50%; background:var(--pink-light); flex-shrink:0; }
-    .privacy-block-body strong { color:var(--brown); font-weight:700; }
+    .priv-pledge { padding:0 6%; transform:translateY(-40px); }
+    .priv-pledge-inner { max-width:1180px; margin:0 auto; }
+    .priv-pledge-card {
+      background:var(--gradient-pink); border-radius:var(--r-lg);
+      padding:36px 44px; display:flex; align-items:flex-start; gap:22px;
+      box-shadow:0 20px 48px rgba(232,23,93,.32);
+    }
+    .priv-pledge-shield { width:56px; height:56px; border-radius:14px; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .priv-pledge-shield svg { width:26px; height:26px; stroke:white; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .priv-pledge-title { font-family:var(--font-head); font-size:1.12rem; font-weight:800; color:white; margin-bottom:8px; }
+    .priv-pledge-body { font-size:.94rem; color:rgba(255,255,255,.82); line-height:1.78; }
+    .priv-pledge-body a { color:white; font-weight:700; text-decoration:underline; text-underline-offset:3px; }
 
-    .privacy-highlight { background:var(--gradient-pink); border-radius:var(--r-lg); padding:36px 40px; color:white; display:flex; align-items:flex-start; gap:20px; }
-    .privacy-highlight-icon { width:48px; height:48px; border-radius:12px; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .privacy-highlight-icon svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
-    .privacy-highlight-title { font-family:var(--font-head); font-size:1.05rem; font-weight:800; color:white; margin-bottom:8px; }
-    .privacy-highlight-body { font-size:.92rem; color:rgba(255,255,255,.82); line-height:1.78; }
-    .privacy-highlight-body a { color:white; font-weight:700; }
+    .priv-content-wrap { padding:0 6% 100px; }
+    .priv-content-inner { max-width:1180px; margin:0 auto; }
+
+    .priv-section-label {
+      display:flex; align-items:center; gap:14px;
+      margin:64px 0 32px;
+    }
+    .priv-section-label-line { flex:1; height:1px; background:var(--border); }
+    .priv-section-label-text { font-size:.64rem; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:var(--pink-light); white-space:nowrap; }
+
+    .priv-cards-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+    .priv-card {
+      background:white; border:1.5px solid var(--border); border-radius:var(--r-lg);
+      box-shadow:var(--shadow-card); overflow:hidden;
+      opacity:0; transform:translateY(32px);
+      transition:opacity .55s ease, transform .55s ease, box-shadow .25s, border-color .25s;
+    }
+    .priv-card.visible { opacity:1; transform:translateY(0); }
+    .priv-card:hover { box-shadow:0 8px 36px rgba(232,23,93,.12); border-color:rgba(232,23,93,.32); }
+
+    .priv-card-top { padding:28px 30px 0; display:flex; align-items:flex-start; gap:16px; }
+    .priv-card-ico { width:46px; height:46px; border-radius:12px; background:var(--pink-pale); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .3s; }
+    .priv-card:hover .priv-card-ico { background:var(--pink); }
+    .priv-card-ico svg { width:20px; height:20px; stroke:var(--pink); fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; transition:stroke .3s; }
+    .priv-card:hover .priv-card-ico svg { stroke:white; }
+    .priv-card-label { font-size:.62rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:var(--pink-light); margin-bottom:4px; }
+    .priv-card-title { font-family:var(--font-head); font-size:1.08rem; font-weight:800; color:var(--brown); }
+
+    .priv-card-body { padding:16px 30px 28px; color:var(--brown-light); font-size:.93rem; line-height:1.82; }
+    .priv-card-body p + p { margin-top:12px; }
+    .priv-card-body strong { color:var(--brown); font-weight:700; }
+
+    .priv-card-list { margin-top:14px; display:flex; flex-direction:column; gap:8px; list-style:none; }
+    .priv-card-list li { display:flex; gap:10px; align-items:flex-start; }
+    .priv-card-list li::before { content:''; width:6px; height:6px; margin-top:10px; border-radius:50%; background:var(--pink-light); flex-shrink:0; }
+
+    .priv-card-wide { grid-column:1 / -1; }
+
+    .priv-card-footer { margin-top:18px; padding-top:18px; border-top:1px solid rgba(232,23,93,.08); font-size:.82rem; }
+    .priv-card-footer a { color:var(--pink); font-weight:700; text-decoration:none; }
+    .priv-card-footer a:hover { text-decoration:underline; }
+
+    .priv-contact-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+    .priv-contact-item { display:flex; align-items:center; gap:9px; padding:10px 14px; background:var(--pink-pale); border-radius:10px; font-size:.86rem; }
+    .priv-contact-item svg { width:15px; height:15px; stroke:var(--pink); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+    .priv-contact-item a { color:var(--pink); font-weight:700; text-decoration:none; }
+    .priv-contact-item a:hover { text-decoration:underline; }
+    .priv-contact-item span { color:var(--brown-light); }
 
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
     .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
@@ -123,11 +166,9 @@
       .nav-links { display:none; }
       .nav-toggle { display:inline-flex; flex-shrink:0; }
       .footer-inner { grid-template-columns:1fr 1fr; }
-      .privacy-inner { grid-template-columns:1fr; gap:40px; }
-      .privacy-nav { position:static; }
-      .privacy-nav-list { flex-direction:row; flex-wrap:wrap; gap:8px; }
-      .privacy-nav-link { border-left:none; border-bottom:2.5px solid transparent; padding:8px 14px; }
-      .privacy-nav-link:hover, .privacy-nav-link.active { border-left:none; border-bottom-color:var(--pink); }
+      .priv-cards-grid { grid-template-columns:1fr; }
+      .priv-card-wide { grid-column:1; }
+      .priv-contact-row { grid-template-columns:1fr; }
     }
     @media(max-width:760px) {
       nav { top:46px; height:auto; min-height:76px; padding:10px 5%; gap:14px; flex-wrap:wrap; border-radius:28px; width:calc(100% - 28px); }
@@ -136,21 +177,29 @@
       .header-spacer { height:138px; }
       .nav-logo img { height:44px; }
       .nav-logo-fb { font-size:1.22rem; }
-      .privacy-hero { padding:72px 5% 44px; }
-      .privacy-section { padding:0 5% 80px; }
-      .privacy-block-header { padding:22px 24px 18px; }
-      .privacy-block-body { padding:20px 24px 26px; }
-      .privacy-highlight { flex-direction:column; gap:14px; padding:28px 24px; }
+      .priv-hero { padding:70px 5% 90px; }
+      .priv-hero-title { font-size:clamp(2.4rem,8vw,3.2rem); }
+      .priv-pledge { padding:0 5%; }
+      .priv-pledge-card { flex-direction:column; gap:16px; padding:28px 26px; }
+      .priv-content-wrap { padding:0 5% 80px; }
       .footer-btm { flex-direction:column; gap:16px; align-items:flex-start; }
       .footer-btm-right { align-items:flex-start; }
       #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
     }
     @media(max-width:600px) {
       .footer-inner { grid-template-columns:1fr; }
+      .priv-card-top { padding:22px 22px 0; }
+      .priv-card-body { padding:14px 22px 24px; }
+    }
+
+    @media(prefers-reduced-motion: reduce) {
+      .priv-card { opacity:1; transform:none; transition:none; }
     }
   </style>
 </head>
 <body>
+
+<div class="progress-bar" id="progressBar"></div>
 
 <header class="site-header">
   <div class="top-notice">Sanctissimo Rosario Ladies Dormitory &middot; Safe student housing near UST</div>
@@ -181,88 +230,100 @@
 </header>
 
 <main>
-  <section class="privacy-hero">
-    <div class="privacy-hero-inner">
-      <div class="section-tag">Legal</div>
-      <h1>Privacy <em>Policy</em></h1>
-      <p class="hero-copy">This Privacy Policy explains how DormEase and Sanctissimo Rosario Ladies Dormitory collect, use, and protect the personal information of tenants and visitors who use our platform.</p>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
+
+  <section class="priv-hero">
+    <div class="priv-hero-orb priv-hero-orb-1"></div>
+    <div class="priv-hero-orb priv-hero-orb-2"></div>
+    <div class="priv-hero-inner">
+      <div class="priv-eyebrow">
+        <div class="priv-eyebrow-dot"></div>
+        <span>Legal</span>
+      </div>
+      <h1 class="priv-hero-title">
+        Privacy
+        <em>Policy.</em>
+      </h1>
+      <p class="priv-hero-sub">How DormEase and Sanctissimo Rosario Ladies Dormitory collect, use, and protect your personal information as a tenant or visitor on our platform.</p>
+      <div class="priv-meta-row">
+        <div class="priv-meta-item">
           <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Effective: January 1, 2026
+          Effective January 1, 2026
         </div>
-        <div class="hero-meta-item">
+        <div class="priv-meta-item">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Sanctissimo Rosario Ladies Dormitory
         </div>
       </div>
     </div>
+    <div class="priv-scroll-hint"></div>
   </section>
 
-  <section class="privacy-section">
-    <div class="privacy-inner">
-
-      <nav class="privacy-nav" aria-label="Privacy sections">
-        <div class="privacy-nav-label">On this page</div>
-        <div class="privacy-nav-list">
-          <a href="#info-collect" class="privacy-nav-link active">Information We Collect</a>
-          <a href="#info-use" class="privacy-nav-link">How We Use It</a>
-          <a href="#info-share" class="privacy-nav-link">Sharing of Information</a>
-          <a href="#data-security" class="privacy-nav-link">Data Security</a>
-          <a href="#your-rights" class="privacy-nav-link">Your Rights</a>
-          <a href="#retention" class="privacy-nav-link">Data Retention</a>
-          <a href="#changes" class="privacy-nav-link">Policy Changes</a>
-          <a href="#contact" class="privacy-nav-link">Contact Us</a>
+  <section class="priv-pledge">
+    <div class="priv-pledge-inner">
+      <div class="priv-pledge-card">
+        <div class="priv-pledge-shield">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
-      </nav>
-
-      <div class="privacy-content">
-
-        <div class="privacy-highlight">
-          <div class="privacy-highlight-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </div>
-          <div>
-            <div class="privacy-highlight-title">Your privacy is important to us</div>
-            <div class="privacy-highlight-body">DormEase is used exclusively by tenants of Sanctissimo Rosario Ladies Dormitory. We only collect what is necessary to manage your tenancy and keep the dormitory running safely. We do not sell your data to third parties. For questions, contact us at <a href="tel:+639175359723">+63 917 535 9723</a>.</div>
-          </div>
+        <div>
+          <div class="priv-pledge-title">Your privacy matters here</div>
+          <div class="priv-pledge-body">DormEase is used exclusively by tenants of Sanctissimo Rosario Ladies Dormitory. We only collect what is necessary to manage your tenancy and keep the dormitory running safely. We do not sell your data to anyone. Questions? Reach us at <a href="tel:+639175359723">+63 917 535 9723</a>.</div>
         </div>
+      </div>
+    </div>
+  </section>
 
-        <div class="privacy-block" id="info-collect">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
+  <section class="priv-content-wrap">
+    <div class="priv-content-inner">
+
+      <div class="priv-section-label">
+        <div class="priv-section-label-line"></div>
+        <div class="priv-section-label-text">What we collect and why</div>
+        <div class="priv-section-label-line"></div>
+      </div>
+
+      <div class="priv-cards-grid">
+
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
               <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </div>
-            <div class="privacy-block-title">Information We Collect</div>
+            <div>
+              <div class="priv-card-label">Section 1</div>
+              <div class="priv-card-title">Information We Collect</div>
+            </div>
           </div>
-          <div class="privacy-block-body">
-            <p>When you register as a tenant or use the DormEase platform, we collect the following categories of personal information:</p>
-            <ul>
-              <li><strong>Identity information:</strong> full name, school ID number, school name, and enrollment certificate details.</li>
-              <li><strong>Contact information:</strong> mobile number and email address used for your account and notifications.</li>
-              <li><strong>Room and tenancy information:</strong> your assigned room, floor, move-in date, lease terms, and payment history.</li>
-              <li><strong>Maintenance and service requests:</strong> descriptions, voice recordings (when using voice input), and any media you submit with a request.</li>
-              <li><strong>Visitor records:</strong> names, contact numbers, ID types, and visit details of visitors you pre-register through the app.</li>
-              <li><strong>Billing information:</strong> water consumption data, billing amounts, payment proof uploads, and transaction records.</li>
+          <div class="priv-card-body">
+            <p>When you register or use DormEase, we collect the following categories of personal information.</p>
+            <ul class="priv-card-list">
+              <li><strong>Identity:</strong> full name, school ID number, school name, and enrollment certificate details.</li>
+              <li><strong>Contact:</strong> mobile number and email address used for your account and notifications.</li>
+              <li><strong>Tenancy:</strong> assigned room, floor, move-in date, lease terms, and payment history.</li>
+              <li><strong>Maintenance requests:</strong> descriptions, voice recordings when using voice input, and any media you submit.</li>
+              <li><strong>Visitor records:</strong> names, contact numbers, ID types, and visit details you pre-register through the app.</li>
+              <li><strong>Billing:</strong> water consumption data, billing amounts, payment proof uploads, and transaction records.</li>
               <li><strong>Device and usage data:</strong> device type, operating system, and general app usage patterns collected for platform improvement.</li>
             </ul>
           </div>
         </div>
 
-        <div class="privacy-block" id="info-use">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
             </div>
-            <div class="privacy-block-title">How We Use Your Information</div>
+            <div>
+              <div class="priv-card-label">Section 2</div>
+              <div class="priv-card-title">How We Use Your Information</div>
+            </div>
           </div>
-          <div class="privacy-block-body">
-            <p>The information collected through DormEase is used solely for dormitory management and tenant service purposes, including:</p>
-            <ul>
+          <div class="priv-card-body">
+            <p>The information collected is used solely for dormitory management and tenant service purposes, including:</p>
+            <ul class="priv-card-list">
               <li>Processing and managing your tenancy, room assignment, and lease agreement.</li>
               <li>Generating and delivering monthly water billing statements and payment records.</li>
               <li>Receiving, routing, and resolving maintenance and emergency reports.</li>
-              <li>Sending push notifications for announcements, billing reminders, and request status updates.</li>
+              <li>Sending push notifications for announcements, billing reminders, and request updates.</li>
               <li>Managing and verifying visitor pre-registrations at the front desk.</li>
               <li>Processing document requests and generating administrative documents.</li>
               <li>Monitoring building safety through biometric arrival and departure logs.</li>
@@ -271,17 +332,30 @@
           </div>
         </div>
 
-        <div class="privacy-block" id="info-share">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
+      </div>
+
+      <div class="priv-section-label">
+        <div class="priv-section-label-line"></div>
+        <div class="priv-section-label-text">Sharing, security, and your rights</div>
+        <div class="priv-section-label-line"></div>
+      </div>
+
+      <div class="priv-cards-grid">
+
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
               <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </div>
-            <div class="privacy-block-title">Sharing of Information</div>
+            <div>
+              <div class="priv-card-label">Section 3</div>
+              <div class="priv-card-title">Sharing of Information</div>
+            </div>
           </div>
-          <div class="privacy-block-body">
-            <p>We do not sell, rent, or trade your personal information to any third party. Your data is only accessible to authorized dormitory personnel (the Administrator and Front Desk Staff) who need it to carry out their duties.</p>
-            <p>We may disclose your information only in the following limited circumstances:</p>
-            <ul>
+          <div class="priv-card-body">
+            <p>We do not sell, rent, or trade your personal information to any third party. Your data is only accessible to authorized dormitory personnel who need it to carry out their duties.</p>
+            <p>We may disclose your information only in these limited circumstances:</p>
+            <ul class="priv-card-list">
               <li>When required by law, court order, or lawful request from a government authority.</li>
               <li>To protect the safety or security of tenants, staff, or the building.</li>
               <li>With your explicit written consent for a specific purpose.</li>
@@ -289,16 +363,19 @@
           </div>
         </div>
 
-        <div class="privacy-block" id="data-security">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
               <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <div class="privacy-block-title">Data Security</div>
+            <div>
+              <div class="priv-card-label">Section 4</div>
+              <div class="priv-card-title">Data Security</div>
+            </div>
           </div>
-          <div class="privacy-block-body">
-            <p>DormEase implements reasonable technical and organizational measures to protect your personal information from unauthorized access, disclosure, alteration, or destruction. These include:</p>
-            <ul>
+          <div class="priv-card-body">
+            <p>DormEase implements reasonable technical and organizational measures to protect your personal information, including:</p>
+            <ul class="priv-card-list">
               <li>Secure authentication for all tenant and administrator accounts.</li>
               <li>Encrypted transmission of data between the app and our servers.</li>
               <li>Access controls that limit data visibility to authorized personnel only.</li>
@@ -308,73 +385,111 @@
           </div>
         </div>
 
-        <div class="privacy-block" id="your-rights">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
+        <div class="priv-card priv-card-wide">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
               <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             </div>
-            <div class="privacy-block-title">Your Rights</div>
+            <div>
+              <div class="priv-card-label">Section 5</div>
+              <div class="priv-card-title">Your Rights as a Tenant</div>
+            </div>
           </div>
-          <div class="privacy-block-body">
-            <p>As a tenant of Sanctissimo Rosario Ladies Dormitory, you have the following rights with respect to your personal information:</p>
-            <ul>
-              <li><strong>Access:</strong> you may request a copy of the personal data we hold about you.</li>
-              <li><strong>Correction:</strong> you may request that inaccurate or outdated information be corrected.</li>
-              <li><strong>Deletion:</strong> you may request deletion of your data after your tenancy ends, subject to legal and operational retention requirements.</li>
-              <li><strong>Objection:</strong> you may object to specific uses of your data by contacting dormitory management directly.</li>
+          <div class="priv-card-body">
+            <p>As a tenant of Sanctissimo Rosario Ladies Dormitory, you have the following rights over your personal data.</p>
+            <ul class="priv-card-list">
+              <li><strong>Access:</strong> request a copy of the personal data we hold about you.</li>
+              <li><strong>Correction:</strong> request that inaccurate or outdated information be updated.</li>
+              <li><strong>Deletion:</strong> request deletion of your data after your tenancy ends, subject to legal and operational retention requirements.</li>
+              <li><strong>Objection:</strong> object to specific uses of your data by contacting dormitory management directly.</li>
             </ul>
-            <p>To exercise any of these rights, contact the dormitory office directly at <strong>+63 917 535 9723</strong> or visit us at 1229 Navarra Street, Sampaloc, Manila.</p>
-          </div>
-        </div>
-
-        <div class="privacy-block" id="retention">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div class="priv-card-footer">
+              To exercise any of these rights, contact us at <a href="tel:+639175359723">+63 917 535 9723</a> or visit us at 1229 Navarra Street, Sampaloc, Manila.
             </div>
-            <div class="privacy-block-title">Data Retention</div>
-          </div>
-          <div class="privacy-block-body">
-            <p>We retain your personal information for as long as your tenancy is active and for a reasonable period afterward as required for administrative, legal, or dispute resolution purposes.</p>
-            <p>Billing and payment records are retained in accordance with standard accounting and legal requirements. Visitor logs are retained for building safety and security review purposes. Maintenance and emergency request records are retained for service quality monitoring.</p>
-            <p>Once retention periods expire, your data is securely deleted or anonymized.</p>
-          </div>
-        </div>
-
-        <div class="privacy-block" id="changes">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
-              <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.09"/></svg>
-            </div>
-            <div class="privacy-block-title">Changes to This Policy</div>
-          </div>
-          <div class="privacy-block-body">
-            <p>We may update this Privacy Policy from time to time to reflect changes in our practices or legal obligations. When we do, the updated policy will be posted on the DormEase platform and the effective date at the top of this page will be revised.</p>
-            <p>Continued use of DormEase after a policy update constitutes your acceptance of the revised terms. We encourage you to review this page periodically.</p>
-          </div>
-        </div>
-
-        <div class="privacy-block" id="contact">
-          <div class="privacy-block-header">
-            <div class="privacy-block-icon">
-              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <div class="privacy-block-title">Contact Us</div>
-          </div>
-          <div class="privacy-block-body">
-            <p>If you have questions, concerns, or requests regarding this Privacy Policy or the handling of your personal data, please reach out to the dormitory management directly:</p>
-            <ul>
-              <li><strong>Phone:</strong> <a href="tel:+639175359723" style="color:var(--pink);font-weight:700;">+63 917 535 9723</a></li>
-              <li><strong>Address:</strong> 1229 Navarra Street, Sampaloc, Manila</li>
-              <li><strong>Facebook:</strong> <a href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer" style="color:var(--pink);font-weight:700;">facebook.com/USTNavarra</a></li>
-              <li><strong>Instagram:</strong> <a href="https://www.instagram.com/SRBdormitory" target="_blank" rel="noopener noreferrer" style="color:var(--pink);font-weight:700;">@SRBdormitory</a></li>
-            </ul>
           </div>
         </div>
 
       </div>
+
+      <div class="priv-section-label">
+        <div class="priv-section-label-line"></div>
+        <div class="priv-section-label-text">Retention, changes, and contact</div>
+        <div class="priv-section-label-line"></div>
+      </div>
+
+      <div class="priv-cards-grid">
+
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <div class="priv-card-label">Section 6</div>
+              <div class="priv-card-title">Data Retention</div>
+            </div>
+          </div>
+          <div class="priv-card-body">
+            <p>We retain your personal information for as long as your tenancy is active and for a reasonable period afterward as required for administrative, legal, or dispute resolution purposes.</p>
+            <p>Billing and payment records are retained in accordance with standard accounting and legal requirements. Visitor logs are retained for building safety and security review. Maintenance and emergency request records are kept for service quality monitoring.</p>
+            <p>Once retention periods expire, your data is securely deleted or anonymized.</p>
+          </div>
+        </div>
+
+        <div class="priv-card">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
+              <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.09"/></svg>
+            </div>
+            <div>
+              <div class="priv-card-label">Section 7</div>
+              <div class="priv-card-title">Changes to This Policy</div>
+            </div>
+          </div>
+          <div class="priv-card-body">
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices or legal obligations. When we do, the updated policy will be posted on DormEase and the effective date at the top of this page will be revised.</p>
+            <p>Continued use of DormEase after a policy update means you accept the revised terms. We encourage you to review this page periodically.</p>
+          </div>
+        </div>
+
+        <div class="priv-card priv-card-wide">
+          <div class="priv-card-top">
+            <div class="priv-card-ico">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="priv-card-label">Section 8</div>
+              <div class="priv-card-title">Contact Us</div>
+            </div>
+          </div>
+          <div class="priv-card-body">
+            <p>If you have questions, concerns, or requests regarding this Privacy Policy or the handling of your personal data, reach out to dormitory management directly.</p>
+            <div class="priv-contact-row">
+              <div class="priv-contact-item">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <a href="tel:+639175359723">+63 917 535 9723</a>
+              </div>
+              <div class="priv-contact-item">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>1229 Navarra Street, Sampaloc, Manila</span>
+              </div>
+              <div class="priv-contact-item">
+                <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <a href="https://www.facebook.com/USTNavarra" target="_blank" rel="noopener noreferrer">facebook.com/USTNavarra</a>
+              </div>
+              <div class="priv-contact-item">
+                <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <a href="https://www.instagram.com/SRBdormitory" target="_blank" rel="noopener noreferrer">@SRBdormitory</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </section>
+
 </main>
 
 <footer>
@@ -460,21 +575,23 @@
   }
 
   const scrollTopBtn = document.getElementById('scrollTopBtn');
-  window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('visible', scrollY > 300));
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', scrollY > 300);
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (docH > 0 ? (scrollY / docH) * 100 : 0) + '%';
+  });
   scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-  const navLinks = document.querySelectorAll('.privacy-nav-link');
-  const sections = document.querySelectorAll('.privacy-block[id]');
-  const sectionObs = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+  const cardObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        const active = document.querySelector(`.privacy-nav-link[href="#${entry.target.id}"]`);
-        if (active) active.classList.add('active');
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        cardObs.unobserve(entry.target);
       }
     });
-  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
-  sections.forEach(s => sectionObs.observe(s));
+  }, { threshold: 0.10 });
+  document.querySelectorAll('.priv-card').forEach(card => cardObs.observe(card));
 </script>
 </body>
 </html>
