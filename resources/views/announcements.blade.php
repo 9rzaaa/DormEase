@@ -1847,9 +1847,10 @@ function openViewModal(id) {
         <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="ann-badge badge-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
         <div class="view-row"><span class="view-label">Status</span><span class="view-val"><span class="ann-badge badge-${ann.status||'active'}">${ucFirst(ann.status||'active')}</span></span></div>
         ${isScheduled
-    ? `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at || ann.created_at)}</span></div>
+    ${isScheduled
+    ? `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at || ann.scheduled_at || ann.created_at)}</span></div>
        <div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:var(--hot-pink);">${formatDate(ann.scheduled_at)}</span></div>`
-    : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at || ann.created_at)}</span></div>`}
+    : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at || ann.scheduled_at || ann.created_at)}</span></div>`}
         <div class="view-content">${escapeHtml(ann.content || '')}</div>
         ${renderAttachments(ann.attachment)}
     `;
