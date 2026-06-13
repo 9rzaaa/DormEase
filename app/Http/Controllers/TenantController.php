@@ -116,7 +116,8 @@ class TenantController extends Controller
             'floor'                  => 'nullable|integer|min:1|max:5',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
-            'estimated_move_in_date' => 'nullable|date',
+            'move_out_date'          => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
         ]);
@@ -229,7 +230,7 @@ class TenantController extends Controller
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
             'move_out_date'          => 'nullable|date',
-            'estimated_move_in_date' => 'nullable|date',
+            'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
             'status'                 => 'required|in:active,pending,reserved,move_out,inactive',

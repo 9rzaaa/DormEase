@@ -1271,6 +1271,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
                                 <label>Estimated Move-In Date</label>
                                 <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                                <span class="field-error" id="add-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full" id="add-movein-wrap">
                                 <label>Move-In Date</label>
@@ -1374,9 +1375,21 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
+                        <div class="modal-field full">
+                            <label>Stay Type</label>
+                            <select name="stay_type" id="edit-stay-type" onchange="onEditStayTypeChange()">
+                                <option value="" disabled>Select type</option>
+                                <option value="Solo Room">Solo Room</option>
+                                <option value="Shared Room">Shared Room</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full" id="edit-room-suggest-wrap" style="display:none;">
+                            <div id="edit-room-suggest"></div>
+                        </div>
                         <div class="modal-field">
                             <label>Room No.</label>
                             <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input" @error('room_number') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            <span class="field-error" id="edit-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             @error('room_number')
                                 <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
                             @enderror
@@ -1390,13 +1403,8 @@ tbody tr:hover { background: var(--soft-bg); }
                                 @endfor
                             </select>
                         </div>
-                        <div class="modal-field full">
-                            <label>Stay Type</label>
-                            <select name="stay_type" id="edit-stay-type">
-                                <option value="" disabled>Select type</option>
-                                <option value="Solo Room">Solo Room</option>
-                                <option value="Shared Room">Shared Room</option>
-                            </select>
+                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
+                            <div id="edit-room-hint"></div>
                         </div>
                         <div class="modal-field">
                             <label>Move-In Date</label>
@@ -1405,16 +1413,15 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field">
                             <label>Move-Out Date</label>
                             <input type="date" name="move_out_date" id="edit-moveout" @error('move_out_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            <span class="field-error" id="edit-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             @error('move_out_date')
                                 <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
-                            <div id="edit-room-hint"></div>
-                        </div>
                         <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
                             <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in">
+                            <span class="field-error" id="edit-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
@@ -1781,11 +1788,44 @@ function attachMoveOutValidator(moveInId, moveOutId, errorId) {
     moveIn.addEventListener('change', function() { validateMoveOutDate(moveInId, moveOutId, errorId); });
 }
 
+function validateEstimatedMoveInDate(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value;
+    if (!val) {
+        input.classList.remove('field-invalid');
+        error.style.display = 'none';
+        error.textContent = '';
+        return true;
+    }
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(val + 'T00:00:00');
+    if (est < today) {
+        input.classList.add('field-invalid');
+        error.textContent = 'Estimated move-in date cannot be earlier than today.';
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachEstimatedMoveInValidator(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
+}
+
 function validateAddTenantForm(e) {
     var emailOk    = validateEmailField('add-email', 'add-email-error');
     var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
-    if (!emailOk || !contactOk || !moveOutOk) {
+    var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
+    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('add-email').focus();
@@ -1793,6 +1833,8 @@ function validateAddTenantForm(e) {
             document.getElementById('add-contact').focus();
         } else if (!moveOutOk) {
             document.getElementById('add-move-out-date').focus();
+        } else if (!estOk) {
+            document.getElementById('add-estimated-move-in').focus();
         }
         return false;
     }
@@ -1803,7 +1845,8 @@ function validateEditTenantForm(e) {
     var emailOk   = validateEmailField('edit-email', 'edit-email-error');
     var contactOk = validatePhoneField('edit-contact', 'edit-contact-error', false);
     var moveOutOk = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
-    if (!emailOk || !contactOk || !moveOutOk) {
+    var estOk     = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
+    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('edit-email').focus();
@@ -1811,6 +1854,8 @@ function validateEditTenantForm(e) {
             document.getElementById('edit-contact').focus();
         } else if (!moveOutOk) {
             document.getElementById('edit-moveout').focus();
+        } else if (!estOk) {
+            document.getElementById('edit-estimated-move-in').focus();
         }
         return false;
     }
@@ -1824,6 +1869,8 @@ document.addEventListener('DOMContentLoaded', function() {
     attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
+    attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
+    attachEstimatedMoveInValidator('edit-estimated-move-in', 'edit-estimated-move-in-error');
 });
 
 function showActionLoading(message) {
@@ -2335,10 +2382,36 @@ function openEditModal(t) {
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     openModal('edit-modal');
+    var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
+    var editSuggestBox  = document.getElementById('edit-room-suggest');
+    if (editSuggestWrap) editSuggestWrap.style.display = 'none';
+    if (editSuggestBox) editSuggestBox.innerHTML = '';
+
     var editRoomInput = document.getElementById('edit-room');
     if (editRoomInput && editRoomInput.value.trim()) {
         setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
     }
+
+    if (document.getElementById('edit-stay-type').value) {
+        onEditStayTypeChange();
+    }
+
+    var editEmail = document.getElementById('edit-email');
+    var editEmailError = document.getElementById('edit-email-error');
+    if (editEmail) editEmail.classList.remove('field-invalid');
+    if (editEmailError) { editEmailError.style.display = 'none'; editEmailError.textContent = ''; }
+    var editContact = document.getElementById('edit-contact');
+    var editContactError = document.getElementById('edit-contact-error');
+    if (editContact) editContact.classList.remove('field-invalid');
+    if (editContactError) { editContactError.style.display = 'none'; editContactError.textContent = ''; }
+    var editMoveout = document.getElementById('edit-moveout');
+    var editMoveoutError = document.getElementById('edit-moveout-error');
+    if (editMoveout) editMoveout.classList.remove('field-invalid');
+    if (editMoveoutError) { editMoveoutError.style.display = 'none'; editMoveoutError.textContent = ''; }
+    var editEstError = document.getElementById('edit-estimated-move-in-error');
+    if (editEstError) { editEstError.style.display = 'none'; editEstError.textContent = ''; }
+    var editEst = document.getElementById('edit-estimated-move-in');
+    if (editEst) editEst.classList.remove('field-invalid');
 }
 
 function openTagMovedInModal(id, name) {
@@ -3035,13 +3108,19 @@ async function submitDeleteRoom() {
         });
     }
 
-    function renderRoomSuggestions(stayType) {
-        var wrap = document.getElementById('add-room-suggest-wrap');
-        var box  = document.getElementById('add-room-suggest');
+    function renderRoomSuggestions(stayType, boxId, inputId, excludeId) {
+        var wrap = document.getElementById(boxId + '-wrap');
+        var box  = document.getElementById(boxId);
         if (!stayType || !wrap || !box) return;
         getRoomsCache(function(rooms) {
             var matched = rooms.filter(function(r) {
                 return r.stay_type === stayType;
+            }).map(function(r) {
+                var effOccupancy = r.occupancy;
+                if (excludeId && currentTenant && currentTenant.room_number === r.room_number && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out') {
+                    effOccupancy = Math.max(0, effOccupancy - 1);
+                }
+                return Object.assign({}, r, { occupancy: effOccupancy });
             }).sort(function(a, b) {
                 var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
                 var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
@@ -3080,11 +3159,11 @@ async function submitDeleteRoom() {
                 } else if (pct >= 75) {
                     chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
                     badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
                 } else {
                     chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
                 }
                 var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
                 var displayBg     = isSelected ? '#fffbf0' : chipBg;
@@ -3119,17 +3198,25 @@ async function submitDeleteRoom() {
         var stayType    = document.getElementById('add-stay-type-select').value;
         var suggestWrap = document.getElementById('add-room-suggest-wrap');
         if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
-        renderRoomSuggestions(stayType);
+        renderRoomSuggestions(stayType, 'add-room-suggest', 'add-room-number-input', null);
     };
 
-    window.selectSuggestedRoom = function(roomNumber) {
-        var input = document.getElementById('add-room-number-input');
+    window.onEditStayTypeChange = function() {
+        var stayType    = document.getElementById('edit-stay-type').value;
+        var suggestWrap = document.getElementById('edit-room-suggest-wrap');
+        if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
+        var excludeId = currentTenant ? currentTenant.tenant_id : null;
+        renderRoomSuggestions(stayType, 'edit-room-suggest', 'edit-room', excludeId);
+    };
+
+    window.selectSuggestedRoom = function(roomNumber, inputId, suggestBoxId, stayTypeSelectId, excludeId) {
+        var input = document.getElementById(inputId);
         if (!input) return;
         selectedRoomNumber = roomNumber;
         input.value = roomNumber;
-        var stayType = document.getElementById('add-stay-type-select').value;
+        var stayType = document.getElementById(stayTypeSelectId).value;
         if (stayType) {
-            renderRoomSuggestions(stayType);
+            renderRoomSuggestions(stayType, suggestBoxId, inputId, excludeId);
         }
         input.dispatchEvent(new Event('input'));
     };
