@@ -285,6 +285,11 @@ class TenantController extends Controller
 
         $previousStatus = $tenant->status;
 
+        $moveOutDate = $request->move_out_date;
+        if ($request->status === 'move_out' && !$moveOutDate) {
+            $moveOutDate = now()->format('Y-m-d');
+        }
+
         $tenant->update([
             'first_name'             => $request->first_name,
             'last_name'              => $request->last_name,
@@ -294,7 +299,7 @@ class TenantController extends Controller
             'floor'                  => $request->floor,
             'stay_type'              => $request->stay_type,
             'move_in_date'           => $request->move_in_date,
-            'move_out_date'          => $request->move_out_date,
+            'move_out_date'          => $moveOutDate,
             'estimated_move_in_date' => $request->estimated_move_in_date,
             'reservation_notes'      => $request->reservation_notes,
             'referred_by'            => $request->referred_by,
@@ -322,7 +327,7 @@ class TenantController extends Controller
             ->with('success', 'Tenant information updated successfully.');
     }
 
-    public function tagAsMovedIn($id)
+    public function tagAsMovedIn(Request $request, $id)
     {
         $tenant = Tenant::findOrFail($id);
 
@@ -331,8 +336,8 @@ class TenantController extends Controller
                 ->with('success', 'Tenant is not in reserved status.');
         }
 
-        if ($request_room = $tenant->room_number) {
-            $room = \App\Models\Room::where('room_number', $request_room)
+        if ($tenant->room_number) {
+            $room = \App\Models\Room::where('room_number', $tenant->room_number)
                 ->where('is_active', true)
                 ->first();
 
@@ -342,28 +347,32 @@ class TenantController extends Controller
             }
 
             $occupancy = Tenant::whereNotIn('status', ['inactive', 'move_out'])
-                ->where('room_number', $request_room)
+                ->where('room_number', $tenant->room_number)
                 ->where('tenant_id', '!=', $tenant->tenant_id)
                 ->count();
 
             if ($occupancy >= $room->capacity) {
                 return redirect()->route('tenants.index')
-                    ->with('error', "Room {$request_room} is already at full capacity.");
+                    ->with('error', "Room {$tenant->room_number} is already at full capacity.");
             }
         }
 
-        $accountId    = Tenant::generateAccountId();
-        $tempPassword = Tenant::generateTempPassword();
+        [$accountId, $tempPassword] = \Illuminate\Support\Facades\DB::transaction(function () use ($tenant) {
+            $accountId    = Tenant::generateAccountId();
+            $tempPassword = Tenant::generateTempPassword();
 
-        $tenant->update([
-            'account_id'             => $accountId,
-            'password_hash'          => Hash::make($tempPassword),
-            'is_temp_password'       => true,
-            'status'                 => 'pending',
-            'move_in_date'           => $tenant->move_in_date ?? now()->format('Y-m-d'),
-            'estimated_move_in_date' => null,
-            'reservation_notes'      => null,
-        ]);
+            $tenant->update([
+                'account_id'             => $accountId,
+                'password_hash'          => Hash::make($tempPassword),
+                'is_temp_password'       => true,
+                'status'                 => 'pending',
+                'move_in_date'           => $tenant->move_in_date ?? now()->format('Y-m-d'),
+                'estimated_move_in_date' => null,
+                'reservation_notes'      => null,
+            ]);
+
+            return [$accountId, $tempPassword];
+        });
 
         NotificationHelper::sendToAll(
             type: 'tenant_moved_in',
