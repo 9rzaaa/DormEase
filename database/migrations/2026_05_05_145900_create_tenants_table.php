@@ -37,7 +37,7 @@ return new class extends Migration
             $table->date('move_out_date')->nullable();
 
             // ── Account Status ────────────────────────────────────────────
-            $table->enum('status', ['active', 'pending', 'move_out', 'inactive'])
+            $table->enum('status', ['active', 'pending', 'reserved', 'move_out', 'inactive'])
                 ->default('pending');
             // pending   = account created but tenant has not logged in yet
             // active    = tenant is currently staying and using the app
