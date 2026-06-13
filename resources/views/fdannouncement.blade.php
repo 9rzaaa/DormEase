@@ -594,7 +594,7 @@
     <div class="ann-main-layout fade-up d4">
 
         <div class="ann-list-panel" id="ann-list-panel">
-            @forelse($announcements->sortByDesc('posted_at') as $ann)
+            @forelse($announcements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at) as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
@@ -682,7 +682,7 @@
                         Recent
                     </div>
                     <span style="font-size:.72rem;font-weight:700;background:var(--petal,#ffeef4);color:var(--hot-pink,#d6175a);padding:.12rem .5rem;border-radius:99px;border:1px solid var(--pink-100,#f9c5d6);">
-                        {{ $announcements->where('status','active')->count() }} active
+                        {{ $announcements->count() }} total
                     </span>
                 </div>
                 <div class="ann-sidebar-body">
