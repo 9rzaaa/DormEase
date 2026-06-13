@@ -46,6 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/visitors',                 [VisitorController::class, 'index']);
     Route::post('/visitors',                [VisitorController::class, 'store']);
     Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
+    Route::patch('/visitors/{id}/cancel',   [VisitorController::class, 'cancel']);
+    Route::delete('/visitors/{id}',         [VisitorController::class, 'destroy']);
 
     // billing
     Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
