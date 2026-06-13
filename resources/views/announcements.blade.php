@@ -5,1787 +5,1197 @@
 
 @section('styles')
 <style>
-    .page-body{
-        padding:1.8rem 2rem;
-        display:flex;
-        flex-direction:column;
-        gap:1.5rem;
-        flex:1;
-    }
-
-    .page-header{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        flex-wrap:wrap;
-        gap:1rem;
-    }
-
-    .page-header-left h1{
-        font-size:2rem;
-        font-weight:700;
-        color:var(--black);
-        letter-spacing:-.02em;
-        line-height:1.15;
-    }
-
-    .page-header-left .dorm-name{
-        font-size:1rem;
-        font-weight:600;
-        color:var(--hot-pink);
-        margin-top:.2rem;
-    }
-
-    .header-actions{
-        display:flex;
-        align-items:center;
-        gap:.75rem;
-        flex-wrap:wrap;
-        flex-shrink:0;
-    }
-
-    .btn-post{
-        display:flex;
-        align-items:center;
-        gap:.5rem;
-        padding:.55rem 1.2rem;
-        background:var(--hot-pink);
-        color:var(--white);
-        border:none;
-        border-radius:10px;
-        font-size:.87rem;
-        font-weight:700;
-        cursor:pointer;
-        transition:.2s;
-        white-space:nowrap;
-    }
-
-    .btn-post:hover{
-        background:var(--bright-pink);
-        transform:translateY(-1px);
-    }
-
-    .btn-post img,
-    .compose-tool-btn img,
-    .filter-btn img,
-    .ann-dropdown-item img,
-    .ann-files img{
-        width:16px;
-        height:16px;
-        object-fit:contain;
-    }
-
-    .btn-archive-open{
-        display:inline-flex;
-        align-items:center;
-        gap:.45rem;
-        padding:.6rem 1.2rem;
-        border-radius:12px;
-        background:var(--white);
-        color:var(--hot-pink);
-        border:1.5px solid var(--pink-100);
-        font-size:.87rem;
-        font-weight:600;
-        cursor:pointer;
-        transition:.2s;
-        white-space:nowrap;
-        font-family:var(--ff-body);
-        letter-spacing:.01em;
-    }
-
-    .btn-archive-open:hover{
-        border-color:var(--bright-pink);
-        color:var(--bright-pink);
-    }
-
-    .btn-archive-open img{
-        width:14px;
-        height:14px;
-        object-fit:contain;
-    }
-
-    .compose-card{
-        background:var(--white);
-        border:1px solid var(--border);
-        border-radius:16px;
-        padding:1.2rem 1.4rem;
-        box-shadow:var(--shadow);
-    }
-
-    .compose-top{
-        display:flex;
-        align-items:center;
-        gap:.8rem;
-        border-bottom:1px solid var(--border);
-        padding-bottom:.9rem;
-        margin-bottom:.7rem;
-    }
-
-    .compose-avatar{
-        width:36px;
-        height:36px;
-        border-radius:50%;
-        background:var(--gradient-pink);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:14px;
-        font-weight:700;
-        color:var(--white);
-        flex-shrink:0;
-    }
-
-    .compose-title-input {
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: .9rem;
-        font-weight: 500;
-        color: var(--ink);
-        font-family: var(--ff-body);
-    }
-
-    .compose-title-input::placeholder,
-    .compose-body-input::placeholder{
-        color:var(--gray);
-    }
-
-    .compose-close{
-        background:none;
-        border:none;
-        cursor:pointer;
-    }
-
-    .compose-body-input {
-        width: 100%;
-        border: none;
-        outline: none;
-        resize: none;
-        background: transparent;
-        min-height: 48px;
-        line-height: 1.6;
-        font-size: .9rem;
-        font-weight: 500;
-        color: var(--ink-muted);
-        font-family: var(--ff-body);
-    }
-
-    .compose-footer{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        margin-top:.7rem;
-        padding-top:.7rem;
-        border-top:1px solid var(--border);
-    }
-
-    .compose-tools{
-        display:flex;
-        gap:.5rem;
-    }
-
-    .compose-tool-btn{
-        width:32px;
-        height:32px;
-        border-radius:8px;
-        background:var(--white);
-        border:1px solid var(--border);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        cursor:pointer;
-        transition:.2s;
-    }
-
-    .compose-tool-btn:hover{
-        border-color:var(--hot-pink);
-        background:var(--pink-bg);
-    }
-
-    .filters-row{
-        display:flex;
-        align-items:center;
-        gap:.75rem;
-        flex-wrap:wrap;
-    }
-
-    .filter-btn{
-        display:flex;
-        align-items:center;
-        gap:.4rem;
-        padding:.42rem .9rem;
-        border-radius:8px;
-        border:1.5px solid var(--border);
-        background:var(--white);
-        font-size:.82rem;
-        font-weight:600;
-        color:var(--ink-muted);
-        cursor:pointer;
-        transition:.2s;
-    }
-
-    .filter-btn:hover,
-    .filter-btn.active{
-        border-color:var(--hot-pink);
-        color:var(--hot-pink);
-        background:var(--pink-bg);
-    }
-
-    .columns-wrapper{
-        display:grid;
-        grid-template-columns:1fr 1fr 1fr 1fr;
-        gap:1.2rem;
-        align-items:start;
-    }
-
-    .kanban-col{
-        background:var(--white);
-        border:1px solid var(--border);
-        border-radius:16px;
-        box-shadow:var(--shadow);
-        overflow:visible;
-    }
-
-    .kanban-col-header{
-        padding:.9rem 1.2rem;
-        display:flex;
-        align-items:center;
-        gap:.6rem;
-        border-bottom:2px solid var(--hot-pink);
-    }
-
-    .kanban-col-header.sched-header{
-        border-bottom-color:var(--hot-pink);
-    }
-
-    .col-dot{
-        width:9px;
-        height:9px;
-        border-radius:50%;
-        background:var(--hot-pink);
-        flex-shrink:0;
-    }
-
-    .col-title{
-        font-size:.9rem;
-        font-weight:700;
-        color:var(--ink);
-        flex:1;
-    }
-
-    .col-count{
-        font-size:.78rem;
-        font-weight:700;
-        color:var(--hot-pink);
-        background:var(--pink-50);
-        border-radius:20px;
-        padding:.1rem .55rem;
-    }
-
-    .col-count-sched{
-        font-size:.78rem;
-        font-weight:700;
-        color:var(--hot-pink);
-        background:var(--pink-50);
-        border-radius:20px;
-        padding:.1rem .55rem;
-    }
-
-    .kanban-col-body{
-        padding:.9rem;
-        display:flex;
-        flex-direction:column;
-        gap:.75rem;
-    }
-
-    .ann-card{
-        background:var(--white);
-        border:1px solid var(--border);
-        border-radius:12px;
-        padding:1rem;
-        cursor:pointer;
-        transition:.2s;
-        position:relative;
-    }
-
-    .ann-card:hover{
-        box-shadow:0 6px 20px rgba(232,23,93,.12);
-        transform:translateY(-2px);
-    }
-
-    .ann-card.sched-card{
-        border-color:var(--pink-100);
-        background:var(--blush);
-    }
-
-    .ann-card.sched-card:hover{
-        box-shadow:0 6px 20px rgba(232,23,93,.12);
-    }
-
-    .ann-card-top{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        margin-bottom:.55rem;
-    }
-
-    .priority-tag{
-        font-size:.68rem;
-        font-weight:700;
-        padding:.18rem .55rem;
-        border-radius:5px;
-        border:1.5px solid;
-        letter-spacing:.03em;
-    }
-
-    .priority-low{
-        color:var(--green);
-        border-color:var(--green);
-        background:#f0fdf8;
-    }
-
-    .priority-moderate{
-        color:#f59e0b;
-        border-color:#f59e0b;
-        background:#fff8eb;
-    }
-
-    .priority-high{
-        color:var(--red);
-        border-color:var(--red);
-        background:#fff0f0;
-    }
-
-    .ann-menu-btn{
-        width:30px;
-        height:30px;
-        border:1px solid transparent;
-        border-radius:8px;
-        background:var(--white);
-        cursor:pointer;
-        color:var(--ink-muted);
-        font-size:1.25rem;
-        font-weight:800;
-        line-height:1;
-        transition:.2s;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .ann-menu-btn:hover,
-    .ann-menu-btn.active{
-        color:var(--hot-pink);
-        border-color:var(--hot-pink);
-        background:var(--pink-bg);
-    }
-
-    .ann-menu-wrap{
-        position:relative;
-        flex-shrink:0;
-    }
-
-    .ann-title{
-        font-size:.92rem;
-        font-weight:700;
-        color:var(--ink);
-        margin-bottom:.35rem;
-        line-height:1.35;
-    }
-
-    .ann-desc{
-        font-size:.8rem;
-        color:var(--ink-muted);
-        line-height:1.55;
-        margin-bottom:.7rem;
-        display:-webkit-box;
-        -webkit-line-clamp:2;
-        -webkit-box-orient:vertical;
-        overflow:hidden;
-    }
-
-    .ann-footer{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        flex-wrap:wrap;
-        gap:.3rem;
-    }
-
-    .ann-date,
-    .ann-files{
-        font-size:.73rem;
-        color:var(--ink-muted);
-    }
-
-    .sched-badge{
-        display:inline-flex;
-        align-items:center;
-        gap:.3rem;
-        font-size:.7rem;
-        font-weight:700;
-        color:var(--hot-pink);
-        background:var(--petal);
-        border:1px solid var(--pink-200);
-        border-radius:6px;
-        padding:.18rem .5rem;
-        letter-spacing:.02em;
-    }
-
-    .sched-badge svg{
-        width:11px;
-        height:11px;
-        flex-shrink:0;
-    }
-
-    .ann-dropdown{
-        position:absolute;
-        right:0;
-        top:calc(100% + .35rem);
-        background:var(--white);
-        border:1px solid var(--border);
-        border-radius:10px;
-        box-shadow:0 8px 24px rgba(26,26,46,.12);
-        z-index:500;
-        min-width:150px;
-        display:none;
-        flex-direction:column;
-        overflow:hidden;
-    }
-
-    .ann-dropdown.open{
-        display:flex;
-    }
-
-    .ann-dropdown-item{
-        padding:.6rem 1rem;
-        font-size:.82rem;
-        font-weight:500;
-        color:var(--ink);
-        cursor:pointer;
-        transition:.15s;
-        border:none;
-        background:none;
-        text-align:left;
-        width:100%;
-        display:flex;
-        align-items:center;
-        gap:.5rem;
-    }
-
-    .ann-dropdown-item:hover{
-        background:var(--pink-bg);
-        color:var(--hot-pink);
-    }
-
-    .ann-dropdown-item.danger{
-        color:var(--red);
-    }
-
-    .ann-dropdown-item.danger:hover{
-        background:#fff0f0;
-    }
-
-    .modal-field input:focus,
-    .modal-field select:focus,
-    .modal-field textarea:focus{
-        border-color:var(--hot-pink);
-        outline:none;
-    }
-
-    .modal-field textarea{
-        resize:vertical;
-        min-height:100px;
-    }
-
-    .modal-grid-2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:1rem;
-    }
-
-    .modal-actions{
-        display:flex;
-        gap:.7rem;
-        margin-top:1.5rem;
-        justify-content:flex-end;
-    }
-
-    .btn-cancel{
-        padding:.6rem 1.2rem;
-        border-radius:9px;
-        border:1.5px solid var(--border);
-        background:var(--white);
-        font-size:.87rem;
-        font-weight:600;
-        color:var(--hot-pink);
-        cursor:pointer;
-        transition:.2s;
-    }
-
-    .btn-cancel:hover{
-        border-color:var(--hot-pink);
-        color:var(--hot-pink);
-        background:var(--pink-bg);
-    }
-
-    .btn-submit{
-        padding:.6rem 1.4rem;
-        border-radius:9px;
-        border:none;
-        background:var(--hot-pink);
-        color:var(--white);
-        font-size:.87rem;
-        font-weight:700;
-        cursor:pointer;
-        transition:.2s;
-    }
-
-    .btn-submit:hover{
-        background:var(--bright-pink);
-    }
-
-    .btn-danger{
-        padding:.6rem 1.4rem;
-        border-radius:9px;
-        border:none;
-        background:var(--red);
-        color:var(--white);
-        font-size:.87rem;
-        font-weight:700;
-        cursor:pointer;
-    }
-
-    .view-row{
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-start;
-        padding:.65rem 0;
-        border-bottom:1px solid var(--border);
-        font-size:.88rem;
-    }
-
-    .view-row:last-child{
-        border-bottom:none;
-    }
-
-    .view-label{
-        color:var(--ink-muted);
-        font-weight:500;
-    }
-
-    .view-val{
-        font-weight:600;
-        color:var(--ink);
-        text-align:right;
-    }
-
-    .view-title{
-        font-size:1.35rem;
-        font-weight:800;
-        color:var(--ink);
-        line-height:1.25;
-        margin-bottom:.65rem;
-    }
-
-    .view-content{
-        margin-top:1rem;
-        white-space:pre-wrap;
-        font-size:.92rem;
-        color:var(--ink-muted);
-        line-height:1.75;
-    }
-
-    .attachment-grid{
-        margin-top:1rem;
-        display:grid;
-        grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
-        gap:.8rem;
-    }
-
-    .attachment-card{
-        border:1px solid var(--border);
-        border-radius:10px;
-        overflow:hidden;
-        background:var(--white);
-    }
-
-    .attachment-card img{
-        width:100%;
-        max-height:360px;
-        object-fit:contain;
-        display:block;
-        background:var(--gray-light);
-    }
-
-    .attachment-link{
-        display:flex;
-        align-items:center;
-        gap:.45rem;
-        padding:.7rem .85rem;
-        color:var(--hot-pink);
-        font-size:.82rem;
-        font-weight:700;
-        text-decoration:none;
-        word-break:break-word;
-    }
-
-    .attachment-link img{
-        width:16px;
-        height:16px;
-        flex-shrink:0;
-    }
-
-    .inline-edit-form{
-        display:none;
-        margin-top:1rem;
-        border-top:1px solid var(--border);
-        padding-top:1rem;
-    }
-
-    .inline-edit-form.open{
-        display:block;
-    }
-
-    .current-files-note{
-        margin-top:.35rem;
-        font-size:.76rem;
-        color:var(--ink-muted);
-        line-height:1.5;
-    }
-
-    .action-loading-overlay{
-        position:fixed;
-        inset:0;
-        z-index:1200;
-        display:none;
-        align-items:center;
-        justify-content:center;
-        background:rgba(255,255,255,.72);
-        backdrop-filter:blur(2px);
-    }
-
-    .action-loading-overlay.open{
-        display:flex;
-    }
-
-    .action-loading-box{
-        display:flex;
-        align-items:center;
-        flex-direction:column;
-        gap:.75rem;
-        padding:1.25rem 1.6rem;
-        border:1px solid var(--border);
-        border-radius:12px;
-        background:var(--white);
-        box-shadow:0 12px 32px rgba(26,26,46,.14);
-        color:var(--ink);
-        font-size:.9rem;
-        font-weight:700;
-    }
-
-    .loading-logo-wrap{
-        width:86px;
-        height:86px;
-        border:3px solid var(--pink-50);
-        border-radius:50%;
-        background:var(--gradient-pink);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        box-shadow:0 10px 24px rgba(232,23,93,.25);
-        animation:pulseLogo 1s ease-in-out infinite;
-        flex-shrink:0;
-    }
-
-    .loading-logo-wrap img{
-        width:62px;
-        height:62px;
-        object-fit:contain;
-    }
-
-    .loading-spinner{
-        width:18px;
-        height:18px;
-        border:3px solid var(--pink-50);
-        border-top-color:var(--hot-pink);
-        border-radius:50%;
-        animation:spin .75s linear infinite;
-    }
-
-    .is-loading{
-        opacity:.75;
-        pointer-events:none;
-    }
-
-    .delete-warning{
-        background:#fff0f0;
-        border:1px solid #ffd6d6;
-        border-radius:12px;
-        padding:1rem;
-        margin-bottom:1rem;
-        font-size:.88rem;
-        color:var(--red);
-        line-height:1.6;
-    }
-
-    .empty-col{
-        text-align:center;
-        padding:2rem 1rem;
-        color:var(--ink-muted);
-        font-size:.83rem;
-    }
-
-    .empty-icon{
-        width:36px;
-        height:36px;
-        opacity:.3;
-        margin:0 auto .5rem;
-    }
-
-    .schedule-toggle-row{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        padding:.7rem .9rem;
-        background:var(--petal);
-        border:1.5px solid var(--pink-100);
-        border-radius:10px;
-        margin-bottom:.9rem;
-        cursor:pointer;
-        transition:background .2s,border-color .2s;
-        user-select:none;
-    }
-
-    .schedule-toggle-row:hover{
-        background:var(--blush);
-        border-color:var(--pink-200);
-    }
-
-    .schedule-toggle-label{
-        display:flex;
-        align-items:center;
-        gap:.55rem;
-        font-size:.87rem;
-        font-weight:700;
-        color:var(--hot-pink);
-    }
-
-    .schedule-toggle-label svg{
-        width:16px;
-        height:16px;
-        flex-shrink:0;
-    }
-
-    .schedule-toggle-switch{
-        width:36px;
-        height:20px;
-        border-radius:99px;
-        background:var(--pink-200);
-        position:relative;
-        transition:background .2s;
-        flex-shrink:0;
-    }
-
-    .schedule-toggle-switch.on{
-        background:var(--hot-pink);
-    }
-
-    .schedule-toggle-switch::after{
-        content:'';
-        position:absolute;
-        top:2px;
-        left:2px;
-        width:16px;
-        height:16px;
-        border-radius:50%;
-        background:var(--white);
-        transition:transform .2s;
-        box-shadow:0 1px 3px rgba(0,0,0,.2);
-    }
-
-    .schedule-toggle-switch.on::after{
-        transform:translateX(16px);
-    }
-
-    .schedule-fields{
-        display:none;
-        padding:.8rem;
-        background:var(--blush);
-        border:1.5px solid var(--pink-100);
-        border-radius:10px;
-        margin-bottom:.9rem;
-        gap:.8rem;
-        flex-direction:column;
-    }
-
-    .schedule-fields.open{
-        display:flex;
-    }
-
-    .schedule-fields .modal-field{
-        margin-bottom:0;
-    }
-
-    .schedule-fields .modal-field label{
-        color:var(--hot-pink);
-        font-weight:600;
-    }
-
-    .schedule-fields input[type="datetime-local"]{
-        width:100%;
-        box-sizing:border-box;
-        border:1.5px solid var(--pink-100);
-        border-radius:9px;
-        padding:.55rem .85rem;
-        font-size:.88rem;
-        color:var(--ink);
-        background:var(--white);
-        font-family:var(--ff-body);
-        transition:border-color .15s;
-    }
-
-    .schedule-fields input[type="datetime-local"]:focus{
-        border-color:var(--hot-pink);
-        outline:none;
-    }
-
-    .schedule-note{
-        font-size:.75rem;
-        color:var(--bright-pink);
-        margin-top:.35rem;
-        line-height:1.5;
-    }
-
-    .ann-archive-drawer{
-        position:fixed;
-        top:0;right:0;bottom:0;
-        width:min(660px,100vw);
-        background:var(--soft-bg);
-        z-index:500;
-        display:flex;
-        flex-direction:column;
-        transform:translateX(100%);
-        transition:transform .38s cubic-bezier(.4,0,.2,1);
-        box-shadow:-8px 0 40px rgba(214,51,117,.15);
-    }
-
-    .ann-archive-drawer.open{transform:translateX(0);}
-
-    .ann-archive-backdrop{
-        position:fixed;inset:0;
-        background:rgba(232,23,93,.18);
-        backdrop-filter:blur(3px);
-        z-index:499;
-        opacity:0;pointer-events:none;
-        transition:opacity .38s ease;
-    }
-
-    .ann-archive-backdrop.open{opacity:1;pointer-events:auto;}
-
-    .aad-header{
-        padding:1.6rem 1.8rem 1.2rem;
-        border-bottom:1px solid var(--pink-100);
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:1rem;
-        flex-shrink:0;
-    }
-
-    .aad-title{
-        font-size:1.3rem;
-        font-weight:800;
-        color:var(--ink);
-        letter-spacing:-.02em;
-        line-height:1.2;
-    }
-
-    .aad-sub{
-        font-size:.78rem;
-        color:var(--ink-muted);
-        margin-top:.25rem;
-        font-weight:500;
-    }
-
-    .aad-close{
-        width:34px;height:34px;
-        border-radius:8px;
-        border:1px solid var(--pink-100);
-        background:var(--petal);
-        color:var(--bright-pink);
-        font-size:1rem;
-        cursor:pointer;
-        display:flex;align-items:center;justify-content:center;
-        transition:background .2s,color .2s;
-        flex-shrink:0;
-    }
-
-    .aad-close:hover{background:var(--pink-100);color:var(--hot-pink);}
-
-    .aad-search-bar{
-        padding:1rem 1.8rem .8rem;
-        flex-shrink:0;
-    }
-
-    .aad-search-inner{
-        position:relative;
-        display:flex;
-        align-items:center;
-    }
-
-    .aad-search-inner input{
-        width:100%;
-        padding:.55rem .9rem .55rem 2.2rem;
-        border-radius:10px;
-        border:1px solid var(--pink-100);
-        background:var(--white);
-        color:var(--ink);
-        font-size:.83rem;
-        font-family:var(--ff-body);
-        outline:none;
-        transition:border-color .2s,background .2s;
-        box-sizing:border-box;
-    }
-
-    .aad-search-inner input::placeholder{color:var(--ink-muted);}
-    .aad-search-inner input:focus{border-color:var(--bright-pink);background:var(--blush);}
-
-    .aad-search-icon{
-        position:absolute;left:.75rem;
-        width:13px;height:13px;
-        opacity:.5;pointer-events:none;
-    }
-
-    .aad-list{
-        flex:1;
-        overflow-y:auto;
-        padding:0 1.8rem 1.8rem;
-        display:flex;
-        flex-direction:column;
-        gap:.75rem;
-    }
-
-    .aad-list::-webkit-scrollbar{width:4px;}
-    .aad-list::-webkit-scrollbar-track{background:transparent;}
-    .aad-list::-webkit-scrollbar-thumb{background:var(--pink-200);border-radius:99px;}
-
-    .aad-card{
-        background:var(--white);
-        border:1px solid var(--pink-100);
-        border-radius:14px;
-        padding:1rem 1.1rem;
-        transition:background .2s,border-color .2s;
-        animation:aadSlideIn .3s ease both;
-    }
-
-    @keyframes aadSlideIn{
-        from{opacity:0;transform:translateX(12px);}
-        to{opacity:1;transform:translateX(0);}
-    }
-
-    .aad-card:hover{background:var(--blush);border-color:var(--bright-pink);}
-
-    .aad-card-top{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:.8rem;
-        margin-bottom:.5rem;
-    }
-
-    .aad-card-id{
-        font-size:.75rem;
-        font-weight:800;
-        color:var(--bright-pink);
-        letter-spacing:.02em;
-        font-family:monospace;
-    }
-
-    .aad-card-time{
-        font-size:.7rem;
-        color:var(--ink-muted);
-        font-weight:500;
-        white-space:nowrap;
-        flex-shrink:0;
-    }
-
-    .aad-card-title{
-        font-size:.9rem;
-        font-weight:700;
-        color:var(--ink);
-        line-height:1.3;
-        margin-bottom:.2rem;
-    }
-
-    .aad-card-desc{
-        font-size:.75rem;
-        color:var(--ink-muted);
-        line-height:1.5;
-        display:-webkit-box;
-        -webkit-line-clamp:2;
-        -webkit-box-orient:vertical;
-        overflow:hidden;
-    }
-
-    .aad-card-meta{
-        display:flex;
-        align-items:center;
-        gap:.45rem;
-        margin-top:.6rem;
-        flex-wrap:wrap;
-    }
-
-    .aad-pill{
-        font-size:.68rem;
-        font-weight:700;
-        padding:.18rem .55rem;
-        border-radius:99px;
-        letter-spacing:.03em;
-        text-transform:uppercase;
-    }
-
-    .aad-pill-low     {background:#f0fdf8;color:var(--green);border:1px solid #8ce0bb;}
-    .aad-pill-moderate{background:#fff8eb;color:#c8960c;border:1px solid #f0c040;}
-    .aad-pill-high    {background:#fff0f0;color:var(--red);border:1px solid #ffd6d6;}
-    .aad-pill-active  {background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
-    .aad-pill-closed  {background:var(--blush);color:var(--ink-muted);border:1px solid var(--pink-100);}
-    .aad-pill-scheduled{background:var(--petal);color:var(--hot-pink);border:1px solid var(--pink-200);}
-
-    .aad-card-deleted{
-        display:flex;
-        align-items:center;
-        gap:.4rem;
-        margin-top:.75rem;
-        padding-top:.6rem;
-        border-top:1px solid var(--pink-100);
-        font-size:.7rem;
-        color:var(--ink-muted);
-        font-weight:500;
-    }
-
-    .aad-card-deleted span{color:var(--bright-pink);font-weight:600;}
-
-    .aad-empty{
-        text-align:center;
-        padding:3rem 1rem;
-        color:var(--ink-muted);
-        font-size:.85rem;
-    }
-
-    .aad-empty-icon{
-        width:40px;height:40px;
-        margin:0 auto .75rem;
-        opacity:.3;
-        display:block;
-    }
-
-    .aad-footer{
-        padding:.9rem 1.8rem;
-        border-top:1px solid var(--pink-100);
-        background:var(--white);
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        flex-shrink:0;
-        flex-wrap:wrap;
-        gap:.5rem;
-    }
-
-    .aad-count-label{
-        font-size:.75rem;
-        color:var(--ink-muted);
-        font-weight:600;
-    }
-
-    .aad-export-btn{
-        display:inline-flex;
-        align-items:center;
-        gap:.4rem;
-        font-size:.75rem;
-        font-weight:700;
-        color:var(--bright-pink);
-        background:var(--petal);
-        border:1px solid var(--pink-100);
-        border-radius:8px;
-        padding:.35rem .85rem;
-        cursor:pointer;
-        transition:background .2s,color .2s,border-color .2s;
-        font-family:var(--ff-body);
-    }
-
-    .aad-export-btn:hover{background:var(--gradient-pink);color:var(--white);border-color:transparent;}
-    .aad-export-btn img{width:12px;height:12px;object-fit:contain;opacity:.7;}
-
-    @keyframes fadeUp{
-        from{opacity:0;transform:translateY(15px);}
-        to{opacity:1;transform:translateY(0);}
-    }
-
-    @keyframes spin{
-        to{transform:rotate(360deg);}
-    }
-
-    @keyframes pulseLogo{
-        0%,100%{transform:scale(1);}
-        50%{transform:scale(1.06);}
-    }
-
-    .fade-up{animation:fadeUp .45s ease both;}
-
-    .modal-field select{
-        width:100%;
-        box-sizing:border-box;
-        border:1.5px solid var(--border);
-        border-radius:9px;
-        padding:.55rem .85rem;
-        font-size:.88rem;
-        color:var(--ink);
-        background:var(--white);
-        appearance:none;
-        -webkit-appearance:none;
-        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat:no-repeat;
-        background-position:right .85rem center;
-        padding-right:2.2rem;
-        cursor:pointer;
-        transition:border-color .15s;
-    }
-
-    .modal-field select:focus{border-color:var(--hot-pink);outline:none;}
-    .modal-field select:hover{border-color:var(--hot-pink);}
-
-    .modal-grid-2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:1rem;
-        margin-bottom:.9rem;
-    }
-
-    .d1{animation-delay:.05s;}
-    .d2{animation-delay:.12s;}
-    .d3{animation-delay:.2s;}
-    .d4{animation-delay:.28s;}
-
-    @media(max-width:1300px){
-        .columns-wrapper{grid-template-columns:1fr 1fr;}
-    }
-
-    @media(max-width:700px){
-        .columns-wrapper{grid-template-columns:1fr;}
-        .page-body{padding:1rem;}
-        .modal-grid-2{grid-template-columns:1fr;}
-        .aad-header{padding:1.2rem 1rem .9rem;}
-        .aad-list{padding:0 1rem 1.2rem;}
-        .aad-search-bar{padding:.8rem 1rem .6rem;}
-        .aad-footer{padding:.75rem 1rem;}
-    }
-
-    #edit-modal .modal,
-    #post-modal .modal,
-    #view-modal .modal{
-        max-width:560px;
-        width:100%;
-        padding:0;
-        overflow:hidden;
-        max-height:92vh;
-        display:flex;
-        flex-direction:column;
-    }
-
-    #view-modal .em-panels,
-    #view-modal #vm-edit-panels{
-        overflow-y:auto;
-        flex:1;
-    }
-
-    #post-modal .em-panels,
-    #edit-modal .em-panels{
-        overflow-y:auto;
-        flex:1;
-    }
-
-    .em-header{
-        padding:1.3rem 1.5rem 0;
-        border-bottom:1px solid var(--pink-100);
-        background:var(--white);
-        flex-shrink:0;
-    }
-
-    .em-header-top{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:.75rem;
-        margin-bottom:1rem;
-    }
-
-    .em-title-group{
-        display:flex;
-        align-items:center;
-        gap:.65rem;
-    }
-
-    .em-icon{
-        width:34px;
-        height:34px;
-        border-radius:9px;
-        background:var(--gradient-pink);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        flex-shrink:0;
-    }
-
-    .em-icon img{
-        width:16px;
-        height:16px;
-        object-fit:contain;
-        filter:brightness(10);
-    }
-
-    .em-title{
-        font-size:1rem;
-        font-weight:800;
-        color:var(--ink);
-        letter-spacing:-.02em;
-        line-height:1.2;
-    }
-
-    .em-sub{
-        font-size:.7rem;
-        color:var(--ink-muted);
-        font-weight:500;
-        margin-top:.1rem;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        max-width:280px;
-    }
-
-    .em-close{
-        width:30px;height:30px;
-        border-radius:7px;
-        border:1px solid var(--pink-100);
-        background:var(--petal);
-        color:var(--bright-pink);
-        font-size:.8rem;
-        cursor:pointer;
-        display:flex;align-items:center;justify-content:center;
-        transition:background .2s,color .2s;
-        flex-shrink:0;
-    }
-
-    .em-close:hover{background:var(--pink-100);color:var(--hot-pink);}
-
-    .em-tabs{
-        display:flex;
-        gap:0;
-    }
-
-    .em-tab{
-        padding:.62rem 1.1rem;
-        font-size:.8rem;
-        font-weight:700;
-        color:var(--ink-muted);
-        cursor:pointer;
-        border:none;
-        background:none;
-        border-bottom:2.5px solid transparent;
-        transition:color .18s, border-color .18s;
-        display:flex;
-        align-items:center;
-        gap:.38rem;
-        white-space:nowrap;
-        font-family:var(--ff-body);
-        margin-bottom:-1px;
-    }
-
-    .em-tab img{
-        width:13px;height:13px;
-        object-fit:contain;
-        opacity:.5;
-        transition:opacity .18s;
-    }
-
-    .em-tab:hover{
-        color:var(--hot-pink);
-    }
-
-    .em-tab:hover img{
-        opacity:.8;
-    }
-
-    .em-tab.active{
-        color:var(--hot-pink);
-        border-bottom-color:var(--hot-pink);
-    }
-
-    .em-tab.active img{
-        opacity:1;
-    }
-
-    .em-panels{
-        padding:1.3rem 1.5rem;
-        min-height:240px;
-    }
-
-    .em-panel{
-        display:none;
-        flex-direction:column;
-        gap:.9rem;
-        animation:emFadeIn .18s ease both;
-    }
-
-    .em-panel.active{
-        display:flex;
-    }
-
-    @keyframes emFadeIn{
-        from{opacity:0;transform:translateY(5px);}
-        to{opacity:1;transform:translateY(0);}
-    }
-
-    #edit-modal .modal-field,
-    #post-modal .modal-field{
-        margin-bottom:0;
-    }
-
-    #edit-modal .modal-grid-2,
-    #post-modal .modal-grid-2{
-        margin-bottom:0;
-    }
-
-    .em-pill-row{
-        display:flex;
-        gap:.45rem;
-        flex-wrap:wrap;
-    }
-
-    .em-pill-opt{
-        padding:.36rem .85rem;
-        border-radius:99px;
-        border:1.5px solid var(--border);
-        font-size:.78rem;
-        font-weight:700;
-        color:var(--ink-muted);
-        cursor:pointer;
-        transition:.18s;
-        user-select:none;
-        background:var(--white);
-    }
-
-    .em-pill-opt:hover{
-        border-color:var(--hot-pink);
-        color:var(--hot-pink);
-        background:var(--petal);
-    }
-
-    .em-pill-opt.sel-low     { border-color:var(--green);      color:var(--green);      background:#f0fdf8; }
-    .em-pill-opt.sel-moderate{ border-color:#f59e0b;            color:#c8960c;           background:#fff8eb; }
-    .em-pill-opt.sel-high    { border-color:var(--red);         color:var(--red);        background:#fff0f0; }
-    .em-pill-opt.sel-active  { border-color:var(--hot-pink);    color:var(--hot-pink);   background:var(--petal); }
-    .em-pill-opt.sel-closed  { border-color:var(--ink-muted);   color:var(--ink-muted);  background:var(--gray-light,#f3f4f6); }
-
-    .em-file-zone{
-        border:1.5px dashed var(--pink-200);
-        border-radius:12px;
-        padding:1rem 1.1rem;
-        background:var(--blush);
-        display:flex;
-        flex-direction:column;
-        gap:.45rem;
-    }
-
-    .em-file-zone input[type="file"]{
-        font-size:.82rem;
-        color:var(--ink-muted);
-        font-family:var(--ff-body);
-    }
-
-    .em-file-note{
-        font-size:.72rem;
-        color:var(--ink-muted);
-        line-height:1.5;
-    }
-
-    .em-replace-row{
-        display:flex;
-        align-items:center;
-        gap:.5rem;
-        padding:.5rem .75rem;
-        border-radius:9px;
-        border:1px solid var(--pink-100);
-        background:var(--petal);
-        cursor:pointer;
-        transition:background .2s;
-    }
-
-    .em-replace-row:hover{ background:var(--blush); }
-
-    .em-replace-row input[type="checkbox"]{
-        width:14px;height:14px;
-        accent-color:var(--hot-pink);
-        cursor:pointer;
-        flex-shrink:0;
-    }
-
-    .em-replace-row span{
-        font-size:.77rem;
-        font-weight:600;
-        color:var(--hot-pink);
-        line-height:1.4;
-    }
-
-    .em-footer{
-        padding:.9rem 1.5rem;
-        border-top:1px solid var(--pink-100);
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:.75rem;
-        flex-shrink:0;
-    }
-
-    .em-tab-nav{
-        display:flex;
-        align-items:center;
-        gap:.5rem;
-    }
-
-    .em-nav-btn{
-        padding:.45rem .9rem;
-        border-radius:8px;
-        border:1.5px solid var(--border);
-        background:var(--white);
-        font-size:.78rem;
-        font-weight:600;
-        color:var(--ink-muted);
-        cursor:pointer;
-        transition:.2s;
-        font-family:var(--ff-body);
-        display:flex;
-        align-items:center;
-        gap:.3rem;
-    }
-
-    .em-nav-btn:hover{
-        border-color:var(--hot-pink);
-        color:var(--hot-pink);
-        background:var(--pink-bg);
-    }
-
-    .em-nav-btn:disabled{
-        opacity:.35;
-        pointer-events:none;
-    }
-
-    .em-footer-actions{
-        display:flex;
-        gap:.6rem;
-    }
-
-    #edit-modal .schedule-toggle-row,
-    #post-modal .schedule-toggle-row{ margin-bottom:0; }
-    #edit-modal .schedule-fields,
-    #post-modal .schedule-fields{ margin-bottom:0; }
+.ann-page {
+    padding: 1.8rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+    background: var(--soft-bg, #fdf6f9);
+    box-sizing: border-box;
+}
+
+.ann-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ann-page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink, #1a1a2e);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.ann-page-header .dorm-name {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--bright-pink, #E8175D);
+    margin-top: .2rem;
+}
+
+.ann-header-actions {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    flex-wrap: wrap;
+}
+
+.btn-ann-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1.3rem;
+    border-radius: 12px;
+    background: var(--gradient-pink, linear-gradient(135deg,#E8175D,#c0103e));
+    color: #fff;
+    border: none;
+    font-size: .87rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(232,23,93,.28);
+    transition: transform .2s, box-shadow .2s;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+
+.btn-ann-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(232,23,93,.38);
+}
+
+.btn-ann-primary img { width: 15px; height: 15px; object-fit: contain; filter: brightness(0) invert(1); }
+
+.btn-ann-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1.2rem;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--hot-pink, #d6175a);
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+
+.btn-ann-outline:hover {
+    border-color: var(--bright-pink, #E8175D);
+    box-shadow: 0 4px 14px rgba(232,23,93,.12);
+}
+
+.btn-ann-outline img {
+    width: 14px; height: 14px; object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+
+.ann-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.ann-stat-card {
+    background: #fff;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    border-radius: 16px;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    box-shadow: 0 2px 12px rgba(232,23,93,.06);
+    transition: box-shadow .2s;
+}
+
+.ann-stat-card:hover { box-shadow: 0 6px 20px rgba(232,23,93,.12); }
+
+.ann-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+.ann-stat-icon img { width: 22px; height: 22px; object-fit: contain; }
+
+.ann-stat-icon.pink-bg { background: #E8175D; }
+.ann-stat-icon.pink-bg img {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(30%) saturate(600%) hue-rotate(295deg) brightness(130%);
+}
+
+.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: var(--ink); line-height: 1; }
+.ann-stat-label { font-size: .73rem; font-weight: 600; color: var(--ink-muted, #888); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+
+.ann-compose-strip {
+    background: #fff;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    border-radius: 16px;
+    padding: .85rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 10px rgba(232,23,93,.05);
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.ann-compose-strip:hover {
+    border-color: var(--bright-pink);
+    box-shadow: 0 4px 18px rgba(232,23,93,.12);
+}
+
+.ann-compose-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .88rem; font-weight: 800; color: #fff;
+    flex-shrink: 0;
+}
+
+.ann-compose-placeholder {
+    flex: 1;
+    font-size: .9rem;
+    color: #bbb;
+    user-select: none;
+    font-style: italic;
+}
+
+.ann-compose-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.ann-compose-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .8rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--petal, #ffeef4);
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--hot-pink);
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+}
+
+.ann-compose-chip:hover { background: var(--blush); border-color: var(--bright-pink); }
+.ann-compose-chip img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
+
+.ann-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.ann-filter-group {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.ann-filter-select {
+    display: inline-flex;
+    align-items: center;
+    padding: .42rem 2rem .42rem .85rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink-muted, #888);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: var(--ff-body);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23E8175D' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem center;
+    outline: none;
+}
+
+.ann-filter-select:hover { border-color: var(--bright-pink, #E8175D); color: var(--hot-pink, #d6175a); background-color: var(--petal, #ffeef4); }
+.ann-filter-select:focus { border-color: var(--bright-pink, #E8175D); color: var(--hot-pink, #d6175a); }
+.ann-filter-select.has-value {
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23E8175D' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem center;
+    color: var(--hot-pink, #d6175a);
+    border-color: var(--bright-pink, #E8175D);
+    box-shadow: 0 4px 12px rgba(232,23,93,.12);
+}
+.ann-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ann-search-wrap input {
+    padding: .45rem .85rem .45rem 2.1rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--pink-100);
+    background: #fff;
+    font-size: .82rem;
+    color: var(--ink);
+    outline: none;
+    width: 200px;
+    font-family: var(--ff-body);
+    transition: border-color .2s, width .3s;
+    box-shadow: 0 2px 8px rgba(232,23,93,.04);
+}
+
+.ann-search-wrap input:focus { border-color: var(--bright-pink); width: 240px; }
+.ann-search-icon { position: absolute; left: .65rem; width: 14px; height: 14px; opacity: .35; pointer-events: none; }
+
+.ann-main-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.2rem;
+    align-items: start;
+}
+
+.ann-list-panel {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.ann-row-card {
+    background: #fff;
+    border: 1px solid var(--pink-100);
+    border-radius: 14px;
+    padding: 1rem 1.2rem 1rem 1.6rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: .75rem 1rem;
+    align-items: start;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .15s;
+    position: relative;
+    overflow: hidden;
+}
+
+.ann-row-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--pink-100);
+    transition: background .2s;
+}
+
+.ann-row-card:hover {
+    border-color: var(--bright-pink);
+    box-shadow: 0 6px 22px rgba(232,23,93,.11);
+    transform: translateY(-1px);
+}
+
+.ann-row-card:hover::before { background: var(--gradient-pink); }
+.ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
+
+.ann-row-card.status-closed {
+    opacity: .58;
+    background: #f7f7f9;
+    border-color: #e0e0e8;
+}
+
+.ann-row-card.status-closed .ann-row-title,
+.ann-row-card.status-closed .ann-row-excerpt { color: #999; }
+.ann-row-card.status-closed .ann-row-time { color: #bbb; }
+.ann-row-card.status-closed::before { background: #c8c8d4; }
+
+.ann-row-card.status-closed:hover {
+    border-color: #c0c0cc;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+    opacity: .72;
+    transform: translateY(-1px);
+}
+
+.ann-row-card.status-closed:hover::before { background: #a0a0b8; }
+.ann-row-card.status-scheduled::before { background: var(--gradient-pink); }
+
+.ann-row-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    padding-top: .15rem;
+}
+
+.ann-row-priority-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.prio-low      { background: #1f9d69; }
+.prio-moderate { background: #f59e0b; }
+.prio-high     { background: #e04867; }
+
+.ann-row-body { min-width: 0; }
+
+.ann-row-title {
+    font-size: .93rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: .28rem;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ann-row-excerpt {
+    font-size: .78rem;
+    color: var(--ink-muted);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: .55rem;
+}
+
+.ann-row-meta {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+.ann-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    font-size: .7rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+
+.ann-meta-chip img { width: 11px; height: 11px; object-fit: contain; opacity: .5; }
+
+.ann-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: .18rem .58rem;
+    border-radius: 99px;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+
+.badge-active     { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.badge-closed     { background: #f3f4f6; color: #888; border: 1px solid #d0d0d8; }
+.badge-scheduled  { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200, #f4b8d0); }
+.badge-low        { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.badge-moderate   { background: #fff8e1; color: #c8960c; border: 1px solid #f0c040; }
+.badge-high       { background: #fff0f0; color: #e04867; border: 1px solid #ffb3c0; }
+
+.ann-row-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: .4rem;
+    flex-shrink: 0;
+}
+
+.ann-row-time {
+    font-size: .68rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.ann-menu-btn {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    border: 1px solid var(--pink-100);
+    background: #fff;
+    cursor: pointer;
+    color: var(--ink-muted);
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: .2s;
+    position: relative;
+}
+
+.ann-menu-btn:hover, .ann-menu-btn.active {
+    color: var(--hot-pink);
+    border-color: var(--bright-pink);
+    background: var(--petal);
+}
+
+.ann-dropdown {
+    position: fixed;
+    background: #fff;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(26,26,46,.14), 0 2px 8px rgba(232,23,93,.08);
+    z-index: 99999;
+    min-width: 170px;
+    display: none;
+    flex-direction: column;
+    padding: .35rem;
+    overflow: hidden;
+}
+
+.ann-dropdown.open { display: flex; }
+
+.ann-dropdown-item {
+    padding: .55rem .85rem;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--ink, #1a1a2e);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-family: var(--ff-body);
+    border-radius: 8px;
+}
+
+.ann-dropdown-item:hover {
+    background: var(--petal, #ffeef4);
+    color: var(--hot-pink, #d6175a);
+}
+
+.ann-dropdown-item:hover .dd-icon { opacity: 1; }
+
+.ann-dropdown-item.danger { color: #e04867; }
+.ann-dropdown-item.danger:hover { background: #fff0f0; color: #c0103e; }
+
+.dd-icon {
+    width: 16px; height: 16px;
+    object-fit: contain;
+    opacity: .55;
+    transition: opacity .15s;
+    flex-shrink: 0;
+}
+
+.ann-dropdown-item:not(.danger) .dd-icon {
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+
+.ann-dropdown-item.danger .dd-icon {
+    filter: brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(2000%) hue-rotate(330deg) brightness(90%) contrast(95%);
+}
+
+.ann-dropdown-divider {
+    height: 1px;
+    background: var(--pink-100, #f9c5d6);
+    margin: .25rem .1rem;
+}
+
+.sched-inline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .7rem;
+    font-weight: 700;
+    color: var(--hot-pink);
+    background: var(--petal);
+    border: 1px solid var(--pink-200);
+    border-radius: 6px;
+    padding: .18rem .5rem;
+}
+
+.sched-inline-badge svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+.ann-list-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #fff;
+    border: 1px solid var(--pink-100);
+    border-radius: 14px;
+    color: var(--ink-muted);
+    font-size: .85rem;
+}
+
+.ann-list-empty img {
+    width: 42px; height: 42px;
+    opacity: .25;
+    display: block;
+    margin: 0 auto .75rem;
+}
+
+.ann-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: sticky;
+    top: 5rem;
+    align-self: flex-start;
+}
+
+.ann-sidebar-card {
+    background: #fff;
+    border: 1px solid var(--pink-100);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(232,23,93,.05);
+}
+
+.ann-sidebar-header {
+    padding: .85rem 1.1rem;
+    border-bottom: 1px solid var(--pink-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ann-sidebar-title {
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.ann-sidebar-title img {
+    width: 14px; height: 14px; object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+
+.ann-sidebar-body { padding: .75rem 1.1rem; }
+
+.ann-prio-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .45rem 0;
+    border-bottom: 1px solid var(--pink-100);
+    font-size: .8rem;
+}
+
+.ann-prio-row:last-child { border-bottom: none; }
+
+.ann-prio-label {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.ann-prio-label .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ann-prio-count {
+    font-weight: 800;
+    color: var(--hot-pink);
+}
+
+.ann-sched-item {
+    padding: .65rem 0;
+    border-bottom: 1px solid var(--pink-100);
+    cursor: pointer;
+    transition: background .15s;
+}
+
+.ann-sched-item:last-child { border-bottom: none; }
+.ann-sched-item:hover .ann-sched-title { color: var(--hot-pink); }
+
+.ann-sched-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: .22rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ann-sched-time {
+    font-size: .7rem;
+    color: var(--hot-pink);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}
+
+.ann-sched-time svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+.ann-sched-empty {
+    font-size: .8rem;
+    color: var(--ink-muted);
+    padding: .5rem 0;
+    text-align: center;
+}
+
+.action-loading-overlay {
+    position: fixed; inset: 0; z-index: 1200;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+}
+
+.action-loading-overlay.open { display: flex; }
+
+.action-loading-box {
+    display: flex; align-items: center; flex-direction: column;
+    gap: .75rem; padding: 1.25rem 1.6rem;
+    border: 1px solid var(--pink-100); border-radius: 12px;
+    background: #fff; box-shadow: 0 12px 32px rgba(26,26,46,.14);
+    color: var(--ink); font-size: .9rem; font-weight: 700;
+}
+
+.loading-logo-wrap {
+    width: 86px; height: 86px;
+    border: 3px solid var(--pink-100); border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(232,23,93,.25);
+    animation: pulseLogo 1s ease-in-out infinite;
+}
+
+.loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
+.is-loading { opacity: .75; pointer-events: none; }
+
+.ann-archive-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(660px, 100vw);
+    background: var(--soft-bg, #fdf6f9);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .38s cubic-bezier(.4,0,.2,1);
+    box-shadow: -8px 0 40px rgba(214,51,117,.15);
+}
+
+.ann-archive-drawer.open { transform: translateX(0); }
+
+.ann-archive-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(232,23,93,.18);
+    backdrop-filter: blur(3px);
+    z-index: 499; opacity: 0; pointer-events: none;
+    transition: opacity .38s ease;
+}
+
+.ann-archive-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.aad-header {
+    padding: 1.4rem 1.6rem 1rem;
+    border-bottom: 1px solid var(--pink-100);
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-shrink: 0;
+}
+
+.aad-title { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+.aad-sub   { font-size: .78rem; color: var(--ink-muted); margin-top: .2rem; }
+
+.aad-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--pink-100);
+    background: var(--petal);
+    color: var(--bright-pink);
+    font-size: .95rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+
+.aad-close:hover { background: var(--pink-100); }
+
+.aad-search-bar { padding: .85rem 1.6rem .65rem; flex-shrink: 0; }
+.aad-search-inner { position: relative; display: flex; align-items: center; }
+
+.aad-search-inner input {
+    width: 100%;
+    padding: .52rem .9rem .52rem 2.1rem;
+    border-radius: 10px;
+    border: 1px solid var(--pink-100);
+    background: #fff;
+    font-size: .82rem;
+    font-family: var(--ff-body);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.aad-search-inner input:focus { border-color: var(--bright-pink); background: var(--blush); }
+.aad-search-icon { position: absolute; left: .72rem; width: 13px; height: 13px; opacity: .45; pointer-events: none; }
+
+.aad-list {
+    flex: 1; overflow-y: auto;
+    padding: 0 1.6rem 1.6rem;
+    display: flex; flex-direction: column; gap: .7rem;
+}
+
+.aad-list::-webkit-scrollbar { width: 4px; }
+.aad-list::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+.aad-card {
+    background: #fff;
+    border: 1px solid var(--pink-100);
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    transition: border-color .2s;
+    animation: aadSlide .3s ease both;
+}
+
+@keyframes aadSlide { from { opacity:0; transform: translateX(10px); } to { opacity:1; transform: none; } }
+.aad-card:hover { border-color: var(--bright-pink); background: var(--blush); }
+
+.aad-card-top { display: flex; justify-content: space-between; gap: .8rem; margin-bottom: .4rem; }
+.aad-card-id  { font-size: .72rem; font-weight: 800; color: var(--bright-pink); font-family: monospace; }
+.aad-card-time { font-size: .68rem; color: var(--ink-muted); white-space: nowrap; }
+.aad-card-title { font-size: .88rem; font-weight: 700; color: var(--ink); margin-bottom: .18rem; }
+.aad-card-desc { font-size: .74rem; color: var(--ink-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.aad-card-meta { display: flex; gap: .4rem; margin-top: .55rem; flex-wrap: wrap; }
+
+.aad-pill { font-size: .66rem; font-weight: 700; padding: .16rem .52rem; border-radius: 99px; text-transform: uppercase; letter-spacing: .03em; }
+.aad-pill-low      { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
+.aad-pill-moderate { background: #fff8e1; color: #c8960c; border: 1px solid #f0c040; }
+.aad-pill-high     { background: #fff0f0; color: #e04867; border: 1px solid #ffb3c0; }
+.aad-pill-active   { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+.aad-pill-closed   { background: #f3f4f6; color: #888; border: 1px solid #d0d0d8; }
+.aad-pill-scheduled { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
+
+.aad-card-deleted {
+    font-size: .68rem; color: var(--ink-muted);
+    margin-top: .55rem; padding-top: .5rem;
+    border-top: 1px solid var(--pink-100);
+}
+
+.aad-card-deleted span { color: var(--bright-pink); font-weight: 600; }
+
+.aad-empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink-muted); font-size: .84rem; }
+.aad-empty img { width: 38px; height: 38px; opacity: .25; display: block; margin: 0 auto .65rem; }
+
+.aad-footer {
+    padding: .85rem 1.6rem;
+    border-top: 1px solid var(--pink-100);
+    background: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.aad-count-label { font-size: .75rem; color: var(--ink-muted); font-weight: 600; }
+
+.aad-export-btn {
+    display: inline-flex; align-items: center; gap: .38rem;
+    font-size: .74rem; font-weight: 700; color: var(--bright-pink);
+    background: var(--petal); border: 1px solid var(--pink-100);
+    border-radius: 8px; padding: .32rem .8rem;
+    cursor: pointer; transition: background .2s; font-family: var(--ff-body);
+}
+
+.aad-export-btn:hover { background: var(--gradient-pink); color: #fff; border-color: transparent; }
+.aad-export-btn img { width: 12px; height: 12px; opacity: .7; }
+
+.delete-warning {
+    background: #fff0f0; border: 1px solid #ffd6d6;
+    border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+    font-size: .88rem; color: var(--red); line-height: 1.6;
+}
+
+.modal-field select {
+    width: 100%; box-sizing: border-box;
+    border: 1.5px solid var(--border); border-radius: 9px;
+    padding: .55rem .85rem;
+    font-size: .88rem; color: var(--ink); background: #fff;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .85rem center;
+    padding-right: 2.2rem;
+    cursor: pointer; transition: border-color .15s;
+}
+
+.modal-field select:focus { border-color: var(--hot-pink); outline: none; }
+
+.modal-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: .9rem; }
+
+.modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
+
+.btn-cancel {
+    padding: .58rem 1.2rem; border-radius: 9px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-size: .87rem; font-weight: 600; color: var(--hot-pink); cursor: pointer;
+    transition: .2s;
+}
+.btn-cancel:hover { border-color: var(--hot-pink); background: var(--pink-bg); }
+
+.btn-submit {
+    padding: .58rem 1.4rem; border-radius: 9px;
+    border: none; background: var(--hot-pink); color: #fff;
+    font-size: .87rem; font-weight: 700; cursor: pointer; transition: .2s;
+}
+.btn-submit:hover { background: var(--bright-pink); }
+
+.btn-danger {
+    padding: .58rem 1.4rem; border-radius: 9px;
+    border: none; background: var(--red); color: #fff;
+    font-size: .87rem; font-weight: 700; cursor: pointer;
+}
+
+.schedule-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .7rem .9rem;
+    background: var(--petal); border: 1.5px solid var(--pink-100);
+    border-radius: 10px; cursor: pointer;
+    transition: background .2s; user-select: none;
+}
+.schedule-toggle-row:hover { background: var(--blush); border-color: var(--pink-200); }
+.schedule-toggle-label { display: flex; align-items: center; gap: .55rem; font-size: .87rem; font-weight: 700; color: var(--hot-pink); }
+.schedule-toggle-label svg { width: 16px; height: 16px; }
+.schedule-toggle-switch { width: 36px; height: 20px; border-radius: 99px; background: var(--pink-200); position: relative; transition: background .2s; }
+.schedule-toggle-switch.on { background: var(--hot-pink); }
+.schedule-toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.schedule-toggle-switch.on::after { transform: translateX(16px); }
+
+.schedule-fields { display: none; padding: .8rem; background: var(--blush); border: 1.5px solid var(--pink-100); border-radius: 10px; gap: .8rem; flex-direction: column; }
+.schedule-fields.open { display: flex; }
+.schedule-fields .modal-field { margin-bottom: 0; }
+.schedule-fields input[type="datetime-local"] { width: 100%; box-sizing: border-box; border: 1.5px solid var(--pink-100); border-radius: 9px; padding: .55rem .85rem; font-size: .88rem; color: var(--ink); background: #fff; font-family: var(--ff-body); }
+.schedule-note { font-size: .75rem; color: var(--bright-pink); margin-top: .3rem; line-height: 1.5; }
+
+#edit-modal .modal, #post-modal .modal, #view-modal .modal {
+    max-width: 560px; width: 100%; padding: 0;
+    overflow: hidden; max-height: 92vh;
+    display: flex; flex-direction: column;
+}
+#view-modal .em-panels, #view-modal #vm-edit-panels { overflow-y: auto; flex: 1; }
+#post-modal .em-panels, #edit-modal .em-panels { overflow-y: auto; flex: 1; }
+
+.em-header { padding: 1.3rem 1.5rem 0; border-bottom: 1px solid var(--pink-100); background: #fff; flex-shrink: 0; }
+.em-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+.em-title-group { display: flex; align-items: center; gap: .65rem; }
+.em-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--gradient-pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.em-icon img { width: 16px; height: 16px; object-fit: contain; filter: brightness(10); }
+.em-title { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+.em-sub { font-size: .7rem; color: var(--ink-muted); font-weight: 500; margin-top: .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+.em-close { width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--pink-100); background: var(--petal); color: var(--bright-pink); font-size: .8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.em-close:hover { background: var(--pink-100); }
+.em-tabs { display: flex; }
+.em-tab { padding: .62rem 1.1rem; font-size: .8rem; font-weight: 700; color: var(--ink-muted); cursor: pointer; border: none; background: none; border-bottom: 2.5px solid transparent; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: .38rem; font-family: var(--ff-body); margin-bottom: -1px; }
+.em-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; }
+.em-tab:hover { color: var(--hot-pink); }
+.em-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+.em-tab.active img { opacity: 1; }
+.em-panels { padding: 1.3rem 1.5rem; min-height: 220px; }
+.em-panel { display: none; flex-direction: column; gap: .9rem; animation: emFadeIn .18s ease both; }
+.em-panel.active { display: flex; }
+@keyframes emFadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+#edit-modal .modal-field, #post-modal .modal-field { margin-bottom: 0; }
+.em-pill-row { display: flex; gap: .45rem; flex-wrap: wrap; }
+.em-pill-opt { padding: .36rem .85rem; border-radius: 99px; border: 1.5px solid var(--border); font-size: .78rem; font-weight: 700; color: var(--ink-muted); cursor: pointer; transition: .18s; user-select: none; background: #fff; }
+.em-pill-opt:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: var(--petal); }
+.em-pill-opt.sel-low      { border-color: var(--green); color: var(--green); background: #f0fdf8; }
+.em-pill-opt.sel-moderate { border-color: #f59e0b; color: #c8960c; background: #fff8eb; }
+.em-pill-opt.sel-high     { border-color: var(--red); color: var(--red); background: #fff0f0; }
+.em-pill-opt.sel-active   { border-color: var(--hot-pink); color: var(--hot-pink); background: var(--petal); }
+.em-pill-opt.sel-closed   { border-color: var(--ink-muted); color: var(--ink-muted); background: #f3f4f6; }
+.em-file-zone { border: 1.5px dashed var(--pink-200); border-radius: 12px; padding: 1rem 1.1rem; background: var(--blush); display: flex; flex-direction: column; gap: .45rem; }
+.em-file-note { font-size: .72rem; color: var(--ink-muted); line-height: 1.5; }
+.em-replace-row { display: flex; align-items: center; gap: .5rem; padding: .5rem .75rem; border-radius: 9px; border: 1px solid var(--pink-100); background: var(--petal); cursor: pointer; }
+.em-replace-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--hot-pink); cursor: pointer; }
+.em-replace-row span { font-size: .77rem; font-weight: 600; color: var(--hot-pink); }
+.em-footer { padding: .9rem 1.5rem; border-top: 1px solid var(--pink-100); display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-shrink: 0; }
+.em-tab-nav { display: flex; align-items: center; gap: .5rem; }
+.em-nav-btn { padding: .45rem .9rem; border-radius: 8px; border: 1.5px solid var(--border); background: #fff; font-size: .78rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; transition: .2s; font-family: var(--ff-body); display: flex; align-items: center; gap: .3rem; }
+.em-nav-btn:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: var(--pink-bg); }
+.em-nav-btn:disabled { opacity: .35; pointer-events: none; }
+.em-footer-actions { display: flex; gap: .6rem; }
+#edit-modal .schedule-toggle-row, #post-modal .schedule-toggle-row { margin-bottom: 0; }
+
+.view-title { font-size: 1.3rem; font-weight: 800; color: var(--ink); line-height: 1.25; margin-bottom: .65rem; }
+.view-row { display: flex; justify-content: space-between; align-items: flex-start; padding: .62rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; }
+.view-row:last-child { border-bottom: none; }
+.view-label { color: var(--ink-muted); font-weight: 500; }
+.view-val { font-weight: 600; color: var(--ink); text-align: right; }
+.view-content { margin-top: 1rem; white-space: pre-wrap; font-size: .92rem; color: var(--ink-muted); line-height: 1.75; }
+.attachment-grid { margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: .8rem; }
+.attachment-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+.attachment-card img { width: 100%; max-height: 360px; object-fit: contain; display: block; background: var(--gray-light); }
+.attachment-link { display: flex; align-items: center; gap: .45rem; padding: .7rem .85rem; color: var(--hot-pink); font-size: .82rem; font-weight: 700; text-decoration: none; }
+.attachment-link img { width: 16px; height: 16px; }
+.current-files-note { margin-top: .35rem; font-size: .76rem; color: var(--ink-muted); line-height: 1.5; }
+
+@media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
+@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } }
+@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1rem; } .ann-compose-chip { display: none; } }
+
+.fade-up { animation: fadeUp .42s ease both; }
+.d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
+@keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 </style>
 @endsection
 
 @section('content')
-<div class="page-body">
+<div class="ann-page">
 
-    <div class="page-header fade-up d1">
-        <div class="page-header-left">
+    <div class="ann-page-header fade-up d1">
+        <div>
             <h1>Announcements</h1>
             <div class="dorm-name">Sanctissimo Rosario Ladies Dormitory</div>
         </div>
-        <div class="header-actions">
-            <button class="btn-archive-open" onclick="openAnnArchive()">
+        <div class="ann-header-actions">
+            <button class="btn-ann-outline" onclick="openAnnArchive()">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
                 Archive / History
             </button>
-            <button class="btn-post" onclick="openPostModal()">
-                <img src="{{ asset('icons/announce.png') }}" alt=""> Post New Announcement
+            <button class="btn-ann-primary" onclick="openPostModal()">
+                <img src="{{ asset('icons/announce.png') }}" alt="">
+                Post Announcement
             </button>
         </div>
     </div>
 
-    <div class="compose-card fade-up d2">
-        <div class="compose-top">
-            <div class="compose-avatar">
-                @if($staff->profile_picture)
-                    <img src="{{ $staff->profile_picture }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+    <div class="ann-stats-row fade-up d2">
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon pink-bg">
+                <img src="{{ asset('icons/announce.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $announcements->count() }}</div>
+                <div class="ann-stat-label">Total</div>
+            </div>
+        </div>
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon pink-bg">
+                <img src="{{ asset('icons/check.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
+                <div class="ann-stat-label">Active</div>
+            </div>
+        </div>
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon pink-bg">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
+                <div class="ann-stat-label">Closed</div>
+            </div>
+        </div>
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon pink-bg">
+                <img src="{{ asset('icons/clock.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $scheduled->count() }}</div>
+                <div class="ann-stat-label">Scheduled</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ann-compose-strip fade-up d3" onclick="openPostModal()">
+        <div class="ann-compose-avatar">
+            @if($staff->profile_picture)
+                <img src="{{ $staff->profile_picture }}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+            @else
+                {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
+            @endif
+        </div>
+        <div class="ann-compose-placeholder">What do you want to announce today?</div>
+        <div class="ann-compose-actions">
+            <span class="ann-compose-chip"><img src="{{ asset('icons/flag.png') }}" alt=""> Priority</span>
+            <span class="ann-compose-chip"><img src="{{ asset('icons/attach.png') }}" alt=""> Attach</span>
+            <span class="ann-compose-chip"><img src="{{ asset('icons/clock.png') }}" alt=""> Schedule</span>
+        </div>
+    </div>
+
+    <div class="ann-toolbar fade-up d3">
+        <div class="ann-filter-group">
+            <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="closed">Closed</option>
+            </select>
+            <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
+            <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
+                <option value="">Any Date</option>
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="two_weeks">Last 2 Weeks</option>
+                <option value="this_month">This Month</option>
+            </select>
+        </div>
+        <div class="ann-search-wrap">
+            <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
+            <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+        </div>
+    </div>
+
+    <div class="ann-main-layout fade-up d4">
+
+        <div class="ann-list-panel" id="ann-list-panel">
+            @php
+                $merged = $announcements->merge($scheduled)
+                    ->sortByDesc(fn($a) => $a->created_at ?? $a->posted_at ?? $a->scheduled_at)
+                    ->sortBy(fn($a) => $a->status === 'closed' ? 1 : 0);
+            @endphp
+            @forelse($merged as $ann)
+                @php $isScheduled = $ann->status === 'scheduled'; @endphp
+                <div class="ann-row-card status-{{ $ann->status }}"
+                     data-status="{{ $ann->status }}"
+                     data-priority="{{ strtolower($ann->priority ?? 'low') }}"
+                     data-posted="{{ $ann->posted_at ?? $ann->scheduled_at }}"
+                     data-title="{{ strtolower($ann->title) }}"
+                     data-content="{{ strtolower($ann->content) }}"
+                     onclick="openViewModal({{ $ann->announcement_id }})">
+
+                    <div class="ann-row-left">
+                        <span class="ann-row-priority-dot prio-{{ strtolower($ann->priority ?? 'low') }}" title="{{ ucfirst($ann->priority ?? 'low') }} priority"></span>
+                    </div>
+
+                    <div class="ann-row-body">
+                        <div class="ann-row-title">{{ $ann->title }}</div>
+                        <div class="ann-row-excerpt">{{ $ann->content }}</div>
+                        <div class="ann-row-meta">
+                            <span class="ann-badge badge-{{ $ann->status }}">{{ ucfirst($ann->status) }}</span>
+                            <span class="ann-badge badge-{{ strtolower($ann->priority ?? 'low') }}">{{ ucfirst($ann->priority ?? 'Low') }}</span>
+                            @if($ann->attachment)
+                                <span class="ann-meta-chip">
+                                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                                    {{ count(explode(',', $ann->attachment)) }} file(s)
+                                </span>
+                            @endif
+                            @if($isScheduled)
+                                <span class="sched-inline-badge">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    {{ \Carbon\Carbon::parse($ann->scheduled_at)->format('M j · g:i A') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="ann-row-right">
+                        <span class="ann-row-time">
+                            {{ \Carbon\Carbon::parse($isScheduled ? $ann->scheduled_at : $ann->posted_at)->format('M j, Y') }}
+                        </span>
+                        <button class="ann-menu-btn"
+                                onclick="toggleMenu(event, {{ $ann->announcement_id }})"
+                                aria-label="Actions">···</button>
+                    </div>
+                </div>
+
+                @if(!$isScheduled)
+                    @if($ann->status !== 'closed')
+                        <form id="close-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.archive', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+                    @endif
                 @else
-                    {{ strtoupper(substr($staff->first_name ?? 'A', 0, 1)) }}
-                @endif
-            </div>
-            <input class="compose-title-input" type="text" placeholder="Write a quick announcement title..." id="quick-title" onclick="openPostModal()" readonly>
-            <button class="compose-close" onclick="openPostModal()">
-                <img src="{{ asset('icons/edit.png') }}" style="width:16px;height:16px;opacity:.5;" alt="">
-            </button>
-        </div>
-        <textarea class="compose-body-input" id="quick-desc" placeholder="What do you want to announce?" rows="2" onclick="openPostModal()" readonly></textarea>
-        <div class="compose-footer">
-            <div class="compose-tools">
-                <button class="compose-tool-btn" title="Priority" onclick="openPostModal()">
-                    <img src="{{ asset('icons/flag.png') }}" alt="">
-                </button>
-                <button class="compose-tool-btn" title="Attach file" onclick="openPostModal()">
-                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                </button>
-                <button class="compose-tool-btn" onclick="openPostModal()" title="Schedule announcement">
-                    <img src="{{ asset('icons/clock.png') }}" alt="">
-                </button>
-            </div>
-            <button class="btn-post" style="padding:.4rem 1rem;font-size:.8rem;" onclick="openPostModal()">
-                <img src="{{ asset('icons/announce.png') }}" alt=""> Post
-            </button>
-        </div>
-    </div>
-
-    <div class="filters-row fade-up d3">
-        <button class="filter-btn active" onclick="setFilter(this,'all')">
-            <img src="{{ asset('icons/filter.png') }}" alt=""> All
-        </button>
-        <button class="filter-btn" onclick="setFilter(this,'week')">
-            <img src="{{ asset('icons/calendar.png') }}" alt=""> This Week
-        </button>
-        <button class="filter-btn" onclick="setFilter(this,'month')">
-            <img src="{{ asset('icons/calendar.png') }}" alt=""> This Month
-        </button>
-        <button class="filter-btn" onclick="setFilter(this,'high')">
-            <img src="{{ asset('icons/warning.png') }}" alt=""> High Priority
-        </button>
-        <button class="filter-btn" onclick="setFilter(this,'low')">
-            <img src="{{ asset('icons/lowprio.png') }}" alt=""> Low Priority
-        </button>
-    </div>
-
-    <div class="columns-wrapper fade-up d4">
-
-        <div class="kanban-col">
-            <div class="kanban-col-header">
-                <span class="col-dot"></span>
-                <span class="col-title">All</span>
-                <span class="col-count">{{ $announcements->count() }}</span>
-            </div>
-            <div class="kanban-col-body">
-                @forelse($announcements as $ann)
-                    <div class="ann-card" onclick="openViewModal({{ $ann->announcement_id }})">
-                        <div class="ann-card-top">
-                            <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
-                                {{ ucfirst($ann->priority ?? 'Low') }}
-                            </span>
-                            <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-all-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
-                                <div class="ann-dropdown" id="menu-all-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
-                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
-                                    </button>
-                                    @if($ann->status !== 'closed')
-                                        <button class="ann-dropdown-item" onclick="submitForm('close-{{ $ann->announcement_id }}', event)">
-                                            <img src="{{ asset('icons/archive.png') }}" alt=""> Close
-                                        </button>
-                                    @else
-                                        <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
-                                            <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
-                                        </button>
-                                    @endif
-                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
-                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->content }}</div>
-                        <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
-                            @if($ann->attachment)
-                                <span class="ann-files">
-                                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                                    {{ count(explode(',', $ann->attachment)) }} file(s)
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <form id="close-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.archive', $ann->announcement_id) }}" style="display:none;">@csrf</form>
-                    <form id="restore-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.restore', $ann->announcement_id) }}" style="display:none;">@csrf</form>
-
-                @empty
-                    <div class="empty-col">
-                        <img class="empty-icon" src="{{ asset('icons/announce.png') }}" alt="">
-                        <div>No announcements yet</div>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <div class="kanban-col">
-            <div class="kanban-col-header">
-                <span class="col-dot" style="background:var(--green)"></span>
-                <span class="col-title">Active</span>
-                <span class="col-count" style="color:var(--green);background:#f0fdf8;">
-                    {{ $announcements->where('status','active')->count() }}
-                </span>
-            </div>
-            <div class="kanban-col-body">
-                @forelse($announcements->where('status','active') as $ann)
-                    <div class="ann-card" onclick="openViewModal({{ $ann->announcement_id }})">
-                        <div class="ann-card-top">
-                            <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
-                                {{ ucfirst($ann->priority ?? 'Low') }}
-                            </span>
-                            <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-act-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
-                                <div class="ann-dropdown" id="menu-act-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
-                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
-                                    </button>
-                                    <button class="ann-dropdown-item" onclick="submitForm('close-{{ $ann->announcement_id }}', event)">
-                                        <img src="{{ asset('icons/archive.png') }}" alt=""> Close
-                                    </button>
-                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
-                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->content }}</div>
-                        <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
-                            @if($ann->attachment)
-                                <span class="ann-files">
-                                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                                    {{ count(explode(',', $ann->attachment)) }} file(s)
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-col">
-                        <img class="empty-icon" src="{{ asset('icons/check.png') }}" alt="">
-                        <div>No active announcements</div>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <div class="kanban-col">
-            <div class="kanban-col-header">
-                <span class="col-dot" style="background:var(--gray)"></span>
-                <span class="col-title">Closed</span>
-                <span class="col-count" style="color:var(--ink-muted);background:var(--gray-light);">
-                    {{ $announcements->where('status','closed')->count() }}
-                </span>
-            </div>
-            <div class="kanban-col-body">
-                @forelse($announcements->where('status','closed') as $ann)
-                    <div class="ann-card" style="opacity:.75;" onclick="openViewModal({{ $ann->announcement_id }})">
-                        <div class="ann-card-top">
-                            <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
-                                {{ ucfirst($ann->priority ?? 'Low') }}
-                            </span>
-                            <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-cls-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
-                                <div class="ann-dropdown" id="menu-cls-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
-                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit
-                                    </button>
-                                    <button class="ann-dropdown-item" onclick="submitForm('restore-{{ $ann->announcement_id }}', event)">
-                                        <img src="{{ asset('icons/restore.png') }}" alt=""> Restore
-                                    </button>
-                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
-                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->content }}</div>
-                        <div class="ann-footer">
-                            <span class="ann-date">{{ \Carbon\Carbon::parse($ann->posted_at)->format('F j, Y · g:i A') }}</span>
-                            @if($ann->attachment)
-                                <span class="ann-files">
-                                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                                    {{ count(explode(',', $ann->attachment)) }} file(s)
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                @empty
-                    <div class="empty-col">
-                        <img class="empty-icon" src="{{ asset('icons/check.png') }}" alt="">
-                        <div>No closed announcements</div>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-        <div class="kanban-col">
-            <div class="kanban-col-header sched-header">
-                <span class="col-dot" style="background:var(--hot-pink)"></span>
-                <span class="col-title">Scheduled</span>
-                <span class="col-count-sched">{{ $scheduled->count() }}</span>
-            </div>
-            <div class="kanban-col-body">
-                @forelse($scheduled as $ann)
-                    <div class="ann-card sched-card" onclick="openViewModal({{ $ann->announcement_id }})">
-                        <div class="ann-card-top">
-                            <span class="priority-tag priority-{{ strtolower($ann->priority ?? 'low') }}">
-                                {{ ucfirst($ann->priority ?? 'Low') }}
-                            </span>
-                            <div class="ann-menu-wrap">
-                                <button class="ann-menu-btn" onclick="toggleMenu(event, 'menu-sched-{{ $ann->announcement_id }}')" aria-label="Announcement actions">...</button>
-                                <div class="ann-dropdown" id="menu-sched-{{ $ann->announcement_id }}">
-                                    <button class="ann-dropdown-item" onclick="openEditModal({{ $ann->announcement_id }}, event)">
-                                        <img src="{{ asset('icons/edit.png') }}" alt=""> Edit / Reschedule
-                                    </button>
-                                    <button class="ann-dropdown-item" onclick="submitForm('publish-now-{{ $ann->announcement_id }}', event)">
-                                        <img src="{{ asset('icons/announce.png') }}" alt=""> Publish Now
-                                    </button>
-                                    <button class="ann-dropdown-item danger" onclick="openDeleteModal({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}', event)">
-                                        <img src="{{ asset('icons/delete.png') }}" alt=""> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ann-title">{{ $ann->title }}</div>
-                        <div class="ann-desc">{{ $ann->content }}</div>
-                        <div class="ann-footer">
-                            <span class="sched-badge">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                {{ \Carbon\Carbon::parse($ann->scheduled_at)->format('M j, Y · g:i A') }}
-                            </span>
-                            @if($ann->attachment)
-                                <span class="ann-files">
-                                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                                    {{ count(explode(',', $ann->attachment)) }} file(s)
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-
                     <form id="publish-now-{{ $ann->announcement_id }}" method="POST" action="{{ route('announcements.restore', $ann->announcement_id) }}" style="display:none;">@csrf</form>
+                @endif
 
-                @empty
-                    <div class="empty-col">
-                        <img class="empty-icon" src="{{ asset('icons/calendar.png') }}" alt="">
-                        <div>No scheduled announcements</div>
-                    </div>
-                @endforelse
+            @empty
+                <div class="ann-list-empty">
+                    <img src="{{ asset('icons/announce.png') }}" alt="">
+                    No announcements yet. Post your first one!
+                </div>
+            @endforelse
+
+            <div class="ann-list-empty" id="ann-no-results" style="display:none;">
+                <img src="{{ asset('icons/search.png') }}" alt="">
+                No announcements match your search.
             </div>
         </div>
 
+        <div class="ann-sidebar">
+
+            <div class="ann-sidebar-card">
+                <div class="ann-sidebar-header">
+                    <div class="ann-sidebar-title">
+                        <img src="{{ asset('icons/flag.png') }}" alt="">
+                        Priority Breakdown
+                    </div>
+                </div>
+                <div class="ann-sidebar-body">
+                    @php
+                        $all = $announcements->merge($scheduled);
+                        $highCount = $all->where('priority','high')->count();
+                        $modCount  = $all->where('priority','moderate')->count();
+                        $lowCount  = $all->where('priority','low')->count();
+                    @endphp
+                    <div class="ann-prio-row">
+                        <div class="ann-prio-label"><span class="dot" style="background:#e04867"></span> High</div>
+                        <span class="ann-prio-count">{{ $highCount }}</span>
+                    </div>
+                    <div class="ann-prio-row">
+                        <div class="ann-prio-label"><span class="dot" style="background:#f59e0b"></span> Moderate</div>
+                        <span class="ann-prio-count">{{ $modCount }}</span>
+                    </div>
+                    <div class="ann-prio-row">
+                        <div class="ann-prio-label"><span class="dot" style="background:#1f9d69"></span> Low</div>
+                        <span class="ann-prio-count">{{ $lowCount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ann-sidebar-card">
+                <div class="ann-sidebar-header">
+                    <div class="ann-sidebar-title">
+                        <img src="{{ asset('icons/clock.png') }}" alt="">
+                        Scheduled
+                    </div>
+                    <span style="font-size:.72rem;font-weight:700;background:var(--petal);color:var(--hot-pink);padding:.12rem .5rem;border-radius:99px;border:1px solid var(--pink-100);">{{ $scheduled->count() }}</span>
+                </div>
+                <div class="ann-sidebar-body">
+                    @forelse($scheduled->take(5) as $s)
+                        <div class="ann-sched-item" onclick="openViewModal({{ $s->announcement_id }})">
+                            <div class="ann-sched-title">{{ $s->title }}</div>
+                            <div class="ann-sched-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                {{ \Carbon\Carbon::parse($s->scheduled_at)->format('M j, Y · g:i A') }}
+                            </div>
+                        </div>
+                    @empty
+                        <div class="ann-sched-empty">No upcoming scheduled announcements.</div>
+                    @endforelse
+                </div>
+            </div>
+
+        </div>
     </div>
+
 </div>
 @endsection
 
 @section('modals')
+
+<div class="ann-dropdown" id="ann-global-dropdown"></div>
 
 <div class="ann-archive-backdrop" id="aad-backdrop" onclick="closeAnnArchive()"></div>
 
@@ -1797,21 +1207,17 @@
         </div>
         <button class="aad-close" onclick="closeAnnArchive()">&#x2715;</button>
     </div>
-
     <div class="aad-search-bar">
         <div class="aad-search-inner">
             <img src="{{ asset('icons/search.png') }}" class="aad-search-icon" alt="">
             <input type="text" id="aad-search" placeholder="Search archived announcements..." oninput="renderAnnArchive()">
         </div>
     </div>
-
     <div class="aad-list" id="aad-list"></div>
-
     <div class="aad-footer">
         <div class="aad-count-label" id="aad-count-label">0 records</div>
         <button class="aad-export-btn" onclick="exportAnnArchive()">
-            <img src="{{ asset('icons/export.png') }}" alt="">
-            Export CSV
+            <img src="{{ asset('icons/export.png') }}" alt=""> Export CSV
         </button>
     </div>
 </div>
@@ -1827,13 +1233,10 @@
 
 <div class="modal-overlay" id="post-modal">
     <div class="modal">
-
         <div class="em-header">
             <div class="em-header-top">
                 <div class="em-title-group">
-                    <div class="em-icon">
-                        <img src="{{ asset('icons/announce.png') }}" alt="">
-                    </div>
+                    <div class="em-icon"><img src="{{ asset('icons/announce.png') }}" alt=""></div>
                     <div>
                         <div class="em-title">Post New Announcement</div>
                         <div class="em-sub">Sanctissimo Rosario Ladies Dormitory</div>
@@ -1842,23 +1245,14 @@
                 <button class="em-close" onclick="closeModal('post-modal')">&#x2715;</button>
             </div>
             <div class="em-tabs">
-                <button class="em-tab active" onclick="switchPostTab(0)" id="pm-tab-0">
-                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
-                </button>
-                <button class="em-tab" onclick="switchPostTab(1)" id="pm-tab-1">
-                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
-                </button>
-                <button class="em-tab" onclick="switchPostTab(2)" id="pm-tab-2">
-                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
-                </button>
+                <button class="em-tab active" onclick="switchPostTab(0)" id="pm-tab-0"><img src="{{ asset('icons/edit.png') }}" alt=""> Content</button>
+                <button class="em-tab" onclick="switchPostTab(1)" id="pm-tab-1"><img src="{{ asset('icons/flag.png') }}" alt=""> Settings</button>
+                <button class="em-tab" onclick="switchPostTab(2)" id="pm-tab-2"><img src="{{ asset('icons/attach.png') }}" alt=""> Attachments</button>
             </div>
         </div>
-
         <form method="POST" action="{{ route('announcements.store') }}" id="post-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
-
             <div class="em-panels">
-
                 <div class="em-panel active" id="pm-panel-0">
                     <div class="modal-field">
                         <label>Title *</label>
@@ -1869,27 +1263,24 @@
                         <textarea name="content" id="post-content" placeholder="Write your announcement here..." required></textarea>
                     </div>
                 </div>
-
                 <div class="em-panel" id="pm-panel-1">
                     <div class="modal-field">
                         <label>Priority</label>
                         <div class="em-pill-row" id="post-priority-pills">
-                            <span class="em-pill-opt sel-low" data-val="low"      onclick="selectPostPill('priority','low')">Low</span>
-                            <span class="em-pill-opt"         data-val="moderate" onclick="selectPostPill('priority','moderate')">Moderate</span>
-                            <span class="em-pill-opt"         data-val="high"     onclick="selectPostPill('priority','high')">High</span>
+                            <span class="em-pill-opt sel-low" data-val="low" onclick="selectPostPill('priority','low')">Low</span>
+                            <span class="em-pill-opt" data-val="moderate" onclick="selectPostPill('priority','moderate')">Moderate</span>
+                            <span class="em-pill-opt" data-val="high" onclick="selectPostPill('priority','high')">High</span>
                         </div>
                         <input type="hidden" name="priority" id="post-priority" value="low">
                     </div>
-
                     <div class="modal-field" id="post-status-field">
                         <label>Status</label>
                         <div class="em-pill-row" id="post-status-pills">
                             <span class="em-pill-opt sel-active" data-val="active" onclick="selectPostPill('status','active')">Active</span>
-                            <span class="em-pill-opt"            data-val="closed" onclick="selectPostPill('status','closed')">Closed</span>
+                            <span class="em-pill-opt" data-val="closed" onclick="selectPostPill('status','closed')">Closed</span>
                         </div>
                         <input type="hidden" name="status" id="post-status" value="active">
                     </div>
-
                     <div class="schedule-toggle-row" onclick="toggleSchedule('post')">
                         <span class="schedule-toggle-label">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1897,7 +1288,6 @@
                         </span>
                         <span class="schedule-toggle-switch" id="post-sched-switch"></span>
                     </div>
-
                     <div class="schedule-fields" id="post-sched-fields">
                         <div class="modal-field">
                             <label>Publish Date &amp; Time</label>
@@ -1906,16 +1296,13 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="em-panel" id="pm-panel-2">
                     <div class="em-file-zone">
                         <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
                         <div class="em-file-note">Attach images, PDFs, or documents (optional).</div>
                     </div>
                 </div>
-
             </div>
-
             <div class="em-footer">
                 <div class="em-tab-nav">
                     <button type="button" class="em-nav-btn" id="pm-prev-btn" onclick="switchPostTab(window._pmTab - 1)" disabled>&#8592; Prev</button>
@@ -1926,20 +1313,16 @@
                     <button type="button" class="btn-submit" id="post-submit-btn" onclick="submitPostModal()">Post Announcement</button>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
 
 <div class="modal-overlay" id="edit-modal">
     <div class="modal">
-
         <div class="em-header">
             <div class="em-header-top">
                 <div class="em-title-group">
-                    <div class="em-icon">
-                        <img src="{{ asset('icons/edit.png') }}" alt="">
-                    </div>
+                    <div class="em-icon"><img src="{{ asset('icons/edit.png') }}" alt=""></div>
                     <div>
                         <div class="em-title">Edit Announcement</div>
                         <div class="em-sub" id="em-sub-label">Editing announcement</div>
@@ -1948,46 +1331,28 @@
                 <button class="em-close" onclick="closeModal('edit-modal')">&#x2715;</button>
             </div>
             <div class="em-tabs">
-                <button class="em-tab active" onclick="switchTab(0)" id="em-tab-0">
-                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
-                </button>
-                <button class="em-tab" onclick="switchTab(1)" id="em-tab-1">
-                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
-                </button>
-                <button class="em-tab" onclick="switchTab(2)" id="em-tab-2">
-                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
-                </button>
+                <button class="em-tab active" onclick="switchTab(0)" id="em-tab-0"><img src="{{ asset('icons/edit.png') }}" alt=""> Content</button>
+                <button class="em-tab" onclick="switchTab(1)" id="em-tab-1"><img src="{{ asset('icons/flag.png') }}" alt=""> Settings</button>
+                <button class="em-tab" onclick="switchTab(2)" id="em-tab-2"><img src="{{ asset('icons/attach.png') }}" alt=""> Attachments</button>
             </div>
         </div>
-
         <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
-            @csrf
-            @method('PUT')
-
+            @csrf @method('PUT')
             <div class="em-panels">
-
                 <div class="em-panel active" id="em-panel-0">
-                    <div class="modal-field">
-                        <label>Title *</label>
-                        <input type="text" name="title" id="edit-title" required placeholder="Announcement title">
-                    </div>
-                    <div class="modal-field">
-                        <label>Content *</label>
-                        <textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea>
-                    </div>
+                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="edit-title" required placeholder="Announcement title"></div>
+                    <div class="modal-field"><label>Content *</label><textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea></div>
                 </div>
-
                 <div class="em-panel" id="em-panel-1">
                     <div class="modal-field">
                         <label>Priority</label>
                         <div class="em-pill-row" id="edit-priority-pills">
-                            <span class="em-pill-opt" data-val="low"      onclick="selectPill('priority','low')">Low</span>
+                            <span class="em-pill-opt" data-val="low" onclick="selectPill('priority','low')">Low</span>
                             <span class="em-pill-opt" data-val="moderate" onclick="selectPill('priority','moderate')">Moderate</span>
-                            <span class="em-pill-opt" data-val="high"     onclick="selectPill('priority','high')">High</span>
+                            <span class="em-pill-opt" data-val="high" onclick="selectPill('priority','high')">High</span>
                         </div>
                         <input type="hidden" name="priority" id="edit-priority">
                     </div>
-
                     <div class="modal-field" id="edit-status-field">
                         <label>Status</label>
                         <div class="em-pill-row" id="edit-status-pills">
@@ -1996,7 +1361,6 @@
                         </div>
                         <input type="hidden" name="status" id="edit-status">
                     </div>
-
                     <div class="schedule-toggle-row" onclick="toggleSchedule('edit')">
                         <span class="schedule-toggle-label">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -2004,7 +1368,6 @@
                         </span>
                         <span class="schedule-toggle-switch" id="edit-sched-switch"></span>
                     </div>
-
                     <div class="schedule-fields" id="edit-sched-fields">
                         <div class="modal-field">
                             <label>Publish Date &amp; Time</label>
@@ -2013,7 +1376,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="em-panel" id="em-panel-2">
                     <div class="em-file-zone">
                         <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
@@ -2024,9 +1386,7 @@
                         <span>Replace existing files with the new upload</span>
                     </label>
                 </div>
-
             </div>
-
             <div class="em-footer">
                 <div class="em-tab-nav">
                     <button type="button" class="em-nav-btn" id="em-prev-btn" onclick="switchTab(window._emTab - 1)" disabled>&#8592; Prev</button>
@@ -2037,20 +1397,16 @@
                     <button type="button" class="btn-submit" id="edit-submit-btn" onclick="submitEditModal()">Save Changes</button>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
 
 <div class="modal-overlay" id="view-modal">
     <div class="modal">
-
         <div class="em-header">
             <div class="em-header-top">
                 <div class="em-title-group">
-                    <div class="em-icon" id="view-em-icon">
-                        <img src="{{ asset('icons/announce.png') }}" alt="">
-                    </div>
+                    <div class="em-icon" id="view-em-icon"><img src="{{ asset('icons/announce.png') }}" alt=""></div>
                     <div>
                         <div class="em-title" id="view-modal-title">Announcement</div>
                         <div class="em-sub" id="view-em-sub">View details</div>
@@ -2059,55 +1415,34 @@
                 <button class="em-close" onclick="closeModal('view-modal')">&#x2715;</button>
             </div>
             <div class="em-tabs">
-                <button class="em-tab active" onclick="switchViewTab(0)" id="vm-tab-0">
-                    <img src="{{ asset('icons/announce.png') }}" alt=""> Details
-                </button>
-                <button class="em-tab" onclick="switchViewTab(1)" id="vm-tab-1">
-                    <img src="{{ asset('icons/edit.png') }}" alt=""> Content
-                </button>
-                <button class="em-tab" onclick="switchViewTab(2)" id="vm-tab-2">
-                    <img src="{{ asset('icons/flag.png') }}" alt=""> Settings
-                </button>
-                <button class="em-tab" onclick="switchViewTab(3)" id="vm-tab-3">
-                    <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
-                </button>
+                <button class="em-tab active" onclick="switchViewTab(0)" id="vm-tab-0"><img src="{{ asset('icons/announce.png') }}" alt=""> Details</button>
+                <button class="em-tab" onclick="switchViewTab(1)" id="vm-tab-1"><img src="{{ asset('icons/edit.png') }}" alt=""> Content</button>
+                <button class="em-tab" onclick="switchViewTab(2)" id="vm-tab-2"><img src="{{ asset('icons/flag.png') }}" alt=""> Settings</button>
+                <button class="em-tab" onclick="switchViewTab(3)" id="vm-tab-3"><img src="{{ asset('icons/attach.png') }}" alt=""> Attachments</button>
             </div>
         </div>
-
         <div id="vm-details-panel" class="em-panels">
             <div class="em-panel active" id="vm-panel-0">
                 <div id="view-modal-content"></div>
             </div>
         </div>
-
         <form method="POST" id="view-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
-            @csrf
-            @method('PUT')
-
+            @csrf @method('PUT')
             <div class="em-panels" id="vm-edit-panels" style="display:none;">
-
                 <div class="em-panel" id="vm-panel-1">
-                    <div class="modal-field">
-                        <label>Title *</label>
-                        <input type="text" name="title" id="view-edit-title" required>
-                    </div>
-                    <div class="modal-field">
-                        <label>Content *</label>
-                        <textarea name="content" id="view-edit-content" required></textarea>
-                    </div>
+                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="view-edit-title" required></div>
+                    <div class="modal-field"><label>Content *</label><textarea name="content" id="view-edit-content" required></textarea></div>
                 </div>
-
                 <div class="em-panel" id="vm-panel-2">
                     <div class="modal-field">
                         <label>Priority</label>
                         <div class="em-pill-row" id="view-edit-priority-pills">
-                            <span class="em-pill-opt" data-val="low"      onclick="selectViewPill('priority','low')">Low</span>
+                            <span class="em-pill-opt" data-val="low" onclick="selectViewPill('priority','low')">Low</span>
                             <span class="em-pill-opt" data-val="moderate" onclick="selectViewPill('priority','moderate')">Moderate</span>
-                            <span class="em-pill-opt" data-val="high"     onclick="selectViewPill('priority','high')">High</span>
+                            <span class="em-pill-opt" data-val="high" onclick="selectViewPill('priority','high')">High</span>
                         </div>
                         <input type="hidden" name="priority" id="view-edit-priority">
                     </div>
-
                     <div class="modal-field">
                         <label>Status</label>
                         <div class="em-pill-row" id="view-edit-status-pills">
@@ -2116,7 +1451,6 @@
                         </div>
                         <input type="hidden" name="status" id="view-edit-status">
                     </div>
-
                     <div class="schedule-toggle-row" onclick="toggleSchedule('view-edit')">
                         <span class="schedule-toggle-label">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -2124,7 +1458,6 @@
                         </span>
                         <span class="schedule-toggle-switch" id="view-edit-sched-switch"></span>
                     </div>
-
                     <div class="schedule-fields" id="view-edit-sched-fields">
                         <div class="modal-field">
                             <label>Publish Date &amp; Time</label>
@@ -2133,7 +1466,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="em-panel" id="vm-panel-3">
                     <div class="em-file-zone">
                         <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
@@ -2144,9 +1476,7 @@
                         <span>Replace existing files with the new upload</span>
                     </label>
                 </div>
-
             </div>
-
             <div class="em-footer" id="vm-edit-footer" style="display:none;">
                 <div class="em-tab-nav">
                     <button type="button" class="em-nav-btn" id="vm-prev-btn" onclick="switchViewTab(window._vmTab - 1)" disabled>&#8592; Prev</button>
@@ -2157,9 +1487,7 @@
                     <button type="button" class="btn-submit" onclick="submitViewEditModal()">Save Changes</button>
                 </div>
             </div>
-
         </form>
-
         <div class="em-footer" id="vm-details-footer">
             <div></div>
             <div class="em-footer-actions">
@@ -2167,7 +1495,6 @@
                 <button class="btn-submit" onclick="enableViewEdit()">Edit</button>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -2182,8 +1509,7 @@
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
             <form method="POST" id="delete-form" style="display:inline;" data-loading-message="Please wait...">
-                @csrf
-                @method('DELETE')
+                @csrf @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
             </form>
         </div>
@@ -2194,534 +1520,466 @@
 
 @section('scripts')
 <script>
-    const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
-    const deletedAnnArchive = @json($deletedArchive);
-    const storageBaseUrl    = "{{ asset('storage') }}";
+const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
+const deletedAnnArchive = @json($deletedArchive);
+const storageBaseUrl    = "{{ asset('storage') }}";
 
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+const editIcon    = "{{ asset('icons/edit.png') }}";
+const announceIcon= "{{ asset('icons/announce.png') }}";
+const archiveIcon = "{{ asset('icons/archive.png') }}";
+const deleteIcon  = "{{ asset('icons/delete.png') }}";
 
-    document.querySelectorAll('.modal-overlay').forEach(m => {
-        m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+const _autoPublishedIds = new Set();
+
+function checkScheduledAnnouncements() {
+    const now = new Date();
+    Object.values(annData).forEach(ann => {
+        if (ann.status !== 'scheduled' || !ann.scheduled_at) return;
+        if (_autoPublishedIds.has(ann.announcement_id)) return;
+        const scheduledTime = new Date(ann.scheduled_at);
+        if (scheduledTime <= now) {
+            _autoPublishedIds.add(ann.announcement_id);
+            const form = document.getElementById('publish-now-' + ann.announcement_id);
+            if (form) {
+                showActionLoading('Publishing scheduled announcement...');
+                form.submit();
+            }
+        }
+    });
+}
+
+checkScheduledAnnouncements();
+setInterval(checkScheduledAnnouncements, 30000);
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+document.querySelectorAll('form[data-loading-message]').forEach(form => {
+    form.addEventListener('submit', () => setFormLoading(form, form.dataset.loadingMessage || 'Processing...'));
+});
+
+const globalDropdown = document.getElementById('ann-global-dropdown');
+let activeMenuId = null;
+
+function buildDropdownHTML(id, ann) {
+    const isScheduled = ann.status === 'scheduled';
+    let middle = '';
+    if (isScheduled) {
+        middle = `<button class="ann-dropdown-item" onclick="submitForm('publish-now-${id}',event)"><img class="dd-icon" src="${announceIcon}" alt=""> Publish Now</button>`;
+    } else if (ann.status !== 'closed') {
+        middle = `<button class="ann-dropdown-item" onclick="submitForm('close-${id}',event)"><img class="dd-icon" src="${archiveIcon}" alt=""> Close</button>`;
+    }
+    return `
+        <button class="ann-dropdown-item" onclick="openEditModal(${id},event)"><img class="dd-icon" src="${editIcon}" alt=""> Edit</button>
+        ${middle}
+        <div class="ann-dropdown-divider"></div>
+        <button class="ann-dropdown-item danger" onclick="openDeleteModal(${id},'${escapeHtml(ann.title || '')}',event)"><img class="dd-icon" src="${deleteIcon}" alt=""> Delete</button>
+    `;
+}
+
+function toggleMenu(e, id) {
+    e.stopPropagation();
+    if (activeMenuId === id) { closeGlobalDropdown(); return; }
+    activeMenuId = id;
+    const ann = annData[id];
+    if (!ann) return;
+    const btn = e.currentTarget;
+    document.querySelectorAll('.ann-menu-btn.active').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    globalDropdown.innerHTML = buildDropdownHTML(id, ann);
+    globalDropdown.classList.add('open');
+    positionDropdown(btn);
+}
+
+function positionDropdown(btn) {
+    const rect = btn.getBoundingClientRect();
+    const ddW  = 170;
+    let left   = rect.right - ddW + window.scrollX;
+    let top    = rect.bottom + 6 + window.scrollY;
+    if (left < 8) left = 8;
+    globalDropdown.style.left = left + 'px';
+    globalDropdown.style.top  = top + 'px';
+}
+
+function closeGlobalDropdown() {
+    globalDropdown.classList.remove('open');
+    globalDropdown.innerHTML = '';
+    document.querySelectorAll('.ann-menu-btn.active').forEach(b => b.classList.remove('active'));
+    activeMenuId = null;
+}
+
+document.addEventListener('click', e => {
+    if (!globalDropdown.contains(e.target) && !e.target.classList.contains('ann-menu-btn')) {
+        closeGlobalDropdown();
+    }
+});
+
+window.addEventListener('scroll', () => { if (activeMenuId !== null) closeGlobalDropdown(); }, true);
+window.addEventListener('resize', () => { if (activeMenuId !== null) closeGlobalDropdown(); });
+
+function applyDropdownFilters(changedEl) {
+    if (changedEl) {
+        changedEl.classList.toggle('has-value', changedEl.value !== '');
+    }
+
+    const status   = document.getElementById('filter-status').value;
+    const priority = document.getElementById('filter-priority').value;
+    const date     = document.getElementById('filter-date').value;
+    const q        = document.getElementById('ann-search-input').value.toLowerCase();
+    const now      = new Date();
+
+    let weekStart, weekEnd;
+
+    if (date === 'this_week') {
+        weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay()); weekStart.setHours(0,0,0,0);
+        weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6); weekEnd.setHours(23,59,59,999);
+    } else if (date === 'last_week') {
+        weekEnd   = new Date(now); weekEnd.setDate(now.getDate() - now.getDay() - 1); weekEnd.setHours(23,59,59,999);
+        weekStart = new Date(weekEnd); weekStart.setDate(weekEnd.getDate() - 6); weekStart.setHours(0,0,0,0);
+    } else if (date === 'two_weeks') {
+        weekStart = new Date(now); weekStart.setDate(now.getDate() - 13); weekStart.setHours(0,0,0,0);
+        weekEnd   = now;
+    } else if (date === 'this_month') {
+        weekStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        weekEnd   = now;
+    }
+
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        const cardStatus   = card.dataset.status;
+        const cardPriority = card.dataset.priority;
+        const cardPosted   = new Date(card.dataset.posted);
+        const cardTitle    = card.dataset.title   || '';
+        const cardContent  = card.dataset.content || '';
+
+        let show = true;
+
+        if (status && cardStatus !== status) show = false;
+        if (priority && cardPriority !== priority) show = false;
+        if (date && weekStart && weekEnd && (cardPosted < weekStart || cardPosted > weekEnd)) show = false;
+        if (q && !cardTitle.includes(q) && !cardContent.includes(q)) show = false;
+
+        card.style.display = show ? '' : 'none';
     });
 
-    document.querySelectorAll('form[data-loading-message]').forEach(form => {
-        form.addEventListener('submit', () => {
-            setFormLoading(form, form.dataset.loadingMessage || 'Processing...');
-        });
-    });
+    updateEmptyState();
+}
 
-    function toggleMenu(e, id) {
-        e.stopPropagation();
-        const menu   = document.getElementById(id);
-        const isOpen = menu.classList.contains('open');
-        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
-        if (!isOpen) {
-            menu.classList.add('open');
-            e.currentTarget.classList.add('active');
-        }
+function searchAnnouncements() {
+    applyDropdownFilters();
+}
+
+function updateEmptyState() {
+    const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
+    document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
+}
+
+function submitForm(formId, e) {
+    e.stopPropagation();
+    closeGlobalDropdown();
+    showActionLoading('Please wait...');
+    document.getElementById(formId).submit();
+}
+
+function setFormLoading(form, message) {
+    showActionLoading(message);
+}
+
+function showActionLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+}
+
+function toggleSchedule(prefix, forceState) {
+    const sw     = document.getElementById(prefix + '-sched-switch');
+    const fields = document.getElementById(prefix + '-sched-fields');
+    const input  = document.getElementById(prefix + '-scheduled-at');
+    const turnOn = forceState !== undefined ? forceState : !sw.classList.contains('on');
+    if (turnOn) {
+        sw.classList.add('on'); fields.classList.add('open'); input.required = true;
+        ['post','edit'].forEach(p => { if (prefix === p) { const sf = document.getElementById(p + '-status-field'); if (sf) sf.style.display = 'none'; } });
+    } else {
+        sw.classList.remove('on'); fields.classList.remove('open'); input.required = false; input.value = '';
+        ['post','edit'].forEach(p => { if (prefix === p) { const sf = document.getElementById(p + '-status-field'); if (sf) sf.style.display = ''; } });
     }
+}
 
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.ann-menu-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.ann-dropdown').forEach(d => d.classList.remove('open'));
-    });
+window._pmTab = 0;
+const PM_TABS = 3;
 
-    function setFilter(btn, type) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const now   = new Date();
-        const cards = document.querySelectorAll('.ann-card');
-
-        cards.forEach(card => {
-            const id  = getCardId(card);
-            const ann = annData[id];
-            if (!ann) return;
-
-            const postedAt = new Date(ann.posted_at || ann.scheduled_at);
-            let show = false;
-
-            if (type === 'all') {
-                show = true;
-            } else if (type === 'week') {
-                const weekAgo = new Date(now);
-                weekAgo.setDate(now.getDate() - 7);
-                show = postedAt >= weekAgo;
-            } else if (type === 'month') {
-                show = postedAt.getMonth() === now.getMonth() &&
-                       postedAt.getFullYear() === now.getFullYear();
-            } else if (type === 'high') {
-                show = (ann.priority || '').toLowerCase() === 'high';
-            } else if (type === 'low') {
-                show = (ann.priority || '').toLowerCase() === 'low';
-            }
-
-            card.style.display = show ? '' : 'none';
-        });
-
-        document.querySelectorAll('.kanban-col').forEach(col => {
-            const visible = col.querySelectorAll('.ann-card:not([style*="display: none"])').length;
-            const countEl = col.querySelector('.col-count, .col-count-sched');
-            if (countEl) countEl.textContent = visible;
-
-            let emptyEl = col.querySelector('.empty-col.filter-empty');
-            const body  = col.querySelector('.kanban-col-body');
-            const hasStaticEmpty = col.querySelector('.empty-col:not(.filter-empty)');
-
-            if (visible === 0) {
-                if (hasStaticEmpty) {
-                    hasStaticEmpty.style.display = '';
-                } else {
-                    if (!emptyEl) {
-                        emptyEl = document.createElement('div');
-                        emptyEl.className = 'empty-col filter-empty';
-                        emptyEl.innerHTML = '<div>No announcements match this filter.</div>';
-                        body.appendChild(emptyEl);
-                    }
-                    emptyEl.style.display = '';
-                }
-            } else {
-                if (hasStaticEmpty) hasStaticEmpty.style.display = 'none';
-                if (emptyEl) emptyEl.style.display = 'none';
-            }
-        });
+function switchPostTab(idx) {
+    if (idx < 0 || idx >= PM_TABS) return;
+    window._pmTab = idx;
+    for (let i = 0; i < PM_TABS; i++) {
+        document.getElementById('pm-tab-' + i).classList.toggle('active', i === idx);
+        document.getElementById('pm-panel-' + i).classList.toggle('active', i === idx);
     }
+    document.getElementById('pm-prev-btn').disabled = (idx === 0);
+    document.getElementById('pm-next-btn').disabled = (idx === PM_TABS - 1);
+}
 
-    function getCardId(card) {
-        const match = card.getAttribute('onclick')?.match(/openViewModal\((\d+)\)/);
-        return match ? match[1] : null;
+function selectPostPill(type, val) {
+    const row = document.getElementById('post-' + type + '-pills');
+    row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
+    document.getElementById('post-' + type).value = val;
+}
+
+function submitPostModal() {
+    const form = document.getElementById('post-form');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    setFormLoading(form, 'Posting...'); form.submit();
+}
+
+function openPostModal() {
+    document.getElementById('post-form').reset();
+    selectPostPill('priority', 'low');
+    selectPostPill('status', 'active');
+    toggleSchedule('post', false);
+    switchPostTab(0);
+    openModal('post-modal');
+}
+
+window._emTab = 0;
+const EM_TABS = 3;
+
+function switchTab(idx) {
+    if (idx < 0 || idx >= EM_TABS) return;
+    window._emTab = idx;
+    for (let i = 0; i < EM_TABS; i++) {
+        document.getElementById('em-tab-' + i).classList.toggle('active', i === idx);
+        document.getElementById('em-panel-' + i).classList.toggle('active', i === idx);
     }
+    document.getElementById('em-prev-btn').disabled = (idx === 0);
+    document.getElementById('em-next-btn').disabled = (idx === EM_TABS - 1);
+}
 
-    function submitForm(formId, e) {
-        e.stopPropagation();
-        showActionLoading('Please wait...');
-        document.getElementById(formId).submit();
+function selectPill(type, val) {
+    const row = document.getElementById('edit-' + type + '-pills');
+    row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
+    document.getElementById('edit-' + type).value = val;
+}
+
+function openEditModal(id, e) {
+    if (e) e.stopPropagation();
+    closeGlobalDropdown();
+    const ann = annData[id];
+    if (!ann) return;
+    document.getElementById('edit-form').reset();
+    document.getElementById('edit-form').action = `/announcements/${id}`;
+    document.getElementById('edit-title').value   = ann.title   || '';
+    document.getElementById('edit-content').value = ann.content || '';
+    document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
+    document.getElementById('em-sub-label').textContent = `#${id} · ${(ann.title || '').slice(0,42)}`;
+    selectPill('priority', ann.priority || 'low');
+    selectPill('status',   ann.status   || 'active');
+    switchTab(0);
+    const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
+    if (isScheduled) {
+        const dt = new Date(ann.scheduled_at);
+        document.getElementById('edit-scheduled-at').value = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+        toggleSchedule('edit', true);
+    } else {
+        toggleSchedule('edit', false);
     }
+    openModal('edit-modal');
+}
 
-    function setFormLoading(form, message) {
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) {
-            submitButton.textContent = 'Please wait...';
-            submitButton.disabled = true;
-            submitButton.classList.add('is-loading');
-        }
-        form.querySelectorAll('button:not([type="submit"])').forEach(button => {
-            button.disabled = true;
-            button.classList.add('is-loading');
-        });
-        showActionLoading(message);
-    }
+function submitEditModal() {
+    const form = document.getElementById('edit-form');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    setFormLoading(form, 'Saving changes...'); form.submit();
+}
 
-    function showActionLoading(message) {
-        const overlay = document.getElementById('action-loading');
-        document.getElementById('action-loading-text').textContent = message;
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-    }
+window._vmTab = 0;
+const VM_TABS = 4;
+let _vmEditOn = false;
 
-    function toggleSchedule(prefix, forceState) {
-        const sw     = document.getElementById(prefix + '-sched-switch');
-        const fields = document.getElementById(prefix + '-sched-fields');
-        const input  = document.getElementById(prefix + '-scheduled-at');
-
-        const turnOn = forceState !== undefined ? forceState : !sw.classList.contains('on');
-
-        if (turnOn) {
-            sw.classList.add('on');
-            fields.classList.add('open');
-            input.required = true;
-            if (prefix === 'post') {
-                const sf = document.getElementById('post-status-field');
-                if (sf) sf.style.display = 'none';
-            }
-            if (prefix === 'edit') {
-                const sf = document.getElementById('edit-status-field');
-                if (sf) sf.style.display = 'none';
-            }
-        } else {
-            sw.classList.remove('on');
-            fields.classList.remove('open');
-            input.required = false;
-            input.value = '';
-            if (prefix === 'post') {
-                const sf = document.getElementById('post-status-field');
-                if (sf) sf.style.display = '';
-            }
-            if (prefix === 'edit') {
-                const sf = document.getElementById('edit-status-field');
-                if (sf) sf.style.display = '';
-            }
-        }
-    }
-
-    window._pmTab = 0;
-    const PM_TABS = 3;
-
-    function switchPostTab(idx) {
-        if (idx < 0 || idx >= PM_TABS) return;
-        window._pmTab = idx;
-        for (let i = 0; i < PM_TABS; i++) {
-            document.getElementById('pm-tab-' + i).classList.toggle('active', i === idx);
-            document.getElementById('pm-panel-' + i).classList.toggle('active', i === idx);
-        }
-        document.getElementById('pm-prev-btn').disabled = (idx === 0);
-        document.getElementById('pm-next-btn').disabled = (idx === PM_TABS - 1);
-    }
-
-    function selectPostPill(type, val) {
-        const row = document.getElementById('post-' + type + '-pills');
-        row.querySelectorAll('.em-pill-opt').forEach(p => {
-            p.className = 'em-pill-opt';
-            if (p.dataset.val === val) p.classList.add('sel-' + val);
-        });
-        document.getElementById('post-' + type).value = val;
-    }
-
-    function submitPostModal() {
-        const form = document.getElementById('post-form');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        setFormLoading(form, 'Posting...');
-        form.submit();
-    }
-
-    function openPostModal() {
-        document.getElementById('post-form').reset();
-        selectPostPill('priority', 'low');
-        selectPostPill('status', 'active');
-        toggleSchedule('post', false);
-        switchPostTab(0);
-        openModal('post-modal');
-    }
-
-    window._emTab = 0;
-    const EM_TABS = 3;
-
-    function switchTab(idx) {
-        if (idx < 0 || idx >= EM_TABS) return;
-        window._emTab = idx;
-        for (let i = 0; i < EM_TABS; i++) {
-            document.getElementById('em-tab-' + i).classList.toggle('active', i === idx);
-            document.getElementById('em-panel-' + i).classList.toggle('active', i === idx);
-        }
-        document.getElementById('em-prev-btn').disabled = (idx === 0);
-        document.getElementById('em-next-btn').disabled = (idx === EM_TABS - 1);
-    }
-
-    function selectPill(type, val) {
-        const row = document.getElementById('edit-' + type + '-pills');
-        row.querySelectorAll('.em-pill-opt').forEach(p => {
-            p.className = 'em-pill-opt';
-            if (p.dataset.val === val) p.classList.add('sel-' + val);
-        });
-        document.getElementById('edit-' + type).value = val;
-    }
-
-    function initPills(ann) {
-        selectPill('priority', ann.priority || 'low');
-        selectPill('status',   ann.status   || 'active');
-    }
-
-    function openEditModal(id, e) {
-        if (e) e.stopPropagation();
-        const ann = annData[id];
-        if (!ann) return;
-
-        document.getElementById('edit-form').reset();
-        document.getElementById('edit-form').action = `/announcements/${id}`;
-        document.getElementById('edit-title').value   = ann.title   || '';
-        document.getElementById('edit-content').value = ann.content || '';
-        document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
-        document.getElementById('em-sub-label').textContent =
-            `#${id} · ${ann.title ? ann.title.slice(0, 42) + (ann.title.length > 42 ? '…' : '') : ''}`;
-
-        initPills(ann);
-        switchTab(0);
-
-        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
-        if (isScheduled) {
-            const dt    = new Date(ann.scheduled_at);
-            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('edit-scheduled-at').value = local;
-            toggleSchedule('edit', true);
-        } else {
-            toggleSchedule('edit', false);
-        }
-
-        openModal('edit-modal');
-    }
-
-    function submitEditModal() {
-        const form = document.getElementById('edit-form');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        setFormLoading(form, 'Saving changes...');
-        form.submit();
-    }
-
-    window._vmTab   = 0;
-    const VM_TABS   = 4;
-    let   _vmEditOn = false;
-
-    function switchViewTab(idx) {
-        if (idx < 0 || idx >= VM_TABS) return;
-        if (idx === 0 && _vmEditOn) return;
-        window._vmTab = idx;
-
-        for (let i = 0; i < VM_TABS; i++) {
-            document.getElementById('vm-tab-' + i).classList.toggle('active', i === idx);
-        }
-
-        if (idx === 0) {
-            document.getElementById('vm-details-panel').style.display  = '';
-            document.getElementById('vm-edit-panels').style.display    = 'none';
-            document.getElementById('vm-details-footer').style.display = '';
-            document.getElementById('vm-edit-footer').style.display    = 'none';
-        } else {
-            document.getElementById('vm-details-panel').style.display  = 'none';
-            document.getElementById('vm-edit-panels').style.display    = '';
-            document.getElementById('vm-details-footer').style.display = 'none';
-            document.getElementById('vm-edit-footer').style.display    = '';
-
-            for (let i = 1; i < VM_TABS; i++) {
-                document.getElementById('vm-panel-' + i).classList.toggle('active', i === idx);
-            }
-            document.getElementById('vm-prev-btn').disabled = (idx === 1);
-            document.getElementById('vm-next-btn').disabled = (idx === VM_TABS - 1);
-        }
-    }
-
-    function enableViewEdit() {
-        _vmEditOn = true;
-        document.getElementById('vm-tab-0').classList.remove('active');
-        switchViewTab(1);
-    }
-
-    function selectViewPill(type, val) {
-        const row = document.getElementById('view-edit-' + type + '-pills');
-        row.querySelectorAll('.em-pill-opt').forEach(p => {
-            p.className = 'em-pill-opt';
-            if (p.dataset.val === val) p.classList.add('sel-' + val);
-        });
-        document.getElementById('view-edit-' + type).value = val;
-    }
-
-    function openViewModal(id) {
-        const ann = annData[id];
-        if (!ann) return;
-
-        _vmEditOn     = false;
-        window._vmTab = 0;
-
-        for (let i = 0; i < VM_TABS; i++) {
-            document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
-        }
-
-        for (let i = 1; i < VM_TABS; i++) {
-            document.getElementById('vm-panel-' + i).classList.remove('active');
-        }
-
-        document.getElementById('vm-panel-0').classList.add('active');
+function switchViewTab(idx) {
+    if (idx < 0 || idx >= VM_TABS) return;
+    if (idx === 0 && _vmEditOn) return;
+    window._vmTab = idx;
+    for (let i = 0; i < VM_TABS; i++) document.getElementById('vm-tab-' + i).classList.toggle('active', i === idx);
+    if (idx === 0) {
         document.getElementById('vm-details-panel').style.display  = '';
         document.getElementById('vm-edit-panels').style.display    = 'none';
         document.getElementById('vm-details-footer').style.display = '';
         document.getElementById('vm-edit-footer').style.display    = 'none';
-
-        document.getElementById('view-modal-title').textContent = ann.title;
-        document.getElementById('view-em-sub').textContent =
-            ucFirst(ann.priority || 'low') + ' priority · ' + ucFirst(ann.status || 'active');
-
-        const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
-        document.getElementById('view-modal-content').innerHTML = `
-            <div class="view-title">${escapeHtml(ann.title || '')}</div>
-            <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="priority-tag priority-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
-            <div class="view-row"><span class="view-label">Status</span><span class="view-val">${ucFirst(ann.status||'active')}</span></div>
-            ${isScheduled
-                ? `<div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:var(--hot-pink);">${formatDate(ann.scheduled_at)}</span></div>`
-                : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>`
-            }
-            <div class="view-content">${escapeHtml(ann.content || '')}</div>
-            ${renderAttachments(ann.attachment)}
-        `;
-
-        document.getElementById('view-edit-form').action   = `/announcements/${id}`;
-        document.getElementById('view-edit-title').value   = ann.title   || '';
-        document.getElementById('view-edit-content').value = ann.content || '';
-        document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
-        selectViewPill('priority', ann.priority || 'low');
-        selectViewPill('status',   ann.status   || 'active');
-
-        if (isScheduled) {
-            const dt    = new Date(ann.scheduled_at);
-            const local = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-            document.getElementById('view-edit-scheduled-at').value = local;
-            toggleSchedule('view-edit', true);
-        } else {
-            toggleSchedule('view-edit', false);
-        }
-
-        openModal('view-modal');
+    } else {
+        document.getElementById('vm-details-panel').style.display  = 'none';
+        document.getElementById('vm-edit-panels').style.display    = '';
+        document.getElementById('vm-details-footer').style.display = 'none';
+        document.getElementById('vm-edit-footer').style.display    = '';
+        for (let i = 1; i < VM_TABS; i++) document.getElementById('vm-panel-' + i).classList.toggle('active', i === idx);
+        document.getElementById('vm-prev-btn').disabled = (idx === 1);
+        document.getElementById('vm-next-btn').disabled = (idx === VM_TABS - 1);
     }
+}
 
-    function submitViewEditModal() {
-        const form = document.getElementById('view-edit-form');
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        setFormLoading(form, 'Saving changes...');
-        form.submit();
+function enableViewEdit() { _vmEditOn = true; document.getElementById('vm-tab-0').classList.remove('active'); switchViewTab(1); }
+
+function selectViewPill(type, val) {
+    const row = document.getElementById('view-edit-' + type + '-pills');
+    row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
+    document.getElementById('view-edit-' + type).value = val;
+}
+
+function openViewModal(id) {
+    const ann = annData[id];
+    if (!ann) return;
+    _vmEditOn = false; window._vmTab = 0;
+    for (let i = 0; i < VM_TABS; i++) document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
+    for (let i = 1; i < VM_TABS; i++) document.getElementById('vm-panel-' + i).classList.remove('active');
+    document.getElementById('vm-panel-0').classList.add('active');
+    document.getElementById('vm-details-panel').style.display  = '';
+    document.getElementById('vm-edit-panels').style.display    = 'none';
+    document.getElementById('vm-details-footer').style.display = '';
+    document.getElementById('vm-edit-footer').style.display    = 'none';
+    document.getElementById('view-modal-title').textContent = ann.title;
+    document.getElementById('view-em-sub').textContent = ucFirst(ann.priority || 'low') + ' priority · ' + ucFirst(ann.status || 'active');
+    const isScheduled = ann.status === 'scheduled' && ann.scheduled_at;
+    document.getElementById('view-modal-content').innerHTML = `
+        <div class="view-title">${escapeHtml(ann.title || '')}</div>
+        <div class="view-row"><span class="view-label">Priority</span><span class="view-val"><span class="ann-badge badge-${(ann.priority||'low').toLowerCase()}">${ucFirst(ann.priority||'low')}</span></span></div>
+        <div class="view-row"><span class="view-label">Status</span><span class="view-val"><span class="ann-badge badge-${ann.status||'active'}">${ucFirst(ann.status||'active')}</span></span></div>
+        ${isScheduled
+            ? `<div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:var(--hot-pink);">${formatDate(ann.scheduled_at)}</span></div>`
+            : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at)}</span></div>`}
+        <div class="view-content">${escapeHtml(ann.content || '')}</div>
+        ${renderAttachments(ann.attachment)}
+    `;
+    document.getElementById('view-edit-form').action   = `/announcements/${id}`;
+    document.getElementById('view-edit-title').value   = ann.title   || '';
+    document.getElementById('view-edit-content').value = ann.content || '';
+    document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
+    selectViewPill('priority', ann.priority || 'low');
+    selectViewPill('status',   ann.status   || 'active');
+    if (isScheduled) {
+        const dt = new Date(ann.scheduled_at);
+        document.getElementById('view-edit-scheduled-at').value = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000).toISOString().slice(0,16);
+        toggleSchedule('view-edit', true);
+    } else { toggleSchedule('view-edit', false); }
+    openModal('view-modal');
+}
+
+function submitViewEditModal() {
+    const form = document.getElementById('view-edit-form');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    setFormLoading(form, 'Saving changes...'); form.submit();
+}
+
+function openDeleteModal(id, name, e) {
+    if (e) e.stopPropagation();
+    closeGlobalDropdown();
+    document.getElementById('delete-ann-name').textContent = name;
+    document.getElementById('delete-form').action = `/announcements/${id}`;
+    openModal('delete-modal');
+}
+
+function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+function getAttachments(att) {
+    if (!att) return [];
+    return String(att).split(',').map(p => p.trim()).filter(Boolean);
+}
+
+function filesNote(att) {
+    const total = getAttachments(att).length;
+    return total ? `${total} existing file(s). Upload new to add, or tick replace to change.` : 'No files attached yet.';
+}
+
+function renderAttachments(att) {
+    const files = getAttachments(att);
+    if (!files.length) return '<div class="current-files-note">No files attached.</div>';
+    return `<div class="attachment-grid">${files.map(path => {
+        const url  = `${storageBaseUrl}/${encodeURI(path)}`;
+        const name = path.split('/').pop();
+        if (/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(path))
+            return `<div class="attachment-card"><a href="${url}" target="_blank"><img src="${url}" alt="${escapeHtml(name)}"></a></div>`;
+        return `<div class="attachment-card"><a class="attachment-link" href="${url}" target="_blank"><img src="{{ asset('icons/attach.png') }}" alt=""> ${escapeHtml(name)}</a></div>`;
+    }).join('')}</div>`;
+}
+
+function formatDate(value) {
+    if (!value) return '';
+    const d = new Date(value);
+    return isNaN(d) ? value : d.toLocaleString([], { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit' });
+}
+
+function escapeHtml(v) {
+    return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function fmtDate(d) {
+    if (!d) return '—';
+    return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function fmtDatePlain(d) {
+    if (!d) return '—';
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-US', { month:'2-digit', day:'2-digit', year:'numeric' }) + ' ' +
+           dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
+}
+
+function openAnnArchive() {
+    document.getElementById('aad-drawer').classList.add('open');
+    document.getElementById('aad-backdrop').classList.add('open');
+    document.getElementById('aad-search').value = '';
+    renderAnnArchive();
+}
+
+function closeAnnArchive() {
+    document.getElementById('aad-drawer').classList.remove('open');
+    document.getElementById('aad-backdrop').classList.remove('open');
+}
+
+function renderAnnArchive() {
+    const q    = document.getElementById('aad-search').value.toLowerCase();
+    const data = deletedAnnArchive.filter(r =>
+        (r.title   || '').toLowerCase().includes(q) ||
+        (r.content || '').toLowerCase().includes(q) ||
+        (r.priority|| '').toLowerCase().includes(q)
+    );
+    const list = document.getElementById('aad-list');
+    document.getElementById('aad-count-label').textContent = `${data.length} record${data.length !== 1 ? 's' : ''}`;
+    if (!data.length) {
+        list.innerHTML = `<div class="aad-empty"><img src="{{ asset('icons/announce.png') }}" alt="">No archived announcements found.</div>`;
+        return;
     }
-
-    function openDeleteModal(id, name, e) {
-        e.stopPropagation();
-        document.getElementById('delete-ann-name').textContent = name;
-        document.getElementById('delete-form').action = `/announcements/${id}`;
-        openModal('delete-modal');
-    }
-
-    function ucFirst(str) {
-        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-    }
-
-    function getAttachments(attachment) {
-        if (!attachment) return [];
-        return String(attachment).split(',').map(path => path.trim()).filter(Boolean);
-    }
-
-    function filesNote(attachment) {
-        const total = getAttachments(attachment).length;
-        return total
-            ? `${total} existing file(s). Upload new files to add more, or tick replace to change them.`
-            : 'No image or file attached yet.';
-    }
-
-    function renderAttachments(attachment) {
-        const files = getAttachments(attachment);
-        if (!files.length) return '<div class="current-files-note">No image or file attached.</div>';
-
-        return `<div class="attachment-grid">${files.map(path => {
-            const url  = `${storageBaseUrl}/${encodeURI(path)}`;
-            const name = path.split('/').pop();
-            if (isImage(path)) {
-                return `<div class="attachment-card"><a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="${escapeHtml(name)}"></a></div>`;
-            }
-            return `<div class="attachment-card"><a class="attachment-link" href="${url}" target="_blank" rel="noopener"><img src="{{ asset('icons/attach.png') }}" alt=""> ${escapeHtml(name)}</a></div>`;
-        }).join('')}</div>`;
-    }
-
-    function isImage(path) {
-        return /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(path || '');
-    }
-
-    function formatDate(value) {
-        if (!value) return '';
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return value;
-        return date.toLocaleString([], { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit' });
-    }
-
-    function escapeHtml(value) {
-        return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    function fmtDate(d) {
-        if (!d) return '—';
-        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    function fmtDatePlain(d) {
-        if (!d) return '—';
-        const dt   = new Date(d);
-        const date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        const time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        return `${date} ${time}`;
-    }
-
-    function openAnnArchive() {
-        document.getElementById('aad-drawer').classList.add('open');
-        document.getElementById('aad-backdrop').classList.add('open');
-        document.getElementById('aad-search').value = '';
-        renderAnnArchive();
-    }
-
-    function closeAnnArchive() {
-        document.getElementById('aad-drawer').classList.remove('open');
-        document.getElementById('aad-backdrop').classList.remove('open');
-    }
-
-    function renderAnnArchive() {
-        const q = document.getElementById('aad-search').value.toLowerCase();
-
-        const data = deletedAnnArchive.filter(r =>
-            (r.title   || '').toLowerCase().includes(q) ||
-            (r.content || '').toLowerCase().includes(q) ||
-            (r.priority|| '').toLowerCase().includes(q) ||
-            (r.status  || '').toLowerCase().includes(q)
-        );
-
-        const list = document.getElementById('aad-list');
-        document.getElementById('aad-count-label').textContent =
-            `${data.length} record${data.length !== 1 ? 's' : ''}`;
-
-        if (data.length === 0) {
-            list.innerHTML = `<div class="aad-empty">
-                <img class="aad-empty-icon" src="{{ asset('icons/announce.png') }}" alt="">
-                No archived announcements found.
-            </div>`;
-            return;
-        }
-
-        list.innerHTML = data.map((r, i) => `
-            <div class="aad-card" style="animation-delay:${i * 0.04}s;">
-                <div class="aad-card-top">
-                    <div class="aad-card-id">#${r.announcement_id}</div>
-                    <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')}</div>
-                </div>
-                <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
-                <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
-                <div class="aad-card-meta">
-                    <span class="aad-pill aad-pill-${(r.priority || 'low').toLowerCase()}">${ucFirst(r.priority || 'low')}</span>
-                    <span class="aad-pill aad-pill-${(r.status || 'active').toLowerCase()}">${ucFirst(r.status || 'active')}</span>
-                    ${r.attachment
-                        ? `<span class="aad-pill aad-pill-closed">${r.attachment.split(',').length} file(s)</span>`
-                        : ''}
-                </div>
-                <div class="aad-card-deleted">
-                    Deleted on: <span>${fmtDatePlain(r.deleted_at)}</span>
-                </div>
+    list.innerHTML = data.map((r, i) => `
+        <div class="aad-card" style="animation-delay:${i * 0.04}s;">
+            <div class="aad-card-top">
+                <div class="aad-card-id">#${r.announcement_id}</div>
+                <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')}</div>
             </div>
-        `).join('');
-    }
+            <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
+            <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
+            <div class="aad-card-meta">
+                <span class="aad-pill aad-pill-${(r.priority || 'low').toLowerCase()}">${ucFirst(r.priority || 'low')}</span>
+                <span class="aad-pill aad-pill-${(r.status || 'active').toLowerCase()}">${ucFirst(r.status || 'active')}</span>
+                ${r.attachment ? `<span class="aad-pill aad-pill-closed">${r.attachment.split(',').length} file(s)</span>` : ''}
+            </div>
+            <div class="aad-card-deleted">Deleted on: <span>${fmtDatePlain(r.deleted_at)}</span></div>
+        </div>
+    `).join('');
+}
 
-    function exportAnnArchive() {
-        const rows = [['ID', 'Title', 'Content', 'Priority', 'Status', 'Posted At', 'Scheduled At', 'Deleted On']];
-        deletedAnnArchive.forEach(r => {
-            rows.push([
-                r.announcement_id,
-                r.title        || '',
-                r.content      || '',
-                r.priority     || '',
-                r.status       || '',
-                r.posted_at    || '',
-                r.scheduled_at || '',
-                r.deleted_at   || '',
-            ]);
-        });
-        const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
-        const a   = document.createElement('a');
-        a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'announcements_deleted_archive.csv';
-        a.click();
-    }
+function exportAnnArchive() {
+    const rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Deleted On']];
+    deletedAnnArchive.forEach(r => rows.push([r.announcement_id, r.title||'', r.content||'', r.priority||'', r.status||'', r.posted_at||'', r.scheduled_at||'', r.deleted_at||'']));
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'announcements_deleted_archive.csv';
+    a.click();
+}
 
-    @if(session('success'))
-        showToast("{{ session('success') }}", 'success');
-    @endif
-    @if(session('error'))
-        showToast("{{ session('error') }}", 'error');
-    @endif
+@if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
+@if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
 </script>
 @endsection
