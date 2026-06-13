@@ -316,6 +316,62 @@ class TenantController extends Controller
             ->with('success', 'Tenant information updated successfully.');
     }
 
+    public function tagAsMovedIn($id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        if ($tenant->status !== 'reserved') {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Tenant is not in reserved status.');
+        }
+
+        if ($request_room = $tenant->room_number) {
+            $room = \App\Models\Room::where('room_number', $request_room)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$room) {
+                return redirect()->route('tenants.index')
+                    ->with('error', 'Assigned room no longer exists or is inactive.');
+            }
+
+            $occupancy = Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                ->where('room_number', $request_room)
+                ->where('tenant_id', '!=', $tenant->tenant_id)
+                ->count();
+
+            if ($occupancy >= $room->capacity) {
+                return redirect()->route('tenants.index')
+                    ->with('error', "Room {$request_room} is already at full capacity.");
+            }
+        }
+
+        $accountId    = Tenant::generateAccountId();
+        $tempPassword = Tenant::generateTempPassword();
+
+        $tenant->update([
+            'account_id'             => $accountId,
+            'password_hash'          => Hash::make($tempPassword),
+            'is_temp_password'       => true,
+            'status'                 => 'pending',
+            'move_in_date'           => $tenant->move_in_date ?? now()->format('Y-m-d'),
+            'estimated_move_in_date' => null,
+            'reservation_notes'      => null,
+        ]);
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_moved_in',
+            message: "{$tenant->first_name} {$tenant->last_name} has been tagged as moved in.",
+            ref_id: $tenant->tenant_id,
+        );
+
+        return redirect()->route('tenants.index')
+            ->with('success', 'Tenant tagged as moved in successfully.')
+            ->with('new_account_id',    $accountId)
+            ->with('new_temp_password', $tempPassword)
+            ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
+    }
+
     public function reactivate($id)
     {
         if (!Auth::guard('staff')->check()) {
@@ -528,6 +584,8 @@ class TenantController extends Controller
         }
 
         $tenant->update(['last_login_at' => now()]);
+        $tenant->markAccessed();
+        $tenant = $tenant->fresh();
 
         $token = $tenant->createToken('tenant-app')->plainTextToken;
 

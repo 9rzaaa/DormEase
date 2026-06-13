@@ -220,6 +220,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout    { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-reserved   { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
+.act-btn[title="Tag as Moved In"]:hover { border-color: #d4a000; box-shadow: 0 6px 14px rgba(212,160,0,.20); background: #fff3cc; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
 .tenant-section-pill-pink { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
 .tenant-section-bar-pink  { background: var(--gradient-pink); }
@@ -655,7 +656,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div class="status-legend-popup" id="status-legend-popup">
                         <div class="slp-title">Status Guide</div>
                         <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
-                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Moved in but account setup or verification is incomplete.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
                         <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
                         <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
                         <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
@@ -1416,6 +1417,31 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="modal-overlay" id="tag-movedin-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Tag as Moved In
+            </div>
+            <button class="modal-close" onclick="closeModal('tag-movedin-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-info-banner">
+                <span>Tagging <strong id="tag-movedin-name" style="color:var(--ink);"></strong> as moved in will generate a new Account ID and temporary password. The tenant's status will become <strong>Pending</strong> until they log in for the first time.</span>
+            </div>
+            <p style="font-size:.85rem;color:var(--ink-muted);margin:0;">Make sure the assigned room is correct before proceeding. This cannot be undone.</p>
+        </div>
+        <form method="POST" id="tag-movedin-form" action="" data-loading-message="Tagging as moved in..." style="display:contents;">
+            @csrf
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" style="background:linear-gradient(135deg,#f0c040,#e8a020);box-shadow:0 8px 20px rgba(232,160,32,.3);">Confirm &amp; Generate Credentials</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1958,8 +1984,28 @@ function buildRows(list) {
             + (t.is_temp_password ? tempBadge(true) : '')
             + '</div>';
         var col4 = t.status === 'reserved'
-            ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
+            ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
             : fmtDate(t.move_in_date);
+       var isReserved = t.status === 'reserved';
+        var dataAttr = 'data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\'';
+        var actions = ''
+            + '<button class="act-btn" title="View" ' + dataAttr + ' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
+            + '<button class="act-btn" title="Edit" ' + dataAttr + ' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>';
+
+        if (isReserved) {
+            actions += '<button class="act-btn" title="Tag as Moved In" data-tenant-id="' + t.tenant_id + '" data-tenant-name="' + escapeJs(t.first_name + ' ' + t.last_name) + '" onclick="openTagMovedInModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')" style="border-color:#f0c040;background:#fffbf0;">'
+                + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+                + '</button>';
+        } else {
+            actions += '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>';
+        }
+
+        actions += '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>';
+
+        if (!isReserved) {
+            actions += '<button class="act-btn" title="Bill Slip" ' + dataAttr + ' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>';
+        }
+
         return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
             + '<td id="admin-inside-cell-' + t.tenant_id + '">' + nameCell + '</td>'
@@ -1968,13 +2014,7 @@ function buildRows(list) {
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
             + '<td>' + statusBadge(t.status) + '</td>'
-            + '<td><div class="action-group">'
-                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
-            + '</div></td></tr>';
+            + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
 
@@ -2213,6 +2253,12 @@ function openEditModal(t) {
     if (editRoomInput && editRoomInput.value.trim()) {
         setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
     }
+}
+
+function openTagMovedInModal(id, name) {
+    document.getElementById('tag-movedin-name').textContent = name;
+    document.getElementById('tag-movedin-form').action = '/tenants/' + id + '/tag-moved-in';
+    openModal('tag-movedin-modal');
 }
 
 function openResetModal(id, name) {

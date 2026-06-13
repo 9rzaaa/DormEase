@@ -28,7 +28,6 @@ class MarkOverdueBills extends Command
         $count = 0;
 
         foreach ($billings as $billing) {
-            // Update status to overdue
             $billing->update(['payment_status' => 'overdue']);
 
             $amount  = number_format($billing->room_share, 2);
