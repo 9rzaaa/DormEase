@@ -2133,6 +2133,15 @@ function tempBadge(isTemp) {
     return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
 }
 
+function escapeHtml(str) {
+    if (!str) return '\u2014';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -2373,7 +2382,7 @@ function viewTenant(t) {
         '<div class="tv-header">'
             + '<div class="tv-avatar">' + initials(t) + '</div>'
             + '<div class="tv-header-info">'
-                + '<div class="tv-name">' + t.first_name + ' ' + t.last_name + '</div>'
+                + '<div class="tv-name">' + escapeHtml(t.first_name) + ' ' + escapeHtml(t.last_name) + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
                 + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + '</div>'
             + '</div>'
@@ -2382,7 +2391,7 @@ function viewTenant(t) {
         + '<div class="tv-grid">'
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + (t.contact_number || '\u2014') + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + (t.referred_by || '\u2014') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
         + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
         + '<div class="tv-grid">'
@@ -3528,56 +3537,81 @@ function exportTenantArchive(format) {
     a.click();
 }
 
-function getMenuForDropdown(id) {
-    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
-        return m._sourceDropdownId === id;
-    }) || document.querySelector('#' + id + ' .export-menu');
+var _exportMenuPortal = null;
+
+function getExportPortal() {
+    if (!_exportMenuPortal) {
+        _exportMenuPortal = document.createElement('div');
+        _exportMenuPortal.id = 'export-menu-portal';
+        _exportMenuPortal.style.cssText = 'position:fixed;z-index:99999;top:0;left:0;width:0;height:0;overflow:visible;';
+        document.body.appendChild(_exportMenuPortal);
+    }
+    return _exportMenuPortal;
 }
 
-function positionExportMenu(dropdown) {
-    var btn  = dropdown.querySelector('button');
-    var menu = getMenuForDropdown(dropdown.id);
-    var rect = btn.getBoundingClientRect();
-    if (!menu._movedToBody) {
-        menu._sourceDropdownId = dropdown.id;
-        document.body.appendChild(menu);
-        menu._movedToBody = true;
-    }
-    menu.style.position = 'fixed';
-    menu.style.zIndex   = '99999';
-    menu.style.right    = (window.innerWidth - rect.right) + 'px';
-    menu.style.left     = 'auto';
-    menu.style.minWidth = rect.width + 'px';
-    menu.style.top    = 'auto';
-    menu.style.bottom = 'auto';
-    var menuHeight = menu.offsetHeight || 80;
-    var spaceBelow = window.innerHeight - rect.bottom;
-    if (spaceBelow >= menuHeight + 6) {
-        menu.style.top    = (rect.bottom + 6) + 'px';
-        menu.style.bottom = 'auto';
-    } else {
-        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
-        menu.style.top    = 'auto';
-    }
-}
+var _activeExportDropdownId = null;
+var _portalMenuEl = null;
 
 function toggleExportDropdown(id) {
-    var dropdown = document.getElementById(id);
-    var menu     = getMenuForDropdown(id);
-    var isOpen   = menu.classList.contains('open');
+    if (_activeExportDropdownId === id && _portalMenuEl) {
+        closeAllExportDropdowns();
+        return;
+    }
     closeAllExportDropdowns();
-    if (!isOpen) {
-        positionExportMenu(dropdown);
-        getMenuForDropdown(id).classList.add('open');
+    var dropdown = document.getElementById(id);
+    var sourceMenu = dropdown.querySelector('.export-menu');
+    if (!sourceMenu) return;
+
+    _portalMenuEl = sourceMenu.cloneNode(true);
+    _portalMenuEl.classList.add('open');
+    _portalMenuEl.style.cssText = 'display:block;position:fixed;z-index:99999;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.15);min-width:160px;overflow:hidden;';
+    _portalMenuEl.setAttribute('data-portal-for', id);
+
+    _portalMenuEl.querySelectorAll('button').forEach(function(btn, i) {
+        var original = sourceMenu.querySelectorAll('button')[i];
+        if (original) {
+            btn.onclick = original.onclick;
+        }
+    });
+
+    getExportPortal().appendChild(_portalMenuEl);
+    _activeExportDropdownId = id;
+
+    var btnEl = dropdown.querySelector('button');
+    var rect  = btnEl.getBoundingClientRect();
+    var menuHeight = 0;
+    _portalMenuEl.style.visibility = 'hidden';
+    _portalMenuEl.style.top = '-9999px';
+    document.body.offsetHeight;
+    menuHeight = _portalMenuEl.offsetHeight || 80;
+    _portalMenuEl.style.visibility = '';
+
+    var spaceBelow = window.innerHeight - rect.bottom;
+    _portalMenuEl.style.right = (window.innerWidth - rect.right) + 'px';
+    _portalMenuEl.style.left  = 'auto';
+    _portalMenuEl.style.minWidth = rect.width + 'px';
+
+    if (spaceBelow >= menuHeight + 6) {
+        _portalMenuEl.style.top    = (rect.bottom + 6) + 'px';
+        _portalMenuEl.style.bottom = 'auto';
+    } else {
+        _portalMenuEl.style.top    = 'auto';
+        _portalMenuEl.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
     }
 }
 
 function closeAllExportDropdowns() {
-    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    if (_portalMenuEl) {
+        _portalMenuEl.remove();
+        _portalMenuEl = null;
+    }
+    _activeExportDropdownId = null;
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
+        closeAllExportDropdowns();
+    }
 });
 
 var adminLogData    = [];

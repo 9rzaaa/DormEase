@@ -417,7 +417,7 @@ class TenantController extends Controller
     public function reactivate($id)
     {
         if (!Auth::guard('staff')->check()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return redirect()->route('login')->with('error', 'You must be logged in to perform this action.');
         }
 
         if (Auth::guard('staff')->user()->role !== 'admin') {
@@ -527,8 +527,11 @@ class TenantController extends Controller
             \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
             \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
                 ->whereIn('payment_status', ['unpaid', 'overdue'])
-                ->update(['tenant_id' => null]);
-
+                ->update([
+                    'tenant_id'      => null,
+                    'payment_status' => 'cancelled',
+                    'notes'          => 'Tenant account deleted on ' . now()->format('Y-m-d'),
+                ]);
             $tenant->tokens()->delete();
             $tenant->delete();
         });
