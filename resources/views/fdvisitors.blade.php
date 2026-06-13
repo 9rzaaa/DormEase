@@ -1436,7 +1436,7 @@
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
-                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
@@ -1484,7 +1484,7 @@
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
-                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             rows.push([
                 'LOG-' + String(v.visitor_id).padStart(4, '0'),
@@ -1543,7 +1543,7 @@
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
-                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             return '<tr>'
                 + '<td>LOG-' + String(v.visitor_id).padStart(4, '0') + '</td>'
