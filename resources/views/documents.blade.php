@@ -113,12 +113,13 @@
     }
 
     .tab-btn img {
-        width: 15px;
-        height: 15px;
-        object-fit: contain;
-        opacity: .5;
-        transition: opacity .2s;
-    }
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    opacity: .6;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    transition: opacity .2s, filter .2s;
+}
 
     .tab-btn.active {
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
@@ -1945,7 +1946,7 @@
         <div class="modal-body" style="padding:.85rem 1rem;">
             <div id="view-req-content"></div>
         </div>
-        <div class="modal-footer" id="view-req-actions"></div>
+        <div id="view-req-actions" style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .9rem;border-top:1.5px solid var(--pink-100);background:#fffafd;"></div>
     </div>
 </div>
 
@@ -2462,11 +2463,12 @@ function viewDoc(r) {
     }
 
     const footer = document.getElementById('view-req-actions');
-    footer.style.justifyContent = 'space-between';
     footer.innerHTML = `
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
+    footer.style.setProperty('justify-content', 'space-between', 'important');
+    openModal('view-req-modal');
     openModal('view-doc-modal');
 }
 
@@ -2716,11 +2718,12 @@ function viewReq(r) {
     `;
 
     const footer = document.getElementById('view-req-actions');
-    footer.style.justifyContent = 'space-between';
     footer.innerHTML = `
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
+    footer.style.setProperty('justify-content', 'space-between', 'important');
+    openModal('view-req-modal');
     openModal('view-req-modal');
 }
 
