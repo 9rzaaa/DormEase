@@ -561,8 +561,8 @@ class TenantController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        $totalUnits    = 25;
-        $occupiedUnits = Tenant::where('is_active', true)->whereNotNull('room_number')->distinct('room_number')->count('room_number');
+        $totalUnits    = \App\Models\Room::where('is_active', true)->sum('capacity');
+        $occupiedUnits = Tenant::whereNotIn('status', ['inactive', 'move_out'])->whereNotNull('room_number')->distinct('room_number')->count('room_number');
 
         return view('fdtenant', [
             'tenants'        => $tenants,
