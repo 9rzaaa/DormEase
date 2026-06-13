@@ -542,7 +542,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .slp-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .55rem; padding-bottom: .4rem; border-bottom: 1.5px solid var(--petal); }
 .slp-row { display: flex; align-items: flex-start; gap: .6rem; padding: .35rem 0; border-bottom: 1px solid var(--pink-100); }
 .slp-row:last-child { border-bottom: none; }
-.slp-row .badge { flex-shrink: 0; width: 78px; justify-content: center; text-align: center; }
+.slp-row .badge { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
 @media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
 .addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
@@ -1420,7 +1420,7 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
             <div class="modal-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Tag as Moved In
             </div>
             <button class="modal-close" onclick="closeModal('tag-movedin-modal')">&#x2715;</button>
@@ -1435,7 +1435,7 @@ tbody tr:hover { background: var(--soft-bg); }
             @csrf
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:linear-gradient(135deg,#f0c040,#e8a020);box-shadow:0 8px 20px rgba(232,160,32,.3);">Confirm &amp; Generate Credentials</button>
+                <button type="submit" class="btn-submit">Confirm &amp; Generate Credentials</button>
             </div>
         </form>
     </div>
