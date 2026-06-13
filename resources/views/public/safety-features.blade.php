@@ -228,7 +228,7 @@
         <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
       </a>
       </div>
-      <div class="footer-links"><a href="#">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
+      <div class="footer-links"><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
     </div>
   </div>
 </footer>
