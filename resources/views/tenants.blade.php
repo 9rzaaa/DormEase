@@ -543,6 +543,11 @@ tbody tr:hover { background: var(--soft-bg); }
 .addf-item:last-child { border-bottom: none; }
 .addf-item:hover { background: var(--blush); color: var(--hot-pink); }
 .addf-item.active { background: var(--petal); color: var(--hot-pink); }
+.modal-title img {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
 </style>
 @endsection
 
@@ -800,7 +805,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay" id="add-room-modal">
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
-            <div class="modal-title">Add Room</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="">
+                Add Room
+            </div>
             <button class="modal-close" onclick="closeModal('add-room-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
@@ -842,7 +850,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay" id="edit-room-modal">
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
-            <div class="modal-title">Edit Room</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="">
+                Edit Room
+            </div>
             <button class="modal-close" onclick="closeModal('edit-room-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
@@ -891,7 +902,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay" id="delete-room-modal">
     <div class="modal" style="max-width:380px;">
         <div class="modal-header">
-            <div class="modal-title">Delete Room</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/delete.png') }}" class="icon-sm" alt="">
+                Delete Room
+            </div>
             <button class="modal-close" onclick="closeModal('delete-room-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
@@ -1004,7 +1018,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay open" id="credentials-modal">
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
-            <div class="modal-title">Tenant Account Created</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/nav-tenants.png') }}" class="icon-sm" alt="">
+                Tenant Account Created
+            </div>
             <button class="modal-close" onclick="closeModal('credentials-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
@@ -1047,7 +1064,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay open" id="reset-credentials-modal">
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
-            <div class="modal-title">Password Reset Successfully</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/reset.png') }}" class="icon-sm" alt="">
+                Password Reset Successfully
+            </div>
             <button class="modal-close" onclick="closeModal('reset-credentials-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
@@ -1088,7 +1108,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Add New Tenant</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/tenants.png') }}" class="icon-sm" alt="">
+                Add New Tenant
+            </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
         <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
@@ -1232,7 +1255,10 @@ tbody tr:hover { background: var(--soft-bg); }
 <div class="modal-overlay" id="view-modal">
     <div class="modal" style="max-width:580px;">
         <div class="modal-header">
-            <div class="modal-title">Tenant Details</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/person.png') }}" class="icon-sm" alt="">
+                Tenant Details
+            </div>
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
