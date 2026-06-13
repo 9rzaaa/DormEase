@@ -65,6 +65,14 @@ class ClearArchiveRecords extends Command
 
             if ($setting->module === 'announcements') {
                 $model::withTrashed()->where($column, '<', $cutoff)->forceDelete();
+            } elseif ($setting->module === 'visitor_logs') {
+                $model::where(function($query) use ($column, $cutoff) {
+                    $query->where($column, '<', $cutoff)
+                          ->orWhere(function($q) use ($cutoff) {
+                              $q->whereNull('arrival_time')
+                                ->where('date_of_visit', '<', $cutoff->toDateString());
+                          });
+                })->delete();
             } else {
                 $model::where($column, '<', $cutoff)->delete();
             }
