@@ -232,8 +232,8 @@ class VisitorController extends Controller
             ->where('tenant_id', $tenantId)
             ->firstOrFail();
 
-        if ($visitor->status !== 'completed') {
-            return response()->json(['message' => 'Only completed visitor logs can be hidden from your view.'], 422);
+        if (!in_array($visitor->status, ['completed', 'cancelled'], true)) {
+            return response()->json(['message' => 'Only completed or cancelled visitor logs can be hidden from your view.'], 422);
         }
 
         $visitor->update([
