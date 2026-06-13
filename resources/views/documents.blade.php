@@ -1936,11 +1936,16 @@
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title">Request Details</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/pending.png') }}" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);" alt="">
+                Request Details
+            </div>
             <button class="modal-close" onclick="closeModal('view-req-modal')">&#x2715;</button>
         </div>
-        <div id="view-req-content"></div>
-        <div class="modal-actions" style="margin-top:1rem;" id="view-req-actions"></div>
+        <div class="modal-body" style="padding:.85rem 1rem;">
+            <div id="view-req-content"></div>
+        </div>
+        <div class="modal-footer" id="view-req-actions"></div>
     </div>
 </div>
 
@@ -2646,22 +2651,69 @@ function viewReq(r) {
     const isHardCopy   = deliveryType.includes('printed') || deliveryType.includes('hard');
 
     const fulfilledHtml = r.fulfilled_file
-        ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank">View Fulfilled Document</a>`
+        ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank">
+               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+               View Document
+           </a>`
         : isHardCopy
-            ? '<span style="font-size:.82rem;color:var(--ink-muted);">Hard copy — tenant will pick up at admin office.</span>'
-            : '<span style="font-size:.82rem;color:var(--ink-muted);">No document uploaded yet.</span>';
+            ? `<span style="font-size:.82rem;color:var(--ink-muted);font-style:italic;">Hard copy — tenant picks up at admin office.</span>`
+            : `<span style="font-size:.82rem;color:var(--ink-muted);font-style:italic;">No document uploaded yet.</span>`;
+
+    const reqId = '#DRQ-' + String(r.doc_request_id).padStart(3, '0');
 
     document.getElementById('view-req-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Request ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(r.tenant_name ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Document Type</div><div class="view-detail-val">${escHtml(r.document_type)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Purpose</div><div class="view-detail-val">${escHtml(r.purpose ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Delivery</div><div class="view-detail-val">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(r.submitted_at)}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Status</div><div class="view-detail-val">${reqStatusBadge(r.status)}</div></div>
-        ${r.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(r.admin_remarks)}</div></div></div>` : ''}
-        <div class="view-detail-row"><div class="view-detail-label">Fulfilled Document</div><div class="view-detail-val">${fulfilledHtml}</div></div>
+        <div style="display:flex;align-items:center;gap:.85rem;padding-bottom:.9rem;margin-bottom:.9rem;border-bottom:1.5px solid var(--petal);">
+            <div style="width:46px;height:46px;border-radius:12px;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 16px rgba(232,23,93,.25);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:1rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;line-height:1.25;">${escHtml(r.document_type)}</div>
+                <div style="font-size:.78rem;color:var(--bright-pink);font-family:monospace;font-weight:700;margin-top:.2rem;">${reqId}</div>
+                <div style="margin-top:.45rem;">${reqStatusBadge(r.status)}</div>
+            </div>
+        </div>
+
+        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
+            Request Information
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.9rem;">
+            <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.6rem .8rem;">
+                <div style="font-size:.67rem;font-weight:800;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;">Tenant</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.tenant_name ?? '—')}</div>
+            </div>
+            <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.6rem .8rem;">
+                <div style="font-size:.67rem;font-weight:800;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;">Submitted</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${fmtDate(r.submitted_at)}</div>
+            </div>
+            <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.6rem .8rem;">
+                <div style="font-size:.67rem;font-weight:800;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;">Delivery</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</div>
+            </div>
+            <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.6rem .8rem;">
+                <div style="font-size:.67rem;font-weight:800;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;">Purpose</div>
+                <div style="font-size:.875rem;font-weight:600;color:var(--ink);line-height:1.4;">${escHtml(r.purpose ?? '—')}</div>
+            </div>
+        </div>
+
+        ${r.admin_remarks ? `
+        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
+            Admin Remarks
+        </div>
+        <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.7rem .85rem;font-size:.84rem;color:var(--ink);line-height:1.6;margin-bottom:.9rem;white-space:pre-wrap;">${escHtml(r.admin_remarks)}</div>
+        ` : ''}
+
+        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
+            Fulfilled Document
+        </div>
+        <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.7rem .85rem;display:flex;align-items:center;gap:.6rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            ${fulfilledHtml}
+        </div>
     `;
+
     document.getElementById('view-req-actions').innerHTML = `
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
