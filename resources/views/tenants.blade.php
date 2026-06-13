@@ -1499,6 +1499,9 @@ tbody tr:hover { background: var(--soft-bg); }
                         <span style="font-size:1rem;flex-shrink:0;"></span>
                         <span>Setting to <strong>Reserved</strong> holds the assigned room and counts toward occupancy. Setting to <strong>Inactive</strong> blocks mobile login. Setting to <strong>Move Out</strong> archives the record.</span>
                     </div>
+                    <div id="edit-pending-reserved-warn" style="display:none;margin-top:.6rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.55rem .8rem;font-size:.8rem;color:#7a5400;line-height:1.5;">
+                        This tenant has no login credentials yet. Setting status to <strong>Pending</strong> has no effect until you use <strong>Tag as Moved In</strong> to generate their account.
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -2144,9 +2147,9 @@ function buildRows(list) {
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-        var insideDot = t.is_inside
-            ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
-            : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
+        var insideDot = t.status === 'reserved' ? '' : (t.is_inside
+    ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
+    : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>');
         var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
             + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
             + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '')
@@ -2371,7 +2374,7 @@ function viewTenant(t) {
             + '<div class="tv-header-info">'
                 + '<div class="tv-name">' + t.first_name + ' ' + t.last_name + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
-                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password ? tempBadge(true) : '') + '</div>'
+                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + '</div>'
             + '</div>'
         + '</div>'
         + '<div class="modal-section-title">Personal Information</div>'
@@ -2390,7 +2393,7 @@ function viewTenant(t) {
         + '</div>'
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
-            + '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary -not yet changed by tenant' : 'Changed by tenant') + '</div></div>'
+            + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
         + '</div>';
     openModal('view-modal');
 }
@@ -2441,7 +2444,15 @@ function openEditModal(t) {
     document.getElementById('edit-contact').value           = hasOld && old.contact_number         ? old.contact_number         : (t.contact_number || '');
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
-    document.getElementById('edit-status').value            = hasOld && old.status                 ? old.status                 : (t.status || 'pending');
+    document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var editStatusSel = document.getElementById('edit-status');
+    editStatusSel.onchange = function() {
+        updateStatusDot(this);
+        toggleReservationFields('edit');
+        var noAccount = !currentTenant || !currentTenant.account_id;
+        var warn = document.getElementById('edit-pending-reserved-warn');
+        if (warn) warn.style.display = (this.value === 'pending' && noAccount) ? '' : 'none';
+    };
     restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
