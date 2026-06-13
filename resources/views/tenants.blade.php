@@ -220,7 +220,6 @@ tbody tr:hover { background: var(--soft-bg); }
 .badge-inactive { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .badge-moveout    { background: var(--petal); color: var(--hot-pink); border: 1px solid #ff9db0; }
 .badge-reserved   { background: #fff8e0; color: #9a6200; border: 1px solid #f0c840; }
-.act-btn[title="Tag as Moved In"]:hover { border-color: #d4a000; box-shadow: 0 6px 14px rgba(212,160,0,.20); background: #fff3cc; }
 .badge-temp     { background: #fff3b0; color: #5a3d00; border: 1px solid #ffd84d; font-weight: 700; box-shadow: 0 4px 10px rgba(255,216,77,.25); }
 .tenant-section-pill-pink { background: var(--petal); color: var(--hot-pink); border: 1px solid var(--pink-200); }
 .tenant-section-bar-pink  { background: var(--gradient-pink); }
@@ -543,7 +542,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .slp-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .55rem; padding-bottom: .4rem; border-bottom: 1.5px solid var(--petal); }
 .slp-row { display: flex; align-items: flex-start; gap: .6rem; padding: .35rem 0; border-bottom: 1px solid var(--pink-100); }
 .slp-row:last-child { border-bottom: none; }
-.slp-row .badge { flex-shrink: 0; min-width: 72px; justify-content: center; }
+.slp-row .badge { flex-shrink: 0; width: 78px; justify-content: center; text-align: center; }
 .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
 @media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
 .addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
@@ -1993,8 +1992,8 @@ function buildRows(list) {
             + '<button class="act-btn" title="Edit" ' + dataAttr + ' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>';
 
         if (isReserved) {
-            actions += '<button class="act-btn" title="Tag as Moved In" data-tenant-id="' + t.tenant_id + '" data-tenant-name="' + escapeJs(t.first_name + ' ' + t.last_name) + '" onclick="openTagMovedInModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')" style="border-color:#f0c040;background:#fffbf0;">'
-                + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+            actions += '<button class="act-btn" title="Tag as Moved In" data-tenant-id="' + t.tenant_id + '" data-tenant-name="' + escapeJs(t.first_name + ' ' + t.last_name) + '" onclick="openTagMovedInModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')">'
+                + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
                 + '</button>';
         } else {
             actions += '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>';
