@@ -1985,7 +1985,7 @@ function buildRows(list) {
             : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
         var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
             + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
-            + (t.is_temp_password ? tempBadge(true) : '')
+            + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '')
             + '</div>';
         var col4 = t.status === 'reserved'
             ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
@@ -2197,7 +2197,7 @@ function viewTenant(t) {
         + '</div>'
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
-            + '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary \u2014 not yet changed by tenant' : 'Changed by tenant') + '</div></div>'
+            + '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary -not yet changed by tenant' : 'Changed by tenant') + '</div></div>'
         + '</div>';
     openModal('view-modal');
 }
