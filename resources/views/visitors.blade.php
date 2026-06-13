@@ -1493,7 +1493,9 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
@@ -1589,7 +1591,9 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
 
             rows.push([
                 'VST-' + String(logId).padStart(3, '0'),
@@ -1634,7 +1638,9 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
 
             return '<tr>'
                 + '<td>VST-' + String(logId).padStart(3, '0') + '</td>'

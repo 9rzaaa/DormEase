@@ -1435,7 +1435,9 @@
             var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
@@ -1481,7 +1483,9 @@
             var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
             rows.push([
                 'LOG-' + String(v.visitor_id).padStart(4, '0'),
                 v.visitor_name   || '',
@@ -1538,7 +1542,9 @@
             var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : logTime;
+                : archiveTab === 'cancelled'
+                    ? (v.updated_at ? fmtDatePlain(v.updated_at) : logTime)
+                    : logTime;
             return '<tr>'
                 + '<td>LOG-' + String(v.visitor_id).padStart(4, '0') + '</td>'
                 + '<td>' + (v.visitor_name || '') + '</td>'
