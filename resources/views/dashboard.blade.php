@@ -309,7 +309,14 @@
     .priority-moderate { color: #a84c00; border-color: #f5a24b;           background: #fff6ed; }
     .priority-high     { color: #C4003A; border-color: var(--bright-pink); background: var(--baby-pink); }
 
-    .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
+    .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
     .notif-item { display: flex; align-items: flex-start; gap: .7rem; padding: .6rem 0; border-bottom: 1px solid var(--petal); cursor: pointer; transition: background .15s; border-radius: 6px; }
@@ -755,7 +762,7 @@
             @if($recentActivities->isEmpty())
                 <div class="empty-state" style="padding:1rem 0;">No recent activity.</div>
             @else
-                @foreach($recentActivities as $log)
+                @foreach($recentActivities->take(3) as $log)
                     <div class="activity-item">
                         <div class="activity-avatar">
                             {{ strtoupper(substr($log->visitor_name ?? 'A', 0, 1)) }}
