@@ -31,6 +31,9 @@ Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 Route::get('/features', fn() => view('public.features'))->name('features');
 Route::get('/gallery', fn() => view('public.gallery'))->name('gallery');
 Route::redirect('/register', '/login')->name('register');
+Route::get('/privacy-policy', function () {
+    return view('public.privacy');
+})->name('privacy');
 
 // auth
 Route::get('/login', function () {
