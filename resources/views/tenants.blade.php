@@ -2052,6 +2052,7 @@ function toggleReservationFields(context) {
         document.getElementById('edit-reservation-notes-wrap').style.display = show ? '' : 'none';
         document.getElementById('edit-movein-wrap').style.display = show ? 'none' : '';
     }
+}
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
     m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
