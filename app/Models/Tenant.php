@@ -73,4 +73,11 @@ class Tenant extends Authenticatable
     {
         return $this->hasMany(WaterBilling::class, 'tenant_id', 'tenant_id');
     }
+
+    public function markAccessed(): void
+    {
+        if ($this->status === 'pending') {
+            $this->update(['status' => 'active']);
+        }
+    }
 }
