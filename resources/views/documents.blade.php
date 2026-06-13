@@ -2603,7 +2603,7 @@ function viewReq(r) {
     const isHardCopy   = deliveryType.includes('printed') || deliveryType.includes('hard');
 
     const fulfilledHtml = r.fulfilled_file
-        ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank">
+        ? `<a class="btn-view-file" href="/storage/${r.fulfilled_file}" target="_blank" style="background:var(--gradient-pink);box-shadow:0 4px 14px rgba(232,23,93,.3);">
                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                View Document
            </a>`
@@ -2660,8 +2660,7 @@ function viewReq(r) {
             <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
             Fulfilled Document
         </div>
-        <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.7rem .85rem;display:flex;align-items:center;gap:.6rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <div style="padding:.2rem 0;">
             ${fulfilledHtml}
         </div>
     `;
