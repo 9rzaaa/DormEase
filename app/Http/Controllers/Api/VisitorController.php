@@ -23,6 +23,7 @@ class VisitorController extends Controller
             ?: 'Unknown';
 
         $logs = VisitorLog::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->orderByDesc('date_of_visit')
             ->orderByDesc('visitor_id')
             ->get()
@@ -44,6 +45,7 @@ class VisitorController extends Controller
             ]);
 
         $visitorsToday = VisitorLog::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->whereDate('date_of_visit', today())
             ->count();
 
@@ -164,6 +166,71 @@ class VisitorController extends Controller
                 'status'         => $visitor->status,
                 'departure_time' => $visitor->departure_time,
             ],
+        ]);
+    }
+
+    /**
+     * PATCH /api/visitors/{id}/cancel
+     */
+    public function cancel($id, Request $request)
+    {
+        $user = $request->user();
+        $tenantId = $user?->tenant_id ?? $user?->id;
+
+        $visitor = VisitorLog::where('visitor_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->firstOrFail();
+
+        if ($visitor->arrival_time) {
+            return response()->json(['message' => 'Visitor has already checked in.'], 422);
+        }
+
+        if (in_array($visitor->status, ['cancelled', 'completed', 'rejected'], true)) {
+            return response()->json(['message' => 'Visitor registration cannot be cancelled in its current state.'], 422);
+        }
+
+        $visitor->update([
+            'status' => 'cancelled',
+        ]);
+
+        $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? '')) ?: 'Unknown';
+
+        NotificationHelper::sendToAll(
+            type: 'visitor_cancelled',
+            message: "{$tenantName} cancelled visitor registration for {$visitor->visitor_name}.",
+            ref_id: $visitor->visitor_id,
+        );
+
+        return response()->json([
+            'message' => 'Visitor registration cancelled successfully.',
+            'visitor' => [
+                'id'     => $visitor->visitor_id,
+                'status' => $visitor->status,
+            ],
+        ]);
+    }
+
+    /**
+     * DELETE /api/visitors/{id}
+     */
+    public function destroy($id, Request $request)
+    {
+        $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
+
+        $visitor = VisitorLog::where('visitor_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->firstOrFail();
+
+        if ($visitor->status !== 'completed') {
+            return response()->json(['message' => 'Only completed visitor logs can be hidden from your view.'], 422);
+        }
+
+        $visitor->update([
+            'hidden_from_tenant' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Visitor log removed from your view.',
         ]);
     }
 }

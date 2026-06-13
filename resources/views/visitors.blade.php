@@ -968,7 +968,7 @@
     <div class="archive-drawer-header">
         <div>
             <div class="archive-drawer-title">Archive &amp; History</div>
-            <div class="archive-drawer-sub">Record of completed and deleted visitor logs</div>
+            <div class="archive-drawer-sub">Record of completed and cancelled visitor logs</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
@@ -981,6 +981,10 @@
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
+        </button>
+        <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
+            Cancelled
+            <span class="archive-tab-count" id="acount-cancelled">0</span>
         </button>
     </div>
 
@@ -1187,6 +1191,7 @@
     const logs              = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const completedVisitors = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const deletedVisitors   = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const cancelledVisitors = @json($cancelledVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
     let filtered   = Array.isArray(logs) ? [...logs] : [];
     let archiveTab = 'completed';
@@ -1299,6 +1304,8 @@
             pending:            'badge-pending',
             denied:             'badge-denied',
             rejected:           'badge-denied',
+            cancelled:          'badge-denied',
+            deleted:            'badge-denied',
             inside:             'badge-inside',
             'currently inside': 'badge-inside',
         };
@@ -1419,12 +1426,14 @@
     }
 
     function openArchive() {
-        document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors) ? completedVisitors.length : 0;
-        document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)   ? deletedVisitors.length   : 0;
+        document.getElementById('acount-completed').textContent  = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
+        document.getElementById('acount-deleted').textContent    = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
+        document.getElementById('acount-cancelled').textContent  = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
         document.getElementById('archive-search').value = '';
         archiveTab = 'completed';
         document.getElementById('atab-completed').classList.add('active');
         document.getElementById('atab-deleted').classList.remove('active');
+        document.getElementById('atab-cancelled').classList.remove('active');
         renderArchive();
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
@@ -1439,15 +1448,22 @@
         archiveTab = tab;
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
+        document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
 
     function renderArchive() {
-        const q    = document.getElementById('archive-search').value.toLowerCase();
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        const q = document.getElementById('archive-search').value.toLowerCase();
+
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
         const result = data.filter(function(v) {
             return (v.visitor_name ?? '').toLowerCase().includes(q)
@@ -1467,21 +1483,22 @@
         }
 
         const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        const pillLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
 
         list.innerHTML = result.map(function(v, i) {
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? null;
             const roomNum    = v.tenant?.room_number ?? null;
             const logId      = v.visitor_id ?? v.id ?? 0;
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
                     + '<div class="archive-card-id">VST-' + String(logId).padStart(3, '0') + '</div>'
-                    + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
+                    + '<div class="archive-card-time">' + logTime + '</div>'
                 + '</div>'
                 + '<div class="archive-card-visitor">' + (v.visitor_name ?? '—') + '</div>'
                 + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' - Rm ' + roomNum : '') + '</div>' : '')
@@ -1552,21 +1569,27 @@
     }
 
     function exportArchiveCsv() {
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
         if (!data.length) { alert('No archive data to export.'); return; }
 
-        const label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        const label = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
 
         data.forEach(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
 
             rows.push([
                 'VST-' + String(logId).padStart(3, '0'),
@@ -1590,22 +1613,28 @@
     }
 
     function exportArchivePdf() {
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
         if (!data.length) { alert('No archive data to export.'); return; }
 
-        const tabLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        const tabLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
 
         var win  = window.open('', '_blank');
         var rows = data.map(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
 
             return '<tr>'
                 + '<td>VST-' + String(logId).padStart(3, '0') + '</td>'
