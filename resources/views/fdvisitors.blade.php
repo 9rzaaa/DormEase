@@ -726,7 +726,7 @@
     <div class="archive-drawer-header">
         <div>
             <div class="archive-drawer-title">Archive &amp; History</div>
-            <div class="archive-drawer-sub">Record of completed and deleted visitor logs</div>
+            <div class="archive-drawer-sub">Record of completed and cancelled visitor logs</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
@@ -739,6 +739,10 @@
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
+        </button>
+        <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
+            Cancelled
+            <span class="archive-tab-count" id="acount-cancelled">0</span>
         </button>
     </div>
 
@@ -999,6 +1003,7 @@
     var visitors          = @json($visitors);
     var completedVisitors = @json($completedVisitors);
     var deletedVisitors   = @json($deletedVisitors);
+    var cancelledVisitors = @json($cancelledVisitors);
 
     var PER_PAGE    = 7;
     var currentPage = 1;
@@ -1046,6 +1051,8 @@
             'pending':   '<span class="badge badge-pending">Pending</span>',
             'rejected':  '<span class="badge badge-rejected">Rejected</span>',
             'completed': '<span class="badge badge-completed">Completed</span>',
+            'cancelled': '<span class="badge badge-rejected">Cancelled</span>',
+            'deleted':   '<span class="badge badge-rejected">Deleted</span>',
         };
         return map[status] || '<span class="badge badge-pending">' + (status || '') + '</span>';
     }
@@ -1370,6 +1377,7 @@
         document.getElementById('archive-backdrop').classList.add('open');
         document.getElementById('acount-completed').textContent = completedVisitors.length;
         document.getElementById('acount-deleted').textContent   = deletedVisitors.length;
+        document.getElementById('acount-cancelled').textContent = cancelledVisitors.length;
         renderArchive();
     }
 
@@ -1382,13 +1390,22 @@
         archiveTab = tab;
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
+        document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
 
     function renderArchive() {
         var q    = document.getElementById('archive-search').value.toLowerCase();
-        var data = archiveTab === 'completed' ? completedVisitors : deletedVisitors;
+        
+        var data;
+        if (archiveTab === 'completed') {
+            data = completedVisitors;
+        } else if (archiveTab === 'deleted') {
+            data = deletedVisitors;
+        } else {
+            data = cancelledVisitors;
+        }
 
         var result = data.filter(function(v) {
             return (v.visitor_name || '').toLowerCase().includes(q)
@@ -1409,20 +1426,21 @@
         }
 
         var pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        var pillLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        var footerLabel = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
+        var pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
+        var footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
 
         list.innerHTML = result.map(function(v, i) {
             var tenantName = v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : null;
             var roomNum    = v.tenant && v.tenant.room_number ? v.tenant.room_number : null;
+            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
                     + '<div class="archive-card-id">LOG-' + String(v.visitor_id).padStart(4, '0') + '</div>'
-                    + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
+                    + '<div class="archive-card-time">' + logTime + '</div>'
                 + '</div>'
                 + '<div class="archive-card-visitor">' + (v.visitor_name || '&mdash;') + '</div>'
                 + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' - Rm ' + roomNum : '') + '</div>' : '')
@@ -1438,14 +1456,32 @@
     }
 
     function exportArchiveCsv() {
-        var data  = archiveTab === 'completed' ? completedVisitors : deletedVisitors;
+        var data;
+        if (archiveTab === 'completed') {
+            data = completedVisitors;
+        } else if (archiveTab === 'deleted') {
+            data = deletedVisitors;
+        } else {
+            data = cancelledVisitors;
+        }
+
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
-        var label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+
+        var label;
+        if (archiveTab === 'completed') {
+            label = 'Checked Out On';
+        } else if (archiveTab === 'deleted') {
+            label = 'Deleted On';
+        } else {
+            label = 'Cancelled On';
+        }
+
         var rows  = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
         data.forEach(function(v) {
+            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
             rows.push([
                 'LOG-' + String(v.visitor_id).padStart(4, '0'),
                 v.visitor_name   || '',
@@ -1469,15 +1505,40 @@
     }
 
     function exportArchivePdf() {
-        var data = archiveTab === 'completed' ? completedVisitors : deletedVisitors;
+        var data;
+        if (archiveTab === 'completed') {
+            data = completedVisitors;
+        } else if (archiveTab === 'deleted') {
+            data = deletedVisitors;
+        } else {
+            data = cancelledVisitors;
+        }
+
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
-        var tabLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        var footerHead = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+
+        var tabLabel;
+        if (archiveTab === 'completed') {
+            tabLabel = 'Completed';
+        } else if (archiveTab === 'deleted') {
+            tabLabel = 'Deleted';
+        } else {
+            tabLabel = 'Cancelled';
+        }
+
+        var footerHead;
+        if (archiveTab === 'completed') {
+            footerHead = 'Checked Out On';
+        } else if (archiveTab === 'deleted') {
+            footerHead = 'Deleted On';
+        } else {
+            footerHead = 'Cancelled On';
+        }
         var win  = window.open('', '_blank');
         var rows = data.map(function(v) {
+            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : fmtDatePlain(v.arrival_time);
+                : logTime;
             return '<tr>'
                 + '<td>LOG-' + String(v.visitor_id).padStart(4, '0') + '</td>'
                 + '<td>' + (v.visitor_name || '') + '</td>'
