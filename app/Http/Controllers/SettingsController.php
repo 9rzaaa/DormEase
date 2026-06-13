@@ -17,6 +17,7 @@ class SettingsController extends Controller
             'emergency_new'      => true,
             'visitor_checkin'    => false,
             'visitor_checkout'   => false,
+            'visitor_cancelled'  => true,
             'billing_overdue'    => true,
             'document_request'   => true,
             'announcement_new'   => false,
@@ -45,6 +46,7 @@ class SettingsController extends Controller
             'emergency_new',
             'visitor_checkin',
             'visitor_checkout',
+            'visitor_cancelled',
             'billing_overdue',
             'document_request',
             'announcement_new',
@@ -68,11 +70,12 @@ class SettingsController extends Controller
         $staff = Auth::guard('staff')->user();
 
         $defaultPrefs = [
-            'emergency_new'    => true,
+            'emergency_new'        => true,
             'visitor_registration' => true,
-            'visitor_checkin'  => true,
-            'visitor_checkout' => true,
-            'announcement_new' => true,
+            'visitor_checkin'      => true,
+            'visitor_checkout'     => true,
+            'visitor_cancelled'    => true,
+            'announcement_new'     => true,
         ];
 
         $notifPrefs = $defaultPrefs;
@@ -95,6 +98,7 @@ class SettingsController extends Controller
             'visitor_registration',
             'visitor_checkin',
             'visitor_checkout',
+            'visitor_cancelled',
             'announcement_new',
         ];
 

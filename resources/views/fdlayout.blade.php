@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -604,17 +604,19 @@
                                     @php
                                         $notifIcon = match($notif->type) {
                                             'visitor_registration' => 'nav-visit',
-                                            'emergency_new'        => 'warn',
                                             'visitor_checkin'      => 'nav-visit',
                                             'visitor_checkout'     => 'nav-visit',
+                                            'visitor_cancelled'    => 'nav-visit',
+                                            'emergency_new'        => 'warn',
                                             'announcement_new'     => 'nav-announ',
                                             default                => 'bell',
                                         };
                                         $notifTypeLabel = match($notif->type) {
                                             'visitor_registration' => 'visitor',
-                                            'emergency_new'        => 'emergency',
                                             'visitor_checkin'      => 'visitor',
                                             'visitor_checkout'     => 'visitor',
+                                            'visitor_cancelled'    => 'visitor',
+                                            'emergency_new'        => 'emergency',
                                             'announcement_new'     => 'announcement',
                                             default                => 'general',
                                         };
