@@ -162,6 +162,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
     Route::post('/tenants/{id}/tag-moved-in', [TenantController::class, 'tagAsMovedIn'])->name('tenants.tag-moved-in');
+    Route::post('/tenants/{id}/reschedule', [TenantController::class, 'reschedule'])->name('tenants.reschedule');
     Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
     Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
     Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);

@@ -372,6 +372,33 @@ class TenantController extends Controller
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
+    public function reschedule(Request $request, $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+
+        if ($tenant->status !== 'reserved') {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Tenant is not in reserved status.');
+        }
+
+        $request->validate([
+            'estimated_move_in_date' => 'required|date',
+        ]);
+
+        $tenant->update([
+            'estimated_move_in_date' => $request->estimated_move_in_date,
+        ]);
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_reservation_rescheduled',
+            message: "Reservation for {$tenant->first_name} {$tenant->last_name} has been rescheduled to " . \Carbon\Carbon::parse($request->estimated_move_in_date)->format('M d, Y') . ".",
+            ref_id: $tenant->tenant_id,
+        );
+
+        return redirect()->route('tenants.index')
+            ->with('success', 'Reservation rescheduled successfully.');
+    }
+
     public function reactivate($id)
     {
         if (!Auth::guard('staff')->check()) {

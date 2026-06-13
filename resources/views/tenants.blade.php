@@ -428,6 +428,43 @@ tbody tr:hover { background: var(--soft-bg); }
 .tv-item.full { grid-column: 1 / -1; }
 .tv-item-label { font-size: .68rem; font-weight: 800; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
 .tv-item-value { font-size: .9rem; font-weight: 600; color: #5a1e38; word-break: break-word; line-height: 1.4; }
+.overdue-date {
+    color: #e04867;
+    font-weight: 700;
+    text-decoration: underline dotted #e04867;
+    text-decoration-thickness: 1.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color .15s;
+}
+.overdue-date:hover { color: #b0163a; }
+.overdue-date-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: .5rem .75rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    z-index: 50;
+    pointer-events: none;
+}
+.overdue-date-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+}
+.overdue-date:hover .overdue-date-tooltip { display: block; }
 
 @keyframes pulseGreen {
     0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
@@ -1446,6 +1483,36 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="modal-overlay" id="reschedule-modal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </span>
+                Reschedule Reservation
+            </div>
+            <button class="modal-close" onclick="closeModal('reschedule-modal')">&#x2715;</button>
+        </div>
+        <form method="POST" id="reschedule-form" action="" data-loading-message="Rescheduling reservation..." style="display:contents;">
+            @csrf
+            <div class="modal-body">
+                <p style="font-size:.9rem;color:var(--ink);font-weight:600;margin:0 0 .6rem;">
+                    Update the estimated move-in date for <strong id="reschedule-name" style="color:var(--bright-pink);"></strong>.
+                </p>
+                <div class="modal-field">
+                    <label>New Estimated Move-In Date</label>
+                    <input type="date" name="estimated_move_in_date" id="reschedule-date" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('reschedule-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save New Date</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal-overlay" id="reset-modal">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
@@ -1987,9 +2054,24 @@ function buildRows(list) {
             + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
             + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '')
             + '</div>';
-        var col4 = t.status === 'reserved'
-            ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
-            : fmtDate(t.move_in_date);
+        var col4;
+        if (t.status === 'reserved') {
+            if (t.estimated_move_in_date) {
+                if (isOverdue(t.estimated_move_in_date)) {
+                    var ov = daysOverdue(t.estimated_move_in_date);
+                    col4 = '<span class="overdue-date" onclick="openRescheduleModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\', \'' + t.estimated_move_in_date + '\')">'
+                        + fmtDate(t.estimated_move_in_date)
+                        + '<span class="overdue-date-tooltip">Overdue by ' + ov + ' day' + (ov !== 1 ? 's' : '') + '. Click to reschedule.</span>'
+                        + '</span>';
+                } else {
+                    col4 = '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>';
+                }
+            } else {
+                col4 = '\u2014';
+            }
+        } else {
+            col4 = fmtDate(t.move_in_date);
+        }
        var isReserved = t.status === 'reserved';
         var dataAttr = 'data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\'';
         var actions = ''
@@ -2263,6 +2345,29 @@ function openTagMovedInModal(id, name) {
     document.getElementById('tag-movedin-name').textContent = name;
     document.getElementById('tag-movedin-form').action = '/tenants/' + id + '/tag-moved-in';
     openModal('tag-movedin-modal');
+}
+
+function openRescheduleModal(id, name, currentDate) {
+    document.getElementById('reschedule-name').textContent = name;
+    document.getElementById('reschedule-form').action = '/tenants/' + id + '/reschedule';
+    document.getElementById('reschedule-date').value = currentDate || '';
+    openModal('reschedule-modal');
+}
+
+function isOverdue(dateStr) {
+    if (!dateStr) return false;
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(dateStr + 'T00:00:00');
+    return est < today;
+}
+
+function daysOverdue(dateStr) {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(dateStr + 'T00:00:00');
+    var diff = Math.floor((today - est) / 86400000);
+    return diff;
 }
 
 function openResetModal(id, name) {
