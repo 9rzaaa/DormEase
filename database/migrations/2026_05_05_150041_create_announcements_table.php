@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('priority')->nullable();
             $table->string('status')->nullable();
             $table->string('attachment')->nullable();
-            $table->timestamp('posted_at')->useCurrent();
-
+            $table->timestamp('posted_at')->nullable();
             $table->foreign('posted_by')
                   ->references('staff_id')
                   ->on('staff')
