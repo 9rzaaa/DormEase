@@ -2413,11 +2413,11 @@ function viewDoc(r) {
         `;
     }
 
-    document.getElementById('view-req-actions').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-            <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
-            <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
-        </div>
+    const footer = document.getElementById('view-req-actions');
+    footer.style.justifyContent = 'space-between';
+    footer.innerHTML = `
+        <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
+        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
     openModal('view-doc-modal');
 }
