@@ -446,7 +446,7 @@
     </div>
 
     <div class="carousel-slide" id="slide-3">
-      <img src="{{ asset('images/main.jpg') }}" alt="Building" class="carousel-slide-img"
+      <img src="{{ asset('images/main.png') }}" alt="Building" class="carousel-slide-img"
            onerror="this.parentElement.innerHTML='<div class=carousel-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg><span>Add main.jpg</span></div>'">
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Sanctissimo Rosario · Sampaloc, Manila</span></div>
