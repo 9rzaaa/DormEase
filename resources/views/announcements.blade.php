@@ -1066,8 +1066,7 @@
         <div class="ann-list-panel" id="ann-list-panel">
             @php
                 $merged = $announcements->merge($scheduled)
-                    ->sortByDesc(fn($a) => $a->created_at ?? $a->posted_at ?? $a->scheduled_at)
-                    ->sortBy(fn($a) => $a->status === 'closed' ? 1 : 0);
+                    ->sortByDesc(fn($a) => $a->posted_at ?? $a->scheduled_at ?? $a->created_at);
             @endphp
             @forelse($merged as $ann)
                 @php $isScheduled = $ann->status === 'scheduled'; @endphp
@@ -1600,9 +1599,10 @@ function toggleMenu(e, id) {
 function positionDropdown(btn) {
     const rect = btn.getBoundingClientRect();
     const ddW  = 170;
-    let left   = rect.right - ddW + window.scrollX;
-    let top    = rect.bottom + 6 + window.scrollY;
+    let left   = rect.right - ddW;
+    let top    = rect.bottom + 6;
     if (left < 8) left = 8;
+    if (top + 140 > window.innerHeight) top = rect.top - 140;
     globalDropdown.style.left = left + 'px';
     globalDropdown.style.top  = top + 'px';
 }
