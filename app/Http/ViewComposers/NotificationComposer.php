@@ -28,6 +28,7 @@ class NotificationComposer
         'tenant_reactivated',
         'tenant_deleted',
         'tenant_reserved',
+        'reservation_overdue',
     ];
 
     const FRONTDESK_TYPES = [

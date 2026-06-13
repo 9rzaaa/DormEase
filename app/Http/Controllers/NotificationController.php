@@ -147,6 +147,7 @@ class NotificationController extends Controller
 
         $uiType = match (true) {
             $type === 'tenant_reserved'            => 'reservation',
+            $type === 'reservation_overdue'        => 'reservation_overdue',
             str_starts_with($type, 'maintenance')  => 'maintenance',
             str_starts_with($type, 'emergency')    => 'emergency',
             str_starts_with($type, 'billing')      => 'billing',
@@ -158,15 +159,16 @@ class NotificationController extends Controller
         };
 
         $icon = match ($uiType) {
-            'reservation'  => 'pending',
-            'maintenance'  => 'maintenance',
-            'emergency'    => 'warn',
-            'billing'      => 'billing',
-            'document'     => 'nav-docu',
-            'announcement' => 'nav-announ',
-            'visitor'      => 'nav-visit',
-            'tenant'       => 'nav-tenants',
-            default        => 'bell',
+            'reservation'         => 'pending',
+            'reservation_overdue' => 'pending',
+            'maintenance'         => 'maintenance',
+            'emergency'           => 'warn',
+            'billing'             => 'billing',
+            'document'            => 'nav-docu',
+            'announcement'        => 'nav-announ',
+            'visitor'             => 'nav-visit',
+            'tenant'              => 'nav-tenants',
+            default               => 'bell',
         };
 
         return [
