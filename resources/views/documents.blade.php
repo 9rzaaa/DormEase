@@ -2461,9 +2461,11 @@ function viewDoc(r) {
         `;
     }
 
-    document.getElementById('view-doc-actions').innerHTML = `
-        <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
-        <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review / Set Status</button>
+    document.getElementById('view-req-actions').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
+            <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
+        </div>
     `;
     openModal('view-doc-modal');
 }
