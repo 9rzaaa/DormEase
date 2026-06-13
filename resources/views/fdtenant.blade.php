@@ -2632,7 +2632,7 @@ function runQuickSearch() {
     }
 
     var pool = tenants.filter(function(t) {
-        return t.status !== 'inactive' && t.status !== 'move_out';
+        return t.status === 'active' || t.status === 'pending';
     });
 
     var matches = pool.filter(function(t) {
