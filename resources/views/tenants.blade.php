@@ -1420,22 +1420,27 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
             <div class="modal-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
                 Tag as Moved In
             </div>
             <button class="modal-close" onclick="closeModal('tag-movedin-modal')">&#x2715;</button>
         </div>
-        <div class="modal-body">
-            <div class="modal-info-banner">
-                <span>Tagging <strong id="tag-movedin-name" style="color:var(--ink);"></strong> as moved in will generate a new Account ID and temporary password. The tenant's status will become <strong>Pending</strong> until they log in for the first time.</span>
+        <div class="modal-body" style="padding-top:.2rem;">
+            <p style="font-size:.92rem;color:var(--ink);font-weight:600;margin:0 0 .6rem;">
+                Tag <strong id="tag-movedin-name" style="color:var(--bright-pink);"></strong> as moved in?
+            </p>
+            <div class="modal-info-banner" style="margin-bottom:.6rem;">
+                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will change to <strong>Pending</strong> until their first login.</span>
             </div>
-            <p style="font-size:.85rem;color:var(--ink-muted);margin:0;">Make sure the assigned room is correct before proceeding. This cannot be undone.</p>
+            <p style="font-size:.78rem;color:var(--ink-muted);margin:0;line-height:1.5;">Make sure the assigned room is correct before proceeding. This action cannot be undone.</p>
         </div>
         <form method="POST" id="tag-movedin-form" action="" data-loading-message="Tagging as moved in..." style="display:contents;">
             @csrf
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Confirm &amp; Generate Credentials</button>
+                <button type="submit" class="btn-submit">Confirm</button>
             </div>
         </form>
     </div>
