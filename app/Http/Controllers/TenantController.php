@@ -209,12 +209,17 @@ class TenantController extends Controller
             ref_id: $tenant->tenant_id,
         );
 
+        if ($isReserved) {
+            return redirect()->route('tenants.index')
+                ->with('success', 'Reservation created successfully.');
+        }
+
         return redirect()->route('tenants.index')
             ->with('success', 'Tenant account created successfully.')
             ->with('new_account_id',    $accountId)
             ->with('new_temp_password', $tempPassword)
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
-    }
+        }
 
     public function update(Request $request, $id)
     {
