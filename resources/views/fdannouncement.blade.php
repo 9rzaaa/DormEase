@@ -81,18 +81,10 @@
     gap: .75rem;
 }
 
-.ann-filter-group {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    flex-wrap: wrap;
-}
-
-.ann-filter-btn {
+.ann-filter-select {
     display: inline-flex;
     align-items: center;
-    gap: .38rem;
-    padding: .42rem .9rem;
+    padding: .42rem 2rem .42rem .85rem;
     border-radius: 99px;
     border: 1.5px solid var(--pink-100, #f9c5d6);
     background: #fff;
@@ -102,12 +94,34 @@
     cursor: pointer;
     transition: all .2s;
     font-family: var(--ff-body);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23E8175D' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem center;
+    outline: none;
 }
 
-.ann-filter-btn:hover { border-color: var(--bright-pink, #E8175D); color: var(--hot-pink, #d6175a); background: var(--petal, #ffeef4); }
-.ann-filter-btn.active { background: var(--gradient-pink, linear-gradient(135deg,#E8175D,#c0103e)); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(232,23,93,.25); }
-.ann-filter-btn.active img { filter: brightness(0) invert(1); }
-.ann-filter-btn img { width: 13px; height: 13px; object-fit: contain; filter: brightness(0) saturate(100%) invert(60%) sepia(5%) saturate(300%) hue-rotate(0deg); opacity: .7; }
+.ann-filter-select:hover {
+    border-color: var(--bright-pink, #E8175D);
+    color: var(--hot-pink, #d6175a);
+    background-color: var(--petal, #ffeef4);
+}
+
+.ann-filter-select:focus {
+    border-color: var(--bright-pink, #E8175D);
+    color: var(--hot-pink, #d6175a);
+}
+
+.ann-filter-select.has-value {
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23E8175D' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem center;
+    color: var(--hot-pink, #d6175a);
+    border-color: var(--bright-pink, #E8175D);
+    box-shadow: 0 4px 12px rgba(232,23,93,.12);
+}
 
 .ann-search-wrap {
     position: relative;
@@ -552,31 +566,30 @@
     </div>
 
     <div class="ann-toolbar fade-up d3">
-        <div class="ann-filter-group">
-            <button class="ann-filter-btn active" onclick="setFilter(this,'all')">
-                <img src="{{ asset('icons/filter.png') }}" alt=""> All
-            </button>
-            <button class="ann-filter-btn" onclick="setFilter(this,'active')">
-                <img src="{{ asset('icons/check.png') }}" alt=""> Active
-            </button>
-            <button class="ann-filter-btn" onclick="setFilter(this,'closed')">
-                <img src="{{ asset('icons/archive.png') }}" alt=""> Closed
-            </button>
-            <button class="ann-filter-btn" onclick="setFilter(this,'high')">
-                <img src="{{ asset('icons/warning.png') }}" alt=""> High Priority
-            </button>
-            <button class="ann-filter-btn" onclick="setFilter(this,'low')">
-                <img src="{{ asset('icons/flag.png') }}" alt=""> Low Priority
-            </button>
-            <button class="ann-filter-btn" onclick="setFilter(this,'week')">
-                <img src="{{ asset('icons/calendar.png') }}" alt=""> This Week
-            </button>
-        </div>
-        <div class="ann-search-wrap">
-            <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
-            <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="searchAnnouncements()">
-        </div>
+    <div class="ann-filter-group">
+        <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+        </select>
+        <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
+            <option value="">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="low">Low Priority</option>
+        </select>
+        <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
+            <option value="">Any Date</option>
+            <option value="this_week">This Week</option>
+            <option value="last_week">Last Week</option>
+            <option value="two_weeks">Last 2 Weeks</option>
+            <option value="this_month">This Month</option>
+        </select>
     </div>
+    <div class="ann-search-wrap">
+        <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
+        <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+    </div>
+</div>
 
     <div class="ann-main-layout fade-up d4">
 
@@ -756,38 +769,55 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-function setFilter(btn, type) {
-    document.querySelectorAll('.ann-filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const cards = document.querySelectorAll('.ann-row-card');
-    const now   = new Date();
-    cards.forEach(card => {
-        let show = false;
-        const status   = card.dataset.status;
-        const priority = card.dataset.priority;
-        const posted   = new Date(card.dataset.posted);
-        if      (type === 'all')    show = true;
-        else if (type === 'active') show = status === 'active';
-        else if (type === 'closed') show = status === 'closed';
-        else if (type === 'high')   show = priority === 'high';
-        else if (type === 'low')    show = priority === 'low';
-        else if (type === 'week') {
-            const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7);
-            show = posted >= weekAgo;
-        }
+function applyDropdownFilters(changedEl) {
+    if (changedEl) {
+        changedEl.classList.toggle('has-value', changedEl.value !== '');
+    }
+
+    const status   = document.getElementById('filter-status').value;
+    const priority = document.getElementById('filter-priority').value;
+    const date     = document.getElementById('filter-date').value;
+    const q        = document.getElementById('ann-search-input').value.toLowerCase();
+    const now      = new Date();
+
+    let weekStart, weekEnd;
+
+    if (date === 'this_week') {
+        weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay()); weekStart.setHours(0,0,0,0);
+        weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6); weekEnd.setHours(23,59,59,999);
+    } else if (date === 'last_week') {
+        weekEnd   = new Date(now); weekEnd.setDate(now.getDate() - now.getDay() - 1); weekEnd.setHours(23,59,59,999);
+        weekStart = new Date(weekEnd); weekStart.setDate(weekEnd.getDate() - 6); weekStart.setHours(0,0,0,0);
+    } else if (date === 'two_weeks') {
+        weekStart = new Date(now); weekStart.setDate(now.getDate() - 13); weekStart.setHours(0,0,0,0);
+        weekEnd   = now;
+    } else if (date === 'this_month') {
+        weekStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        weekEnd   = now;
+    }
+
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        const cardStatus   = card.dataset.status;
+        const cardPriority = card.dataset.priority;
+        const cardPosted   = new Date(card.dataset.posted);
+        const cardTitle    = card.dataset.title   || '';
+        const cardContent  = card.dataset.content || '';
+
+        let show = true;
+
+        if (status && cardStatus !== status) show = false;
+        if (priority && cardPriority !== priority) show = false;
+        if (date && weekStart && weekEnd && (cardPosted < weekStart || cardPosted > weekEnd)) show = false;
+        if (q && !cardTitle.includes(q) && !cardContent.includes(q)) show = false;
+
         card.style.display = show ? '' : 'none';
     });
+
     updateEmptyState();
 }
 
 function searchAnnouncements() {
-    const q = document.getElementById('ann-search-input').value.toLowerCase();
-    document.querySelectorAll('.ann-row-card').forEach(card => {
-        const title   = card.dataset.title   || '';
-        const content = card.dataset.content || '';
-        card.style.display = (title.includes(q) || content.includes(q)) ? '' : 'none';
-    });
-    updateEmptyState();
+    applyDropdownFilters();
 }
 
 function updateEmptyState() {
