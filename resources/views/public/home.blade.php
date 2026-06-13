@@ -44,7 +44,6 @@ body { font-family: var(--font-body); background: var(--cream); color: var(--bro
   border-bottom: 1px solid rgba(232,23,93,0.12);
 }
 
-/* ─── NAV ─── */
 nav {
   position: fixed; top: 54px; left: 50%; z-index: 100;
   width: min(1220px, calc(100% - 12%));
@@ -84,7 +83,6 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
 }
 .nav-cta:hover { filter: brightness(0.94); transform: translateY(-1px); }
 
-/* Mobile hamburger toggle */
 .nav-toggle {
   display: none; width: 44px; height: 44px; border: 0; border-radius: 50%;
   background: var(--gradient-pink); color: white; align-items: center; justify-content: center;
@@ -106,7 +104,6 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
 }
 .mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
-/* ─── HEADER INFO STRIP ─── */
 .header-info-strip { padding: 154px 6% 16px; background: var(--pink-pale); border-bottom: 1px solid rgba(232,23,93,0.12); }
 .header-info-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
 .header-info-item {
@@ -119,7 +116,6 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
 .header-info-title { font-family: var(--font-head); font-size: .98rem; font-weight: 800; color: var(--brown); line-height: 1.25; }
 .header-info-text { font-size: .82rem; color: var(--brown-light); line-height: 1.45; margin-top: 3px; }
 
-/* ─── HERO ─── */
 .hero {
   min-height: 100svh; padding: 0 5% 0 8%;
   display: grid; grid-template-columns: 1fr 1fr; align-items: center;
@@ -183,14 +179,12 @@ nav.scrolled { top: 18px; box-shadow: 0 16px 34px rgba(36,16,24,0.12); }
 .hero-arch img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; filter: brightness(0.93) saturate(0.90); transition: transform 0.6s ease; }
 .hero-arch:hover img { transform: scale(1.04); }
 
-/* ─── SECTIONS ─── */
 section { padding: 100px 6%; }
 .section-tag { font-size:.70rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
 .section-title { font-family:var(--font-head); font-size:clamp(1.8rem,3.2vw,2.8rem); font-weight:800; line-height:1.15; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
 .section-title em { color:var(--pink); font-style:italic; font-weight:700; }
 .section-sub { font-size:1rem; color:var(--brown-light); line-height:1.8; max-width:540px; }
 
-/* ─── GALLERY ─── */
 .gallery { background:var(--cream-dark); padding-top:80px; padding-bottom:80px; }
 .gallery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; margin-top:48px; }
 .gal-item { border-radius:var(--r-lg); overflow:hidden; position:relative; background:white; box-shadow:var(--shadow-card); }
@@ -204,7 +198,6 @@ section { padding: 100px 6%; }
 .gal-title { font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--brown); margin-bottom:4px; }
 .gal-desc { font-size:0.85rem; color:var(--brown-light); line-height:1.7; }
 
-/* ─── HOW IT WORKS ─── */
 .how { background:var(--cream); position:relative; overflow:hidden; }
 .how::before { content:''; position:absolute; top:-200px; right:-200px; width:500px; height:500px; border-radius:50%; background:rgba(214,56,104,0.04); }
 .how-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
@@ -215,7 +208,6 @@ section { padding: 100px 6%; }
 .step-desc { font-size:.87rem; color:var(--brown-light); line-height:1.75; }
 .how-img-main { background:white; border-radius:var(--r-xl); box-shadow:var(--shadow-soft); padding:36px 28px; text-align:center; }
 
-/* ─── PHONE MOCKUP ─── */
 .de-mockup-wrap {
   background: var(--pink-pale); border-radius: 20px;
   padding: 32px 16px 24px; display: flex;
@@ -277,7 +269,6 @@ section { padding: 100px 6%; }
 .de-notice-body { font-size: 6px; color: var(--brown-light); line-height: 1.5; }
 .de-notice-date { font-size: 5.5px; color: var(--pink-light); font-weight: 700; margin-top: 2px; }
 
-/* ─── ABOUT ─── */
 .about { background:var(--brown); color:white; position:relative; overflow:hidden; }
 .about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(255,45,120,0.16); }
 .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; position:relative; z-index:1; }
@@ -292,7 +283,6 @@ section { padding: 100px 6%; }
 .about-main-photo { width:min(100%,460px); height:clamp(500px,42vw,620px); }
 .about-img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:var(--r-lg); filter:brightness(1.05) saturate(1.1); }
 
-/* ─── CTA / CONTACT ─── */
 .cta-section { background:var(--pink-pale); }
 .contact-inner { display:grid; grid-template-columns:minmax(460px,1fr) minmax(260px,360px); gap:54px; align-items:center; max-width:1100px; margin:0 auto; }
 .contact-copy { text-align:left; }
@@ -315,7 +305,6 @@ section { padding: 100px 6%; }
 .contact-map-img { width:100%; height:auto; display:block; }
 .contact-map-link { color:inherit; text-decoration:none; }
 
-/* ─── FOOTER ─── */
 footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 40px; }
 .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
 .footer-logo { display:flex; align-items:center; margin-bottom:16px; text-decoration:none; }
@@ -336,7 +325,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
 .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 
-/* ─── SCROLL TOP ─── */
 #scrollTopBtn {
   position:fixed; bottom:32px; right:32px; z-index:999;
   width:50px; height:50px; border:none; border-radius:50%;
@@ -352,14 +340,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
 #scrollTopBtn:active { transform:translateY(0) scale(.96); }
 #scrollTopBtn svg { width:22px; height:22px; stroke:white; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
 
-/* ─── REVEAL ─── */
 .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
 .reveal.visible { opacity:1; transform:translateY(0); }
 .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s} .d4{transition-delay:.40s}
 
-/*  RESPONSIVE BREAKPOINTS */
-
-/* ── 960px tablet ── */
 @media(max-width:960px){
   .hero { grid-template-columns:1fr; padding:120px 6% 80px; min-height:auto; }
   .hero-content { padding:0; }
@@ -379,12 +363,10 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .header-info-inner { grid-template-columns:1fr 1fr; gap:18px; }
   .header-info-item { border:1px solid rgba(36,16,24,0.14); border-radius:var(--r-md); padding:16px; background:rgba(255,255,255,0.55); }
   .header-info-item:last-child { border-right:1px solid rgba(36,16,24,0.14); }
-  /* phone mockup: scale down slightly so 3 phones fit */
   .de-phone.side { width:110px; height:238px; }
   .de-phone.center { width:132px; height:284px; }
 }
 
-/* ── 760px large mobile ── */
 @media(max-width:760px){
   nav { top:46px; height:auto; min-height:76px; padding:10px 5%; gap:14px; flex-wrap:wrap; border-radius:28px; width:calc(100% - 28px); }
   nav.scrolled { top:12px; }
@@ -406,13 +388,11 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .footer-btm { flex-direction:column; gap:16px; align-items:flex-start; }
   .footer-btm-right { align-items:flex-start; }
   #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
-  /* phone mockup: show only center phone on small screens */
   .de-phone.side { display:none; }
   .de-phone.center { width:180px; height:340px; transform:none; }
   .de-mockup-wrap { padding:24px 16px 20px; }
 }
 
-/* ── 600px mobile ── */
 @media(max-width:600px){
   .features-grid { grid-template-columns:1fr; }
   .gallery-grid { grid-template-columns:1fr; }
@@ -425,11 +405,9 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .header-info-item { grid-template-columns:40px 1fr; }
   .header-info-icon { width:40px; height:40px; }
   .how-img-main { padding:24px 16px; border-radius:var(--r-lg); }
-  /* make center phone a bit bigger now that it's alone */
   .de-phone.center { width:200px; height:370px; }
 }
 
-/* ── 420px small mobile ── */
 @media(max-width:420px){
   .hero-chip { font-size:.74rem; padding:7px 11px; }
   .section-title { font-size:1.72rem; }
@@ -439,7 +417,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   .btn-primary,.btn-outline { font-size:.85rem; padding:12px 20px; }
   .footer-inner { gap:32px; }
   .de-phone.center { width:175px; height:330px; }
-  /* stack steps more tightly */
   .steps { gap:20px; }
   .step-num { width:36px; height:36px; font-size:.88rem; }
 }
@@ -519,7 +496,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </header>
 
-<!-- ─── HERO ─── -->
 <section class="hero" id="hero">
   <div class="hero-content">
     <div class="hero-badge">Safe &middot; Comfortable &middot; Near UST</div>
@@ -547,7 +523,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ─── GALLERY ─── -->
 <section class="gallery" id="gallery">
   <div class="reveal">
     <div class="section-tag">Our Rooms</div>
@@ -590,7 +565,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ─── HOW IT WORKS ─── -->
 <section class="how" id="how">
   <div class="how-inner">
     <div>
@@ -625,7 +599,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
     <div class="how-img-main reveal">
       <div class="de-mockup-wrap">
 
-        {{-- Left phone: Menu --}}
         <div class="de-phone side">
           <div class="de-notch"></div>
           <div class="de-screen">
@@ -648,7 +621,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
           </div>
         </div>
 
-        {{-- Center phone: Dashboard --}}
         <div class="de-phone center">
           <div class="de-notch"></div>
           <div class="de-screen">
@@ -670,7 +642,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
           </div>
         </div>
 
-        {{-- Right phone: Notices --}}
         <div class="de-phone side">
           <div class="de-notch"></div>
           <div class="de-screen">
@@ -705,7 +676,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ─── ABOUT ─── -->
 <section class="about" id="about">
   <div class="about-inner">
     <div>
@@ -737,7 +707,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ─── CTA / CONTACT ─── -->
 <section class="cta-section" id="contact">
   <div class="contact-inner reveal">
     <div class="contact-copy">
@@ -765,7 +734,6 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
   </div>
 </section>
 
-<!-- ─── FOOTER ─── -->
 <footer>
   <div class="footer-inner">
     <div>
@@ -787,14 +755,14 @@ footer { background:var(--brown); color:rgba(255,255,255,0.48); padding:64px 6% 
       <h4>Dormitory</h4>
       <a href="#about">About</a>
       <a href="#gallery">Room Types</a>
-      <a href="#">Amenities</a>
+      <a href="{{ route('gallery') }}">Amenities</a>
       <a href="https://maps.google.com/?q=1235%20Navarra%20St,%20Sampaloc,%20Manila,%201015%20Metro%20Manila&ftid=0x3397b5ffdcdacc75:0x38ad8e34f1c2236f&entry=gps&lucs=,94284469,94231188,47071704,94218641,94282134,94286869&g_st=ipc">Location</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
       <a href="tel:+639175359723">+63 917 535 9723</a>
-      <a href="#">1229 Navarra St.</a>
-      <a href="#">Sampaloc, Manila</a>
+      <a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">1229 Navarra St.</a>
+      <a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">Sampaloc, Manila</a>
     </div>
   </div>
   <div class="footer-btm">
