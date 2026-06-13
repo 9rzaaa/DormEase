@@ -1700,10 +1700,10 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-title">Add / Edit Note</div>
             <button class="modal-close" onclick="closeModal('notes-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;padding:0 1.1rem;">
-            Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
-        </p>
-        <div style="padding: 0 1.1rem;">
+        <div style="flex:1;overflow-y:auto;padding:.75rem 1.1rem;">
+            <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:.9rem;">
+                Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
+            </p>
             <div class="modal-field">
                 <label>Note</label>
                 <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
@@ -1811,13 +1811,17 @@ function toggleReservedTable() {
     var chevron  = document.getElementById('reserved-chevron');
     var controls = document.getElementById('reserved-table-controls');
     if (reservedTableOpen) {
-        body.style.display     = '';
-        controls.style.display = '';
+        body.style.display      = '';
+        controls.style.display  = '';
         chevron.style.transform = '';
     } else {
-        body.style.display     = 'none';
-        controls.style.display = 'none';
+        body.style.display      = 'none';
+        controls.style.display  = 'none';
         chevron.style.transform = 'rotate(-90deg)';
+        document.getElementById('reserved-search-input').value = '';
+        document.getElementById('reserved-floor-filter').value = '';
+        document.getElementById('reserved-sort-select').value  = 'newest';
+        applyReservedFilters();
     }
 }
 
@@ -2337,8 +2341,15 @@ function viewTenant(t) {
 
     bodyHtml += '<div class="td-section-label">Stay Period</div>';
     bodyHtml += '<div class="td-info-grid">';
-    bodyHtml += infoItem('Move-In Date',  fmtDate(t.move_in_date));
-    bodyHtml += infoItem('Move-Out Date', fmtDate(t.move_out_date));
+    if (t.status === 'reserved') {
+        bodyHtml += infoItem('Est. Move-In Date', fmtDate(t.estimated_move_in_date));
+        if (t.reservation_notes) {
+            bodyHtml += infoItem('Reservation Notes', t.reservation_notes, true);
+        }
+    } else {
+        bodyHtml += infoItem('Move-In Date',  fmtDate(t.move_in_date));
+        bodyHtml += infoItem('Move-Out Date', fmtDate(t.move_out_date));
+    }
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="td-section-label">Notes</div>';
@@ -2391,7 +2402,11 @@ async function submitNote() {
         var filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
         if (filteredIdx !== -1) filtered[filteredIdx].notes = note;
 
+        var reservedIdx = reservedFiltered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
+        if (reservedIdx !== -1) reservedFiltered[reservedIdx].notes = note;
+
         renderTable();
+        renderReservedTable();
         closeModal('notes-modal');
         showToast('Note saved successfully.', 'success');
     } catch(e) {
@@ -2593,7 +2608,7 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('#log-date-dropdown-btn') && !e.target.closest('#log-date-dropdown-menu')) {
         var m = document.getElementById('log-date-dropdown-menu');
         var c = document.getElementById('log-date-dropdown-chevron');
-        if (m) { m.style.display = 'none'; }
+        if (m && m.style.display !== 'none') { m.style.display = 'none'; }
         if (c) { c.style.transform = ''; }
     }
 });
@@ -2683,7 +2698,9 @@ async function quickTimeIn(id, btn) {
         var data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed.');
         updateTenantInsideState(id, true);
-        runQuickSearch();
+        document.getElementById('quick-search-input').value = '';
+        document.getElementById('quick-results').classList.remove('open');
+        document.getElementById('quick-results').innerHTML = '';
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
@@ -2704,7 +2721,9 @@ async function quickTimeOut(id, btn) {
         var data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed.');
         updateTenantInsideState(id, false);
-        runQuickSearch();
+        document.getElementById('quick-search-input').value = '';
+        document.getElementById('quick-results').classList.remove('open');
+        document.getElementById('quick-results').innerHTML = '';
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
