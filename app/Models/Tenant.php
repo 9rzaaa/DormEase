@@ -78,6 +78,11 @@ class Tenant extends Authenticatable
     {
         if ($this->status === 'pending') {
             $this->update(['status' => 'active']);
+            \App\Helpers\NotificationHelper::sendToAll(
+                type: 'tenant_activated',
+                message: "{$this->first_name} {$this->last_name} has logged in and their account is now active.",
+                ref_id: $this->tenant_id,
+            );
         }
     }
 }

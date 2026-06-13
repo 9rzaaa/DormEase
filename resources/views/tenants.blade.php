@@ -210,6 +210,7 @@ td {
     vertical-align: middle;
 }
 th:nth-child(2), td:nth-child(2) { text-align: center; }
+th:nth-child(3), td:nth-child(3) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
 .td-center { text-align: center; }
