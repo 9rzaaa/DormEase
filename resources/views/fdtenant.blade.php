@@ -1296,6 +1296,63 @@ tbody tr:hover { background: var(--soft-bg); }
 .log-ddf-item:last-child { border-bottom: none; }
 .log-ddf-item:hover { background: var(--blush); color: var(--hot-pink); }
 .log-ddf-item.active { background: var(--petal); color: var(--hot-pink); }
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%; max-width: 540px;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    display: flex; flex-direction: column;
+    max-height: 92vh; overflow: hidden;
+    animation: modalIn .28s cubic-bezier(.34,1.3,.64,1) both;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+    padding: .75rem 1.1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--pink-100); flex-shrink: 0;
+}
+.modal-title { font-size: 1rem; font-weight: 800; color: var(--ink); }
+.modal-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 1.5px solid var(--pink-100); background: var(--petal);
+    color: var(--bright-pink); font-size: .95rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s;
+}
+.modal-close:hover { background: var(--bright-pink); color: var(--white); }
+.modal-actions {
+    padding: .65rem 1.1rem;
+    border-top: 1px solid var(--pink-100);
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: .55rem; flex-shrink: 0; background: #fffafd;
+}
+.btn-cancel {
+    padding: .55rem 1.2rem; border-radius: 10px;
+    border: 1.5px solid var(--pink-100); background: var(--white);
+    color: var(--ink-muted); font-size: .875rem; font-weight: 600;
+    cursor: pointer; transition: .2s; font-family: inherit;
+}
+.btn-cancel:hover { border-color: var(--bright-pink); color: var(--hot-pink); background: var(--petal); }
+.btn-submit {
+    padding: .55rem 1.3rem; border-radius: 10px;
+    border: none; background: var(--gradient-pink);
+    color: var(--white); font-size: .875rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    box-shadow: 0 8px 20px rgba(232,23,93,.25);
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
+.icon-sm { width: 16px; height: 16px; object-fit: contain; }
 </style>
 @endsection
 
@@ -1778,7 +1835,18 @@ function renderTable() {
                 : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
-                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
+                (function() {
+                    var nameCell = t.first_name + ' ' + t.last_name;
+                    if (t.estimated_move_in_date) {
+                        var today = new Date(); today.setHours(0,0,0,0);
+                        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
+                        if (est < today) {
+                            var days = Math.floor((today - est) / 86400000);
+                            nameCell += ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
+                        }
+                    }
+                    return '<td style="font-weight:600;">' + nameCell + '</td>';
+                })() +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
@@ -2649,9 +2717,9 @@ async function quickTimeOut(id, btn) {
 document.addEventListener('click', function(e) {
     var panel = document.getElementById('quick-results');
     var input = document.getElementById('quick-search-input');
-    if (panel && !panel.contains(e.target) && e.target !== input) {
-        panel.classList.remove('open');
-    }
+    if (!panel || !input) return;
+    if (panel.contains(e.target) || e.target === input) return;
+    panel.classList.remove('open');
 });
 
 applyFilters();
