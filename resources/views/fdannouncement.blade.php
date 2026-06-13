@@ -594,7 +594,7 @@
     <div class="ann-main-layout fade-up d4">
 
         <div class="ann-list-panel" id="ann-list-panel">
-            @forelse($announcements->sortByDesc('posted_at')->sortBy(fn($a) => $a->status === 'closed' ? 1 : 0) as $ann)
+            @forelse($announcements->sortByDesc('posted_at') as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
