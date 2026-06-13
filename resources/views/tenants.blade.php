@@ -405,6 +405,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-title { display: flex; align-items: center; gap: .65rem; }
 .tenant-section-label { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
 .tenant-section-pill { font-size: .7rem; font-weight: 800; padding: .22rem .6rem; border-radius: 99px; letter-spacing: .03em; }
+.tenant-section-pill-overdue { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .tenant-section-pill-active { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tenant-section-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .tenant-section-chevron { transition: transform .25s cubic-bezier(.4,0,.2,1); flex-shrink: 0; }
@@ -451,6 +452,9 @@ tbody tr:hover { background: var(--soft-bg); }
     padding: .5rem .75rem;
     border-radius: 8px;
     white-space: nowrap;
+    max-width: 280px;
+    white-space: normal;
+    line-height: 1.45;
     box-shadow: 0 8px 20px rgba(0,0,0,.18);
     z-index: 50;
     pointer-events: none;
@@ -744,6 +748,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span class="tenant-section-label">Reserved Tenants</span>
                     <span class="tenant-section-pill tenant-section-pill-pink" id="pill-reserved">0</span>
+                    <span class="tenant-section-pill" id="pill-reserved-overdue" style="display:none;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);">0 overdue</span>
                 </div>
                 <svg class="tenant-section-chevron open" id="chevron-reserved" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -2106,10 +2111,12 @@ function buildRows(list) {
         if (t.status === 'reserved') {
             if (t.estimated_move_in_date) {
                 if (isOverdue(t.estimated_move_in_date)) {
-                    var ov = daysOverdue(t.estimated_move_in_date);
+                    var ov       = daysOverdue(t.estimated_move_in_date);
+                    var roomRef  = t.room_number ? 'Rm. ' + t.room_number : 'this room';
+                    var tooltipText = roomRef + ' held ' + ov + ' day' + (ov !== 1 ? 's' : '') + ' past expected move-in. Click to reschedule.';
                     col4 = '<span class="overdue-date" onclick="openRescheduleModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\', \'' + t.estimated_move_in_date + '\')">'
                         + fmtDate(t.estimated_move_in_date)
-                        + '<span class="overdue-date-tooltip">Overdue by ' + ov + ' day' + (ov !== 1 ? 's' : '') + '. Click to reschedule.</span>'
+                        + '<span class="overdue-date-tooltip">' + tooltipText + '</span>'
                         + '</span>';
                 } else {
                     col4 = '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>';
@@ -2179,6 +2186,18 @@ function renderSection(group) {
     document.getElementById('showing-' + group).textContent  = total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
     document.getElementById('pagination-' + group).innerHTML = buildPagination(group, page, total);
     document.getElementById('pill-' + group).textContent     = total;
+    if (group === 'reserved') {
+        var overdueCount = data.filter(function(t) { return isOverdue(t.estimated_move_in_date); }).length;
+        var overduePill  = document.getElementById('pill-reserved-overdue');
+        if (overduePill) {
+            if (overdueCount > 0) {
+                overduePill.textContent  = overdueCount + ' overdue';
+                overduePill.style.display = '';
+            } else {
+                overduePill.style.display = 'none';
+            }
+        }
+    }
 }
 
 function goPage(group, p) {

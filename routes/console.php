@@ -14,3 +14,4 @@ Schedule::command('tenants:activate-reserved')->dailyAt('00:05');
 
 Schedule::command('bills:mark-overdue')->dailyAt('00:10');
 Schedule::command('bills:notify-due-reminder')->dailyAt('09:00');
+Schedule::command('reservations:notify-overdue')->dailyAt('08:00');
