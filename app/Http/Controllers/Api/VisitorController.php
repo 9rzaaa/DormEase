@@ -67,13 +67,23 @@ class VisitorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'visitor_name'  => 'required|string|max:255',
-            'contact_no'    => 'nullable|string|max:255',
-            'purpose'       => 'nullable|string|max:255',
-            'id_type'       => 'nullable|string|max:255',
-            'id_photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
-            'date_of_visit' => 'nullable|date',
-            'time_of_visit' => 'nullable|string|max:20',
+            'visitor_name'  => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $parts = array_filter(explode(' ', trim($value)));
+                    if (count($parts) < 2) {
+                        $fail('The visitor full name must contain at least a first name and a last name.');
+                    }
+                }
+            ],
+            'contact_no'    => 'required|digits:11',
+            'purpose'       => 'required|string|max:255',
+            'id_type'       => 'required|string|max:255',
+            'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'date_of_visit' => 'required|date',
+            'time_of_visit' => 'required|string|max:20',
         ]);
 
         $user     = $request->user();
