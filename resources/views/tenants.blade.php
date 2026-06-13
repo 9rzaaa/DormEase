@@ -2807,7 +2807,7 @@ function renderRooms() {
                     ? `<span style="font-size:.68rem;font-weight:700;color:#e04867;">Full</span>`
                     : `<span style="font-size:.68rem;font-weight:600;color:var(--ink-muted);">${vacantCount} slot${vacantCount !== 1 ? 's' : ''} free</span>`;
 
-            return `<div onclick="openViewRoomModal(${JSON.stringify(r)})" style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;cursor:pointer;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
+            return `<div onclick="openViewRoomModal(this)" data-room='${JSON.stringify(r).replace(/'/g, "&#39;")}' style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;cursor:pointer;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isFull ? 'linear-gradient(90deg,#e04867,#ff6b8a)' : pct >= 75 ? 'linear-gradient(90deg,#f0a500,#ffd060)' : isEmpty ? 'linear-gradient(90deg,#d0d0d8,#e8e8f0)' : 'linear-gradient(90deg,#1f9d69,#4ecb8d)'};border-radius:16px 16px 0 0;"></div>
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding-top:.15rem;">
                     <div style="display:flex;flex-direction:column;gap:.2rem;">
@@ -2818,7 +2818,7 @@ function renderRooms() {
                         <span style="font-size:.7rem;font-weight:600;color:var(--ink-muted);letter-spacing:.02em;">${r.stay_type}</span>
                     </div>
                     <div style="display:flex;gap:.25rem;flex-shrink:0;">
-                       <button class="act-btn" title="Edit" onclick="event.stopPropagation();openEditRoomModal(${JSON.stringify(r).replace(/'/g, '&#39;')})" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
+                       <button class="act-btn" title="Edit" onclick="event.stopPropagation();openEditRoomModal(JSON.parse(this.closest('[data-room]').dataset.room))" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
                         <button class="act-btn" title="Delete" onclick="event.stopPropagation();openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
@@ -2935,7 +2935,8 @@ async function submitAddRoom() {
     }
 }
 
-function openViewRoomModal(r) {
+function openViewRoomModal(el) {
+    var r = JSON.parse(el.dataset.room);
     var occupants = tenants.filter(function(t) {
         return t.room_number === r.room_number
             && t.status !== 'inactive'
