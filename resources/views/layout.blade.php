@@ -162,7 +162,7 @@
     .logout-btn:hover { transform: translateY(-1px); opacity: .95; }
     .logout-btn img { width: 15px; height: 15px; filter: brightness(0) invert(1); }
 
-    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; overflow-y: visible; }
 
     .topbar {
         position: sticky; top: 0; z-index: 50;
