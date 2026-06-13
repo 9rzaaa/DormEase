@@ -46,32 +46,37 @@
 }
 
 .ann-stat-card {
-    background: #fff;
-    border: 1px solid var(--pink-100, #f9c5d6);
+    background: linear-gradient(135deg, var(--hot-pink, #d6175a) 0%, var(--bright-pink, #E8175D) 100%);
     border-radius: 16px;
+    border: none;
     padding: 1.1rem 1.3rem;
     display: flex;
     align-items: center;
     gap: .9rem;
-    box-shadow: 0 2px 12px rgba(232,23,93,.06);
-    transition: box-shadow .2s;
+    box-shadow: 0 8px 24px rgba(232,23,93,.18);
+    transition: transform .2s, box-shadow .2s;
 }
 
-.ann-stat-card:hover { box-shadow: 0 6px 20px rgba(232,23,93,.12); }
+.ann-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(232,23,93,.25);
+}
 
 .ann-stat-icon {
     width: 44px; height: 44px;
     border-radius: 12px;
+    background: #fff;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
 
-.ann-stat-icon img { width: 22px; height: 22px; object-fit: contain; }
-.ann-stat-icon.pink-bg { background: #E8175D; }
-.ann-stat-icon.pink-bg img { filter: brightness(0) invert(1); }
+.ann-stat-icon img {
+    width: 22px; height: 22px; object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
 
-.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: var(--ink); line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 600; color: var(--ink-muted, #888); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
+.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
 
 .ann-toolbar {
     display: flex;
@@ -533,7 +538,7 @@
 
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
@@ -542,7 +547,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
@@ -551,7 +556,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
             </div>
             <div>
@@ -560,7 +565,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/warning.png') }}" alt="">
             </div>
             <div>
