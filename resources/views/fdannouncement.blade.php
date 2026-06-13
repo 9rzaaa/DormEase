@@ -46,32 +46,37 @@
 }
 
 .ann-stat-card {
-    background: #fff;
-    border: 1px solid var(--pink-100, #f9c5d6);
+    background: linear-gradient(135deg, var(--hot-pink, #d6175a) 0%, var(--bright-pink, #E8175D) 100%);
     border-radius: 16px;
+    border: none;
     padding: 1.1rem 1.3rem;
     display: flex;
     align-items: center;
     gap: .9rem;
-    box-shadow: 0 2px 12px rgba(232,23,93,.06);
-    transition: box-shadow .2s;
+    box-shadow: 0 8px 24px rgba(232,23,93,.18);
+    transition: transform .2s, box-shadow .2s;
 }
 
-.ann-stat-card:hover { box-shadow: 0 6px 20px rgba(232,23,93,.12); }
+.ann-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(232,23,93,.25);
+}
 
 .ann-stat-icon {
     width: 44px; height: 44px;
     border-radius: 12px;
+    background: #fff;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
 
-.ann-stat-icon img { width: 22px; height: 22px; object-fit: contain; }
-.ann-stat-icon.pink-bg { background: #E8175D; }
-.ann-stat-icon.pink-bg img { filter: brightness(0) invert(1); }
+.ann-stat-icon img {
+    width: 22px; height: 22px; object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
 
-.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: var(--ink); line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 600; color: var(--ink-muted, #888); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
+.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
 
 .ann-toolbar {
     display: flex;
@@ -81,9 +86,14 @@
     gap: .75rem;
 }
 
-.ann-filter-select {
-    display: inline-flex;
+.ann-filter-group {
+    display: flex;
     align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.ann-filter-select {
     padding: .42rem 2rem .42rem .85rem;
     border-radius: 99px;
     border: 1.5px solid var(--pink-100, #f9c5d6);
@@ -528,7 +538,7 @@
 
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
@@ -537,7 +547,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
@@ -546,7 +556,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
             </div>
             <div>
@@ -555,7 +565,7 @@
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/warning.png') }}" alt="">
             </div>
             <div>
@@ -566,39 +576,42 @@
     </div>
 
     <div class="ann-toolbar fade-up d3">
-    <div class="ann-filter-group">
-        <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
-            <option value="">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="closed">Closed</option>
-        </select>
-        <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
-            <option value="">All Priorities</option>
-            <option value="high">High Priority</option>
-            <option value="low">Low Priority</option>
-        </select>
-        <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
-            <option value="">Any Date</option>
-            <option value="this_week">This Week</option>
-            <option value="last_week">Last Week</option>
-            <option value="two_weeks">Last 2 Weeks</option>
-            <option value="this_month">This Month</option>
-        </select>
+        <div class="ann-filter-group">
+            <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="closed">Closed</option>
+            </select>
+            <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
+                <option value="">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="low">Low Priority</option>
+            </select>
+            <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
+                <option value="">Any Date</option>
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="two_weeks">Last 2 Weeks</option>
+                <option value="this_month">This Month</option>
+            </select>
+        </div>
+        <div class="ann-search-wrap">
+            <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
+            <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+        </div>
     </div>
-    <div class="ann-search-wrap">
-        <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
-        <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
-    </div>
-</div>
 
     <div class="ann-main-layout fade-up d4">
 
         <div class="ann-list-panel" id="ann-list-panel">
-            @forelse($announcements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at) as $ann)
+            @php
+                $sorted = $announcements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at)->values();
+            @endphp
+            @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
-                     data-posted="{{ $ann->posted_at }}"
+                     data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
                      data-title="{{ strtolower($ann->title) }}"
                      data-content="{{ strtolower($ann->content) }}"
                      onclick="openViewModal({{ $ann->announcement_id }})">
@@ -625,7 +638,7 @@
 
                     <div class="ann-row-right">
                         <span class="ann-row-time">
-                            {{ \Carbon\Carbon::parse($ann->posted_at)->format('M j, Y') }}
+                            {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
                         <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
                             <img src="{{ asset('icons/eye.png') }}" alt=""> View
@@ -686,13 +699,13 @@
                     </span>
                 </div>
                 <div class="ann-sidebar-body">
-                    @forelse($announcements->where('status','active')->sortByDesc('posted_at')->take(5) as $r)
+                    @forelse($announcements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
                         <div class="ann-recent-item" onclick="openViewModal({{ $r->announcement_id }})">
                             <div class="ann-recent-title">{{ $r->title }}</div>
-                            <div class="ann-recent-time">{{ \Carbon\Carbon::parse($r->posted_at)->format('M j, Y') }}</div>
+                            <div class="ann-recent-time">{{ \Carbon\Carbon::parse($r->posted_at ?? $r->created_at)->format('M j, Y') }}</div>
                         </div>
                     @empty
-                        <div class="ann-recent-empty">No active announcements.</div>
+                        <div class="ann-recent-empty">No announcements yet.</div>
                     @endforelse
                 </div>
             </div>
@@ -816,10 +829,6 @@ function applyDropdownFilters(changedEl) {
     updateEmptyState();
 }
 
-function searchAnnouncements() {
-    applyDropdownFilters();
-}
-
 function updateEmptyState() {
     const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
     document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
@@ -920,7 +929,7 @@ function openViewModal(id) {
         </div>
         <div class="vm-detail-row">
             <span class="vm-detail-label">Posted</span>
-            <span class="vm-detail-val">${formatDate(ann.posted_at)}</span>
+            <span class="vm-detail-val">${formatDate(ann.posted_at || ann.created_at)}</span>
         </div>
         <div class="vm-detail-row">
             <span class="vm-detail-label">Attachments</span>
