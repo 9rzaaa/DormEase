@@ -1097,13 +1097,13 @@
         </select>
 
         <span class="toolbar-label">From:</span>
-        <div class="date-range" style="position:relative;">
+        <div class="date-range">
             <input type="date" id="date-from" onchange="applyFilters()">
             <span class="date-sep">to</span>
             <input type="date" id="date-to" onchange="applyFilters()">
             <button type="button" id="date-clear-btn" onclick="clearDates()" style="display:none;margin-left:.25rem;background:none;border:none;cursor:pointer;color:var(--bright-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;transition:opacity .2s;" title="Clear dates">&#x2715;</button>
-            <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:9999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
         </div>
+        <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:9999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
 
         <select class="toolbar-select" id="status-filter" onchange="applyFilters()">
             <option value="">All Statuses</option>
@@ -1607,9 +1607,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (from && to && from > to) {
             var toEl  = document.getElementById('date-to');
             var rect  = toEl.getBoundingClientRect();
+            dateErr.style.visibility = 'hidden';
+            dateErr.style.display    = 'block';
             dateErr.style.top  = (rect.bottom + 6) + 'px';
             dateErr.style.left = rect.left + 'px';
-            dateErr.style.display = 'block';
+            dateErr.style.visibility = '';
             document.getElementById('date-from').style.borderColor = '#ffc2d1';
             toEl.style.borderColor = '#ffc2d1';
             return;
