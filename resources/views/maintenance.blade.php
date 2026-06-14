@@ -486,6 +486,11 @@
         animation: rcFadeUp .28s ease both;
     }
 
+    @keyframes rcFadeUp {
+        from { opacity: 0; transform: translateY(16px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);   }
+    }
+
     .resubmit-confirm-title {
         font-size: 1rem;
         font-weight: 800;
@@ -1096,7 +1101,8 @@
             <input type="date" id="date-from" onchange="applyFilters()">
             <span class="date-sep">to</span>
             <input type="date" id="date-to" onchange="applyFilters()">
-            <div id="date-error" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:200;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
+            <button type="button" id="date-clear-btn" onclick="clearDates()" style="display:none;margin-left:.25rem;background:none;border:none;cursor:pointer;color:var(--bright-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;transition:opacity .2s;" title="Clear dates">&#x2715;</button>
+            <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:9999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
         </div>
 
         <select class="toolbar-select" id="status-filter" onchange="applyFilters()">
@@ -1501,9 +1507,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchIcon = "{{ asset('icons/search.png') }}";
     const maintIcon  = "{{ asset('icons/maintenance.png') }}";
 
+    var _rowDataMap = {};
+
     function buildRow(r) {
         const issueKey = (r.issue_type ?? '').toLowerCase();
         const cls = issueClasses[issueKey] ?? 'issue-other';
+        _rowDataMap[r.id] = r;
         return `<tr>
             <td><span class="req-id">#REQ-${String(r.id).padStart(3,'0')}</span></td>
             <td><div class="req-date">${fmtDate(r.created_at)}</div></td>
@@ -1515,10 +1524,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${statusBadge(r.status)}</td>
             <td>
                 <div class="action-cell">
-                    <button class="action-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
+                    <button class="action-btn" title="View" onclick="viewReq(_rowDataMap[${r.id}])">
                         <img src="${eyeIcon}" alt="View">
                     </button>
-                    <button class="action-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
+                    <button class="action-btn" title="Edit" onclick="openEditModal(_rowDataMap[${r.id}])">
                         <img src="${editIcon}" alt="Edit">
                     </button>
                     <button class="action-btn" title="Delete" onclick="openDeleteModal(${r.id}, '#REQ-${String(r.id).padStart(3,'0')}')">
@@ -1560,7 +1569,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
         for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span style="color:var(--ink-muted);padding:0 .2rem;line-height:30px;">&#8230;</span>`;
+            }
         }
         html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`;
         pg.innerHTML = html;
@@ -1592,15 +1605,20 @@ document.addEventListener('DOMContentLoaded', () => {
         var dateErr = document.getElementById('date-error');
 
         if (from && to && from > to) {
+            var toEl  = document.getElementById('date-to');
+            var rect  = toEl.getBoundingClientRect();
+            dateErr.style.top  = (rect.bottom + 6) + 'px';
+            dateErr.style.left = rect.left + 'px';
             dateErr.style.display = 'block';
             document.getElementById('date-from').style.borderColor = '#ffc2d1';
-            document.getElementById('date-to').style.borderColor   = '#ffc2d1';
+            toEl.style.borderColor = '#ffc2d1';
             return;
         }
 
         dateErr.style.display = 'none';
         document.getElementById('date-from').style.borderColor = '';
         document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-clear-btn').style.display = (from || to) ? 'inline' : 'none';
 
         filtered = requests.filter(function(r) {
             var matchSearch =
@@ -1865,14 +1883,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderArchive();
     }
 
+    var _archiveDebounce = null;
+
     function renderArchive() {
+        clearTimeout(_archiveDebounce);
+        _archiveDebounce = setTimeout(function() { _runRenderArchive(); }, 150);
+    }
+
+    function _runRenderArchive() {
         const q    = document.getElementById('archive-search').value.toLowerCase();
         const data = archiveTab === 'closed' ? closedArchive
                    : archiveTab === 'resolved' ? resolvedArchive
                    : archiveTab === 'cancelled' ? cancelledArchive
                    : deletedArchive;
 
-        const filtered = data.filter(r =>
+        const archiveFiltered = data.filter(r =>
             ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
             (r.tenant_name ?? '').toLowerCase().includes(q) ||
             (r.room_number ?? '').toLowerCase().includes(q) ||
@@ -1881,9 +1906,9 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         const list = document.getElementById('archive-list');
-        document.getElementById('archive-count-label').textContent = `${filtered.length} record${filtered.length !== 1 ? 's' : ''}`;
+        document.getElementById('archive-count-label').textContent = `${archiveFiltered.length} record${archiveFiltered.length !== 1 ? 's' : ''}`;
 
-        if (filtered.length === 0) {
+        if (archiveFiltered.length === 0) {
             list.innerHTML = `<div class="archive-empty">
                 <img class="archive-empty-icon" src="{{ asset('icons/maintenance.png') }}" alt="">
                 No ${archiveTab === 'resolved' ? 'resolved' : archiveTab === 'cancelled' ? 'cancelled' : archiveTab} requests found.
@@ -1897,7 +1922,7 @@ document.addEventListener('DOMContentLoaded', () => {
                            : archiveTab === 'cancelled' ? 'Cancelled on'
                            : 'Deleted on';
 
-        list.innerHTML = filtered.map((r, i) => `
+        list.innerHTML = archiveFiltered.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
                 <div class="archive-card-top">
                     <div class="archive-card-id">#REQ-${String(r.id).padStart(3,'0')}</div>
@@ -2101,6 +2126,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
         return true;
+    }
+    function clearDates() {
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value   = '';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-error').style.display    = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
     }
 </script>
 @endsection
