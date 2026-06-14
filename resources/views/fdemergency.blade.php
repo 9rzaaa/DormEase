@@ -1191,8 +1191,8 @@
                 <img src="{{ asset('icons/resolved.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Resolved Emergencies</div>
-                <div class="stat-num">{{ $resolvedCount }}</div>
+                <div class="stat-label">Active Panic Alerts</div>
+                <div class="stat-num">{{ $panicCount }}</div>
             </div>
         </div>
     </div>
@@ -1404,7 +1404,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="report-submit-btn" onclick="handleReportSubmit(this)">Submit Report</button>
+                <button type="submit" class="btn-submit" id="report-submit-btn" onclick="handleReportSubmit(event, this)">Submit Report</button>
             </div>
         </form>
     </div>
@@ -1945,11 +1945,10 @@
 
         try {
             const res = await fetch(`/frontdesk/emergency/${currentRep.report_id}`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'PUT',
                 },
                 body: JSON.stringify({
                     status:      document.getElementById('edit-status').value,
@@ -1990,11 +1989,10 @@
 
         try {
             const res = await fetch(`/frontdesk/emergency/${deleteId}`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'DELETE',
                 },
             });
 
@@ -2232,7 +2230,7 @@
         showToast('{{ session("success") }}', 'success');
     @endif
 
-    function handleReportSubmit(btn) {
+    function handleReportSubmit(event, btn) {
         const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
         const loc  = document.querySelector('#report-modal input[name="location"]').value.trim();
         if (!type) {
@@ -2308,5 +2306,20 @@
     populateTypeFilter();
     applyFilters();
     renderDirList();
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
 </script>
 @endsection

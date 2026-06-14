@@ -1154,7 +1154,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="dir-modal">
+<div class="modal-overlay" id="dir-modal" onclick="handleOverlayClick(event, 'dir-modal')">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">
@@ -1199,7 +1199,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
+<div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
             <div class="modal-title">Emergency Details</div>
@@ -1213,7 +1213,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="edit-modal">
+<div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event, 'edit-modal')">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
             <div class="modal-title">Update Emergency Report</div>
@@ -1258,7 +1258,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
+<div class="modal-overlay" id="delete-modal" onclick="handleOverlayClick(event, 'delete-modal')">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
             <div class="modal-title">Delete Report</div>
@@ -1292,6 +1292,10 @@
     let deleteId    = null;
     let archiveTab  = 'closed';
 
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function handleOverlayClick(event, id) { if (event.target === event.currentTarget) closeModal(id); }
+
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -1312,6 +1316,7 @@
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function handleOverlayClick(event, id) { if (event.target === event.currentTarget) closeModal(id); }
 
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
@@ -2031,5 +2036,37 @@
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
+
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
+
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
 </script>
 @endsection
