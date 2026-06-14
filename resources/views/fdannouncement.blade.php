@@ -1012,7 +1012,7 @@ function applyDropdownFilters(changedEl) {
         card.style.display = show ? '' : 'none';
     });
 
-    updateEmptyState();
+    applyHidden();
 }
 
 const HIDDEN_KEY = 'fd_hidden_announcements';
