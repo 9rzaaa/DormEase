@@ -1053,8 +1053,6 @@ function applyHidden() {
         const id = parseInt(card.dataset.annId);
         if (hidden.includes(id)) {
             card.style.display = 'none';
-        } else {
-            if (card.style.display === 'none') card.style.display = '';
         }
     });
     const bar   = document.getElementById('ann-show-hidden-bar');
@@ -1234,7 +1232,7 @@ function openViewModal(id) {
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
 
-updateEmptyState();
+applyHidden();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
