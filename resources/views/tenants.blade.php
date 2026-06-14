@@ -869,7 +869,19 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="tad-list" id="rooms-list"></div>
     <div class="tad-footer">
         <div class="tad-count-label" id="rooms-count-label">0 rooms</div>
-        <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+            <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
+            <div class="export-dropdown" id="export-dropdown-rooms">
+                <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-rooms')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-rooms">
+                    <button onclick="exportRoomsCSV(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportRoomsPDF(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -3874,6 +3886,142 @@ function exportAdminLog(format) {
     a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'tenant-entry-exit-log.csv';
     a.click();
+}
+
+function exportRoomsCSV() {
+    var data = roomsData;
+    if (!data || !data.length) { showToast('No room data to export.', 'error'); return; }
+    var tenantsByRoom = {};
+    tenants.forEach(function(t) {
+        if (!t.room_number || t.status === 'inactive' || t.status === 'move_out') return;
+        if (!tenantsByRoom[t.room_number]) tenantsByRoom[t.room_number] = [];
+        tenantsByRoom[t.room_number].push(t.first_name + ' ' + t.last_name + ' (' + t.status + ')');
+    });
+    var rows = [['Room No.', 'Floor', 'Type', 'Capacity', 'Occupied', 'Available', 'Status', 'Tenants']];
+    data.forEach(function(r) {
+        var occupied  = r.occupancy || 0;
+        var available = r.capacity - occupied;
+        var status    = !r.is_active ? 'Closed' : occupied >= r.capacity ? 'Full' : available === r.capacity ? 'Vacant' : 'Partial';
+        var tenantList = (tenantsByRoom[r.room_number] || []).join('; ');
+        rows.push([r.room_number, 'Floor ' + r.floor, r.stay_type, r.capacity, occupied, available, status, tenantList]);
+    });
+    var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'dormease-rooms-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+}
+
+function exportRoomsPDF() {
+    var data = roomsData;
+    if (!data || !data.length) { showToast('No room data to export.', 'error'); return; }
+
+    var tenantsByRoom = {};
+    tenants.forEach(function(t) {
+        if (!t.room_number || t.status === 'inactive' || t.status === 'move_out') return;
+        if (!tenantsByRoom[t.room_number]) tenantsByRoom[t.room_number] = [];
+        tenantsByRoom[t.room_number].push({ name: t.first_name + ' ' + t.last_name, status: t.status });
+    });
+
+    var sortedFloors = [...new Set(data.map(r => r.floor))].sort(function(a,b){return a-b;});
+    var totalOcc = data.reduce(function(s,r){return s+r.occupancy;},0);
+    var totalCap = data.reduce(function(s,r){return s+r.capacity;},0);
+    var pct      = totalCap > 0 ? Math.round(totalOcc/totalCap*100) : 0;
+    var today    = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    var rows = sortedFloors.map(function(fl) {
+        var floorRooms = data.filter(function(r){ return r.floor === fl; });
+        var floorOcc   = floorRooms.reduce(function(s,r){return s+r.occupancy;},0);
+        var floorCap   = floorRooms.reduce(function(s,r){return s+r.capacity;},0);
+        var floorPct   = floorCap > 0 ? Math.round(floorOcc/floorCap*100) : 0;
+
+        var cards = floorRooms.map(function(r) {
+            var occ       = r.occupancy || 0;
+            var isFull    = occ >= r.capacity;
+            var isEmpty   = occ === 0;
+            var slotsLeft = r.capacity - occ;
+            var roomPct   = r.capacity > 0 ? Math.round(occ/r.capacity*100) : 0;
+
+            var barColor  = !r.is_active ? '#c8c8d4' : isFull ? '#e04867' : roomPct >= 75 ? '#f59e0b' : '#1f9d69';
+            var statusLabel = !r.is_active ? 'Closed' : isFull ? 'Full' : isEmpty ? 'Vacant' : 'Active';
+            var statusBg    = !r.is_active ? '#f3f4f6' : isFull ? '#fff0f0' : isEmpty ? '#e8faf5' : '#e8faf5';
+            var statusColor = !r.is_active ? '#888'    : isFull ? '#e04867' : isEmpty ? '#1f9d69' : '#1f9d69';
+            var statusBorder= !r.is_active ? '#d0d0d8' : isFull ? '#ffb3c0' : isEmpty ? '#8ce0bb' : '#8ce0bb';
+
+            var tenantList = tenantsByRoom[r.room_number] || [];
+            var tenantRows = tenantList.length === 0
+                ? '<div style="font-size:10px;color:#aaa;font-style:italic;padding:4px 0;">No tenants assigned</div>'
+                : tenantList.map(function(t) {
+                    var sc = t.status === 'active' ? '#1f9d69' : t.status === 'reserved' ? '#9a6200' : '#888';
+                    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid #fce8f1;font-size:10px;">'
+                        + '<span style="color:#3a0e22;font-weight:600;">\u2022 ' + t.name + '</span>'
+                        + '<span style="color:' + sc + ';font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.03em;">' + t.status + '</span>'
+                        + '</div>';
+                }).join('');
+
+            var barW = Math.max(roomPct, 0);
+
+            return '<div style="background:#fff;border:1.5px solid #f4b8d0;border-radius:10px;padding:10px 12px;break-inside:avoid;">'
+                + '<div style="height:3px;background:' + barColor + ';border-radius:3px 3px 0 0;margin:-10px -12px 8px;"></div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+                    + '<span style="font-size:13px;font-weight:800;color:#1a1a2e;">Rm. ' + r.room_number + '</span>'
+                    + '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:' + statusBg + ';color:' + statusColor + ';border:1px solid ' + statusBorder + ';">' + statusLabel + '</span>'
+                + '</div>'
+                + '<div style="font-size:9.5px;color:#888;margin-bottom:6px;">' + r.stay_type + ' &nbsp;&middot;&nbsp; Floor ' + r.floor + '</div>'
+                + '<div style="background:#f0e0e8;border-radius:3px;height:4px;margin-bottom:5px;">'
+                    + '<div style="height:4px;width:' + barW + '%;background:' + barColor + ';border-radius:3px;min-width:' + (occ > 0 ? '4' : '0') + 'px;"></div>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+                    + '<span style="font-size:10px;font-weight:700;color:' + barColor + ';">' + occ + '/' + r.capacity + ' occupied</span>'
+                    + '<span style="font-size:9.5px;color:#888;">' + (isFull ? 'No slots free' : slotsLeft + ' slot' + (slotsLeft !== 1 ? 's' : '') + ' free') + '</span>'
+                + '</div>'
+                + '<div style="background:#fff5f9;border-radius:6px;padding:5px 7px;">' + tenantRows + '</div>'
+                + '</div>';
+        }).join('');
+
+        return '<div style="margin-bottom:20px;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #fce8f1;">'
+                + '<div style="display:flex;align-items:center;gap:8px;">'
+                    + '<div style="width:3px;height:16px;background:#E8175D;border-radius:2px;"></div>'
+                    + '<span style="font-size:12px;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.08em;">Floor ' + fl + '</span>'
+                + '</div>'
+                + '<span style="font-size:10px;font-weight:700;color:#888;">' + floorOcc + '/' + floorCap + ' occupied &nbsp;&middot;&nbsp; ' + floorPct + '%</span>'
+            + '</div>'
+            + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">' + cards + '</div>'
+            + '</div>';
+    }).join('');
+
+    var win = window.open('', '_blank');
+    win.document.write('<!DOCTYPE html><html><head><title>Room Overview</title>'
+        + '<style>'
+        + 'body{font-family:"Segoe UI",Arial,sans-serif;margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+        + '.header{background:#E8175D;color:#fff;padding:18px 24px 14px;}'
+        + '.header h1{margin:0 0 3px;font-size:16px;font-weight:800;letter-spacing:-.01em;}'
+        + '.header p{margin:0;font-size:10.5px;opacity:.82;}'
+        + '.summary-bar{display:flex;gap:16px;padding:10px 24px;background:#fff5f9;border-bottom:1.5px solid #fce8f1;}'
+        + '.summary-item{display:flex;flex-direction:column;gap:1px;}'
+        + '.summary-item .val{font-size:16px;font-weight:800;color:#E8175D;line-height:1;}'
+        + '.summary-item .lbl{font-size:9px;font-weight:700;color:#b06080;text-transform:uppercase;letter-spacing:.05em;}'
+        + '.content{padding:18px 24px;}'
+        + '@media print{body{padding:0;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
+        + '</style>'
+        + '</head><body>'
+        + '<div class="header">'
+            + '<h1>Sanctissimo Rosario Ladies Dormitory</h1>'
+            + '<p>Room Overview &nbsp;&middot;&nbsp; Exported ' + today + '</p>'
+        + '</div>'
+        + '<div class="summary-bar">'
+            + '<div class="summary-item"><div class="val">' + data.length + '</div><div class="lbl">Total Rooms</div></div>'
+            + '<div class="summary-item"><div class="val">' + totalOcc + '</div><div class="lbl">Occupied Slots</div></div>'
+            + '<div class="summary-item"><div class="val">' + (totalCap - totalOcc) + '</div><div class="lbl">Available Slots</div></div>'
+            + '<div class="summary-item"><div class="val">' + pct + '%</div><div class="lbl">Occupancy Rate</div></div>'
+            + '<div class="summary-item"><div class="val">' + data.filter(function(r){return r.is_active && r.occupancy >= r.capacity;}).length + '</div><div class="lbl">Full Rooms</div></div>'
+            + '<div class="summary-item"><div class="val">' + data.filter(function(r){return !r.is_active;}).length + '</div><div class="lbl">Closed Rooms</div></div>'
+        + '</div>'
+        + '<div class="content">' + rows + '</div>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
 }
 
 function fmtDateTime(d) {
