@@ -109,7 +109,7 @@
 
     .stats-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.2rem;
         box-sizing: border-box;
     }
@@ -126,7 +126,6 @@
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
-        transition: transform .2s, box-shadow .2s;
     }
 
     .stat-card:hover {
@@ -1049,6 +1048,72 @@
     .report-hotline-wrap { margin-bottom: 1rem; display: none; }
     .report-hotline-wrap.visible { display: block; }
 
+    .status-legend-wrap {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+
+    .status-legend-wrap:hover img { opacity: 1; }
+
+    .status-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.18), 0 2px 8px rgba(0,0,0,.1);
+        padding: .75rem .9rem;
+        min-width: 320px;
+        z-index: 99999;
+        pointer-events: auto;
+    }
+
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+
+    .slp-row {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--pink-100);
+    }
+
+    .slp-row:last-child { border-bottom: none; }
+
+    .slp-badge {
+        flex-shrink: 0;
+        min-width: 90px;
+        display: flex;
+        align-items: center;
+    }
+
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+    }
+
     @media (max-width: 900px) {
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -1108,7 +1173,7 @@
                 <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Total Reports</div>
+                <div class="stat-label">Total Emergencies</div>
                 <div class="stat-num">{{ $totalCount }}</div>
             </div>
         </div>
@@ -1117,8 +1182,8 @@
                 <img src="{{ asset('icons/warn.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Active</div>
-                <div class="stat-num">{{ $activeCount }}</div>
+                <div class="stat-label">Critical Emergencies</div>
+                <div class="stat-num">{{ $criticalCount }}</div>
             </div>
         </div>
         <div class="stat-card">
@@ -1126,17 +1191,8 @@
                 <img src="{{ asset('icons/resolved.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Resolved</div>
+                <div class="stat-label">Resolved Emergencies</div>
                 <div class="stat-num">{{ $resolvedCount }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <img src="{{ asset('icons/panic.png') }}" alt="">
-            </div>
-            <div>
-                <div class="stat-label">Panic Alerts</div>
-                <div class="stat-num">{{ $panicCount }}</div>
             </div>
         </div>
     </div>
@@ -1148,9 +1204,23 @@
                 <div class="table-sub" id="table-date"></div>
             </div>
             <div class="table-controls">
-                <div class="search-box">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                <div style="display:flex;align-items:center;gap:.45rem;">
+                    <div class="search-box">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                    </div>
+                    <div class="status-legend-wrap" id="fd-status-legend-wrap">
+                        <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                        <div class="status-legend-popup" id="fd-status-legend-popup">
+                            <div class="slp-title">Urgency &amp; Status Guide</div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
+                        </div>
+                    </div>
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
@@ -2187,6 +2257,46 @@
         select.innerHTML = '<option value="">All Types</option>' +
             types.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
     }
+
+    (function() {
+        var popup = document.getElementById('fd-status-legend-popup');
+        var wrap  = document.getElementById('fd-status-legend-wrap');
+        if (!popup || !wrap) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+
+        var hideTimer = null;
+
+        wrap.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+            var rect       = wrap.getBoundingClientRect();
+            var popupWidth = 320;
+            var left       = rect.left;
+            if (left + popupWidth > window.innerWidth - 12) {
+                left = window.innerWidth - popupWidth - 12;
+            }
+            popup.style.top     = (rect.bottom + 8) + 'px';
+            popup.style.left    = left + 'px';
+            popup.style.display = 'block';
+        });
+
+        wrap.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
 
     function resetFilters() {
         document.getElementById('search-input').value = '';
