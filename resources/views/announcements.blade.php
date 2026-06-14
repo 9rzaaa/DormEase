@@ -93,6 +93,12 @@
     gap: 1.2rem;
     box-sizing: border-box;
 }
+.ann-stat-sub {
+    font-size: .75rem;
+    color: var(--white);
+    font-weight: 600;
+    letter-spacing: .04em;
+}
 .ann-stat-card {
     background: var(--gradient-pink);
     border-radius: 18px;
