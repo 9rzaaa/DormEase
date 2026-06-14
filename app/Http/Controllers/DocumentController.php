@@ -312,14 +312,10 @@ class DocumentController extends Controller
                 ]),
             ]);
 
-            if ($docRequest->fulfilled_file) {
-                Storage::disk('public')->delete($docRequest->fulfilled_file);
-            }
-
             $docRequest->delete();
 
             return response()->json(['message' => 'Request archived successfully']);
-        } catch (\Exception $e) {
+            } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
