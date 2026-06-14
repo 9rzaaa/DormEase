@@ -42,36 +42,38 @@ Route::middleware('auth:sanctum')->group(function () {
     // change passoword
     Route::post('/change-password', [PasswordController::class, 'change']);
 
-    // visitors
-    Route::get('/visitors',                 [VisitorController::class, 'index']);
-    Route::post('/visitors',                [VisitorController::class, 'store']);
-    Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
-    Route::patch('/visitors/{id}/cancel',   [VisitorController::class, 'cancel']);
-    Route::delete('/visitors/{id}',         [VisitorController::class, 'destroy']);
+    Route::middleware('tenant.not_on_vacation')->group(function () {
+        // visitors
+        Route::get('/visitors',                 [VisitorController::class, 'index']);
+        Route::post('/visitors',                [VisitorController::class, 'store']);
+        Route::patch('/visitors/{id}/checkout', [VisitorController::class, 'checkout']);
+        Route::patch('/visitors/{id}/cancel',   [VisitorController::class, 'cancel']);
+        Route::delete('/visitors/{id}',         [VisitorController::class, 'destroy']);
 
-    // billing
-    Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
-    Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
+        // billing
+        Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
+        Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
-    // document request
-    Route::get('/document-requests', [DocumentRequestController::class, 'index']);
-    Route::post('/document-requests', [DocumentRequestController::class, 'store']);
-    Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
-    Route::delete('/document-requests/{id}', [DocumentRequestController::class, 'destroy']);
+        // document request
+        Route::get('/document-requests', [DocumentRequestController::class, 'index']);
+        Route::post('/document-requests', [DocumentRequestController::class, 'store']);
+        Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+        Route::delete('/document-requests/{id}', [DocumentRequestController::class, 'destroy']);
 
-    // document forms
-    Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
-    Route::get('/tenant/forms', [DocumentRequestController::class, 'tenantForms']);
+        // document forms
+        Route::get('/tenant/documents', [DocumentRequestController::class, 'tenantDocuments']);
+        Route::get('/tenant/forms', [DocumentRequestController::class, 'tenantForms']);
 
-    // maintenance
-    Route::get('/maintenance', [MaintenanceController::class, 'index']);
-    Route::post('/maintenance', [MaintenanceController::class, 'store']);
-    Route::post('/maintenance/{id}/resubmit-photo', [MaintenanceController::class, 'resubmitPhoto']);
-    Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy']);
+        // maintenance
+        Route::get('/maintenance', [MaintenanceController::class, 'index']);
+        Route::post('/maintenance', [MaintenanceController::class, 'store']);
+        Route::post('/maintenance/{id}/resubmit-photo', [MaintenanceController::class, 'resubmitPhoto']);
+        Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy']);
 
-    // emergency
-    Route::get('/emergency', [EmergencyController::class, 'index']);
-    Route::post('/emergency', [EmergencyController::class, 'store']);
+        // emergency
+        Route::get('/emergency', [EmergencyController::class, 'index']);
+        Route::post('/emergency', [EmergencyController::class, 'store']);
+    });
 
     // profile
     Route::post('/profile/photo', function (Request $request) {
@@ -105,5 +107,68 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         return response()->json(['message' => 'Profile updated successfully.']);
+    });
+
+    Route::patch('/vacation-status', function (Request $request) {
+        $tenant = $request->user();
+
+        $request->validate([
+            'is_on_vacation' => 'required|boolean',
+            'vacation_note'  => 'nullable|string|max:150',
+        ]);
+
+        $isOnVacation = (bool) $request->input('is_on_vacation');
+        $vacationNote = $request->input('vacation_note');
+
+        if ($isOnVacation) {
+            $errors = [];
+
+            if ($tenant->hasUnpaidBills()) {
+                $errors[] = "You have unpaid or pending bills.";
+            }
+            if ($tenant->hasOngoingMaintenance()) {
+                $errors[] = "You have ongoing maintenance requests.";
+            }
+            if ($tenant->hasOngoingDocuments()) {
+                $errors[] = "You have active document requests.";
+            }
+            if ($tenant->hasActiveVisitors()) {
+                $errors[] = "You have upcoming or active registered visitors.";
+            }
+
+            if (!empty($errors)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot set status to vacation. Preconditions not met.',
+                    'errors'  => $errors,
+                ], 422);
+            }
+        }
+
+        $tenant->update([
+            'is_on_vacation' => $isOnVacation,
+            'vacation_note'  => $isOnVacation ? $vacationNote : null,
+        ]);
+
+        $tenantName = trim($tenant->first_name . ' ' . $tenant->last_name);
+        if ($isOnVacation) {
+            \App\Helpers\NotificationHelper::sendToAll(
+                type: 'tenant_vacation_on',
+                message: "{$tenantName} is now on vacation/break (" . ($vacationNote ?: 'No details') . ").",
+                ref_id: $tenant->tenant_id,
+            );
+        } else {
+            \App\Helpers\NotificationHelper::sendToAll(
+                type: 'tenant_vacation_off',
+                message: "{$tenantName} has returned from vacation/break.",
+                ref_id: $tenant->tenant_id,
+            );
+        }
+
+        return response()->json([
+            'success'        => true,
+            'is_on_vacation' => $tenant->is_on_vacation,
+            'vacation_note'  => $tenant->vacation_note,
+        ]);
     });
 });
