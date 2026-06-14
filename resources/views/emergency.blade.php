@@ -939,7 +939,6 @@
         padding: .75rem .9rem;
         min-width: 320px;
         z-index: 9999;
-        pointer-events: none;
     }
     .slp-title {
         font-size: .67rem;
@@ -1973,7 +1972,10 @@
     document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
         var popup = wrap.querySelector('.status-legend-popup');
         if (!popup) return;
-        wrap.addEventListener('mouseenter', function() {
+        var hideTimer = null;
+
+        function showPopup() {
+            clearTimeout(hideTimer);
             var rect = wrap.getBoundingClientRect();
             var popupWidth = 320;
             var left = rect.left;
@@ -1983,11 +1985,22 @@
             popup.style.top = (rect.bottom + 8) + 'px';
             popup.style.left = left + 'px';
             popup.style.display = 'block';
-        });
-        wrap.addEventListener('mouseleave', function() {
-            popup.style.display = 'none';
-        });
+            popup.style.pointerEvents = 'auto';
+        }
+
+        function hidePopup() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+                popup.style.pointerEvents = 'none';
+            }, 120);
+        }
+
+        wrap.addEventListener('mouseenter', showPopup);
+        wrap.addEventListener('mouseleave', hidePopup);
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+        popup.addEventListener('mouseleave', hidePopup);
     });
+
     function resetFilters() {
         document.getElementById('search-input').value = '';
         document.getElementById('status-filter').value = '';
