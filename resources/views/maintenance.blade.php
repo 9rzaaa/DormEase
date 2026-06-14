@@ -97,7 +97,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.2rem;
         box-sizing: border-box;
     }
@@ -133,6 +133,7 @@
     .stat-info { flex: 1; min-width: 0; }
     .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
     .stat-label { font-size: .8rem; color: rgba(247,245,245,.967); font-weight: 700; margin-bottom: .15rem; }
+    .stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
 
     .toolbar {
         display: flex;
@@ -900,7 +901,7 @@
     .archive-export-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
     .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .65; }
 
-    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) {
         .stats-grid { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -968,7 +969,7 @@
     border-radius: 14px;
     box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
     padding: .75rem .9rem;
-    min-width: 340px;
+    min-width: 380px;
     z-index: 9999;
 }
 .mlp-title {
@@ -1006,18 +1007,19 @@
 }
 .mlp-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: .6rem;
-    padding: .28rem 0;
+    padding: .32rem 0;
     border-bottom: 1px solid var(--pink-100);
 }
 .mlp-row:last-child { border-bottom: none; }
-.mlp-badge { flex-shrink: 0; min-width: 88px; }
+.mlp-badge { flex-shrink: 0; min-width: 110px; display: flex; align-items: center; }
 .mlp-desc {
     font-size: .73rem;
     color: var(--ink-muted);
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.45;
+    padding-top: .1rem;
 }
 
 .export-dropdown { position: relative; display: inline-flex; }
@@ -1060,27 +1062,23 @@
             <div class="stat-info">
                 <div class="stat-label">Total Requests</div>
                 <div class="stat-num" id="stat-total">{{ $stats['total'] }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon"><img src="{{ asset('icons/warn.png') }}" alt=""></div>
-            <div class="stat-info">
-                <div class="stat-label">Urgent Requests</div>
-                <div class="stat-num" id="stat-urgent">{{ $stats['urgent'] }}</div>
+                <div class="stat-sub">All Time Submitted</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{{ asset('icons/pending.png') }}" alt=""></div>
             <div class="stat-info">
-                <div class="stat-label">In-Progress Requests</div>
+                <div class="stat-label">In-Progress</div>
                 <div class="stat-num" id="stat-progress">{{ $stats['in_progress'] }}</div>
+                <div class="stat-sub">Currently Being Worked On</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{{ asset('icons/resolved.png') }}" alt=""></div>
             <div class="stat-info">
-                <div class="stat-label">Resolved Requests</div>
+                <div class="stat-label">Resolved</div>
                 <div class="stat-num" id="stat-resolved">{{ $stats['resolved'] }}</div>
+                <div class="stat-sub">Successfully Closed</div>
             </div>
         </div>
     </div>
@@ -2030,17 +2028,34 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.style.zIndex = '9999';
 
         var hideTimer = null;
+        var popupWidth = 380;
 
         document.querySelectorAll('.maint-legend-wrap').forEach(function(wrap) {
             wrap.addEventListener('mouseenter', function() {
                 clearTimeout(hideTimer);
+                popup.style.visibility = 'hidden';
+                popup.style.display = 'block';
                 var rect = wrap.getBoundingClientRect();
-                var popupWidth = 340;
+                var popupH = popup.offsetHeight || 260;
+                popup.style.display = 'none';
+                popup.style.visibility = '';
+
                 var left = rect.left;
                 if (left + popupWidth > window.innerWidth - 12) {
                     left = window.innerWidth - popupWidth - 12;
                 }
-                popup.style.top = (rect.bottom + 8) + 'px';
+                if (left < 8) left = 8;
+
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var top;
+                if (spaceBelow >= popupH + 10) {
+                    top = rect.bottom + 8;
+                } else {
+                    top = rect.top - popupH - 8;
+                    if (top < 8) top = 8;
+                }
+
+                popup.style.top = top + 'px';
                 popup.style.left = left + 'px';
                 popup.style.display = 'block';
             });
