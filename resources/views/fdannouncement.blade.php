@@ -895,7 +895,10 @@ function applyDropdownFilters(changedEl) {
         card.style.display = show ? '' : 'none';
     });
 
-    const HIDDEN_KEY = 'fd_hidden_announcements';
+    updateEmptyState();
+}
+
+const HIDDEN_KEY = 'fd_hidden_announcements';
 
 function getHidden() {
     try { return JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]'); } catch { return []; }
@@ -934,10 +937,6 @@ function applyHidden() {
         bar.classList.remove('visible');
     }
     updateEmptyState();
-}
-
-updateEmptyState();
-applyHidden();
 }
 
 function updateEmptyState() {
