@@ -1969,37 +1969,48 @@
         if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
     });
 
-    document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
-        var popup = wrap.querySelector('.status-legend-popup');
+    (function() {
+        var popup = document.querySelector('.status-legend-popup');
         if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+
         var hideTimer = null;
 
-        function showPopup() {
-            clearTimeout(hideTimer);
-            var rect = wrap.getBoundingClientRect();
-            var popupWidth = 320;
-            var left = rect.left;
-            if (left + popupWidth > window.innerWidth - 12) {
-                left = window.innerWidth - popupWidth - 12;
-            }
-            popup.style.top = (rect.bottom + 8) + 'px';
-            popup.style.left = left + 'px';
-            popup.style.display = 'block';
-            popup.style.pointerEvents = 'auto';
-        }
+        document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                var rect = wrap.getBoundingClientRect();
+                var popupWidth = 320;
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                popup.style.top = (rect.bottom + 8) + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
 
-        function hidePopup() {
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
             hideTimer = setTimeout(function() {
                 popup.style.display = 'none';
-                popup.style.pointerEvents = 'none';
-            }, 120);
-        }
-
-        wrap.addEventListener('mouseenter', showPopup);
-        wrap.addEventListener('mouseleave', hidePopup);
-        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
-        popup.addEventListener('mouseleave', hidePopup);
-    });
+            }, 150);
+        });
+    })();
 
     function resetFilters() {
         document.getElementById('search-input').value = '';
