@@ -1149,10 +1149,6 @@
                     <option value="on_leave">On Leave</option>
                 </select>
                 <div class="filter-divider"></div>
-                <div class="status-legend-wrap" id="status-legend-trigger" onclick="toggleStatusLegend(event)">
-                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(11%) sepia(93%) saturate(6000%) hue-rotate(327deg) brightness(95%);">
-                </div>
-                <div class="filter-divider"></div>
                 <span class="filter-label">Sort:</span>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
                     <option value="newest">Newest</option>
@@ -1160,6 +1156,10 @@
                     <option value="name">Name</option>
                     <option value="role">Role</option>
                 </select>
+                <div class="filter-divider"></div>
+                <div class="status-legend-wrap" id="status-legend-trigger" onmouseenter="showStatusLegend()" onmouseleave="scheduleHideStatusLegend()" onclick="toggleStatusLegendClick(event)">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(11%) sepia(93%) saturate(6000%) hue-rotate(327deg) brightness(95%);">
+                </div>
             </div>
         </div>
 
@@ -1198,7 +1198,7 @@
         <span id="action-loading-text">Please wait...</span>
     </div>
 </div>
-<div class="status-legend-popup" id="status-legend-popup">
+<div class="status-legend-popup" id="status-legend-popup" onmouseenter="clearTimeout(statusLegendHideTimer)" onmouseleave="scheduleHideStatusLegend()">
     <div class="slg-title">Duty Status</div>
     <div class="slg-row"><span class="badge badge-onduty">On Duty</span><span class="slg-desc">Staff member is currently active and on shift.</span></div>
     <div class="slg-row"><span class="badge badge-offduty">Off Duty</span><span class="slg-desc">Staff member is not currently on shift.</span></div>
@@ -2348,14 +2348,11 @@
         }
     });
 
-    function toggleStatusLegend(e) {
-        e.stopPropagation();
+    var statusLegendHideTimer = null;
+
+    function positionStatusLegend() {
         var popup   = document.getElementById('status-legend-popup');
         var trigger = document.getElementById('status-legend-trigger');
-        if (popup.classList.contains('open')) {
-            popup.classList.remove('open');
-            return;
-        }
         var rect = trigger.getBoundingClientRect();
         popup.style.left = '8px';
         popup.style.top  = (rect.bottom + 8) + 'px';
@@ -2374,12 +2371,35 @@
         });
     }
 
+    function showStatusLegend() {
+        clearTimeout(statusLegendHideTimer);
+        positionStatusLegend();
+    }
+
+    function hideStatusLegend() {
+        document.getElementById('status-legend-popup').classList.remove('open');
+    }
+
+    function scheduleHideStatusLegend() {
+        statusLegendHideTimer = setTimeout(hideStatusLegend, 200);
+    }
+
+    function toggleStatusLegendClick(e) {
+        e.stopPropagation();
+        var popup = document.getElementById('status-legend-popup');
+        if (popup.classList.contains('open')) {
+            hideStatusLegend();
+        } else {
+            positionStatusLegend();
+        }
+    }
+
     document.addEventListener('click', function(e) {
         var popup = document.getElementById('status-legend-popup');
         if (popup && popup.classList.contains('open') &&
             !e.target.closest('#status-legend-popup') &&
             !e.target.closest('#status-legend-trigger')) {
-            popup.classList.remove('open');
+            hideStatusLegend();
         }
     });
 
