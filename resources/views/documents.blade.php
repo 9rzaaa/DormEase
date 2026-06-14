@@ -763,6 +763,113 @@
         box-sizing: border-box;
     }
 
+    .dm-modal-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .dm-modal-title-icon {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+        flex-shrink: 0;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+
+    .dm-modal-body {
+        padding: .85rem 1rem;
+    }
+
+    .dm-modal-hero {
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+        padding-bottom: .9rem;
+        margin-bottom: .9rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+
+    .dm-modal-hero-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: var(--gradient-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(232,23,93,.25);
+    }
+
+    .dm-modal-hero-icon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .dm-modal-hero-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .dm-modal-hero-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -.01em;
+        line-height: 1.25;
+    }
+
+    .dm-modal-hero-id {
+        font-size: .78rem;
+        color: var(--bright-pink);
+        font-family: monospace;
+        font-weight: 700;
+        margin-top: .2rem;
+    }
+
+    .dm-modal-hero-status {
+        margin-top: .45rem;
+    }
+
+    .dm-modal-section-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .dm-modal-section-bar {
+        display: inline-block;
+        width: 3px;
+        height: 11px;
+        background: var(--gradient-pink);
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
+    .dm-modal-form-block {
+        margin-bottom: .9rem;
+    }
+
+    .dm-modal-footer {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between !important;
+        gap: .6rem;
+        padding: .55rem .9rem;
+        border-top: 1.5px solid var(--pink-100);
+        background: #fffafd;
+        margin-top: 0 !important;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .resubmission-toggle {
         display: flex;
         align-items: center;
@@ -1958,55 +2065,69 @@
 </div>
 
 <div class="modal-overlay" id="update-doc-modal">
-    <div class="modal" style="max-width:480px;">
+    <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title">Review Submission</div>
+            <div class="modal-title dm-modal-title-wrap">
+                <img src="{{ asset('icons/nav-docu.png') }}" class="dm-modal-title-icon" alt="">
+                <span id="update-doc-modal-title">Review Submission</span>
+            </div>
             <button class="modal-close" onclick="closeModal('update-doc-modal')">&#x2715;</button>
         </div>
-        <div class="modal-body">
-        <input type="hidden" id="upd-doc-id">
-        <div class="modal-field">
-            <label>Status</label>
-            <select id="upd-doc-status" onchange="toggleRejectionField()">
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="approved">Approved</option>
-                <option value="denied">Denied</option>
-            </select>
-        </div>
-        <div id="rejection-reason-wrap" style="display:none;">
-            <div class="modal-field">
-                <label>Reason for Rejection</label>
-                <select id="upd-doc-rejection-preset" onchange="handleRejectionPreset()">
-                    <option value="">Select a reason...</option>
-                    <option value="Blurry or unreadable submission">Blurry or unreadable submission</option>
-                    <option value="Incomplete form fields">Incomplete form fields</option>
-                    <option value="Wrong form submitted">Wrong form submitted</option>
-                    <option value="File is corrupted or unreadable">File is corrupted or unreadable</option>
-                    <option value="Missing required signature">Missing required signature</option>
-                    <option value="Photo or scan is too dark">Photo or scan is too dark</option>
-                    <option value="File format not supported">File format not supported</option>
-                    <option value="other">Other (specify below)</option>
-                </select>
+        <div class="modal-body dm-modal-body">
+            <div id="update-doc-summary"></div>
+
+            <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Review &amp; Status</div>
+            <div class="dm-modal-form-block">
+                <input type="hidden" id="upd-doc-id">
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select id="upd-doc-status" onchange="toggleRejectionField()">
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="approved">Approved</option>
+                        <option value="denied">Denied</option>
+                    </select>
+                </div>
             </div>
-            <div class="modal-field" id="rejection-other-wrap" style="display:none;">
-                <label>Specify Reason</label>
-                <input type="text" id="upd-doc-rejection-other" placeholder="Describe the rejection reason...">
+
+            <div id="rejection-reason-wrap" style="display:none;">
+                <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Rejection Details</div>
+                <div class="dm-modal-form-block">
+                    <div class="modal-field">
+                        <label>Reason for Rejection</label>
+                        <select id="upd-doc-rejection-preset" onchange="handleRejectionPreset()">
+                            <option value="">Select a reason...</option>
+                            <option value="Blurry or unreadable submission">Blurry or unreadable submission</option>
+                            <option value="Incomplete form fields">Incomplete form fields</option>
+                            <option value="Wrong form submitted">Wrong form submitted</option>
+                            <option value="File is corrupted or unreadable">File is corrupted or unreadable</option>
+                            <option value="Missing required signature">Missing required signature</option>
+                            <option value="Photo or scan is too dark">Photo or scan is too dark</option>
+                            <option value="File format not supported">File format not supported</option>
+                            <option value="other">Other (specify below)</option>
+                        </select>
+                    </div>
+                    <div class="modal-field" id="rejection-other-wrap" style="display:none;">
+                        <label>Specify Reason</label>
+                        <input type="text" id="upd-doc-rejection-other" placeholder="Describe the rejection reason...">
+                    </div>
+                    <label class="resubmission-toggle" for="upd-doc-allow-resubmission">
+                        <input type="checkbox" id="upd-doc-allow-resubmission">
+                        <span>
+                            Allow tenant to resubmit
+                            <small>The tenant will be notified and can upload a corrected file through the mobile app.</small>
+                        </span>
+                    </label>
+                </div>
             </div>
-            <label class="resubmission-toggle" for="upd-doc-allow-resubmission">
-                <input type="checkbox" id="upd-doc-allow-resubmission">
-                <span>
-                    Allow tenant to resubmit
-                    <small>The tenant will be notified and can upload a corrected file through the mobile app.</small>
-                </span>
-            </label>
+
+            <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Additional Remarks</div>
+            <div class="modal-field" style="margin-bottom:0;">
+                <label>Notes for tenant (optional)</label>
+                <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
+            </div>
         </div>
-        <div class="modal-field">
-            <label>Additional Remarks (optional)</label>
-            <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
-        </div>
-        </div>
-        <div class="modal-actions modal-footer-split">
+        <div class="dm-modal-footer modal-footer-split">
             <button class="btn-submit" onclick="submitUpdateDoc()">Save Changes</button>
             <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Close</button>
         </div>
@@ -2034,69 +2155,87 @@
 <div class="modal-overlay" id="view-req-modal">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title" style="display:flex;align-items:center;gap:.5rem;">
-                <img src="{{ asset('icons/pending.png') }}" style="width:20px;height:20px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);flex-shrink:0;" alt="">
+            <div class="modal-title dm-modal-title-wrap">
+                <img src="{{ asset('icons/pending.png') }}" class="dm-modal-title-icon" alt="">
                 Request Details
             </div>
             <button class="modal-close" onclick="closeModal('view-req-modal')">&#x2715;</button>
         </div>
-        <div class="modal-body" style="padding:.85rem 1rem;">
+        <div class="modal-body dm-modal-body">
             <div id="view-req-content"></div>
         </div>
-        <div id="view-req-actions" style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .9rem;border-top:1.5px solid var(--pink-100);background:#fffafd;"></div>
+        <div id="view-req-actions" class="dm-modal-footer modal-footer-split"></div>
     </div>
 </div>
 
 <div class="modal-overlay" id="update-req-modal">
-    <div class="modal" style="max-width:500px;">
+    <div class="modal" style="max-width:520px;">
         <div class="modal-header">
-            <div class="modal-title">Update Request</div>
+            <div class="modal-title dm-modal-title-wrap">
+                <img src="{{ asset('icons/pending.png') }}" class="dm-modal-title-icon" alt="">
+                <span id="update-req-modal-title">Update Request</span>
+            </div>
             <button class="modal-close" onclick="closeModal('update-req-modal')">&#x2715;</button>
         </div>
-        <div class="modal-body">
-        <input type="hidden" id="upd-req-id">
-        <div class="modal-field">
-            <label>Status</label>
-            <select id="upd-req-status" onchange="toggleReqRejectionField()">
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="approved">Approved</option>
-                <option value="ready">Ready for Pickup / Sending</option>
-                <option value="denied">Denied</option>
-            </select>
-        </div>
-        <div id="req-rejection-reason-wrap" style="display:none;">
-            <div class="modal-field">
-                <label>Reason for Denial</label>
-                <select id="upd-req-rejection-preset" onchange="handleReqRejectionPreset()">
-                    <option value="">Select a reason...</option>
-                    <option value="Incomplete request details">Incomplete request details</option>
-                    <option value="Purpose not clearly stated">Purpose not clearly stated</option>
-                    <option value="Document type not offered by the dormitory">Document type not offered by the dormitory</option>
-                    <option value="Tenant is not currently active">Tenant is not currently active</option>
-                    <option value="Insufficient processing time given">Insufficient processing time given</option>
-                    <option value="Document currently unavailable">Document currently unavailable</option>
-                    <option value="other">Other (specify below)</option>
-                </select>
+        <div class="modal-body dm-modal-body">
+            <div id="update-req-summary"></div>
+
+            <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Review &amp; Status</div>
+            <div class="dm-modal-form-block">
+                <input type="hidden" id="upd-req-id">
+                <div class="modal-field">
+                    <label>Status</label>
+                    <select id="upd-req-status" onchange="toggleReqRejectionField()">
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="approved">Approved</option>
+                        <option value="ready">Ready for Pickup / Sending</option>
+                        <option value="denied">Denied</option>
+                    </select>
+                </div>
             </div>
-            <div class="modal-field" id="req-rejection-other-wrap" style="display:none;">
-                <label>Specify Reason</label>
-                <input type="text" id="upd-req-rejection-other" placeholder="Describe the denial reason...">
+
+            <div id="req-rejection-reason-wrap" style="display:none;">
+                <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Denial Details</div>
+                <div class="dm-modal-form-block">
+                    <div class="modal-field">
+                        <label>Reason for Denial</label>
+                        <select id="upd-req-rejection-preset" onchange="handleReqRejectionPreset()">
+                            <option value="">Select a reason...</option>
+                            <option value="Incomplete request details">Incomplete request details</option>
+                            <option value="Purpose not clearly stated">Purpose not clearly stated</option>
+                            <option value="Document type not offered by the dormitory">Document type not offered by the dormitory</option>
+                            <option value="Tenant is not currently active">Tenant is not currently active</option>
+                            <option value="Insufficient processing time given">Insufficient processing time given</option>
+                            <option value="Document currently unavailable">Document currently unavailable</option>
+                            <option value="other">Other (specify below)</option>
+                        </select>
+                    </div>
+                    <div class="modal-field" id="req-rejection-other-wrap" style="display:none;">
+                        <label>Specify Reason</label>
+                        <input type="text" id="upd-req-rejection-other" placeholder="Describe the denial reason...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Admin Remarks</div>
+            <div class="dm-modal-form-block">
+                <div class="modal-field">
+                    <label>Notes for tenant</label>
+                    <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
+                </div>
+            </div>
+
+            <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Fulfilled Document</div>
+            <div class="modal-field" style="margin-bottom:0;">
+                <label>Attach file (optional, for digital delivery)</label>
+                <input type="file" id="upd-req-file" accept=".pdf">
+                <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
             </div>
         </div>
-        <div class="modal-field">
-            <label>Admin Remarks</label>
-            <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
-        </div>
-        <div class="modal-field">
-            <label>Attach Fulfilled Document (optional, for digital delivery)</label>
-            <input type="file" id="upd-req-file" accept=".pdf">
-            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
-        </div>
-        </div>
-        <div class="modal-actions" style="justify-content:space-between;">
+        <div class="dm-modal-footer modal-footer-split">
             <button class="btn-submit" onclick="submitUpdateReq()">Save Changes</button>
-            <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
+            <button class="btn-cancel" onclick="closeModal('update-req-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -2372,6 +2511,21 @@ function reqStatusBadge(s) {
     return map[s] ?? '<span class="req-status-badge req-pending">Pending</span>';
 }
 
+const UPDATE_MODAL_HERO_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+
+function buildUpdateModalHero(r, idLabel) {
+    return `
+        <div class="dm-modal-hero">
+            <div class="dm-modal-hero-icon">${UPDATE_MODAL_HERO_ICON}</div>
+            <div class="dm-modal-hero-text">
+                <div class="dm-modal-hero-title">${escHtml(r.document_type)}</div>
+                <div class="dm-modal-hero-id">${idLabel}</div>
+                <div class="dm-modal-hero-status">${reqStatusBadge(r.status)}</div>
+            </div>
+        </div>
+    `;
+}
+
 function renderPagination(containerId, currentPage, totalPages, onGo) {
     const pg = document.getElementById(containerId);
     if (totalPages <= 1) { pg.innerHTML = ''; return; }
@@ -2613,8 +2767,11 @@ function openUpdateDoc(r) {
     currentDoc = r;
     document.getElementById('upd-doc-id').value     = r.doc_request_id;
     document.getElementById('upd-doc-status').value = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
-    document.querySelector('#update-doc-modal .modal-title').textContent =
+    document.getElementById('update-doc-modal-title').textContent =
         r.status === 'resubmission' ? 'Review Resubmission' : 'Review Submission';
+    document.getElementById('update-doc-summary').innerHTML = buildUpdateModalHero(
+        r, '#FSB-' + String(r.doc_request_id).padStart(3, '0')
+    );
     document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-doc-rejection-preset').value = '';
     document.getElementById('upd-doc-rejection-other').value  = '';
@@ -2785,21 +2942,9 @@ function viewReq(r) {
     const reqId = '#DRQ-' + String(r.doc_request_id).padStart(3, '0');
 
     document.getElementById('view-req-content').innerHTML = `
-        <div style="display:flex;align-items:center;gap:.85rem;padding-bottom:.9rem;margin-bottom:.9rem;border-bottom:1.5px solid var(--petal);">
-            <div style="width:46px;height:46px;border-radius:12px;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 16px rgba(232,23,93,.25);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            </div>
-            <div style="flex:1;min-width:0;">
-                <div style="font-size:1rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;line-height:1.25;">${escHtml(r.document_type)}</div>
-                <div style="font-size:.78rem;color:var(--bright-pink);font-family:monospace;font-weight:700;margin-top:.2rem;">${reqId}</div>
-                <div style="margin-top:.45rem;">${reqStatusBadge(r.status)}</div>
-            </div>
-        </div>
+        ${buildUpdateModalHero(r, reqId)}
 
-        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
-            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
-            Request Information
-        </div>
+        <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Request Information</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.9rem;">
             <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.6rem .8rem;">
                 <div style="font-size:.67rem;font-weight:800;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem;">Tenant</div>
@@ -2820,17 +2965,11 @@ function viewReq(r) {
         </div>
 
         ${r.admin_remarks ? `
-        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
-            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
-            Admin Remarks
-        </div>
+        <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Admin Remarks</div>
         <div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:11px;padding:.7rem .85rem;font-size:.84rem;color:var(--ink);line-height:1.6;margin-bottom:.9rem;white-space:pre-wrap;">${escHtml(r.admin_remarks)}</div>
         ` : ''}
 
-        <div style="font-size:.67rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem;">
-            <span style="display:inline-block;width:3px;height:11px;background:var(--gradient-pink);border-radius:2px;"></span>
-            Fulfilled Document
-        </div>
+        <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Fulfilled Document</div>
         <div style="padding:.2rem 0;">
             ${fulfilledHtml}
         </div>
@@ -2841,8 +2980,6 @@ function viewReq(r) {
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
-    footer.style.setProperty('justify-content', 'space-between', 'important');
-    footer.style.setProperty('gap', '.6rem', 'important');
     openModal('view-req-modal');
 }
 
@@ -2868,6 +3005,9 @@ function openUpdateReq(r) {
     currentReq = r;
     document.getElementById('upd-req-id').value      = r.doc_request_id;
     document.getElementById('upd-req-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
+    document.getElementById('update-req-summary').innerHTML = buildUpdateModalHero(
+        r, '#DRQ-' + String(r.doc_request_id).padStart(3, '0')
+    );
     document.getElementById('upd-req-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-req-file').value    = '';
     document.getElementById('upd-req-rejection-preset').value = '';
