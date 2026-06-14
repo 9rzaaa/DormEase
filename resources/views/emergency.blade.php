@@ -914,7 +914,7 @@
     @media (max-width: 580px) { .stats-row { grid-template-columns: 1fr; } }
 
     .status-legend-wrap {
-        position: relative;
+        position: static;
         display: inline-flex;
         align-items: center;
         cursor: pointer;
@@ -931,17 +931,14 @@
     .status-legend-wrap:hover img { opacity: 1; }
     .status-legend-popup {
         display: none;
-        position: absolute;
-        top: calc(100% + 10px);
-        left: 0;
-        transform: none;
+        position: fixed;
         background: var(--white);
         border: 1.5px solid var(--pink-200);
         border-radius: 14px;
         box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
         padding: .75rem .9rem;
         min-width: 320px;
-        z-index: 600;
+        z-index: 9999;
         pointer-events: none;
     }
     .status-legend-wrap:hover .status-legend-popup { display: block; }
@@ -1034,9 +1031,23 @@
                 <div class="table-sub" id="table-date"></div>
             </div>
             <div class="table-controls">
-                <div class="search-box">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                <div style="display:flex;align-items:center;gap:.45rem;">
+                    <div class="search-box">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                    </div>
+                    <div class="status-legend-wrap">
+                        <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                        <div class="status-legend-popup">
+                            <div class="slp-title">Urgency &amp; Status Guide</div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
+                        </div>
+                    </div>
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
@@ -1057,18 +1068,6 @@
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
                 </select>
-                <div class="status-legend-wrap">
-                    <img src="{{ asset('icons/info.png') }}" alt="Status guide">
-                    <div class="status-legend-popup">
-                        <div class="slp-title">Urgency &amp; Status Guide</div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
-                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
-                    </div>
-                </div>
                 <div class="date-filter">
                     <input type="date" id="date-from" onchange="applyFilters()">
                     <span>to</span>
@@ -1938,6 +1937,21 @@
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
     @endif
+
+    document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
+        var popup = wrap.querySelector('.status-legend-popup');
+        if (!popup) return;
+        wrap.addEventListener('mouseenter', function() {
+            var rect = wrap.getBoundingClientRect();
+            var popupWidth = 320;
+            var left = rect.left;
+            if (left + popupWidth > window.innerWidth - 12) {
+                left = window.innerWidth - popupWidth - 12;
+            }
+            popup.style.top = (rect.bottom + 8) + 'px';
+            popup.style.left = left + 'px';
+        });
+    });
 
     populateTypeFilter();
     applyFilters();
