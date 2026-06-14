@@ -1473,6 +1473,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="vacation">On Vacation</option>
                 </select>
                 <select class="sort-select" id="inside-filter" onchange="applyFilters()">
                     <option value="">All Locations</option>
@@ -1797,6 +1798,10 @@ function statusBadge(status) {
     return map[status] || ('<span class="badge badge-inactive">' + status + '</span>');
 }
 
+function vacationBadge(isOnVacation) {
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+}
+
 function insideIndicator(isInside) {
     if (isInside) {
         return '<span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span>';
@@ -1864,7 +1869,7 @@ function renderTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
@@ -1918,7 +1923,7 @@ function renderReservedTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
@@ -2008,7 +2013,7 @@ function applyFilters() {
             (t.contact_number || '').toLowerCase().indexOf(q) !== -1 ||
             String(t.floor || '').indexOf(q) !== -1;
         var matchesFloor  = floor  === '' || String(t.floor) === floor;
-        var matchesStatus = status === '' || t.status === status;
+        var matchesStatus = status === '' || (status === 'vacation' ? t.is_on_vacation : t.status === status);
         var matchesInside = inside === '' || (inside === 'inside' ? t.is_inside : !t.is_inside);
         return matchesSearch && matchesFloor && matchesStatus && matchesInside;
     });
@@ -2322,6 +2327,9 @@ function viewTenant(t) {
             + (statusLabel[t.status] || t.status)
             + '</span>';
     }
+    if (t.is_on_vacation) {
+        metaHtml += '<span class="td-modal-pill" style="background:#FFF3CD; border-color:#FFEBAA; color:#856404;">🏖 Vacation</span>';
+    }
     if (t.floor && t.room_number) {
         metaHtml += '<span class="td-modal-pill">Floor ' + t.floor + ' &bull; Rm ' + t.room_number + '</span>';
     } else if (t.room_number) {
@@ -2362,8 +2370,11 @@ function viewTenant(t) {
     }
     bodyHtml += '</div>';
 
-    bodyHtml += '<div class="td-section-label">Notes</div>';
+    bodyHtml += '<div class="td-section-label">Status &amp; Notes</div>';
     bodyHtml += '<div class="td-info-grid">';
+    if (t.is_on_vacation) {
+        bodyHtml += infoItem('Vacation Details', '🏖 On Vacation' + (t.vacation_note ? ' (' + t.vacation_note + ')' : ''), true);
+    }
     bodyHtml += infoItem('Note', t.notes, true);
     bodyHtml += '</div>';
 
