@@ -41,6 +41,11 @@ class AutoMarkMoveOut extends Command
                 'is_active' => false,
             ]);
 
+            \App\Helpers\NotificationHelper::sendToAll(
+                type: 'tenant_moveout_reminder',
+                message: "{$tenant->first_name} {$tenant->last_name} (Rm. {$tenant->room_number}) has been automatically marked as moved out.",
+                ref_id: $tenant->tenant_id,
+            );
             $this->info("Marked move_out: {$tenant->first_name} {$tenant->last_name} ({$tenant->account_id})");
         }
 

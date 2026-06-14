@@ -32,7 +32,6 @@
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-body); background: var(--cream); color: var(--brown); overflow-x: hidden; line-height: 1.6; }
 
-    /* ── notice bar ── */
     .top-notice {
       position: absolute; top: 0; left: 0; right: 0; z-index: 101;
       min-height: 34px; display: flex; align-items: center; justify-content: center;
@@ -40,7 +39,6 @@
       color: white; font-family: var(--font-head); font-size: .86rem; font-weight: 800; text-align: center;
     }
 
-    /* ── nav ── */
     nav {
       position: fixed; top: 54px; left: 50%; z-index: 100;
       width: min(1220px, calc(100% - 12%)); transform: translateX(-50%);
@@ -69,7 +67,6 @@
     .mobile-nav a { color: var(--brown); text-decoration: none; font-size: .95rem; font-weight: 800; padding: 12px 14px; border-radius: 16px; }
     .mobile-nav a:hover, .mobile-nav a.nav-active { color: var(--pink); background: rgba(255,255,255,0.62); }
 
-    /* ── hero carousel ── */
     .hero-carousel {
       position: relative; height: 100svh; min-height: 560px;
       overflow: hidden; background: var(--brown);
@@ -125,7 +122,6 @@
     .carousel-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--gradient); color: white; text-decoration: none; font-weight: 700; font-size: .9rem; padding: 13px 28px; border-radius: 100px; box-shadow: 0 8px 24px rgba(232,23,93,.32); transition: filter .2s, transform .15s; width: fit-content; }
     .carousel-cta:hover { filter: brightness(.94); transform: translateY(-2px); }
 
-    /* carousel controls */
     .carousel-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
       width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer;
@@ -137,9 +133,8 @@
     .carousel-btn:hover { background: rgba(255,255,255,.24); transform: translateY(-50%) scale(1.08); }
     .carousel-btn svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; }
     .carousel-prev { left: 28px; }
-    .carousel-next { right: 28px; }
+    .carousel-next { right: 110px; }
 
-    /* dots */
     .carousel-dots {
       position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
       display: flex; gap: 8px; z-index: 10;
@@ -150,7 +145,6 @@
     }
     .carousel-dot.active { width: 28px; background: white; }
 
-    /* thumb strip */
     .carousel-thumbs {
       position: absolute; right: 28px; top: 50%; transform: translateY(-50%);
       display: flex; flex-direction: column; gap: 10px; z-index: 10;
@@ -166,14 +160,12 @@
     .carousel-thumb-ph { width: 100%; height: 100%; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; }
     .carousel-thumb-ph svg { width: 18px; height: 18px; stroke: rgba(255,255,255,.3); fill: none; stroke-width: 1.6; }
 
-    /* ── section heading ── */
     .section-wrap { padding: 72px 6% 0; }
     .section-tag { font-size: .70rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pink); margin-bottom: 10px; }
     .section-title { font-family: var(--font-head); font-size: clamp(1.9rem,3.2vw,2.8rem); font-weight: 800; color: var(--brown); letter-spacing: -.03em; margin-bottom: 14px; }
     .section-title em { color: var(--pink); font-style: italic; }
     .section-sub { font-size: 1rem; color: var(--brown-light); line-height: 1.8; max-width: 520px; }
 
-    /* ── filter bar ── */
     .filter-wrap {
       padding: 32px 6% 0;
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -193,7 +185,6 @@
     }
     .filter-btn:not(.active) .filter-count { background: var(--pink-pale); color: var(--pink); }
 
-    /* ── masonry grid ── */
     .gallery-grid-wrap { padding: 40px 6% 80px; }
     .masonry {
       columns: 3; column-gap: 22px;
@@ -206,7 +197,6 @@
     .masonry-item.visible { opacity: 1; transform: translateY(0); }
     .masonry-item.hidden { display: none; }
 
-    /* card */
     .gal-card {
       background: white; border-radius: var(--r-lg); overflow: hidden;
       border: 1px solid var(--border); box-shadow: var(--shadow-card);
@@ -234,7 +224,6 @@
     }
     .gal-overlay-zoom svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; }
 
-    /* card label */
     .gal-label { padding: 14px 18px 18px; }
     .gal-label-top { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
     .gal-badge { background: var(--gradient); color: white; font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; }
@@ -242,7 +231,6 @@
     .gal-title { font-family: var(--font-head); font-size: .94rem; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
     .gal-desc { font-size: .82rem; color: var(--brown-light); line-height: 1.7; }
 
-    /* img placeholder */
     .img-ph {
       background: linear-gradient(135deg, var(--cream-dark) 0%, #e8ddd4 100%);
       border: 2px dashed rgba(214,56,104,.22); display: flex; flex-direction: column;
@@ -256,13 +244,11 @@
     .img-ph-ico svg { width: 17px; height: 17px; stroke: var(--pink); fill: none; stroke-width: 1.8; stroke-linecap: round; }
     .img-ph span { position: relative; z-index: 1; }
 
-    /* empty state */
     .no-results { display: none; text-align: center; padding: 70px 20px; }
     .no-results.show { display: block; }
     .no-results-emoji { font-size: 3rem; margin-bottom: 14px; }
     .no-results p { font-size: 1rem; color: var(--brown-light); }
 
-    /* ── lightbox ── */
     .lightbox {
       position: fixed; inset: 0; z-index: 999;
       background: rgba(20,8,14,0.95); backdrop-filter: blur(12px);
@@ -311,7 +297,6 @@
     .lightbox-prev { left: -62px; }
     .lightbox-next { right: -62px; }
 
-    /* ── stats strip ── */
     .stats-strip {
       background: var(--brown); padding: 48px 6%;
       display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
@@ -323,7 +308,6 @@
     .stat-num { font-family: var(--font-head); font-size: 2.4rem; font-weight: 800; color: var(--pink-light); line-height: 1; margin-bottom: 6px; }
     .stat-label { font-size: .80rem; color: rgba(255,255,255,.40); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 
-    /* ── cta ── */
     .gallery-cta { background: var(--pink-pale); padding: 80px 6%; text-align: center; }
     .gallery-cta h2 { font-family: var(--font-head); font-size: clamp(1.9rem,3.5vw,2.8rem); font-weight: 800; color: var(--brown); letter-spacing: -.03em; margin-bottom: 14px; }
     .gallery-cta h2 em { color: var(--pink); font-style: italic; }
@@ -334,7 +318,6 @@
     .btn-outline { display: inline-flex; align-items: center; gap: 8px; background: transparent; color: var(--brown); text-decoration: none; font-size: .9rem; font-weight: 600; padding: 13px 28px; border-radius: 100px; border: 1.5px solid rgba(36,16,24,.20); transition: border-color .2s, color .2s; }
     .btn-outline:hover { border-color: var(--pink); color: var(--pink); }
 
-    /* ── footer ── */
     footer { background: var(--brown); color: rgba(255,255,255,.48); padding: 64px 6% 40px; }
     .footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
     .footer-logo { display: flex; align-items: center; margin-bottom: 16px; text-decoration: none; }
@@ -355,18 +338,15 @@
     .footer-social-icon:hover { transform: translateY(-2px); background: var(--pink); }
     .footer-social-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-    /* scroll top */
     #scrollTopBtn { position: fixed; bottom: 32px; right: 32px; z-index: 999; width: 50px; height: 50px; border: none; border-radius: 50%; background: var(--gradient); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 24px rgba(232,23,93,.36); opacity: 0; transform: translateY(16px) scale(.85); transition: opacity .3s, transform .3s; pointer-events: none; }
     #scrollTopBtn.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
     #scrollTopBtn:hover { transform: translateY(-3px) scale(1.07); }
     #scrollTopBtn svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 2.4; stroke-linecap: round; }
 
-    /* reveal */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s}
 
-    /* ── responsive ── */
     @media (max-width: 960px) {
       nav { top: 46px; height: auto; min-height: 76px; padding: 10px 5%; flex-wrap: wrap; border-radius: 28px; width: calc(100% - 28px); }
       nav.scrolled { top: 12px; }
@@ -378,6 +358,7 @@
       .nav-toggle { display: inline-flex; flex-shrink: 0; }
       .masonry { columns: 2; }
       .carousel-thumbs { display: none; }
+      .carousel-next { right: 28px; }
       .stats-strip { grid-template-columns: 1fr 1fr; }
       .stat-item:nth-child(2)::after { display: none; }
       .footer-inner { grid-template-columns: 1fr 1fr; }
@@ -425,7 +406,6 @@
   </div>
 </nav>
 
-{{-- ── hero carousel ── --}}
 <div class="hero-carousel" id="heroCarousel">
   <div class="carousel-track" id="carouselTrack">
 
@@ -449,7 +429,7 @@
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Solo Room</span></div>
         <h1 class="carousel-title">Your own space,<br>your own <em>comfort</em></h1>
-        <p class="carousel-desc">A private space designed for rest, study, and independence — simple, quiet, and all yours.</p>
+        <p class="carousel-desc">A personal space where you can relax, study, and live independently in comfort and quiet.</p>
         <a href="#gallery-section" class="carousel-cta">View All Photos</a>
       </div>
     </div>
@@ -460,18 +440,18 @@
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Triple Room · 3 Occupants</span></div>
         <h1 class="carousel-title">More room,<br>more <em>laughter</em></h1>
-        <p class="carousel-desc">Triple rooms for three — spacious, well-lit, and perfect for close-knit groups of students.</p>
+        <p class="carousel-desc">Triple rooms designed for three, spacious, well lit, and perfect for close knit groups of students.</p>
         <a href="#gallery-section" class="carousel-cta">View All Photos</a>
       </div>
     </div>
 
     <div class="carousel-slide" id="slide-3">
-      <img src="{{ asset('images/main.jpg') }}" alt="Building" class="carousel-slide-img"
+      <img src="{{ asset('images/main.png') }}" alt="Building" class="carousel-slide-img"
            onerror="this.parentElement.innerHTML='<div class=carousel-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg><span>Add main.jpg</span></div>'">
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Sanctissimo Rosario · Sampaloc, Manila</span></div>
         <h1 class="carousel-title">Five storeys of <em>safety</em><br>near UST</h1>
-        <p class="carousel-desc">Located at 1229 Navarra Street, Sampaloc — a secure, study-friendly home close to the University Belt.</p>
+        <p class="carousel-desc">Conveniently located at 1229 Navarra Street, Sampaloc, offering a secure and study friendly home just minutes from the University Belt.</p>
         <a href="tel:+639175359723" class="carousel-cta">
           <svg viewBox="0 0 20 20" style="width:16px;height:16px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
           Inquire Now
@@ -481,7 +461,6 @@
 
   </div>
 
-  {{-- controls --}}
   <button class="carousel-btn carousel-prev" id="carouselPrev" aria-label="Previous">
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
@@ -489,7 +468,6 @@
     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 
-  {{-- dots --}}
   <div class="carousel-dots" id="carouselDots">
     <button class="carousel-dot active" data-index="0"></button>
     <button class="carousel-dot" data-index="1"></button>
@@ -497,7 +475,6 @@
     <button class="carousel-dot" data-index="3"></button>
   </div>
 
-  {{-- thumbnail strip --}}
   <div class="carousel-thumbs" id="carouselThumbs">
     <div class="carousel-thumb active" data-index="0">
       <img src="{{ asset('images/lobby2.jpg') }}" alt="Solo" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
@@ -514,7 +491,6 @@
   </div>
 </div>
 
-{{-- ── stats strip ── --}}
 <div class="stats-strip">
   <div class="stat-item reveal"><div class="stat-num">4</div><div class="stat-label">Room Types</div></div>
   <div class="stat-item reveal d1"><div class="stat-num">5F</div><div class="stat-label">Storeys</div></div>
@@ -522,7 +498,6 @@
   <div class="stat-item reveal d3"><div class="stat-num">UST</div><div class="stat-label">Near Campus</div></div>
 </div>
 
-{{-- ── gallery section ── --}}
 <div id="gallery-section">
   <div class="section-wrap reveal">
     <div class="section-tag">Photo Gallery</div>
@@ -530,7 +505,6 @@
     <p class="section-sub">Browse our rooms, common areas, and amenities. Click any photo to view it in full.</p>
   </div>
 
-  {{-- filter --}}
   <div class="filter-wrap reveal">
     <button class="filter-btn active" data-filter="all">All <span class="filter-count" id="cnt-all">11</span></button>
     <button class="filter-btn" data-filter="rooms">Rooms <span class="filter-count" id="cnt-rooms">4</span></button>
@@ -539,11 +513,9 @@
     <button class="filter-btn" data-filter="exterior">Exterior <span class="filter-count" id="cnt-exterior">2</span></button>
   </div>
 
-  {{-- masonry --}}
   <div class="gallery-grid-wrap">
     <div class="masonry" id="masonryGrid">
 
-      {{-- rooms --}}
       <div class="masonry-item" data-cat="rooms">
         <div class="gal-card" data-title="Solo Room" data-badge="Solo" data-desc="Semi-furnished private room ideal for one student. Includes a bed, wardrobe, and study desk.">
           <div class="gal-img-wrap" style="aspect-ratio:4/3">
@@ -595,12 +567,11 @@
           <div class="gal-label">
             <div class="gal-label-top"><span class="gal-badge">Quad</span><span class="gal-badge-cat">4 Occupants</span></div>
             <h3 class="gal-title">Quad Room</h3>
-            <p class="gal-desc">Best value for four — four beds and communal storage, fully utilized.</p>
+            <p class="gal-desc">A practical and comfortable setup for four, complete with four beds and communal storage.</p>
           </div>
         </div>
       </div>
 
-      {{-- common areas --}}
       <div class="masonry-item" data-cat="common">
         <div class="gal-card" data-title="Study Lounge" data-badge="Common Area" data-desc="A quiet shared study lounge available to all tenants on designated floors.">
           <div class="gal-img-wrap" style="aspect-ratio:16/9">
@@ -643,9 +614,8 @@
         </div>
       </div>
 
-      {{-- amenities --}}
       <div class="masonry-item" data-cat="amenities">
-        <div class="gal-card" data-title="Private Bathroom" data-badge="Amenity" data-desc="Each room has its own private bathroom — clean, well-ventilated, and maintained regularly.">
+        <div class="gal-card" data-title="Private Bathroom" data-badge="Amenity" data-desc="Every room comes with its own private bathroom, designed for comfort with a clean, well ventilated space and regular maintenance.">
           <div class="gal-img-wrap" style="aspect-ratio:3/4">
             <img src="{{ asset('images/bathroom.jpg') }}" alt="Bathroom" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:260px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>bathroom.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Amenity</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
@@ -653,13 +623,13 @@
           <div class="gal-label">
             <div class="gal-label-top"><span class="gal-badge-cat">Amenity</span></div>
             <h3 class="gal-title">Private Bathroom</h3>
-            <p class="gal-desc">Each room includes its own bathroom.</p>
+            <p class="gal-desc">Every room comes with its own private bathroom, designed for comfort.</p>
           </div>
         </div>
       </div>
 
       <div class="masonry-item" data-cat="amenities">
-        <div class="gal-card" data-title="Elevator" data-badge="Amenity" data-desc="Elevator access for all floors — easy for tenants moving in or carrying loads.">
+        <div class="gal-card" data-title="Elevator" data-badge="Amenity" data-desc="Elevator access to every floor for easier movement, whether moving in, carrying belongings, or going about your day.">
           <div class="gal-img-wrap" style="aspect-ratio:4/5">
             <img src="{{ asset('images/elevator.jpg') }}" alt="Elevator" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:240px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>elevator.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Amenity</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
@@ -667,7 +637,7 @@
           <div class="gal-label">
             <div class="gal-label-top"><span class="gal-badge-cat">Amenity</span></div>
             <h3 class="gal-title">Elevator</h3>
-            <p class="gal-desc">Elevator access for all floors — easy for tenants moving in or carrying loads.</p>
+            <p class="gal-desc">Elevator access on every floor, making it more convenient for tenants when moving in, carrying belongings, or handling everyday routines.</p>
           </div>
         </div>
       </div>
@@ -686,9 +656,8 @@
         </div>
       </div>
 
-      {{-- exterior --}}
       <div class="masonry-item" data-cat="exterior">
-        <div class="gal-card" data-title="Building Exterior" data-badge="Exterior" data-desc="Five-storey building at 1229 Navarra Street, Sampaloc, Manila — close to UST and the University Belt.">
+        <div class="gal-card" data-title="Building Exterior" data-badge="Exterior" data-desc="A five storey building at 1229 Navarra Street, Sampaloc, Manila, conveniently located near UST and the University Belt.">
           <div class="gal-img-wrap" style="aspect-ratio:3/4">
             <img src="{{ asset('images/main.png') }}" alt="Building Exterior" class="gal-img" onerror="this.parentElement.innerHTML='<div class=img-ph style=min-height:280px><div class=img-ph-ico><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg></div><span>main.jpg</span></div>'">
             <div class="gal-overlay"><span class="gal-overlay-tag">Exterior</span><div class="gal-overlay-zoom"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div></div>
@@ -696,7 +665,7 @@
           <div class="gal-label">
             <div class="gal-label-top"><span class="gal-badge-cat">Exterior</span></div>
             <h3 class="gal-title">Building Exterior</h3>
-            <p class="gal-desc">Five-storey building at 1229 Navarra St., Sampaloc — close to UST and UBelt.</p>
+            <p class="gal-desc">A five storey building at 1229 Navarra Street, Sampaloc, Manila, conveniently located near UST and the University Belt.</p>
           </div>
         </div>
       </div>
@@ -724,7 +693,6 @@
   </div>
 </div>
 
-{{-- ── cta ── --}}
 <div class="gallery-cta reveal">
   <h2>Ready to call this <em>home?</em></h2>
   <p>Contact us to inquire about room availability, pricing, and how to get started with DormEase.</p>
@@ -737,7 +705,6 @@
   </div>
 </div>
 
-{{-- ── footer ── --}}
 <footer>
   <div class="footer-inner">
     <div>
@@ -759,13 +726,13 @@
       <h4>Dormitory</h4>
       <a href="{{ route('home') }}#about">About</a>
       <a href="{{ route('gallery') }}">Gallery</a>
-      <a href="#">Amenities</a>
+      <a href="{{ route('gallery') }}">Amenities</a>
       <a href="https://maps.google.com/?q=1235+Navarra+St,+Sampaloc,+Manila">Location</a>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
       <a href="tel:+639175359723">+63 917 535 9723</a>
-      <a href="#">1229 Navarra St.</a><a href="#">Sampaloc, Manila</a>
+      <a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">1229 Navarra St.</a><a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">Sampaloc, Manila</a>
     </div>
   </div>
   <div class="footer-btm">
@@ -783,7 +750,7 @@
         </a>
       </div>
       <div class="footer-links">
-        <a href="#">Privacy Policy</a>
+        <a href="{{ route('privacy') }}">Privacy Policy</a>
         <a href="{{ route('faqs') }}">FAQs</a>
         <a href="{{ route('login') }}">Admin Portal</a>
       </div>
@@ -791,7 +758,6 @@
   </div>
 </footer>
 
-{{-- ── lightbox ── --}}
 <div class="lightbox" id="lightbox">
   <div class="lightbox-inner">
     <button class="lightbox-close" id="lightboxClose">
@@ -816,7 +782,6 @@
 </button>
 
 <script>
-  // nav
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
   const navToggle = document.getElementById('navToggle');
@@ -838,24 +803,20 @@
     });
   }
 
-  // scroll top
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('visible', scrollY > 400));
   scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-  // reveal
   const revealObs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-  // masonry reveal
   const itemObs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.05 });
   document.querySelectorAll('.masonry-item').forEach(el => itemObs.observe(el));
 
-  // ── carousel ──
   const track  = document.getElementById('carouselTrack');
   const slides  = track.querySelectorAll('.carousel-slide');
   const dots    = document.querySelectorAll('.carousel-dot');
@@ -885,7 +846,6 @@
   dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.index); startAuto(); }));
   thumbs.forEach(t => t.addEventListener('click', () => { goTo(+t.dataset.index); startAuto(); }));
 
-  // swipe support
   let touchX = 0;
   track.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
   track.addEventListener('touchend', e => {
@@ -895,7 +855,6 @@
 
   startAuto();
 
-  // ── filter ──
   const filterBtns  = document.querySelectorAll('.filter-btn');
   const items       = document.querySelectorAll('.masonry-item');
   const noResults   = document.getElementById('noResults');
@@ -916,14 +875,12 @@
     });
   });
 
-  // update counts
   cats.forEach(cat => {
     const el = document.getElementById('cnt-' + cat);
     if (el) el.textContent = document.querySelectorAll(`.masonry-item[data-cat="${cat}"]`).length;
   });
   document.getElementById('cnt-all').textContent = items.length;
 
-  // ── lightbox ──
   const lightbox        = document.getElementById('lightbox');
   const lightboxClose   = document.getElementById('lightboxClose');
   const lightboxPrev    = document.getElementById('lightboxPrev');
@@ -991,7 +948,6 @@
     if (e.key === 'ArrowRight' && lbIndex < lbItems.length - 1) { lbIndex++; renderLightbox(); }
   });
 
-  // swipe lightbox
   let lbTouchX = 0;
   lightbox.addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
   lightbox.addEventListener('touchend', e => {

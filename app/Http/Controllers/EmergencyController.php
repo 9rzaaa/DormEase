@@ -18,6 +18,7 @@ class EmergencyController extends Controller
         $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
         $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
+        $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
@@ -27,6 +28,7 @@ class EmergencyController extends Controller
             'totalCount',
             'criticalCount',
             'resolvedCount',
+            'panicCount',
             'closedArchive',
             'resolvedArchive',
             'deletedArchive'
@@ -38,9 +40,8 @@ class EmergencyController extends Controller
         $staff = Auth::guard('staff')->user();
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
         $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
-        $activeCount   = EmergencyReport::where('status', 'active')->count();
-        $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
-        $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
+        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
+        $panicCount = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
@@ -49,8 +50,7 @@ class EmergencyController extends Controller
             'staff',
             'reports',
             'totalCount',
-            'activeCount',
-            'resolvedCount',
+            'criticalCount',
             'panicCount',
             'closedArchive',
             'resolvedArchive',
@@ -101,7 +101,7 @@ class EmergencyController extends Controller
 
         $report->update([
             'admin_notes' => $validated['admin_notes'] ?? null,
-            'location'    => $validated['location'] ?? $report->location,
+            'location'    => (!empty($validated['location'])) ? $validated['location'] : $report->location,
         ]);
 
         if ($validated['status'] === 'closed') {
@@ -109,8 +109,8 @@ class EmergencyController extends Controller
                 app(TenantPushNotificationService::class)->sendToTenant(
                     tenant: $report->tenant_id,
                     type: 'emergency',
-                    title: 'Emergency report closed',
-                    body: "Your emergency report #{$report->report_id} has been closed.",
+                    title: 'Emergency Report Closed',
+                    body: "Your emergency report ({$report->emergency_type}) has been closed.",
                     refId: $report->report_id,
                     route: '/tenant/emergency',
                 );
@@ -125,8 +125,8 @@ class EmergencyController extends Controller
                 app(TenantPushNotificationService::class)->sendToTenant(
                     tenant: $report->tenant_id,
                     type: 'emergency',
-                    title: 'Emergency report resolved',
-                    body: "Your emergency report #{$report->report_id} has been resolved.",
+                    title: 'Emergency Report Resolved',
+                    body: "Your emergency report ({$report->emergency_type}) has been resolved.",
                     refId: $report->report_id,
                     route: '/tenant/emergency',
                 );
@@ -136,6 +136,10 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
+            $report->resolved_at = now();
+            $report->save();
+            $report->resolved_at = now();
+            $report->save();
             $this->archiveReport($report, 'resolved');
             $report->delete();
             return response()->json(['success' => true, 'archived' => true]);
@@ -191,7 +195,7 @@ class EmergencyController extends Controller
         $tenantName = $tenant
             ? trim($tenant->first_name . ' ' . $tenant->last_name)
             : 'Front Desk';
-        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user() ?? Auth::user();
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
 
         ArchivedEmergencyReport::create([
             'original_id' => $report->report_id,
@@ -270,6 +274,39 @@ class EmergencyController extends Controller
                 'resolved_at' => $report->resolved_at,
             ];
         })->values();
+    }
+
+    public function acknowledge($id)
+    {
+        $report = EmergencyReport::find($id);
+        if (!$report) {
+            return response()->json(['success' => false, 'message' => 'Report not found'], 404);
+        }
+
+        if (!$report->tenant_id) {
+            return response()->json(['success' => true, 'message' => 'No tenant associated with this report']);
+        }
+
+        $alreadySent = \App\Models\Notification::where('tenant_id', $report->tenant_id)
+            ->where('type', 'emergency')
+            ->where('ref_id', $report->report_id)
+            ->where('message', 'like', '%acknowledged%')
+            ->exists();
+
+        if (!$alreadySent) {
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $report->tenant_id,
+                type: 'emergency',
+                title: 'Emergency Report Acknowledged',
+                body: "Staff has acknowledged your emergency report ({$report->emergency_type}) and is responding.",
+                refId: $report->report_id,
+                route: '/tenant/emergency',
+            );
+
+            return response()->json(['success' => true, 'notified' => true]);
+        }
+
+        return response()->json(['success' => true, 'notified' => false]);
     }
 
     public function pollPanic()

@@ -11,8 +11,11 @@ class TenantLogController extends Controller
 {
     public function timeIn(Request $request, $id)
     {
-        $tenant = Tenant::findOrFail($id);
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
 
+        $tenant = Tenant::findOrFail($id);
         if ($tenant->is_inside) {
             return response()->json(['error' => 'Tenant is already inside.'], 422);
         }
@@ -41,8 +44,11 @@ class TenantLogController extends Controller
 
     public function timeOut(Request $request, $id)
     {
-        $tenant = Tenant::findOrFail($id);
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
 
+        $tenant = Tenant::findOrFail($id);
         if (!$tenant->is_inside) {
             return response()->json(['error' => 'Tenant is already outside.'], 422);
         }
@@ -71,6 +77,10 @@ class TenantLogController extends Controller
 
     public function logs(Request $request)
     {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
         $logs = TenantLog::orderByDesc('logged_at')
             ->limit(500)
             ->get();

@@ -17,7 +17,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -28,7 +28,14 @@ class VisitorController extends Controller
             $allVisitors->where('status', 'deleted')
         );
 
-        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $cancelledVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'cancelled')
+        );
+
+        $visitorsToday = VisitorLog::where(function ($q) {
+            $q->whereDate('date_of_visit', Carbon::today())
+              ->orWhereDate('arrival_time', Carbon::today());
+        })->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->where('status', 'inside')
@@ -41,6 +48,7 @@ class VisitorController extends Controller
             'visitors',
             'completedVisitors',
             'deletedVisitors',
+            'cancelledVisitors',
             'visitorsToday',
             'currentlyInside',
             'tenants'
@@ -54,7 +62,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -65,7 +73,14 @@ class VisitorController extends Controller
             $allVisitors->where('status', 'deleted')
         );
 
-        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $cancelledVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'cancelled')
+        );
+
+        $visitorsToday = VisitorLog::where(function ($q) {
+            $q->whereDate('date_of_visit', Carbon::today())
+              ->orWhereDate('arrival_time', Carbon::today());
+        })->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->where('status', 'inside')
@@ -79,6 +94,7 @@ class VisitorController extends Controller
             'logs'              => $visitors,
             'completedVisitors' => $completedVisitors,
             'deletedVisitors'   => $deletedVisitors,
+            'cancelledVisitors' => $cancelledVisitors,
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,

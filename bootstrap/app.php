@@ -14,8 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
         $middleware->alias([
-            'dormhead'      => \App\Http\Middleware\DormHeadOnly::class,
-            'tenant.active' => \App\Http\Middleware\CheckTenantActive::class,
+            'dormhead'               => \App\Http\Middleware\DormHeadOnly::class,
+            'tenant.active'          => \App\Http\Middleware\CheckTenantActive::class,
+            'tenant.not_on_vacation' => \App\Http\Middleware\CheckNotOnVacation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -912,6 +912,59 @@
     }
 
     @media (max-width: 580px) { .stats-row { grid-template-columns: 1fr; } }
+
+    .status-legend-wrap {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 320px;
+        z-index: 9999;
+    }
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .slp-row {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--pink-100);
+    }
+    .slp-row:last-child { border-bottom: none; }
+    .slp-badge { flex-shrink: 0; min-width: 90px; }
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+    }
 </style>
 @endsection
 
@@ -976,9 +1029,23 @@
                 <div class="table-sub" id="table-date"></div>
             </div>
             <div class="table-controls">
-                <div class="search-box">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                <div style="display:flex;align-items:center;gap:.45rem;">
+                    <div class="search-box">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                    </div>
+                    <div class="status-legend-wrap">
+                        <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                        <div class="status-legend-popup">
+                            <div class="slp-title">Urgency &amp; Status Guide</div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
+                        </div>
+                    </div>
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
@@ -1087,7 +1154,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="dir-modal">
+<div class="modal-overlay" id="dir-modal" onclick="handleOverlayClick(event, 'dir-modal')">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
             <div class="modal-title">
@@ -1132,7 +1199,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
+<div class="modal-overlay" id="view-modal" onclick="handleOverlayClick(event, 'view-modal')">
     <div class="modal" style="max-width:520px;">
         <div class="modal-header">
             <div class="modal-title">Emergency Details</div>
@@ -1146,7 +1213,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="edit-modal">
+<div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event, 'edit-modal')">
     <div class="modal" style="max-width:480px;">
         <div class="modal-header">
             <div class="modal-title">Update Emergency Report</div>
@@ -1191,7 +1258,7 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="delete-modal">
+<div class="modal-overlay" id="delete-modal" onclick="handleOverlayClick(event, 'delete-modal')">
     <div class="modal" style="max-width:400px;">
         <div class="modal-header">
             <div class="modal-title">Delete Report</div>
@@ -1225,6 +1292,10 @@
     let deleteId    = null;
     let archiveTab  = 'closed';
 
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function handleOverlayClick(event, id) { if (event.target === event.currentTarget) closeModal(id); }
+
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
@@ -1245,6 +1316,7 @@
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function handleOverlayClick(event, id) { if (event.target === event.currentTarget) closeModal(id); }
 
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
@@ -1318,7 +1390,13 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
+            const hasFilters = document.getElementById('search-input').value
+                || document.getElementById('status-filter').value
+                || document.getElementById('type-filter').value
+                || document.getElementById('urgency-filter').value
+                || document.getElementById('date-from').value
+                || document.getElementById('date-to').value;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">${hasFilters ? 'No results match your filters. <button onclick="resetFilters()" style="background:none;border:none;color:var(--bright-pink);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;margin-left:.3rem;">Clear filters</button>' : 'No emergency reports found.'}</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -1348,7 +1426,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, '${escHtml(r.emergency_type)}')">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
@@ -1394,6 +1472,17 @@
         const sort    = document.getElementById('sort-select').value;
         const from    = document.getElementById('date-from').value;
         const to      = document.getElementById('date-to').value;
+
+        const dateFromEl = document.getElementById('date-from');
+        const dateToEl   = document.getElementById('date-to');
+        if (from && to && from > to) {
+            dateToEl.style.borderColor = '#e04867';
+            dateFromEl.style.borderColor = '#e04867';
+            return;
+        } else {
+            dateFromEl.style.borderColor = '';
+            dateToEl.style.borderColor = '';
+        }
 
         filtered = reports.filter(r => {
             const matchSearch =
@@ -1481,6 +1570,14 @@
             </div>
         `;
         openModal('view-modal');
+
+        if (r && r.report_id) {
+            var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+            fetch('/emergency/' + r.report_id + '/acknowledge', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+            }).catch(function(e) {});
+        }
     }
 
     function switchToEdit() {
@@ -1755,12 +1852,15 @@
 
     function copyHotline(number, btn) {
         const clean = number.replace(/[^0-9+]/g, '');
-        navigator.clipboard.writeText(clean).then(() => {
-            const origWidth = btn.offsetWidth;
+        const origWidth = btn.offsetWidth;
+        const origHTML  = btn.innerHTML;
+
+        function flash(success) {
             btn.style.minWidth = origWidth + 'px';
-            const origHTML = btn.innerHTML;
-            btn.innerHTML = 'Copied!';
-            btn.style.cssText += ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;';
+            btn.innerHTML = success ? 'Copied!' : 'Copy failed';
+            btn.style.cssText += success
+                ? ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;'
+                : ';background:#e04867!important;color:#fff!important;border-color:#e04867!important;';
             setTimeout(() => {
                 btn.innerHTML = origHTML;
                 btn.style.cssText = btn.style.cssText
@@ -1769,7 +1869,24 @@
                     .replace(/border-color:[^;]+;?/g,'');
                 btn.style.minWidth = '';
             }, 1500);
-        });
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(clean).then(() => flash(true)).catch(() => flash(false));
+        } else {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = clean;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                flash(true);
+            } catch {
+                flash(false);
+            }
+        }
     }
 
     function exportTable(format) {
@@ -1857,12 +1974,99 @@
         if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
     });
 
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
-    @endif
+    (function() {
+        var popup = document.querySelector('.status-legend-popup');
+        if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+
+        var hideTimer = null;
+
+        document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                var rect = wrap.getBoundingClientRect();
+                var popupWidth = 320;
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                popup.style.top = (rect.bottom + 8) + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
+
+    function resetFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('status-filter').value = '';
+        document.getElementById('type-filter').value = '';
+        document.getElementById('urgency-filter').value = '';
+        document.getElementById('urgency-filter').value = '';
+        document.getElementById('sort-select').value = 'newest';
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+        applyFilters();
+    }
 
     populateTypeFilter();
     applyFilters();
     renderDirList();
+
+    @if(session('success'))
+        showToast('{{ session("success") }}', 'success');
+    @endif
+
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
+
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
 </script>
 @endsection

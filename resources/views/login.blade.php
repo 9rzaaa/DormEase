@@ -732,6 +732,28 @@
 
     .toggle-pw:hover { opacity: .85; }
 
+    .caps-icon {
+        position: absolute;
+        right: 2.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        pointer-events: none;
+    }
+
+    .caps-icon.visible {
+        display: flex;
+    }
+
+    .caps-icon svg {
+        width: 15px;
+        height: 15px;
+    }
+
     .email-check {
         position: absolute;
         right: .9rem; top: 50%;
@@ -858,32 +880,21 @@
         90%      { transform: translateX(2px); }
     }
 
-    .input-shake { animation: shake .45s ease; }
+    .input-error-state { border-color: var(--hot-pink) !important; }
 
     .field-error {
-        display: flex;
-        align-items: center;
-        gap: .35rem;
-        font-size: .75rem;
+        font-size: .74rem;
         font-weight: 600;
         color: var(--hot-pink);
-        margin-top: .35rem;
         padding-left: .1rem;
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        transition: max-height .25s ease, opacity .2s ease, margin-top .2s ease;
+        height: 1rem;
+        line-height: 1rem;
+        margin-top: .3rem;
+        visibility: hidden;
     }
 
     .field-error.visible {
-        max-height: 2rem;
-        opacity: 1;
-        margin-top: .35rem;
-    }
-
-    .field-error svg {
-        flex-shrink: 0;
-        width: 13px; height: 13px;
+        visibility: visible;
     }
 
     .de-alert-error {
@@ -893,56 +904,22 @@
         background: #fff0f3;
         border-left: 3px solid var(--hot-pink);
         border-radius: 8px;
-        padding: .55rem .85rem;
-        font-size: .81rem;
+        padding: .45rem .8rem;
+        font-size: .78rem;
         color: var(--hot-pink);
         font-weight: 600;
-        margin-bottom: .9rem;
+        margin-bottom: .75rem;
         animation: slideDown .2s ease;
     }
 
     .de-alert-error img {
-        width: 14px; height: 14px;
+        width: 13px; height: 13px;
         flex-shrink: 0;
     }
 
     @keyframes slideDown {
         from { opacity: 0; transform: translateY(-6px); }
         to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .pw-hint {
-        font-size: .73rem;
-        color: var(--red);
-        margin-top: .3rem;
-        display: none;
-        padding-left: .1rem;
-        animation: slideDown .2s ease;
-    }
-
-    .caps-warn {
-        display: none;
-        align-items: center;
-        gap: .35rem;
-        font-size: .73rem;
-        font-weight: 600;
-        color: #b45309;
-        background: #fffbeb;
-        border: 1px solid #fcd34d;
-        border-radius: 6px;
-        padding: .3rem .6rem;
-        margin-top: .35rem;
-        animation: slideDown .2s ease;
-    }
-
-    .caps-warn.visible {
-        display: flex;
-    }
-
-    .caps-warn svg {
-        flex-shrink: 0;
-        width: 13px;
-        height: 13px;
     }
 
     .de-btn-primary {
@@ -1594,19 +1571,12 @@
 
             <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
 
-            @if ($errors->any())
-                <div class="de-alert-error">
-                    <img src="{{ asset('icons/warning.png') }}" alt="Error">
-                    <span>{{ $errors->first('email') }}</span>
-                </div>
-            @endif
-
             <div class="field">
                 <label for="email">Email Address</label>
                 <div class="input-wrap">
                     <img class="input-icon" src="{{ asset('icons/email.png') }}" alt="">
                     <input
-                        class="de-input"
+                        class="de-input{{ $errors->has('email') ? ' input-error-state' : '' }}"
                         type="email"
                         id="email"
                         name="email"
@@ -1616,19 +1586,12 @@
                         maxlength="255"
                         required
                         autofocus
-                        oninvalid="this.setCustomValidity('Please enter a valid email address (e.g. you@example.com)')"
+                        oninvalid="this.setCustomValidity('')"
                         oninput="this.setCustomValidity('')"
                     >
-                    <span class="email-check" id="email-check">
-                        <svg viewBox="0 0 18 18" fill="none">
-                            <circle cx="9" cy="9" r="8.5" stroke="#16a34a" stroke-width="1.2"/>
-                            <path d="M5.5 9l2.5 2.5 4.5-5" stroke="#16a34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
                 </div>
-                <div class="field-error" id="email-field-error">
-                    <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6" stroke="#E8175D" stroke-width="1.2"/><path d="M6.5 4v3M6.5 9h.01" stroke="#E8175D" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    <span id="email-error-text"></span>
+                <div class="field-error{{ $errors->has('email') ? ' visible' : '' }}" id="email-field-error">
+                    <span id="email-error-text">{{ $errors->first('email') }}</span>
                 </div>
             </div>
 
@@ -1644,10 +1607,12 @@
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         style="padding-right: 2.8rem;"
-                        minlength="8"
                         maxlength="128"
                         required
                     >
+                    <span class="caps-icon" id="caps-icon">
+                        <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                    </span>
                     <button
                         type="button"
                         class="toggle-pw"
@@ -1664,15 +1629,7 @@
                     </button>
                 </div>
                 <div class="field-error" id="pw-field-error">
-                    <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6" stroke="#E8175D" stroke-width="1.2"/><path d="M6.5 4v3M6.5 9h.01" stroke="#E8175D" stroke-width="1.4" stroke-linecap="round"/></svg>
                     <span id="pw-error-text"></span>
-                </div>
-                <div class="caps-warn" id="caps-warn">
-                    <svg viewBox="0 0 13 13" fill="none">
-                        <path d="M6.5 1L1 10h11L6.5 1z" stroke="#b45309" stroke-width="1.3" stroke-linejoin="round"/>
-                        <path d="M6.5 5.5v2.5M6.5 9.5h.01" stroke="#b45309" stroke-width="1.3" stroke-linecap="round"/>
-                    </svg>
-                    Caps Lock is on
                 </div>
             </div>
 
@@ -1774,7 +1731,10 @@
                     <label>New Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right:2.8rem;">
+                        <input type="password" id="fp-new-pw" class="fp-input" placeholder="Minimum 8 characters" style="padding-right:5rem;">
+                        <span class="fp-caps-icon" id="fp-caps-icon" style="display:none;position:absolute;right:2.8rem;top:50%;transform:translateY(-50%);pointer-events:none;">
+                            <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                        </span>
                         <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-new-pw',this)">
                             <img id="fp-eye-new" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
@@ -1792,7 +1752,10 @@
                     <label>Confirm Password</label>
                     <div class="fp-input-wrap">
                         <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
-                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right:2.8rem;">
+                        <input type="password" id="fp-confirm-pw" class="fp-input" placeholder="Re-enter password" style="padding-right:5rem;">
+                        <span class="fp-caps-icon" id="fp-confirm-caps-icon" style="display:none;position:absolute;right:2.8rem;top:50%;transform:translateY(-50%);pointer-events:none;">
+                            <img src="{{ asset('icons/caps.png') }}" alt="Caps Lock" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                        </span>
                         <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-confirm-pw',this)">
                             <img id="fp-eye-confirm" src="{{ asset('icons/eye.png') }}" alt="Toggle">
                         </button>
@@ -1874,7 +1837,6 @@
     function typeFeature() {
         var current = features[fIdx].text;
         if (fPause > 0) { fPause--; setTimeout(typeFeature, 80); return; }
-
         if (!fDeleting) {
             fTextEl.textContent = current.slice(0, fCharIdx + 1);
             fCharIdx++;
@@ -1896,7 +1858,6 @@
 
     var leftPanel  = document.getElementById('left-panel');
     var studentWrap = document.getElementById('student-wrap');
-    var parallaxBase = 0;
 
     leftPanel.addEventListener('mousemove', function (e) {
         var rect = leftPanel.getBoundingClientRect();
@@ -1904,9 +1865,7 @@
         var cy   = rect.height / 2;
         var dx   = (e.clientX - rect.left - cx) / cx;
         var dy   = (e.clientY - rect.top  - cy) / cy;
-        var tx   = dx * 14;
-        var ty   = dy * 8;
-        studentWrap.style.transform = 'translateX(' + tx + 'px) translateY(calc(' + ty + 'px))';
+        studentWrap.style.transform = 'translateX(' + (dx * 14) + 'px) translateY(' + (dy * 8) + 'px)';
     });
 
     leftPanel.addEventListener('mouseleave', function () {
@@ -1918,44 +1877,27 @@
         cards.forEach(function (card) {
             card.addEventListener('mousemove', function (e) {
                 var rect = card.getBoundingClientRect();
-                var cx = rect.left + rect.width  / 2;
-                var cy = rect.top  + rect.height / 2;
-                var dx = (e.clientX - cx) / (rect.width  / 2);
-                var dy = (e.clientY - cy) / (rect.height / 2);
-                var tx = dx * 6;
-                var ty = dy * 4;
-                card.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(1.03)';
+                var dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+                var dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+                card.style.transform = 'translate(' + (dx * 6) + 'px,' + (dy * 4) + 'px) scale(1.03)';
                 card.style.boxShadow = '0 8px 28px rgba(232,23,93,.18)';
             });
             card.addEventListener('mouseleave', function () {
                 card.style.transform = '';
                 card.style.boxShadow = '';
             });
-            card.addEventListener('mousedown', function () {
-                card.style.transform = 'scale(.97)';
-            });
-            card.addEventListener('mouseup', function () {
-                card.style.transform = '';
-            });
+            card.addEventListener('mousedown', function () { card.style.transform = 'scale(.97)'; });
+            card.addEventListener('mouseup', function () { card.style.transform = ''; });
         });
     })();
 
     (function () {
-        var pwInput  = document.getElementById('password');
-        var normal   = document.getElementById('student-normal');
-        var cover    = document.getElementById('student-cover');
-
+        var pwInput = document.getElementById('password');
+        var normal  = document.getElementById('student-normal');
+        var cover   = document.getElementById('student-cover');
         if (!pwInput || !normal || !cover) return;
-
-        pwInput.addEventListener('focus', function () {
-            normal.style.opacity = '0';
-            cover.style.opacity  = '1';
-        });
-
-        pwInput.addEventListener('blur', function () {
-            normal.style.opacity = '1';
-            cover.style.opacity  = '0';
-        });
+        pwInput.addEventListener('focus', function () { normal.style.opacity = '0'; cover.style.opacity = '1'; });
+        pwInput.addEventListener('blur',  function () { normal.style.opacity = '1'; cover.style.opacity = '0'; });
     })();
 
     var fpAdminEmail = '';
@@ -1965,32 +1907,23 @@
             document.getElementById('role-' + r).classList.toggle('active', r === role);
         });
         document.getElementById('role-input').value = role;
-
-        var textEl   = document.getElementById('eyebrow-text');
-        var eyebrow  = document.getElementById('eyebrow-label');
-        var next     = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
-
+        var textEl  = document.getElementById('eyebrow-text');
+        var eyebrow = document.getElementById('eyebrow-label');
+        var next    = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
         if (skipAnim) {
             textEl.textContent = next;
-            setTimeout(function () {
-                eyebrow.classList.add('line-drawn');
-            }, 320);
+            setTimeout(function () { eyebrow.classList.add('line-drawn'); }, 320);
             return;
         }
-
         eyebrow.classList.remove('line-drawn');
         textEl.classList.remove('entering');
         textEl.classList.add('switching');
-
         setTimeout(function () {
             textEl.textContent = next;
             textEl.classList.remove('switching');
             textEl.classList.add('entering');
         }, 220);
-
-        setTimeout(function () {
-            eyebrow.classList.add('line-drawn');
-        }, 280);
+        setTimeout(function () { eyebrow.classList.add('line-drawn'); }, 280);
     }
 
     (function () {
@@ -2000,13 +1933,13 @@
 
     document.querySelectorAll('.role-btn').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
-            var r = document.createElement('span');
+            var r    = document.createElement('span');
             r.className = 'ripple';
             var rect = btn.getBoundingClientRect();
             var size = Math.max(rect.width, rect.height);
             r.style.width  = r.style.height = size + 'px';
-            r.style.left   = (e.clientX - rect.left  - size / 2) + 'px';
-            r.style.top    = (e.clientY - rect.top   - size / 2) + 'px';
+            r.style.left   = (e.clientX - rect.left - size / 2) + 'px';
+            r.style.top    = (e.clientY - rect.top  - size / 2) + 'px';
             btn.appendChild(r);
             setTimeout(function () { r.remove(); }, 500);
         });
@@ -2020,34 +1953,22 @@
         icon.src   = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
     }
 
-    document.getElementById('password').addEventListener('input', function () {
-        var errEl   = document.getElementById('pw-field-error');
-        var errText = document.getElementById('pw-error-text');
-        if (this.value.length > 0 && this.value.length < 8) {
-            errText.textContent = 'Password must be at least 8 characters.';
-            errEl.classList.add('visible');
-        } else {
-            errEl.classList.remove('visible');
+    (function () {
+        var pwInput  = document.getElementById('password');
+        var capsIcon = document.getElementById('caps-icon');
+
+        function checkCaps(e) {
+            var caps = e.getModifierState && e.getModifierState('CapsLock');
+            capsIcon.classList.toggle('visible', !!caps);
         }
-    });
 
-    document.getElementById('password').addEventListener('keyup', function (e) {
-        var caps = e.getModifierState && e.getModifierState('CapsLock');
-        document.getElementById('caps-warn').classList.toggle('visible', !!caps);
-    });
+        pwInput.addEventListener('keyup',  checkCaps);
+        pwInput.addEventListener('keydown', checkCaps);
+        pwInput.addEventListener('focus', function (e) { checkCaps(e); });
+        pwInput.addEventListener('blur',  function () { capsIcon.classList.remove('visible'); });
+    })();
 
-    document.getElementById('password').addEventListener('focus', function (e) {
-        if (e.getModifierState && e.getModifierState('CapsLock')) {
-            document.getElementById('caps-warn').classList.add('visible');
-        }
-    });
-
-    document.getElementById('password').addEventListener('blur', function () {
-        document.getElementById('caps-warn').classList.remove('visible');
-    });
-
-    var emailInput = document.getElementById('email');
-    var emailCheck = document.getElementById('email-check');
+    var emailInput    = document.getElementById('email');
     var emailFieldErr = document.getElementById('email-field-error');
     var emailErrText  = document.getElementById('email-error-text');
 
@@ -2058,64 +1979,73 @@
     function showEmailErr(msg) {
         emailErrText.textContent = msg;
         emailFieldErr.classList.add('visible');
-        emailCheck.classList.remove('visible');
-        emailInput.classList.remove('input-valid');
+        emailInput.style.borderColor = 'var(--hot-pink)';
     }
 
     function clearEmailErr() {
         emailFieldErr.classList.remove('visible');
+        emailInput.style.borderColor = '';
+    }
+
+    function showPwErr(msg) {
+        document.getElementById('pw-error-text').textContent = msg;
+        document.getElementById('pw-field-error').classList.add('visible');
+        document.getElementById('password').style.borderColor = 'var(--hot-pink)';
+    }
+
+    function clearPwErr() {
+        document.getElementById('pw-field-error').classList.remove('visible');
+        document.getElementById('password').style.borderColor = '';
     }
 
     emailInput.addEventListener('input', function () {
-        var val = this.value.trim();
         clearEmailErr();
-        if (val && isValidEmail(val)) {
-            emailCheck.classList.add('visible');
-            emailInput.classList.add('input-valid');
-        } else {
-            emailCheck.classList.remove('visible');
-            emailInput.classList.remove('input-valid');
-        }
     });
 
     emailInput.addEventListener('blur', function () {
         var val = this.value.trim();
         if (!val) { clearEmailErr(); return; }
-        if (!isValidEmail(val)) {
-            showEmailErr('Please enter a valid email address (e.g. you@example.com)');
-        }
+        if (!isValidEmail(val)) showEmailErr('Invalid email format.');
     });
 
-    @if ($errors->any())
+    document.getElementById('password').addEventListener('input', function () {
+        clearPwErr();
+    });
+
+    @if ($errors->has('email'))
         (function () {
-            var inputs = document.querySelectorAll('.de-input');
-            inputs.forEach(function (inp) {
-                inp.classList.add('input-shake');
-                inp.addEventListener('animationend', function () {
-                    inp.classList.remove('input-shake');
-                }, { once: true });
-            });
+            var inp = document.getElementById('email');
+            if (!inp) return;
+            inp.classList.add('input-shake');
+            inp.addEventListener('animationend', function () {
+                inp.classList.remove('input-shake');
+            }, { once: true });
         })();
     @endif
 
-    document.getElementById('login-btn').addEventListener('click', function (e) {
-        var form = document.getElementById('login-form');
+    document.getElementById('login-btn').addEventListener('click', function () {
+        var form     = document.getElementById('login-form');
         var emailVal = emailInput.value.trim();
+        var pwVal    = document.getElementById('password').value;
+        var valid    = true;
+
+        clearEmailErr();
+        clearPwErr();
 
         if (!emailVal) {
-            showEmailErr('Email address is required.');
-            emailInput.focus();
-            return;
+            showEmailErr('This field is required.');
+            valid = false;
+        } else if (!isValidEmail(emailVal)) {
+            showEmailErr('Invalid email format.');
+            valid = false;
         }
-        if (!isValidEmail(emailVal)) {
-            showEmailErr('Please enter a valid email address (e.g. you@example.com)');
-            emailInput.focus();
-            return;
+
+        if (!pwVal) {
+            showPwErr('This field is required.');
+            valid = false;
         }
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
+
+        if (!valid) return;
 
         var btn = this;
         btn.disabled = true;
@@ -2126,13 +2056,10 @@
             btn.disabled = false;
             document.getElementById('login-btn-text').style.display = 'inline';
             document.getElementById('login-spinner').style.display  = 'none';
-            showEmailErr('Connection timed out. Please check your network and try again.');
+            showEmailErr('Connection timed out. Try again.');
         }, 12000);
 
-        form.addEventListener('submit', function () {
-            clearTimeout(timeout);
-        }, { once: true });
-
+        form.addEventListener('submit', function () { clearTimeout(timeout); }, { once: true });
         form.submit();
     });
 
@@ -2157,31 +2084,20 @@
         var sheet = document.getElementById('fp-sheet');
         return Array.from(sheet.querySelectorAll(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        )).filter(function (el) {
-            return el.offsetParent !== null;
-        });
+        )).filter(function (el) { return el.offsetParent !== null; });
     }
 
     function fpKeyHandler(e) {
-        if (e.key === 'Escape') {
-            closeFP();
-            return;
-        }
+        if (e.key === 'Escape') { closeFP(); return; }
         if (e.key !== 'Tab') return;
         var focusable = getFocusable();
         if (!focusable.length) return;
         var first = focusable[0];
         var last  = focusable[focusable.length - 1];
         if (e.shiftKey) {
-            if (document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            }
+            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
         } else {
-            if (document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
+            if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
         }
     }
 
@@ -2197,19 +2113,19 @@
         document.getElementById('fp-confirm-pw').value               = '';
         document.getElementById('fp-admin-err').style.display        = 'none';
         document.getElementById('fp-pw-err').style.display           = 'none';
-        fpAdminEmail        = '';
-        fpVerifyInFlight    = false;
-        fpResetInFlight     = false;
+        fpAdminEmail     = '';
+        fpVerifyInFlight = false;
+        fpResetInFlight  = false;
     }
 
     function fpSetRole(role) {
-        document.getElementById('fp-step-role').style.display      = 'none';
-        document.getElementById('fp-step-' + role).style.display   = '';
+        document.getElementById('fp-step-role').style.display    = 'none';
+        document.getElementById('fp-step-' + role).style.display = '';
     }
 
     function fpBack(role) {
         document.getElementById('fp-step-' + role).style.display = 'none';
-        document.getElementById('fp-step-role').style.display     = '';
+        document.getElementById('fp-step-role').style.display    = '';
     }
 
     function fpShowErr(id, msg) {
@@ -2246,7 +2162,6 @@
         var label  = document.getElementById('fp-strength-label');
         var colors = ['#DF0404','#FF8C00','#f0c040','#22c55e'];
         var labels = ['Weak','Fair','Good','Strong'];
-
         if (!val) {
             fill.style.width  = '0%';
             label.textContent = '';
@@ -2256,10 +2171,7 @@
             label.textContent     = labels[score - 1] || labels[0];
             label.style.color     = colors[score - 1] || colors[0];
         }
-
-        var toggle = function (id, met) {
-            document.getElementById(id).classList.toggle('met', met);
-        };
+        var toggle = function (id, met) { document.getElementById(id).classList.toggle('met', met); };
         toggle('req-length',  val.length >= 8);
         toggle('req-upper',   /[A-Z]/.test(val));
         toggle('req-number',  /[0-9]/.test(val));
@@ -2277,19 +2189,16 @@
         if (fpVerifyInFlight) return;
         var email = document.getElementById('fp-admin-email').value.trim();
         fpHideErr('fp-admin-err');
-
         if (!email) { fpShowErr('fp-admin-err', 'Please enter your email address.'); return; }
         if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
             fpShowErr('fp-admin-err', 'Please enter a valid email address.');
             return;
         }
-
         fpVerifyInFlight = true;
         var txt    = document.getElementById('fp-verify-txt');
         var loader = document.getElementById('fp-verify-loader');
         txt.style.display    = 'none';
         loader.style.display = 'inline-block';
-
         fetch('/forgot-password/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
@@ -2322,18 +2231,15 @@
         var pw      = document.getElementById('fp-new-pw').value;
         var confirm = document.getElementById('fp-confirm-pw').value;
         fpHideErr('fp-pw-err');
-
         if (pw.length < 8)           { fpShowErr('fp-pw-err', 'Password must be at least 8 characters.'); return; }
         if (!confirm)                { fpShowErr('fp-pw-err', 'Please confirm your new password.'); return; }
         if (pw !== confirm)          { fpShowErr('fp-pw-err', 'Passwords do not match.'); return; }
         if (fpCheckStrength(pw) < 3) { fpShowErr('fp-pw-err', 'Password must include uppercase, a number, and a special character.'); return; }
-
         fpResetInFlight = true;
         var txt    = document.getElementById('fp-reset-txt');
         var loader = document.getElementById('fp-reset-loader');
         txt.style.display    = 'none';
         loader.style.display = 'inline-block';
-
         fetch('/forgot-password/reset', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
@@ -2376,6 +2282,35 @@
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
+
+   (function () {
+        var fpNewPw      = document.getElementById('fp-new-pw');
+        var fpConfirmPw  = document.getElementById('fp-confirm-pw');
+        var fpCapsNew    = document.getElementById('fp-caps-icon');
+        var fpCapsConf   = document.getElementById('fp-confirm-caps-icon');
+
+        function checkFpCaps(e, iconEl) {
+            var caps = e.getModifierState && e.getModifierState('CapsLock');
+            iconEl.style.display = caps ? 'inline-flex' : 'none';
+        }
+
+        ['keyup', 'keydown', 'focus'].forEach(function(evt) {
+            if (fpNewPw && fpCapsNew) {
+                fpNewPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsNew); });
+            }
+            if (fpConfirmPw && fpCapsConf) {
+                fpConfirmPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsConf); });
+            }
+        });
+
+        if (fpNewPw && fpCapsNew) {
+            fpNewPw.addEventListener('blur', function() { fpCapsNew.style.display = 'none'; });
+        }
+        if (fpConfirmPw && fpCapsConf) {
+            fpConfirmPw.addEventListener('blur', function() { fpCapsConf.style.display = 'none'; });
+        }
+    })();
+
     document.getElementById('remember-cb').addEventListener('change', function () {
         document.getElementById('remember-track').setAttribute('aria-checked', this.checked ? 'true' : 'false');
     });

@@ -210,6 +210,7 @@ td {
     vertical-align: middle;
 }
 th:nth-child(2), td:nth-child(2) { text-align: center; }
+th:nth-child(3), td:nth-child(3) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
 .td-center { text-align: center; }
@@ -339,6 +340,12 @@ tbody tr:hover { background: var(--soft-bg); }
     background: var(--white);
 }
 .modal-field input::placeholder { color: #c4a0af; }
+.modal-field input.field-invalid {
+    border-color: #e04867;
+    box-shadow: 0 0 0 3px rgba(224,72,103,.12);
+    background: #fff5f6;
+}
+.field-error { line-height: 1.4; }
 .status-select-wrap { position: relative; }
 .status-dot {
     position: absolute; left: .75rem; top: 50%; transform: translateY(-50%);
@@ -399,6 +406,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-title { display: flex; align-items: center; gap: .65rem; }
 .tenant-section-label { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
 .tenant-section-pill { font-size: .7rem; font-weight: 800; padding: .22rem .6rem; border-radius: 99px; letter-spacing: .03em; }
+.tenant-section-pill-overdue { background: #fff0f0; color: #e04867; border: 1px solid var(--pink-200); }
 .tenant-section-pill-active { background: #e8faf5; color: #1f9d69; border: 1px solid #8ce0bb; }
 .tenant-section-pill-pending { background: #fff9e6; color: #c8960c; border: 1px solid #f0c040; }
 .tenant-section-chevron { transition: transform .25s cubic-bezier(.4,0,.2,1); flex-shrink: 0; }
@@ -422,6 +430,68 @@ tbody tr:hover { background: var(--soft-bg); }
 .tv-item.full { grid-column: 1 / -1; }
 .tv-item-label { font-size: .68rem; font-weight: 800; color: var(--hot-pink); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
 .tv-item-value { font-size: .9rem; font-weight: 600; color: #5a1e38; word-break: break-word; line-height: 1.4; }
+.room-occupant-card {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .85rem;
+    background: #fffafd;
+    border: 1.5px solid var(--pink-100);
+    border-radius: 12px;
+    transition: border-color .2s, background .2s;
+}
+.room-occupant-card:hover { border-color: var(--pink-200); background: #fff5f9; }
+.room-occupant-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(232,23,93,.2);
+}
+.room-occupant-name { font-size: .88rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.room-occupant-sub  { font-size: .72rem; color: var(--ink-muted); margin-top: .1rem; }
+.overdue-date {
+    color: #e04867;
+    font-weight: 700;
+    text-decoration: underline dotted #e04867;
+    text-decoration-thickness: 1.5px;
+    cursor: pointer;
+    position: relative;
+    transition: color .15s;
+}
+.overdue-date:hover { color: #b0163a; }
+.overdue-date-tooltip {
+    display: none;
+    position: fixed;
+    background: var(--ink);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 600;
+    padding: .5rem .75rem;
+    border-radius: 8px;
+    max-width: 280px;
+    white-space: normal;
+    line-height: 1.45;
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    z-index: 9999;
+    pointer-events: none;
+}
+.overdue-date-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--ink);
+}
 
 @keyframes pulseGreen {
     0%, 100% { box-shadow: 0 0 0 3px rgba(31,157,105,.2); }
@@ -536,7 +606,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .slp-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .55rem; padding-bottom: .4rem; border-bottom: 1.5px solid var(--petal); }
 .slp-row { display: flex; align-items: flex-start; gap: .6rem; padding: .35rem 0; border-bottom: 1px solid var(--pink-100); }
 .slp-row:last-child { border-bottom: none; }
-.slp-row .badge { flex-shrink: 0; min-width: 72px; justify-content: center; }
+.slp-row .badge { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
 @media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
 .addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
@@ -643,14 +713,14 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
-                    <option value="reserved">Reserved</option>
+                    <option value="vacation">On Vacation</option>
                 </select>
                 <div class="status-legend-wrap" id="status-legend-trigger">
                     <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
                     <div class="status-legend-popup" id="status-legend-popup">
                         <div class="slp-title">Status Guide</div>
                         <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
-                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Moved in but account setup or verification is incomplete.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
                         <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
                         <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
                         <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
@@ -702,6 +772,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" style="flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span class="tenant-section-label">Reserved Tenants</span>
                     <span class="tenant-section-pill tenant-section-pill-pink" id="pill-reserved">0</span>
+                    <span class="tenant-section-pill" id="pill-reserved-overdue" style="display:none;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);">0 overdue</span>
                 </div>
                 <svg class="tenant-section-chevron open" id="chevron-reserved" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -798,7 +869,19 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="tad-list" id="rooms-list"></div>
     <div class="tad-footer">
         <div class="tad-count-label" id="rooms-count-label">0 rooms</div>
-        <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+            <div style="font-size:.73rem;color:var(--ink-muted);" id="rooms-summary"></div>
+            <div class="export-dropdown" id="export-dropdown-rooms">
+                <button class="tad-export-btn" onclick="toggleExportDropdown('export-dropdown-rooms')">
+                    <img src="{{ asset('icons/export.png') }}" alt="">
+                    Export
+                </button>
+                <div class="export-menu" id="export-menu-rooms">
+                    <button onclick="exportRoomsCSV(); closeAllExportDropdowns()">Export as CSV</button>
+                    <button onclick="exportRoomsPDF(); closeAllExportDropdowns()">Export as PDF</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -815,7 +898,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="ar-number" placeholder="e.g. 308">
+                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="10" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -861,7 +944,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="er-number">
+                    <input type="text" id="er-number" inputmode="numeric" maxlength="10" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -895,6 +978,23 @@ tbody tr:hover { background: var(--soft-bg); }
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('edit-room-modal')">Cancel</button>
             <button class="btn-submit" onclick="submitEditRoom()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="view-room-modal">
+    <div class="modal" style="max-width:480px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="">
+                Room Details
+            </div>
+            <button class="modal-close" onclick="closeModal('view-room-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body" id="view-room-content"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('view-room-modal')">Close</button>
+            <button class="btn-submit" id="view-room-edit-btn" onclick="">Edit Room</button>
         </div>
     </div>
 </div>
@@ -1114,7 +1214,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;">
+        <form method="POST" action="{{ route('tenants.store') }}" data-loading-message="Adding tenant..." style="display:contents;" onsubmit="return validateAddTenantForm(event)">
             @csrf
             <input type="hidden" name="add_mode" id="add-mode-input" value="moved_in">
             <div style="flex-shrink:0;background:#fffafd;border-top:1.5px solid var(--pink-100);border-bottom:1.5px solid var(--pink-100);">
@@ -1167,11 +1267,13 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field full">
                                 <label>Email Address</label>
-                                <input type="email" name="email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                                <input type="email" name="email" id="add-email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
+                                <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
                                 <label>Contact No.</label>
-                                <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789" maxlength="13" value="{{ old('contact_number') }}">
+                                <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
                                 <label>Referred By</label>
@@ -1210,7 +1312,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field">
                                 <label>Room No.</label>
-                                <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" value="{{ old('room_number') }}">
+                                <input type="text" id="add-room-number-input" name="room_number" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input" value="{{ old('room_number') }}">
                             </div>
                             <div class="modal-field">
                                 <label>Floor</label>
@@ -1224,13 +1326,19 @@ tbody tr:hover { background: var(--soft-bg); }
                             <div class="modal-field full" id="add-room-hint-wrap" style="display:none;">
                                 <div id="add-room-hint"></div>
                             </div>
+                            <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
+                                <label>Estimated Move-In Date</label>
+                                <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                                <span class="field-error" id="add-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            </div>
                             <div class="modal-field full" id="add-movein-wrap">
                                 <label>Move-In Date</label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                             </div>
-                            <div class="modal-field full" id="add-est-movein-wrap" style="display:none;">
-                                <label>Estimated Move-In Date</label>
-                                <input type="date" name="estimated_move_in_date" id="add-estimated-move-in" value="{{ old('estimated_move_in_date') }}">
+                            <div class="modal-field full" id="add-moveout-wrap">
+                                <label>Move-Out Date (Optional)</label>
+                                <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
+                                <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                                 <label>Reservation Notes</label>
@@ -1278,7 +1386,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return validateEditTenantForm(event)">
             @csrf
             @method('PUT')
             <div class="modal-body">
@@ -1296,10 +1404,12 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-field full">
                             <label>Email Address</label>
                             <input type="email" name="email" id="edit-email" placeholder="Email address" required>
+                            <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789">
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789" maxlength="13">
+                            <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
@@ -1323,9 +1433,24 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
+                        <div class="modal-field full">
+                            <label>Stay Type</label>
+                            <select name="stay_type" id="edit-stay-type" onchange="onEditStayTypeChange()">
+                                <option value="" disabled>Select type</option>
+                                <option value="Solo Room">Solo Room</option>
+                                <option value="Shared Room">Shared Room</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full" id="edit-room-suggest-wrap" style="display:none;">
+                            <div id="edit-room-suggest"></div>
+                        </div>
                         <div class="modal-field">
                             <label>Room No.</label>
-                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304">
+                            <input type="text" name="room_number" id="edit-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input" @error('room_number') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            <span class="field-error" id="edit-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            @error('room_number')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="modal-field">
                             <label>Floor</label>
@@ -1336,28 +1461,25 @@ tbody tr:hover { background: var(--soft-bg); }
                                 @endfor
                             </select>
                         </div>
-                        <div class="modal-field full">
-                            <label>Stay Type</label>
-                            <select name="stay_type" id="edit-stay-type">
-                                <option value="" disabled>Select type</option>
-                                <option value="Solo Room">Solo Room</option>
-                                <option value="Shared Room">Shared Room</option>
-                            </select>
+                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
+                            <div id="edit-room-hint"></div>
                         </div>
-                        <div class="modal-field">
+                        <div class="modal-field" id="edit-movein-wrap">
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
                         </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
-                            <input type="date" name="move_out_date" id="edit-moveout">
-                        </div>
-                        <div class="modal-field full" id="edit-room-hint-wrap" style="display:none;">
-                            <div id="edit-room-hint"></div>
+                            <input type="date" name="move_out_date" id="edit-moveout" @error('move_out_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
+                            <span class="field-error" id="edit-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            @error('move_out_date')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
                             <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in">
+                            <span class="field-error" id="edit-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
@@ -1386,11 +1508,74 @@ tbody tr:hover { background: var(--soft-bg); }
                         <span style="font-size:1rem;flex-shrink:0;"></span>
                         <span>Setting to <strong>Reserved</strong> holds the assigned room and counts toward occupancy. Setting to <strong>Inactive</strong> blocks mobile login. Setting to <strong>Move Out</strong> archives the record.</span>
                     </div>
+                    <div id="edit-pending-reserved-warn" style="display:none;margin-top:.6rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.55rem .8rem;font-size:.8rem;color:#7a5400;line-height:1.5;">
+                        This tenant has no login credentials yet. Setting status to <strong>Pending</strong> has no effect until you use <strong>Tag as Moved In</strong> to generate their account.
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="tag-movedin-modal">
+    <div class="modal" style="max-width:420px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                Tag as Moved In
+            </div>
+            <button class="modal-close" onclick="closeModal('tag-movedin-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body" style="padding-top:.2rem;">
+            <p style="font-size:.92rem;color:var(--ink);font-weight:600;margin:0 0 .6rem;">
+                Tag <strong id="tag-movedin-name" style="color:var(--bright-pink);"></strong> as moved in?
+            </p>
+            <div class="modal-info-banner" style="margin-bottom:.6rem;">
+                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will change to <strong>Pending</strong> until their first login.</span>
+            </div>
+            <p style="font-size:.78rem;color:var(--ink-muted);margin:0;line-height:1.5;">Make sure the assigned room is correct before proceeding. This action cannot be undone.</p>
+        </div>
+        <form method="POST" id="tag-movedin-form" action="" data-loading-message="Tagging as moved in..." style="display:contents;">
+            @csrf
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Confirm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="reschedule-modal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </span>
+                Reschedule Reservation
+            </div>
+            <button class="modal-close" onclick="closeModal('reschedule-modal')">&#x2715;</button>
+        </div>
+        <form method="POST" id="reschedule-form" action="" data-loading-message="Rescheduling reservation..." style="display:contents;">
+            @csrf
+            <div class="modal-body">
+                <p style="font-size:.9rem;color:var(--ink);font-weight:600;margin:0 0 .6rem;">
+                    Update the estimated move-in date for <strong id="reschedule-name" style="color:var(--bright-pink);"></strong>.
+                </p>
+                <div class="modal-field">
+                    <label>New Estimated Move-In Date</label>
+                    <input type="date" name="estimated_move_in_date" id="reschedule-date" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('reschedule-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save New Date</button>
             </div>
         </form>
     </div>
@@ -1516,8 +1701,8 @@ function printCredentialSlip(type) {
     win.document.close();
 }
 
-var tenants = @json($tenants);
-var billingData = @json($billingData);
+var tenants = {!! json_encode($tenants, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var billingData = {!! json_encode($billingData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 var PER_PAGE = 8;
 var currentTenant = null;
 var sectionState = { active: true, reserved: true };
@@ -1525,6 +1710,229 @@ var sectionPages = { active: 1, reserved: 1 };
 var sectionData  = { active: [], reserved: [] };
 var addCurrentStep = 1;
 var selectedRoomNumber = null;
+
+var EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+function validateEmailField(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value.trim();
+    var msg = '';
+    if (!val) {
+        msg = input.required ? 'Email address is required.' : '';
+    } else if (val.indexOf('@') === -1) {
+        msg = 'Email must contain an "@" symbol.';
+    } else if (val.indexOf(' ') !== -1) {
+        msg = 'Email cannot contain spaces.';
+    } else if ((val.match(/@/g) || []).length > 1) {
+        msg = 'Email cannot contain more than one "@".';
+    } else if (!EMAIL_REGEX.test(val)) {
+        msg = 'Please enter a valid email address (e.g. name@example.com).';
+    }
+    if (msg) {
+        input.classList.add('field-invalid');
+        error.textContent = msg;
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function formatPhoneNumber(rawValue) {
+    var digits = rawValue.replace(/\D/g, '');
+    if (digits.length > 11) digits = digits.substring(0, 11);
+    var formatted = digits;
+    if (digits.length > 4 && digits.length <= 7) {
+        formatted = digits.substring(0, 4) + '-' + digits.substring(4);
+    } else if (digits.length > 7) {
+        formatted = digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7);
+    }
+    return formatted;
+}
+
+function validatePhoneField(inputId, errorId, required) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value.trim();
+    var digits = val.replace(/\D/g, '');
+    var msg = '';
+    if (!val) {
+        msg = required ? 'Contact number is required.' : '';
+    } else if (digits.length !== 11) {
+        msg = 'Contact number must be 11 digits (e.g. 0912-345-6789).';
+    } else if (digits.charAt(0) !== '0') {
+        msg = 'Contact number must start with 0 (e.g. 0912-345-6789).';
+    } else if (!/^[0-9-]+$/.test(val)) {
+        msg = 'Contact number can only contain numbers and dashes.';
+    }
+    if (msg) {
+        input.classList.add('field-invalid');
+        error.textContent = msg;
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachPhoneFormatter(inputId, errorId, required) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('input', function() {
+        var cursorAtEnd = this.selectionStart === this.value.length;
+        var formatted = formatPhoneNumber(this.value);
+        this.value = formatted;
+        if (cursorAtEnd) {
+            this.setSelectionRange(this.value.length, this.value.length);
+        }
+        validatePhoneField(inputId, errorId, required);
+    });
+    input.addEventListener('blur', function() {
+        validatePhoneField(inputId, errorId, required);
+    });
+    input.addEventListener('keypress', function(e) {
+        var char = String.fromCharCode(e.which);
+        if (!/[0-9]/.test(char) && e.which !== 8) {
+            e.preventDefault();
+        }
+    });
+}
+
+function attachEmailValidator(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('input', function() {
+        validateEmailField(inputId, errorId);
+    });
+    input.addEventListener('blur', function() {
+        validateEmailField(inputId, errorId);
+    });
+}
+
+function validateMoveOutDate(moveInId, moveOutId, errorId) {
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    var error   = document.getElementById(errorId);
+    if (!moveIn || !moveOut || !error) return true;
+    var moveInVal  = moveIn.value;
+    var moveOutVal = moveOut.value;
+    if (!moveOutVal) {
+        moveOut.classList.remove('field-invalid');
+        error.style.display = 'none';
+        error.textContent = '';
+        return true;
+    }
+    if (moveInVal && moveOutVal < moveInVal) {
+        moveOut.classList.add('field-invalid');
+        error.textContent = 'Move-out date cannot be earlier than move-in date.';
+        error.style.display = 'block';
+        return false;
+    }
+    moveOut.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachMoveOutValidator(moveInId, moveOutId, errorId) {
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    if (!moveIn || !moveOut) return;
+    moveOut.addEventListener('change', function() { validateMoveOutDate(moveInId, moveOutId, errorId); });
+    moveIn.addEventListener('change', function() { validateMoveOutDate(moveInId, moveOutId, errorId); });
+}
+
+function validateEstimatedMoveInDate(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    var error = document.getElementById(errorId);
+    if (!input || !error) return true;
+    var val = input.value;
+    if (!val) {
+        input.classList.remove('field-invalid');
+        error.style.display = 'none';
+        error.textContent = '';
+        return true;
+    }
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(val + 'T00:00:00');
+    if (est < today) {
+        input.classList.add('field-invalid');
+        error.textContent = 'Estimated move-in date cannot be earlier than today.';
+        error.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    error.style.display = 'none';
+    error.textContent = '';
+    return true;
+}
+
+function attachEstimatedMoveInValidator(inputId, errorId) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
+}
+
+function validateAddTenantForm(e) {
+    var emailOk    = validateEmailField('add-email', 'add-email-error');
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
+    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+        e.preventDefault();
+        if (!emailOk) {
+            document.getElementById('add-email').focus();
+        } else if (!contactOk) {
+            document.getElementById('add-contact').focus();
+        } else if (!moveOutOk) {
+            document.getElementById('add-move-out-date').focus();
+        } else if (!estOk) {
+            document.getElementById('add-estimated-move-in').focus();
+        }
+        return false;
+    }
+    return true;
+}
+
+function validateEditTenantForm(e) {
+    var emailOk   = validateEmailField('edit-email', 'edit-email-error');
+    var contactOk = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var moveOutOk = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    var estOk     = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
+    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+        e.preventDefault();
+        if (!emailOk) {
+            document.getElementById('edit-email').focus();
+        } else if (!contactOk) {
+            document.getElementById('edit-contact').focus();
+        } else if (!moveOutOk) {
+            document.getElementById('edit-moveout').focus();
+        } else if (!estOk) {
+            document.getElementById('edit-estimated-move-in').focus();
+        }
+        return false;
+    }
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachEmailValidator('add-email', 'add-email-error');
+    attachEmailValidator('edit-email', 'edit-email-error');
+    attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
+    attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
+    attachEstimatedMoveInValidator('edit-estimated-move-in', 'edit-estimated-move-in-error');
+});
 
 function showActionLoading(message) {
     var overlay = document.getElementById('action-loading');
@@ -1575,6 +1983,18 @@ function closeModal(id) {
         if (aw) aw.style.display = 'none';
         if (an) an.style.display = 'none';
         if (am) am.style.display = '';
+        var amo = document.getElementById('add-move-out-date');
+        var amoErr = document.getElementById('add-moveout-error');
+        if (amo) { amo.value = ''; amo.classList.remove('field-invalid'); }
+        if (amoErr) { amoErr.style.display = 'none'; amoErr.textContent = ''; }
+        var ae = document.getElementById('add-email');
+        var aeErr = document.getElementById('add-email-error');
+        if (ae) ae.classList.remove('field-invalid');
+        if (aeErr) { aeErr.style.display = 'none'; aeErr.textContent = ''; }
+        var ac = document.getElementById('add-contact');
+        var acErr = document.getElementById('add-contact-error');
+        if (ac) ac.classList.remove('field-invalid');
+        if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
@@ -1620,6 +2040,19 @@ function goAddStep(step) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            return;
+        }
+        if (!validateEmailField('add-email', 'add-email-error')) {
+            document.getElementById('add-email').focus();
+            return;
+        }
+        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+            document.getElementById('add-contact').focus();
+            return;
+        }
+    }
+    if (step === 1) {
+        if (!validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error')) {
             return;
         }
     }
@@ -1678,6 +2111,7 @@ function toggleReservationFields(context) {
         var show = status === 'reserved';
         document.getElementById('edit-est-movein-wrap').style.display = show ? '' : 'none';
         document.getElementById('edit-reservation-notes-wrap').style.display = show ? '' : 'none';
+        document.getElementById('edit-movein-wrap').style.display = show ? 'none' : '';
     }
 }
 
@@ -1707,6 +2141,19 @@ function tempBadge(isTemp) {
     return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
 }
 
+function vacationBadge(isOnVacation) {
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+}
+
+function escapeHtml(str) {
+    if (!str) return '\u2014';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1722,16 +2169,53 @@ function buildRows(list) {
     }
     return list.map(function(t) {
         var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
-        var insideDot = t.is_inside
-            ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
-            : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>';
+        var insideDot = t.status === 'reserved' ? '' : (t.is_inside
+    ? '<span title="Inside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.22);animation:pulseGreen 2s infinite;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>'
+    : '<span title="Outside" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d0d0dc;flex-shrink:0;margin-left:.35rem;vertical-align:middle;"></span>');
         var nameCell = '<div style="display:flex;flex-direction:column;align-items:center;gap:.2rem;">'
             + '<span style="display:inline-flex;align-items:center;gap:0;">' + t.first_name + ' ' + t.last_name + insideDot + '</span>'
-            + (t.is_temp_password ? tempBadge(true) : '')
+            + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '')
             + '</div>';
-        var col4 = t.status === 'reserved'
-            ? (t.estimated_move_in_date ? '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">Est. ' + fmtDate(t.estimated_move_in_date) + '</span>' : '\u2014')
-            : fmtDate(t.move_in_date);
+        var col4;
+        if (t.status === 'reserved') {
+            if (t.estimated_move_in_date) {
+                if (isOverdue(t.estimated_move_in_date)) {
+                    var ov       = daysOverdue(t.estimated_move_in_date);
+                    var roomRef  = t.room_number ? 'Rm. ' + t.room_number : 'this room';
+                    var tooltipText = roomRef + ' held ' + ov + ' day' + (ov !== 1 ? 's' : '') + ' past expected move-in. Click to reschedule.';
+                    col4 = '<span class="overdue-date" onclick="openRescheduleModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\', \'' + t.estimated_move_in_date + '\')">'
+                        + fmtDate(t.estimated_move_in_date)
+                        + '<span class="overdue-date-tooltip">' + tooltipText + '</span>'
+                        + '</span>';
+                } else {
+                    col4 = '<span style="font-size:.78rem;color:#9a6200;font-weight:600;">' + fmtDate(t.estimated_move_in_date) + '</span>';
+                }
+            } else {
+                col4 = '\u2014';
+            }
+        } else {
+            col4 = fmtDate(t.move_in_date);
+        }
+       var isReserved = t.status === 'reserved';
+        var dataAttr = 'data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\'';
+        var actions = ''
+            + '<button class="act-btn" title="View" ' + dataAttr + ' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
+            + '<button class="act-btn" title="Edit" ' + dataAttr + ' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>';
+
+        if (isReserved) {
+            actions += '<button class="act-btn" title="Tag as Moved In" data-tenant-id="' + t.tenant_id + '" data-tenant-name="' + escapeJs(t.first_name + ' ' + t.last_name) + '" onclick="openTagMovedInModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')">'
+                + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
+                + '</button>';
+        } else {
+            actions += '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>';
+        }
+
+        actions += '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>';
+
+        if (!isReserved) {
+            actions += '<button class="act-btn" title="Bill Slip" ' + dataAttr + ' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>';
+        }
+
         return '<tr id="admin-tenant-row-' + t.tenant_id + '">'
             + '<td>' + (t.account_id || '\u2014') + '</td>'
             + '<td id="admin-inside-cell-' + t.tenant_id + '">' + nameCell + '</td>'
@@ -1739,14 +2223,8 @@ function buildRows(list) {
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
-            + '<td>' + statusBadge(t.status) + '</td>'
-            + '<td><div class="action-group">'
-                + '<button class="act-btn" title="View" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Edit" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>'
-                + '<button class="act-btn" title="Bill Slip" data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/bill.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>'
-            + '</div></td></tr>';
+            + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
+            + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
 
@@ -1777,6 +2255,18 @@ function renderSection(group) {
     document.getElementById('showing-' + group).textContent  = total === 0 ? 'No entries' : 'Showing ' + from + ' to ' + to + ' of ' + total;
     document.getElementById('pagination-' + group).innerHTML = buildPagination(group, page, total);
     document.getElementById('pill-' + group).textContent     = total;
+    if (group === 'reserved') {
+        var overdueCount = data.filter(function(t) { return isOverdue(t.estimated_move_in_date); }).length;
+        var overduePill  = document.getElementById('pill-reserved-overdue');
+        if (overduePill) {
+            if (overdueCount > 0) {
+                overduePill.textContent  = overdueCount + ' overdue';
+                overduePill.style.display = '';
+            } else {
+                overduePill.style.display = 'none';
+            }
+        }
+    }
 }
 
 function goPage(group, p) {
@@ -1801,7 +2291,45 @@ function toggleSection(group) {
 
 var statusFilter = '';
 
-function setStatusFilter(val) {
+function enforceRoomNumberInput(input) {
+    input.addEventListener('keydown', function(e) {
+        var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End'];
+        if (allowed.indexOf(e.key) !== -1) return;
+        if (e.ctrlKey || e.metaKey) return;
+        if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    input.addEventListener('input', function() {
+        var clean = this.value.replace(/\D/g, '');
+        if (this.value !== clean) this.value = clean;
+    });
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        var maxLen = parseInt(this.getAttribute('maxlength')) || 10;
+        var combined = (this.value + pasted).substring(0, maxLen);
+        this.value = combined;
+        this.dispatchEvent(new Event('input'));
+    });
+}
+
+function validateRoomNumberField(input) {
+    var val = input.value.trim();
+    if (val.length > 0 && val.length < 3) {
+        input.classList.add('field-invalid');
+        return false;
+    }
+    input.classList.remove('field-invalid');
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.room-number-input').forEach(function(inp) {
+        enforceRoomNumberInput(inp);
+        inp.addEventListener('blur', function() { validateRoomNumberField(this); });
+        inp.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
+    });
+});
+    function setStatusFilter(val) {
     statusFilter = val;
     applyFilters();
 }
@@ -1835,11 +2363,17 @@ function applyFilters() {
         if (statusFilter === '' || statusFilter === 'active' || statusFilter === 'pending') {
             return statusFilter === '' ? true : t.status === statusFilter;
         }
+        if (statusFilter === 'vacation') {
+            return t.is_on_vacation;
+        }
         return false;
     }));
     sectionData.reserved = sortList(base.filter(function(t) {
         if (t.status !== 'reserved') return false;
         if (statusFilter === '' || statusFilter === 'reserved') return true;
+        if (statusFilter === 'vacation') {
+            return t.is_on_vacation;
+        }
         return false;
     }));
     sectionPages.active   = 1;
@@ -1866,16 +2400,16 @@ function viewTenant(t) {
         '<div class="tv-header">'
             + '<div class="tv-avatar">' + initials(t) + '</div>'
             + '<div class="tv-header-info">'
-                + '<div class="tv-name">' + t.first_name + ' ' + t.last_name + '</div>'
+                + '<div class="tv-name">' + escapeHtml(t.first_name) + ' ' + escapeHtml(t.last_name) + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
-                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password ? tempBadge(true) : '') + '</div>'
+                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + vacationBadge(t.is_on_vacation) + '</div>'
             + '</div>'
         + '</div>'
         + '<div class="modal-section-title">Personal Information</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + (t.contact_number || '\u2014') + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + (t.referred_by || '\u2014') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
         + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
         + '<div class="tv-grid">'
@@ -1887,7 +2421,8 @@ function viewTenant(t) {
         + '</div>'
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
-            + '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary \u2014 not yet changed by tenant' : 'Changed by tenant') + '</div></div>'
+            + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
+            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">🏖 On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
         + '</div>';
     openModal('view-modal');
 }
@@ -1901,27 +2436,115 @@ function switchToEdit() {
 
 function openEditModal(t) {
     currentTenant = t;
+    document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+        b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+    });
+    var ew = document.getElementById('edit-room-hint-wrap');
+    var eh = document.getElementById('edit-room-hint');
+    if (ew) ew.style.display = 'none';
+    if (eh) eh.innerHTML = '';
+
+    var old = {
+        first_name:             '{{ old("first_name") }}',
+        last_name:              '{{ old("last_name") }}',
+        email:                  '{{ old("email") }}',
+        contact_number:         '{{ old("contact_number") }}',
+        room_number:            '{{ old("room_number") }}',
+        floor:                  '{{ old("floor") }}',
+        stay_type:              '{{ old("stay_type") }}',
+        move_in_date:           '{{ old("move_in_date") }}',
+        move_out_date:          '{{ old("move_out_date") }}',
+        estimated_move_in_date: '{{ old("estimated_move_in_date") }}',
+        reservation_notes:      '{{ old("reservation_notes") }}',
+        referred_by:            '{{ old("referred_by") }}',
+        status:                 '{{ old("status") }}',
+    };
+    var hasOld = {{ session('edit_tenant_id') ? 'true' : 'false' }} && String(t.tenant_id) === '{{ session("edit_tenant_id", "") }}';
+
     document.getElementById('edit-form').action             = '/tenants/' + t.tenant_id;
-    document.getElementById('edit-first-name').value        = t.first_name || '';
-    document.getElementById('edit-last-name').value         = t.last_name  || '';
-    document.getElementById('edit-email').value             = t.email      || '';
-    document.getElementById('edit-room').value              = t.room_number || '';
-    document.getElementById('edit-floor').value             = t.floor      || '';
-    document.getElementById('edit-stay-type').value         = t.stay_type  || '';
-    document.getElementById('edit-date').value              = t.move_in_date  || '';
-    document.getElementById('edit-moveout').value           = t.move_out_date || '';
-    document.getElementById('edit-contact').value           = t.contact_number || '';
-    restoreReferredBy('edit', t.referred_by || '');
-    document.getElementById('edit-estimated-move-in').value = t.estimated_move_in_date || '';
-    document.getElementById('edit-reservation-notes').value = t.reservation_notes || '';
-    document.getElementById('edit-status').value            = t.status || 'pending';
+    document.getElementById('edit-first-name').value        = hasOld && old.first_name             ? old.first_name             : (t.first_name || '');
+    document.getElementById('edit-last-name').value         = hasOld && old.last_name              ? old.last_name              : (t.last_name  || '');
+    document.getElementById('edit-email').value             = hasOld && old.email                  ? old.email                  : (t.email      || '');
+    document.getElementById('edit-room').value              = hasOld && old.room_number            ? old.room_number            : (t.room_number || '');
+    document.getElementById('edit-floor').value             = hasOld && old.floor                  ? old.floor                  : (t.floor      || '');
+    document.getElementById('edit-stay-type').value         = hasOld && old.stay_type              ? old.stay_type              : (t.stay_type  || '');
+    document.getElementById('edit-date').value              = hasOld && old.move_in_date           ? old.move_in_date           : (t.move_in_date  || '');
+    document.getElementById('edit-moveout').value           = hasOld && old.move_out_date          ? old.move_out_date          : (t.move_out_date || '');
+    document.getElementById('edit-contact').value           = hasOld && old.contact_number         ? old.contact_number         : (t.contact_number || '');
+    document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
+    document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
+    document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var editStatusSel = document.getElementById('edit-status');
+    editStatusSel.onchange = function() {
+        updateStatusDot(this);
+        toggleReservationFields('edit');
+        var noAccount = !currentTenant || !currentTenant.account_id;
+        var warn = document.getElementById('edit-pending-reserved-warn');
+        if (warn) warn.style.display = (this.value === 'pending' && noAccount) ? '' : 'none';
+    };
+    restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     openModal('edit-modal');
+    var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
+    var editSuggestBox  = document.getElementById('edit-room-suggest');
+    if (editSuggestWrap) editSuggestWrap.style.display = 'none';
+    if (editSuggestBox) editSuggestBox.innerHTML = '';
+
     var editRoomInput = document.getElementById('edit-room');
     if (editRoomInput && editRoomInput.value.trim()) {
         setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
     }
+
+    if (document.getElementById('edit-stay-type').value) {
+        onEditStayTypeChange();
+    }
+
+    var editEmail = document.getElementById('edit-email');
+    var editEmailError = document.getElementById('edit-email-error');
+    if (editEmail) editEmail.classList.remove('field-invalid');
+    if (editEmailError) { editEmailError.style.display = 'none'; editEmailError.textContent = ''; }
+    var editContact = document.getElementById('edit-contact');
+    var editContactError = document.getElementById('edit-contact-error');
+    if (editContact) editContact.classList.remove('field-invalid');
+    if (editContactError) { editContactError.style.display = 'none'; editContactError.textContent = ''; }
+    var editMoveout = document.getElementById('edit-moveout');
+    var editMoveoutError = document.getElementById('edit-moveout-error');
+    if (editMoveout) editMoveout.classList.remove('field-invalid');
+    if (editMoveoutError) { editMoveoutError.style.display = 'none'; editMoveoutError.textContent = ''; }
+    var editEstError = document.getElementById('edit-estimated-move-in-error');
+    if (editEstError) { editEstError.style.display = 'none'; editEstError.textContent = ''; }
+    var editEst = document.getElementById('edit-estimated-move-in');
+    if (editEst) editEst.classList.remove('field-invalid');
+}
+
+function openTagMovedInModal(id, name) {
+    document.getElementById('tag-movedin-name').textContent = name;
+    document.getElementById('tag-movedin-form').action = '/tenants/' + id + '/tag-moved-in';
+    openModal('tag-movedin-modal');
+}
+
+function openRescheduleModal(id, name, currentDate) {
+    document.getElementById('reschedule-name').textContent = name;
+    document.getElementById('reschedule-form').action = '/tenants/' + id + '/reschedule';
+    document.getElementById('reschedule-date').value = currentDate || '';
+    openModal('reschedule-modal');
+}
+
+function isOverdue(dateStr) {
+    if (!dateStr) return false;
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(dateStr + 'T00:00:00');
+    return est < today;
+}
+
+function daysOverdue(dateStr) {
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var est = new Date(dateStr + 'T00:00:00');
+    var diff = Math.floor((today - est) / 86400000);
+    return diff;
 }
 
 function openResetModal(id, name) {
@@ -1970,7 +2593,14 @@ function copyText(elementId, btn) {
 }
 
 @if($errors->any())
-    document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('edit_tenant_id'))
+            var t = tenants.find(function(x) { return x.tenant_id == {{ session('edit_tenant_id') }}; });
+            if (t) { openEditModal(t); }
+        @else
+            openModal('add-modal');
+        @endif
+    });
 @endif
 
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
@@ -2217,7 +2847,7 @@ function renderRooms() {
                     ? `<span style="font-size:.68rem;font-weight:700;color:#e04867;">Full</span>`
                     : `<span style="font-size:.68rem;font-weight:600;color:var(--ink-muted);">${vacantCount} slot${vacantCount !== 1 ? 's' : ''} free</span>`;
 
-            return `<div style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
+            return `<div onclick="openViewRoomModal(this)" data-room='${JSON.stringify(r).replace(/'/g, "&#39;")}' style="background:var(--white);border:1.5px solid var(--pink-100);border-radius:16px;padding:1rem 1.05rem .85rem;transition:border-color .22s,box-shadow .22s;display:flex;flex-direction:column;gap:.7rem;position:relative;overflow:hidden;cursor:pointer;" onmouseover="this.style.borderColor='var(--bright-pink)';this.style.boxShadow='0 6px 24px rgba(232,23,93,.10)'" onmouseout="this.style.borderColor='var(--pink-100)';this.style.boxShadow='none'">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isFull ? 'linear-gradient(90deg,#e04867,#ff6b8a)' : pct >= 75 ? 'linear-gradient(90deg,#f0a500,#ffd060)' : isEmpty ? 'linear-gradient(90deg,#d0d0d8,#e8e8f0)' : 'linear-gradient(90deg,#1f9d69,#4ecb8d)'};border-radius:16px 16px 0 0;"></div>
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;padding-top:.15rem;">
                     <div style="display:flex;flex-direction:column;gap:.2rem;">
@@ -2228,8 +2858,8 @@ function renderRooms() {
                         <span style="font-size:.7rem;font-weight:600;color:var(--ink-muted);letter-spacing:.02em;">${r.stay_type}</span>
                     </div>
                     <div style="display:flex;gap:.25rem;flex-shrink:0;">
-                        <button class="act-btn" title="Edit" onclick='openEditRoomModal(${JSON.stringify(r)})' style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
-                        <button class="act-btn" title="Delete" onclick="openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
+                       <button class="act-btn" title="Edit" onclick="event.stopPropagation();openEditRoomModal(JSON.parse(this.closest('[data-room]').dataset.room))" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
+                        <button class="act-btn" title="Delete" onclick="event.stopPropagation();openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;min-height:22px;">${personIcons}</div>
@@ -2323,6 +2953,9 @@ async function submitAddRoom() {
     const capacity = document.getElementById('ar-capacity').value;
     const stayType = document.getElementById('ar-stay-type').value;
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
+    const duplicate = roomsData.find(function(r) { return r.room_number.toLowerCase() === number.toLowerCase(); });
+    if (duplicate) { showToast('Room ' + number + ' already exists on Floor ' + duplicate.floor + '.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     showActionLoading('Adding room...');
     try {
         const res = await fetch('/rooms', {
@@ -2340,6 +2973,88 @@ async function submitAddRoom() {
     } finally {
         document.getElementById('action-loading').classList.remove('open');
     }
+}
+
+function openViewRoomModal(el) {
+    var r = JSON.parse(el.dataset.room);
+    var occupants = tenants.filter(function(t) {
+        return t.room_number === r.room_number
+            && t.status !== 'inactive'
+            && t.status !== 'move_out';
+    });
+
+    var isFull    = r.occupancy >= r.capacity;
+    var pct       = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
+    var slotsLeft = r.capacity - r.occupancy;
+
+    var barColor  = isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69';
+    var statusDot = r.is_active
+        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2px #e8faf5;flex-shrink:0;"></span><span style="font-size:.75rem;font-weight:700;color:#1f9d69;">Active</span>'
+        : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#e04867;box-shadow:0 0 0 2px #fff0f0;flex-shrink:0;"></span><span style="font-size:.75rem;font-weight:700;color:#e04867;">Closed</span>';
+
+    var occupantRows = '';
+    if (occupants.length === 0) {
+        occupantRows = '<div style="text-align:center;padding:1.5rem 1rem;color:var(--ink-muted);font-size:.85rem;background:#fffafd;border:1.5px dashed var(--pink-100);border-radius:12px;">No tenants currently assigned to this room.</div>';
+    } else {
+        occupantRows = '<div style="display:flex;flex-direction:column;gap:.5rem;">'
+            + occupants.map(function(t) {
+                var av  = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+                var sub = (t.stay_type || '') + (t.move_in_date ? ' &nbsp;&middot;&nbsp; Moved in ' + fmtDate(t.move_in_date) : '') + (t.estimated_move_in_date && t.status === 'reserved' ? ' &nbsp;&middot;&nbsp; Est. ' + fmtDate(t.estimated_move_in_date) : '');
+                var overdueTag = '';
+                if (t.status === 'reserved' && isOverdue(t.estimated_move_in_date)) {
+                    var ov = daysOverdue(t.estimated_move_in_date);
+                    overdueTag = ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);">' + ov + 'd overdue</span>';
+                }
+                return '<div class="room-occupant-card">'
+                    + '<div class="room-occupant-avatar">' + av + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                        + '<div class="room-occupant-name">' + t.first_name + ' ' + t.last_name + overdueTag + '</div>'
+                        + '<div class="room-occupant-sub">' + sub + '</div>'
+                    + '</div>'
+                    + statusBadge(t.status)
+                    + '</div>';
+            }).join('')
+            + '</div>';
+    }
+
+    document.getElementById('view-room-content').innerHTML =
+        '<div style="display:flex;align-items:center;gap:1rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1.5px solid var(--petal);">'
+            + '<div style="width:52px;height:52px;border-radius:14px;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 6px 16px rgba(232,23,93,.22);">'
+                + '<img src="{{ asset("icons/bed.png") }}" style="width:26px;height:26px;object-fit:contain;filter:brightness(0) invert(1);">'
+            + '</div>'
+            + '<div style="flex:1;min-width:0;">'
+                + '<div style="font-size:1.3rem;font-weight:900;color:var(--ink);letter-spacing:-.02em;line-height:1.1;">Room ' + r.room_number + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.5rem;margin-top:.3rem;">' + statusDot + '</div>'
+            + '</div>'
+        + '</div>'
+
+        + '<div class="modal-section-title">Room Info</div>'
+        + '<div class="tv-grid" style="margin-bottom:1rem;">'
+            + '<div class="tv-item"><div class="tv-item-label">Floor</div><div class="tv-item-value">Floor ' + r.floor + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Type</div><div class="tv-item-value">' + (r.stay_type || 'N/A') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Capacity</div><div class="tv-item-value">' + r.capacity + ' pax</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Available Slots</div><div class="tv-item-value" style="color:' + (isFull ? '#e04867' : '#1f9d69') + ';font-weight:700;">' + (isFull ? 'Full' : slotsLeft + ' of ' + r.capacity + ' free') + '</div></div>'
+        + '</div>'
+
+        + '<div style="margin-bottom:1rem;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;">'
+                + '<span style="font-size:.72rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.04em;">Occupancy</span>'
+                + '<span style="font-size:.75rem;font-weight:700;color:var(--ink);">' + r.occupancy + ' / ' + r.capacity + ' &nbsp;(' + pct + '%)</span>'
+            + '</div>'
+            + '<div style="height:6px;background:var(--pink-100);border-radius:99px;overflow:hidden;">'
+                + '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:99px;transition:width .4s;"></div>'
+            + '</div>'
+        + '</div>'
+
+        + '<div class="modal-section-title">Tenants (' + occupants.length + ')</div>'
+        + occupantRows;
+
+    document.getElementById('view-room-edit-btn').onclick = function() {
+        closeModal('view-room-modal');
+        setTimeout(function() { openEditRoomModal(r); }, 180);
+    };
+
+    openModal('view-room-modal');
 }
 
 function openEditRoomModal(r) {
@@ -2361,6 +3076,7 @@ async function submitEditRoom() {
     const stayType = document.getElementById('er-stay-type').value;
     const isActive = document.getElementById('er-active').value === '1';
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('er-number').classList.add('field-invalid'); return; }
     showActionLoading('Saving room...');
     try {
         const res = await fetch('/rooms/' + id, {
@@ -2578,13 +3294,19 @@ async function submitDeleteRoom() {
         });
     }
 
-    function renderRoomSuggestions(stayType) {
-        var wrap = document.getElementById('add-room-suggest-wrap');
-        var box  = document.getElementById('add-room-suggest');
+    function renderRoomSuggestions(stayType, boxId, inputId, excludeId) {
+        var wrap = document.getElementById(boxId + '-wrap');
+        var box  = document.getElementById(boxId);
         if (!stayType || !wrap || !box) return;
         getRoomsCache(function(rooms) {
             var matched = rooms.filter(function(r) {
                 return r.stay_type === stayType;
+            }).map(function(r) {
+                var effOccupancy = r.occupancy;
+                if (excludeId && currentTenant && currentTenant.room_number === r.room_number && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out') {
+                    effOccupancy = Math.max(0, effOccupancy - 1);
+                }
+                return Object.assign({}, r, { occupancy: effOccupancy });
             }).sort(function(a, b) {
                 var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
                 var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
@@ -2623,11 +3345,11 @@ async function submitDeleteRoom() {
                 } else if (pct >= 75) {
                     chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
                     badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
                 } else {
                     chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
                 }
                 var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
                 var displayBg     = isSelected ? '#fffbf0' : chipBg;
@@ -2662,17 +3384,25 @@ async function submitDeleteRoom() {
         var stayType    = document.getElementById('add-stay-type-select').value;
         var suggestWrap = document.getElementById('add-room-suggest-wrap');
         if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
-        renderRoomSuggestions(stayType);
+        renderRoomSuggestions(stayType, 'add-room-suggest', 'add-room-number-input', null);
     };
 
-    window.selectSuggestedRoom = function(roomNumber) {
-        var input = document.getElementById('add-room-number-input');
+    window.onEditStayTypeChange = function() {
+        var stayType    = document.getElementById('edit-stay-type').value;
+        var suggestWrap = document.getElementById('edit-room-suggest-wrap');
+        if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
+        var excludeId = currentTenant ? currentTenant.tenant_id : null;
+        renderRoomSuggestions(stayType, 'edit-room-suggest', 'edit-room', excludeId);
+    };
+
+    window.selectSuggestedRoom = function(roomNumber, inputId, suggestBoxId, stayTypeSelectId, excludeId) {
+        var input = document.getElementById(inputId);
         if (!input) return;
         selectedRoomNumber = roomNumber;
         input.value = roomNumber;
-        var stayType = document.getElementById('add-stay-type-select').value;
+        var stayType = document.getElementById(stayTypeSelectId).value;
         if (stayType) {
-            renderRoomSuggestions(stayType);
+            renderRoomSuggestions(stayType, suggestBoxId, inputId, excludeId);
         }
         input.dispatchEvent(new Event('input'));
     };
@@ -2713,11 +3443,65 @@ function setAddMode(mode) {
     toggleReservationFields('add');
 }
 
+(function() {
+    var activeTooltip = null;
+
+    document.addEventListener('mouseover', function(e) {
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        var tooltip = el.querySelector('.overdue-date-tooltip');
+        if (!tooltip) return;
+        activeTooltip = tooltip;
+        tooltip.style.display = 'block';
+        positionOverdueTooltip(el, tooltip);
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!activeTooltip) return;
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        positionOverdueTooltip(el, activeTooltip);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+        var el = e.target.closest('.overdue-date');
+        if (!el) return;
+        var tooltip = el.querySelector('.overdue-date-tooltip');
+        if (tooltip) tooltip.style.display = 'none';
+        activeTooltip = null;
+    });
+
+    function positionOverdueTooltip(el, tooltip) {
+        var rect       = el.getBoundingClientRect();
+        var tipWidth   = tooltip.offsetWidth  || 280;
+        var tipHeight  = tooltip.offsetHeight || 60;
+        var spaceAbove = rect.top;
+        var spaceBelow = window.innerHeight - rect.bottom;
+        var left       = rect.left + (rect.width / 2) - (tipWidth / 2);
+
+        left = Math.max(8, Math.min(left, window.innerWidth - tipWidth - 8));
+
+        var top;
+        var arrow = tooltip.querySelector('::after');
+
+        if (spaceAbove >= tipHeight + 12) {
+            top = rect.top - tipHeight - 10;
+            tooltip.style.setProperty('--arrow-top', '100%');
+        } else {
+            top = rect.bottom + 10;
+            tooltip.style.setProperty('--arrow-top', '-10px');
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top  + 'px';
+    }
+})();
+
 applyFilters();
 
-var deletedTenantArchive  = @json($deletedArchive);
-var inactiveTenantArchive = @json($inactiveArchive);
-var moveoutTenantArchive  = @json($moveoutArchive);
+var deletedTenantArchive  = {!! json_encode($deletedArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var inactiveTenantArchive = {!! json_encode($inactiveArchive, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
+var moveoutTenantArchive  = {!! json_encode($moveoutArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 var tenantArchiveTab = 'deleted';
 
 function fmtDatePlain(d) {
@@ -2826,56 +3610,81 @@ function exportTenantArchive(format) {
     a.click();
 }
 
-function getMenuForDropdown(id) {
-    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
-        return m._sourceDropdownId === id;
-    }) || document.querySelector('#' + id + ' .export-menu');
+var _exportMenuPortal = null;
+
+function getExportPortal() {
+    if (!_exportMenuPortal) {
+        _exportMenuPortal = document.createElement('div');
+        _exportMenuPortal.id = 'export-menu-portal';
+        _exportMenuPortal.style.cssText = 'position:fixed;z-index:99999;top:0;left:0;width:0;height:0;overflow:visible;';
+        document.body.appendChild(_exportMenuPortal);
+    }
+    return _exportMenuPortal;
 }
 
-function positionExportMenu(dropdown) {
-    var btn  = dropdown.querySelector('button');
-    var menu = getMenuForDropdown(dropdown.id);
-    var rect = btn.getBoundingClientRect();
-    if (!menu._movedToBody) {
-        menu._sourceDropdownId = dropdown.id;
-        document.body.appendChild(menu);
-        menu._movedToBody = true;
-    }
-    menu.style.position = 'fixed';
-    menu.style.zIndex   = '99999';
-    menu.style.right    = (window.innerWidth - rect.right) + 'px';
-    menu.style.left     = 'auto';
-    menu.style.minWidth = rect.width + 'px';
-    menu.style.top    = 'auto';
-    menu.style.bottom = 'auto';
-    var menuHeight = menu.offsetHeight || 80;
-    var spaceBelow = window.innerHeight - rect.bottom;
-    if (spaceBelow >= menuHeight + 6) {
-        menu.style.top    = (rect.bottom + 6) + 'px';
-        menu.style.bottom = 'auto';
-    } else {
-        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
-        menu.style.top    = 'auto';
-    }
-}
+var _activeExportDropdownId = null;
+var _portalMenuEl = null;
 
 function toggleExportDropdown(id) {
-    var dropdown = document.getElementById(id);
-    var menu     = getMenuForDropdown(id);
-    var isOpen   = menu.classList.contains('open');
+    if (_activeExportDropdownId === id && _portalMenuEl) {
+        closeAllExportDropdowns();
+        return;
+    }
     closeAllExportDropdowns();
-    if (!isOpen) {
-        positionExportMenu(dropdown);
-        getMenuForDropdown(id).classList.add('open');
+    var dropdown = document.getElementById(id);
+    var sourceMenu = dropdown.querySelector('.export-menu');
+    if (!sourceMenu) return;
+
+    _portalMenuEl = sourceMenu.cloneNode(true);
+    _portalMenuEl.classList.add('open');
+    _portalMenuEl.style.cssText = 'display:block;position:fixed;z-index:99999;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.15);min-width:160px;overflow:hidden;';
+    _portalMenuEl.setAttribute('data-portal-for', id);
+
+    _portalMenuEl.querySelectorAll('button').forEach(function(btn, i) {
+        var original = sourceMenu.querySelectorAll('button')[i];
+        if (original) {
+            btn.onclick = original.onclick;
+        }
+    });
+
+    getExportPortal().appendChild(_portalMenuEl);
+    _activeExportDropdownId = id;
+
+    var btnEl = dropdown.querySelector('button');
+    var rect  = btnEl.getBoundingClientRect();
+    var menuHeight = 0;
+    _portalMenuEl.style.visibility = 'hidden';
+    _portalMenuEl.style.top = '-9999px';
+    document.body.offsetHeight;
+    menuHeight = _portalMenuEl.offsetHeight || 80;
+    _portalMenuEl.style.visibility = '';
+
+    var spaceBelow = window.innerHeight - rect.bottom;
+    _portalMenuEl.style.right = (window.innerWidth - rect.right) + 'px';
+    _portalMenuEl.style.left  = 'auto';
+    _portalMenuEl.style.minWidth = rect.width + 'px';
+
+    if (spaceBelow >= menuHeight + 6) {
+        _portalMenuEl.style.top    = (rect.bottom + 6) + 'px';
+        _portalMenuEl.style.bottom = 'auto';
+    } else {
+        _portalMenuEl.style.top    = 'auto';
+        _portalMenuEl.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
     }
 }
 
 function closeAllExportDropdowns() {
-    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    if (_portalMenuEl) {
+        _portalMenuEl.remove();
+        _portalMenuEl = null;
+    }
+    _activeExportDropdownId = null;
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
+        closeAllExportDropdowns();
+    }
 });
 
 var adminLogData    = [];
@@ -3077,6 +3886,142 @@ function exportAdminLog(format) {
     a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'tenant-entry-exit-log.csv';
     a.click();
+}
+
+function exportRoomsCSV() {
+    var data = roomsData;
+    if (!data || !data.length) { showToast('No room data to export.', 'error'); return; }
+    var tenantsByRoom = {};
+    tenants.forEach(function(t) {
+        if (!t.room_number || t.status === 'inactive' || t.status === 'move_out') return;
+        if (!tenantsByRoom[t.room_number]) tenantsByRoom[t.room_number] = [];
+        tenantsByRoom[t.room_number].push(t.first_name + ' ' + t.last_name + ' (' + t.status + ')');
+    });
+    var rows = [['Room No.', 'Floor', 'Type', 'Capacity', 'Occupied', 'Available', 'Status', 'Tenants']];
+    data.forEach(function(r) {
+        var occupied  = r.occupancy || 0;
+        var available = r.capacity - occupied;
+        var status    = !r.is_active ? 'Closed' : occupied >= r.capacity ? 'Full' : available === r.capacity ? 'Vacant' : 'Partial';
+        var tenantList = (tenantsByRoom[r.room_number] || []).join('; ');
+        rows.push([r.room_number, 'Floor ' + r.floor, r.stay_type, r.capacity, occupied, available, status, tenantList]);
+    });
+    var csv = rows.map(function(r) { return r.map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'dormease-rooms-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+}
+
+function exportRoomsPDF() {
+    var data = roomsData;
+    if (!data || !data.length) { showToast('No room data to export.', 'error'); return; }
+
+    var tenantsByRoom = {};
+    tenants.forEach(function(t) {
+        if (!t.room_number || t.status === 'inactive' || t.status === 'move_out') return;
+        if (!tenantsByRoom[t.room_number]) tenantsByRoom[t.room_number] = [];
+        tenantsByRoom[t.room_number].push({ name: t.first_name + ' ' + t.last_name, status: t.status });
+    });
+
+    var sortedFloors = [...new Set(data.map(r => r.floor))].sort(function(a,b){return a-b;});
+    var totalOcc = data.reduce(function(s,r){return s+r.occupancy;},0);
+    var totalCap = data.reduce(function(s,r){return s+r.capacity;},0);
+    var pct      = totalCap > 0 ? Math.round(totalOcc/totalCap*100) : 0;
+    var today    = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    var rows = sortedFloors.map(function(fl) {
+        var floorRooms = data.filter(function(r){ return r.floor === fl; });
+        var floorOcc   = floorRooms.reduce(function(s,r){return s+r.occupancy;},0);
+        var floorCap   = floorRooms.reduce(function(s,r){return s+r.capacity;},0);
+        var floorPct   = floorCap > 0 ? Math.round(floorOcc/floorCap*100) : 0;
+
+        var cards = floorRooms.map(function(r) {
+            var occ       = r.occupancy || 0;
+            var isFull    = occ >= r.capacity;
+            var isEmpty   = occ === 0;
+            var slotsLeft = r.capacity - occ;
+            var roomPct   = r.capacity > 0 ? Math.round(occ/r.capacity*100) : 0;
+
+            var barColor  = !r.is_active ? '#c8c8d4' : isFull ? '#e04867' : roomPct >= 75 ? '#f59e0b' : '#1f9d69';
+            var statusLabel = !r.is_active ? 'Closed' : isFull ? 'Full' : isEmpty ? 'Vacant' : 'Active';
+            var statusBg    = !r.is_active ? '#f3f4f6' : isFull ? '#fff0f0' : isEmpty ? '#e8faf5' : '#e8faf5';
+            var statusColor = !r.is_active ? '#888'    : isFull ? '#e04867' : isEmpty ? '#1f9d69' : '#1f9d69';
+            var statusBorder= !r.is_active ? '#d0d0d8' : isFull ? '#ffb3c0' : isEmpty ? '#8ce0bb' : '#8ce0bb';
+
+            var tenantList = tenantsByRoom[r.room_number] || [];
+            var tenantRows = tenantList.length === 0
+                ? '<div style="font-size:10px;color:#aaa;font-style:italic;padding:4px 0;">No tenants assigned</div>'
+                : tenantList.map(function(t) {
+                    var sc = t.status === 'active' ? '#1f9d69' : t.status === 'reserved' ? '#9a6200' : '#888';
+                    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid #fce8f1;font-size:10px;">'
+                        + '<span style="color:#3a0e22;font-weight:600;">\u2022 ' + t.name + '</span>'
+                        + '<span style="color:' + sc + ';font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.03em;">' + t.status + '</span>'
+                        + '</div>';
+                }).join('');
+
+            var barW = Math.max(roomPct, 0);
+
+            return '<div style="background:#fff;border:1.5px solid #f4b8d0;border-radius:10px;padding:10px 12px;break-inside:avoid;">'
+                + '<div style="height:3px;background:' + barColor + ';border-radius:3px 3px 0 0;margin:-10px -12px 8px;"></div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">'
+                    + '<span style="font-size:13px;font-weight:800;color:#1a1a2e;">Rm. ' + r.room_number + '</span>'
+                    + '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:' + statusBg + ';color:' + statusColor + ';border:1px solid ' + statusBorder + ';">' + statusLabel + '</span>'
+                + '</div>'
+                + '<div style="font-size:9.5px;color:#888;margin-bottom:6px;">' + r.stay_type + ' &nbsp;&middot;&nbsp; Floor ' + r.floor + '</div>'
+                + '<div style="background:#f0e0e8;border-radius:3px;height:4px;margin-bottom:5px;">'
+                    + '<div style="height:4px;width:' + barW + '%;background:' + barColor + ';border-radius:3px;min-width:' + (occ > 0 ? '4' : '0') + 'px;"></div>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+                    + '<span style="font-size:10px;font-weight:700;color:' + barColor + ';">' + occ + '/' + r.capacity + ' occupied</span>'
+                    + '<span style="font-size:9.5px;color:#888;">' + (isFull ? 'No slots free' : slotsLeft + ' slot' + (slotsLeft !== 1 ? 's' : '') + ' free') + '</span>'
+                + '</div>'
+                + '<div style="background:#fff5f9;border-radius:6px;padding:5px 7px;">' + tenantRows + '</div>'
+                + '</div>';
+        }).join('');
+
+        return '<div style="margin-bottom:20px;">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #fce8f1;">'
+                + '<div style="display:flex;align-items:center;gap:8px;">'
+                    + '<div style="width:3px;height:16px;background:#E8175D;border-radius:2px;"></div>'
+                    + '<span style="font-size:12px;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.08em;">Floor ' + fl + '</span>'
+                + '</div>'
+                + '<span style="font-size:10px;font-weight:700;color:#888;">' + floorOcc + '/' + floorCap + ' occupied &nbsp;&middot;&nbsp; ' + floorPct + '%</span>'
+            + '</div>'
+            + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">' + cards + '</div>'
+            + '</div>';
+    }).join('');
+
+    var win = window.open('', '_blank');
+    win.document.write('<!DOCTYPE html><html><head><title>Room Overview</title>'
+        + '<style>'
+        + 'body{font-family:"Segoe UI",Arial,sans-serif;margin:0;padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+        + '.header{background:#E8175D;color:#fff;padding:18px 24px 14px;}'
+        + '.header h1{margin:0 0 3px;font-size:16px;font-weight:800;letter-spacing:-.01em;}'
+        + '.header p{margin:0;font-size:10.5px;opacity:.82;}'
+        + '.summary-bar{display:flex;gap:16px;padding:10px 24px;background:#fff5f9;border-bottom:1.5px solid #fce8f1;}'
+        + '.summary-item{display:flex;flex-direction:column;gap:1px;}'
+        + '.summary-item .val{font-size:16px;font-weight:800;color:#E8175D;line-height:1;}'
+        + '.summary-item .lbl{font-size:9px;font-weight:700;color:#b06080;text-transform:uppercase;letter-spacing:.05em;}'
+        + '.content{padding:18px 24px;}'
+        + '@media print{body{padding:0;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}'
+        + '</style>'
+        + '</head><body>'
+        + '<div class="header">'
+            + '<h1>Sanctissimo Rosario Ladies Dormitory</h1>'
+            + '<p>Room Overview &nbsp;&middot;&nbsp; Exported ' + today + '</p>'
+        + '</div>'
+        + '<div class="summary-bar">'
+            + '<div class="summary-item"><div class="val">' + data.length + '</div><div class="lbl">Total Rooms</div></div>'
+            + '<div class="summary-item"><div class="val">' + totalOcc + '</div><div class="lbl">Occupied Slots</div></div>'
+            + '<div class="summary-item"><div class="val">' + (totalCap - totalOcc) + '</div><div class="lbl">Available Slots</div></div>'
+            + '<div class="summary-item"><div class="val">' + pct + '%</div><div class="lbl">Occupancy Rate</div></div>'
+            + '<div class="summary-item"><div class="val">' + data.filter(function(r){return r.is_active && r.occupancy >= r.capacity;}).length + '</div><div class="lbl">Full Rooms</div></div>'
+            + '<div class="summary-item"><div class="val">' + data.filter(function(r){return !r.is_active;}).length + '</div><div class="lbl">Closed Rooms</div></div>'
+        + '</div>'
+        + '<div class="content">' + rows + '</div>'
+        + '</body></html>');
+    win.document.close();
+    win.print();
 }
 
 function fmtDateTime(d) {

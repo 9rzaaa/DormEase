@@ -952,6 +952,60 @@
     .d3 { animation-delay: .2s;  }
     .d4 { animation-delay: .28s; }
 
+    .visitor-legend-wrap {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .visitor-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .55;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+        transition: opacity .2s;
+    }
+    .visitor-legend-wrap:hover img { opacity: 1; }
+    .visitor-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 360px;
+        z-index: 99999;
+    }
+    .vlp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .45rem;
+        padding-bottom: .35rem;
+        border-bottom: 1.5px solid #fce4ef;
+    }
+    .vlp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .32rem 0;
+        border-bottom: 1px solid #fce4ef;
+    }
+    .vlp-row:last-child { border-bottom: none; }
+    .vlp-badge { flex-shrink: 0; min-width: 100px; display: flex; align-items: center; }
+    .vlp-desc {
+        font-size: .73rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .1rem;
+    }
+
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -968,7 +1022,7 @@
     <div class="archive-drawer-header">
         <div>
             <div class="archive-drawer-title">Archive &amp; History</div>
-            <div class="archive-drawer-sub">Record of completed and deleted visitor logs</div>
+            <div class="archive-drawer-sub">Record of completed and cancelled visitor logs</div>
         </div>
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
@@ -981,6 +1035,10 @@
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
+        </button>
+        <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
+            Cancelled
+            <span class="archive-tab-count" id="acount-cancelled">0</span>
         </button>
     </div>
 
@@ -1125,7 +1183,7 @@
                     id="search-input"
                     class="ctrl-input ctrl-input-search"
                     placeholder="Search visitor..."
-                    onkeyup="applyFilters()"
+                    oninput="applyFilters()"
                 >
 
                 <div class="filter-divider"></div>
@@ -1143,6 +1201,37 @@
                 <input type="date" id="date-from" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
                 <span class="range-sep">—</span>
                 <input type="date" id="date-to" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
+                <button type="button" id="date-clear-btn" onclick="clearDates()" style="display:none;background:none;border:none;cursor:pointer;color:var(--hot-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;flex-shrink:0;" title="Clear dates">&#x2715;</button>
+                <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:99999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
+
+                <div class="filter-divider"></div>
+
+                <div class="visitor-legend-wrap" id="visitor-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" alt="Status Guide">
+                    <div class="visitor-legend-popup" id="visitor-legend-popup">
+                        <div class="vlp-title">Status Guide</div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-approved">Approved</span></span>
+                            <span class="vlp-desc">Visit has been approved and is expected but the visitor has not yet arrived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-inside">Inside</span></span>
+                            <span class="vlp-desc">Visitor has checked in and is currently inside the dormitory.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-pending">Pending</span></span>
+                            <span class="vlp-desc">Visit has been registered but not yet approved or acted on.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-completed">Completed</span></span>
+                            <span class="vlp-desc">Visitor has checked out. Visit is done and archived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-denied">Denied</span></span>
+                            <span class="vlp-desc">Visit was rejected, cancelled, or denied entry by staff.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1187,9 +1276,11 @@
     const logs              = @json($logs, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const completedVisitors = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const deletedVisitors   = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const cancelledVisitors = @json($cancelledVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
     let filtered   = Array.isArray(logs) ? [...logs] : [];
     let archiveTab = 'completed';
+    var _logRowMap = {};
 
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
@@ -1220,30 +1311,69 @@
              + ' ' + dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
     }
 
+    var _filterDebounce  = null;
+    var _archiveDebounce = null;
+
     function applyFilters() {
-        const q    = document.getElementById('search-input').value.toLowerCase().trim();
-        const from = document.getElementById('date-from').value;
-        const to   = document.getElementById('date-to').value;
-        const sort = document.getElementById('sort-select').value;
+        clearTimeout(_filterDebounce);
+        _filterDebounce = setTimeout(function() { _runFilters(); }, 180);
+    }
+
+    function clearDates() {
+        document.getElementById('date-from').value             = '';
+        document.getElementById('date-to').value               = '';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-error').style.display    = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
+    }
+
+    function _runFilters() {
+        var q    = document.getElementById('search-input').value.toLowerCase().trim();
+        var from = document.getElementById('date-from').value;
+        var to   = document.getElementById('date-to').value;
+        var sort = document.getElementById('sort-select').value;
+        var dateErr     = document.getElementById('date-error');
+        var clearBtn    = document.getElementById('date-clear-btn');
+        var dateFromEl  = document.getElementById('date-from');
+        var dateToEl    = document.getElementById('date-to');
+
+        if (from && to && from > to) {
+            dateErr.style.visibility = 'hidden';
+            dateErr.style.display    = 'block';
+            var rect = dateToEl.getBoundingClientRect();
+            dateErr.style.top        = (rect.bottom + 6) + 'px';
+            dateErr.style.left       = rect.left + 'px';
+            dateErr.style.visibility = '';
+            dateFromEl.style.borderColor = '#ffc2d1';
+            dateToEl.style.borderColor   = '#ffc2d1';
+            return;
+        }
+
+        dateErr.style.display        = 'none';
+        dateFromEl.style.borderColor = '';
+        dateToEl.style.borderColor   = '';
+        clearBtn.style.display       = (from || to) ? 'inline' : 'none';
 
         filtered = logs.filter(function(v) {
-            const matchesSearch = !q
-                || (v.visitor_name ?? '').toLowerCase().includes(q)
-                || (v.tenant?.name ?? '').toLowerCase().includes(q)
-                || (v.purpose      ?? '').toLowerCase().includes(q)
-                || (v.staff?.name  ?? '').toLowerCase().includes(q);
+            var matchesSearch = !q
+                || (v.visitor_name || '').toLowerCase().includes(q)
+                || (v.tenant ? (v.tenant.name || v.tenant.full_name || '') : '').toLowerCase().includes(q)
+                || (v.purpose     || '').toLowerCase().includes(q)
+                || (v.staff ? (v.staff.name || '') : '').toLowerCase().includes(q);
 
-            const visitDate   = v.date_of_visit ?? '';
-            const matchesFrom = !from || visitDate >= from;
-            const matchesTo   = !to   || visitDate <= to;
+            var visitDate   = v.date_of_visit || '';
+            var matchesFrom = !from || visitDate >= from;
+            var matchesTo   = !to   || visitDate <= to;
 
             return matchesSearch && matchesFrom && matchesTo;
         });
 
         filtered.sort(function(a, b) {
-            if (sort === 'newest') return (b.date_of_visit ?? '').localeCompare(a.date_of_visit ?? '') || (b.id - a.id);
-            if (sort === 'oldest') return (a.date_of_visit ?? '').localeCompare(b.date_of_visit ?? '') || (a.id - b.id);
-            if (sort === 'name')   return (a.visitor_name  ?? '').localeCompare(b.visitor_name  ?? '');
+            if (sort === 'newest') return (b.date_of_visit || '').localeCompare(a.date_of_visit || '') || (b.id - a.id);
+            if (sort === 'oldest') return (a.date_of_visit || '').localeCompare(b.date_of_visit || '') || (a.id - b.id);
+            if (sort === 'name')   return (a.visitor_name  || '').localeCompare(b.visitor_name  || '');
             return 0;
         });
 
@@ -1259,6 +1389,7 @@
         }
 
         tbody.innerHTML = filtered.map(function(v) {
+            _logRowMap[v.id] = v;
             const expectedVisit = (v.date_of_visit || v.time_of_visit)
                 ? fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit)
                 : '—';
@@ -1283,7 +1414,7 @@
                 + '<td>' + (v.staff?.name ?? '—') + '</td>'
                 + '<td>' + getStatusBadge(v.status) + '</td>'
                 + '<td>'
-                    + '<button class="act-btn" title="View details" onclick="viewVisitor(' + v.id + ')">'
+                    + '<button class="act-btn" title="View details" onclick="viewVisitor(_logRowMap[' + v.id + '])">'
                         + '<img src="' + eyeIcon + '" alt="View">'
                     + '</button>'
                 + '</td>'
@@ -1299,6 +1430,8 @@
             pending:            'badge-pending',
             denied:             'badge-denied',
             rejected:           'badge-denied',
+            cancelled:          'badge-denied',
+            deleted:            'badge-denied',
             inside:             'badge-inside',
             'currently inside': 'badge-inside',
         };
@@ -1321,8 +1454,7 @@
         });
     }
 
-    function viewVisitor(id) {
-        const v = logs.find(function(item) { return item.id === id; });
+    function viewVisitor(v) {
         if (!v) return;
 
         document.getElementById('modalHeaderName').textContent = v.visitor_name ?? '—';
@@ -1419,15 +1551,12 @@
     }
 
     function openArchive() {
-        document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors) ? completedVisitors.length : 0;
-        document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)   ? deletedVisitors.length   : 0;
-        document.getElementById('archive-search').value = '';
-        archiveTab = 'completed';
-        document.getElementById('atab-completed').classList.add('active');
-        document.getElementById('atab-deleted').classList.remove('active');
-        renderArchive();
+        document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
+        document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
+        document.getElementById('acount-cancelled').textContent = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
+        switchArchiveTab('completed');
     }
 
     function closeArchive() {
@@ -1439,15 +1568,27 @@
         archiveTab = tab;
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
+        document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
 
     function renderArchive() {
-        const q    = document.getElementById('archive-search').value.toLowerCase();
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        clearTimeout(_archiveDebounce);
+        _archiveDebounce = setTimeout(function() { _runRenderArchive(); }, 150);
+    }
+
+    function _runRenderArchive() {
+        const q = document.getElementById('archive-search').value.toLowerCase();
+
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
         const result = data.filter(function(v) {
             return (v.visitor_name ?? '').toLowerCase().includes(q)
@@ -1467,21 +1608,24 @@
         }
 
         const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        const pillLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : 'Deleted on';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
 
         list.innerHTML = result.map(function(v, i) {
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? null;
             const roomNum    = v.tenant?.room_number ?? null;
             const logId      = v.visitor_id ?? v.id ?? 0;
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : archiveTab === 'cancelled'
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
+                    : logTime;
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
                     + '<div class="archive-card-id">VST-' + String(logId).padStart(3, '0') + '</div>'
-                    + '<div class="archive-card-time">' + fmtDatePlain(v.arrival_time) + '</div>'
+                    + '<div class="archive-card-time">' + logTime + '</div>'
                 + '</div>'
                 + '<div class="archive-card-visitor">' + (v.visitor_name ?? '—') + '</div>'
                 + (tenantName ? '<div class="archive-card-tenant">Visited: ' + tenantName + (roomNum ? ' - Rm ' + roomNum : '') + '</div>' : '')
@@ -1497,7 +1641,7 @@
     }
 
     function exportLogsCsv() {
-        if (!filtered.length) { alert('No data to export.'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
 
         var rows = [['Name', 'Expected Date', 'Expected Time', 'Time In', 'Time Out', 'Purpose', 'Tenant Visited', 'Logged By', 'Status']];
         filtered.forEach(function(v) {
@@ -1523,9 +1667,10 @@
     }
 
     function exportLogsPdf() {
-        if (!filtered.length) { alert('No data to export.'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
 
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(v) {
             return '<tr>'
                 + '<td>' + (v.visitor_name ?? '') + '</td>'
@@ -1552,21 +1697,29 @@
     }
 
     function exportArchiveCsv() {
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
-        if (!data.length) { alert('No archive data to export.'); return; }
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const label = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        const label = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
 
         data.forEach(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : archiveTab === 'cancelled'
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
+                    : logTime;
 
             rows.push([
                 'VST-' + String(logId).padStart(3, '0'),
@@ -1590,22 +1743,31 @@
     }
 
     function exportArchivePdf() {
-        const data = archiveTab === 'completed'
-            ? (Array.isArray(completedVisitors) ? completedVisitors : [])
-            : (Array.isArray(deletedVisitors)   ? deletedVisitors   : []);
+        let data;
+        if (archiveTab === 'completed') {
+            data = Array.isArray(completedVisitors) ? completedVisitors : [];
+        } else if (archiveTab === 'deleted') {
+            data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
+        } else {
+            data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        }
 
-        if (!data.length) { alert('No archive data to export.'); return; }
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const tabLabel   = archiveTab === 'completed' ? 'Completed' : 'Deleted';
-        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : 'Deleted On';
+        const tabLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
 
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = data.map(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
+            const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : fmtDatePlain(v.arrival_time);
+                : archiveTab === 'cancelled'
+                    ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
+                    : logTime;
 
             return '<tr>'
                 + '<td>VST-' + String(logId).padStart(3, '0') + '</td>'
@@ -1683,7 +1845,77 @@
         }
     });
 
+    function clearDates() {
+        document.getElementById('date-from').value              = '';
+        document.getElementById('date-to').value                = '';
+        document.getElementById('date-from').style.borderColor  = '';
+        document.getElementById('date-to').style.borderColor    = '';
+        document.getElementById('date-error').style.display     = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
+    }
+
     applyFilters();
+
+    (function() {
+        var popup = document.getElementById('visitor-legend-popup');
+        if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display   = 'none';
+        popup.style.position  = 'fixed';
+        popup.style.zIndex    = '99999';
+
+        var hideTimer  = null;
+        var popupWidth = 360;
+
+        document.querySelectorAll('.visitor-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                popup.style.visibility = 'hidden';
+                popup.style.display    = 'block';
+                var popupH = popup.offsetHeight || 220;
+                popup.style.display    = 'none';
+                popup.style.visibility = '';
+
+                var rect = wrap.getBoundingClientRect();
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                if (left < 8) left = 8;
+
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var top;
+                if (spaceBelow >= popupH + 10) {
+                    top = rect.bottom + 8;
+                } else {
+                    top = rect.top - popupH - 8;
+                    if (top < 8) top = 8;
+                }
+
+                popup.style.top  = top + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
 
 </script>
 @endsection

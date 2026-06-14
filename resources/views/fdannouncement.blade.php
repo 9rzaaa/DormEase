@@ -41,42 +41,53 @@
 
 .ann-stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    box-sizing: border-box;
 }
 
 .ann-stat-card {
-    background: linear-gradient(135deg, var(--hot-pink, #d6175a) 0%, var(--bright-pink, #E8175D) 100%);
-    border-radius: 16px;
+    background: var(--gradient-pink);
+    border-radius: 18px;
     border: none;
-    padding: 1.1rem 1.3rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
+    padding: 1.4rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: .9rem;
-    box-shadow: 0 8px 24px rgba(232,23,93,.18);
+    gap: 1.2rem;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
     transition: transform .2s, box-shadow .2s;
 }
 
 .ann-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(232,23,93,.25);
+    box-shadow: 0 8px 24px rgba(232,23,93,.35);
 }
 
 .ann-stat-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     flex-shrink: 0;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
 }
 
 .ann-stat-icon img {
-    width: 22px; height: 22px; object-fit: contain;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
-.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
+.ann-stat-label { font-size: .8rem; color: rgba(247,245,245,.967); margin-bottom: .15rem; font-weight: 700; }
+.ann-stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
 
 .ann-toolbar {
     display: flex;
@@ -189,7 +200,7 @@
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 4px;
-    background: var(--pink-100, #f9c5d6);
+    background: var(--pink-200, #f4b8d0);
     transition: background .2s;
 }
 
@@ -200,7 +211,7 @@
 }
 
 .ann-row-card:hover::before { background: var(--gradient-pink, linear-gradient(135deg,#E8175D,#c0103e)); }
-.ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
+.ann-row-card.status-active::before { background: var(--gradient-pink); }
 
 .ann-row-card.status-closed {
     opacity: .58;
@@ -490,14 +501,16 @@
 
 .vm-file-grid { display: flex; flex-direction: column; gap: .75rem; }
 .vm-file-item { border: 1.5px solid var(--pink-100, #f9c5d6); border-radius: 14px; overflow: hidden; background: #fff; }
-.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .6rem .9rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); }
-.vm-file-name { font-size: .78rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
-.vm-file-name img { width: 13px; height: 13px; opacity: .5; }
-.vm-file-actions { display: flex; align-items: center; gap: .4rem; }
-.vm-file-dl { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; color: var(--bright-pink, #E8175D); text-decoration: none; padding: .22rem .65rem; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; transition: .2s; }
-.vm-file-dl:hover { background: var(--pink-100, #f9c5d6); border-color: var(--bright-pink, #E8175D); }
-.vm-file-body { padding: .8rem; }
-.vm-file-body img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; }
+.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .55rem .85rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); gap: .75rem; }
+.vm-file-name { font-size: .76rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .38rem; min-width: 0; flex: 1; }
+.vm-file-name img { width: 13px; height: 13px; opacity: .45; flex-shrink: 0; }
+.vm-file-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vm-file-actions { display: flex; align-items: center; gap: .3rem; flex-shrink: 0; }
+.vm-file-dl { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; color: var(--bright-pink, #E8175D); text-decoration: none; transition: .2s; font-size: .85rem; cursor: pointer; }
+.vm-file-dl:hover { background: var(--bright-pink, #E8175D); border-color: var(--bright-pink, #E8175D); color: #fff; }
+.vm-file-dl svg { width: 14px; height: 14px; flex-shrink: 0; }
+.vm-file-body { padding: .75rem; }
+.vm-file-body img { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; background: var(--soft-bg, #fdf6f9); }
 .vm-file-body img:hover { opacity: .88; }
 .vm-file-body iframe { width: 100%; height: 300px; border: none; border-radius: 8px; display: block; }
 .vm-file-unsupported { display: flex; flex-direction: column; align-items: center; padding: 1.5rem; color: var(--ink-muted, #888); font-size: .8rem; text-align: center; gap: .4rem; }
@@ -520,9 +533,151 @@
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
 
+.ann-dismiss-btn {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+    flex-shrink: 0;
+    opacity: .55;
+}
+
+.ann-dismiss-btn:hover {
+    border-color: #e04867;
+    background: #fff0f0;
+    opacity: 1;
+}
+
+.ann-dismiss-btn svg { width: 12px; height: 12px; color: #e04867; }
+
+.ann-show-hidden-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: .6rem 1rem;
+    border-radius: 12px;
+    border: 1.5px dashed var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--hot-pink, #d6175a);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+
+.ann-show-hidden-bar.visible { display: flex; }
+.ann-show-hidden-bar:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush); }
+.ann-show-hidden-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.hidden-modal-overlay {
+    position: fixed; inset: 0; z-index: 800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+.hidden-modal-overlay.open { display: flex; }
+.hidden-modal-box {
+    background: #fff;
+    border-radius: 18px;
+    width: 100%; max-width: 480px;
+    max-height: 82vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    animation: modalIn .25s cubic-bezier(.34,1.3,.64,1) both;
+    overflow: hidden;
+}
+@keyframes modalIn { from { opacity:0; transform: translateY(16px) scale(.97); } to { opacity:1; transform: none; } }
+.hidden-modal-header {
+    padding: .9rem 1.2rem;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+}
+.hidden-modal-title {
+    font-size: .95rem; font-weight: 800; color: var(--ink);
+    display: flex; align-items: center; gap: .5rem;
+}
+.hidden-modal-title svg { width: 16px; height: 16px; color: var(--hot-pink, #d6175a); }
+.hidden-modal-close {
+    width: 30px; height: 30px; border-radius: 7px;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    color: var(--bright-pink, #E8175D);
+    font-size: .8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+}
+.hidden-modal-close:hover { background: var(--pink-100, #f9c5d6); }
+.hidden-modal-body {
+    flex: 1; overflow-y: auto;
+    padding: .75rem 1.2rem;
+    display: flex; flex-direction: column; gap: .55rem;
+}
+.hidden-modal-body::-webkit-scrollbar { width: 4px; }
+.hidden-modal-body::-webkit-scrollbar-thumb { background: var(--pink-200, #f4b8d0); border-radius: 99px; }
+.hidden-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .65rem .85rem;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    border-radius: 11px;
+    background: #fff;
+    transition: border-color .2s, background .2s;
+}
+.hidden-item:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush, #fff5f9); }
+.hidden-item-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+}
+.hidden-item-info { flex: 1; min-width: 0; }
+.hidden-item-title {
+    font-size: .85rem; font-weight: 700; color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: .15rem;
+}
+.hidden-item-meta { font-size: .7rem; color: var(--ink-muted, #888); font-weight: 500; }
+.hidden-unhide-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .75rem; border-radius: 7px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    color: var(--hot-pink, #d6175a);
+    font-size: .72rem; font-weight: 700;
+    cursor: pointer; transition: .2s;
+    white-space: nowrap; flex-shrink: 0;
+    font-family: var(--ff-body);
+}
+.hidden-unhide-btn:hover { background: var(--bright-pink, #E8175D); color: #fff; border-color: transparent; }
+.hidden-modal-footer {
+    padding: .75rem 1.2rem;
+    border-top: 1px solid var(--pink-100, #f9c5d6);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: #fffafd;
+}
+.hidden-modal-count { font-size: .75rem; color: var(--ink-muted, #888); font-weight: 600; }
+.hidden-restore-all-btn {
+    display: inline-flex; align-items: center; gap: .38rem;
+    padding: .38rem .9rem; border-radius: 8px;
+    border: none; background: var(--gradient-pink);
+    color: #fff; font-size: .78rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: var(--ff-body);
+    box-shadow: 0 4px 12px rgba(232,23,93,.22);
+}
+.hidden-restore-all-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,23,93,.32); }
+.hidden-empty {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--ink-muted, #888); font-size: .84rem;
+}
+
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
-@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } }
-@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1rem; } }
+@media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
+@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
+@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
 </style>
 @endsection
 
@@ -542,35 +697,34 @@
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
+                <div class="ann-stat-label">Total Announcements</div>
                 <div class="ann-stat-num">{{ $announcements->count() }}</div>
-                <div class="ann-stat-label">Total</div>
+                <div class="ann-stat-sub">All Posted</div>
             </div>
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/check.png') }}" alt="">
+                <img src="{{ asset('icons/active.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
                 <div class="ann-stat-label">Active</div>
+                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
+                <div class="ann-stat-sub">{{ $announcements->where('status','closed')->count() }} Closed</div>
             </div>
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/archive.png') }}" alt="">
+                <img src="{{ asset('icons/flag.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
-                <div class="ann-stat-label">Closed</div>
-            </div>
-        </div>
-        <div class="ann-stat-card">
-            <div class="ann-stat-icon">
-                <img src="{{ asset('icons/warning.png') }}" alt="">
-            </div>
-            <div>
+                <div class="ann-stat-label">Priority Breakdown</div>
                 <div class="ann-stat-num">{{ $announcements->where('priority','high')->count() }}</div>
-                <div class="ann-stat-label">High Priority</div>
+                <div class="ann-stat-sub">
+                    High &nbsp;&middot;&nbsp;
+                    {{ $announcements->where('priority','moderate')->count() }} Moderate
+                    &nbsp;&middot;&nbsp;
+                    {{ $announcements->where('priority','low')->count() }} Low
+                </div>
             </div>
         </div>
     </div>
@@ -585,6 +739,7 @@
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
                 <option value="high">High Priority</option>
+                <option value="moderate">Moderate Priority</option>
                 <option value="low">Low Priority</option>
             </select>
             <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
@@ -609,6 +764,7 @@
             @endphp
             @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
+                     data-ann-id="{{ $ann->announcement_id }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
@@ -640,9 +796,14 @@
                         <span class="ann-row-time">
                             {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
-                        <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
-                            <img src="{{ asset('icons/eye.png') }}" alt=""> View
-                        </button>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
+                                <img src="{{ asset('icons/eye.png') }}" alt=""> View
+                            </button>
+                            <button class="ann-dismiss-btn" onclick="event.stopPropagation(); dismissAnnouncement({{ $ann->announcement_id }})" title="Hide this announcement">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             @empty
@@ -651,6 +812,14 @@
                     No announcements yet.
                 </div>
             @endforelse
+
+            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="openHiddenModal()">
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    <span id="ann-hidden-count-label">1 hidden announcement</span>
+                </div>
+                <span style="font-size:.72rem;font-weight:700;text-decoration:underline;">Manage</span>
+            </div>
 
             <div class="ann-list-empty" id="ann-no-results" style="display:none;">
                 <img src="{{ asset('icons/search.png') }}" alt="">
@@ -768,6 +937,23 @@
     </div>
 </div>
 
+<div class="hidden-modal-overlay" id="hidden-modal" onclick="if(event.target===this)closeHiddenModal()">
+    <div class="hidden-modal-box">
+        <div class="hidden-modal-header">
+            <div class="hidden-modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                Hidden Announcements
+            </div>
+            <button class="hidden-modal-close" onclick="closeHiddenModal()">&#x2715;</button>
+        </div>
+        <div class="hidden-modal-body" id="hidden-modal-body"></div>
+        <div class="hidden-modal-footer">
+            <span class="hidden-modal-count" id="hidden-modal-count"></span>
+            <button class="hidden-restore-all-btn" onclick="restoreHidden()">Restore All</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -826,7 +1012,96 @@ function applyDropdownFilters(changedEl) {
         card.style.display = show ? '' : 'none';
     });
 
+    applyHidden();
+}
+
+const HIDDEN_KEY = 'fd_hidden_announcements';
+
+function getHidden() {
+    try { return JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]'); } catch { return []; }
+}
+
+function saveHidden(ids) {
+    localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+}
+
+function dismissAnnouncement(id) {
+    const hidden = getHidden();
+    if (!hidden.includes(id)) hidden.push(id);
+    saveHidden(hidden);
+    applyHidden();
+}
+
+function restoreHidden() {
+    saveHidden([]);
+    applyHidden();
+    closeHiddenModal();
+}
+
+function unhideOne(id) {
+    const hidden = getHidden().filter(h => h !== id);
+    saveHidden(hidden);
+    const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
+    if (card) card.style.display = '';
+    applyHidden();
+    renderHiddenModal();
+}
+
+function applyHidden() {
+    const hidden = getHidden();
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        const id = parseInt(card.dataset.annId);
+        if (hidden.includes(id)) {
+            card.style.display = 'none';
+        }
+    });
+    const bar   = document.getElementById('ann-show-hidden-bar');
+    const label = document.getElementById('ann-hidden-count-label');
+    if (hidden.length > 0) {
+        bar.classList.add('visible');
+        label.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
+    } else {
+        bar.classList.remove('visible');
+    }
     updateEmptyState();
+}
+
+function openHiddenModal() {
+    renderHiddenModal();
+    document.getElementById('hidden-modal').classList.add('open');
+}
+
+function closeHiddenModal() {
+    document.getElementById('hidden-modal').classList.remove('open');
+}
+
+function renderHiddenModal() {
+    const hidden = getHidden();
+    const body   = document.getElementById('hidden-modal-body');
+    const count  = document.getElementById('hidden-modal-count');
+    count.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
+    if (!hidden.length) {
+        body.innerHTML = '<div class="hidden-empty">No hidden announcements.</div>';
+        return;
+    }
+    const prioColors = { high: '#e04867', moderate: '#f59e0b', low: '#1f9d69' };
+    body.innerHTML = hidden.map(id => {
+        const ann = annData[id];
+        if (!ann) return '';
+        const prio  = (ann.priority || 'low').toLowerCase();
+        const color = prioColors[prio] || '#1f9d69';
+        const date  = ann.posted_at || ann.created_at
+            ? new Date(ann.posted_at || ann.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '';
+        return `<div class="hidden-item">
+            <span class="hidden-item-dot" style="background:${color};"></span>
+            <div class="hidden-item-info">
+                <div class="hidden-item-title">${escHtml(ann.title || '')}</div>
+                <div class="hidden-item-meta">${ucFirst(prio)} priority &nbsp;&middot;&nbsp; ${date}</div>
+            </div>
+            <button class="hidden-unhide-btn" onclick="unhideOne(${id})">Unhide</button>
+        </div>`;
+    }).filter(Boolean).join('');
 }
 
 function updateEmptyState() {
@@ -871,32 +1146,39 @@ function closeLightbox() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 function buildFilePreview(path) {
-    const name = path.split('/').pop();
-    const ext  = (path.split('.').pop() || '').toLowerCase();
-    const url  = path.startsWith('http') ? path : `${storageBase}/${encodeURI(path)}`;
+    const name    = path.split('/').pop();
+    const ext     = (path.split('.').pop() || '').toLowerCase();
+    const url     = path.startsWith('http') ? path : `${storageBase}/${encodeURI(path)}`;
     const isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
     const isPdf   = ext === 'pdf';
 
+    const expandSvg   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+    const openSvg     = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+    const downloadSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+
     let body = '';
     if (isImage) {
-        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size"></div>`;
+        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size" onerror="this.parentElement.innerHTML='<div class=&quot;vm-file-unsupported&quot;>Image could not be loaded.</div>'"></div>`;
     } else if (isPdf) {
         body = `<div class="vm-file-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
     } else {
         body = `<div class="vm-file-unsupported"><img src="{{ asset('icons/attach.png') }}" alt=""><span>No preview for <strong>.${ext}</strong> files.</span></div>`;
     }
 
-    const openBtn = isImage
-        ? `<button class="vm-file-dl" onclick="openLightbox('${url}')">&#x26F6; Expand</button>`
-        : `<a href="${url}" target="_blank" class="vm-file-dl">&#x2197; Open</a>`;
+    const actionBtn = isImage
+        ? `<button class="vm-file-dl" onclick="openLightbox('${url}')" title="Expand">${expandSvg}</button>`
+        : `<a href="${url}" target="_blank" class="vm-file-dl" title="Open">${openSvg}</a>`;
 
     return `
         <div class="vm-file-item">
             <div class="vm-file-bar">
-                <div class="vm-file-name"><img src="{{ asset('icons/attach.png') }}" alt="">${escHtml(name)}</div>
+                <div class="vm-file-name">
+                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                    <span title="${escHtml(name)}">${escHtml(name)}</span>
+                </div>
                 <div class="vm-file-actions">
-                    ${openBtn}
-                    <a href="${url}" download class="vm-file-dl">&#x2193; Download</a>
+                    ${actionBtn}
+                    <a href="${url}" download="${escHtml(name)}" class="vm-file-dl" title="Download">${downloadSvg}</a>
                 </div>
             </div>
             ${body}
@@ -905,7 +1187,7 @@ function buildFilePreview(path) {
 
 function openViewModal(id) {
     const ann = annData[id];
-    if (!ann) return;
+    if (!ann) { showToast('Could not load announcement. Please refresh the page.', 'error'); return; }
 
     const files = getFiles(ann.attachment);
 
@@ -949,6 +1231,8 @@ function openViewModal(id) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+applyHidden();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif

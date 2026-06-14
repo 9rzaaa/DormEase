@@ -1296,6 +1296,63 @@ tbody tr:hover { background: var(--soft-bg); }
 .log-ddf-item:last-child { border-bottom: none; }
 .log-ddf-item:hover { background: var(--blush); color: var(--hot-pink); }
 .log-ddf-item.active { background: var(--petal); color: var(--hot-pink); }
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%; max-width: 540px;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    display: flex; flex-direction: column;
+    max-height: 92vh; overflow: hidden;
+    animation: modalIn .28s cubic-bezier(.34,1.3,.64,1) both;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+    padding: .75rem 1.1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--pink-100); flex-shrink: 0;
+}
+.modal-title { font-size: 1rem; font-weight: 800; color: var(--ink); }
+.modal-close {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 1.5px solid var(--pink-100); background: var(--petal);
+    color: var(--bright-pink); font-size: .95rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, color .2s;
+}
+.modal-close:hover { background: var(--bright-pink); color: var(--white); }
+.modal-actions {
+    padding: .65rem 1.1rem;
+    border-top: 1px solid var(--pink-100);
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: .55rem; flex-shrink: 0; background: #fffafd;
+}
+.btn-cancel {
+    padding: .55rem 1.2rem; border-radius: 10px;
+    border: 1.5px solid var(--pink-100); background: var(--white);
+    color: var(--ink-muted); font-size: .875rem; font-weight: 600;
+    cursor: pointer; transition: .2s; font-family: inherit;
+}
+.btn-cancel:hover { border-color: var(--bright-pink); color: var(--hot-pink); background: var(--petal); }
+.btn-submit {
+    padding: .55rem 1.3rem; border-radius: 10px;
+    border: none; background: var(--gradient-pink);
+    color: var(--white); font-size: .875rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: inherit;
+    box-shadow: 0 8px 20px rgba(232,23,93,.25);
+}
+.btn-submit:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(232,23,93,.35); }
+.icon-sm { width: 16px; height: 16px; object-fit: contain; }
 </style>
 @endsection
 
@@ -1416,6 +1473,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="vacation">On Vacation</option>
                 </select>
                 <select class="sort-select" id="inside-filter" onchange="applyFilters()">
                     <option value="">All Locations</option>
@@ -1450,7 +1508,7 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 
     <div class="table-card fade-up" style="animation-delay:.34s;">
-        <div class="table-header" style="cursor:pointer;" onclick="toggleReservedTable()">
+        <div class="table-header" style="cursor:pointer;" onclick="if(event.target===this||event.target.closest('.table-title')||event.target.closest('.table-date')){toggleReservedTable();}">
             <div>
                 <div class="table-title">Reserved Tenants</div>
                 <div class="table-date" id="reserved-table-date"></div>
@@ -1643,10 +1701,10 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-title">Add / Edit Note</div>
             <button class="modal-close" onclick="closeModal('notes-modal')">&#x2715;</button>
         </div>
-        <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:1rem;padding:0 1.1rem;">
-            Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
-        </p>
-        <div style="padding: 0 1.1rem;">
+        <div style="flex:1;overflow-y:auto;padding:.75rem 1.1rem;">
+            <p style="font-size:.85rem;color:var(--ink-muted);margin-bottom:.9rem;">
+                Adding note for <strong id="notes-tenant-name" style="color:var(--ink);"></strong>
+            </p>
             <div class="modal-field">
                 <label>Note</label>
                 <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
@@ -1699,6 +1757,16 @@ function hideActionLoading() {
     overlay.setAttribute('aria-hidden', 'true');
 }
 
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1730,6 +1798,10 @@ function statusBadge(status) {
     return map[status] || ('<span class="badge badge-inactive">' + status + '</span>');
 }
 
+function vacationBadge(isOnVacation) {
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+}
+
 function insideIndicator(isInside) {
     if (isInside) {
         return '<span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span>';
@@ -1754,13 +1826,17 @@ function toggleReservedTable() {
     var chevron  = document.getElementById('reserved-chevron');
     var controls = document.getElementById('reserved-table-controls');
     if (reservedTableOpen) {
-        body.style.display     = '';
-        controls.style.display = '';
+        body.style.display      = '';
+        controls.style.display  = '';
         chevron.style.transform = '';
     } else {
-        body.style.display     = 'none';
-        controls.style.display = 'none';
+        body.style.display      = 'none';
+        controls.style.display  = 'none';
         chevron.style.transform = 'rotate(-90deg)';
+        document.getElementById('reserved-search-input').value = '';
+        document.getElementById('reserved-floor-filter').value = '';
+        document.getElementById('reserved-sort-select').value  = 'newest';
+        applyReservedFilters();
     }
 }
 
@@ -1778,17 +1854,28 @@ function renderTable() {
                 : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
-                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
+                (function() {
+                    var nameCell = t.first_name + ' ' + t.last_name;
+                    if (t.estimated_move_in_date) {
+                        var today = new Date(); today.setHours(0,0,0,0);
+                        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
+                        if (est < today) {
+                            var days = Math.floor((today - est) / 86400000);
+                            nameCell += ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
+                        }
+                    }
+                    return '<td style="font-weight:600;">' + nameCell + '</td>';
+                })() +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
-                    '<span id="timebtn-' + t.tenant_id + '">' + timeBtnHtml + '</span>' +
+                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
@@ -1836,11 +1923,11 @@ function renderReservedTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td>' + (t.contact_number || '\u2014') + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + '</td>' +
+                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" onclick=\'openNotesModal(' + t.tenant_id + ', "' + t.first_name + ' ' + t.last_name + '", `' + (t.notes || '').replace(/`/g, "'") + '`)\'><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
@@ -1926,7 +2013,7 @@ function applyFilters() {
             (t.contact_number || '').toLowerCase().indexOf(q) !== -1 ||
             String(t.floor || '').indexOf(q) !== -1;
         var matchesFloor  = floor  === '' || String(t.floor) === floor;
-        var matchesStatus = status === '' || t.status === status;
+        var matchesStatus = status === '' || (status === 'vacation' ? t.is_on_vacation : t.status === status);
         var matchesInside = inside === '' || (inside === 'inside' ? t.is_inside : !t.is_inside);
         return matchesSearch && matchesFloor && matchesStatus && matchesInside;
     });
@@ -2211,9 +2298,9 @@ function exportLog(format) {
 function infoItem(label, value, full) {
     var isEmpty  = !value || String(value).trim() === '' || value === '\u2014';
     var valClass = isEmpty ? 'td-info-value empty' : 'td-info-value';
-    var display  = isEmpty ? 'Not provided' : value;
+    var display  = isEmpty ? 'Not provided' : escapeHtml(String(value));
     return '<div class="td-info-item' + (full ? ' full' : '') + '">'
-        + '<div class="td-info-label">' + label + '</div>'
+        + '<div class="td-info-label">' + escapeHtml(label) + '</div>'
         + '<div class="' + valClass + '">' + display + '</div>'
         + '</div>';
 }
@@ -2239,6 +2326,9 @@ function viewTenant(t) {
         metaHtml += '<span class="td-modal-pill ' + statusPillModalClass(t.status) + '">'
             + (statusLabel[t.status] || t.status)
             + '</span>';
+    }
+    if (t.is_on_vacation) {
+        metaHtml += '<span class="td-modal-pill" style="background:#FFF3CD; border-color:#FFEBAA; color:#856404;">🏖 Vacation</span>';
     }
     if (t.floor && t.room_number) {
         metaHtml += '<span class="td-modal-pill">Floor ' + t.floor + ' &bull; Rm ' + t.room_number + '</span>';
@@ -2269,18 +2359,35 @@ function viewTenant(t) {
 
     bodyHtml += '<div class="td-section-label">Stay Period</div>';
     bodyHtml += '<div class="td-info-grid">';
-    bodyHtml += infoItem('Move-In Date',  fmtDate(t.move_in_date));
-    bodyHtml += infoItem('Move-Out Date', fmtDate(t.move_out_date));
+    if (t.status === 'reserved') {
+        bodyHtml += infoItem('Est. Move-In Date', fmtDate(t.estimated_move_in_date));
+        if (t.reservation_notes) {
+            bodyHtml += infoItem('Reservation Notes', t.reservation_notes, true);
+        }
+    } else {
+        bodyHtml += infoItem('Move-In Date',  fmtDate(t.move_in_date));
+        bodyHtml += infoItem('Move-Out Date', fmtDate(t.move_out_date));
+    }
     bodyHtml += '</div>';
 
-    bodyHtml += '<div class="td-section-label">Notes</div>';
+    bodyHtml += '<div class="td-section-label">Status &amp; Notes</div>';
     bodyHtml += '<div class="td-info-grid">';
+    if (t.is_on_vacation) {
+        bodyHtml += infoItem('Vacation Details', '🏖 On Vacation' + (t.vacation_note ? ' (' + t.vacation_note + ')' : ''), true);
+    }
     bodyHtml += infoItem('Note', t.notes, true);
     bodyHtml += '</div>';
 
     document.getElementById('td-modal-body').innerHTML = bodyHtml;
 
     document.getElementById('view-modal').style.display = 'flex';
+}
+
+function openNotesModalFromBtn(btn) {
+    var id   = parseInt(btn.dataset.tid, 10);
+    var name = btn.dataset.tname || '';
+    var note = btn.dataset.tnote || '';
+    openNotesModal(id, name, note);
 }
 
 function openNotesModal(id, name, currentNote) {
@@ -2320,10 +2427,8 @@ async function submitNote() {
         var idx = tenants.findIndex(function(t) { return t.tenant_id === currentNoteId; });
         if (idx !== -1) tenants[idx].notes = note;
 
-        var filteredIdx = filtered.findIndex(function(t) { return t.tenant_id === currentNoteId; });
-        if (filteredIdx !== -1) filtered[filteredIdx].notes = note;
-
         renderTable();
+        renderReservedTable();
         closeModal('notes-modal');
         showToast('Note saved successfully.', 'success');
     } catch(e) {
@@ -2466,66 +2571,83 @@ function exportTenantArchive(format) {
     a.click();
 }
 
-function getMenuForDropdown(id) {
-    return Array.from(document.querySelectorAll('.export-menu')).find(function(m) {
-        return m._sourceDropdownId === id;
-    }) || document.querySelector('#' + id + ' .export-menu');
+var _exportMenuPortal = null;
+
+function getExportPortal() {
+    if (!_exportMenuPortal) {
+        _exportMenuPortal = document.createElement('div');
+        _exportMenuPortal.id = 'export-menu-portal';
+        _exportMenuPortal.style.cssText = 'position:fixed;z-index:99999;top:0;left:0;width:0;height:0;overflow:visible;';
+        document.body.appendChild(_exportMenuPortal);
+    }
+    return _exportMenuPortal;
 }
 
-function positionExportMenu(dropdown) {
-    var btn  = dropdown.querySelector('button');
-    var menu = getMenuForDropdown(dropdown.id);
-    var rect = btn.getBoundingClientRect();
-
-    if (!menu._movedToBody) {
-        menu._sourceDropdownId = dropdown.id;
-        document.body.appendChild(menu);
-        menu._movedToBody = true;
-    }
-
-    menu.style.position = 'fixed';
-    menu.style.zIndex   = '99999';
-    menu.style.right    = (window.innerWidth - rect.right) + 'px';
-    menu.style.left     = 'auto';
-    menu.style.minWidth = rect.width + 'px';
-    menu.style.top      = 'auto';
-    menu.style.bottom   = 'auto';
-
-    var menuHeight = menu.offsetHeight || 80;
-    var spaceBelow = window.innerHeight - rect.bottom;
-
-    if (spaceBelow >= menuHeight + 6) {
-        menu.style.top    = (rect.bottom + 6) + 'px';
-        menu.style.bottom = 'auto';
-    } else {
-        menu.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
-        menu.style.top    = 'auto';
-    }
-}
+var _activeExportDropdownId = null;
+var _portalMenuEl = null;
 
 function toggleExportDropdown(id) {
-    var dropdown = document.getElementById(id);
-    var menu     = getMenuForDropdown(id);
-    var isOpen   = menu.classList.contains('open');
+    if (_activeExportDropdownId === id && _portalMenuEl) {
+        closeAllExportDropdowns();
+        return;
+    }
     closeAllExportDropdowns();
-    if (!isOpen) {
-        positionExportMenu(dropdown);
-        getMenuForDropdown(id).classList.add('open');
+    var dropdown   = document.getElementById(id);
+    var sourceMenu = dropdown.querySelector('.export-menu');
+    if (!sourceMenu) return;
+
+    _portalMenuEl = sourceMenu.cloneNode(true);
+    _portalMenuEl.classList.add('open');
+    _portalMenuEl.style.cssText = 'display:block;position:fixed;z-index:99999;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.15);min-width:160px;overflow:hidden;';
+    _portalMenuEl.setAttribute('data-portal-for', id);
+
+    _portalMenuEl.querySelectorAll('button').forEach(function(btn, i) {
+        var original = sourceMenu.querySelectorAll('button')[i];
+        if (original) btn.onclick = original.onclick;
+    });
+
+    getExportPortal().appendChild(_portalMenuEl);
+    _activeExportDropdownId = id;
+
+    var btnEl = dropdown.querySelector('button');
+    var rect  = btnEl.getBoundingClientRect();
+
+    _portalMenuEl.style.visibility = 'hidden';
+    _portalMenuEl.style.top = '-9999px';
+    document.body.offsetHeight;
+    var menuHeight = _portalMenuEl.offsetHeight || 80;
+    _portalMenuEl.style.visibility = '';
+
+    var spaceBelow = window.innerHeight - rect.bottom;
+    _portalMenuEl.style.right    = (window.innerWidth - rect.right) + 'px';
+    _portalMenuEl.style.left     = 'auto';
+    _portalMenuEl.style.minWidth = rect.width + 'px';
+
+    if (spaceBelow >= menuHeight + 6) {
+        _portalMenuEl.style.top    = (rect.bottom + 6) + 'px';
+        _portalMenuEl.style.bottom = 'auto';
+    } else {
+        _portalMenuEl.style.top    = 'auto';
+        _portalMenuEl.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
     }
 }
 
 function closeAllExportDropdowns() {
-    document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    if (_portalMenuEl) {
+        _portalMenuEl.remove();
+        _portalMenuEl = null;
+    }
+    _activeExportDropdownId = null;
 }
 
 document.addEventListener('click', function(e) {
-    if (!e.target.closest('.export-dropdown')) {
+    if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
         closeAllExportDropdowns();
     }
     if (!e.target.closest('#log-date-dropdown-btn') && !e.target.closest('#log-date-dropdown-menu')) {
         var m = document.getElementById('log-date-dropdown-menu');
         var c = document.getElementById('log-date-dropdown-chevron');
-        if (m) { m.style.display = 'none'; }
+        if (m && m.style.display !== 'none') { m.style.display = 'none'; }
         if (c) { c.style.transform = ''; }
     }
 });
@@ -2564,7 +2686,7 @@ function runQuickSearch() {
     }
 
     var pool = tenants.filter(function(t) {
-        return t.status !== 'inactive' && t.status !== 'move_out';
+        return t.status === 'active' || t.status === 'pending';
     });
 
     var matches = pool.filter(function(t) {
@@ -2615,7 +2737,10 @@ async function quickTimeIn(id, btn) {
         var data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed.');
         updateTenantInsideState(id, true);
-        runQuickSearch();
+        document.getElementById('quick-search-input').value = '';
+        document.getElementById('quick-results').classList.remove('open');
+        document.getElementById('quick-results').innerHTML = '';
+        applyFilters();
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
@@ -2636,7 +2761,10 @@ async function quickTimeOut(id, btn) {
         var data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed.');
         updateTenantInsideState(id, false);
-        runQuickSearch();
+        document.getElementById('quick-search-input').value = '';
+        document.getElementById('quick-results').classList.remove('open');
+        document.getElementById('quick-results').innerHTML = '';
+        applyFilters();
         showToast(data.message, 'success');
     } catch(e) {
         showToast(e.message, 'error');
@@ -2649,9 +2777,9 @@ async function quickTimeOut(id, btn) {
 document.addEventListener('click', function(e) {
     var panel = document.getElementById('quick-results');
     var input = document.getElementById('quick-search-input');
-    if (panel && !panel.contains(e.target) && e.target !== input) {
-        panel.classList.remove('open');
-    }
+    if (!panel || !input) return;
+    if (panel.contains(e.target) || e.target === input) return;
+    panel.classList.remove('open');
 });
 
 applyFilters();

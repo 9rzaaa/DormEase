@@ -495,6 +495,11 @@
                                 'desc'  => 'When a visitor departs and is logged out.',
                                 'icon'  => 'nav-visit',
                             ],
+                            'visitor_cancelled' => [
+                                'label' => 'Visitor Registration Cancelled',
+                                'desc'  => 'When a tenant cancels a pending visitor registration.',
+                                'icon'  => 'nav-visit',
+                            ],
                             'billing_overdue'  => [
                                 'label' => 'Overdue Water Bill',
                                 'desc' => 'When a tenant\'s water billing payment is past due.',
@@ -734,6 +739,7 @@
         emergency_new:    true,
         visitor_checkin:  false,
         visitor_checkout: false,
+        visitor_cancelled: true,
         billing_overdue:  true,
         document_request: true,
         announcement_new: false,

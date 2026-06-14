@@ -35,6 +35,8 @@ class VisitorLog extends Model
         'arrival_time',
         'departure_time',
         'status',
+        'hidden_from_tenant',
+        'cancelled_at',
     ];
 
     public function tenant()

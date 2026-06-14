@@ -147,26 +147,30 @@ class NotificationController extends Controller
 
         $uiType = match (true) {
             $type === 'tenant_reserved'            => 'reservation',
+            $type === 'reservation_overdue'        => 'reservation_overdue',
             str_starts_with($type, 'maintenance')  => 'maintenance',
             str_starts_with($type, 'emergency')    => 'emergency',
             str_starts_with($type, 'billing')      => 'billing',
             str_starts_with($type, 'document')     => 'document',
             str_starts_with($type, 'announcement') => 'announcement',
             str_starts_with($type, 'visitor')      => 'visitor',
+            $type === 'tenant_moveout_reminder'    => 'moveout_reminder',
             str_starts_with($type, 'tenant')       => 'tenant',
             default                                => 'general',
         };
 
         $icon = match ($uiType) {
-            'reservation'  => 'pending',
-            'maintenance'  => 'maintenance',
-            'emergency'    => 'warn',
-            'billing'      => 'billing',
-            'document'     => 'nav-docu',
-            'announcement' => 'nav-announ',
-            'visitor'      => 'nav-visit',
-            'tenant'       => 'nav-tenants',
-            default        => 'bell',
+            'reservation'         => 'pending',
+            'reservation_overdue' => 'pending',
+            'maintenance'         => 'maintenance',
+            'emergency'           => 'warn',
+            'billing'             => 'billing',
+            'document'            => 'nav-docu',
+            'announcement'        => 'nav-announ',
+            'visitor'             => 'nav-visit',
+            'moveout_reminder'    => 'pending',
+            'tenant'              => 'nav-tenants',
+            default               => 'bell',
         };
 
         return [

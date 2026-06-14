@@ -636,13 +636,13 @@
                 @foreach($notifications->take(6) as $notif)
             @php
                 $notifTypeLabel = match($notif->type ?? '') {
-                    'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'visitor',
+                    'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'visitor',
                     'emergency_new'    => 'emergency',
                     'announcement_new' => 'announcement',
                     default            => 'general',
                 };
                 $notifIcon = match($notif->type ?? '') {
-                    'visitor_registration', 'visitor_checkin', 'visitor_checkout' => 'nav-visit',
+                    'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'nav-visit',
                     'emergency_new'    => 'warn',
                     'announcement_new' => 'nav-announ',
                     default            => 'bell',

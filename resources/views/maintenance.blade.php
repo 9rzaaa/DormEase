@@ -97,7 +97,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.2rem;
         box-sizing: border-box;
     }
@@ -133,6 +133,7 @@
     .stat-info { flex: 1; min-width: 0; }
     .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
     .stat-label { font-size: .8rem; color: rgba(247,245,245,.967); font-weight: 700; margin-bottom: .15rem; }
+    .stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
 
     .toolbar {
         display: flex;
@@ -178,7 +179,7 @@
         font-weight: 600;
     }
 
-    .date-range img { width: 14px; height: 14px; object-fit: contain; opacity: .5; }
+    .date-range { user-select: none; }
 
     .date-range input[type="date"] {
         border: none; outline: none;
@@ -483,6 +484,11 @@
         border: 1px solid var(--baby-pink);
         box-shadow: 0 20px 60px rgba(232,23,93,.15);
         animation: rcFadeUp .28s ease both;
+    }
+
+    @keyframes rcFadeUp {
+        from { opacity: 0; transform: translateY(16px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);   }
     }
 
     .resubmit-confirm-title {
@@ -900,7 +906,7 @@
     .archive-export-btn:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
     .archive-export-btn img { width: 12px; height: 12px; object-fit: contain; opacity: .65; }
 
-    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) {
         .stats-grid { grid-template-columns: 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -944,6 +950,83 @@
     50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
 }
 
+.maint-legend-wrap {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.maint-legend-wrap img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    opacity: .6;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    transition: opacity .2s;
+}
+.maint-legend-wrap:hover img { opacity: 1; }
+.maint-legend-popup {
+    display: none;
+    position: fixed;
+    background: var(--white);
+    border: 1.5px solid var(--pink-200);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 380px;
+    z-index: 9999;
+}
+.mlp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .45rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+.mlp-section {
+    margin-top: .55rem;
+    margin-bottom: .2rem;
+}
+.mlp-section-label {
+    font-size: .62rem;
+    font-weight: 800;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    margin-bottom: .3rem;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}
+.mlp-section-label::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 9px;
+    background: var(--gradient-pink);
+    border-radius: 2px;
+}
+.mlp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .32rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+.mlp-row:last-child { border-bottom: none; }
+.mlp-badge { flex-shrink: 0; min-width: 110px; display: flex; align-items: center; }
+.mlp-desc {
+    font-size: .73rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .1rem;
+}
+
 .export-dropdown { position: relative; display: inline-flex; }
 .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
 .export-menu.open { display: block; }
@@ -984,27 +1067,23 @@
             <div class="stat-info">
                 <div class="stat-label">Total Requests</div>
                 <div class="stat-num" id="stat-total">{{ $stats['total'] }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon"><img src="{{ asset('icons/warn.png') }}" alt=""></div>
-            <div class="stat-info">
-                <div class="stat-label">Urgent Requests</div>
-                <div class="stat-num" id="stat-urgent">{{ $stats['urgent'] }}</div>
+                <div class="stat-sub">All Time Submitted</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{{ asset('icons/pending.png') }}" alt=""></div>
             <div class="stat-info">
-                <div class="stat-label">In-Progress Requests</div>
+                <div class="stat-label">In-Progress</div>
                 <div class="stat-num" id="stat-progress">{{ $stats['in_progress'] }}</div>
+                <div class="stat-sub">Currently Being Worked On</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{{ asset('icons/resolved.png') }}" alt=""></div>
             <div class="stat-info">
-                <div class="stat-label">Resolved Requests</div>
+                <div class="stat-label">Resolved</div>
                 <div class="stat-num" id="stat-resolved">{{ $stats['resolved'] }}</div>
+                <div class="stat-sub">Successfully Closed</div>
             </div>
         </div>
     </div>
@@ -1019,11 +1098,12 @@
 
         <span class="toolbar-label">From:</span>
         <div class="date-range">
-            <img src="{{ asset('icons/calendar.png') }}" alt="">
             <input type="date" id="date-from" onchange="applyFilters()">
             <span class="date-sep">to</span>
             <input type="date" id="date-to" onchange="applyFilters()">
+            <button type="button" id="date-clear-btn" onclick="clearDates()" style="display:none;margin-left:.25rem;background:none;border:none;cursor:pointer;color:var(--bright-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;transition:opacity .2s;" title="Clear dates">&#x2715;</button>
         </div>
+        <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:9999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
 
         <select class="toolbar-select" id="status-filter" onchange="applyFilters()">
             <option value="">All Statuses</option>
@@ -1037,6 +1117,28 @@
             <option value="moderate">Moderate</option>
             <option value="low">Low</option>
         </select>
+
+        <div class="maint-legend-wrap">
+            <img src="{{ asset('icons/info.png') }}" alt="Guide">
+            <div class="maint-legend-popup">
+                <div class="mlp-title">Urgency, Status &amp; Issue Guide</div>
+
+                <div class="mlp-section">
+                    <div class="mlp-section-label">Urgency</div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-urgent">Urgent</span></span><span class="mlp-desc">Immediate attention required as safety or habitability at risk.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-moderate">Moderate</span></span><span class="mlp-desc">Needs prompt attention but is not an immediate danger.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-low">Low</span></span><span class="mlp-desc">Minor issue that can be addressed in routine maintenance.</span></div>
+                </div>
+
+                <div class="mlp-section">
+                    <div class="mlp-section-label">Status</div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-pending">Pending</span></span><span class="mlp-desc">Request received and awaiting assignment or action.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-in-progress">In-Progress</span></span><span class="mlp-desc">Assigned and currently being worked on.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-resolved">Resolved</span></span><span class="mlp-desc">Issue fixed and moved to the resolved archive.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-closed">Closed</span></span><span class="mlp-desc">Request closed and moved to the closed archive.</span></div>
+                </div>
+            </div>
+        </div>
 
         <div class="search-wrap">
             <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
@@ -1147,6 +1249,10 @@
             Resolved
             <span class="archive-tab-count" id="acount-resolved">0</span>
         </button>
+        <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
+            Cancelled
+            <span class="archive-tab-count" id="acount-cancelled">0</span>
+        </button>
         <button class="archive-tab" id="atab-deleted" onclick="switchArchiveTab('deleted')">
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
@@ -1201,7 +1307,6 @@
 
 <div class="modal-overlay" id="edit-modal">
     <div class="modal" style="max-width:540px;padding:0;overflow:hidden;border-radius:18px;">
-        <!-- Header -->
         <div style="background:var(--gradient-pink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
             <div style="display:flex;align-items:center;gap:.75rem;">
                 <div style="width:38px;height:38px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1215,15 +1320,12 @@
             <button class="modal-close" onclick="closeModal('edit-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
 
-        <!-- Body -->
-        <form id="edit-form" method="POST" data-loading-message="Saving changes...">
+        <form id="edit-form" method="POST" data-loading-message="Saving changes..." onsubmit="return validateEditMaintForm(event)">
             @csrf
             @method('PUT')
             <div style="padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
 
-                <!-- Status + Urgency row -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
-                    <!-- Status -->
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
                         <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
@@ -1233,8 +1335,6 @@
                             <option value="closed">Close &amp; Archive</option>
                         </select>
                     </div>
-
-                    <!-- Urgency -->
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
                         <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
@@ -1245,7 +1345,6 @@
                     </div>
                 </div>
 
-                <!-- Admin Remarks -->
                 <div style="display:flex;flex-direction:column;gap:.4rem;">
                     <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Admin Remarks <span style="text-transform:none;font-weight:500;color:var(--ink-muted);">(visible to tenant)</span></label>
                     <textarea name="admin_remarks" id="edit-remarks"
@@ -1256,7 +1355,6 @@
                     ></textarea>
                 </div>
 
-                <!-- Warning note -->
                 <div style="display:flex;align-items:flex-start;gap:.6rem;background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.7rem .9rem;">
                     <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">⚠️</span>
                     <span style="font-size:.78rem;color:#c07800;line-height:1.55;">Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this request to the archive permanently.</span>
@@ -1264,7 +1362,6 @@
 
             </div>
 
-            <!-- Footer -->
             <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;">
                 <button type="button" onclick="closeModal('edit-modal')"
                     style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
@@ -1338,7 +1435,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const requests       = @json($requests);
     const closedArchive  = @json($closedArchive);
     const resolvedArchive = @json($resolvedArchive);
-    const deletedArchive = @json($deletedArchive);
+    const deletedArchive    = @json($deletedArchive);
+    const cancelledArchive  = @json($cancelledArchive);
     const perPage  = 10;
     let filtered    = [...requests];
     let currentPage = 1;
@@ -1409,9 +1507,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchIcon = "{{ asset('icons/search.png') }}";
     const maintIcon  = "{{ asset('icons/maintenance.png') }}";
 
+    var _rowDataMap = {};
+
     function buildRow(r) {
         const issueKey = (r.issue_type ?? '').toLowerCase();
         const cls = issueClasses[issueKey] ?? 'issue-other';
+        _rowDataMap[r.id] = r;
         return `<tr>
             <td><span class="req-id">#REQ-${String(r.id).padStart(3,'0')}</span></td>
             <td><div class="req-date">${fmtDate(r.created_at)}</div></td>
@@ -1423,10 +1524,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${statusBadge(r.status)}</td>
             <td>
                 <div class="action-cell">
-                    <button class="action-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
+                    <button class="action-btn" title="View" onclick="viewReq(_rowDataMap[${r.id}])">
                         <img src="${eyeIcon}" alt="View">
                     </button>
-                    <button class="action-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
+                    <button class="action-btn" title="Edit" onclick="openEditModal(_rowDataMap[${r.id}])">
                         <img src="${editIcon}" alt="Edit">
                     </button>
                     <button class="action-btn" title="Delete" onclick="openDeleteModal(${r.id}, '#REQ-${String(r.id).padStart(3,'0')}')">
@@ -1468,7 +1569,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
         for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span style="color:var(--ink-muted);padding:0 .2rem;line-height:30px;">&#8230;</span>`;
+            }
         }
         html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage===totalPages?'disabled':''}>&#8250;</button>`;
         pg.innerHTML = html;
@@ -1481,27 +1586,55 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable();
     }
 
+    var _filterDebounce = null;
+
     function applyFilters() {
-        const q       = document.getElementById('search-input').value.toLowerCase();
-        const sort    = document.getElementById('sort-select').value;
-        const status  = document.getElementById('status-filter').value;
-        const urgency = document.getElementById('urgency-filter').value;
-        const from    = document.getElementById('date-from').value;
-        const to      = document.getElementById('date-to').value;
+        clearTimeout(_filterDebounce);
+        _filterDebounce = setTimeout(function() {
+            _runFilters();
+        }, 180);
+    }
 
-        filtered = requests.filter(r => {
-            const matchSearch =
+    function _runFilters() {
+        var q       = document.getElementById('search-input').value.toLowerCase();
+        var sort    = document.getElementById('sort-select').value;
+        var status  = document.getElementById('status-filter').value;
+        var urgency = document.getElementById('urgency-filter').value;
+        var from    = document.getElementById('date-from').value;
+        var to      = document.getElementById('date-to').value;
+        var dateErr = document.getElementById('date-error');
+
+        if (from && to && from > to) {
+            var toEl  = document.getElementById('date-to');
+            var rect  = toEl.getBoundingClientRect();
+            dateErr.style.visibility = 'hidden';
+            dateErr.style.display    = 'block';
+            dateErr.style.top  = (rect.bottom + 6) + 'px';
+            dateErr.style.left = rect.left + 'px';
+            dateErr.style.visibility = '';
+            document.getElementById('date-from').style.borderColor = '#ffc2d1';
+            toEl.style.borderColor = '#ffc2d1';
+            return;
+        }
+
+        dateErr.style.display = 'none';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-clear-btn').style.display = (from || to) ? 'inline' : 'none';
+
+        filtered = requests.filter(function(r) {
+            var matchSearch =
                 ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
-                (r.tenant_name ?? '').toLowerCase().includes(q) ||
-                (r.room_number ?? '').toLowerCase().includes(q) ||
-                (r.issue_type  ?? '').toLowerCase().includes(q) ||
-                (r.description ?? '').toLowerCase().includes(q);
-            const matchStatus  = !status  || r.status  === status;
-            const matchUrgency = !urgency || r.urgency === urgency;
+                (r.tenant_name || '').toLowerCase().includes(q) ||
+                (r.room_number || '').toLowerCase().includes(q) ||
+                (r.issue_type  || '').toLowerCase().includes(q) ||
+                (r.description || '').toLowerCase().includes(q);
+            var matchStatus  = !status  || r.status  === status;
+            var matchUrgency = !urgency || r.urgency === urgency;
 
-            let matchDate = true;
+            var matchDate = true;
             if (from || to) {
-                const d = new Date(r.created_at);
+                var d = new Date(r.created_at);
                 if (from && d < new Date(from)) matchDate = false;
                 if (to   && d > new Date(to + 'T23:59:59')) matchDate = false;
             }
@@ -1509,10 +1642,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchSearch && matchStatus && matchUrgency && matchDate;
         });
 
-        const urgencyOrder = { urgent: 0, moderate: 1, low: 2 };
-        if (sort === 'newest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        if (sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-        if (sort === 'urgent') filtered.sort((a,b) => (urgencyOrder[a.urgency]??2) - (urgencyOrder[b.urgency]??2));
+        var urgencyOrder = { urgent: 0, moderate: 1, low: 2 };
+        if (sort === 'newest') filtered.sort(function(a,b){ return new Date(b.created_at) - new Date(a.created_at); });
+        if (sort === 'oldest') filtered.sort(function(a,b){ return new Date(a.created_at) - new Date(b.created_at); });
+        if (sort === 'urgent') filtered.sort(function(a,b){ return (urgencyOrder[a.urgency] ?? 2) - (urgencyOrder[b.urgency] ?? 2); });
 
         currentPage = 1;
         renderTable();
@@ -1717,7 +1850,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportTablePDF() {
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(r) {
             return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.description || '') + '</td></tr>';
         }).join('');
@@ -1731,6 +1865,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('archive-backdrop').classList.add('open');
         document.getElementById('acount-closed').textContent    = closedArchive.length;
         document.getElementById('acount-resolved').textContent  = resolvedArchive.length;
+        document.getElementById('acount-cancelled').textContent = cancelledArchive.length;
         document.getElementById('acount-deleted').textContent   = deletedArchive.length;
         renderArchive();
     }
@@ -1742,18 +1877,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchArchiveTab(tab) {
         archiveTab = tab;
-        document.getElementById('atab-closed').classList.toggle('active',   tab === 'closed');
-        document.getElementById('atab-resolved').classList.toggle('active', tab === 'resolved');
-        document.getElementById('atab-deleted').classList.toggle('active',  tab === 'deleted');
+        document.getElementById('atab-closed').classList.toggle('active',     tab === 'closed');
+        document.getElementById('atab-resolved').classList.toggle('active',   tab === 'resolved');
+        document.getElementById('atab-cancelled').classList.toggle('active',  tab === 'cancelled');
+        document.getElementById('atab-deleted').classList.toggle('active',    tab === 'deleted');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
 
-    function renderArchive() {
-        const q    = document.getElementById('archive-search').value.toLowerCase();
-        const data = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
+    var _archiveDebounce = null;
 
-        const filtered = data.filter(r =>
+    function renderArchive() {
+        clearTimeout(_archiveDebounce);
+        _archiveDebounce = setTimeout(function() { _runRenderArchive(); }, 150);
+    }
+
+    function _runRenderArchive() {
+        const q    = document.getElementById('archive-search').value.toLowerCase();
+        const data = archiveTab === 'closed' ? closedArchive
+                   : archiveTab === 'resolved' ? resolvedArchive
+                   : archiveTab === 'cancelled' ? cancelledArchive
+                   : deletedArchive;
+
+        const archiveFiltered = data.filter(r =>
             ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
             (r.tenant_name ?? '').toLowerCase().includes(q) ||
             (r.room_number ?? '').toLowerCase().includes(q) ||
@@ -1762,20 +1908,23 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         const list = document.getElementById('archive-list');
-        document.getElementById('archive-count-label').textContent = `${filtered.length} record${filtered.length !== 1 ? 's' : ''}`;
+        document.getElementById('archive-count-label').textContent = `${archiveFiltered.length} record${archiveFiltered.length !== 1 ? 's' : ''}`;
 
-        if (filtered.length === 0) {
+        if (archiveFiltered.length === 0) {
             list.innerHTML = `<div class="archive-empty">
                 <img class="archive-empty-icon" src="{{ asset('icons/maintenance.png') }}" alt="">
-                No ${archiveTab === 'resolved' ? 'resolved' : archiveTab} requests found.
+                No ${archiveTab === 'resolved' ? 'resolved' : archiveTab === 'cancelled' ? 'cancelled' : archiveTab} requests found.
             </div>`;
             return;
         }
 
         const urgencyPillClass = { urgent: 'archive-pill-urgent', moderate: 'archive-pill-moderate', low: 'archive-pill-low' };
-        const archiveLabel = archiveTab === 'closed' ? 'Closed on' : archiveTab === 'resolved' ? 'Resolved on' : 'Deleted on';
+        const archiveLabel = archiveTab === 'closed' ? 'Closed on'
+                           : archiveTab === 'resolved' ? 'Resolved on'
+                           : archiveTab === 'cancelled' ? 'Cancelled on'
+                           : 'Deleted on';
 
-        list.innerHTML = filtered.map((r, i) => `
+        list.innerHTML = archiveFiltered.map((r, i) => `
             <div class="archive-card" style="animation-delay:${i * 0.04}s;">
                 <div class="archive-card-top">
                     <div class="archive-card-id">#REQ-${String(r.id).padStart(3,'0')}</div>
@@ -1797,12 +1946,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportArchive(format) {
-        var data     = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
-        var label    = archiveTab === 'closed' ? 'Closed On' : archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
+        var data  = archiveTab === 'closed' ? closedArchive
+                  : archiveTab === 'resolved' ? resolvedArchive
+                  : archiveTab === 'cancelled' ? cancelledArchive
+                  : deletedArchive;
+        var label = archiveTab === 'closed' ? 'Closed On'
+                  : archiveTab === 'resolved' ? 'Resolved On'
+                  : archiveTab === 'cancelled' ? 'Cancelled On'
+                  : 'Deleted On';
 
         if (format === 'pdf') {
-            var win      = window.open('', '_blank');
-            var tabLabel = archiveTab === 'closed' ? 'Closed' : archiveTab === 'resolved' ? 'Resolved' : 'Deleted';
+            var win = window.open('', '_blank');
+            if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
+            var tabLabel = archiveTab === 'closed' ? 'Closed'
+                         : archiveTab === 'resolved' ? 'Resolved'
+                         : archiveTab === 'cancelled' ? 'Cancelled'
+                         : 'Deleted';
             var rows = data.map(function(r) {
                 return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + fmtDatePlain(r.archived_at) + '</td></tr>';
             }).join('');
@@ -1899,5 +2058,85 @@ document.addEventListener('DOMContentLoaded', () => {
     @endif
 
     applyFilters();
+
+    (function() {
+        var popup = document.querySelector('.maint-legend-popup');
+        if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+
+        var hideTimer = null;
+        var popupWidth = 380;
+
+        document.querySelectorAll('.maint-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                popup.style.visibility = 'hidden';
+                popup.style.display = 'block';
+                var rect = wrap.getBoundingClientRect();
+                var popupH = popup.offsetHeight || 260;
+                popup.style.display = 'none';
+                popup.style.visibility = '';
+
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                if (left < 8) left = 8;
+
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var top;
+                if (spaceBelow >= popupH + 10) {
+                    top = rect.bottom + 8;
+                } else {
+                    top = rect.top - popupH - 8;
+                    if (top < 8) top = 8;
+                }
+
+                popup.style.top = top + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
+
+    function validateEditMaintForm(e) {
+        var status  = document.getElementById('edit-status').value;
+        var urgency = document.getElementById('edit-urgency').value;
+        if (!status || !urgency) {
+            e.preventDefault();
+            showToast('Please select a status and urgency before saving.', 'error');
+            return false;
+        }
+        return true;
+    }
+    function clearDates() {
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value   = '';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-error').style.display    = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
+    }
 </script>
 @endsection

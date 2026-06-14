@@ -109,7 +109,7 @@
 
     .stats-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1.2rem;
         box-sizing: border-box;
     }
@@ -126,7 +126,6 @@
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
-        transition: transform .2s, box-shadow .2s;
     }
 
     .stat-card:hover {
@@ -1049,6 +1048,72 @@
     .report-hotline-wrap { margin-bottom: 1rem; display: none; }
     .report-hotline-wrap.visible { display: block; }
 
+    .status-legend-wrap {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+
+    .status-legend-wrap:hover img { opacity: 1; }
+
+    .status-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.18), 0 2px 8px rgba(0,0,0,.1);
+        padding: .75rem .9rem;
+        min-width: 320px;
+        z-index: 99999;
+        pointer-events: auto;
+    }
+
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+
+    .slp-row {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--pink-100);
+    }
+
+    .slp-row:last-child { border-bottom: none; }
+
+    .slp-badge {
+        flex-shrink: 0;
+        min-width: 90px;
+        display: flex;
+        align-items: center;
+    }
+
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+    }
+
     @media (max-width: 900px) {
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -1108,7 +1173,7 @@
                 <img src="{{ asset('icons/nav-emerg.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Total Reports</div>
+                <div class="stat-label">Total Emergencies</div>
                 <div class="stat-num">{{ $totalCount }}</div>
             </div>
         </div>
@@ -1117,8 +1182,8 @@
                 <img src="{{ asset('icons/warn.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Active</div>
-                <div class="stat-num">{{ $activeCount }}</div>
+                <div class="stat-label">Critical Emergencies</div>
+                <div class="stat-num">{{ $criticalCount }}</div>
             </div>
         </div>
         <div class="stat-card">
@@ -1126,16 +1191,7 @@
                 <img src="{{ asset('icons/resolved.png') }}" alt="">
             </div>
             <div>
-                <div class="stat-label">Resolved</div>
-                <div class="stat-num">{{ $resolvedCount }}</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">
-                <img src="{{ asset('icons/panic.png') }}" alt="">
-            </div>
-            <div>
-                <div class="stat-label">Panic Alerts</div>
+                <div class="stat-label">Active Panic Alerts</div>
                 <div class="stat-num">{{ $panicCount }}</div>
             </div>
         </div>
@@ -1148,9 +1204,23 @@
                 <div class="table-sub" id="table-date"></div>
             </div>
             <div class="table-controls">
-                <div class="search-box">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                <div style="display:flex;align-items:center;gap:.45rem;">
+                    <div class="search-box">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="search-input" placeholder="Search..." oninput="applyFilters()">
+                    </div>
+                    <div class="status-legend-wrap" id="fd-status-legend-wrap">
+                        <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                        <div class="status-legend-popup" id="fd-status-legend-popup">
+                            <div class="slp-title">Urgency &amp; Status Guide</div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
+                            <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
+                        </div>
+                    </div>
                 </div>
                 <select class="filter-select" id="status-filter" onchange="applyFilters()">
                     <option value="">All Status</option>
@@ -1160,12 +1230,6 @@
                 </select>
                 <select class="filter-select" id="type-filter" onchange="applyFilters()">
                     <option value="">All Types</option>
-                    <option value="Medical">Medical</option>
-                    <option value="Fire">Fire</option>
-                    <option value="Lockout">Lockout</option>
-                    <option value="Security">Security</option>
-                    <option value="Structural">Structural</option>
-                    <option value="Other">Other</option>
                 </select>
                 <select class="filter-select" id="sort-select" onchange="applyFilters()">
                     <option value="newest">Newest</option>
@@ -1340,7 +1404,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Submit Report</button>
+                <button type="submit" class="btn-submit" id="report-submit-btn" onclick="handleReportSubmit(event, this)">Submit Report</button>
             </div>
         </form>
     </div>
@@ -1411,13 +1475,15 @@
             <div class="modal-title">Delete Report</div>
             <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
-        <div class="delete-warn">This emergency report will be removed from the active list and saved to archive history.</div>
-        <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
-            Delete report for <strong id="delete-label" style="color:var(--ink);"></strong>?
-        </p>
-        <div class="modal-actions">
+        <div class="modal-body">
+            <div class="delete-warn">This emergency report will be removed from the active list and saved to archive history.</div>
+            <p style="font-size:.9rem;color:var(--ink-muted);margin:0;">
+                Delete report for <strong id="delete-label" style="color:var(--ink);"></strong>?
+            </p>
+        </div>
+        <div class="modal-footer">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-            <button type="button" class="btn-submit" style="background:var(--red);" onclick="submitDelete()">Delete</button>
+            <button type="button" class="btn-submit" style="background:var(--red);box-shadow:0 6px 16px rgba(224,72,103,.3);" onclick="submitDelete()">Delete</button>
         </div>
     </div>
 </div>
@@ -1607,13 +1673,16 @@
 
     function copyHotline(number, btn) {
         const clean = number.replace(/[^0-9+]/g, '');
-        navigator.clipboard.writeText(clean).then(function() {
-            const origWidth = btn.offsetWidth;
+        const origWidth = btn.offsetWidth;
+        const origHTML  = btn.innerHTML;
+
+        function flash(success) {
             btn.style.minWidth = origWidth + 'px';
-            const origHTML = btn.innerHTML;
-            btn.innerHTML = 'Copied!';
-            btn.style.cssText += ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;';
-            setTimeout(function() {
+            btn.innerHTML = success ? 'Copied!' : 'Copy failed';
+            btn.style.cssText += success
+                ? ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;'
+                : ';background:#e04867!important;color:#fff!important;border-color:#e04867!important;';
+            setTimeout(() => {
                 btn.innerHTML = origHTML;
                 btn.style.cssText = btn.style.cssText
                     .replace(/background:[^;]+;?/g,'')
@@ -1621,7 +1690,24 @@
                     .replace(/border-color:[^;]+;?/g,'');
                 btn.style.minWidth = '';
             }, 1500);
-        });
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(clean).then(() => flash(true)).catch(() => flash(false));
+        } else {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = clean;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                flash(true);
+            } catch {
+                flash(false);
+            }
+        }
     }
 
     function urgencyBadge(u) {
@@ -1668,7 +1754,10 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
+            const hasFilters = document.getElementById('search-input').value
+                || document.getElementById('status-filter').value
+                || document.getElementById('type-filter').value;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">${hasFilters ? 'No results match your filters. <button onclick="resetFilters()" style="background:none;border:none;color:var(--bright-pink);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;margin-left:.3rem;">Clear filters</button>' : 'No emergency reports found.'}</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -1683,7 +1772,7 @@
                     <td style="font-size:.83rem;">${escHtml(r.location)}</td>
                     <td>
                         <div style="font-weight:600;font-size:.85rem;">${escHtml(r.tenant_name)}</div>
-                        <div style="font-size:.76rem;color:var(--ink-muted);">Room ${escHtml(String(r.room_number))}</div>
+                        ${r.room_number && r.room_number !== '—' ? `<div style="font-size:.76rem;color:var(--ink-muted);">Room ${escHtml(String(r.room_number))}</div>` : ''}
                     </td>
                     <td style="font-size:.82rem;white-space:nowrap;">${fmtDate(r.reported_at)}</td>
                     <td style="font-size:.82rem;color:var(--ink-muted);max-width:180px;">${truncate(r.description, 55)}</td>
@@ -1696,7 +1785,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, '${escHtml(r.emergency_type)}')">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
@@ -1815,6 +1904,14 @@
             </div>
         `;
         openModal('view-modal');
+
+        if (r && r.report_id) {
+            var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+            fetch('/emergency/' + r.report_id + '/acknowledge', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+            }).catch(function(e) {});
+        }
     }
 
     function switchToEdit() {
@@ -1848,11 +1945,10 @@
 
         try {
             const res = await fetch(`/frontdesk/emergency/${currentRep.report_id}`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'PUT',
                 },
                 body: JSON.stringify({
                     status:      document.getElementById('edit-status').value,
@@ -1893,11 +1989,10 @@
 
         try {
             const res = await fetch(`/frontdesk/emergency/${deleteId}`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-HTTP-Method-Override': 'DELETE',
                 },
             });
 
@@ -2132,12 +2227,99 @@
     });
 
     @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () =>
-            showToast('{{ session("success") }}', 'success')
-        );
+        showToast('{{ session("success") }}', 'success');
     @endif
 
+    function handleReportSubmit(event, btn) {
+        const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
+        const loc  = document.querySelector('#report-modal input[name="location"]').value.trim();
+        if (!type) {
+            showToast('Please select an emergency type.', 'error');
+            event.preventDefault();
+            return;
+        }
+        if (!loc) {
+            showToast('Please enter a location.', 'error');
+            event.preventDefault();
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+    }
+
+    function populateTypeFilter() {
+        const select = document.getElementById('type-filter');
+        const types = [...new Set(
+            reports.map(r => String(r.emergency_type ?? '').trim()).filter(t => t && t !== '—')
+        )].sort((a, b) => a.localeCompare(b));
+        select.innerHTML = '<option value="">All Types</option>' +
+            types.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
+    }
+
+    (function() {
+        var popup = document.getElementById('fd-status-legend-popup');
+        var wrap  = document.getElementById('fd-status-legend-wrap');
+        if (!popup || !wrap) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+
+        var hideTimer = null;
+
+        wrap.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+            var rect       = wrap.getBoundingClientRect();
+            var popupWidth = 320;
+            var left       = rect.left;
+            if (left + popupWidth > window.innerWidth - 12) {
+                left = window.innerWidth - popupWidth - 12;
+            }
+            popup.style.top     = (rect.bottom + 8) + 'px';
+            popup.style.left    = left + 'px';
+            popup.style.display = 'block';
+        });
+
+        wrap.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
+
+    function resetFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('status-filter').value = '';
+        document.getElementById('type-filter').value = '';
+        document.getElementById('sort-select').value = 'newest';
+        applyFilters();
+    }
+    populateTypeFilter();
     applyFilters();
     renderDirList();
+    (function() {
+        var lastPanicId = null;
+        function checkPanic() {
+            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.has_panic && data.report_id !== lastPanicId) {
+                        lastPanicId = data.report_id;
+                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                    }
+                })
+                .catch(function() {});
+        }
+        setInterval(checkPanic, 30000);
+    })();
 </script>
 @endsection

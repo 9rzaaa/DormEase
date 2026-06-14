@@ -1141,7 +1141,7 @@
     }
 
     .approved-zone-body.open {
-        max-height: 340px;
+        max-height: 380px;
     }
 
     .approved-zone-inner {
@@ -1368,6 +1368,67 @@
         padding: .25rem 0;
         font-weight: 500;
     }
+    .req-cancelled { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .req-cancelled::before { background: #ef4444; box-shadow: 0 0 0 2px rgba(239,68,68,.2); }
+
+    .status-legend-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        transform: none;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 310px;
+        z-index: 600;
+        pointer-events: none;
+    }
+    .status-legend-wrap:hover .status-legend-popup { display: block; }
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .slp-row {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--petal);
+    }
+    .slp-row:last-child { border-bottom: none; }
+    .slp-badge { flex-shrink: 0; min-width: 140px; }
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .15rem;
+    }
 </style>
 @endsection
 
@@ -1411,7 +1472,8 @@
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
             <select class="toolbar-select" id="doc-filter-status" onchange="docApplyFilters()">
-                <option value="">All Statuses</option>
+                <option value="">Active</option>
+                <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="approved">Approved</option>
@@ -1425,6 +1487,17 @@
                 <option value="oldest">Oldest</option>
             </select>
 
+            <div class="status-legend-wrap">
+                <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                <div class="status-legend-popup">
+                    <div class="slp-title">Submission Status Guide</div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Submitted by tenant, not yet reviewed by admin.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-processing">Processing</span></span><span class="slp-desc">Admin has seen it and is currently reviewing.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-approved">Approved</span></span><span class="slp-desc">Submission accepted. Moved to the Approved tray below.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-resubmission">For Resubmission</span></span><span class="slp-desc">Rejected but tenant is allowed to upload a corrected file.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Submission rejected. Moved to the Denied archive tab.</span></div>
+                </div>
+            </div>
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                 <input type="text" id="doc-search" placeholder="Search tenant, form type..." oninput="docApplyFilters()">
@@ -1495,7 +1568,8 @@
         <div class="toolbar">
             <span class="toolbar-label">Status:</span>
             <select class="toolbar-select" id="req-filter-status" onchange="reqApplyFilters()">
-                <option value="">All Statuses</option>
+                <option value="">Active</option>
+                <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="processing">Processing</option>
                 <option value="approved">Approved</option>
@@ -1509,6 +1583,18 @@
                 <option value="oldest">Oldest</option>
             </select>
 
+            <div class="status-legend-wrap">
+                <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                <div class="status-legend-popup">
+                    <div class="slp-title">Request Status Guide</div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Request submitted, waiting for admin action.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-processing">Processing</span></span><span class="slp-desc">Admin is preparing the requested document.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-approved">Approved</span></span><span class="slp-desc">Request approved and document is being prepared.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-ready">Ready</span></span><span class="slp-desc">Document is ready for pickup or has been sent digitally.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Request was denied. Tenant has been notified with a reason.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-cancelled">Cancelled</span></span><span class="slp-desc">Request was cancelled before it was fulfilled.</span></div>
+                </div>
+            </div>
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                 <input type="text" id="req-search" placeholder="Search tenant, document type..." oninput="reqApplyFilters()">
@@ -1606,8 +1692,12 @@
                 <span class="drawer-tab-badge" id="dtab-reqs-count">0</span>
             </button>
             <button class="drawer-tab-btn" id="dtab-denied-btn" onclick="switchDrawerTab('denied')">
-                Denied Submissions
+                Denied &amp; Resubmission
                 <span class="drawer-tab-badge" id="dtab-denied-count">0</span>
+            </button>
+            <button class="drawer-tab-btn" id="dtab-cancelled-btn" onclick="switchDrawerTab('cancelled')">
+                Cancelled Requests
+                <span class="drawer-tab-badge" id="dtab-cancelled-count">0</span>
             </button>
         </div>
 
@@ -1733,7 +1823,7 @@
                 <div class="table-card-header">
                     <div>
                         <div class="table-card-title">Denied Submissions</div>
-                        <div class="table-card-sub">Rejected and resubmission-flagged form submissions</div>
+                        <div class="table-card-sub">Denied and resubmission-flagged form submissions</div>
                     </div>
                 </div>
                 <div class="table-wrap">
@@ -1756,6 +1846,50 @@
                 <div class="table-footer">
                     <div class="table-info" id="adenied-info">Showing 0 entries</div>
                     <div class="pagination" id="adenied-pagination"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-panel" id="dpanel-cancelled">
+            <div class="drawer-toolbar">
+                <span class="toolbar-label">Sort:</span>
+                <select class="toolbar-select" id="acancelled-sort" onchange="acancelledApplyFilters()">
+                    <option value="newest">Newest Archived</option>
+                    <option value="oldest">Oldest Archived</option>
+                </select>
+                <div class="search-wrap" style="margin-left:auto;">
+                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                    <input type="text" id="acancelled-search" placeholder="Search tenant, document type..." oninput="acancelledApplyFilters()">
+                </div>
+            </div>
+            <div class="table-card" style="flex:unset;">
+                <div class="table-card-header">
+                    <div>
+                        <div class="table-card-title">Cancelled Requests</div>
+                        <div class="table-card-sub">Document requests and form submissions cancelled by tenants</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Tenant</th>
+                                <th>Document/Form Type</th>
+                                <th>Purpose</th>
+                                <th>Delivery/File</th>
+                                <th class="th-center">Status</th>
+                                <th>Submitted</th>
+                                <th>Cancelled On</th>
+                                <th class="th-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="acancelled-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-info" id="acancelled-info">Showing 0 entries</div>
+                    <div class="pagination" id="acancelled-pagination"></div>
                 </div>
             </div>
         </div>
@@ -1820,6 +1954,7 @@
             <div class="modal-title">Review Submission</div>
             <button class="modal-close" onclick="closeModal('update-doc-modal')">&#x2715;</button>
         </div>
+        <div class="modal-body">
         <input type="hidden" id="upd-doc-id">
         <div class="modal-field">
             <label>Status</label>
@@ -1860,6 +1995,7 @@
         <div class="modal-field">
             <label>Additional Remarks (optional)</label>
             <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
+        </div>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
@@ -1908,6 +2044,7 @@
             <div class="modal-title">Update Request</div>
             <button class="modal-close" onclick="closeModal('update-req-modal')">&#x2715;</button>
         </div>
+        <div class="modal-body">
         <input type="hidden" id="upd-req-id">
         <div class="modal-field">
             <label>Status</label>
@@ -1943,8 +2080,10 @@
             <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
         </div>
         <div class="modal-field">
-            <label>Attach Fulfilled Document - PDF only (optional, for digital delivery)</label>
+            <label>Attach Fulfilled Document (optional, for digital delivery)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
+            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
+        </div>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
@@ -2044,8 +2183,9 @@
             <input type="text" id="uf-label" placeholder="e.g. Guards Form">
         </div>
         <div class="modal-field">
-            <label>PDF File (max 20MB)</label>
+            <label>PDF File</label>
             <input type="file" id="uf-file" accept=".pdf">
+            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('upload-form-modal')">Cancel</button>
@@ -2146,6 +2286,9 @@ let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage
 let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
 let currentReq = null;
+let approvedState   = { search: '', page: 1, perPage: 8,  data: [], filtered: [] };
+let adeniedState    = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -2215,6 +2358,7 @@ function reqStatusBadge(s) {
         ready:         '<span class="req-status-badge req-ready">Ready</span>',
         denied:        '<span class="req-status-badge req-denied">Denied</span>',
         resubmission:  '<span class="req-status-badge req-resubmission">For Resubmission</span>',
+        cancelled:     '<span class="req-status-badge req-cancelled">Cancelled</span>',
     };
     return map[s] ?? '<span class="req-status-badge req-pending">Pending</span>';
 }
@@ -2222,12 +2366,29 @@ function reqStatusBadge(s) {
 function renderPagination(containerId, currentPage, totalPages, onGo) {
     const pg = document.getElementById(containerId);
     if (totalPages <= 1) { pg.innerHTML = ''; return; }
-    let html = `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&#8249;</button>`;
+    pg.innerHTML = '';
+
+    const prev = document.createElement('button');
+    prev.className = 'page-btn';
+    prev.innerHTML = '&#8249;';
+    prev.disabled = currentPage === 1;
+    prev.onclick = () => onGo(currentPage - 1);
+    pg.appendChild(prev);
+
     for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="(${onGo.toString()})(${i})">${i}</button>`;
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+        btn.textContent = i;
+        btn.onclick = () => onGo(i);
+        pg.appendChild(btn);
     }
-    html += `<button class="page-btn" onclick="(${onGo.toString()})(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&#8250;</button>`;
-    pg.innerHTML = html;
+
+    const next = document.createElement('button');
+    next.className = 'page-btn';
+    next.innerHTML = '&#8250;';
+    next.disabled = currentPage === totalPages;
+    next.onclick = () => onGo(currentPage + 1);
+    pg.appendChild(next);
 }
 
 async function fetchDocs() {
@@ -2274,14 +2435,13 @@ function docApplyFilters() {
 
     docState.filtered = docState.data.filter(r => {
         if (r.status === 'approved') return false;
-        if (r.status === 'denied')   return false;
-        if (r.status === 'resubmission') return false;
-        const matchStatus = !status || r.status === status;
+        if (status === '' && (r.status === 'denied' || r.status === 'resubmission')) return false;
+        if (status !== '' && status !== 'all' && r.status !== status) return false;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
             (r.tenant_name   ?? '').toLowerCase().includes(q) ||
             (r.full_name     ?? '').toLowerCase().includes(q);
-        return matchStatus && matchSearch;
+        return matchSearch;
     });
 
     if (sort === 'newest') docState.filtered.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
@@ -2414,13 +2574,12 @@ function viewDoc(r) {
         `;
     }
 
-    const footer = document.getElementById('view-req-actions');
-    footer.innerHTML = `
-        <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
-        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
+    document.getElementById('view-doc-actions').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:.6rem;padding:.55rem 0 0;">
+            <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
+            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+        </div>
     `;
-    footer.style.setProperty('justify-content', 'space-between', 'important');
-    openModal('view-req-modal');
     openModal('view-doc-modal');
 }
 
@@ -2445,8 +2604,10 @@ function handleRejectionPreset() {
 
 function openUpdateDoc(r) {
     currentDoc = r;
-    document.getElementById('upd-doc-id').value      = r.doc_request_id;
-    document.getElementById('upd-doc-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
+    document.getElementById('upd-doc-id').value     = r.doc_request_id;
+    document.getElementById('upd-doc-status').value = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
+    document.querySelector('#update-doc-modal .modal-title').textContent =
+        r.status === 'resubmission' ? 'Review Resubmission' : 'Review Submission';
     document.getElementById('upd-doc-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-doc-rejection-preset').value = '';
     document.getElementById('upd-doc-rejection-other').value  = '';
@@ -2543,14 +2704,13 @@ function reqApplyFilters() {
     const sort   = document.getElementById('req-sort').value;
 
     reqState.filtered = reqState.data.filter(r => {
-        if (r.status === 'denied')   return false;
-        if (r.status === 'resubmission') return false;
-        const matchStatus = !status || r.status === status;
+        if (status === '' && (r.status === 'denied' || r.status === 'resubmission')) return false;
+        if (status !== '' && status !== 'all' && r.status !== status) return false;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
             (r.tenant_name   ?? '').toLowerCase().includes(q) ||
             (r.purpose       ?? '').toLowerCase().includes(q);
-        return matchStatus && matchSearch;
+        return matchSearch;
     });
 
     if (sort === 'newest') reqState.filtered.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
@@ -2674,8 +2834,8 @@ function viewReq(r) {
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
-    footer.style.setProperty('justify-content', 'space-between', 'important');
-    openModal('view-req-modal');
+    footer.style.setProperty('justify-content', 'flex-end', 'important');
+    footer.style.setProperty('gap', '.6rem', 'important');
     openModal('view-req-modal');
 }
 
@@ -2700,7 +2860,7 @@ function handleReqRejectionPreset() {
 function openUpdateReq(r) {
     currentReq = r;
     document.getElementById('upd-req-id').value      = r.doc_request_id;
-    document.getElementById('upd-req-status').value  = r.status ?? 'pending';
+    document.getElementById('upd-req-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
     document.getElementById('upd-req-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-req-file').value    = '';
     document.getElementById('upd-req-rejection-preset').value = '';
@@ -2803,24 +2963,30 @@ async function fetchArchive() {
 
         adocState.data   = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category === 'form' &&
-            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission' && r.data?.status !== 'cancelled'
         );
         areqState.data   = data.filter(r =>
             r.archivable_type === 'document_request' && r.data?.category !== 'form' &&
-            r.data?.status !== 'denied' && r.data?.status !== 'resubmission'
+            r.data?.status !== 'denied' && r.data?.status !== 'resubmission' && r.data?.status !== 'cancelled'
         );
         adeniedState.data = data.filter(r =>
             r.archivable_type === 'document_request' &&
-            (r.data?.status === 'denied' || r.data?.status === 'resubmission')
+            (r.data?.status === 'denied' || r.data?.status === 'resubmission') && r.data?.status !== 'cancelled'
+        );
+        acancelledState.data = data.filter(r =>
+            r.archivable_type === 'document_request' &&
+            r.data?.status === 'cancelled'
         );
 
         document.getElementById('dtab-docs-count').textContent   = adocState.data.length;
         document.getElementById('dtab-reqs-count').textContent   = areqState.data.length;
         document.getElementById('dtab-denied-count').textContent = adeniedState.data.length;
+        document.getElementById('dtab-cancelled-count').textContent = acancelledState.data.length;
 
         adocApplyFilters();
         areqApplyFilters();
         adeniedApplyFilters();
+        acancelledApplyFilters();
     } catch {
         document.getElementById('adoc-tbody').innerHTML =
             `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load archive.</div></td></tr>`;
@@ -2897,10 +3063,13 @@ function viewAdoc(r) {
         ? `<a class="btn-view-file" href="/storage/${d.attachment}" target="_blank">View Uploaded Form</a>`
         : '<span style="font-size:.82rem;color:var(--ink-muted);">No file uploaded.</span>';
 
+    const isCertCancelled = d.category && d.category !== 'form';
+    const cancelledPrefix = isCertCancelled ? 'DRQ' : 'FSB';
+    const cancelledIdLabel = isCertCancelled ? 'Request ID' : 'Submission ID';
     document.getElementById('view-adoc-content').innerHTML = `
-        <div class="view-detail-row"><div class="view-detail-label">Submission ID</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">${cancelledIdLabel}</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#${cancelledPrefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">${isCertCancelled ? 'Document Type' : 'Form Type'}</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.submitted_at)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Status at Archive</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
         ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
@@ -3078,8 +3247,7 @@ function formApplyFilters() {
 }
 
 function openFormFile(filePath) {
-    const url = filePath.startsWith('forms/') ? '/' + filePath : '/storage/' + filePath;
-    window.open(url, '_blank');
+    window.open('/storage/' + filePath, '_blank');
 }
 
 function renderFormTable() {
@@ -3099,10 +3267,10 @@ function renderFormTable() {
                     <button class="act-btn" title="Open" onclick="openFormFile('${escHtml(f.file_path)}')">
                         <img src="${eyeIcon}" alt="Open">
                     </button>
-                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, '${escHtml(f.label)}')">
+                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, ${JSON.stringify(f.label)})">
                         <img src="${editIcon}" alt="Rename">
                     </button>
-                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, '${escHtml(f.label)}')">
+                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, ${JSON.stringify(f.label)})">
                         <img src="${deleteIcon}" alt="Delete">
                     </button>
                 </div>
@@ -3124,6 +3292,8 @@ async function submitUploadForm() {
     const file  = document.getElementById('uf-file').files[0];
     if (!label) { showToast('Label is required.', 'error'); return; }
     if (!file)  { showToast('Please select a PDF file.', 'error'); return; }
+    if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
+    if (file.size > 20 * 1024 * 1024)   { showToast('File must be under 20MB.', 'error'); return; }
 
     const fd = new FormData();
     fd.append('label', label);
@@ -3222,9 +3392,6 @@ async function confirmDeleteForm() {
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
 @endif
-
-let approvedState = { search: '', page: 1, perPage: 8, data: [], filtered: [] };
-let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function toggleApprovedPanel() {
     const body = document.getElementById('approved-panel-body');
@@ -3365,6 +3532,75 @@ function renderAdeniedTable() {
     renderPagination('adenied-pagination', adeniedState.page,
         Math.ceil(total / adeniedState.perPage),
         p => { adeniedState.page = p; renderAdeniedTable(); });
+}
+
+function acancelledApplyFilters() {
+    const q    = document.getElementById('acancelled-search').value.toLowerCase();
+    const sort = document.getElementById('acancelled-sort').value;
+
+    acancelledState.filtered = acancelledState.data.filter(r => {
+        const d = r.data ?? {};
+        return !q ||
+            (d.document_type ?? '').toLowerCase().includes(q) ||
+            (d.tenant_name   ?? '').toLowerCase().includes(q) ||
+            (d.full_name     ?? '').toLowerCase().includes(q);
+    });
+
+    if (sort === 'newest') acancelledState.filtered.sort((a, b) => new Date(b.archived_at) - new Date(a.archived_at));
+    if (sort === 'oldest') acancelledState.filtered.sort((a, b) => new Date(a.archived_at) - new Date(b.archived_at));
+
+    acancelledState.page = 1;
+    renderAcancelledTable();
+}
+
+function renderAcancelledTable() {
+    const start = (acancelledState.page - 1) * acancelledState.perPage;
+    const page  = acancelledState.filtered.slice(start, start + acancelledState.perPage);
+    const tbody = document.getElementById('acancelled-tbody');
+
+    if (!page.length) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state">No cancelled requests found.</div></td></tr>`;
+        document.getElementById('acancelled-info').textContent = 'Showing 0 entries';
+        document.getElementById('acancelled-pagination').innerHTML = '';
+        return;
+    }
+
+    tbody.innerHTML = page.map(r => {
+        const d     = r.data ?? {};
+        const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
+        const prefix = d.category === 'form' ? 'FSB' : 'DRQ';
+        const isForm = d.category === 'form';
+        const deliveryOrFile = isForm ? fileTypeBadge(d.attachment) : escHtml(d.delivery_type ?? '—');
+        
+        return `<tr>
+            <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
+            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td>${escHtml(d.purpose ?? '—')}</td>
+            <td>${deliveryOrFile}</td>
+            <td class="td-center"><span class="req-status-badge req-cancelled">Cancelled</span></td>
+            <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
+            <td style="font-size:.8rem;white-space:nowrap;"><span class="archive-badge">${fmtDate(r.archived_at)}</span></td>
+            <td class="td-center">
+                <div class="action-group">
+                    <button class="act-btn" title="View" onclick='viewAdoc(${JSON.stringify(r)})'>
+                        <img src="${eyeIcon}" alt="View">
+                    </button>
+                    <button class="act-btn danger" title="Remove" onclick="promptRemoveAdoc(${r.archive_id}, '#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}')">
+                        <img src="${deleteIcon}" alt="Remove">
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+
+    const total  = acancelledState.filtered.length;
+    const endIdx = Math.min(start + acancelledState.perPage, total);
+    document.getElementById('acancelled-info').textContent =
+        `Showing data ${total ? start + 1 : 0} to ${endIdx} of ${total} entries`;
+    renderPagination('acancelled-pagination', acancelledState.page,
+        Math.ceil(total / acancelledState.perPage),
+        p => { acancelledState.page = p; renderAcancelledTable(); });
 }
 
 fetchDocs();

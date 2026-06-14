@@ -23,6 +23,7 @@ class VisitorController extends Controller
             ?: 'Unknown';
 
         $logs = VisitorLog::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->orderByDesc('date_of_visit')
             ->orderByDesc('visitor_id')
             ->get()
@@ -44,6 +45,7 @@ class VisitorController extends Controller
             ]);
 
         $visitorsToday = VisitorLog::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->whereDate('date_of_visit', today())
             ->count();
 
@@ -65,13 +67,23 @@ class VisitorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'visitor_name'  => 'required|string|max:255',
-            'contact_no'    => 'nullable|string|max:255',
-            'purpose'       => 'nullable|string|max:255',
-            'id_type'       => 'nullable|string|max:255',
-            'id_photo'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
-            'date_of_visit' => 'nullable|date',
-            'time_of_visit' => 'nullable|string|max:20',
+            'visitor_name'  => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $parts = array_filter(explode(' ', trim($value)));
+                    if (count($parts) < 2) {
+                        $fail('The visitor full name must contain at least a first name and a last name.');
+                    }
+                }
+            ],
+            'contact_no'    => ['required', 'digits:11', 'regex:/^09\d{9}$/'],
+            'purpose'       => 'required|string|max:255',
+            'id_type'       => 'required|string|max:255',
+            'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'date_of_visit' => 'required|date',
+            'time_of_visit' => 'required|string|max:20',
         ]);
 
         $user     = $request->user();
@@ -164,6 +176,72 @@ class VisitorController extends Controller
                 'status'         => $visitor->status,
                 'departure_time' => $visitor->departure_time,
             ],
+        ]);
+    }
+
+    /**
+     * PATCH /api/visitors/{id}/cancel
+     */
+    public function cancel($id, Request $request)
+    {
+        $user = $request->user();
+        $tenantId = $user?->tenant_id ?? $user?->id;
+
+        $visitor = VisitorLog::where('visitor_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->firstOrFail();
+
+        if ($visitor->arrival_time) {
+            return response()->json(['message' => 'Visitor has already checked in.'], 422);
+        }
+
+        if (in_array($visitor->status, ['cancelled', 'completed', 'rejected'], true)) {
+            return response()->json(['message' => 'Visitor registration cannot be cancelled in its current state.'], 422);
+        }
+
+        $visitor->update([
+            'status'       => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? '')) ?: 'Unknown';
+
+        NotificationHelper::sendToAll(
+            type: 'visitor_cancelled',
+            message: "{$tenantName} cancelled visitor registration for {$visitor->visitor_name}.",
+            ref_id: $visitor->visitor_id,
+        );
+
+        return response()->json([
+            'message' => 'Visitor registration cancelled successfully.',
+            'visitor' => [
+                'id'     => $visitor->visitor_id,
+                'status' => $visitor->status,
+            ],
+        ]);
+    }
+
+    /**
+     * DELETE /api/visitors/{id}
+     */
+    public function destroy($id, Request $request)
+    {
+        $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
+
+        $visitor = VisitorLog::where('visitor_id', $id)
+            ->where('tenant_id', $tenantId)
+            ->firstOrFail();
+
+        if (!in_array($visitor->status, ['completed', 'cancelled'], true)) {
+            return response()->json(['message' => 'Only completed or cancelled visitor logs can be hidden from your view.'], 422);
+        }
+
+        $visitor->update([
+            'hidden_from_tenant' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Visitor log removed from your view.',
         ]);
     }
 }

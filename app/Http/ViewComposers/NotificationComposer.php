@@ -13,6 +13,7 @@ class NotificationComposer
         'visitor_registration',
         'visitor_checkin',
         'visitor_checkout',
+        'visitor_cancelled',
         'emergency_new',
         'emergency_updated',
         'maintenance_new',
@@ -27,13 +28,17 @@ class NotificationComposer
         'tenant_reactivated',
         'tenant_deleted',
         'tenant_reserved',
+        'tenant_vacation_on',
+        'tenant_vacation_off',
+        'reservation_overdue',
+        'tenant_moveout_reminder',
     ];
-
     const FRONTDESK_TYPES = [
         'announcement_new',
         'visitor_registration',
         'visitor_checkin',
         'visitor_checkout',
+        'visitor_cancelled',
         'emergency_new',
         'emergency_updated',
         'tenant_new',
@@ -41,6 +46,8 @@ class NotificationComposer
         'tenant_reactivated',
         'tenant_deleted',
         'tenant_reserved',
+        'tenant_vacation_on',
+        'tenant_vacation_off',
     ];
 
     public static function visibleTypesFor(?string $role): array

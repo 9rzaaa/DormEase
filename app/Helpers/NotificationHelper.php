@@ -12,8 +12,11 @@ class NotificationHelper
         'visitor_registration',
         'visitor_checkin',
         'visitor_checkout',
+        'visitor_cancelled',
         'emergency_new',
         'emergency_updated',
+        'tenant_vacation_on',
+        'tenant_vacation_off',
     ];
 
     public static function send(int $staff_id, string $type, string $message, ?int $ref_id = null): void

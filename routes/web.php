@@ -31,6 +31,9 @@ Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 Route::get('/features', fn() => view('public.features'))->name('features');
 Route::get('/gallery', fn() => view('public.gallery'))->name('gallery');
 Route::redirect('/register', '/login')->name('register');
+Route::get('/privacy-policy', function () {
+    return view('public.privacy');
+})->name('privacy');
 
 // auth
 Route::get('/login', function () {
@@ -158,6 +161,8 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
+    Route::post('/tenants/{id}/tag-moved-in', [TenantController::class, 'tagAsMovedIn'])->name('tenants.tag-moved-in');
+    Route::post('/tenants/{id}/reschedule', [TenantController::class, 'reschedule'])->name('tenants.reschedule');
     Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
     Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
     Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);
@@ -237,8 +242,9 @@ Route::middleware('auth:staff')->group(function () {
     // emergency
     Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
     Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
+    Route::post('/emergency/{id}/acknowledge', [EmergencyController::class, 'acknowledge'])->name('emergency.acknowledge');
     Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
-    Route::get('/emergency/poll-panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
+    Route::get('/emergency/poll/panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
 
     // frontdesk
@@ -250,7 +256,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
     Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
     Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
-    Route::get('/frontdesk/emergency/poll-panic', [EmergencyController::class, 'pollPanic'])->middleware('auth:staff');
+    Route::get('/frontdesk/emergency/poll/panic', [EmergencyController::class, 'pollPanic'])->middleware('auth:staff');
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
 
     // profile
