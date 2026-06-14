@@ -95,6 +95,13 @@
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
+        transition: transform .2s, box-shadow .2s;
+
+    }
+
+    .stat-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(232,23,93,.35);
     }
 
     .stat-icon-circle {
