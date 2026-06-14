@@ -897,7 +897,7 @@ function buildFilePreview(path) {
 
     let body = '';
     if (isImage) {
-        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size" onerror="this.parentElement.innerHTML='<div class=\\'vm-file-unsupported\\'><img src=\\'{{ asset(\\'icons/attach.png\\') }}\\' alt=\\'\\'>Image could not be loaded.</div>'"></div>`;
+        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size" onerror="this.parentElement.innerHTML='<div class=&quot;vm-file-unsupported&quot;>Image could not be loaded.</div>'"></div>`;
     } else if (isPdf) {
         body = `<div class="vm-file-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
     } else {
