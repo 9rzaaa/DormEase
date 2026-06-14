@@ -16,7 +16,11 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $staff = auth('staff')->user();
-
+        if ($request->filled('contact_number')) {
+            $request->merge([
+                'contact_number' => preg_replace('/\D/', '', $request->contact_number),
+            ]);
+        }
         $request->validate([
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
@@ -30,7 +34,7 @@ class ProfileController extends Controller
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
             'email'          => $request->email,
-            'contact_number' => $request->contact_number,
+            'contact_number' => $request->contact_number ? preg_replace('/\D/', '', $request->contact_number) : null,
         ]);
 
         return back()->with('success', 'Profile updated successfully.');
