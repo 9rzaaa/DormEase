@@ -76,7 +76,6 @@ class DocumentRequestController extends Controller
             $documentRequest->update($updateData);
             $documentRequest->load('tenant');
 
-            // Archive if status changed to denied or resubmission
             if (($finalStatus === 'denied' || $finalStatus === 'resubmission') && $oldStatus !== $finalStatus) {
                 $tenantName = $documentRequest->tenant
                     ? trim($documentRequest->tenant->first_name . ' ' . $documentRequest->tenant->last_name)
@@ -205,10 +204,6 @@ class DocumentRequestController extends Controller
                     'processed_at'   => $documentRequest->processed_at,
                 ],
             ]);
-
-            if ($documentRequest->fulfilled_file) {
-                Storage::disk('public')->delete($documentRequest->fulfilled_file);
-            }
 
             $documentRequest->delete();
 
