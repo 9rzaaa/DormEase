@@ -1868,6 +1868,7 @@
             <div class="modal-title">Review Submission</div>
             <button class="modal-close" onclick="closeModal('update-doc-modal')">&#x2715;</button>
         </div>
+        <div class="modal-body">
         <input type="hidden" id="upd-doc-id">
         <div class="modal-field">
             <label>Status</label>
@@ -1908,6 +1909,7 @@
         <div class="modal-field">
             <label>Additional Remarks (optional)</label>
             <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
+        </div>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
@@ -1956,6 +1958,7 @@
             <div class="modal-title">Update Request</div>
             <button class="modal-close" onclick="closeModal('update-req-modal')">&#x2715;</button>
         </div>
+        <div class="modal-body">
         <input type="hidden" id="upd-req-id">
         <div class="modal-field">
             <label>Status</label>
@@ -1993,6 +1996,7 @@
         <div class="modal-field">
             <label>Attach Fulfilled Document - PDF only (optional, for digital delivery)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
+        </div>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
@@ -2194,6 +2198,9 @@ let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage
 let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
 let currentReq = null;
+let approvedState   = { search: '', page: 1, perPage: 8,  data: [], filtered: [] };
+let adeniedState    = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
+let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -2322,8 +2329,8 @@ function docApplyFilters() {
 
     docState.filtered = docState.data.filter(r => {
         if (r.status === 'approved') return false;
-        if (r.status === 'denied')   return false;
-        if (r.status === 'resubmission') return false;
+        if (r.status === 'denied' && !status) return false;
+        if (r.status === 'resubmission' && !status) return false;
         const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
@@ -2462,13 +2469,12 @@ function viewDoc(r) {
         `;
     }
 
-    const footer = document.getElementById('view-req-actions');
-    footer.innerHTML = `
-        <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
-        <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
+    document.getElementById('view-doc-actions').innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0 0;">
+            <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
+            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
+        </div>
     `;
-    footer.style.setProperty('justify-content', 'space-between', 'important');
-    openModal('view-req-modal');
     openModal('view-doc-modal');
 }
 
@@ -2591,8 +2597,8 @@ function reqApplyFilters() {
     const sort   = document.getElementById('req-sort').value;
 
     reqState.filtered = reqState.data.filter(r => {
-        if (r.status === 'denied')   return false;
-        if (r.status === 'resubmission') return false;
+        if (r.status === 'denied' && !status) return false;
+        if (r.status === 'resubmission' && !status) return false;
         const matchStatus = !status || r.status === status;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
@@ -2723,7 +2729,6 @@ function viewReq(r) {
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
     footer.style.setProperty('justify-content', 'space-between', 'important');
-    openModal('view-req-modal');
     openModal('view-req-modal');
 }
 
@@ -3276,10 +3281,6 @@ async function confirmDeleteForm() {
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
 @endif
-
-let approvedState = { search: '', page: 1, perPage: 8, data: [], filtered: [] };
-let adeniedState  = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
-let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 
 function toggleApprovedPanel() {
     const body = document.getElementById('approved-panel-body');
