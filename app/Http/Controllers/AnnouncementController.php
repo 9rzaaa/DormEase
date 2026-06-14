@@ -32,7 +32,9 @@ class AnnouncementController extends Controller
     public function frontdeskIndex()
     {
         $staff          = Auth::guard('staff')->user();
-        $announcements  = Announcement::latest('posted_at')->get();
+        $announcements  = Announcement::whereIn('status', ['active', 'scheduled'])
+                            ->latest('posted_at')
+                            ->get();
         $scheduled      = Announcement::whereNotNull('scheduled_at')
                             ->where('scheduled_at', '>', now())
                             ->where('status', 'scheduled')
