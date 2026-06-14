@@ -482,9 +482,11 @@
 .vm-tabs { display: flex; }
 .vm-tab { padding: .62rem 1.1rem; font-size: .8rem; font-weight: 700; color: var(--ink-muted, #888); cursor: pointer; border: none; background: none; border-bottom: 2.5px solid transparent; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: .38rem; font-family: var(--ff-body); margin-bottom: -1px; }
 .vm-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; }
+.vm-tab svg { width: 13px; height: 13px; flex-shrink: 0; opacity: .6; transition: opacity .18s; }
 .vm-tab:hover { color: var(--hot-pink, #d6175a); }
 .vm-tab.active { color: var(--hot-pink, #d6175a); border-bottom-color: var(--hot-pink, #d6175a); }
 .vm-tab.active img { opacity: 1; }
+.vm-tab.active svg { opacity: 1; }
 .vm-tab-badge { background: var(--petal, #ffeef4); color: var(--hot-pink, #d6175a); border: 1px solid var(--pink-100, #f9c5d6); font-size: .65rem; font-weight: 800; padding: .1rem .4rem; border-radius: 999px; }
 
 .vm-panels { padding: 1.3rem 1.5rem 1.5rem; overflow-y: auto; flex: 1; }
@@ -900,7 +902,8 @@
             </div>
             <div class="vm-tabs">
                 <button class="vm-tab active" onclick="switchVmTab(this,'details')" id="vm-tab-details">
-                    <img src="{{ asset('icons/announce.png') }}" alt=""> Details
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    Details
                 </button>
                 <button class="vm-tab" onclick="switchVmTab(this,'files')" id="vm-tab-files">
                     <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
