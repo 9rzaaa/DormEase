@@ -952,6 +952,60 @@
     .d3 { animation-delay: .2s;  }
     .d4 { animation-delay: .28s; }
 
+    .visitor-legend-wrap {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .visitor-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .55;
+        filter: brightness(0) saturate(100%) invert(14%) sepia(90%) saturate(4000%) hue-rotate(320deg) brightness(95%);
+        transition: opacity .2s;
+    }
+    .visitor-legend-wrap:hover img { opacity: 1; }
+    .visitor-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 360px;
+        z-index: 99999;
+    }
+    .vlp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .45rem;
+        padding-bottom: .35rem;
+        border-bottom: 1.5px solid #fce4ef;
+    }
+    .vlp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .32rem 0;
+        border-bottom: 1px solid #fce4ef;
+    }
+    .vlp-row:last-child { border-bottom: none; }
+    .vlp-badge { flex-shrink: 0; min-width: 100px; display: flex; align-items: center; }
+    .vlp-desc {
+        font-size: .73rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .1rem;
+    }
+
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--gray-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -1147,6 +1201,35 @@
                 <input type="date" id="date-from" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
                 <span class="range-sep">—</span>
                 <input type="date" id="date-to" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
+
+                <div class="filter-divider"></div>
+
+                <div class="visitor-legend-wrap" id="visitor-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" alt="Status Guide">
+                    <div class="visitor-legend-popup" id="visitor-legend-popup">
+                        <div class="vlp-title">Status Guide</div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-approved">Approved</span></span>
+                            <span class="vlp-desc">Visit has been approved and is expected but the visitor has not yet arrived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-inside">Inside</span></span>
+                            <span class="vlp-desc">Visitor has checked in and is currently inside the dormitory.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-pending">Pending</span></span>
+                            <span class="vlp-desc">Visit has been registered but not yet approved or acted on.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-completed">Completed</span></span>
+                            <span class="vlp-desc">Visitor has checked out. Visit is done and archived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-denied">Denied</span></span>
+                            <span class="vlp-desc">Visit was rejected, cancelled, or denied entry by staff.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1719,6 +1802,66 @@
     });
 
     applyFilters();
+
+    (function() {
+        var popup = document.getElementById('visitor-legend-popup');
+        if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display   = 'none';
+        popup.style.position  = 'fixed';
+        popup.style.zIndex    = '99999';
+
+        var hideTimer  = null;
+        var popupWidth = 360;
+
+        document.querySelectorAll('.visitor-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                popup.style.visibility = 'hidden';
+                popup.style.display    = 'block';
+                var popupH = popup.offsetHeight || 220;
+                popup.style.display    = 'none';
+                popup.style.visibility = '';
+
+                var rect = wrap.getBoundingClientRect();
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                if (left < 8) left = 8;
+
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var top;
+                if (spaceBelow >= popupH + 10) {
+                    top = rect.bottom + 8;
+                } else {
+                    top = rect.top - popupH - 8;
+                    if (top < 8) top = 8;
+                }
+
+                popup.style.top  = top + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
 
 </script>
 @endsection
