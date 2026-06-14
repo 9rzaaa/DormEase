@@ -1183,7 +1183,7 @@
                     id="search-input"
                     class="ctrl-input ctrl-input-search"
                     placeholder="Search visitor..."
-                    onkeyup="applyFilters()"
+                    oninput="applyFilters()"
                 >
 
                 <div class="filter-divider"></div>
@@ -1201,6 +1201,8 @@
                 <input type="date" id="date-from" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
                 <span class="range-sep">—</span>
                 <input type="date" id="date-to" class="ctrl-input ctrl-input-date" onchange="applyFilters()">
+                <button type="button" id="date-clear-btn" onclick="clearDates()" style="display:none;background:none;border:none;cursor:pointer;color:var(--hot-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;flex-shrink:0;" title="Clear dates">&#x2715;</button>
+                <div id="date-error" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:99999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
 
                 <div class="filter-divider"></div>
 
@@ -1278,6 +1280,7 @@
 
     let filtered   = Array.isArray(logs) ? [...logs] : [];
     let archiveTab = 'completed';
+    var _logRowMap = {};
 
     const eyeIcon = "{{ asset('icons/eye.png') }}";
 
@@ -1308,30 +1311,69 @@
              + ' ' + dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
     }
 
+    var _filterDebounce  = null;
+    var _archiveDebounce = null;
+
     function applyFilters() {
-        const q    = document.getElementById('search-input').value.toLowerCase().trim();
-        const from = document.getElementById('date-from').value;
-        const to   = document.getElementById('date-to').value;
-        const sort = document.getElementById('sort-select').value;
+        clearTimeout(_filterDebounce);
+        _filterDebounce = setTimeout(function() { _runFilters(); }, 180);
+    }
+
+    function clearDates() {
+        document.getElementById('date-from').value             = '';
+        document.getElementById('date-to').value               = '';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+        document.getElementById('date-error').style.display    = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
+    }
+
+    function _runFilters() {
+        var q    = document.getElementById('search-input').value.toLowerCase().trim();
+        var from = document.getElementById('date-from').value;
+        var to   = document.getElementById('date-to').value;
+        var sort = document.getElementById('sort-select').value;
+        var dateErr     = document.getElementById('date-error');
+        var clearBtn    = document.getElementById('date-clear-btn');
+        var dateFromEl  = document.getElementById('date-from');
+        var dateToEl    = document.getElementById('date-to');
+
+        if (from && to && from > to) {
+            dateErr.style.visibility = 'hidden';
+            dateErr.style.display    = 'block';
+            var rect = dateToEl.getBoundingClientRect();
+            dateErr.style.top        = (rect.bottom + 6) + 'px';
+            dateErr.style.left       = rect.left + 'px';
+            dateErr.style.visibility = '';
+            dateFromEl.style.borderColor = '#ffc2d1';
+            dateToEl.style.borderColor   = '#ffc2d1';
+            return;
+        }
+
+        dateErr.style.display        = 'none';
+        dateFromEl.style.borderColor = '';
+        dateToEl.style.borderColor   = '';
+        clearBtn.style.display       = (from || to) ? 'inline' : 'none';
 
         filtered = logs.filter(function(v) {
-            const matchesSearch = !q
-                || (v.visitor_name ?? '').toLowerCase().includes(q)
-                || (v.tenant?.name ?? '').toLowerCase().includes(q)
-                || (v.purpose      ?? '').toLowerCase().includes(q)
-                || (v.staff?.name  ?? '').toLowerCase().includes(q);
+            var matchesSearch = !q
+                || (v.visitor_name || '').toLowerCase().includes(q)
+                || (v.tenant ? (v.tenant.name || v.tenant.full_name || '') : '').toLowerCase().includes(q)
+                || (v.purpose     || '').toLowerCase().includes(q)
+                || (v.staff ? (v.staff.name || '') : '').toLowerCase().includes(q);
 
-            const visitDate   = v.date_of_visit ?? '';
-            const matchesFrom = !from || visitDate >= from;
-            const matchesTo   = !to   || visitDate <= to;
+            var visitDate   = v.date_of_visit || '';
+            var matchesFrom = !from || visitDate >= from;
+            var matchesTo   = !to   || visitDate <= to;
 
             return matchesSearch && matchesFrom && matchesTo;
         });
 
         filtered.sort(function(a, b) {
-            if (sort === 'newest') return (b.date_of_visit ?? '').localeCompare(a.date_of_visit ?? '') || (b.id - a.id);
-            if (sort === 'oldest') return (a.date_of_visit ?? '').localeCompare(b.date_of_visit ?? '') || (a.id - b.id);
-            if (sort === 'name')   return (a.visitor_name  ?? '').localeCompare(b.visitor_name  ?? '');
+            if (sort === 'newest') return (b.date_of_visit || '').localeCompare(a.date_of_visit || '') || (b.id - a.id);
+            if (sort === 'oldest') return (a.date_of_visit || '').localeCompare(b.date_of_visit || '') || (a.id - b.id);
+            if (sort === 'name')   return (a.visitor_name  || '').localeCompare(b.visitor_name  || '');
             return 0;
         });
 
@@ -1347,6 +1389,7 @@
         }
 
         tbody.innerHTML = filtered.map(function(v) {
+            _logRowMap[v.id] = v;
             const expectedVisit = (v.date_of_visit || v.time_of_visit)
                 ? fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit)
                 : '—';
@@ -1371,7 +1414,7 @@
                 + '<td>' + (v.staff?.name ?? '—') + '</td>'
                 + '<td>' + getStatusBadge(v.status) + '</td>'
                 + '<td>'
-                    + '<button class="act-btn" title="View details" onclick="viewVisitor(' + v.id + ')">'
+                    + '<button class="act-btn" title="View details" onclick="viewVisitor(_logRowMap[' + v.id + '])">'
                         + '<img src="' + eyeIcon + '" alt="View">'
                     + '</button>'
                 + '</td>'
@@ -1411,8 +1454,7 @@
         });
     }
 
-    function viewVisitor(id) {
-        const v = logs.find(function(item) { return item.id === id; });
+    function viewVisitor(v) {
         if (!v) return;
 
         document.getElementById('modalHeaderName').textContent = v.visitor_name ?? '—';
@@ -1509,17 +1551,12 @@
     }
 
     function openArchive() {
-        document.getElementById('acount-completed').textContent  = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
-        document.getElementById('acount-deleted').textContent    = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
-        document.getElementById('acount-cancelled').textContent  = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
-        document.getElementById('archive-search').value = '';
-        archiveTab = 'completed';
-        document.getElementById('atab-completed').classList.add('active');
-        document.getElementById('atab-deleted').classList.remove('active');
-        document.getElementById('atab-cancelled').classList.remove('active');
-        renderArchive();
+        document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
+        document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
+        document.getElementById('acount-cancelled').textContent = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
+        switchArchiveTab('completed');
     }
 
     function closeArchive() {
@@ -1537,6 +1574,11 @@
     }
 
     function renderArchive() {
+        clearTimeout(_archiveDebounce);
+        _archiveDebounce = setTimeout(function() { _runRenderArchive(); }, 150);
+    }
+
+    function _runRenderArchive() {
         const q = document.getElementById('archive-search').value.toLowerCase();
 
         let data;
@@ -1599,7 +1641,7 @@
     }
 
     function exportLogsCsv() {
-        if (!filtered.length) { alert('No data to export.'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
 
         var rows = [['Name', 'Expected Date', 'Expected Time', 'Time In', 'Time Out', 'Purpose', 'Tenant Visited', 'Logged By', 'Status']];
         filtered.forEach(function(v) {
@@ -1625,9 +1667,10 @@
     }
 
     function exportLogsPdf() {
-        if (!filtered.length) { alert('No data to export.'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
 
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(v) {
             return '<tr>'
                 + '<td>' + (v.visitor_name ?? '') + '</td>'
@@ -1663,7 +1706,7 @@
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
         }
 
-        if (!data.length) { alert('No archive data to export.'); return; }
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
         const label = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
@@ -1709,12 +1752,13 @@
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
         }
 
-        if (!data.length) { alert('No archive data to export.'); return; }
+        if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
         const tabLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
         const footerHead = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
 
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = data.map(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
@@ -1800,6 +1844,16 @@
             closeAllExportDropdowns();
         }
     });
+
+    function clearDates() {
+        document.getElementById('date-from').value              = '';
+        document.getElementById('date-to').value                = '';
+        document.getElementById('date-from').style.borderColor  = '';
+        document.getElementById('date-to').style.borderColor    = '';
+        document.getElementById('date-error').style.display     = 'none';
+        document.getElementById('date-clear-btn').style.display = 'none';
+        applyFilters();
+    }
 
     applyFilters();
 
