@@ -101,7 +101,7 @@ class EmergencyController extends Controller
 
         $report->update([
             'admin_notes' => $validated['admin_notes'] ?? null,
-            'location'    => $validated['location'] ?? $report->location,
+            'location'    => (!empty($validated['location'])) ? $validated['location'] : $report->location,
         ]);
 
         if ($validated['status'] === 'closed') {

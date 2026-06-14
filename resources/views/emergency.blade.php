@@ -941,7 +941,6 @@
         z-index: 9999;
         pointer-events: none;
     }
-    .status-legend-wrap:hover .status-legend-popup { display: block; }
     .slp-title {
         font-size: .67rem;
         font-weight: 800;
@@ -1387,7 +1386,13 @@
         const tbody    = document.getElementById('em-tbody');
 
         if (pageData.length === 0) {
-            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No emergency reports found.</td></tr>`;
+            const hasFilters = document.getElementById('search-input').value
+                || document.getElementById('status-filter').value
+                || document.getElementById('type-filter').value
+                || document.getElementById('urgency-filter').value
+                || document.getElementById('date-from').value
+                || document.getElementById('date-to').value;
+            tbody.innerHTML = `<tr class="empty-row"><td colspan="8">${hasFilters ? 'No results match your filters. <button onclick="resetFilters()" style="background:none;border:none;color:var(--bright-pink);font-weight:700;cursor:pointer;font-family:inherit;font-size:inherit;padding:0;margin-left:.3rem;">Clear filters</button>' : 'No emergency reports found.'}</td></tr>`;
         } else {
             tbody.innerHTML = pageData.map(r => `
                 <tr>
@@ -1417,7 +1422,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, '${escHtml(r.emergency_type)}')">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
@@ -1463,6 +1468,17 @@
         const sort    = document.getElementById('sort-select').value;
         const from    = document.getElementById('date-from').value;
         const to      = document.getElementById('date-to').value;
+
+        const dateFromEl = document.getElementById('date-from');
+        const dateToEl   = document.getElementById('date-to');
+        if (from && to && from > to) {
+            dateToEl.style.borderColor = '#e04867';
+            dateFromEl.style.borderColor = '#e04867';
+            return;
+        } else {
+            dateFromEl.style.borderColor = '';
+            dateToEl.style.borderColor = '';
+        }
 
         filtered = reports.filter(r => {
             const matchSearch =
@@ -1832,12 +1848,15 @@
 
     function copyHotline(number, btn) {
         const clean = number.replace(/[^0-9+]/g, '');
-        navigator.clipboard.writeText(clean).then(() => {
-            const origWidth = btn.offsetWidth;
+        const origWidth = btn.offsetWidth;
+        const origHTML  = btn.innerHTML;
+
+        function flash(success) {
             btn.style.minWidth = origWidth + 'px';
-            const origHTML = btn.innerHTML;
-            btn.innerHTML = 'Copied!';
-            btn.style.cssText += ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;';
+            btn.innerHTML = success ? 'Copied!' : 'Copy failed';
+            btn.style.cssText += success
+                ? ';background:var(--bright-pink)!important;color:#fff!important;border-color:var(--bright-pink)!important;'
+                : ';background:#e04867!important;color:#fff!important;border-color:#e04867!important;';
             setTimeout(() => {
                 btn.innerHTML = origHTML;
                 btn.style.cssText = btn.style.cssText
@@ -1846,7 +1865,24 @@
                     .replace(/border-color:[^;]+;?/g,'');
                 btn.style.minWidth = '';
             }, 1500);
-        });
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(clean).then(() => flash(true)).catch(() => flash(false));
+        } else {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = clean;
+                ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+                document.body.appendChild(ta);
+                ta.focus(); ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                flash(true);
+            } catch {
+                flash(false);
+            }
+        }
     }
 
     function exportTable(format) {
@@ -1934,10 +1970,6 @@
         if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
     });
 
-    @if(session('success'))
-        document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
-    @endif
-
     document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
         var popup = wrap.querySelector('.status-legend-popup');
         if (!popup) return;
@@ -1950,11 +1982,30 @@
             }
             popup.style.top = (rect.bottom + 8) + 'px';
             popup.style.left = left + 'px';
+            popup.style.display = 'block';
+        });
+        wrap.addEventListener('mouseleave', function() {
+            popup.style.display = 'none';
         });
     });
+    function resetFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('status-filter').value = '';
+        document.getElementById('type-filter').value = '';
+        document.getElementById('urgency-filter').value = '';
+        document.getElementById('urgency-filter').value = '';
+        document.getElementById('sort-select').value = 'newest';
+        document.getElementById('date-from').value = '';
+        document.getElementById('date-to').value = '';
+        applyFilters();
+    }
 
     populateTypeFilter();
     applyFilters();
     renderDirList();
+
+    @if(session('success'))
+        showToast('{{ session("success") }}', 'success');
+    @endif
 </script>
 @endsection
