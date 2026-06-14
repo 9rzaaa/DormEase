@@ -1028,6 +1028,11 @@ function dismissAnnouncement(id) {
 
 function restoreHidden() {
     saveHidden([]);
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        if (card.dataset.status !== 'closed') {
+            card.style.display = '';
+        }
+    });
     applyHidden();
     closeHiddenModal();
 }
