@@ -1997,9 +1997,9 @@
             <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
         </div>
         </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
+        <div class="modal-actions" style="justify-content:space-between;">
             <button class="btn-submit" onclick="submitUpdateDoc()">Save</button>
+            <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
         </div>
     </div>
 </div>
@@ -2085,9 +2085,9 @@
             <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
         </div>
         </div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
+        <div class="modal-actions" style="justify-content:space-between;">
             <button class="btn-submit" onclick="submitUpdateReq()">Save Changes</button>
+            <button class="btn-cancel" onclick="closeModal('update-req-modal')">Cancel</button>
         </div>
     </div>
 </div>
@@ -2575,7 +2575,7 @@ function viewDoc(r) {
     }
 
     document.getElementById('view-doc-actions').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:flex-end;gap:.6rem;padding:.55rem 0 0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.55rem 0 0;">
             <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
             <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
         </div>
@@ -2834,7 +2834,7 @@ function viewReq(r) {
         <button class="btn-submit" onclick="closeModal('view-req-modal');setTimeout(()=>openUpdateReq(currentReq),200);">Update Status</button>
         <button class="btn-cancel" onclick="closeModal('view-req-modal')">Close</button>
     `;
-    footer.style.setProperty('justify-content', 'flex-end', 'important');
+    footer.style.setProperty('justify-content', 'space-between', 'important');
     footer.style.setProperty('gap', '.6rem', 'important');
     openModal('view-req-modal');
 }
@@ -3571,7 +3571,7 @@ function renderAcancelledTable() {
         const prefix = d.category === 'form' ? 'FSB' : 'DRQ';
         const isForm = d.category === 'form';
         const deliveryOrFile = isForm ? fileTypeBadge(d.attachment) : escHtml(d.delivery_type ?? '—');
-        
+
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
