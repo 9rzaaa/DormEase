@@ -1070,6 +1070,7 @@
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
                 <option value="high">High Priority</option>
+                <option value="moderate">Moderate Priority</option>
                 <option value="low">Low Priority</option>
             </select>
             <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
@@ -1573,6 +1574,13 @@ function checkScheduledAnnouncements() {
             const form = document.getElementById('publish-now-' + ann.announcement_id);
             if (form) {
                 showActionLoading('Publishing scheduled announcement...');
+                setTimeout(function() {
+                    const overlay = document.getElementById('action-loading');
+                    if (overlay && overlay.classList.contains('open')) {
+                        overlay.classList.remove('open');
+                        showToast('Auto-publish timed out. Please refresh the page.', 'error');
+                    }
+                }, 15000);
                 form.submit();
             }
         }
@@ -1802,7 +1810,7 @@ function openEditModal(id, e) {
     const ann = annData[id];
     if (!ann) return;
     document.getElementById('edit-form').reset();
-    document.getElementById('edit-form').action = `/announcements/${id}`;
+    document.getElementById('edit-form').action = '{{ url("announcements") }}/' + id;
     document.getElementById('edit-title').value   = ann.title   || '';
     document.getElementById('edit-content').value = ann.content || '';
     document.getElementById('edit-current-files').textContent = filesNote(ann.attachment);
@@ -1885,7 +1893,7 @@ function openViewModal(id) {
         <div class="view-content">${escapeHtml(ann.content || '')}</div>
         ${renderAttachments(ann.attachment)}
     `;
-    document.getElementById('view-edit-form').action   = `/announcements/${id}`;
+    document.getElementById('view-edit-form').action = '{{ url("announcements") }}/' + id;
     document.getElementById('view-edit-title').value   = ann.title   || '';
     document.getElementById('view-edit-content').value = ann.content || '';
     document.getElementById('view-current-files').textContent = filesNote(ann.attachment);
@@ -1909,7 +1917,7 @@ function openDeleteModal(id, name, e) {
     if (e) e.stopPropagation();
     closeGlobalDropdown();
     document.getElementById('delete-ann-name').textContent = name;
-    document.getElementById('delete-form').action = `/announcements/${id}`;
+    document.getElementById('delete-form').action = '{{ url("announcements") }}/' + id;
     openModal('delete-modal');
 }
 
@@ -2003,6 +2011,7 @@ function renderAnnArchive() {
 }
 
 function exportAnnArchive() {
+    if (!deletedAnnArchive.length) { showToast('No archived announcements to export.', 'error'); return; }
     const rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Deleted On']];
     deletedAnnArchive.forEach(r => rows.push([r.announcement_id, r.title||'', r.content||'', r.priority||'', r.status||'', r.posted_at||'', r.scheduled_at||'', r.deleted_at||'']));
     const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -2011,6 +2020,8 @@ function exportAnnArchive() {
     a.download = 'announcements_deleted_archive.csv';
     a.click();
 }
+
+updateEmptyState();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif

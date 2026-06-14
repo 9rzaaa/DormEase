@@ -501,14 +501,16 @@
 
 .vm-file-grid { display: flex; flex-direction: column; gap: .75rem; }
 .vm-file-item { border: 1.5px solid var(--pink-100, #f9c5d6); border-radius: 14px; overflow: hidden; background: #fff; }
-.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .6rem .9rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); }
-.vm-file-name { font-size: .78rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
-.vm-file-name img { width: 13px; height: 13px; opacity: .5; }
-.vm-file-actions { display: flex; align-items: center; gap: .4rem; }
-.vm-file-dl { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; color: var(--bright-pink, #E8175D); text-decoration: none; padding: .22rem .65rem; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; transition: .2s; }
-.vm-file-dl:hover { background: var(--pink-100, #f9c5d6); border-color: var(--bright-pink, #E8175D); }
-.vm-file-body { padding: .8rem; }
-.vm-file-body img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; }
+.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .55rem .85rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); gap: .75rem; }
+.vm-file-name { font-size: .76rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .38rem; min-width: 0; flex: 1; }
+.vm-file-name img { width: 13px; height: 13px; opacity: .45; flex-shrink: 0; }
+.vm-file-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vm-file-actions { display: flex; align-items: center; gap: .3rem; flex-shrink: 0; }
+.vm-file-dl { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; color: var(--bright-pink, #E8175D); text-decoration: none; transition: .2s; font-size: .85rem; cursor: pointer; }
+.vm-file-dl:hover { background: var(--bright-pink, #E8175D); border-color: var(--bright-pink, #E8175D); color: #fff; }
+.vm-file-dl svg { width: 14px; height: 14px; flex-shrink: 0; }
+.vm-file-body { padding: .75rem; }
+.vm-file-body img { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; background: var(--soft-bg, #fdf6f9); }
 .vm-file-body img:hover { opacity: .88; }
 .vm-file-body iframe { width: 100%; height: 300px; border: none; border-radius: 8px; display: block; }
 .vm-file-unsupported { display: flex; flex-direction: column; align-items: center; padding: 1.5rem; color: var(--ink-muted, #888); font-size: .8rem; text-align: center; gap: .4rem; }
@@ -596,6 +598,7 @@
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
                 <option value="high">High Priority</option>
+                <option value="moderate">Moderate Priority</option>
                 <option value="low">Low Priority</option>
             </select>
             <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
@@ -882,32 +885,39 @@ function closeLightbox() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 function buildFilePreview(path) {
-    const name = path.split('/').pop();
-    const ext  = (path.split('.').pop() || '').toLowerCase();
-    const url  = path.startsWith('http') ? path : `${storageBase}/${encodeURI(path)}`;
+    const name    = path.split('/').pop();
+    const ext     = (path.split('.').pop() || '').toLowerCase();
+    const url     = path.startsWith('http') ? path : `${storageBase}/${encodeURI(path)}`;
     const isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
     const isPdf   = ext === 'pdf';
 
+    const expandSvg   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+    const openSvg     = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+    const downloadSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+
     let body = '';
     if (isImage) {
-        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size"></div>`;
+        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size" onerror="this.parentElement.innerHTML='<div class=\\'vm-file-unsupported\\'><img src=\\'{{ asset(\\'icons/attach.png\\') }}\\' alt=\\'\\'>Image could not be loaded.</div>'"></div>`;
     } else if (isPdf) {
         body = `<div class="vm-file-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
     } else {
         body = `<div class="vm-file-unsupported"><img src="{{ asset('icons/attach.png') }}" alt=""><span>No preview for <strong>.${ext}</strong> files.</span></div>`;
     }
 
-    const openBtn = isImage
-        ? `<button class="vm-file-dl" onclick="openLightbox('${url}')">&#x26F6; Expand</button>`
-        : `<a href="${url}" target="_blank" class="vm-file-dl">&#x2197; Open</a>`;
+    const actionBtn = isImage
+        ? `<button class="vm-file-dl" onclick="openLightbox('${url}')" title="Expand">${expandSvg}</button>`
+        : `<a href="${url}" target="_blank" class="vm-file-dl" title="Open">${openSvg}</a>`;
 
     return `
         <div class="vm-file-item">
             <div class="vm-file-bar">
-                <div class="vm-file-name"><img src="{{ asset('icons/attach.png') }}" alt="">${escHtml(name)}</div>
+                <div class="vm-file-name">
+                    <img src="{{ asset('icons/attach.png') }}" alt="">
+                    <span title="${escHtml(name)}">${escHtml(name)}</span>
+                </div>
                 <div class="vm-file-actions">
-                    ${openBtn}
-                    <a href="${url}" download class="vm-file-dl">&#x2193; Download</a>
+                    ${actionBtn}
+                    <a href="${url}" download="${escHtml(name)}" class="vm-file-dl" title="Download">${downloadSvg}</a>
                 </div>
             </div>
             ${body}
@@ -916,7 +926,7 @@ function buildFilePreview(path) {
 
 function openViewModal(id) {
     const ann = annData[id];
-    if (!ann) return;
+    if (!ann) { showToast('Could not load announcement. Please refresh the page.', 'error'); return; }
 
     const files = getFiles(ann.attachment);
 
@@ -960,6 +970,8 @@ function openViewModal(id) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+updateEmptyState();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
