@@ -574,6 +574,106 @@
 .ann-show-hidden-bar:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush); }
 .ann-show-hidden-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
 
+.hidden-modal-overlay {
+    position: fixed; inset: 0; z-index: 800;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+.hidden-modal-overlay.open { display: flex; }
+.hidden-modal-box {
+    background: #fff;
+    border-radius: 18px;
+    width: 100%; max-width: 480px;
+    max-height: 82vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    animation: modalIn .25s cubic-bezier(.34,1.3,.64,1) both;
+    overflow: hidden;
+}
+@keyframes modalIn { from { opacity:0; transform: translateY(16px) scale(.97); } to { opacity:1; transform: none; } }
+.hidden-modal-header {
+    padding: .9rem 1.2rem;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+}
+.hidden-modal-title {
+    font-size: .95rem; font-weight: 800; color: var(--ink);
+    display: flex; align-items: center; gap: .5rem;
+}
+.hidden-modal-title svg { width: 16px; height: 16px; color: var(--hot-pink, #d6175a); }
+.hidden-modal-close {
+    width: 30px; height: 30px; border-radius: 7px;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    color: var(--bright-pink, #E8175D);
+    font-size: .8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+}
+.hidden-modal-close:hover { background: var(--pink-100, #f9c5d6); }
+.hidden-modal-body {
+    flex: 1; overflow-y: auto;
+    padding: .75rem 1.2rem;
+    display: flex; flex-direction: column; gap: .55rem;
+}
+.hidden-modal-body::-webkit-scrollbar { width: 4px; }
+.hidden-modal-body::-webkit-scrollbar-thumb { background: var(--pink-200, #f4b8d0); border-radius: 99px; }
+.hidden-item {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .65rem .85rem;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    border-radius: 11px;
+    background: #fff;
+    transition: border-color .2s, background .2s;
+}
+.hidden-item:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush, #fff5f9); }
+.hidden-item-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+}
+.hidden-item-info { flex: 1; min-width: 0; }
+.hidden-item-title {
+    font-size: .85rem; font-weight: 700; color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: .15rem;
+}
+.hidden-item-meta { font-size: .7rem; color: var(--ink-muted, #888); font-weight: 500; }
+.hidden-unhide-btn {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .28rem .75rem; border-radius: 7px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    color: var(--hot-pink, #d6175a);
+    font-size: .72rem; font-weight: 700;
+    cursor: pointer; transition: .2s;
+    white-space: nowrap; flex-shrink: 0;
+    font-family: var(--ff-body);
+}
+.hidden-unhide-btn:hover { background: var(--bright-pink, #E8175D); color: #fff; border-color: transparent; }
+.hidden-modal-footer {
+    padding: .75rem 1.2rem;
+    border-top: 1px solid var(--pink-100, #f9c5d6);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; background: #fffafd;
+}
+.hidden-modal-count { font-size: .75rem; color: var(--ink-muted, #888); font-weight: 600; }
+.hidden-restore-all-btn {
+    display: inline-flex; align-items: center; gap: .38rem;
+    padding: .38rem .9rem; border-radius: 8px;
+    border: none; background: var(--gradient-pink);
+    color: #fff; font-size: .78rem; font-weight: 700;
+    cursor: pointer; transition: .2s; font-family: var(--ff-body);
+    box-shadow: 0 4px 12px rgba(232,23,93,.22);
+}
+.hidden-restore-all-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,23,93,.32); }
+.hidden-empty {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--ink-muted, #888); font-size: .84rem;
+}
+
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
 @media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
@@ -713,12 +813,12 @@
                 </div>
             @endforelse
 
-            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="restoreHidden()">
+            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="openHiddenModal()">
                 <div style="display:flex;align-items:center;gap:.5rem;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                     <span id="ann-hidden-count-label">1 hidden announcement</span>
                 </div>
-                <span style="font-size:.72rem;font-weight:700;text-decoration:underline;">Show all</span>
+                <span style="font-size:.72rem;font-weight:700;text-decoration:underline;">Manage</span>
             </div>
 
             <div class="ann-list-empty" id="ann-no-results" style="display:none;">
@@ -837,6 +937,23 @@
     </div>
 </div>
 
+<div class="hidden-modal-overlay" id="hidden-modal" onclick="if(event.target===this)closeHiddenModal()">
+    <div class="hidden-modal-box">
+        <div class="hidden-modal-header">
+            <div class="hidden-modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                Hidden Announcements
+            </div>
+            <button class="hidden-modal-close" onclick="closeHiddenModal()">&#x2715;</button>
+        </div>
+        <div class="hidden-modal-body" id="hidden-modal-body"></div>
+        <div class="hidden-modal-footer">
+            <span class="hidden-modal-count" id="hidden-modal-count"></span>
+            <button class="hidden-restore-all-btn" onclick="restoreHidden()">Restore All</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -918,6 +1035,16 @@ function dismissAnnouncement(id) {
 function restoreHidden() {
     saveHidden([]);
     applyHidden();
+    closeHiddenModal();
+}
+
+function unhideOne(id) {
+    const hidden = getHidden().filter(h => h !== id);
+    saveHidden(hidden);
+    const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
+    if (card) card.style.display = '';
+    applyHidden();
+    renderHiddenModal();
 }
 
 function applyHidden() {
@@ -926,9 +1053,11 @@ function applyHidden() {
         const id = parseInt(card.dataset.annId);
         if (hidden.includes(id)) {
             card.style.display = 'none';
+        } else {
+            if (card.style.display === 'none') card.style.display = '';
         }
     });
-    const bar = document.getElementById('ann-show-hidden-bar');
+    const bar   = document.getElementById('ann-show-hidden-bar');
     const label = document.getElementById('ann-hidden-count-label');
     if (hidden.length > 0) {
         bar.classList.add('visible');
@@ -937,6 +1066,44 @@ function applyHidden() {
         bar.classList.remove('visible');
     }
     updateEmptyState();
+}
+
+function openHiddenModal() {
+    renderHiddenModal();
+    document.getElementById('hidden-modal').classList.add('open');
+}
+
+function closeHiddenModal() {
+    document.getElementById('hidden-modal').classList.remove('open');
+}
+
+function renderHiddenModal() {
+    const hidden = getHidden();
+    const body   = document.getElementById('hidden-modal-body');
+    const count  = document.getElementById('hidden-modal-count');
+    count.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
+    if (!hidden.length) {
+        body.innerHTML = '<div class="hidden-empty">No hidden announcements.</div>';
+        return;
+    }
+    const prioColors = { high: '#e04867', moderate: '#f59e0b', low: '#1f9d69' };
+    body.innerHTML = hidden.map(id => {
+        const ann = annData[id];
+        if (!ann) return '';
+        const prio  = (ann.priority || 'low').toLowerCase();
+        const color = prioColors[prio] || '#1f9d69';
+        const date  = ann.posted_at || ann.created_at
+            ? new Date(ann.posted_at || ann.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '';
+        return `<div class="hidden-item">
+            <span class="hidden-item-dot" style="background:${color};"></span>
+            <div class="hidden-item-info">
+                <div class="hidden-item-title">${escHtml(ann.title || '')}</div>
+                <div class="hidden-item-meta">${ucFirst(prio)} priority &nbsp;&middot;&nbsp; ${date}</div>
+            </div>
+            <button class="hidden-unhide-btn" onclick="unhideOne(${id})">Unhide</button>
+        </div>`;
+    }).filter(Boolean).join('');
 }
 
 function updateEmptyState() {
