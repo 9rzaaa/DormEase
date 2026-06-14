@@ -106,6 +106,28 @@
 
     .filter-divider { width: 1px; height: 20px; background: var(--baby-pink); flex-shrink: 0; }
     .filter-label { font-size: .82rem; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
+    .status-legend-wrap { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .status-legend-wrap img { display: block; opacity: .75; transition: opacity .2s; }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.15), 0 2px 8px rgba(0,0,0,.08);
+        padding: .8rem .9rem;
+        width: 320px;
+        max-width: calc(100vw - 24px);
+        z-index: 99999;
+    }
+    .status-legend-popup.open { display: block; }
+    .slg-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .5rem; padding-bottom: .35rem; border-bottom: 1.5px solid var(--petal); }
+    .slg-title.second { margin-top: .65rem; }
+    .slg-row { display: flex; align-items: flex-start; gap: .6rem; padding: .32rem 0; border-bottom: 1px solid var(--baby-pink); }
+    .slg-row:last-child { border-bottom: none; }
+    .slg-row .badge { flex-shrink: 0; width: 92px; justify-content: center; text-align: center; white-space: nowrap; }
+    .slg-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .12rem; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 980px; }
@@ -1127,6 +1149,10 @@
                     <option value="on_leave">On Leave</option>
                 </select>
                 <div class="filter-divider"></div>
+                <div class="status-legend-wrap" id="status-legend-trigger" onclick="toggleStatusLegend(event)">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(11%) sepia(93%) saturate(6000%) hue-rotate(327deg) brightness(95%);">
+                </div>
+                <div class="filter-divider"></div>
                 <span class="filter-label">Sort:</span>
                 <select class="sort-select" id="sort-select" onchange="sortTable()">
                     <option value="newest">Newest</option>
@@ -1171,6 +1197,16 @@
         </span>
         <span id="action-loading-text">Please wait...</span>
     </div>
+</div>
+<div class="status-legend-popup" id="status-legend-popup">
+    <div class="slg-title">Duty Status</div>
+    <div class="slg-row"><span class="badge badge-onduty">On Duty</span><span class="slg-desc">Staff member is currently active and on shift.</span></div>
+    <div class="slg-row"><span class="badge badge-offduty">Off Duty</span><span class="slg-desc">Staff member is not currently on shift.</span></div>
+    <div class="slg-row"><span class="badge badge-leave">On Leave</span><span class="slg-desc">Staff member is on approved leave and unavailable.</span></div>
+    <div class="slg-title second">Role</div>
+    <div class="slg-row"><span class="badge badge-admin">Admin</span><span class="slg-desc">Full administrative access to manage staff, tenants, and dorm settings.</span></div>
+    <div class="slg-row"><span class="badge badge-admin">Secretary</span><span class="slg-desc">Handles records, documentation, and clerical support tasks.</span></div>
+    <div class="slg-row"><span class="badge badge-frontdesk">Front Desk</span><span class="slg-desc">Manages guest check-ins, inquiries, and daily front desk duties.</span></div>
 </div>
 
 <div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
@@ -2309,6 +2345,41 @@
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.export-dropdown')) {
             closeAllExportDropdowns();
+        }
+    });
+
+    function toggleStatusLegend(e) {
+        e.stopPropagation();
+        var popup   = document.getElementById('status-legend-popup');
+        var trigger = document.getElementById('status-legend-trigger');
+        if (popup.classList.contains('open')) {
+            popup.classList.remove('open');
+            return;
+        }
+        var rect = trigger.getBoundingClientRect();
+        popup.style.left = '8px';
+        popup.style.top  = (rect.bottom + 8) + 'px';
+        popup.classList.add('open');
+        requestAnimationFrame(function() {
+            var pw = popup.offsetWidth;
+            var ph = popup.offsetHeight;
+            var left = rect.left + (rect.width / 2) - (pw / 2);
+            left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+            popup.style.left = left + 'px';
+            if (rect.bottom + ph + 8 > window.innerHeight) {
+                popup.style.top = Math.max(8, rect.top - ph - 8) + 'px';
+            } else {
+                popup.style.top = (rect.bottom + 8) + 'px';
+            }
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        var popup = document.getElementById('status-legend-popup');
+        if (popup && popup.classList.contains('open') &&
+            !e.target.closest('#status-legend-popup') &&
+            !e.target.closest('#status-legend-trigger')) {
+            popup.classList.remove('open');
         }
     });
 
