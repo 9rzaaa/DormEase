@@ -263,7 +263,6 @@ class DocumentController extends Controller
             $oldStatus = $docRequest->status;
             $newStatus = $validated['status'];
 
-            // Handle file upload if provided
             $fulfilledFile = null;
             if ($request->hasFile('fulfilled_file')) {
                 $fulfilledFile = $request->file('fulfilled_file')->store('fulfilled-documents', 'public');
@@ -303,7 +302,6 @@ class DocumentController extends Controller
         try {
             $docRequest = DocumentRequest::findOrFail($id);
 
-            // Archive before deletion
             ArchiveDocu::create([
                 'archivable_type' => 'document_request',
                 'original_id'     => $docRequest->doc_request_id,
@@ -314,14 +312,8 @@ class DocumentController extends Controller
                 ]),
             ]);
 
-            // Delete fulfilled file if exists
             if ($docRequest->fulfilled_file) {
                 Storage::disk('public')->delete($docRequest->fulfilled_file);
-            }
-
-            // Delete attachment if exists
-            if ($docRequest->attachment) {
-                Storage::disk('public')->delete($docRequest->attachment);
             }
 
             $docRequest->delete();
@@ -331,8 +323,6 @@ class DocumentController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    // ── Downloadable Forms 
 
     public function indexForms()
     {
@@ -390,9 +380,6 @@ class DocumentController extends Controller
     {
         try {
             $form = DownloadableForm::findOrFail($id);
-
-            // Only delete from storage if admin-uploaded
-            // Never delete the original static PDFs in public/forms/
             if (str_starts_with($form->file_path, 'downloadable-forms/')) {
                 Storage::disk('public')->delete($form->file_path);
             }
