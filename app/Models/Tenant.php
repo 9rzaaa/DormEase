@@ -34,10 +34,16 @@ class Tenant extends Authenticatable
         'last_login_at',
         'notes',
         'is_inside',
+        'is_on_vacation',
+        'vacation_note',
     ];
 
     protected $hidden = [
         'password_hash',
+    ];
+
+    protected $casts = [
+        'is_on_vacation' => 'boolean',
     ];
 
     public function getAuthPassword()
@@ -85,4 +91,33 @@ class Tenant extends Authenticatable
             );
         }
     }
+
+    public function hasUnpaidBills(): bool
+    {
+        return WaterBilling::where('tenant_id', $this->tenant_id)
+            ->where('payment_status', '!=', 'paid')
+            ->exists();
+    }
+
+    public function hasOngoingMaintenance(): bool
+    {
+        return MaintenanceRequest::where('tenant_id', $this->tenant_id)
+            ->whereIn('status', ['pending', 'in-progress'])
+            ->exists();
+    }
+
+    public function hasOngoingDocuments(): bool
+    {
+        return DocumentRequest::where('tenant_id', $this->tenant_id)
+            ->whereIn('status', ['pending', 'processing', 'approved', 'resubmission'])
+            ->exists();
+    }
+
+    public function hasActiveVisitors(): bool
+    {
+        return VisitorLog::where('tenant_id', $this->tenant_id)
+            ->whereNotIn('status', ['completed', 'deleted', 'cancelled', 'rejected'])
+            ->exists();
+    }
 }
+
