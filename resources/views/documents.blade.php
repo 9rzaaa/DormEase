@@ -1495,7 +1495,7 @@
                 <img src="{{ asset('icons/info.png') }}" alt="Status guide">
                 <div class="status-legend-popup">
                     <div class="slp-title">Submission Status Guide</div>
-                    <div class="slp-row"><span class="slp-badge">{{ reqStatusBadgeBladeHelper('pending') }}<span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Submitted by tenant, not yet reviewed by admin.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Submitted by tenant, not yet reviewed by admin.</span></div>
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-processing">Processing</span></span><span class="slp-desc">Admin has seen it and is currently reviewing.</span></div>
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-approved">Approved</span></span><span class="slp-desc">Submission accepted. Moved to the Approved tray below.</span></div>
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-resubmission">For Resubmission</span></span><span class="slp-desc">Rejected but tenant is allowed to upload a corrected file.</span></div>
