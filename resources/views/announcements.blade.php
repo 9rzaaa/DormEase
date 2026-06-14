@@ -100,42 +100,53 @@
 
 .ann-stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    box-sizing: border-box;
 }
 
 .ann-stat-card {
-    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
-    border-radius: 16px;
+    background: var(--gradient-pink);
+    border-radius: 18px;
     border: none;
-    padding: 1.1rem 1.3rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
+    padding: 1.4rem 1.5rem;
     display: flex;
     align-items: center;
-    gap: .9rem;
-    box-shadow: 0 8px 24px rgba(232,23,93,.18);
+    gap: 1.2rem;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
     transition: transform .2s, box-shadow .2s;
 }
 
 .ann-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(232,23,93,.25);
+    box-shadow: 0 8px 24px rgba(232,23,93,.35);
 }
 
 .ann-stat-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
     flex-shrink: 0;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
 }
 
 .ann-stat-icon img {
-    width: 22px; height: 22px; object-fit: contain;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
-.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
+.ann-stat-label { font-size: .8rem; color: rgba(247,245,245,.967); margin-bottom: .15rem; font-weight: 700; }
+.ann-stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
 
 .ann-compose-strip {
     background: #fff;
@@ -299,7 +310,7 @@
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 4px;
-    background: var(--pink-100);
+    background: var(--pink-200, #f4b8d0);
     transition: background .2s;
 }
 
@@ -310,7 +321,7 @@
 }
 
 .ann-row-card:hover::before { background: var(--gradient-pink); }
-.ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
+.ann-row-card.status-active::before { background: var(--gradient-pink); }
 
 .ann-row-card.status-closed {
     opacity: .58;
@@ -950,9 +961,9 @@
 .current-files-note { margin-top: .35rem; font-size: .76rem; color: var(--ink-muted); line-height: 1.5; }
 
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
-@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } }
-@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1rem; } .ann-compose-chip { display: none; } }
-
+@media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
+@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
+@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-compose-chip { display: none; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
 .fade-up { animation: fadeUp .42s ease both; }
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
@@ -982,39 +993,53 @@
 
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->count() }}</div>
-                <div class="ann-stat-label">Total</div>
+                <div class="ann-stat-label">Total Announcements</div>
+                <div class="ann-stat-num">{{ $announcements->merge($scheduled)->count() }}</div>
+                <div class="ann-stat-sub">All Posted & Scheduled</div>
             </div>
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
+            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
                 <div class="ann-stat-label">Active</div>
+                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
+                <div class="ann-stat-sub">
+                    {{ $announcements->where('status','closed')->count() }} Closed
+                    &nbsp;&middot;&nbsp;
+                    {{ $scheduled->count() }} Scheduled
+                </div>
             </div>
+            @if($scheduled->count() > 0)
+            <div style="margin-left:auto;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:.45rem .75rem;min-width:48px;gap:.1rem;">
+                <span style="font-size:1.1rem;font-weight:800;color:#fff;line-height:1;">{{ $scheduled->count() }}</span>
+                <span style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.88);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">Scheduled</span>
+            </div>
+            @endif
         </div>
         <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
-                <img src="{{ asset('icons/archive.png') }}" alt="">
+            <div class="ann-stat-icon">
+                <img src="{{ asset('icons/flag.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
-                <div class="ann-stat-label">Closed</div>
-            </div>
-        </div>
-        <div class="ann-stat-card">
-            <div class="ann-stat-icon pink-bg">
-                <img src="{{ asset('icons/clock.png') }}" alt="">
-            </div>
-            <div>
-                <div class="ann-stat-num">{{ $scheduled->count() }}</div>
-                <div class="ann-stat-label">Scheduled</div>
+                <div class="ann-stat-label">Priority Breakdown</div>
+                <div class="ann-stat-num">
+                    @php
+                        $allForStats = $announcements->merge($scheduled);
+                    @endphp
+                    {{ $allForStats->where('priority','high')->count() }}
+                </div>
+                <div class="ann-stat-sub">
+                    High &nbsp;&middot;&nbsp;
+                    {{ $allForStats->where('priority','moderate')->count() }} Moderate
+                    &nbsp;&middot;&nbsp;
+                    {{ $allForStats->where('priority','low')->count() }} Low
+                </div>
             </div>
         </div>
     </div>
