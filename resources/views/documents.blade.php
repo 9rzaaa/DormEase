@@ -1370,6 +1370,65 @@
     }
     .req-cancelled { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
     .req-cancelled::before { background: #ef4444; box-shadow: 0 0 0 2px rgba(239,68,68,.2); }
+
+    .status-legend-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 310px;
+        z-index: 600;
+        pointer-events: none;
+    }
+    .status-legend-wrap:hover .status-legend-popup { display: block; }
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .slp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--petal);
+    }
+    .slp-row:last-child { border-bottom: none; }
+    .slp-badge { flex-shrink: 0; min-width: 110px; }
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .15rem;
+    }
 </style>
 @endsection
 
@@ -1431,6 +1490,17 @@
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                 <input type="text" id="doc-search" placeholder="Search tenant, form type..." oninput="docApplyFilters()">
+            </div>
+            <div class="status-legend-wrap">
+                <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                <div class="status-legend-popup">
+                    <div class="slp-title">Submission Status Guide</div>
+                    <div class="slp-row"><span class="slp-badge">{{ reqStatusBadgeBladeHelper('pending') }}<span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Submitted by tenant, not yet reviewed by admin.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-processing">Processing</span></span><span class="slp-desc">Admin has seen it and is currently reviewing.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-approved">Approved</span></span><span class="slp-desc">Submission accepted. Moved to the Approved tray below.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-resubmission">For Resubmission</span></span><span class="slp-desc">Rejected but tenant is allowed to upload a corrected file.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Submission rejected. Moved to the Denied archive tab.</span></div>
+                </div>
             </div>
         </div>
 
@@ -1516,6 +1586,18 @@
             <div class="search-wrap">
                 <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
                 <input type="text" id="req-search" placeholder="Search tenant, document type..." oninput="reqApplyFilters()">
+            </div>
+            <div class="status-legend-wrap">
+                <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                <div class="status-legend-popup">
+                    <div class="slp-title">Request Status Guide</div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-pending">Pending</span></span><span class="slp-desc">Request submitted, waiting for admin action.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-processing">Processing</span></span><span class="slp-desc">Admin is preparing the requested document.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-approved">Approved</span></span><span class="slp-desc">Request approved and document is being prepared.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-ready">Ready</span></span><span class="slp-desc">Document is ready for pickup or has been sent digitally.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Request was denied. Tenant has been notified with a reason.</span></div>
+                    <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-cancelled">Cancelled</span></span><span class="slp-desc">Request was cancelled before it was fulfilled.</span></div>
+                </div>
             </div>
         </div>
 
