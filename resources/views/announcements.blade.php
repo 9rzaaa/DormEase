@@ -93,9 +93,13 @@
     gap: 1.2rem;
     box-sizing: border-box;
 }
-
-.ann-stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
-
+.ann-stat-sub {
+    font-size: .75rem;
+    color: rgba(255,255,255,.82);
+    font-weight: 600;
+    letter-spacing: .04em;
+    margin-top: .2rem;
+}
 .ann-stat-card {
     background: var(--gradient-pink);
     border-radius: 18px;
@@ -119,7 +123,7 @@
     height: 56px;
     border-radius: 50%;
     flex-shrink: 0;
-    background: var(--white);
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -132,7 +136,7 @@
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 .ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .8rem; color: rgba(247,245,245,.967); margin-bottom: .15rem; font-weight: 700; }
+.ann-stat-label { font-size: .8rem; font-weight: 700; color: rgba(255,255,255,.92); margin-bottom: .15rem; letter-spacing: .04em; }
 .ann-compose-strip {
     background: #fff;
     border: 1.5px solid var(--pink-100, #f9c5d6);
@@ -954,16 +958,19 @@
     </div>
 
     <div class="ann-stats-row fade-up d2">
+        @php $allForStats = $announcements->merge($scheduled); @endphp
+
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
                 <div class="ann-stat-label">Total Announcements</div>
-                <div class="ann-stat-num">{{ $announcements->merge($scheduled)->count() }}</div>
-                <div class="ann-stat-sub">All Posted & Scheduled</div>
+                <div class="ann-stat-num">{{ $allForStats->count() }}</div>
+                <div class="ann-stat-sub">All Posted &amp; Scheduled</div>
             </div>
         </div>
+
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
                 <img src="{{ asset('icons/active.png') }}" alt="">
@@ -971,11 +978,7 @@
             <div>
                 <div class="ann-stat-label">Active</div>
                 <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
-                <div class="ann-stat-sub">
-                    {{ $announcements->where('status','closed')->count() }} Closed
-                    &nbsp;&middot;&nbsp;
-                    {{ $scheduled->count() }} Scheduled
-                </div>
+                <div class="ann-stat-sub">{{ $scheduled->count() }} Scheduled</div>
             </div>
             @if($scheduled->count() > 0)
             <div style="margin-left:auto;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:.45rem .75rem;min-width:48px;gap:.1rem;">
@@ -984,24 +987,15 @@
             </div>
             @endif
         </div>
+
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/flag.png') }}" alt="">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Priority Breakdown</div>
-                <div class="ann-stat-num">
-                    @php
-                        $allForStats = $announcements->merge($scheduled);
-                    @endphp
-                    {{ $allForStats->where('priority','high')->count() }}
-                </div>
-                <div class="ann-stat-sub">
-                    High &nbsp;&middot;&nbsp;
-                    {{ $allForStats->where('priority','moderate')->count() }} Moderate
-                    &nbsp;&middot;&nbsp;
-                    {{ $allForStats->where('priority','low')->count() }} Low
-                </div>
+                <div class="ann-stat-label">Closed</div>
+                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
+                <div class="ann-stat-sub">Archived Announcements</div>
             </div>
         </div>
     </div>
@@ -1845,7 +1839,7 @@ function openViewModal(id) {
                <div class="view-row"><span class="view-label">Scheduled For</span><span class="view-val" style="color:var(--hot-pink);">${formatDate(ann.scheduled_at)}</span></div>`
             : `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${formatDate(ann.posted_at || ann.scheduled_at || ann.created_at)}</span></div>`}
         <div class="view-content">${escapeHtml(ann.content || '')}</div>
-        ${renderAttachments(ann.attachment)}
+        ${renderInlineAttachments(ann.attachment)}
     `;
     document.getElementById('view-edit-form').action = '{{ url("announcements") }}/' + id;
     document.getElementById('view-edit-title').value   = ann.title   || '';
@@ -1893,6 +1887,53 @@ function renderAttachments(att) {
         return `<div class="attachment-card"><a class="attachment-link" href="${url}" target="_blank"><img src="${attachIcon}" alt=""> ${escapeHtml(name)}</a></div>`;
     }).join('')}</div>`;
 }
+function renderInlineAttachments(att) {
+    const files = getAttachments(att);
+    if (!files.length) return '';
+    const imgs = files.filter(p => /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(p));
+    const docs = files.filter(p => !/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(p));
+    let html = `<div style="margin-top:1.1rem;border-top:1px solid var(--pink-100);padding-top:.85rem;">`;
+    html += `<div style="font-size:.7rem;font-weight:800;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;">Attachments (${files.length})</div>`;
+    if (imgs.length) {
+        html += `<div style="display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:.55rem;">`;
+        imgs.forEach(path => {
+            const url  = `${storageBaseUrl}/${encodeURI(path)}`;
+            const name = path.split('/').pop();
+            html += `<div style="position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:1.5px solid var(--pink-100);cursor:pointer;flex-shrink:0;" onclick="openImagePreview('${url}','${escapeHtml(name)}')" title="${escapeHtml(name)}">`;
+            html += `<img src="${url}" alt="${escapeHtml(name)}" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+            html += `<div style="position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background .18s;" onmouseover="this.style.background='rgba(0,0,0,.38)';this.querySelector('span').style.opacity=1" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('span').style.opacity=0"><span style="opacity:0;transition:opacity .18s;font-size:.65rem;font-weight:800;color:#fff;background:rgba(0,0,0,.55);padding:.18rem .5rem;border-radius:6px;">Preview</span></div>`;
+            html += `</div>`;
+        });
+        html += `</div>`;
+    }
+    if (docs.length) {
+        html += `<div style="display:flex;flex-direction:column;gap:.35rem;">`;
+        docs.forEach(path => {
+            const url  = `${storageBaseUrl}/${encodeURI(path)}`;
+            const name = path.split('/').pop();
+            html += `<a href="${url}" target="_blank" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:600;color:var(--hot-pink);text-decoration:none;padding:.35rem .7rem;border-radius:8px;border:1px solid var(--pink-100);background:var(--petal);width:fit-content;"><img src="${attachIcon}" alt="" style="width:13px;height:13px;"> ${escapeHtml(name)}</a>`;
+        });
+        html += `</div>`;
+    }
+    html += `</div>`;
+    return html;
+}
+function openImagePreview(url, name) {
+    let lb = document.getElementById('ann-lightbox');
+    if (!lb) {
+        lb = document.createElement('div');
+        lb.id = 'ann-lightbox';
+        lb.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;cursor:zoom-out;';
+        lb.innerHTML = `<button onclick="document.getElementById('ann-lightbox').style.display='none'" style="position:absolute;top:1rem;right:1.2rem;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.3rem;width:36px;height:36px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#x2715;</button><img id="ann-lb-img" src="" alt="" style="max-width:90vw;max-height:80vh;border-radius:10px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.5);"><a id="ann-lb-link" href="" target="_blank" style="font-size:.78rem;color:rgba(255,255,255,.75);text-decoration:underline;"></a>`;
+        lb.addEventListener('click', e => { if (e.target === lb) lb.style.display = 'none'; });
+        document.body.appendChild(lb);
+    }
+    document.getElementById('ann-lb-img').src = url;
+    document.getElementById('ann-lb-img').alt = name;
+    document.getElementById('ann-lb-link').href = url;
+    document.getElementById('ann-lb-link').textContent = name;
+    lb.style.display = 'flex';
+}
 function formatDate(value) {
     if (!value) return '';
     const d = new Date(value);
@@ -1937,7 +1978,6 @@ function renderAnnArchive() {
         return;
     }
     list.innerHTML = data.map((r, i) => {
-        const safeR = JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,"\\'");
         return `
         <div class="aad-card" style="animation-delay:${i * 0.04}s;" onclick='openAnnArchiveDetail(${JSON.stringify(r).replace(/</g,'\\u003c')})'>
             <div class="aad-card-top">
@@ -1992,7 +2032,7 @@ function openAnnArchiveDetail(record) {
         ${record.posted_at    ? `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${fmtDatePlain(record.posted_at)}</span></div>` : ''}
         ${record.scheduled_at ? `<div class="view-row"><span class="view-label">Scheduled for</span><span class="view-val" style="color:var(--hot-pink);">${fmtDatePlain(record.scheduled_at)}</span></div>` : ''}
         <div class="view-row"><span class="view-label">Deleted on</span><span class="view-val" style="color:#e04867;">${fmtDatePlain(record.deleted_at)}</span></div>
-        <div style="margin-top:1rem;padding-top:.5rem;border-top:1px solid var(--white);">
+        <div style="margin-top:1rem;padding-top:.5rem;border-top:1px solid var(--pink-100);">
             <div style="font-size:.72rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;">Content</div>
             <div style="font-size:.88rem;color:var(--ink-muted);line-height:1.75;white-space:pre-wrap;">${escapeHtml(record.content || '')}</div>
         </div>
