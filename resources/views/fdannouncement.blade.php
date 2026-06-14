@@ -493,6 +493,7 @@
 .vm-panel { display: none; flex-direction: column; gap: .9rem; animation: vmFadeIn .18s ease both; }
 .vm-panel.active { display: flex; }
 @keyframes vmFadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
+@keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
 .vm-ann-title { font-size: 1.25rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
 .vm-detail-row { display: flex; justify-content: space-between; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--pink-100, #f9c5d6); font-size: .86rem; }
@@ -930,6 +931,15 @@
     </div>
 </div>
 
+<div class="action-loading-overlay" id="action-loading" style="position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.72);backdrop-filter:blur(2px);">
+    <div style="display:flex;align-items:center;flex-direction:column;gap:.75rem;padding:1.25rem 1.6rem;border:1px solid var(--pink-100,#f9c5d6);border-radius:12px;background:#fff;box-shadow:0 12px 32px rgba(26,26,46,.14);color:var(--ink,#1a1a2e);font-size:.9rem;font-weight:700;">
+        <div style="width:86px;height:86px;border:3px solid var(--pink-100,#f9c5d6);border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(232,23,93,.25);animation:pulseLogo 1s ease-in-out infinite;">
+            <img src="{{ asset('images/logo.png') }}" style="width:62px;height:62px;object-fit:contain;" alt="DormEase">
+        </div>
+        <span id="action-loading-text">Please wait...</span>
+    </div>
+</div>
+
 <div class="hidden-modal-overlay" id="hidden-modal" onclick="if(event.target===this)closeHiddenModal()">
     <div class="hidden-modal-box">
         <div class="hidden-modal-header">
@@ -1020,21 +1030,52 @@ function saveHidden(ids) {
 }
 
 function dismissAnnouncement(id) {
-    const hidden = getHidden();
-    if (!hidden.includes(id)) hidden.push(id);
-    saveHidden(hidden);
-    applyHidden();
+    showFdLoading('Hiding announcement...');
+    setTimeout(() => {
+        const hidden = getHidden();
+        if (!hidden.includes(id)) hidden.push(id);
+        saveHidden(hidden);
+        applyHidden();
+        hideFdLoading();
+    }, 500);
 }
 
 function restoreHidden() {
-    saveHidden([]);
-    document.querySelectorAll('.ann-row-card').forEach(card => {
-        if (card.dataset.status !== 'closed') {
-            card.style.display = '';
-        }
-    });
-    applyHidden();
-    closeHiddenModal();
+    showFdLoading('Restoring all announcements...');
+    setTimeout(() => {
+        saveHidden([]);
+        document.querySelectorAll('.ann-row-card').forEach(card => {
+            if (card.dataset.status !== 'closed') {
+                card.style.display = '';
+            }
+        });
+        applyHidden();
+        closeHiddenModal();
+        hideFdLoading();
+    }, 600);
+}
+
+function unhideOne(id) {
+    showFdLoading('Restoring announcement...');
+    setTimeout(() => {
+        const hidden = getHidden().filter(h => h !== id);
+        saveHidden(hidden);
+        const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
+        if (card) card.style.display = '';
+        applyHidden();
+        renderHiddenModal();
+        hideFdLoading();
+    }, 500);
+}
+
+function showFdLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message;
+    overlay.style.display = 'flex';
+}
+
+function hideFdLoading() {
+    document.getElementById('action-loading').style.display = 'none';
 }
 
 function unhideOne(id) {
