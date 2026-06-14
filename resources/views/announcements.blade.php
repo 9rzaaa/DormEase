@@ -2032,7 +2032,7 @@ function openAnnArchiveDetail(record) {
         ${record.posted_at    ? `<div class="view-row"><span class="view-label">Posted</span><span class="view-val">${fmtDatePlain(record.posted_at)}</span></div>` : ''}
         ${record.scheduled_at ? `<div class="view-row"><span class="view-label">Scheduled for</span><span class="view-val" style="color:var(--hot-pink);">${fmtDatePlain(record.scheduled_at)}</span></div>` : ''}
         <div class="view-row"><span class="view-label">Deleted on</span><span class="view-val" style="color:#e04867;">${fmtDatePlain(record.deleted_at)}</span></div>
-        <div style="margin-top:1rem;padding-top:.5rem;border-top:1px solid var(--pink-100);">
+        <div style="margin-top:1rem;padding-top:.5rem;border-top:1px solid var(--white);">
             <div style="font-size:.72rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;">Content</div>
             <div style="font-size:.88rem;color:var(--ink-muted);line-height:1.75;white-space:pre-wrap;">${escapeHtml(record.content || '')}</div>
         </div>
