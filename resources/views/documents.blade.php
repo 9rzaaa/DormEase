@@ -1998,8 +1998,9 @@
             <textarea id="upd-req-remarks" placeholder="Add remarks, denial reason, or pickup instructions..."></textarea>
         </div>
         <div class="modal-field">
-            <label>Attach Fulfilled Document - PDF only (optional, for digital delivery)</label>
+            <label>Attach Fulfilled Document (optional, for digital delivery)</label>
             <input type="file" id="upd-req-file" accept=".pdf">
+            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
         </div>
         </div>
         <div class="modal-actions">
@@ -2100,8 +2101,9 @@
             <input type="text" id="uf-label" placeholder="e.g. Guards Form">
         </div>
         <div class="modal-field">
-            <label>PDF File (max 20MB)</label>
+            <label>PDF File</label>
             <input type="file" id="uf-file" accept=".pdf">
+            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('upload-form-modal')">Cancel</button>
@@ -2352,11 +2354,7 @@ function docApplyFilters() {
     docState.filtered = docState.data.filter(r => {
         if (r.status === 'approved') return false;
         if (status === '' && (r.status === 'denied' || r.status === 'resubmission')) return false;
-        if (status === 'all') {
-            if (r.status === 'approved') return false;
-        } else if (status !== '') {
-            if (r.status !== status) return false;
-        }
+        if (status !== '' && status !== 'all' && r.status !== status) return false;
         const matchSearch = !q ||
             (r.document_type ?? '').toLowerCase().includes(q) ||
             (r.tenant_name   ?? '').toLowerCase().includes(q) ||
@@ -2495,7 +2493,7 @@ function viewDoc(r) {
     }
 
     document.getElementById('view-doc-actions').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0 0;">
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:.6rem;padding:.55rem 0 0;">
             <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
             <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
         </div>
@@ -2756,7 +2754,6 @@ function viewReq(r) {
     `;
     footer.style.setProperty('justify-content', 'flex-end', 'important');
     footer.style.setProperty('gap', '.6rem', 'important');
-    footer.style.setProperty('gap', '.6rem', 'important');
     openModal('view-req-modal');
 }
 
@@ -2781,7 +2778,7 @@ function handleReqRejectionPreset() {
 function openUpdateReq(r) {
     currentReq = r;
     document.getElementById('upd-req-id').value      = r.doc_request_id;
-    document.getElementById('upd-req-status').value  = r.status ?? 'pending';
+    document.getElementById('upd-req-status').value  = (r.status === 'resubmission') ? 'denied' : (r.status ?? 'pending');
     document.getElementById('upd-req-remarks').value = r.admin_remarks ?? '';
     document.getElementById('upd-req-file').value    = '';
     document.getElementById('upd-req-rejection-preset').value = '';
@@ -2990,7 +2987,7 @@ function viewAdoc(r) {
     document.getElementById('view-adoc-content').innerHTML = `
         <div class="view-detail-row"><div class="view-detail-label">${cancelledIdLabel}</div><div class="view-detail-val" style="font-weight:700;color:var(--hot-pink);">#${cancelledPrefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Tenant</div><div class="view-detail-val">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</div></div>
-        <div class="view-detail-row"><div class="view-detail-label">Form Type</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
+        <div class="view-detail-row"><div class="view-detail-label">${isCertCancelled ? 'Document Type' : 'Form Type'}</div><div class="view-detail-val">${escHtml(d.document_type)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Submitted</div><div class="view-detail-val">${fmtDate(d.submitted_at)}</div></div>
         <div class="view-detail-row"><div class="view-detail-label">Status at Archive</div><div class="view-detail-val">${reqStatusBadge(d.status)}</div></div>
         ${d.admin_remarks ? `<div class="view-detail-row"><div class="view-detail-label">Admin Remarks</div><div class="view-detail-val"><div class="remark-box">${escHtml(d.admin_remarks)}</div></div></div>` : ''}
@@ -3188,10 +3185,10 @@ function renderFormTable() {
                     <button class="act-btn" title="Open" onclick="openFormFile('${escHtml(f.file_path)}')">
                         <img src="${eyeIcon}" alt="Open">
                     </button>
-                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, '${escHtml(f.label)}')">
+                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, ${JSON.stringify(f.label)})">
                         <img src="${editIcon}" alt="Rename">
                     </button>
-                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, '${escHtml(f.label)}')">
+                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, ${JSON.stringify(f.label)})">
                         <img src="${deleteIcon}" alt="Delete">
                     </button>
                 </div>
@@ -3213,6 +3210,8 @@ async function submitUploadForm() {
     const file  = document.getElementById('uf-file').files[0];
     if (!label) { showToast('Label is required.', 'error'); return; }
     if (!file)  { showToast('Please select a PDF file.', 'error'); return; }
+    if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
+    if (file.size > 20 * 1024 * 1024)   { showToast('File must be under 20MB.', 'error'); return; }
 
     const fd = new FormData();
     fd.append('label', label);

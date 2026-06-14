@@ -61,7 +61,7 @@ class DocumentRequestController extends Controller
 
             $updateData = [
                 'status'        => $finalStatus,
-                'admin_remarks' => $adminRemarks,
+                'admin_remarks' => $adminRemarks ?: null,
                 'processed_at'  => now(),
             ];
 
