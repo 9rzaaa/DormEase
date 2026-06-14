@@ -1277,7 +1277,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field full">
                                 <label>Contact No.</label>
-                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789" maxlength="13" value="{{ old('contact_number') }}">
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('contact_number') }}">
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
@@ -1413,7 +1413,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full">
                             <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789" maxlength="13">
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
@@ -1747,16 +1747,51 @@ function validateEmailField(inputId, errorId) {
     return true;
 }
 
-function formatPhoneNumber(rawValue) {
-    var digits = rawValue.replace(/\D/g, '');
-    if (digits.length > 11) digits = digits.substring(0, 11);
-    var formatted = digits;
-    if (digits.length > 4 && digits.length <= 7) {
-        formatted = digits.substring(0, 4) + '-' + digits.substring(4);
-    } else if (digits.length > 7) {
-        formatted = digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7);
+function formatMobileSegment(digits) {
+    if (digits.length > 10) digits = digits.substring(0, 10);
+    if (digits.length > 3 && digits.length <= 6) {
+        return digits.substring(0, 3) + '-' + digits.substring(3);
     }
-    return formatted;
+    if (digits.length > 6) {
+        return digits.substring(0, 3) + '-' + digits.substring(3, 6) + '-' + digits.substring(6);
+    }
+    return digits;
+}
+
+function formatZeroNine(digits) {
+    if (digits.length > 11) digits = digits.substring(0, 11);
+    if (digits.length > 4 && digits.length <= 7) {
+        return digits.substring(0, 4) + '-' + digits.substring(4);
+    }
+    if (digits.length > 7) {
+        return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7);
+    }
+    return digits;
+}
+
+function usesIntlPhoneFormat(rawValue, digits) {
+    var trimmed = (rawValue || '').trim();
+    return trimmed.charAt(0) === '+' || (digits.length >= 2 && digits.substring(0, 2) === '63');
+}
+
+function formatPhoneNumber(rawValue) {
+    var trimmed = (rawValue || '').trim();
+    var digits = rawValue.replace(/\D/g, '');
+
+    if (usesIntlPhoneFormat(rawValue, digits)) {
+        if (trimmed === '+') return '+';
+        if (digits.startsWith('63')) {
+            digits = digits.substring(0, 12);
+        } else if (digits.startsWith('6')) {
+            digits = ('63' + digits.substring(1)).substring(0, 12);
+        } else if (trimmed.charAt(0) === '+') {
+            digits = ('63' + digits).substring(0, 12);
+        }
+        var local = digits.startsWith('63') ? digits.substring(2) : '';
+        return '+63' + (local ? ' ' + formatMobileSegment(local) : '');
+    }
+
+    return formatZeroNine(digits);
 }
 
 function validatePhoneField(inputId, errorId, required) {
@@ -1768,10 +1803,14 @@ function validatePhoneField(inputId, errorId, required) {
     var msg = '';
     if (!val) {
         msg = required ? 'Contact number is required.' : '';
-    } else if (digits.length !== 11) {
-        msg = 'Contact number must be 11 digits (e.g. 0912-345-6789).';
-    } else if (digits.charAt(0) !== '0') {
-        msg = 'Contact number must start with 0 (e.g. 0912-345-6789).';
+    } else if (usesIntlPhoneFormat(val, digits)) {
+        if (digits.length !== 12 || !digits.startsWith('63') || digits.charAt(2) !== '9') {
+            msg = 'Use +63 followed by a 10-digit mobile number (e.g. +63 912-345-6789).';
+        } else if (!/^[0-9+\-\s]+$/.test(val)) {
+            msg = 'Contact number can only contain numbers, +, spaces, and dashes.';
+        }
+    } else if (digits.length !== 11 || !digits.startsWith('09')) {
+        msg = 'Use 11 digits starting with 09 (e.g. 0912-345-6789).';
     } else if (!/^[0-9-]+$/.test(val)) {
         msg = 'Contact number can only contain numbers and dashes.';
     }
@@ -1803,10 +1842,12 @@ function attachPhoneFormatter(inputId, errorId, required) {
         validatePhoneField(inputId, errorId, required);
     });
     input.addEventListener('keypress', function(e) {
+        if (e.which === 8) return;
         var char = String.fromCharCode(e.which);
-        if (!/[0-9]/.test(char) && e.which !== 8) {
-            e.preventDefault();
-        }
+        var pos = this.selectionStart;
+        if (char === '+' && pos === 0 && this.value.indexOf('+') === -1) return;
+        if (/[0-9]/.test(char)) return;
+        e.preventDefault();
     });
 }
 
