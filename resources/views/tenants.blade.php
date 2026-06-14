@@ -713,6 +713,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="">All Statuses</option>
                     <option value="active">Active</option>
                     <option value="pending">Pending</option>
+                    <option value="vacation">On Vacation</option>
                 </select>
                 <div class="status-legend-wrap" id="status-legend-trigger">
                     <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
@@ -2128,6 +2129,10 @@ function tempBadge(isTemp) {
     return isTemp ? '<span class="badge badge-temp">Temp Pass</span>' : '';
 }
 
+function vacationBadge(isOnVacation) {
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+}
+
 function escapeHtml(str) {
     if (!str) return '\u2014';
     return String(str)
@@ -2206,7 +2211,7 @@ function buildRows(list) {
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + (t.contact_number || '\u2014') + '</td>'
-            + '<td>' + statusBadge(t.status) + '</td>'
+            + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
@@ -2346,11 +2351,17 @@ function applyFilters() {
         if (statusFilter === '' || statusFilter === 'active' || statusFilter === 'pending') {
             return statusFilter === '' ? true : t.status === statusFilter;
         }
+        if (statusFilter === 'vacation') {
+            return t.is_on_vacation;
+        }
         return false;
     }));
     sectionData.reserved = sortList(base.filter(function(t) {
         if (t.status !== 'reserved') return false;
         if (statusFilter === '' || statusFilter === 'reserved') return true;
+        if (statusFilter === 'vacation') {
+            return t.is_on_vacation;
+        }
         return false;
     }));
     sectionPages.active   = 1;
@@ -2379,7 +2390,7 @@ function viewTenant(t) {
             + '<div class="tv-header-info">'
                 + '<div class="tv-name">' + escapeHtml(t.first_name) + ' ' + escapeHtml(t.last_name) + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
-                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + '</div>'
+                + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + vacationBadge(t.is_on_vacation) + '</div>'
             + '</div>'
         + '</div>'
         + '<div class="modal-section-title">Personal Information</div>'
@@ -2399,6 +2410,7 @@ function viewTenant(t) {
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
             + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
+            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">🏖 On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
         + '</div>';
     openModal('view-modal');
 }
