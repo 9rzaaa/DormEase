@@ -589,27 +589,29 @@
                         <div class="field-grid">
                             <div class="form-field">
                                 <label>First Name</label>
-                                <input type="text" name="first_name"
+                                <input type="text" name="first_name" id="info-fn"
                                     value="{{ old('first_name', $staff->first_name) }}"
-                                    required oninput="updateDisplayName()">
+                                    required oninput="updateDisplayName(); clearFieldError(this)">
                             </div>
                             <div class="form-field">
                                 <label>Last Name</label>
-                                <input type="text" name="last_name"
+                                <input type="text" name="last_name" id="info-ln"
                                     value="{{ old('last_name', $staff->last_name) }}"
-                                    required oninput="updateDisplayName()">
+                                    required oninput="updateDisplayName(); clearFieldError(this)">
                             </div>
                             <div class="form-field full">
                                 <label>Email Address</label>
-                                <input type="email" name="email"
-                                    value="{{ old('email', $staff->email) }}" required>
+                                <input type="email" name="email" id="info-em"
+                                    value="{{ old('email', $staff->email) }}" required
+                                    oninput="clearFieldError(this)">
                             </div>
                             <div class="form-field full">
                                 <label>Contact Number</label>
-                                <input type="text" name="contact_number"
+                                <input type="text" name="contact_number" id="info-ct"
                                     value="{{ old('contact_number', $staff->contact_number) }}"
-                                    placeholder="09XXXXXXXXX"
-                                    maxlength="11">
+                                    placeholder="e.g. 0912-345-6789"
+                                    maxlength="13"
+                                    oninput="formatContactNumber(this); clearFieldError(this)">
                                 @error('contact_number')
                                     <span style="font-size:.7rem; color:#e8175d; margin-top:.2rem; display:block;">{{ $message }}</span>
                                 @enderror
@@ -626,8 +628,8 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-ghost" onclick="document.getElementById('info-form').reset(); updateDisplayName();">Reset</button>
-                        <button type="submit" class="btn-save">
+                        <button type="button" class="btn-ghost" onclick="document.getElementById('info-form').reset(); setTimeout(updateDisplayName, 0);">Reset</button>
+                        <button type="submit" class="btn-save" onclick="if(!validateInfoForm()){event.preventDefault();}">
                             <img src="{{ asset('icons/export.png') }}" alt="">
                             Save Changes
                         </button>
@@ -687,18 +689,20 @@
                                 <label>Confirm New Password</label>
                                 <div class="input-wrap">
                                     <input type="password" name="password_confirmation" id="conf-pw"
-                                        placeholder="Repeat new password" required autocomplete="new-password">
+                                        placeholder="Repeat new password" required autocomplete="new-password"
+                                        oninput="checkConfirm()">
                                     <button type="button" class="toggle-pw" onclick="togglePw('conf-pw', this)">
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
+                                <div id="conf-pw-match" style="font-size:.69rem;margin-top:.2rem;display:none;"></div>
                             </div>
                         </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-ghost"
-                            onclick="document.getElementById('pw-form').reset(); resetStrength();">Reset</button>
-                        <button type="submit" class="btn-save">
+                            onclick="document.getElementById('pw-form').reset(); resetStrength(); document.getElementById('conf-pw-match').style.display='none'; document.getElementById('conf-pw').style.borderColor=''; document.getElementById('new-pw').style.borderColor='';">Reset</button>
+                        <button type="submit" class="btn-save" onclick="if(!validatePasswordForm()){event.preventDefault();}">
                             <img src="{{ asset('icons/nav-settings.png') }}" alt="">
                             Update Password
                         </button>
@@ -747,7 +751,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('form[data-loading-message]').forEach(form => {
-            form.addEventListener('submit', function () {
+            form.addEventListener('submit', function (e) {
+                if (e.defaultPrevented) return;
                 setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
             });
         });
@@ -756,6 +761,19 @@
     document.getElementById('avatar-input').addEventListener('change', function () {
         const file = this.files[0];
         if (!file) return;
+
+        const allowed = ['image/jpeg','image/png','image/jpg','image/gif','image/webp'];
+        if (!allowed.includes(file.type)) {
+            showToast('Only image files are allowed (JPG, PNG, GIF, WEBP).', 'error');
+            this.value = '';
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('Image must be smaller than 2MB.', 'error');
+            this.value = '';
+            return;
+        }
 
         const preview  = document.getElementById('avatar-preview');
         const initials = document.getElementById('avatar-initials');
@@ -773,9 +791,92 @@
     });
 
     function updateDisplayName() {
-        const fn = document.querySelector('[name="first_name"]').value;
-        const ln = document.querySelector('[name="last_name"]').value;
-        document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
+        const form = document.getElementById('info-form');
+        const fn = form.querySelector('[name="first_name"]').value;
+        const ln = form.querySelector('[name="last_name"]').value;
+        document.getElementById('hero-display-name').textContent = (fn + ' ' + ln).trim() || 'Your Name';
+    }
+
+    function formatContactNumber(input) {
+        var digits = input.value.replace(/\D/g, '').slice(0, 11);
+        var formatted = digits;
+        if (digits.length > 4 && digits.length <= 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        } else if (digits.length > 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+        }
+        input.value = formatted;
+    }
+
+    function showFieldError(input, msg) {
+        input.style.borderColor = '#e8175d';
+        var errId = input.id + '-err';
+        var existing = document.getElementById(errId);
+        if (!existing) {
+            var el = document.createElement('div');
+            el.id = errId;
+            el.style.cssText = 'font-size:.69rem;color:#e8175d;margin-top:.2rem;';
+            input.parentNode.insertBefore(el, input.nextSibling);
+        }
+        document.getElementById(errId).textContent = msg;
+    }
+
+    function clearFieldError(input) {
+        input.style.borderColor = '';
+        var el = document.getElementById(input.id + '-err');
+        if (el) el.textContent = '';
+    }
+
+    function validateInfoForm() {
+        var ok = true;
+        var form = document.getElementById('info-form');
+        var fn = form.querySelector('[name="first_name"]');
+        var ln = form.querySelector('[name="last_name"]');
+        var em = form.querySelector('[name="email"]');
+        var ct = form.querySelector('[name="contact_number"]');
+
+        if (!fn.value.trim()) { showFieldError(fn, 'First name is required.'); ok = false; } else clearFieldError(fn);
+        if (!ln.value.trim()) { showFieldError(ln, 'Last name is required.');  ok = false; } else clearFieldError(ln);
+
+        var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim());
+        if (!em.value.trim()) { showFieldError(em, 'Email is required.'); ok = false; }
+        else if (!emailOk)    { showFieldError(em, 'Enter a valid email address.'); ok = false; }
+        else clearFieldError(em);
+
+        var digits = ct.value.replace(/\D/g, '');
+        if (digits.length > 0 && digits.length < 11) {
+            showFieldError(ct, 'Enter a valid 11-digit phone number.');
+            ok = false;
+        } else if (digits.length > 0 && !digits.startsWith('09')) {
+            showFieldError(ct, 'Contact number must start with 09.');
+            ok = false;
+        } else {
+            clearFieldError(ct);
+        }
+        return ok;
+    }
+
+    function validatePasswordForm() {
+        var ok = true;
+        var cur  = document.getElementById('cur-pw');
+        var npw  = document.getElementById('new-pw');
+        var conf = document.getElementById('conf-pw');
+
+        if (!cur.value) { showFieldError(cur, 'Current password is required.'); ok = false; } else clearFieldError(cur);
+        if (!npw.value) { showFieldError(npw, 'New password is required.'); ok = false; }
+        else if (npw.value.length < 8) { showFieldError(npw, 'Password must be at least 8 characters.'); ok = false; }
+        else clearFieldError(npw);
+
+        if (conf.value && npw.value && conf.value !== npw.value) {
+            showFieldError(conf, 'Passwords do not match.');
+            ok = false;
+        } else if (!conf.value) {
+            showFieldError(conf, 'Please confirm your new password.');
+            ok = false;
+        } else {
+            clearFieldError(conf);
+        }
+        return ok;
     }
 
     function togglePw(inputId, btn) {
@@ -817,10 +918,32 @@
         toggle('preq-special', /[^A-Za-z0-9]/.test(val));
     }
 
+    function checkConfirm() {
+        var npw  = document.getElementById('new-pw').value;
+        var conf = document.getElementById('conf-pw').value;
+        var el   = document.getElementById('conf-pw-match');
+        if (!conf) { el.style.display = 'none'; return; }
+        el.style.display = 'block';
+        if (conf === npw) {
+            el.textContent  = 'Passwords match.';
+            el.style.color  = '#16a34a';
+            document.getElementById('conf-pw').style.borderColor = '#16a34a';
+        } else {
+            el.textContent  = 'Passwords do not match.';
+            el.style.color  = '#e8175d';
+            document.getElementById('conf-pw').style.borderColor = '#e8175d';
+        }
+    }
+
     function resetStrength() {
         document.getElementById('strength-fill').style.width = '0%';
         document.getElementById('strength-label').textContent = '';
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var ct = document.getElementById('info-ct');
+        if (ct && ct.value) formatContactNumber(ct);
+    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));
