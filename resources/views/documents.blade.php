@@ -1415,13 +1415,13 @@
     }
     .slp-row {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: .6rem;
         padding: .35rem 0;
         border-bottom: 1px solid var(--petal);
     }
     .slp-row:last-child { border-bottom: none; }
-    .slp-badge { flex-shrink: 0; min-width: 110px; }
+    .slp-badge { flex-shrink: 0; min-width: 140px; }
     .slp-desc {
         font-size: .75rem;
         color: var(--ink-muted);
