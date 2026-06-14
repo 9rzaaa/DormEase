@@ -533,6 +533,47 @@
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
 
+.ann-dismiss-btn {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+    flex-shrink: 0;
+    opacity: .55;
+}
+
+.ann-dismiss-btn:hover {
+    border-color: #e04867;
+    background: #fff0f0;
+    opacity: 1;
+}
+
+.ann-dismiss-btn svg { width: 12px; height: 12px; color: #e04867; }
+
+.ann-show-hidden-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: .6rem 1rem;
+    border-radius: 12px;
+    border: 1.5px dashed var(--pink-100, #f9c5d6);
+    background: var(--petal, #ffeef4);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--hot-pink, #d6175a);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+
+.ann-show-hidden-bar.visible { display: flex; }
+.ann-show-hidden-bar:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush); }
+.ann-show-hidden-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
+
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
 @media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
@@ -623,6 +664,7 @@
             @endphp
             @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
+                     data-ann-id="{{ $ann->announcement_id }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
@@ -654,9 +696,14 @@
                         <span class="ann-row-time">
                             {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
-                        <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
-                            <img src="{{ asset('icons/eye.png') }}" alt=""> View
-                        </button>
+                        <div style="display:flex;align-items:center;gap:.4rem;">
+                            <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
+                                <img src="{{ asset('icons/eye.png') }}" alt=""> View
+                            </button>
+                            <button class="ann-dismiss-btn" onclick="event.stopPropagation(); dismissAnnouncement({{ $ann->announcement_id }})" title="Hide this announcement">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             @empty
@@ -665,6 +712,14 @@
                     No announcements yet.
                 </div>
             @endforelse
+
+            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="restoreHidden()">
+                <div style="display:flex;align-items:center;gap:.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    <span id="ann-hidden-count-label">1 hidden announcement</span>
+                </div>
+                <span style="font-size:.72rem;font-weight:700;text-decoration:underline;">Show all</span>
+            </div>
 
             <div class="ann-list-empty" id="ann-no-results" style="display:none;">
                 <img src="{{ asset('icons/search.png') }}" alt="">
@@ -840,7 +895,49 @@ function applyDropdownFilters(changedEl) {
         card.style.display = show ? '' : 'none';
     });
 
+    const HIDDEN_KEY = 'fd_hidden_announcements';
+
+function getHidden() {
+    try { return JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]'); } catch { return []; }
+}
+
+function saveHidden(ids) {
+    localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
+}
+
+function dismissAnnouncement(id) {
+    const hidden = getHidden();
+    if (!hidden.includes(id)) hidden.push(id);
+    saveHidden(hidden);
+    applyHidden();
+}
+
+function restoreHidden() {
+    saveHidden([]);
+    applyHidden();
+}
+
+function applyHidden() {
+    const hidden = getHidden();
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        const id = parseInt(card.dataset.annId);
+        if (hidden.includes(id)) {
+            card.style.display = 'none';
+        }
+    });
+    const bar = document.getElementById('ann-show-hidden-bar');
+    const label = document.getElementById('ann-hidden-count-label');
+    if (hidden.length > 0) {
+        bar.classList.add('visible');
+        label.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
+    } else {
+        bar.classList.remove('visible');
+    }
     updateEmptyState();
+}
+
+updateEmptyState();
+applyHidden();
 }
 
 function updateEmptyState() {
