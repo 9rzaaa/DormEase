@@ -32,7 +32,7 @@
     }
     .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
 
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
     .stat-box {
         background: var(--gradient-pink);
         border-radius: 20px;
@@ -48,17 +48,6 @@
     .stat-box:hover {
         transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(232,23,93,.35);
-    }
-    .stat-box.stat-leave {
-        background: linear-gradient(135deg, #f9a825 0%, #f59f00 100%);
-        box-shadow: 0 4px 18px rgba(245,159,0,.28);
-    }
-    .stat-box.stat-leave:hover { box-shadow: 0 8px 28px rgba(245,159,0,.38); }
-    .stat-box.stat-leave .stat-icon-circle {
-        border-color: rgba(255,255,255,.5);
-    }
-    .stat-box.stat-leave .stat-icon-circle img {
-        filter: brightness(0) saturate(100%) invert(55%) sepia(90%) saturate(600%) hue-rotate(5deg) brightness(95%);
     }
     .stat-box:hover { box-shadow: var(--shadow-pink-card); }
     .stat-icon-circle {
@@ -574,7 +563,7 @@
     .d1{animation-delay:.05s;} .d2{animation-delay:.12s;} .d3{animation-delay:.2s;}
 
     @media(max-width:900px) {
-        .stats-row  { grid-template-columns: 1fr 1fr; }
+        .stats-row  { grid-template-columns: 1fr 1fr 1fr; }
         .modal-grid { grid-template-columns: 1fr; }
         .page-header { flex-direction: column; gap: 1rem; }
         .table-header { flex-direction: column; align-items: flex-start; }
@@ -1136,16 +1125,6 @@
                 <div class="stat-label">Off Duty</div>
                 <div class="stat-num">{{ $offDutyCount }}</div>
                 <div class="stat-sub">Not on shift</div>
-            </div>
-        </div>
-        <div class="stat-box stat-leave">
-            <div class="stat-icon-circle">
-                <img src="{{ asset('icons/calendar.png') }}" class="icon-md" alt="on leave">
-            </div>
-            <div>
-                <div class="stat-label">On Leave</div>
-                <div class="stat-num">{{ $onLeaveCount }}</div>
-                <div class="stat-sub">Currently Away</div>
             </div>
         </div>
     </div>
