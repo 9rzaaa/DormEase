@@ -1324,33 +1324,37 @@
             <div class="modal-title">Add New Staff</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff...">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
             @csrf
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>First Name</label>
-                    <input type="text" name="first_name" placeholder="e.g. Juan" required value="{{ old('first_name') }}">
+                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required value="{{ old('first_name') }}" oninput="validateRequired(this)">
+                    <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
                     <label>Last Name</label>
-                    <input type="text" name="last_name" placeholder="e.g. Dela Cruz" required value="{{ old('last_name') }}">
+                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required value="{{ old('last_name') }}" oninput="validateRequired(this)">
+                    <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
                     <label>Email</label>
-                    <input type="email" name="email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}">
+                    <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
+                    <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
                     <label>Role</label>
-                    <select name="role" required>
+                    <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':' var(--red)'">
                         <option value="">Select role</option>
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
                         <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
                     </select>
+                    <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
                 </div>
                 <div class="modal-field">
                     <label>Shift Schedule</label>
-                    <select name="shift_schedule">
+                    <select name="shift_schedule" id="add-shift">
                         <option value="">Select shift</option>
                         <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
                         <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
@@ -1358,12 +1362,13 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                    <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Add Staff</button>
+                <button type="submit" class="btn-submit" onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
             </div>
         </form>
     </div>
@@ -1398,15 +1403,18 @@
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>First Name</label>
-                    <input type="text" name="first_name" id="edit-first-name" required>
+                    <input type="text" name="first_name" id="edit-first-name" required oninput="validateRequired(this)">
+                    <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
                     <label>Last Name</label>
-                    <input type="text" name="last_name" id="edit-last-name" required>
+                    <input type="text" name="last_name" id="edit-last-name" required oninput="validateRequired(this)">
+                    <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
                     <label>Email</label>
-                    <input type="email" name="email" id="edit-email" required>
+                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this)">
+                    <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
                     <label>Role</label>
@@ -1425,7 +1433,8 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact">
+                    <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
                 <div class="modal-field full">
                     <label>Duty Status</label>
@@ -1470,7 +1479,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" onclick="if(document.getElementById('edit-is-on-leave').checked && !validateLeaveDates()){event.preventDefault();}">Save Changes</button>
+                <button type="submit" class="btn-submit" onclick="if(!validateEditForm()){event.preventDefault();}">Save Changes</button>
             </div>
         </form>
     </div>
@@ -1535,7 +1544,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(e) {
+                if (e.defaultPrevented) return;
                 setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
             });
         });
@@ -1676,7 +1686,7 @@
             return matchSearch && matchRole && matchDuty;
         });
         currentPage = 1;
-        renderTable();
+        sortTable();
     }
 
     function sortTable() {
@@ -1723,7 +1733,9 @@
         document.getElementById('edit-email').value           = s.email          || '';
         document.getElementById('edit-role').value            = s.role           || '';
         document.getElementById('edit-shift').value           = s.shift_schedule || '';
+        document.getElementById('edit-contact').value         = '';
         document.getElementById('edit-contact').value         = s.contact_number || '';
+        formatContactNumber(document.getElementById('edit-contact'));
         document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
@@ -1732,6 +1744,91 @@
         document.getElementById('edit-leave-note').value      = s.leave_note  || '';
         toggleLeaveFields();
         openModal('edit-modal');
+    }
+
+    function formatContactNumber(input) {
+        var digits = input.value.replace(/\D/g, '').slice(0, 11);
+        var formatted = digits;
+        if (digits.length > 4 && digits.length <= 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        } else if (digits.length > 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+        }
+        input.value = formatted;
+    }
+
+    function validateContactNumber(input) {
+        var val = input.value.replace(/\D/g, '');
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+        if (val.length > 0 && val.length < 11) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateEmail(input) {
+        var val   = input.value.trim();
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        if (val.length > 0 && !valid) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateRequired(input, label) {
+        var val   = input.value.trim();
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+        if (!val) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateAddForm() {
+        var ok = true;
+        ok = validateRequired(document.getElementById('add-first-name')) && ok;
+        ok = validateRequired(document.getElementById('add-last-name'))  && ok;
+        ok = validateEmail(document.getElementById('add-email'))         && ok;
+        ok = validateContactNumber(document.getElementById('add-contact')) && ok;
+        var roleEl = document.getElementById('add-role');
+        var roleErr = document.getElementById('add-role-error');
+        if (!roleEl.value) {
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErr) roleErr.style.display = 'block';
+            ok = false;
+        } else {
+            roleEl.style.borderColor = '';
+            if (roleErr) roleErr.style.display = 'none';
+        }
+        return ok;
+    }
+
+    function validateEditForm() {
+        var ok = true;
+        ok = validateRequired(document.getElementById('edit-first-name')) && ok;
+        ok = validateRequired(document.getElementById('edit-last-name'))  && ok;
+        ok = validateEmail(document.getElementById('edit-email'))         && ok;
+        ok = validateContactNumber(document.getElementById('edit-contact')) && ok;
+        if (document.getElementById('edit-is-on-leave').checked) {
+            ok = validateLeaveDates() && ok;
+        }
+        return ok;
     }
 
     function toggleLeaveFields() {
@@ -2099,7 +2196,6 @@
             var labelMap = { deleted: 'deleted', inactive: 'inactive' };
             list.innerHTML = '<div class="sad-empty">'
                 + '<img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No ' + labelMap[staffArchiveTab] + ' staff found.'
-                + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + '</div>';
             return;
         }
