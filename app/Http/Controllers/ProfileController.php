@@ -62,7 +62,7 @@ class ProfileController extends Controller
     {
         $staff = auth('staff')->user();
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
         $file     = $request->file('avatar');
         $mime     = $file->getMimeType();
