@@ -1004,7 +1004,7 @@
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/check.png') }}" alt="">
+                <img src="{{ asset('icons/active.png') }}" alt="">
             </div>
             <div>
                 <div class="ann-stat-label">Active</div>
