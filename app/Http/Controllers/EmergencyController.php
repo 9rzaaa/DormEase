@@ -18,6 +18,7 @@ class EmergencyController extends Controller
         $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
         $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
+        $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
@@ -27,6 +28,7 @@ class EmergencyController extends Controller
             'totalCount',
             'criticalCount',
             'resolvedCount',
+            'panicCount',
             'closedArchive',
             'resolvedArchive',
             'deletedArchive'
@@ -39,7 +41,7 @@ class EmergencyController extends Controller
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
         $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
         $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
-        $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
+        $panicCount = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
@@ -49,7 +51,7 @@ class EmergencyController extends Controller
             'reports',
             'totalCount',
             'criticalCount',
-            'resolvedCount',
+            'panicCount',
             'closedArchive',
             'resolvedArchive',
             'deletedArchive'
@@ -134,6 +136,10 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
+            $report->resolved_at = now();
+            $report->save();
+            $report->resolved_at = now();
+            $report->save();
             $this->archiveReport($report, 'resolved');
             $report->delete();
             return response()->json(['success' => true, 'archived' => true]);
@@ -189,7 +195,7 @@ class EmergencyController extends Controller
         $tenantName = $tenant
             ? trim($tenant->first_name . ' ' . $tenant->last_name)
             : 'Front Desk';
-        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user() ?? Auth::user();
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
 
         ArchivedEmergencyReport::create([
             'original_id' => $report->report_id,
