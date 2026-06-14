@@ -944,6 +944,82 @@
     50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
 }
 
+.maint-legend-wrap {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.maint-legend-wrap img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    opacity: .6;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    transition: opacity .2s;
+}
+.maint-legend-wrap:hover img { opacity: 1; }
+.maint-legend-popup {
+    display: none;
+    position: fixed;
+    background: var(--white);
+    border: 1.5px solid var(--pink-200);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 340px;
+    z-index: 9999;
+}
+.mlp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .45rem;
+    padding-bottom: .35rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+.mlp-section {
+    margin-top: .55rem;
+    margin-bottom: .2rem;
+}
+.mlp-section-label {
+    font-size: .62rem;
+    font-weight: 800;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    margin-bottom: .3rem;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}
+.mlp-section-label::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 9px;
+    background: var(--gradient-pink);
+    border-radius: 2px;
+}
+.mlp-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .28rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+.mlp-row:last-child { border-bottom: none; }
+.mlp-badge { flex-shrink: 0; min-width: 88px; }
+.mlp-desc {
+    font-size: .73rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
 .export-dropdown { position: relative; display: inline-flex; }
 .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
 .export-menu.open { display: block; }
@@ -1037,6 +1113,28 @@
             <option value="moderate">Moderate</option>
             <option value="low">Low</option>
         </select>
+
+        <div class="maint-legend-wrap">
+            <img src="{{ asset('icons/info.png') }}" alt="Guide">
+            <div class="maint-legend-popup">
+                <div class="mlp-title">Urgency, Status &amp; Issue Guide</div>
+
+                <div class="mlp-section">
+                    <div class="mlp-section-label">Urgency</div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-urgent">Urgent</span></span><span class="mlp-desc">Immediate attention required as safety or habitability at risk.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-moderate">Moderate</span></span><span class="mlp-desc">Needs prompt attention but is not an immediate danger.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="urgency-badge urgency-low">Low</span></span><span class="mlp-desc">Minor issue that can be addressed in routine maintenance.</span></div>
+                </div>
+
+                <div class="mlp-section">
+                    <div class="mlp-section-label">Status</div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-pending">Pending</span></span><span class="mlp-desc">Request received and awaiting assignment or action.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-in-progress">In-Progress</span></span><span class="mlp-desc">Assigned and currently being worked on.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-resolved">Resolved</span></span><span class="mlp-desc">Issue fixed and moved to the resolved archive.</span></div>
+                    <div class="mlp-row"><span class="mlp-badge"><span class="status-badge status-closed">Closed</span></span><span class="mlp-desc">Request closed and moved to the closed archive.</span></div>
+                </div>
+            </div>
+        </div>
 
         <div class="search-wrap">
             <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
@@ -1921,5 +2019,48 @@ document.addEventListener('DOMContentLoaded', () => {
     @endif
 
     applyFilters();
+
+    (function() {
+        var popup = document.querySelector('.maint-legend-popup');
+        if (!popup) return;
+
+        document.body.appendChild(popup);
+        popup.style.display = 'none';
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+
+        var hideTimer = null;
+
+        document.querySelectorAll('.maint-legend-wrap').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                var rect = wrap.getBoundingClientRect();
+                var popupWidth = 340;
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) {
+                    left = window.innerWidth - popupWidth - 12;
+                }
+                popup.style.top = (rect.bottom + 8) + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 150);
+            });
+        });
+
+        popup.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+        });
+
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() {
+                popup.style.display = 'none';
+            }, 150);
+        });
+    })();
 </script>
 @endsection
