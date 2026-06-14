@@ -714,22 +714,17 @@
             <div>
                 <div class="ann-stat-label">Active</div>
                 <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','active')->count() }}</div>
-                <div class="ann-stat-sub">{{ $visibleAnnouncements->where('status','scheduled')->count() }} Scheduled</div>
+                <div class="ann-stat-sub">Currently posted</div>
             </div>
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/flag.png') }}" alt="">
+                <img src="{{ asset('icons/pending.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Priority Breakdown</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->where('priority','high')->count() }}</div>
-                <div class="ann-stat-sub">
-                    High &nbsp;&middot;&nbsp;
-                    {{ $visibleAnnouncements->where('priority','moderate')->count() }} Moderate
-                    &nbsp;&middot;&nbsp;
-                    {{ $visibleAnnouncements->where('priority','low')->count() }} Low
-                </div>
+                <div class="ann-stat-label">Scheduled Announcements</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','scheduled')->count() }}</div>
+                <div class="ann-stat-sub">Waiting to publish</div>
             </div>
         </div>
     </div>
