@@ -42,6 +42,17 @@
         display: flex; align-items: center; gap: 1.4rem;
         box-sizing: border-box; min-width: 0; overflow: hidden;
     }
+    .stat-box.stat-leave {
+        background: linear-gradient(135deg, #f9a825 0%, #f59f00 100%);
+        box-shadow: 0 4px 18px rgba(245,159,0,.28);
+    }
+    .stat-box.stat-leave:hover { box-shadow: 0 8px 28px rgba(245,159,0,.38); }
+    .stat-box.stat-leave .stat-icon-circle {
+        border-color: rgba(255,255,255,.5);
+    }
+    .stat-box.stat-leave .stat-icon-circle img {
+        filter: brightness(0) saturate(100%) invert(55%) sepia(90%) saturate(600%) hue-rotate(5deg) brightness(95%);
+    }
     .stat-box:hover { box-shadow: var(--shadow-pink-card); }
     .stat-icon-circle {
         width: 72px; height: 72px; border-radius: 50%;
@@ -1120,7 +1131,7 @@
                 <div class="stat-sub">Not on shift</div>
             </div>
         </div>
-        <div class="stat-box">
+        <div class="stat-box stat-leave">
             <div class="stat-icon-circle">
                 <img src="{{ asset('icons/calendar.png') }}" class="icon-md" alt="on leave">
             </div>
@@ -1450,7 +1461,8 @@
                             </div>
                             <div class="modal-field">
                                 <label>Leave End</label>
-                                <input type="date" name="leave_end" id="edit-leave-end">
+                                <input type="date" name="leave_end" id="edit-leave-end" onchange="validateLeaveDates()">
+                                <div id="leave-date-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Leave end must be after start date.</div>
                             </div>
                         </div>
                         <div class="modal-field full">
@@ -1472,7 +1484,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
+                <button type="submit" class="btn-submit" onclick="if(document.getElementById('edit-is-on-leave').checked && !validateLeaveDates()){event.preventDefault();}">Save Changes</button>
             </div>
         </form>
     </div>
@@ -1747,6 +1759,21 @@
         } else {
             duty.disabled = false;
         }
+    }
+
+    function validateLeaveDates() {
+        var start = document.getElementById('edit-leave-start').value;
+        var end   = document.getElementById('edit-leave-end').value;
+        var endInput = document.getElementById('edit-leave-end');
+        var errEl    = document.getElementById('leave-date-error');
+        if (start && end && end < start) {
+            endInput.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        endInput.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
     }
 
     function openDeleteModal(id, name) {
