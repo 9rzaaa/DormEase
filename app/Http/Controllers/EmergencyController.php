@@ -38,9 +38,8 @@ class EmergencyController extends Controller
         $staff = Auth::guard('staff')->user();
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
         $totalCount    = $this->mapReports(EmergencyReport::orderBy('reported_at', 'desc')->get())->count();
-        $activeCount   = EmergencyReport::where('status', 'active')->count();
+        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
-        $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
@@ -49,9 +48,8 @@ class EmergencyController extends Controller
             'staff',
             'reports',
             'totalCount',
-            'activeCount',
+            'criticalCount',
             'resolvedCount',
-            'panicCount',
             'closedArchive',
             'resolvedArchive',
             'deletedArchive'
