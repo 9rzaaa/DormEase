@@ -32,7 +32,10 @@ class VisitorController extends Controller
             $allVisitors->where('status', 'cancelled')
         );
 
-        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $visitorsToday = VisitorLog::where(function ($q) {
+            $q->whereDate('date_of_visit', Carbon::today())
+              ->orWhereDate('arrival_time', Carbon::today());
+        })->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->where('status', 'inside')
@@ -74,7 +77,10 @@ class VisitorController extends Controller
             $allVisitors->where('status', 'cancelled')
         );
 
-        $visitorsToday   = VisitorLog::whereDate('arrival_time', Carbon::today())->count();
+        $visitorsToday = VisitorLog::where(function ($q) {
+            $q->whereDate('date_of_visit', Carbon::today())
+              ->orWhereDate('arrival_time', Carbon::today());
+        })->count();
         $currentlyInside = VisitorLog::whereNotNull('arrival_time')
             ->whereNull('departure_time')
             ->where('status', 'inside')
