@@ -13,15 +13,29 @@ class StaffController extends Controller
 {
     public function index()
     {
+        $today = now()->toDateString();
+
         Staff::where('is_on_leave', true)
             ->whereNotNull('leave_end')
-            ->whereDate('leave_end', '<', now()->toDateString())
+            ->whereDate('leave_end', '<', $today)
             ->update([
                 'is_on_leave' => false,
                 'leave_start' => null,
                 'leave_end'   => null,
                 'leave_note'  => null,
             ]);
+
+        Staff::where('is_on_leave', true)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('leave_start')
+                  ->orWhereDate('leave_start', '<=', $today);
+            })
+            ->where(function ($q) use ($today) {
+                $q->whereNull('leave_end')
+                  ->orWhereDate('leave_end', '>=', $today);
+            })
+            ->where('duty_status', '!=', 'off_duty')
+            ->update(['duty_status' => 'off_duty']);
 
         $staff = Staff::orderByDesc('staff_id')->get();
 
@@ -175,6 +189,7 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $staff = Staff::findOrFail($id);
+        $today = now()->toDateString();
 
         $request->validate([
             'first_name'     => 'required|string|max:100',
@@ -211,7 +226,7 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'shift_start'    => $shiftTimes['shift_start'],
             'shift_end'      => $shiftTimes['shift_end'],
-            'duty_status'    => $isOnLeave ? 'off_duty' : $request->duty_status,
+            'duty_status'    => ($isOnLeave && (!$request->leave_start || $request->leave_start <= $today)) ? 'off_duty' : $request->duty_status,
             'is_on_leave'    => $isOnLeave,
             'leave_start'    => $isOnLeave ? $request->leave_start : null,
             'leave_end'      => $isOnLeave ? $request->leave_end   : null,
