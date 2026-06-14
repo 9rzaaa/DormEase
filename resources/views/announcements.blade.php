@@ -93,12 +93,9 @@
     gap: 1.2rem;
     box-sizing: border-box;
 }
-.ann-stat-sub {
-    font-size: .75rem;
-    color: var(--white);
-    font-weight: 600;
-    letter-spacing: .04em;
-}
+
+.ann-stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
+
 .ann-stat-card {
     background: var(--gradient-pink);
     border-radius: 18px;
@@ -135,7 +132,7 @@
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 .ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-label { font-size: .8rem; color: rgba(247,245,245,.967); margin-bottom: .15rem; font-weight: 700; }
 .ann-compose-strip {
     background: #fff;
     border: 1.5px solid var(--pink-100, #f9c5d6);
