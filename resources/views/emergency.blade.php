@@ -912,6 +912,64 @@
     }
 
     @media (max-width: 580px) { .stats-row { grid-template-columns: 1fr; } }
+
+    .status-legend-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .status-legend-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        transform: none;
+        background: var(--white);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 320px;
+        z-index: 600;
+        pointer-events: none;
+    }
+    .status-legend-wrap:hover .status-legend-popup { display: block; }
+    .slp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .slp-row {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--pink-100);
+    }
+    .slp-row:last-child { border-bottom: none; }
+    .slp-badge { flex-shrink: 0; min-width: 90px; }
+    .slp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+    }
 </style>
 @endsection
 
@@ -999,6 +1057,18 @@
                     <option value="newest">Newest</option>
                     <option value="oldest">Oldest</option>
                 </select>
+                <div class="status-legend-wrap">
+                    <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+                    <div class="status-legend-popup">
+                        <div class="slp-title">Urgency &amp; Status Guide</div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-critical">Critical</span></span><span class="slp-desc">Immediate danger to life or property. Requires urgent response.</span></div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-urgent">Urgent</span></span><span class="slp-desc">Serious situation that needs prompt attention but is not immediately life-threatening.</span></div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-moderate">Moderate</span></span><span class="slp-desc">Situation is under control but still requires monitoring or action.</span></div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-active">Active</span></span><span class="slp-desc">Report is open and being monitored or attended to.</span></div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-resolved">Resolved</span></span><span class="slp-desc">Situation has been addressed and the report is moved to the resolved archive.</span></div>
+                        <div class="slp-row"><span class="slp-badge"><span class="badge badge-closed">Closed</span></span><span class="slp-desc">Report has been closed and moved to the closed archive.</span></div>
+                    </div>
+                </div>
                 <div class="date-filter">
                     <input type="date" id="date-from" onchange="applyFilters()">
                     <span>to</span>
