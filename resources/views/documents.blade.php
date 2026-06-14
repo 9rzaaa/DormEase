@@ -1391,8 +1391,8 @@
         display: none;
         position: absolute;
         top: calc(100% + 10px);
-        left: 50%;
-        transform: translateX(-50%);
+        left: 0;
+        transform: none;
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 14px;
@@ -1487,10 +1487,6 @@
                 <option value="oldest">Oldest</option>
             </select>
 
-            <div class="search-wrap">
-                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                <input type="text" id="doc-search" placeholder="Search tenant, form type..." oninput="docApplyFilters()">
-            </div>
             <div class="status-legend-wrap">
                 <img src="{{ asset('icons/info.png') }}" alt="Status guide">
                 <div class="status-legend-popup">
@@ -1501,6 +1497,10 @@
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-resubmission">For Resubmission</span></span><span class="slp-desc">Rejected but tenant is allowed to upload a corrected file.</span></div>
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Submission rejected. Moved to the Denied archive tab.</span></div>
                 </div>
+            </div>
+            <div class="search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                <input type="text" id="doc-search" placeholder="Search tenant, form type..." oninput="docApplyFilters()">
             </div>
         </div>
 
@@ -1583,10 +1583,6 @@
                 <option value="oldest">Oldest</option>
             </select>
 
-            <div class="search-wrap">
-                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                <input type="text" id="req-search" placeholder="Search tenant, document type..." oninput="reqApplyFilters()">
-            </div>
             <div class="status-legend-wrap">
                 <img src="{{ asset('icons/info.png') }}" alt="Status guide">
                 <div class="status-legend-popup">
@@ -1598,6 +1594,10 @@
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-denied">Denied</span></span><span class="slp-desc">Request was denied. Tenant has been notified with a reason.</span></div>
                     <div class="slp-row"><span class="slp-badge"><span class="req-status-badge req-cancelled">Cancelled</span></span><span class="slp-desc">Request was cancelled before it was fulfilled.</span></div>
                 </div>
+            </div>
+            <div class="search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                <input type="text" id="req-search" placeholder="Search tenant, document type..." oninput="reqApplyFilters()">
             </div>
         </div>
 
