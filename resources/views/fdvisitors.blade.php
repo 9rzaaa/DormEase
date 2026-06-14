@@ -596,6 +596,39 @@
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
 
+    .visitor-legend-wrap {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .visitor-legend-wrap img {
+        width: 15px; height: 15px; object-fit: contain; opacity: .55;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s;
+    }
+    .visitor-legend-wrap:hover img { opacity: 1; }
+    .visitor-legend-popup {
+        display: none; position: fixed;
+        background: var(--white); border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem; min-width: 360px; z-index: 99999;
+    }
+    .vlp-title {
+        font-size: .67rem; font-weight: 800; color: var(--bright-pink);
+        text-transform: uppercase; letter-spacing: .08em;
+        margin-bottom: .45rem; padding-bottom: .35rem; border-bottom: 1.5px solid #fce4ef;
+    }
+    .vlp-row {
+        display: flex; align-items: flex-start; gap: .6rem;
+        padding: .32rem 0; border-bottom: 1px solid #fce4ef;
+    }
+    .vlp-row:last-child { border-bottom: none; }
+    .vlp-badge { flex-shrink: 0; min-width: 100px; display: flex; align-items: center; }
+    .vlp-desc { font-size: .73rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .1rem; }
+
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
     .export-menu.open { display: block; }
@@ -673,6 +706,34 @@
                     <input type="date" class="date-input" id="date-from" onchange="filterTable()">
                     to
                     <input type="date" class="date-input" id="date-to" onchange="filterTable()">
+                    <button type="button" id="date-clear-btn-fd" onclick="clearDates()" style="display:none;background:none;border:none;cursor:pointer;color:var(--bright-pink);font-size:.8rem;font-weight:700;padding:0 .2rem;font-family:var(--ff-body);line-height:1;flex-shrink:0;" title="Clear dates">&#x2715;</button>
+                    <div id="date-error-fd" style="display:none;position:fixed;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:99999;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
+                </div>
+                <div class="visitor-legend-wrap" id="fd-visitor-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" alt="Status Guide">
+                    <div class="visitor-legend-popup" id="fd-visitor-legend-popup">
+                        <div class="vlp-title">Status Guide</div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-approved">Approved</span></span>
+                            <span class="vlp-desc">Visit approved and expected but visitor has not yet arrived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-inside">Inside</span></span>
+                            <span class="vlp-desc">Visitor has checked in and is currently inside the dormitory.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-pending">Pending</span></span>
+                            <span class="vlp-desc">Visit registered but not yet approved or acted on.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-completed">Completed</span></span>
+                            <span class="vlp-desc">Visitor has checked out. Visit is done and archived.</span>
+                        </div>
+                        <div class="vlp-row">
+                            <span class="vlp-badge"><span class="badge badge-rejected">Rejected</span></span>
+                            <span class="vlp-desc">Visit was rejected, cancelled, or denied entry by staff.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="search-wrap">
@@ -1009,6 +1070,7 @@
     var currentPage = 1;
     var filtered    = visitors.slice();
     var archiveTab  = 'completed';
+    var _rowMap     = {};
 
     function fmtDateTime(d) {
         if (!d) return '&mdash;';
@@ -1068,7 +1130,7 @@
             tbody.innerHTML = pageData.map(function(v) {
                 var canTimein  = !v.arrival_time && v.status !== 'rejected';
                 var canTimeout = v.arrival_time && !v.departure_time;
-                var safeV      = JSON.stringify(v).replace(/'/g, "&#39;");
+                _rowMap[v.visitor_id] = v;
 
                 return '<tr>'
                     + '<td class="td-name">' + (v.visitor_name || '') + '</td>'
@@ -1085,7 +1147,7 @@
                     + '<td>' + badge(v.status) + '</td>'
                     + '<td>'
                         + '<div class="action-group">'
-                            + '<button class="act-btn" title="View Details" onclick=\'viewVisitorDetail(' + safeV + ')\'>'
+                            + '<button class="act-btn" title="View Details" onclick="viewVisitorDetail(_rowMap[' + v.visitor_id + '])">'
                                 + '<img src="{{ asset('icons/eye.png') }}" alt="View">'
                             + '</button>'
                             + '<button class="act-btn green" title="Log Time In" ' + (!canTimein ? 'disabled' : '') + ' onclick="openTimein(' + v.visitor_id + ', \'' + (v.visitor_name || '').replace(/'/g, "\\'") + '\')">'
@@ -1134,17 +1196,59 @@
         renderTable();
     }
 
+    var _fdFilterDebounce  = null;
+    var _fdArchiveDebounce = null;
+
     function filterTable() {
-        var q    = document.getElementById('search-input').value.toLowerCase();
-        var from = document.getElementById('date-from').value;
-        var to   = document.getElementById('date-to').value;
+        clearTimeout(_fdFilterDebounce);
+        _fdFilterDebounce = setTimeout(_runFdFilters, 180);
+    }
+
+    function sortTable() { filterTable(); }
+
+    function clearDates() {
+        document.getElementById('date-from').value              = '';
+        document.getElementById('date-to').value                = '';
+        document.getElementById('date-from').style.borderColor  = '';
+        document.getElementById('date-to').style.borderColor    = '';
+        document.getElementById('date-error-fd').style.display  = 'none';
+        document.getElementById('date-clear-btn-fd').style.display = 'none';
+        filterTable();
+    }
+
+    function _runFdFilters() {
+        var q       = document.getElementById('search-input').value.toLowerCase();
+        var from    = document.getElementById('date-from').value;
+        var to      = document.getElementById('date-to').value;
+        var sort    = document.getElementById('sort-select').value;
+        var dateErr = document.getElementById('date-error-fd');
+        var clearBtn= document.getElementById('date-clear-btn-fd');
+        var fromEl  = document.getElementById('date-from');
+        var toEl    = document.getElementById('date-to');
+
+        if (from && to && from > to) {
+            dateErr.style.visibility = 'hidden';
+            dateErr.style.display    = 'block';
+            var rect = toEl.getBoundingClientRect();
+            dateErr.style.top        = (rect.bottom + 6) + 'px';
+            dateErr.style.left       = rect.left + 'px';
+            dateErr.style.visibility = '';
+            fromEl.style.borderColor = '#ffc2d1';
+            toEl.style.borderColor   = '#ffc2d1';
+            return;
+        }
+
+        dateErr.style.display    = 'none';
+        fromEl.style.borderColor = '';
+        toEl.style.borderColor   = '';
+        clearBtn.style.display   = (from || to) ? 'inline' : 'none';
 
         filtered = visitors.filter(function(v) {
             var matchQ = !q
                 || (v.visitor_name || '').toLowerCase().includes(q)
                 || (v.purpose || '').toLowerCase().includes(q)
                 || (v.tenant ? (v.tenant.first_name + ' ' + v.tenant.last_name).toLowerCase().includes(q) : false)
-                || (v.tenant && v.tenant.room_number ? (v.tenant.room_number + '').toLowerCase().includes(q) : false);
+                || (v.tenant && v.tenant.room_number ? String(v.tenant.room_number).toLowerCase().includes(q) : false);
 
             var arrDate   = v.arrival_time ? v.arrival_time.substring(0, 10) : (v.date_of_visit || '');
             var matchFrom = !from || arrDate >= from;
@@ -1153,16 +1257,11 @@
             return matchQ && matchFrom && matchTo;
         });
 
-        currentPage = 1;
-        renderTable();
-    }
+        if (sort === 'newest') filtered.sort(function(a, b) { return new Date(b.arrival_time || b.date_of_visit || 0) - new Date(a.arrival_time || a.date_of_visit || 0); });
+        if (sort === 'oldest') filtered.sort(function(a, b) { return new Date(a.arrival_time || a.date_of_visit || 0) - new Date(b.arrival_time || b.date_of_visit || 0); });
+        if (sort === 'name')   filtered.sort(function(a, b) { return (a.visitor_name || '').localeCompare(b.visitor_name || ''); });
+        if (sort === 'status') filtered.sort(function(a, b) { return (a.status || '').localeCompare(b.status || ''); });
 
-    function sortTable() {
-        var val = document.getElementById('sort-select').value;
-        if (val === 'newest') filtered.sort(function(a, b) { return new Date(b.arrival_time || b.date_of_visit) - new Date(a.arrival_time || a.date_of_visit); });
-        if (val === 'oldest') filtered.sort(function(a, b) { return new Date(a.arrival_time || a.date_of_visit) - new Date(b.arrival_time || b.date_of_visit); });
-        if (val === 'name')   filtered.sort(function(a, b) { return (a.visitor_name || '').localeCompare(b.visitor_name || ''); });
-        if (val === 'status') filtered.sort(function(a, b) { return (a.status || '').localeCompare(b.status || ''); });
         currentPage = 1;
         renderTable();
     }
@@ -1347,7 +1446,8 @@
 
     function exportVisitorsPdf() {
         if (!visitors.length) { showToast('No data to export.', 'error'); return; }
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = visitors.map(function(v) {
             return '<tr>'
                 + '<td>' + (v.visitor_name || '') + '</td>'
@@ -1373,12 +1473,12 @@
     }
 
     function openArchive() {
-        document.getElementById('archive-drawer').classList.add('open');
-        document.getElementById('archive-backdrop').classList.add('open');
         document.getElementById('acount-completed').textContent = completedVisitors.length;
         document.getElementById('acount-deleted').textContent   = deletedVisitors.length;
         document.getElementById('acount-cancelled').textContent = cancelledVisitors.length;
-        renderArchive();
+        document.getElementById('archive-drawer').classList.add('open');
+        document.getElementById('archive-backdrop').classList.add('open');
+        switchArchiveTab('completed');
     }
 
     function closeArchive() {
@@ -1396,8 +1496,13 @@
     }
 
     function renderArchive() {
+        clearTimeout(_fdArchiveDebounce);
+        _fdArchiveDebounce = setTimeout(_runFdRenderArchive, 150);
+    }
+
+    function _runFdRenderArchive() {
         var q    = document.getElementById('archive-search').value.toLowerCase();
-        
+
         var data;
         if (archiveTab === 'completed') {
             data = completedVisitors;
@@ -1629,5 +1734,42 @@
 
     filtered = visitors.slice();
     renderTable();
+
+    (function() {
+        var popup = document.getElementById('fd-visitor-legend-popup');
+        if (!popup) return;
+        document.body.appendChild(popup);
+        popup.style.display  = 'none';
+        popup.style.position = 'fixed';
+        popup.style.zIndex   = '99999';
+        var hideTimer  = null;
+        var popupWidth = 360;
+        document.querySelectorAll('#fd-visitor-legend-trigger').forEach(function(wrap) {
+            wrap.addEventListener('mouseenter', function() {
+                clearTimeout(hideTimer);
+                popup.style.visibility = 'hidden';
+                popup.style.display    = 'block';
+                var popupH = popup.offsetHeight || 220;
+                popup.style.display    = 'none';
+                popup.style.visibility = '';
+                var rect = wrap.getBoundingClientRect();
+                var left = rect.left;
+                if (left + popupWidth > window.innerWidth - 12) left = window.innerWidth - popupWidth - 12;
+                if (left < 8) left = 8;
+                var spaceBelow = window.innerHeight - rect.bottom;
+                var top = spaceBelow >= popupH + 10 ? rect.bottom + 8 : Math.max(8, rect.top - popupH - 8);
+                popup.style.top  = top + 'px';
+                popup.style.left = left + 'px';
+                popup.style.display = 'block';
+            });
+            wrap.addEventListener('mouseleave', function() {
+                hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
+            });
+        });
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+        popup.addEventListener('mouseleave', function() {
+            hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
+        });
+    })();
 </script>
 @endsection
