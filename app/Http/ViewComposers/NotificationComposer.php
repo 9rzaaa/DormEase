@@ -29,8 +29,8 @@ class NotificationComposer
         'tenant_deleted',
         'tenant_reserved',
         'reservation_overdue',
+        'tenant_moveout_reminder',
     ];
-
     const FRONTDESK_TYPES = [
         'announcement_new',
         'visitor_registration',

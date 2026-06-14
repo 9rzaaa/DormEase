@@ -154,6 +154,7 @@ class NotificationController extends Controller
             str_starts_with($type, 'document')     => 'document',
             str_starts_with($type, 'announcement') => 'announcement',
             str_starts_with($type, 'visitor')      => 'visitor',
+            $type === 'tenant_moveout_reminder'    => 'moveout_reminder',
             str_starts_with($type, 'tenant')       => 'tenant',
             default                                => 'general',
         };
@@ -167,6 +168,7 @@ class NotificationController extends Controller
             'document'            => 'nav-docu',
             'announcement'        => 'nav-announ',
             'visitor'             => 'nav-visit',
+            'moveout_reminder'    => 'pending',
             'tenant'              => 'nav-tenants',
             default               => 'bell',
         };
