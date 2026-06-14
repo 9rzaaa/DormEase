@@ -41,7 +41,7 @@
 
 .ann-stats-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.2rem;
     box-sizing: border-box;
 }
@@ -675,7 +675,7 @@
 }
 
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
-@media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
+@media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(2, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
 @media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
 </style>
@@ -699,20 +699,10 @@
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/announce.png') }}" alt="">
-            </div>
-            <div>
-                <div class="ann-stat-label">Total Announcements</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->count() }}</div>
-                <div class="ann-stat-sub">Active &amp; Scheduled</div>
-            </div>
-        </div>
-        <div class="ann-stat-card">
-            <div class="ann-stat-icon">
                 <img src="{{ asset('icons/active.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Active</div>
+                <div class="ann-stat-label">Active Announcements</div>
                 <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','active')->count() }}</div>
                 <div class="ann-stat-sub">Currently posted</div>
             </div>
