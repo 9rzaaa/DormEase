@@ -91,6 +91,7 @@
         box-sizing: border-box;
         min-width: 0;
         overflow: hidden;
+        transition: transform .2s, box-shadow .2s;
     }
 
     .stat-icon {
@@ -105,7 +106,12 @@
     }
 
     .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
-    .stat-label { font-size: .8rem; color: rgba(247,245,245,.967); font-weight: 700; margin-bottom: .15rem; }
+    .stat-label { font-size: .8rem; color: rgba(247,245,245,.967); font-weight: 700; margin-bottom: .15rem;}
+
+    .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(232,23,93,.35);
+    }
 
     .table-card {
         background: var(--white);
