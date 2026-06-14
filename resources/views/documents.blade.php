@@ -754,6 +754,15 @@
         cursor: pointer;
     }
 
+    .modal-footer-split {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between !important;
+        gap: .6rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .resubmission-toggle {
         display: flex;
         align-items: center;
@@ -1944,7 +1953,7 @@
             <div id="vd-remarks-content"></div>
         </div>
 
-        <div class="modal-actions" style="margin-top:1rem;" id="view-doc-actions"></div>
+        <div class="modal-actions modal-footer-split" style="margin-top:1rem;" id="view-doc-actions"></div>
     </div>
 </div>
 
@@ -1997,9 +2006,9 @@
             <textarea id="upd-doc-remarks" placeholder="Add any extra notes for the tenant..."></textarea>
         </div>
         </div>
-        <div class="modal-actions" style="justify-content:space-between;">
-            <button class="btn-submit" onclick="submitUpdateDoc()">Save</button>
-            <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Cancel</button>
+        <div class="modal-actions modal-footer-split">
+            <button class="btn-submit" onclick="submitUpdateDoc()">Save Changes</button>
+            <button class="btn-cancel" onclick="closeModal('update-doc-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -2575,10 +2584,8 @@ function viewDoc(r) {
     }
 
     document.getElementById('view-doc-actions').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.55rem 0 0;">
-            <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
-            <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
-        </div>
+        <button class="btn-submit" onclick="closeModal('view-doc-modal');setTimeout(()=>openUpdateDoc(currentDoc),200);">Review Submission</button>
+        <button class="btn-cancel" onclick="closeModal('view-doc-modal')">Close</button>
     `;
     openModal('view-doc-modal');
 }
