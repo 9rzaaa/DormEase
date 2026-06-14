@@ -682,6 +682,11 @@
 @endsection
 
 @section('content')
+@php
+    $visibleAnnouncements = $announcements
+        ->filter(fn ($a) => strtolower($a->status ?? 'active') !== 'closed')
+        ->values();
+@endphp
 <div class="ann-page">
 
     <div class="ann-page-header fade-up d1">
@@ -698,8 +703,8 @@
             </div>
             <div>
                 <div class="ann-stat-label">Total Announcements</div>
-                <div class="ann-stat-num">{{ $announcements->count() }}</div>
-                <div class="ann-stat-sub">All Posted</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->count() }}</div>
+                <div class="ann-stat-sub">Active &amp; Scheduled</div>
             </div>
         </div>
         <div class="ann-stat-card">
@@ -708,8 +713,8 @@
             </div>
             <div>
                 <div class="ann-stat-label">Active</div>
-                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
-                <div class="ann-stat-sub">{{ $announcements->where('status','closed')->count() }} Closed</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','active')->count() }}</div>
+                <div class="ann-stat-sub">{{ $visibleAnnouncements->where('status','scheduled')->count() }} Scheduled</div>
             </div>
         </div>
         <div class="ann-stat-card">
@@ -718,12 +723,12 @@
             </div>
             <div>
                 <div class="ann-stat-label">Priority Breakdown</div>
-                <div class="ann-stat-num">{{ $announcements->where('priority','high')->count() }}</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->where('priority','high')->count() }}</div>
                 <div class="ann-stat-sub">
                     High &nbsp;&middot;&nbsp;
-                    {{ $announcements->where('priority','moderate')->count() }} Moderate
+                    {{ $visibleAnnouncements->where('priority','moderate')->count() }} Moderate
                     &nbsp;&middot;&nbsp;
-                    {{ $announcements->where('priority','low')->count() }} Low
+                    {{ $visibleAnnouncements->where('priority','low')->count() }} Low
                 </div>
             </div>
         </div>
@@ -734,7 +739,7 @@
             <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
-                <option value="closed">Closed</option>
+                <option value="scheduled">Scheduled</option>
             </select>
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
@@ -760,7 +765,7 @@
 
         <div class="ann-list-panel" id="ann-list-panel">
             @php
-                $sorted = $announcements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at)->values();
+                $sorted = $visibleAnnouncements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at)->values();
             @endphp
             @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
@@ -838,9 +843,9 @@
                 </div>
                 <div class="ann-sidebar-body">
                     @php
-                        $highCount = $announcements->where('priority','high')->count();
-                        $modCount  = $announcements->where('priority','moderate')->count();
-                        $lowCount  = $announcements->where('priority','low')->count();
+                        $highCount = $visibleAnnouncements->where('priority','high')->count();
+                        $modCount  = $visibleAnnouncements->where('priority','moderate')->count();
+                        $lowCount  = $visibleAnnouncements->where('priority','low')->count();
                     @endphp
                     <div class="ann-prio-row">
                         <div class="ann-prio-label"><span class="dot" style="background:#e04867"></span> High</div>
@@ -864,11 +869,11 @@
                         Recent
                     </div>
                     <span style="font-size:.72rem;font-weight:700;background:var(--petal,#ffeef4);color:var(--hot-pink,#d6175a);padding:.12rem .5rem;border-radius:99px;border:1px solid var(--pink-100,#f9c5d6);">
-                        {{ $announcements->count() }} total
+                        {{ $visibleAnnouncements->count() }} total
                     </span>
                 </div>
                 <div class="ann-sidebar-body">
-                    @forelse($announcements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
+                    @forelse($visibleAnnouncements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
                         <div class="ann-recent-item" onclick="openViewModal({{ $r->announcement_id }})">
                             <div class="ann-recent-title">{{ $r->title }}</div>
                             <div class="ann-recent-time">{{ \Carbon\Carbon::parse($r->posted_at ?? $r->created_at)->format('M j, Y') }}</div>
@@ -958,7 +963,7 @@
 
 @section('scripts')
 <script>
-const annData = @json($announcements->keyBy('announcement_id'));
+const annData = @json($visibleAnnouncements->keyBy('announcement_id'));
 const storageBase = "{{ asset('storage') }}";
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -1004,6 +1009,7 @@ function applyDropdownFilters(changedEl) {
 
         let show = true;
 
+        if (cardStatus === 'closed') show = false;
         if (status && cardStatus !== status) show = false;
         if (priority && cardPriority !== priority) show = false;
         if (date && weekStart && weekEnd && (cardPosted < weekStart || cardPosted > weekEnd)) show = false;
@@ -1045,6 +1051,11 @@ function unhideOne(id) {
     if (card) card.style.display = '';
     applyHidden();
     renderHiddenModal();
+}
+
+function purgeHiddenMissing() {
+    const hidden = getHidden().filter(id => !!annData[id]);
+    if (hidden.length !== getHidden().length) saveHidden(hidden);
 }
 
 function applyHidden() {
@@ -1232,6 +1243,8 @@ function openViewModal(id) {
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
 
+document.querySelectorAll('.ann-row-card[data-status="closed"]').forEach(card => card.remove());
+purgeHiddenMissing();
 applyHidden();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
