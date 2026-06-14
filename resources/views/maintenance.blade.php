@@ -179,7 +179,7 @@
         font-weight: 600;
     }
 
-    .date-range img { width: 14px; height: 14px; object-fit: contain; opacity: .5; }
+    .date-range { user-select: none; }
 
     .date-range input[type="date"] {
         border: none; outline: none;
@@ -1092,11 +1092,11 @@
         </select>
 
         <span class="toolbar-label">From:</span>
-        <div class="date-range">
-            <img src="{{ asset('icons/calendar.png') }}" alt="">
+        <div class="date-range" style="position:relative;">
             <input type="date" id="date-from" onchange="applyFilters()">
             <span class="date-sep">to</span>
             <input type="date" id="date-to" onchange="applyFilters()">
+            <div id="date-error" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:8px;padding:.3rem .75rem;font-size:.75rem;font-weight:700;color:#b0163a;white-space:nowrap;z-index:200;box-shadow:0 4px 12px rgba(232,23,93,.12);">End date cannot be before start date.</div>
         </div>
 
         <select class="toolbar-select" id="status-filter" onchange="applyFilters()">
@@ -1301,7 +1301,6 @@
 
 <div class="modal-overlay" id="edit-modal">
     <div class="modal" style="max-width:540px;padding:0;overflow:hidden;border-radius:18px;">
-        <!-- Header -->
         <div style="background:var(--gradient-pink);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
             <div style="display:flex;align-items:center;gap:.75rem;">
                 <div style="width:38px;height:38px;background:rgba(255,255,255,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -1315,15 +1314,12 @@
             <button class="modal-close" onclick="closeModal('edit-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
 
-        <!-- Body -->
-        <form id="edit-form" method="POST" data-loading-message="Saving changes...">
+        <form id="edit-form" method="POST" data-loading-message="Saving changes..." onsubmit="return validateEditMaintForm(event)">
             @csrf
             @method('PUT')
             <div style="padding:1.4rem 1.5rem;display:flex;flex-direction:column;gap:1rem;">
 
-                <!-- Status + Urgency row -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
-                    <!-- Status -->
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
                         <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
@@ -1333,8 +1329,6 @@
                             <option value="closed">Close &amp; Archive</option>
                         </select>
                     </div>
-
-                    <!-- Urgency -->
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
                         <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
@@ -1345,7 +1339,6 @@
                     </div>
                 </div>
 
-                <!-- Admin Remarks -->
                 <div style="display:flex;flex-direction:column;gap:.4rem;">
                     <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Admin Remarks <span style="text-transform:none;font-weight:500;color:var(--ink-muted);">(visible to tenant)</span></label>
                     <textarea name="admin_remarks" id="edit-remarks"
@@ -1356,7 +1349,6 @@
                     ></textarea>
                 </div>
 
-                <!-- Warning note -->
                 <div style="display:flex;align-items:flex-start;gap:.6rem;background:#fff8e1;border:1.5px solid #ffd54f;border-radius:10px;padding:.7rem .9rem;">
                     <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">⚠️</span>
                     <span style="font-size:.78rem;color:#c07800;line-height:1.55;">Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this request to the archive permanently.</span>
@@ -1364,7 +1356,6 @@
 
             </div>
 
-            <!-- Footer -->
             <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;">
                 <button type="button" onclick="closeModal('edit-modal')"
                     style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
@@ -1582,27 +1573,48 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable();
     }
 
+    var _filterDebounce = null;
+
     function applyFilters() {
-        const q       = document.getElementById('search-input').value.toLowerCase();
-        const sort    = document.getElementById('sort-select').value;
-        const status  = document.getElementById('status-filter').value;
-        const urgency = document.getElementById('urgency-filter').value;
-        const from    = document.getElementById('date-from').value;
-        const to      = document.getElementById('date-to').value;
+        clearTimeout(_filterDebounce);
+        _filterDebounce = setTimeout(function() {
+            _runFilters();
+        }, 180);
+    }
 
-        filtered = requests.filter(r => {
-            const matchSearch =
+    function _runFilters() {
+        var q       = document.getElementById('search-input').value.toLowerCase();
+        var sort    = document.getElementById('sort-select').value;
+        var status  = document.getElementById('status-filter').value;
+        var urgency = document.getElementById('urgency-filter').value;
+        var from    = document.getElementById('date-from').value;
+        var to      = document.getElementById('date-to').value;
+        var dateErr = document.getElementById('date-error');
+
+        if (from && to && from > to) {
+            dateErr.style.display = 'block';
+            document.getElementById('date-from').style.borderColor = '#ffc2d1';
+            document.getElementById('date-to').style.borderColor   = '#ffc2d1';
+            return;
+        }
+
+        dateErr.style.display = 'none';
+        document.getElementById('date-from').style.borderColor = '';
+        document.getElementById('date-to').style.borderColor   = '';
+
+        filtered = requests.filter(function(r) {
+            var matchSearch =
                 ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
-                (r.tenant_name ?? '').toLowerCase().includes(q) ||
-                (r.room_number ?? '').toLowerCase().includes(q) ||
-                (r.issue_type  ?? '').toLowerCase().includes(q) ||
-                (r.description ?? '').toLowerCase().includes(q);
-            const matchStatus  = !status  || r.status  === status;
-            const matchUrgency = !urgency || r.urgency === urgency;
+                (r.tenant_name || '').toLowerCase().includes(q) ||
+                (r.room_number || '').toLowerCase().includes(q) ||
+                (r.issue_type  || '').toLowerCase().includes(q) ||
+                (r.description || '').toLowerCase().includes(q);
+            var matchStatus  = !status  || r.status  === status;
+            var matchUrgency = !urgency || r.urgency === urgency;
 
-            let matchDate = true;
+            var matchDate = true;
             if (from || to) {
-                const d = new Date(r.created_at);
+                var d = new Date(r.created_at);
                 if (from && d < new Date(from)) matchDate = false;
                 if (to   && d > new Date(to + 'T23:59:59')) matchDate = false;
             }
@@ -1610,10 +1622,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchSearch && matchStatus && matchUrgency && matchDate;
         });
 
-        const urgencyOrder = { urgent: 0, moderate: 1, low: 2 };
-        if (sort === 'newest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        if (sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-        if (sort === 'urgent') filtered.sort((a,b) => (urgencyOrder[a.urgency]??2) - (urgencyOrder[b.urgency]??2));
+        var urgencyOrder = { urgent: 0, moderate: 1, low: 2 };
+        if (sort === 'newest') filtered.sort(function(a,b){ return new Date(b.created_at) - new Date(a.created_at); });
+        if (sort === 'oldest') filtered.sort(function(a,b){ return new Date(a.created_at) - new Date(b.created_at); });
+        if (sort === 'urgent') filtered.sort(function(a,b){ return (urgencyOrder[a.urgency] ?? 2) - (urgencyOrder[b.urgency] ?? 2); });
 
         currentPage = 1;
         renderTable();
@@ -1818,7 +1830,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportTablePDF() {
-        var win  = window.open('', '_blank');
+        var win = window.open('', '_blank');
+        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(r) {
             return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.description || '') + '</td></tr>';
         }).join('');
@@ -1916,7 +1929,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   : 'Deleted On';
 
         if (format === 'pdf') {
-            var win      = window.open('', '_blank');
+            var win = window.open('', '_blank');
+            if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
             var tabLabel = archiveTab === 'closed' ? 'Closed'
                          : archiveTab === 'resolved' ? 'Resolved'
                          : archiveTab === 'cancelled' ? 'Cancelled'
@@ -2077,5 +2091,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 150);
         });
     })();
+
+    function validateEditMaintForm(e) {
+        var status  = document.getElementById('edit-status').value;
+        var urgency = document.getElementById('edit-urgency').value;
+        if (!status || !urgency) {
+            e.preventDefault();
+            showToast('Please select a status and urgency before saving.', 'error');
+            return false;
+        }
+        return true;
+    }
 </script>
 @endsection
