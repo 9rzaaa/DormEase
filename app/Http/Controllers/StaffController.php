@@ -13,6 +13,16 @@ class StaffController extends Controller
 {
     public function index()
     {
+        Staff::where('is_on_leave', true)
+            ->whereNotNull('leave_end')
+            ->whereDate('leave_end', '<', now()->toDateString())
+            ->update([
+                'is_on_leave' => false,
+                'leave_start' => null,
+                'leave_end'   => null,
+                'leave_note'  => null,
+            ]);
+
         $staff = Staff::orderByDesc('staff_id')->get();
 
         $staffList = $staff->where('is_active', true)->map(function ($s) {
@@ -26,6 +36,10 @@ class StaffController extends Controller
                 'contact_number' => $s->contact_number,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
                 'is_active'      => $s->is_active,
                 'created_at'     => $s->created_at,
             ];
@@ -42,6 +56,10 @@ class StaffController extends Controller
                 'contact_number' => $s->contact_number,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
                 'is_active'      => $s->is_active,
                 'inactivated_at' => $s->inactivated_at,
             ];
@@ -59,6 +77,10 @@ class StaffController extends Controller
                 'contact_number'    => $r->contact_number,
                 'shift_schedule'    => $r->shift_schedule,
                 'duty_status'       => $r->duty_status,
+                'is_on_leave'       => $r->is_on_leave,
+                'leave_start'       => $r->leave_start?->toDateString(),
+                'leave_end'         => $r->leave_end?->toDateString(),
+                'leave_note'        => $r->leave_note,
                 'is_active'         => $r->is_active,
                 'archived_at'       => $r->archived_at,
             ];
@@ -92,6 +114,7 @@ class StaffController extends Controller
             'totalStaff'      => $activeStaff->count(),
             'onDutyCount'     => $activeStaff->where('duty_status', 'on_duty')->count(),
             'offDutyCount'    => $activeStaff->where('duty_status', 'off_duty')->count(),
+            'onLeaveCount'    => $activeStaff->where('is_on_leave', true)->count(),
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'attendanceLogs'  => $attendanceLogs,
@@ -166,12 +189,18 @@ class StaffController extends Controller
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
+            'is_on_leave'    => 'nullable|boolean',
+            'leave_start'    => 'nullable|date',
+            'leave_end'      => 'nullable|date|after_or_equal:leave_start',
+            'leave_note'     => 'nullable|string|max:255',
         ]);
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
         $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
 
         $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
+        $isOnLeave = $request->boolean('is_on_leave');
 
         $staff->update([
             'first_name'     => $request->first_name,
@@ -182,7 +211,11 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'shift_start'    => $shiftTimes['shift_start'],
             'shift_end'      => $shiftTimes['shift_end'],
-            'duty_status'    => $request->duty_status,
+            'duty_status'    => $isOnLeave ? 'off_duty' : $request->duty_status,
+            'is_on_leave'    => $isOnLeave,
+            'leave_start'    => $isOnLeave ? $request->leave_start : null,
+            'leave_end'      => $isOnLeave ? $request->leave_end   : null,
+            'leave_note'     => $isOnLeave ? $request->leave_note  : null,
             'is_active'      => $request->is_active,
             'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),
         ]);
@@ -258,6 +291,10 @@ class StaffController extends Controller
             'contact_number'    => $staff->contact_number,
             'shift_schedule'    => $staff->shift_schedule,
             'duty_status'       => $staff->duty_status,
+            'is_on_leave'       => $staff->is_on_leave,
+            'leave_start'       => $staff->leave_start,
+            'leave_end'         => $staff->leave_end,
+            'leave_note'        => $staff->leave_note,
             'is_active'         => $staff->is_active,
             'archived_at'       => now(),
         ]);

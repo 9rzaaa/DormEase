@@ -32,7 +32,7 @@
     }
     .btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
 
-    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
     .stat-box {
         background: var(--gradient-pink);
         border-radius: 20px;
@@ -1127,6 +1127,16 @@
                 <div class="stat-sub">Not on shift</div>
             </div>
         </div>
+        <div class="stat-box">
+            <div class="stat-icon-circle">
+                <img src="{{ asset('icons/calendar.png') }}" class="icon-md" alt="on leave">
+            </div>
+            <div>
+                <div class="stat-label">On Leave</div>
+                <div class="stat-num">{{ $onLeaveCount }}</div>
+                <div class="stat-sub">Currently Away</div>
+            </div>
+        </div>
     </div>
 
     <div class="table-card fade-up d3">
@@ -1209,7 +1219,7 @@
     <div class="slg-title">Duty Status</div>
     <div class="slg-row"><span class="badge badge-onduty">On Duty</span><span class="slg-desc">Staff member is currently active and on shift.</span></div>
     <div class="slg-row"><span class="badge badge-offduty">Off Duty</span><span class="slg-desc">Staff member is not currently on shift.</span></div>
-    <div class="slg-row"><span class="badge badge-leave">On Leave</span><span class="slg-desc">Staff member is on approved leave and unavailable.</span></div>
+    <div class="slg-row"><span class="badge badge-leave">On Leave</span><span class="slg-desc">Staff member is on approved leave for a scheduled period. Duty status is set to Off Duty while on leave.</span></div>
     <div class="slg-title second">Role</div>
     <div class="slg-row"><span class="badge badge-admin">Admin</span><span class="slg-desc">Full administrative access to manage staff, tenants, and dorm settings.</span></div>
     <div class="slg-row"><span class="badge badge-admin">Secretary</span><span class="slg-desc">Handles records, documentation, and clerical support tasks.</span></div>
@@ -1432,8 +1442,29 @@
                     <select name="duty_status" id="edit-duty-status">
                         <option value="on_duty">On Duty</option>
                         <option value="off_duty">Off Duty</option>
-                        <option value="on_leave">On Leave</option>
                     </select>
+                </div>
+                <div class="modal-field full" style="border:1.5px solid var(--baby-pink);border-radius:10px;padding:.75rem .9rem;background:var(--soft-bg);">
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-bottom:0;">
+                        <input type="checkbox" name="is_on_leave" id="edit-is-on-leave" value="1" onchange="toggleLeaveFields()" style="width:auto;margin:0;">
+                        Mark as On Leave
+                    </label>
+                    <div id="edit-leave-fields" style="display:none;margin-top:.75rem;">
+                        <div class="modal-grid" style="margin-bottom:.75rem;">
+                            <div class="modal-field">
+                                <label>Leave Start</label>
+                                <input type="date" name="leave_start" id="edit-leave-start">
+                            </div>
+                            <div class="modal-field">
+                                <label>Leave End</label>
+                                <input type="date" name="leave_end" id="edit-leave-end">
+                            </div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Reason / Note</label>
+                            <input type="text" name="leave_note" id="edit-leave-note" placeholder="e.g. Sick leave, vacation, family emergency" maxlength="255">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-field full">
                     <label>Active</label>
@@ -1532,9 +1563,24 @@
         var map = {
             on_duty:  '<span class="badge badge-onduty">On Duty</span>',
             off_duty: '<span class="badge badge-offduty">Off Duty</span>',
-            on_leave: '<span class="badge badge-leave">On Leave</span>',
         };
         return map[status] || ('<span class="badge badge-offduty">' + (status || '\u2014') + '</span>');
+    }
+
+    function fmtLeaveDate(d) {
+        if (!d) return null;
+        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function leaveBadge(s) {
+        if (!s.is_on_leave) return '';
+        var start = fmtLeaveDate(s.leave_start);
+        var end   = fmtLeaveDate(s.leave_end);
+        var title = '';
+        if (start || end || s.leave_note) {
+            title = ' title="' + (start || '\u2014') + ' to ' + (end || 'Ongoing') + (s.leave_note ? ' \u2014 ' + String(s.leave_note).replace(/"/g, '&quot;') : '') + '"';
+        }
+        return '<span class="badge badge-leave"' + title + '>On Leave</span>';
     }
 
     function roleBadge(role) {
@@ -1572,7 +1618,7 @@
                     + '<td>' + roleBadge(s.role) + '</td>'
                     + '<td>' + shiftLabel(s.shift_schedule) + '</td>'
                     + '<td>' + (s.contact_number || '\u2014') + '</td>'
-                    + '<td>' + dutyBadge(s.duty_status) + '</td>'
+                    + '<td><div style="display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;">' + dutyBadge(s.duty_status) + leaveBadge(s) + '</div></td>'
                     + '<td>'
                         + '<div class="action-group">'
                             + '<button class="act-btn" title="View" onclick=\'viewStaff(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
@@ -1635,7 +1681,7 @@
                 (s.contact_number || '').toLowerCase().includes(q) ||
                 (s.email          || '').toLowerCase().includes(q);
             var matchRole = role === '' || s.role === role;
-            var matchDuty = duty === '' || s.duty_status === duty;
+            var matchDuty = duty === '' || (duty === 'on_leave' ? !!s.is_on_leave : s.duty_status === duty);
             return matchSearch && matchRole && matchDuty;
         });
         currentPage = 1;
@@ -1662,6 +1708,11 @@
             + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
+            + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
+                ? leaveBadge(s)
+                    + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '\u2014') + ' \u2192 ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
+                    + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
+                : 'Not on leave') + '</span></div>'
             + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">' + (s.is_active ? 'Active' : 'Inactive') + '</span></div>';
         openModal('view-modal');
     }
@@ -1682,9 +1733,27 @@
         document.getElementById('edit-role').value            = s.role           || '';
         document.getElementById('edit-shift').value           = s.shift_schedule || '';
         document.getElementById('edit-contact').value         = s.contact_number || '';
-        document.getElementById('edit-duty-status').value     = s.duty_status    || 'off_duty';
+        document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
+        document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
+        document.getElementById('edit-leave-start').value     = s.leave_start || '';
+        document.getElementById('edit-leave-end').value       = s.leave_end   || '';
+        document.getElementById('edit-leave-note').value      = s.leave_note  || '';
+        toggleLeaveFields();
         openModal('edit-modal');
+    }
+
+    function toggleLeaveFields() {
+        var checked = document.getElementById('edit-is-on-leave').checked;
+        var fields  = document.getElementById('edit-leave-fields');
+        var duty    = document.getElementById('edit-duty-status');
+        fields.style.display = checked ? 'block' : 'none';
+        if (checked) {
+            duty.value    = 'off_duty';
+            duty.disabled = true;
+        } else {
+            duty.disabled = false;
+        }
     }
 
     function openDeleteModal(id, name) {
