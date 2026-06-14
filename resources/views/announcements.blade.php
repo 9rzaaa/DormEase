@@ -798,9 +798,11 @@
 .em-tabs { display: flex; }
 .em-tab { padding: .62rem 1.1rem; font-size: .8rem; font-weight: 700; color: var(--ink-muted); cursor: pointer; border: none; background: none; border-bottom: 2.5px solid transparent; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: .38rem; font-family: var(--ff-body); margin-bottom: -1px; }
 .em-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; }
+.em-tab svg { width: 13px; height: 13px; flex-shrink: 0; opacity: .6; transition: opacity .18s; }
 .em-tab:hover { color: var(--hot-pink); }
 .em-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
 .em-tab.active img { opacity: 1; }
+.em-tab.active svg { opacity: 1; }
 .em-panels { padding: 1.3rem 1.5rem; min-height: 220px; }
 .em-panel { display: none; flex-direction: column; gap: .9rem; animation: emFadeIn .18s ease both; }
 .em-panel.active { display: flex; }
@@ -1403,7 +1405,10 @@
                 <button class="em-close" onclick="closeModal('view-modal')">&#x2715;</button>
             </div>
             <div class="em-tabs">
-                <button class="em-tab active" onclick="switchViewTab(0)" id="vm-tab-0"><img src="{{ asset('icons/announce.png') }}" alt=""> Details</button>
+                <button class="em-tab active" onclick="switchViewTab(0)" id="vm-tab-0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    Details
+                </button>
                 <button class="em-tab" onclick="switchViewTab(1)" id="vm-tab-1"><img src="{{ asset('icons/edit.png') }}" alt=""> Content</button>
                 <button class="em-tab" onclick="switchViewTab(2)" id="vm-tab-2"><img src="{{ asset('icons/flag.png') }}" alt=""> Settings</button>
                 <button class="em-tab" onclick="switchViewTab(3)" id="vm-tab-3"><img src="{{ asset('icons/attach.png') }}" alt=""> Attachments</button>
