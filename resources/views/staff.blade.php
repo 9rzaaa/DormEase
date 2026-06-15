@@ -1329,12 +1329,12 @@
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>First Name</label>
-                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required value="{{ old('first_name') }}" oninput="validateRequired(this)">
+                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
                     <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
                     <label>Last Name</label>
-                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required value="{{ old('last_name') }}" oninput="validateRequired(this)">
+                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
                     <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
@@ -1403,12 +1403,12 @@
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>First Name</label>
-                    <input type="text" name="first_name" id="edit-first-name" required oninput="validateRequired(this)">
+                    <input type="text" name="first_name" id="edit-first-name" required maxlength="100" oninput="validateName(this)">
                     <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
                     <label>Last Name</label>
-                    <input type="text" name="last_name" id="edit-last-name" required oninput="validateRequired(this)">
+                    <input type="text" name="last_name" id="edit-last-name" required maxlength="100" oninput="validateName(this)">
                     <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
@@ -1452,7 +1452,7 @@
                         <div class="modal-grid" style="margin-bottom:.75rem;">
                             <div class="modal-field">
                                 <label>Leave Start</label>
-                                <input type="date" name="leave_start" id="edit-leave-start">
+                                <input type="date" name="leave_start" id="edit-leave-start" onchange="validateLeaveDates()">
                             </div>
                             <div class="modal-field">
                                 <label>Leave End</label>
@@ -1600,6 +1600,18 @@
         return '<span class="shift-dot ' + cls + '">' + shift + '</span>';
     }
 
+    function normalizeContactDisplay(raw) {
+        if (!raw) return '\u2014';
+        var digits = raw.replace(/\D/g, '');
+        if (digits.length === 12 && digits.substring(0, 2) === '63') {
+            digits = '0' + digits.substring(2);
+        }
+        if (digits.length === 11 && digits.substring(0, 2) === '09') {
+            return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+        }
+        return raw;
+    }
+
     function fmtStaffId(id) {
         return 'ST-' + String(id).padStart(3, '0');
     }
@@ -1618,7 +1630,7 @@
                     + '<td class="td-name">' + s.first_name + ' ' + s.last_name + '</td>'
                     + '<td>' + roleBadge(s.role) + '</td>'
                     + '<td>' + shiftLabel(s.shift_schedule) + '</td>'
-                    + '<td>' + (s.contact_number || '\u2014') + '</td>'
+                    + '<td>' + normalizeContactDisplay(s.contact_number) + '</td>'
                     + '<td><div style="display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;">' + dutyBadge(s.duty_status) + leaveBadge(s) + '</div></td>'
                     + '<td>'
                         + '<div class="action-group">'
@@ -1705,7 +1717,7 @@
             '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
             + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (s.contact_number || '\u2014') + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
@@ -1747,7 +1759,19 @@
     }
 
     function formatContactNumber(input) {
-        var digits = input.value.replace(/\D/g, '').slice(0, 11);
+        var raw    = input.value;
+        var digits = raw.replace(/\D/g, '');
+
+        if (raw.trim().charAt(0) === '+' || (digits.length >= 2 && digits.substring(0, 2) === '63')) {
+            if (digits.length === 12 && digits.substring(0, 2) === '63') {
+                digits = '0' + digits.substring(2);
+            } else if (digits.startsWith('6') && digits.length <= 12) {
+                digits = ('63' + digits.substring(1)).substring(0, 12);
+                if (digits.length === 12) digits = '0' + digits.substring(2);
+            }
+        }
+
+        digits = digits.replace(/\D/g, '').slice(0, 11);
         var formatted = digits;
         if (digits.length > 4 && digits.length <= 7) {
             formatted = digits.slice(0, 4) + '-' + digits.slice(4);
@@ -1786,6 +1810,26 @@
         return true;
     }
 
+    function validateName(input) {
+        var val     = input.value.trim();
+        var errId   = input.id + '-error';
+        var errEl   = document.getElementById(errId);
+        var pattern = /^[a-zA-Z\s\-'.]+$/;
+        if (!val) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'This field is required.'; errEl.style.display = 'block'; }
+            return false;
+        }
+        if (!pattern.test(val)) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Only letters, spaces, hyphens, apostrophes, and periods allowed.'; errEl.style.display = 'block'; }
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) { errEl.style.display = 'none'; errEl.textContent = 'This field is required.'; }
+        return true;
+    }
+
     function validateRequired(input, label) {
         var val   = input.value.trim();
         var errId = input.id + '-error';
@@ -1802,8 +1846,8 @@
 
     function validateAddForm() {
         var ok = true;
-        ok = validateRequired(document.getElementById('add-first-name')) && ok;
-        ok = validateRequired(document.getElementById('add-last-name'))  && ok;
+        ok = validateName(document.getElementById('add-first-name')) && ok;
+        ok = validateName(document.getElementById('add-last-name'))  && ok;
         ok = validateEmail(document.getElementById('add-email'))         && ok;
         ok = validateContactNumber(document.getElementById('add-contact')) && ok;
         var roleEl = document.getElementById('add-role');
@@ -1821,8 +1865,8 @@
 
     function validateEditForm() {
         var ok = true;
-        ok = validateRequired(document.getElementById('edit-first-name')) && ok;
-        ok = validateRequired(document.getElementById('edit-last-name'))  && ok;
+        ok = validateName(document.getElementById('edit-first-name')) && ok;
+        ok = validateName(document.getElementById('edit-last-name'))  && ok;
         ok = validateEmail(document.getElementById('edit-email'))         && ok;
         ok = validateContactNumber(document.getElementById('edit-contact')) && ok;
         if (document.getElementById('edit-is-on-leave').checked) {
@@ -1845,18 +1889,24 @@
     }
 
     function validateLeaveDates() {
-        var start = document.getElementById('edit-leave-start').value;
-        var end   = document.getElementById('edit-leave-end').value;
-        var endInput = document.getElementById('edit-leave-end');
-        var errEl    = document.getElementById('leave-date-error');
+        var start      = document.getElementById('edit-leave-start').value;
+        var end        = document.getElementById('edit-leave-end').value;
+        var startInput = document.getElementById('edit-leave-start');
+        var endInput   = document.getElementById('edit-leave-end');
+        var errEl      = document.getElementById('leave-date-error');
+        var ok         = true;
+
+        startInput.style.borderColor = '';
+        endInput.style.borderColor   = '';
+        if (errEl) errEl.style.display = 'none';
+
         if (start && end && end < start) {
             endInput.style.borderColor = 'var(--red)';
-            if (errEl) errEl.style.display = 'block';
-            return false;
+            if (errEl) { errEl.textContent = 'Leave end must be after start date.'; errEl.style.display = 'block'; }
+            ok = false;
         }
-        endInput.style.borderColor = '';
-        if (errEl) errEl.style.display = 'none';
-        return true;
+
+        return ok;
     }
 
     function openDeleteModal(id, name) {

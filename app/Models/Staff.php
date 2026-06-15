@@ -56,6 +56,27 @@ class Staff extends Authenticatable
         'shift_end'      => 'string',
     ];
 
+    public function setContactNumberAttribute($value)
+    {
+        if (!$value) {
+            $this->attributes['contact_number'] = null;
+            return;
+        }
+
+        $digits = preg_replace('/\D/', '', $value);
+
+        if (strlen($digits) === 12 && str_starts_with($digits, '63')) {
+            $digits = '0' . substr($digits, 2);
+        }
+
+        if (strlen($digits) === 11 && str_starts_with($digits, '09')) {
+            $this->attributes['contact_number'] = substr($digits, 0, 4) . '-' . substr($digits, 4, 3) . '-' . substr($digits, 7, 4);
+            return;
+        }
+
+        $this->attributes['contact_number'] = $value;
+    }
+
     public function getAuthPassword()
     {
         return $this->password_hash;
