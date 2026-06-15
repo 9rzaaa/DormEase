@@ -312,7 +312,7 @@
     }
     .vmodal-info-item-value { font-size: .88rem; font-weight: 600; color: var(--black); line-height: 1.35; }
 
-    .vmodal-time-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: .6rem .8rem; margin-top: .55rem; }
+    .vmodal-time-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: .6rem .8rem; }
 
     .vmodal-photo-panel {
         display: flex;
@@ -634,6 +634,173 @@
     .export-menu.open { display: block; }
     .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
     .export-menu button:hover { background: var(--pink-bg); color: var(--bright-pink); }
+
+    #add-modal .modal {
+        max-width: 580px;
+        border-radius: 22px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
+    }
+
+    .add-modal-header {
+        background: linear-gradient(135deg, #fff0f6 0%, #fff8fb 100%);
+        padding: 1.4rem 1.8rem 1.1rem;
+        border-bottom: 1.5px solid var(--pink-light);
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    }
+
+    .add-modal-header-left { display: flex; align-items: center; gap: .85rem; }
+
+    .add-modal-icon-wrap {
+        width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 6px 16px rgba(232,23,93,.3);
+    }
+    .add-modal-icon-wrap img { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
+
+    .add-modal-title-block {}
+    .add-modal-title { font-size: 1.1rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; line-height: 1.2; }
+    .add-modal-sub   { font-size: .75rem; color: var(--ink-muted); font-weight: 500; margin-top: .18rem; }
+
+    .add-modal-close {
+        width: 32px; height: 32px; border-radius: 9px;
+        border: 1.5px solid var(--pink-light); background: var(--white);
+        color: var(--ink-muted); font-size: 1rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: border-color .2s, color .2s, background .2s; flex-shrink: 0;
+    }
+    .add-modal-close:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: #fff0f5; }
+
+    .add-modal-body { padding: 1.4rem 1.8rem; }
+
+    .add-modal-section {
+        font-size: .67rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: .1em; color: var(--hot-pink);
+        margin: 1.15rem 0 .65rem; padding-bottom: .4rem;
+        border-bottom: 1.5px solid #fce4ef;
+    }
+    .add-modal-section:first-child { margin-top: 0; }
+
+    .add-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+    .add-modal-grid .amf-full { grid-column: 1 / -1; }
+
+    .amf { display: flex; flex-direction: column; gap: .3rem; }
+
+    .amf label {
+        font-size: .75rem; font-weight: 700; color: var(--ink-muted);
+        display: flex; align-items: center; gap: .3rem;
+    }
+    .amf label .req { color: var(--red); font-size: .8rem; line-height: 1; }
+
+    .amf-input-wrap { position: relative; }
+
+    .amf-input-wrap input,
+    .amf-input-wrap select,
+    .amf-input-wrap .amf-select-display {
+        width: 100%; padding: .62rem .9rem; border-radius: 10px;
+        border: 1.5px solid var(--pink-light); font-family: var(--ff-body);
+        font-size: .875rem; color: var(--ink); background: var(--pink-bg); outline: none;
+        transition: border-color .2s, background .2s, box-shadow .2s; box-sizing: border-box;
+    }
+    .amf-input-wrap input:focus,
+    .amf-input-wrap select:focus { border-color: var(--bright-pink); background: var(--white); box-shadow: 0 0 0 3px rgba(232,23,93,.08); }
+
+    .amf-input-wrap input.valid   { border-color: var(--green) !important; background: #f0fdf8 !important; }
+    .amf-input-wrap input.invalid,
+    .amf-input-wrap select.invalid,
+    .amf-input-wrap .amf-select-display.invalid { border-color: var(--red) !important; background: #fff5f5 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.07) !important; }
+
+    .amf-hint { font-size: .72rem; color: var(--ink-muted); line-height: 1.4; }
+    .amf-error { font-size: .72rem; color: var(--red); font-weight: 600; line-height: 1.4; display: none; }
+    .amf-error.show { display: block; }
+
+    .amf-status-icon {
+        position: absolute; right: .75rem; top: 50%; transform: translateY(-50%);
+        width: 16px; height: 16px; display: none; pointer-events: none;
+    }
+    .amf-status-icon.show { display: block; }
+
+    .amf-char-count {
+        font-size: .68rem; color: var(--ink-muted); text-align: right; font-weight: 500;
+    }
+
+    .tenant-search-wrap { position: relative; }
+
+    .tenant-search-input {
+        width: 100%; padding: .62rem 2.2rem .62rem .9rem;
+        border-radius: 10px; border: 1.5px solid var(--pink-light);
+        font-family: var(--ff-body); font-size: .875rem; color: var(--ink);
+        background: var(--pink-bg); outline: none; box-sizing: border-box;
+        transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .tenant-search-input:focus { border-color: var(--bright-pink); background: var(--white); box-shadow: 0 0 0 3px rgba(232,23,93,.08); }
+    .tenant-search-input.valid   { border-color: var(--green) !important; background: #f0fdf8 !important; }
+    .tenant-search-input.invalid { border-color: var(--red) !important; background: #fff5f5 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.07) !important; }
+
+    .tenant-search-chevron {
+        position: absolute; right: .75rem; top: 50%; transform: translateY(-50%) rotate(0deg);
+        width: 16px; height: 16px; pointer-events: none; transition: transform .2s;
+        opacity: .45;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .tenant-search-chevron.open { transform: translateY(-50%) rotate(180deg); }
+
+    .tenant-dropdown {
+        position: absolute; top: calc(100% + 5px); left: 0; right: 0; z-index: 900;
+        background: var(--white); border: 1.5px solid var(--pink-light);
+        border-radius: 12px; box-shadow: 0 12px 32px rgba(232,23,93,.13);
+        max-height: 200px; overflow-y: auto;
+        display: none;
+    }
+    .tenant-dropdown.open { display: block; }
+    .tenant-dropdown::-webkit-scrollbar { width: 4px; }
+    .tenant-dropdown::-webkit-scrollbar-thumb { background: #f5b8cf; border-radius: 99px; }
+
+    .tenant-option {
+        padding: .65rem 1rem; cursor: pointer; font-size: .875rem; color: var(--ink);
+        transition: background .15s; border-bottom: 1px solid var(--pink-light);
+        display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+    }
+    .tenant-option:last-child { border-bottom: none; }
+    .tenant-option:hover, .tenant-option.focused { background: var(--pink-bg); color: var(--hot-pink); }
+    .tenant-option.selected { background: #fff0f7; }
+
+    .tenant-option-name { font-weight: 600; }
+    .tenant-option-room { font-size: .75rem; color: var(--ink-muted); background: var(--pink-light); padding: .1rem .45rem; border-radius: 6px; font-weight: 600; flex-shrink: 0; }
+
+    .tenant-option-empty { padding: .9rem 1rem; font-size: .83rem; color: var(--ink-muted); text-align: center; font-weight: 500; }
+
+    .tenant-option mark {
+        background: #ffe4ef; color: var(--hot-pink); border-radius: 3px;
+        padding: 0 1px; font-weight: 800;
+    }
+
+    .add-modal-footer {
+        padding: 1rem 1.8rem 1.4rem;
+        display: flex; align-items: center; justify-content: flex-end; gap: .65rem;
+        border-top: 1.5px solid var(--pink-light); background: #fefcfe;
+    }
+
+    .amf-btn-cancel {
+        padding: .6rem 1.3rem; border-radius: 10px;
+        border: 1.5px solid var(--pink-light); background: var(--white);
+        color: var(--ink-muted); font-size: .87rem; font-weight: 700;
+        cursor: pointer; transition: border-color .2s, color .2s; font-family: var(--ff-body);
+    }
+    .amf-btn-cancel:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+
+    .amf-btn-submit {
+        padding: .6rem 1.5rem; border-radius: 10px;
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+        color: var(--white); border: none; font-size: .87rem; font-weight: 700;
+        cursor: pointer; box-shadow: 0 4px 14px rgba(232,23,93,.32);
+        transition: opacity .2s, transform .15s; font-family: var(--ff-body);
+        display: inline-flex; align-items: center; gap: .4rem;
+    }
+    .amf-btn-submit:hover { opacity: .9; transform: translateY(-1px); }
+    .amf-btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 </style>
 @endsection
 
@@ -888,66 +1055,161 @@
 </div>
 
 <div class="modal-overlay" id="add-modal">
-    <div class="modal" style="max-width:540px;">
-        <div class="modal-header">
-            <div class="modal-title">Add Walk-in Visitor</div>
-            <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:580px;border-radius:22px;padding:0;overflow:hidden;box-shadow:0 24px 64px rgba(232,23,93,.18),0 8px 24px rgba(0,0,0,.1);">
+
+        <div class="add-modal-header">
+            <div class="add-modal-header-left">
+                <div class="add-modal-icon-wrap">
+                    <img src="{{ asset('icons/visitor.png') }}" alt="">
+                </div>
+                <div class="add-modal-title-block">
+                    <div class="add-modal-title">Add Walk-in Visitor</div>
+                    <div class="add-modal-sub">Log a new visitor arriving at the dormitory</div>
+                </div>
+            </div>
+            <button class="add-modal-close" onclick="closeModal('add-modal'); resetAddForm()">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('visitors.store') }}" data-loading-message="Logging visitor...">
+
+        <form method="POST" action="{{ route('visitors.store') }}" id="add-visitor-form" novalidate>
             @csrf
-            <div class="modal-grid">
-                <div class="modal-field">
-                    <label>Visitor Name <span style="color:var(--red)">*</span></label>
-                    <input type="text" name="visitor_name" placeholder="e.g. Maria Santos" required value="{{ old('visitor_name') }}">
+
+            <div class="add-modal-body">
+
+                <div class="add-modal-section">Visitor Information</div>
+
+                <div class="add-modal-grid">
+
+                    <div class="amf amf-full">
+                        <label for="av_visitor_name">
+                            Visitor Full Name <span class="req">*</span>
+                        </label>
+                        <div class="amf-input-wrap">
+                            <input
+                                type="text"
+                                id="av_visitor_name"
+                                name="visitor_name"
+                                placeholder="e.g. Maria Santos"
+                                maxlength="100"
+                                autocomplete="off"
+                                value="{{ old('visitor_name') }}"
+                                oninput="avValidateName(this)"
+                                onblur="avValidateName(this, true)"
+                            >
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div class="amf-error" id="av_visitor_name_err">Please enter the visitor's full name (letters and spaces only).</div>
+                            <div class="amf-char-count" id="av_name_count">0 / 100</div>
+                        </div>
+                    </div>
+
+                    <div class="amf">
+                        <label for="av_contact_no">Contact Number</label>
+                        <div class="amf-input-wrap">
+                            <input
+                                type="text"
+                                id="av_contact_no"
+                                name="contact_no"
+                                placeholder="e.g. 09123456789"
+                                maxlength="15"
+                                autocomplete="off"
+                                value="{{ old('contact_no') }}"
+                                oninput="avValidateContact(this)"
+                                onblur="avValidateContact(this, true)"
+                            >
+                        </div>
+                        <div class="amf-error" id="av_contact_err">Enter a valid PH number (e.g. 09XXXXXXXXX or +639XXXXXXXXX).</div>
+                        <div class="amf-hint">Optional — for emergency contact</div>
+                    </div>
+
+                    <div class="amf">
+                        <label for="av_id_type">ID Type</label>
+                        <div class="amf-input-wrap">
+                            <select id="av_id_type" name="id_type">
+                                <option value="">Select ID Type</option>
+                                <option value="School ID" {{ old('id_type') === 'School ID' ? 'selected' : '' }}>School ID</option>
+                                <option value="Government ID" {{ old('id_type') === 'Government ID' ? 'selected' : '' }}>Government ID</option>
+                                <option value="Passport" {{ old('id_type') === 'Passport' ? 'selected' : '' }}>Passport</option>
+                                <option value="Driver's License" {{ old('id_type') === "Driver's License" ? 'selected' : '' }}>Driver's License</option>
+                                <option value="Other" {{ old('id_type') === 'Other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+                        <div class="amf-hint">Optional — for ID verification</div>
+                    </div>
+
                 </div>
-                <div class="modal-field">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_no" placeholder="e.g. 0912-345-6789" value="{{ old('contact_no') }}">
+
+                <div class="add-modal-section" style="margin-top:1.2rem;">Visit Details</div>
+
+                <div class="add-modal-grid">
+
+                    <div class="amf amf-full">
+                        <label>Tenant to Visit <span class="req">*</span></label>
+                        <div class="tenant-search-wrap">
+                            <input
+                                type="text"
+                                id="av_tenant_search"
+                                class="tenant-search-input"
+                                placeholder="Type tenant name to search..."
+                                autocomplete="off"
+                                oninput="avFilterTenants()"
+                                onfocus="avOpenTenantDropdown()"
+                                onblur="avOnTenantBlur()"
+                                onkeydown="avTenantKeyNav(event)"
+                            >
+                            <img src="{{ asset('icons/arrow-down.png') }}" class="tenant-search-chevron" id="av_tenant_chevron" alt="">
+                            <input type="hidden" name="tenant_id" id="av_tenant_id" value="{{ old('tenant_id') }}">
+                            <div class="tenant-dropdown" id="av_tenant_dropdown"></div>
+                        </div>
+                        <div class="amf-error" id="av_tenant_err">Please select a tenant to visit.</div>
+                    </div>
+
+                    <div class="amf amf-full">
+                        <label for="av_purpose">Purpose of Visit <span class="req">*</span></label>
+                        <div class="amf-input-wrap">
+                            <select
+                                id="av_purpose"
+                                name="purpose"
+                                onchange="avValidatePurpose(this)"
+                                onblur="avValidatePurpose(this, true)"
+                            >
+                                <option value="">Select Purpose</option>
+                                <option value="Visiting Tenant" {{ old('purpose') === 'Visiting Tenant' ? 'selected' : '' }}>Visiting Tenant</option>
+                                <option value="Food Delivery" {{ old('purpose') === 'Food Delivery' ? 'selected' : '' }}>Food Delivery</option>
+                                <option value="Laundry Pickup" {{ old('purpose') === 'Laundry Pickup' ? 'selected' : '' }}>Laundry Pickup</option>
+                                <option value="Package Delivery" {{ old('purpose') === 'Package Delivery' ? 'selected' : '' }}>Package Delivery</option>
+                                <option value="Other" {{ old('purpose') === 'Other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+                        <div class="amf-error" id="av_purpose_err">Please select a purpose for the visit.</div>
+                    </div>
+
+                    <div class="amf amf-full">
+                        <label for="av_arrival_time">Time In <span class="req">*</span></label>
+                        <div class="amf-input-wrap">
+                            <input
+                                type="datetime-local"
+                                id="av_arrival_time"
+                                name="arrival_time"
+                                value="{{ old('arrival_time', now()->format('Y-m-d\TH:i')) }}"
+                                onchange="avValidateArrival(this)"
+                                onblur="avValidateArrival(this, true)"
+                            >
+                        </div>
+                        <div class="amf-error" id="av_arrival_err">Time in cannot be set in the future.</div>
+                        <div class="amf-hint">Status will automatically be set to "Inside" upon logging.</div>
+                    </div>
+
                 </div>
-                <div class="modal-field">
-                    <label>Tenant to Visit <span style="color:var(--red)">*</span></label>
-                    <select name="tenant_id" required>
-                        <option value="">Select Tenant</option>
-                        @foreach($tenants as $tenant)
-                            <option value="{{ $tenant->tenant_id }}" {{ old('tenant_id') == $tenant->tenant_id ? 'selected' : '' }}>
-                                {{ $tenant->first_name }} {{ $tenant->last_name }}
-                                @if($tenant->room_number) &mdash; Rm {{ $tenant->room_number }} @endif
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Purpose of Visit <span style="color:var(--red)">*</span></label>
-                    <select name="purpose" required>
-                        <option value="">Select Purpose</option>
-                        <option value="Visiting Tenant">Visiting Tenant</option>
-                        <option value="Food Delivery">Food Delivery</option>
-                        <option value="Laundry Pickup">Laundry Pickup</option>
-                        <option value="Package Delivery">Package Delivery</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>ID Type</label>
-                    <select name="id_type">
-                        <option value="">Select ID Type</option>
-                        <option value="School ID">School ID</option>
-                        <option value="Government ID">Government ID</option>
-                        <option value="Passport">Passport</option>
-                        <option value="Driver's License">Driver's License</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Time In <span style="color:var(--red)">*</span></label>
-                    <input type="datetime-local" name="arrival_time" required value="{{ old('arrival_time', now()->format('Y-m-d\TH:i')) }}">
-                    <div class="hint">Status will auto-set to "Inside"</div>
-                </div>
+
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Log Visitor</button>
+
+            <div class="add-modal-footer">
+                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
+                <button type="submit" class="amf-btn-submit" id="av_submit_btn" onclick="return avSubmit(event)">
+                    Log Visitor
+                </button>
             </div>
+
         </form>
     </div>
 </div>
@@ -1065,6 +1327,7 @@
     var completedVisitors = @json($completedVisitors);
     var deletedVisitors   = @json($deletedVisitors);
     var cancelledVisitors = @json($cancelledVisitors);
+    var allTenants        = @json($tenants);
 
     var PER_PAGE    = 7;
     var currentPage = 1;
@@ -1207,24 +1470,24 @@
     function sortTable() { filterTable(); }
 
     function clearDates() {
-        document.getElementById('date-from').value              = '';
-        document.getElementById('date-to').value                = '';
-        document.getElementById('date-from').style.borderColor  = '';
-        document.getElementById('date-to').style.borderColor    = '';
-        document.getElementById('date-error-fd').style.display  = 'none';
+        document.getElementById('date-from').value                 = '';
+        document.getElementById('date-to').value                   = '';
+        document.getElementById('date-from').style.borderColor     = '';
+        document.getElementById('date-to').style.borderColor       = '';
+        document.getElementById('date-error-fd').style.display     = 'none';
         document.getElementById('date-clear-btn-fd').style.display = 'none';
         filterTable();
     }
 
     function _runFdFilters() {
-        var q       = document.getElementById('search-input').value.toLowerCase();
-        var from    = document.getElementById('date-from').value;
-        var to      = document.getElementById('date-to').value;
-        var sort    = document.getElementById('sort-select').value;
-        var dateErr = document.getElementById('date-error-fd');
-        var clearBtn= document.getElementById('date-clear-btn-fd');
-        var fromEl  = document.getElementById('date-from');
-        var toEl    = document.getElementById('date-to');
+        var q        = document.getElementById('search-input').value.toLowerCase();
+        var from     = document.getElementById('date-from').value;
+        var to       = document.getElementById('date-to').value;
+        var sort     = document.getElementById('sort-select').value;
+        var dateErr  = document.getElementById('date-error-fd');
+        var clearBtn = document.getElementById('date-clear-btn-fd');
+        var fromEl   = document.getElementById('date-from');
+        var toEl     = document.getElementById('date-to');
 
         if (from && to && from > to) {
             dateErr.style.visibility = 'hidden';
@@ -1501,7 +1764,7 @@
     }
 
     function _runFdRenderArchive() {
-        var q    = document.getElementById('archive-search').value.toLowerCase();
+        var q = document.getElementById('archive-search').value.toLowerCase();
 
         var data;
         if (archiveTab === 'completed') {
@@ -1537,7 +1800,7 @@
         list.innerHTML = result.map(function(v, i) {
             var tenantName = v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : null;
             var roomNum    = v.tenant && v.tenant.room_number ? v.tenant.room_number : null;
-            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
+            var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
@@ -1583,9 +1846,9 @@
             label = 'Cancelled On';
         }
 
-        var rows  = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
+        var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
         data.forEach(function(v) {
-            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
+            var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
@@ -1642,9 +1905,10 @@
         } else {
             footerHead = 'Cancelled On';
         }
+
         var win  = window.open('', '_blank');
         var rows = data.map(function(v) {
-            var logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
+            var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
                 : archiveTab === 'cancelled'
@@ -1722,6 +1986,254 @@
 
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.export-dropdown')) closeAllExportDropdowns();
+    });
+
+    var _avSelectedTenantId   = null;
+    var _avTenantDropdownOpen = false;
+    var _avTenantFocusIdx     = -1;
+    var _avBlurTimer          = null;
+
+    function avShowErr(id, show) {
+        var el = document.getElementById(id);
+        if (el) el.classList.toggle('show', !!show);
+    }
+
+    function avSetFieldState(input, state) {
+        if (!input) return;
+        input.classList.remove('valid', 'invalid');
+        if (state === 'valid')   input.classList.add('valid');
+        if (state === 'invalid') input.classList.add('invalid');
+    }
+
+    function avValidateName(input, strict) {
+        var v     = input.value;
+        var count = document.getElementById('av_name_count');
+        if (count) count.textContent = v.length + ' / 100';
+
+        var trimmed = v.trim();
+        var valid   = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(trimmed) && trimmed.length >= 2;
+
+        if (strict || trimmed.length > 0) {
+            avSetFieldState(input, valid ? 'valid' : 'invalid');
+            avShowErr('av_visitor_name_err', !valid);
+        } else {
+            avSetFieldState(input, '');
+            avShowErr('av_visitor_name_err', false);
+        }
+        return valid && trimmed.length > 0;
+    }
+
+    function avValidateContact(input, strict) {
+        var v = input.value.trim();
+        if (!v) {
+            avSetFieldState(input, '');
+            avShowErr('av_contact_err', false);
+            return true;
+        }
+        var valid = /^(\+?63|0)[0-9]{9,10}$/.test(v.replace(/[\s\-]/g, ''));
+        if (strict || v.length > 3) {
+            avSetFieldState(input, valid ? 'valid' : 'invalid');
+            avShowErr('av_contact_err', !valid);
+        }
+        return valid;
+    }
+
+    function avValidatePurpose(select, strict) {
+        var valid = select.value !== '';
+        if (strict || select.value) {
+            avSetFieldState(select, valid ? 'valid' : 'invalid');
+            avShowErr('av_purpose_err', !valid);
+        }
+        return valid;
+    }
+
+    function avValidateArrival(input, strict) {
+        var v   = input.value;
+        var now = new Date();
+        var sel = v ? new Date(v) : null;
+        if (!v) {
+            if (strict) { avSetFieldState(input, 'invalid'); avShowErr('av_arrival_err', true); }
+            return false;
+        }
+        var valid = sel <= now;
+        avSetFieldState(input, valid ? 'valid' : 'invalid');
+        avShowErr('av_arrival_err', !valid);
+        return valid;
+    }
+
+    function avValidateTenant() {
+        var valid = !!_avSelectedTenantId;
+        var inp   = document.getElementById('av_tenant_search');
+        if (inp) inp.classList.toggle('invalid', !valid);
+        avShowErr('av_tenant_err', !valid);
+        return valid;
+    }
+
+    function avHighlightMatch(text, query) {
+        if (!query) return _escHtml(text);
+        var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return _escHtml(text).replace(new RegExp('(' + escaped + ')', 'gi'), '<mark>$1</mark>');
+    }
+
+    function _escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function avBuildDropdown(query) {
+        var dd   = document.getElementById('av_tenant_dropdown');
+        var q    = (query || '').toLowerCase().trim();
+        var list = allTenants.filter(function(t) {
+            var name = (t.first_name + ' ' + t.last_name).toLowerCase();
+            return !q || name.includes(q);
+        });
+
+        if (!list.length) {
+            dd.innerHTML = '<div class="tenant-option-empty">No tenants found for "' + _escHtml(query) + '"</div>';
+        } else {
+            dd.innerHTML = list.map(function(t, i) {
+                var fullName = t.first_name + ' ' + t.last_name;
+                var selected = String(t.tenant_id) === String(_avSelectedTenantId);
+                return '<div class="tenant-option' + (selected ? ' selected' : '') + '" '
+                    + 'data-id="' + t.tenant_id + '" '
+                    + 'data-name="' + _escHtml(fullName) + '" '
+                    + 'data-idx="' + i + '" '
+                    + 'onmousedown="avSelectTenant(event, \'' + t.tenant_id + '\', \'' + _escHtml(fullName) + '\')">'
+                    + '<span class="tenant-option-name">' + avHighlightMatch(fullName, query) + '</span>'
+                    + (t.room_number ? '<span class="tenant-option-room">Rm ' + _escHtml(String(t.room_number)) + '</span>' : '')
+                    + '</div>';
+            }).join('');
+        }
+        _avTenantFocusIdx = -1;
+    }
+
+    function avOpenTenantDropdown() {
+        clearTimeout(_avBlurTimer);
+        var dd  = document.getElementById('av_tenant_dropdown');
+        var chv = document.getElementById('av_tenant_chevron');
+        avBuildDropdown(document.getElementById('av_tenant_search').value);
+        dd.classList.add('open');
+        if (chv) chv.classList.add('open');
+        _avTenantDropdownOpen = true;
+    }
+
+    function avCloseTenantDropdown() {
+        var dd  = document.getElementById('av_tenant_dropdown');
+        var chv = document.getElementById('av_tenant_chevron');
+        dd.classList.remove('open');
+        if (chv) chv.classList.remove('open');
+        _avTenantDropdownOpen = false;
+        _avTenantFocusIdx     = -1;
+    }
+
+    function avOnTenantBlur() {
+        _avBlurTimer = setTimeout(function() {
+            avCloseTenantDropdown();
+            if (!_avSelectedTenantId) {
+                document.getElementById('av_tenant_search').value = '';
+            }
+            avValidateTenant();
+        }, 180);
+    }
+
+    function avSelectTenant(e, id, name) {
+        e.preventDefault();
+        clearTimeout(_avBlurTimer);
+        _avSelectedTenantId = id;
+        document.getElementById('av_tenant_id').value        = id;
+        document.getElementById('av_tenant_search').value    = name;
+        document.getElementById('av_tenant_search').classList.remove('invalid');
+        document.getElementById('av_tenant_search').classList.add('valid');
+        avShowErr('av_tenant_err', false);
+        avCloseTenantDropdown();
+    }
+
+    function avFilterTenants() {
+        if (!_avTenantDropdownOpen) avOpenTenantDropdown();
+        _avSelectedTenantId = null;
+        document.getElementById('av_tenant_id').value = '';
+        document.getElementById('av_tenant_search').classList.remove('valid', 'invalid');
+        avBuildDropdown(document.getElementById('av_tenant_search').value);
+    }
+
+    function avTenantKeyNav(e) {
+        var dd      = document.getElementById('av_tenant_dropdown');
+        var options = dd.querySelectorAll('.tenant-option');
+        if (!options.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (!_avTenantDropdownOpen) avOpenTenantDropdown();
+            _avTenantFocusIdx = Math.min(_avTenantFocusIdx + 1, options.length - 1);
+            avHighlightOption(options);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            _avTenantFocusIdx = Math.max(_avTenantFocusIdx - 1, 0);
+            avHighlightOption(options);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (_avTenantFocusIdx >= 0 && options[_avTenantFocusIdx]) {
+                var opt = options[_avTenantFocusIdx];
+                avSelectTenant(e, opt.dataset.id, opt.dataset.name);
+            }
+        } else if (e.key === 'Escape') {
+            avCloseTenantDropdown();
+        }
+    }
+
+    function avHighlightOption(options) {
+        options.forEach(function(o, i) { o.classList.toggle('focused', i === _avTenantFocusIdx); });
+        if (_avTenantFocusIdx >= 0 && options[_avTenantFocusIdx]) {
+            options[_avTenantFocusIdx].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    function avSubmit(e) {
+        var nameOk    = avValidateName(document.getElementById('av_visitor_name'), true);
+        var contactOk = avValidateContact(document.getElementById('av_contact_no'), true);
+        var tenantOk  = avValidateTenant();
+        var purposeOk = avValidatePurpose(document.getElementById('av_purpose'), true);
+        var arrivalOk = avValidateArrival(document.getElementById('av_arrival_time'), true);
+
+        if (!nameOk || !contactOk || !tenantOk || !purposeOk || !arrivalOk) {
+            e.preventDefault();
+            return false;
+        }
+        showActionLoading('Logging visitor...');
+        return true;
+    }
+
+    function resetAddForm() {
+        var form = document.getElementById('add-visitor-form');
+        if (form) form.reset();
+        _avSelectedTenantId = null;
+        var si = document.getElementById('av_tenant_search');
+        if (si) { si.value = ''; si.classList.remove('valid', 'invalid'); }
+        var ti = document.getElementById('av_tenant_id');
+        if (ti) ti.value = '';
+        avCloseTenantDropdown();
+        ['av_visitor_name','av_contact_no','av_purpose','av_arrival_time'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.remove('valid', 'invalid');
+        });
+        ['av_visitor_name_err','av_contact_err','av_tenant_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
+            avShowErr(id, false);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var ni = document.getElementById('av_arrival_time');
+        if (ni && !ni.value) ni.value = new Date().toISOString().slice(0, 16);
+
+        var oldTenant = '{{ old('tenant_id') }}';
+        if (oldTenant) {
+            var found = allTenants.find(function(t) { return String(t.tenant_id) === String(oldTenant); });
+            if (found) {
+                _avSelectedTenantId = oldTenant;
+                document.getElementById('av_tenant_id').value     = oldTenant;
+                document.getElementById('av_tenant_search').value = found.first_name + ' ' + found.last_name;
+                document.getElementById('av_tenant_search').classList.add('valid');
+            }
+        }
     });
 
     @if(session('success'))
