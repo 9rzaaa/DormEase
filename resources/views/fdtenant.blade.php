@@ -1490,7 +1490,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <th>Tenant Name</th>
                         <th>Floor No.</th>
                         <th>Room No.</th>
-                        <th>Contact No.</th>
+                        <th class="th-center">Contact No.</th>
                         <th class="th-center">Status</th>
                         <th class="th-center">Location</th>
                         <th>Notes</th>
@@ -1551,7 +1551,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <th>Tenant Name</th>
                             <th>Floor No.</th>
                             <th>Room No.</th>
-                            <th>Contact No.</th>
+                            <th class="th-center">Contact No.</th>
                             <th class="th-center">Status</th>
                             <th>Notes</th>
                             <th class="th-center">Action</th>
@@ -1757,6 +1757,18 @@ function hideActionLoading() {
     overlay.setAttribute('aria-hidden', 'true');
 }
 
+function normalizeContactDisplay(raw) {
+    if (!raw) return '\u2014';
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 12 && digits.substring(0, 2) === '63') {
+        digits = '0' + digits.substring(2);
+    }
+    if (digits.length === 11 && digits.substring(0, 2) === '09') {
+        return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+    }
+    return raw;
+}
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -1868,7 +1880,7 @@ function renderTable() {
                 })() +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
-                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
                 '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
@@ -1922,11 +1934,11 @@ function renderReservedTable() {
                 '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
-                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
                 '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset(\'icons/eye.png\') }}" alt="View"></button>' +
                     '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
                 '</div></td>' +
             '</tr>';
