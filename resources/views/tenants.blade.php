@@ -2205,6 +2205,18 @@ function fmtDate(d) {
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function normalizeContactDisplay(raw) {
+    if (!raw) return '\u2014';
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 12 && digits.substring(0, 2) === '63') {
+        digits = '0' + digits.substring(2);
+    }
+    if (digits.length === 11 && digits.substring(0, 2) === '09') {
+        return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+    }
+    return raw;
+}
+
 function escapeJs(str) {
     return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
@@ -2268,7 +2280,7 @@ function buildRows(list) {
             + '<td>' + floorRoom + '</td>'
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
-            + '<td>' + (t.contact_number || '\u2014') + '</td>'
+            + '<td>' + normalizeContactDisplay(t.contact_number) + '</td>'
             + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
@@ -2454,7 +2466,7 @@ function viewTenant(t) {
         + '<div class="modal-section-title">Personal Information</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + (t.contact_number || '\u2014') + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.contact_number) + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
         + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
