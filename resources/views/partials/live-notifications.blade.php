@@ -3,6 +3,7 @@
         var latestSeenNotificationId = null;
         var firstLiveNotificationLoad = true;
         var pollTimer = null;
+        var emergencyPollTimer = null;
         var notificationAudioContext = null;
         var notificationSoundUnlocked = false;
         var queuedNotificationSound = false;
@@ -269,6 +270,27 @@
                 .catch(function() {});
         }
 
+        function pollEmergencyAlerts() {
+            fetch('/live-alerts', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '',
+                },
+                cache: 'no-store',
+            })
+            .then(function(response) { return response.ok ? response.json() : null; })
+            .then(function(payload) {
+                if (!payload) return;
+                if (typeof window.__processLiveEmergencyAlerts === 'function') {
+                    window.__processLiveEmergencyAlerts(
+                        payload.panic    || null,
+                        payload.critical || { reports: [] }
+                    );
+                }
+            })
+            .catch(function() {});
+        }
+
         window.markAllRead = function() {
             fetch('/notifications/read-all', {
                 method: 'POST',
@@ -290,10 +312,14 @@
             pollTimer = setInterval(function() {
                 renderLiveNotifications(true);
             }, 5000);
+
+            pollEmergencyAlerts();
+            emergencyPollTimer = setInterval(pollEmergencyAlerts, 5000);
         });
 
         window.addEventListener('beforeunload', function() {
             if (pollTimer) clearInterval(pollTimer);
+            if (emergencyPollTimer) clearInterval(emergencyPollTimer);
         });
     })();
 </script>

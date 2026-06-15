@@ -2043,21 +2043,6 @@
         showToast('{{ session("success") }}', 'success');
     @endif
 
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
-        }
-        setInterval(checkPanic, 30000);
-    })();
 
     (function() {
         var lastPanicId = null;
