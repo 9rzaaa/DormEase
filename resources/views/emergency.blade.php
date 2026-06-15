@@ -109,8 +109,8 @@
     .stat-label { font-size: .8rem; color: rgba(247,245,245,.967); font-weight: 700; margin-bottom: .15rem;}
 
     .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(232,23,93,.35);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(232,23,93,.35);
     }
 
     .table-card {
@@ -586,10 +586,7 @@
     .dir-tab-icon { width: 14px; height: 14px; object-fit: contain; opacity: .5; }
     .dir-tab.active .dir-tab-icon { opacity: 1; }
 
-    .dir-search-bar {
-        padding: .85rem .75rem;
-        flex-shrink: 0;
-    }
+    .dir-search-bar { padding: .85rem .75rem; flex-shrink: 0; }
 
     .dir-search-inner { position: relative; display: flex; align-items: center; }
 
@@ -876,8 +873,9 @@
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;
         background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
+        pointer-events: none;
     }
-    .action-loading-overlay.open { display: flex; }
+    .action-loading-overlay.open { display: flex; pointer-events: auto; }
 
     .action-loading-box {
         display: flex; align-items: center; flex-direction: column;
@@ -927,50 +925,31 @@
         flex-shrink: 0;
     }
     .status-legend-wrap img {
-        width: 15px;
-        height: 15px;
-        object-fit: contain;
-        opacity: .6;
+        width: 15px; height: 15px; object-fit: contain; opacity: .6;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
         transition: opacity .2s;
     }
     .status-legend-wrap:hover img { opacity: 1; }
     .status-legend-popup {
-        display: none;
-        position: fixed;
-        background: var(--white);
-        border: 1.5px solid var(--pink-200);
+        display: none; position: fixed;
+        background: var(--white); border: 1.5px solid var(--pink-200);
         border-radius: 14px;
         box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
-        padding: .75rem .9rem;
-        min-width: 320px;
-        z-index: 9999;
+        padding: .75rem .9rem; min-width: 320px; z-index: 9999;
     }
     .slp-title {
-        font-size: .67rem;
-        font-weight: 800;
-        color: var(--bright-pink);
-        text-transform: uppercase;
-        letter-spacing: .08em;
-        margin-bottom: .55rem;
-        padding-bottom: .4rem;
+        font-size: .67rem; font-weight: 800; color: var(--bright-pink);
+        text-transform: uppercase; letter-spacing: .08em;
+        margin-bottom: .55rem; padding-bottom: .4rem;
         border-bottom: 1.5px solid var(--petal);
     }
     .slp-row {
-        display: flex;
-        align-items: center;
-        gap: .6rem;
-        padding: .35rem 0;
-        border-bottom: 1px solid var(--pink-100);
+        display: flex; align-items: center; gap: .6rem;
+        padding: .35rem 0; border-bottom: 1px solid var(--pink-100);
     }
     .slp-row:last-child { border-bottom: none; }
     .slp-badge { flex-shrink: 0; min-width: 90px; }
-    .slp-desc {
-        font-size: .75rem;
-        color: var(--ink-muted);
-        font-weight: 500;
-        line-height: 1.45;
-    }
+    .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; }
 </style>
 @endsection
 
@@ -1163,16 +1142,11 @@
 <div class="modal-overlay" id="dir-modal" onclick="handleOverlayClick(event, 'dir-modal')">
     <div class="modal dir-modal" style="max-width:580px;">
         <div class="modal-header">
-            <div class="modal-title">
-                Emergency Directory
-            </div>
+            <div class="modal-title">Emergency Directory</div>
             <button class="modal-close" onclick="closeModal('dir-modal')">&#x2715;</button>
         </div>
-
         <div class="dir-tabs" id="dir-tabs">
-            <button class="dir-tab active" onclick="switchDirTab('all', this)">
-                All
-            </button>
+            <button class="dir-tab active" onclick="switchDirTab('all', this)">All</button>
             <button class="dir-tab" onclick="switchDirTab('police', this)">
                 <img class="dir-tab-icon" src="{{ asset('icons/police.png') }}" alt=""> Police
             </button>
@@ -1186,20 +1160,15 @@
                 <img class="dir-tab-icon" src="{{ asset('icons/redcross.png') }}" alt=""> Red Cross
             </button>
         </div>
-
         <div class="dir-search-bar">
             <div class="dir-search-inner">
                 <img src="{{ asset('icons/search.png') }}" class="dir-search-icon" alt="">
                 <input type="text" id="dir-search" placeholder="Search contacts..." oninput="renderDirList()">
             </div>
         </div>
-
         <div class="dir-list" id="dir-list"></div>
-
         <div class="modal-footer">
-            <div class="dir-hint" style="flex:1;margin:0;">
-                Tap any number to copy it to your clipboard.
-            </div>
+            <div class="dir-hint" style="flex:1;margin:0;">Tap any number to copy it to your clipboard.</div>
             <button class="btn-cancel" onclick="closeModal('dir-modal')">Close</button>
         </div>
     </div>
@@ -1287,10 +1256,10 @@
 
 @section('scripts')
 <script>
-    const reports          = @json($reports);
-    const closedArchive    = @json($closedArchive);
-    const resolvedArchive  = @json($resolvedArchive);
-    const deletedArchive   = @json($deletedArchive);
+    const reports         = @json($reports);
+    const closedArchive   = @json($closedArchive);
+    const resolvedArchive = @json($resolvedArchive);
+    const deletedArchive  = @json($deletedArchive);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -1319,10 +1288,6 @@
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
     }
-
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    function handleOverlayClick(event, id) { if (event.target === event.currentTarget) closeModal(id); }
 
     document.querySelectorAll('.modal-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
@@ -1529,6 +1494,7 @@
     }
 
     function viewReport(r) {
+        hideActionLoading();
         currentRep = r;
         document.getElementById('view-content').innerHTML = `
             ${r.is_panic_alert ? `<div class="panic-banner"><img src="{{ asset('icons/warning.png') }}" alt=""> This is a Panic Alert</div>` : ''}
@@ -1594,6 +1560,7 @@
     }
 
     function openEditModal(r) {
+        hideActionLoading();
         currentRep = r;
         document.getElementById('edit-status').value   = r.status ?? 'active';
         document.getElementById('edit-location').value = r.location    ?? '';
@@ -1635,6 +1602,7 @@
     }
 
     function openDeleteModal(id, type) {
+        hideActionLoading();
         deleteId = id;
         document.getElementById('delete-label').textContent = type;
         openModal('delete-modal');
@@ -1794,7 +1762,6 @@
                 if (!groups[d.category]) groups[d.category] = [];
                 groups[d.category].push(d);
             });
-
             const categoryOrder = ['general', 'police', 'fire', 'medical', 'redcross'];
             list.innerHTML = categoryOrder
                 .filter(cat => groups[cat])
@@ -1811,9 +1778,7 @@
         return `
             <div class="dir-card" style="animation-delay:${i * 0.04}s;">
                 <div class="dir-card-left">
-                    <div class="dir-card-icon">
-                        <img src="${d.icon}" alt="">
-                    </div>
+                    <div class="dir-card-icon"><img src="${d.icon}" alt=""></div>
                     <div class="dir-card-name">${escHtml(d.name)}</div>
                 </div>
                 <div class="dir-card-numbers">
@@ -1828,16 +1793,12 @@
     function buildSuggestedHotlines(emergencyType, urgencyLevel, isPanic) {
         const type  = (emergencyType ?? '').toLowerCase();
         const level = (urgencyLevel ?? '').toLowerCase();
-
         if (!isPanic && level !== 'critical' && level !== 'urgent') return '';
-
         const matched = DIR_DATA.filter(h =>
             h.name === 'National Emergency Hotline' ||
             h.tags.some(tag => type.includes(tag))
         );
-
         if (!matched.length) return '';
-
         const chips = matched.map(h =>
             h.numbers.map(n => `
                 <div class="dir-suggested-chip" onclick="copyHotline('${n.replace(/[^0-9]/g,'')}', this)">
@@ -1847,7 +1808,6 @@
                 </div>
             `).join('')
         ).join('');
-
         return `
             <div class="dir-suggested-wrap">
                 <div class="dir-suggested-label">Suggested Hotlines</div>
@@ -1889,9 +1849,7 @@
                 document.execCommand('copy');
                 ta.remove();
                 flash(true);
-            } catch {
-                flash(false);
-            }
+            } catch { flash(false); }
         }
     }
 
@@ -1983,43 +1941,29 @@
     (function() {
         var popup = document.querySelector('.status-legend-popup');
         if (!popup) return;
-
         document.body.appendChild(popup);
         popup.style.display = 'none';
         popup.style.position = 'fixed';
         popup.style.zIndex = '9999';
-
         var hideTimer = null;
-
         document.querySelectorAll('.status-legend-wrap').forEach(function(wrap) {
             wrap.addEventListener('mouseenter', function() {
                 clearTimeout(hideTimer);
                 var rect = wrap.getBoundingClientRect();
                 var popupWidth = 320;
                 var left = rect.left;
-                if (left + popupWidth > window.innerWidth - 12) {
-                    left = window.innerWidth - popupWidth - 12;
-                }
+                if (left + popupWidth > window.innerWidth - 12) left = window.innerWidth - popupWidth - 12;
                 popup.style.top = (rect.bottom + 8) + 'px';
                 popup.style.left = left + 'px';
                 popup.style.display = 'block';
             });
-
             wrap.addEventListener('mouseleave', function() {
-                hideTimer = setTimeout(function() {
-                    popup.style.display = 'none';
-                }, 150);
+                hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
             });
         });
-
-        popup.addEventListener('mouseenter', function() {
-            clearTimeout(hideTimer);
-        });
-
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
         popup.addEventListener('mouseleave', function() {
-            hideTimer = setTimeout(function() {
-                popup.style.display = 'none';
-            }, 150);
+            hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
         });
     })();
 
@@ -2027,7 +1971,6 @@
         document.getElementById('search-input').value = '';
         document.getElementById('status-filter').value = '';
         document.getElementById('type-filter').value = '';
-        document.getElementById('urgency-filter').value = '';
         document.getElementById('urgency-filter').value = '';
         document.getElementById('sort-select').value = 'newest';
         document.getElementById('date-from').value = '';
@@ -2042,22 +1985,5 @@
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
-
-
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
-        }
-        setInterval(checkPanic, 30000);
-    })();
 </script>
 @endsection
