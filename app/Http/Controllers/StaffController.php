@@ -153,7 +153,7 @@ class StaffController extends Controller
             'last_name'      => 'required|string|max:100',
             'email'          => 'required|email|unique:staff,email',
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => 'nullable|string|min:11|max:20',
             'shift_schedule' => 'nullable|string|max:50',
         ]);
 
@@ -200,7 +200,7 @@ class StaffController extends Controller
                 Rule::unique('staff', 'email')->ignore($staff->staff_id, 'staff_id'),
             ],
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => 'nullable|string|min:11|max:20',
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
