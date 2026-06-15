@@ -293,22 +293,6 @@
 }
 .ann-row-card:hover::before { background: var(--gradient-pink); }
 .ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
-.ann-row-card.status-closed {
-    opacity: .58;
-    background: #f7f7f9;
-    border-color: #e0e0e8;
-}
-.ann-row-card.status-closed .ann-row-title,
-.ann-row-card.status-closed .ann-row-excerpt { color: #999; }
-.ann-row-card.status-closed .ann-row-time { color: #bbb; }
-.ann-row-card.status-closed::before { background: #c8c8d4; }
-.ann-row-card.status-closed:hover {
-    border-color: #c0c0cc;
-    box-shadow: 0 4px 14px rgba(0,0,0,.06);
-    opacity: .72;
-    transform: translateY(-1px);
-}
-.ann-row-card.status-closed:hover::before { background: #a0a0b8; }
 .ann-row-card.status-scheduled::before { background: var(--gradient-pink); }
 .ann-row-left {
     display: flex;
@@ -651,6 +635,48 @@
     flex-shrink: 0;
 }
 .aad-close:hover { background: var(--pink-100); }
+.aad-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1.6rem;
+    border-bottom: 1px solid var(--pink-100);
+    flex-shrink: 0;
+    background: #fff;
+}
+.aad-tab {
+    padding: .75rem 1rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .18s, border-color .18s;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+.aad-tab:hover { color: var(--hot-pink); }
+.aad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+.aad-tab-count {
+    font-size: .66rem;
+    font-weight: 800;
+    padding: .1rem .42rem;
+    border-radius: 99px;
+    background: var(--petal);
+    color: var(--ink-muted);
+    min-width: 16px;
+    text-align: center;
+}
+.aad-tab.active .aad-tab-count {
+    background: var(--bright-pink);
+    color: #fff;
+}
+.aad-pill-status-closed { background: #f3f4f6; color: #888; border: 1px solid #d0d0d8; }
 .aad-search-bar { padding: .85rem 1.6rem .65rem; flex-shrink: 0; }
 .aad-search-inner { position: relative; display: flex; align-items: center; }
 .aad-search-inner input {
@@ -960,7 +986,7 @@
     </div>
 
     <div class="ann-stats-row fade-up d2">
-        @php $allForStats = $announcements->merge($scheduled); @endphp
+        @php $allForStats = $announcements->merge($scheduled)->merge($closedArchive); @endphp
 
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
@@ -996,7 +1022,7 @@
             </div>
             <div>
                 <div class="ann-stat-label">Closed</div>
-                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
+                <div class="ann-stat-num">{{ $closedArchive->count() }}</div>
                 <div class="ann-stat-sub">Archived Announcements</div>
             </div>
         </div>
@@ -1023,7 +1049,7 @@
             <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
-                <option value="closed">Closed</option>
+                <option value="scheduled">Scheduled</option>
             </select>
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
@@ -1193,9 +1219,17 @@
     <div class="aad-header">
         <div>
             <div class="aad-title">Archive / History</div>
-            <div class="aad-sub">Record of deleted announcements</div>
+            <div class="aad-sub">Closed and deleted announcements</div>
         </div>
         <button class="aad-close" onclick="closeAnnArchive()">&#x2715;</button>
+    </div>
+    <div class="aad-tabs">
+        <button class="aad-tab active" id="aad-tab-closed" onclick="switchAnnArchiveTab('closed')">
+            Closed <span class="aad-tab-count" id="aad-count-closed">0</span>
+        </button>
+        <button class="aad-tab" id="aad-tab-deleted" onclick="switchAnnArchiveTab('deleted')">
+            Deleted <span class="aad-tab-count" id="aad-count-deleted">0</span>
+        </button>
     </div>
     <div class="aad-search-bar">
         <div class="aad-search-inner">
@@ -1515,6 +1549,7 @@
 <script>
 const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
 const deletedAnnArchive = @json($deletedArchive);
+const closedAnnArchive  = @json($closedArchive);
 const storageBaseUrl    = "{{ asset('storage') }}";
 const editIcon          = "{{ asset('icons/edit.png') }}";
 const announceIcon      = "{{ asset('icons/announce.png') }}";
@@ -1546,7 +1581,8 @@ const archiveIconAsset  = "{{ asset('icons/archive.png') }}";
             </div>
         </div>
         <div class="aadd-body" id="aadd-body"></div>
-        <div class="aadd-footer">
+        <div class="aadd-footer" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+            <div id="aadd-reopen-wrap"></div>
             <button class="btn-cancel" onclick="closeAnnArchiveDetail()">Close</button>
         </div>
     `;
@@ -1589,19 +1625,17 @@ const globalDropdown = document.getElementById('ann-global-dropdown');
 let activeMenuId = null;
 
 function buildDropdownHTML(id, ann) {
-    const isScheduled = ann.status === 'scheduled';
-    let middle = '';
+    var isScheduled = ann.status === 'scheduled';
+    var middle = '';
     if (isScheduled) {
-        middle = `<button class="ann-dropdown-item" onclick="submitForm('publish-now-${id}',event)"><img class="dd-icon" src="${announceIcon}" alt=""> Publish Now</button>`;
-    } else if (ann.status !== 'closed') {
-        middle = `<button class="ann-dropdown-item" onclick="submitForm('close-${id}',event)"><img class="dd-icon" src="${archiveIcon}" alt=""> Close</button>`;
+        middle = '<button class="ann-dropdown-item" onclick="submitForm(\'publish-now-' + id + '\',event)"><img class="dd-icon" src="' + announceIcon + '" alt=""> Publish Now</button>';
+    } else {
+        middle = '<button class="ann-dropdown-item" onclick="submitForm(\'close-' + id + '\',event)"><img class="dd-icon" src="' + archiveIcon + '" alt=""> Close</button>';
     }
-    return `
-        <button class="ann-dropdown-item" onclick="openEditModal(${id},event)"><img class="dd-icon" src="${editIcon}" alt=""> Edit</button>
-        ${middle}
-        <div class="ann-dropdown-divider"></div>
-        <button class="ann-dropdown-item danger" onclick="openDeleteModal(${id},'${escapeHtml(ann.title || '')}',event)"><img class="dd-icon" src="${deleteIcon}" alt=""> Delete</button>
-    `;
+    return '<button class="ann-dropdown-item" onclick="openEditModal(' + id + ',event)"><img class="dd-icon" src="' + editIcon + '" alt=""> Edit</button>'
+        + middle
+        + '<div class="ann-dropdown-divider"></div>'
+        + '<button class="ann-dropdown-item danger" onclick="openDeleteModal(' + id + ',\'' + escapeHtml(ann.title || '').replace(/'/g, "\\'") + '\',event)"><img class="dd-icon" src="' + deleteIcon + '" alt=""> Delete</button>';
 }
 
 function toggleMenu(e, id) {
@@ -1958,46 +1992,65 @@ function fmtDatePlain(d) {
            dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
 }
 
+var _annArchiveTab = 'closed';
+
 function openAnnArchive() {
     document.getElementById('aad-drawer').classList.add('open');
     document.getElementById('aad-backdrop').classList.add('open');
     document.getElementById('aad-search').value = '';
+    document.getElementById('aad-count-closed').textContent  = closedAnnArchive.length;
+    document.getElementById('aad-count-deleted').textContent = deletedAnnArchive.length;
     renderAnnArchive();
 }
+
 function closeAnnArchive() {
     document.getElementById('aad-drawer').classList.remove('open');
     document.getElementById('aad-backdrop').classList.remove('open');
 }
 
+function switchAnnArchiveTab(tab) {
+    _annArchiveTab = tab;
+    document.getElementById('aad-tab-closed').classList.toggle('active',  tab === 'closed');
+    document.getElementById('aad-tab-deleted').classList.toggle('active', tab === 'deleted');
+    document.getElementById('aad-search').value = '';
+    renderAnnArchive();
+}
+
 function renderAnnArchive() {
-    const q    = document.getElementById('aad-search').value.toLowerCase();
-    const data = deletedAnnArchive.filter(r =>
-        (r.title   || '').toLowerCase().includes(q) ||
-        (r.content || '').toLowerCase().includes(q) ||
-        (r.priority|| '').toLowerCase().includes(q)
-    );
-    const list = document.getElementById('aad-list');
-    document.getElementById('aad-count-label').textContent = `${data.length} record${data.length !== 1 ? 's' : ''}`;
+    var q      = document.getElementById('aad-search').value.toLowerCase();
+    var source = _annArchiveTab === 'closed' ? closedAnnArchive : deletedAnnArchive;
+    var data   = source.filter(function(r) {
+        return (r.title    || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.content  || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.priority || '').toLowerCase().indexOf(q) !== -1;
+    });
+    var list = document.getElementById('aad-list');
+    document.getElementById('aad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
     if (!data.length) {
-        list.innerHTML = `<div class="aad-empty"><img src="${announceIcon}" alt="">No archived announcements found.</div>`;
+        list.innerHTML = '<div class="aad-empty"><img src="' + announceIcon + '" alt="">No ' + _annArchiveTab + ' announcements found.</div>';
         return;
     }
-    list.innerHTML = data.map((r, i) => {
-        return `
-        <div class="aad-card" style="animation-delay:${i * 0.04}s;" onclick='openAnnArchiveDetail(${JSON.stringify(r).replace(/</g,'\\u003c')})'>
-            <div class="aad-card-top">
-                <div class="aad-card-id">#${r.announcement_id}</div>
-                <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')}</div>
-            </div>
-            <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
-            <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
-            <div class="aad-card-meta">
-                <span class="aad-pill aad-pill-${(r.priority || 'low').toLowerCase()}">${ucFirst(r.priority || 'low')}</span>
-                <span class="aad-pill aad-pill-${(r.status || 'active').toLowerCase()}">${ucFirst(r.status || 'active')}</span>
-                ${r.attachment ? `<span class="aad-pill aad-pill-closed">${r.attachment.split(',').length} file(s)</span>` : ''}
-            </div>
-            <div class="aad-card-deleted">Deleted on: <span>${fmtDatePlain(r.deleted_at)}</span></div>
-        </div>`;
+    list.innerHTML = data.map(function(r, i) {
+        var dateLabel    = _annArchiveTab === 'closed' ? 'Posted' : 'Deleted on';
+        var dateValue    = _annArchiveTab === 'closed'
+            ? (r.posted_at ? fmtDatePlain(r.posted_at) : '—')
+            : fmtDatePlain(r.deleted_at);
+        var dateColor    = _annArchiveTab === 'deleted' ? 'color:#e04867;' : '';
+        var attachCount  = r.attachment ? r.attachment.split(',').length : 0;
+        return '<div class="aad-card" style="animation-delay:' + (i * 0.04) + 's;" onclick=\'openAnnArchiveDetail(' + JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'\\u0027') + ')\'>'
+            + '<div class="aad-card-top">'
+                + '<div class="aad-card-id">#' + r.announcement_id + '</div>'
+                + '<div class="aad-card-time">' + (r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')) + '</div>'
+            + '</div>'
+            + '<div class="aad-card-title">' + escapeHtml(r.title || '') + '</div>'
+            + '<div class="aad-card-desc">'  + escapeHtml(r.content || '') + '</div>'
+            + '<div class="aad-card-meta">'
+                + '<span class="aad-pill aad-pill-' + (r.priority || 'low').toLowerCase() + '">' + ucFirst(r.priority || 'low') + '</span>'
+                + '<span class="aad-pill aad-pill-' + (r.status || 'active').toLowerCase() + '">' + ucFirst(r.status || 'active') + '</span>'
+                + (attachCount ? '<span class="aad-pill aad-pill-closed">' + attachCount + ' file(s)</span>' : '')
+            + '</div>'
+            + '<div class="aad-card-deleted" style="' + dateColor + '">' + dateLabel + ': <span>' + dateValue + '</span></div>'
+        + '</div>';
     }).join('');
 }
 
@@ -2047,6 +2100,17 @@ function openAnnArchiveDetail(record) {
         </div>` : ''}
     `;
 
+    var reopenWrap = document.getElementById('aadd-reopen-wrap');
+    if (reopenWrap) {
+        if (record.status === 'closed' && record.announcement_id) {
+            reopenWrap.innerHTML = '<form method="POST" action="/announcements/' + record.announcement_id + '/reopen" style="display:inline;" onsubmit="showActionLoading(\'Reopening announcement...\');">'
+                + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                + '<button type="submit" class="btn-submit" style="font-size:.82rem;padding:.5rem 1rem;">Reopen as Active</button>'
+                + '</form>';
+        } else {
+            reopenWrap.innerHTML = '';
+        }
+    }
     document.getElementById('aadd-backdrop').classList.add('open');
     document.getElementById('aadd-modal').classList.add('open');
 }
@@ -2057,13 +2121,26 @@ function closeAnnArchiveDetail() {
 }
 
 function exportAnnArchive() {
-    if (!deletedAnnArchive.length) { showToast('No archived announcements to export.', 'error'); return; }
-    const rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Deleted On']];
-    deletedAnnArchive.forEach(r => rows.push([r.announcement_id, r.title||'', r.content||'', r.priority||'', r.status||'', r.posted_at||'', r.scheduled_at||'', r.deleted_at||'']));
-    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const a = document.createElement('a');
+    var source   = _annArchiveTab === 'closed' ? closedAnnArchive : deletedAnnArchive;
+    var filename = _annArchiveTab === 'closed' ? 'announcements_closed.csv' : 'announcements_deleted.csv';
+    if (!source.length) { showToast('No records to export.', 'error'); return; }
+    var rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Closed/Deleted On']];
+    source.forEach(function(r) {
+        rows.push([
+            r.announcement_id,
+            r.title        || '',
+            r.content      || '',
+            r.priority     || '',
+            r.status       || '',
+            r.posted_at    || '',
+            r.scheduled_at || '',
+            _annArchiveTab === 'closed' ? (r.posted_at || '') : (r.deleted_at || ''),
+        ]);
+    });
+    var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'announcements_deleted_archive.csv';
+    a.download = filename;
     a.click();
 }
 

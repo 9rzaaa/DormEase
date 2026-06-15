@@ -178,6 +178,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::put('/announcements/{id}', [AnnouncementController::class, 'update'])->name('announcements.update');
     Route::post('/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
     Route::post('/announcements/{id}/restore', [AnnouncementController::class, 'restore'])->name('announcements.restore');
+    Route::post('announcements/{id}/reopen', [AnnouncementController::class, 'reopen'])->name('announcements.reopen');
     Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
 
     // visitors
