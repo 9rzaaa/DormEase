@@ -1707,7 +1707,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </p>
             <div class="modal-field">
                 <label>Note</label>
-                <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
+                <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..." maxlength="1000"></textarea>
             </div>
         </div>
         <div class="modal-actions">
