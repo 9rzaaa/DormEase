@@ -112,7 +112,7 @@ class TenantController extends Controller
                 Rule::unique('tenants', 'email')->where(fn ($q) => $q->where('status', '!=', 'inactive')),
             ],
             'contact_number'         => 'nullable|string|max:20',
-            'room_number'            => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:5',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
@@ -230,7 +230,7 @@ class TenantController extends Controller
             'last_name'              => 'required|string|max:100',
             'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
             'contact_number'         => 'nullable|string|max:20',
-            'room_number'            => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:5',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
@@ -397,7 +397,7 @@ class TenantController extends Controller
         }
 
         $request->validate([
-            'estimated_move_in_date' => 'required|date',
+            'estimated_move_in_date' => 'required|date|after_or_equal:today',
         ]);
 
         $tenant->update([
