@@ -1266,11 +1266,11 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-grid">
                             <div class="modal-field">
                                 <label>First Name</label>
-                                <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}" autocomplete="given-name">
+                                <input type="text" name="first_name" placeholder="e.g. Maria" required maxlength="100" value="{{ old('first_name') }}" autocomplete="given-name">
                             </div>
                             <div class="modal-field">
                                 <label>Last Name</label>
-                                <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}" autocomplete="family-name">
+                                <input type="text" name="last_name" placeholder="e.g. Ramos" required maxlength="100" value="{{ old('last_name') }}" autocomplete="family-name">
                             </div>
                             <div class="modal-field full">
                                 <label>Email Address</label>
@@ -1297,7 +1297,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select id="add-referred-former-select" style="display:none;" onchange="syncReferredSelect('add-referred-former-select','add-referred-by-value')">
                                     <option value="">Select former tenant...</option>
                                 </select>
-                                <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('add-referred-by-value').value=this.value">
+                                <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." maxlength="150" oninput="document.getElementById('add-referred-by-value').value=this.value">
                             </div>
                         </div>
                     </div>
@@ -1349,7 +1349,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             </div>
                             <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                                 <label>Reservation Notes</label>
-                                <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
+                                <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" maxlength="500" value="{{ old('reservation_notes') }}">
                             </div>
                         </div>
                     </div>
@@ -1433,7 +1433,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <select id="edit-referred-former-select" style="display:none;" onchange="syncReferredSelect('edit-referred-former-select','edit-referred-by-value')">
                                 <option value="">Select former tenant...</option>
                             </select>
-                            <input type="text" id="edit-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('edit-referred-by-value').value=this.value">
+                            <input type="text" id="edit-referred-other-input" style="display:none;" placeholder="Enter name..." maxlength="150" oninput="document.getElementById('edit-referred-by-value').value=this.value">
                         </div>
                     </div>
                 </div>
@@ -1490,7 +1490,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
-                            <input type="text" name="reservation_notes" id="edit-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation">
+                            <input type="text" name="reservation_notes" id="edit-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" maxlength="500">
                         </div>
                     </div>
                 </div>
@@ -1831,6 +1831,8 @@ function validatePhoneField(inputId, errorId, required) {
 function attachPhoneFormatter(inputId, errorId, required) {
     var input = document.getElementById(inputId);
     if (!input) return;
+    if (input._phoneFormatterAttached) return;
+    input._phoneFormatterAttached = true;
     input.addEventListener('input', function() {
         var cursorAtEnd = this.selectionStart === this.value.length;
         var formatted = formatPhoneNumber(this.value);
@@ -1934,6 +1936,28 @@ function validateAddTenantForm(e) {
     var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
+    var mode       = document.getElementById('add-mode-input').value;
+    var stayType   = document.getElementById('add-stay-type-select').value;
+    var moveInDate = document.getElementById('add-move-in-date').value;
+
+    if (!stayType) {
+        e.preventDefault();
+        var staySelect = document.getElementById('add-stay-type-select');
+        staySelect.classList.add('field-invalid');
+        staySelect.focus();
+        showToast('Please select a stay type.', 'error');
+        return false;
+    }
+
+    if (mode === 'moved_in' && !moveInDate) {
+        e.preventDefault();
+        var miInput = document.getElementById('add-move-in-date');
+        miInput.classList.add('field-invalid');
+        miInput.focus();
+        showToast('Please enter a move-in date.', 'error');
+        return false;
+    }
+
     if (!emailOk || !contactOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
@@ -1975,7 +1999,6 @@ document.addEventListener('DOMContentLoaded', function() {
     attachEmailValidator('add-email', 'add-email-error');
     attachEmailValidator('edit-email', 'edit-email-error');
     attachPhoneFormatter('add-contact', 'add-contact-error', false);
-    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
     attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
@@ -2043,6 +2066,12 @@ function closeModal(id) {
         var acErr = document.getElementById('add-contact-error');
         if (ac) ac.classList.remove('field-invalid');
         if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
+        var ast = document.getElementById('add-stay-type-select');
+        if (ast) ast.classList.remove('field-invalid');
+        var ami = document.getElementById('add-move-in-date');
+        if (ami) ami.classList.remove('field-invalid');
+        if (ac) ac.classList.remove('field-invalid');
+        if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
@@ -2098,6 +2127,25 @@ function goAddStep(step) {
             document.getElementById('add-contact').focus();
             return;
         }
+        var fnVal = firstName.value.trim();
+        var lnVal = lastName.value.trim();
+        var namePattern = /^[a-zA-Z\s\-'.]+$/;
+        if (!namePattern.test(fnVal)) {
+            firstName.classList.add('field-invalid');
+            firstName.setCustomValidity('First name can only contain letters, spaces, hyphens, apostrophes, and periods.');
+            firstName.reportValidity();
+            firstName.setCustomValidity('');
+            return;
+        }
+        if (!namePattern.test(lnVal)) {
+            lastName.classList.add('field-invalid');
+            lastName.setCustomValidity('Last name can only contain letters, spaces, hyphens, apostrophes, and periods.');
+            lastName.reportValidity();
+            lastName.setCustomValidity('');
+            return;
+        }
+        firstName.classList.remove('field-invalid');
+        lastName.classList.remove('field-invalid');
     }
     if (step === 1) {
         if (!validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error')) {
@@ -2545,6 +2593,7 @@ function openEditModal(t) {
     restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
     openModal('edit-modal');
     var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
     var editSuggestBox  = document.getElementById('edit-room-suggest');
