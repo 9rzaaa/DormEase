@@ -1890,20 +1890,34 @@ tbody tr:hover { background: var(--soft-bg); }
                 <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will be set to <strong>Pending</strong> until their first login. Their previous record will remain in the archive for reference.</span>
             </div>
             <div class="modal-grid">
+                <div class="modal-field full">
+                    <label>Stay Type</label>
+                    <select id="renew-stay-type" onchange="onRenewStayTypeChange()" style="width:100%;padding:.5rem .8rem;border-radius:10px;border:1.5px solid var(--pink-100);background:#fffafd;font-size:.875rem;color:#5a1e38;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;font-family:inherit;">
+                        <option value="" disabled selected>Select type</option>
+                        <option value="Solo Room">Solo Room</option>
+                        <option value="Shared Room">Shared Room</option>
+                    </select>
+                </div>
+                <div class="modal-field full" id="renew-room-suggest-wrap" style="display:none;">
+                    <div id="renew-room-suggest"></div>
+                </div>
+                <div class="modal-field full">
+                    <label>Room No.</label>
+                    <input type="text" id="renew-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <span id="renew-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+                <div class="modal-field full" id="renew-room-hint-wrap" style="display:none;">
+                    <div id="renew-room-hint"></div>
+                </div>
                 <div class="modal-field">
                     <label>New Move-In Date</label>
                     <input type="date" id="renew-move-in" required>
                     <span id="renew-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
                 <div class="modal-field">
-                    <label>New Move-Out Date <span style="font-weight:500;color:var(--ink-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
-                    <input type="date" id="renew-move-out">
+                    <label>New Move-Out Date</label>
+                    <input type="date" id="renew-move-out" required>
                     <span id="renew-move-out-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
-                </div>
-                <div class="modal-field full">
-                    <label>Room No.</label>
-                    <input type="text" id="renew-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input">
-                    <span id="renew-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
             </div>
         </div>
@@ -2662,6 +2676,18 @@ function closeModal(id) {
         document.querySelectorAll('#add-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
+    }
+    if (id === 'renew-modal') {
+        var rSuggestWrap = document.getElementById('renew-room-suggest-wrap');
+        var rSuggestBox  = document.getElementById('renew-room-suggest');
+        var rHintWrap    = document.getElementById('renew-room-hint-wrap');
+        var rHint        = document.getElementById('renew-room-hint');
+        if (rSuggestWrap) rSuggestWrap.style.display = 'none';
+        if (rSuggestBox)  rSuggestBox.innerHTML = '';
+        if (rHintWrap)    rHintWrap.style.display = 'none';
+        if (rHint)        rHint.innerHTML = '';
+        var rSt = document.getElementById('renew-stay-type');
+        if (rSt) rSt.value = '';
     }
     if (id === 'edit-modal') {
         var w2 = document.getElementById('edit-room-hint-wrap');
@@ -4072,11 +4098,13 @@ async function submitDeleteRoom() {
                 } else if (pct >= 75) {
                     chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
                     badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
+                    var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 } else {
                     chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
+                    var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 }
                 var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
                 var displayBg     = isSelected ? '#fffbf0' : chipBg;
@@ -4112,6 +4140,13 @@ async function submitDeleteRoom() {
         var suggestWrap = document.getElementById('add-room-suggest-wrap');
         if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
         renderRoomSuggestions(stayType, 'add-room-suggest', 'add-room-number-input', null);
+    };
+
+    window.onRenewStayTypeChange = function() {
+        var stayType    = document.getElementById('renew-stay-type').value;
+        var suggestWrap = document.getElementById('renew-room-suggest-wrap');
+        if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
+        renderRoomSuggestions(stayType, 'renew-room-suggest', 'renew-room', null);
     };
 
     window.onEditStayTypeChange = function() {
@@ -4226,7 +4261,7 @@ function setAddMode(mode) {
 
 var renewTenantId = null;
 
-function openRenewModal(id, name, roomNumber) {
+function openRenewModal(id, name, roomNumber, stayType) {
     renewTenantId = id;
     document.getElementById('renew-tenant-name').textContent = name;
     var today = new Date();
@@ -4243,6 +4278,24 @@ function openRenewModal(id, name, roomNumber) {
     document.getElementById('renew-move-in-error').style.display  = 'none';
     document.getElementById('renew-move-out-error').style.display = 'none';
     document.getElementById('renew-room-error').style.display     = 'none';
+
+    var stayTypeSel = document.getElementById('renew-stay-type');
+    if (stayTypeSel) {
+        stayTypeSel.value = stayType || '';
+        var suggestWrap = document.getElementById('renew-room-suggest-wrap');
+        var suggestBox  = document.getElementById('renew-room-suggest');
+        if (suggestWrap) suggestWrap.style.display = 'none';
+        if (suggestBox)  suggestBox.innerHTML = '';
+        if (stayType) {
+            setTimeout(function() { onRenewStayTypeChange(); }, 80);
+        }
+    }
+
+    var hintWrap = document.getElementById('renew-room-hint-wrap');
+    var hint     = document.getElementById('renew-room-hint');
+    if (hintWrap) hintWrap.style.display = 'none';
+    if (hint)     hint.innerHTML = '';
+
     openModal('renew-modal');
     setTimeout(function() {
         var moveInEl  = document.getElementById('renew-move-in');
@@ -4251,6 +4304,43 @@ function openRenewModal(id, name, roomNumber) {
             moveInEl._renewValidatorAttached = true;
             moveInEl.addEventListener('change', validateRenewDates);
             moveOutEl.addEventListener('change', validateRenewDates);
+        }
+        var renewRoomInput = document.getElementById('renew-room');
+        if (renewRoomInput && !renewRoomInput._renewHintAttached) {
+            renewRoomInput._renewHintAttached = true;
+            var debounce = null;
+            renewRoomInput.addEventListener('input', function() {
+                var val = this.value.trim();
+                clearTimeout(debounce);
+                var hintWrap2 = document.getElementById('renew-room-hint-wrap');
+                var hint2     = document.getElementById('renew-room-hint');
+                if (!val) {
+                    if (hintWrap2) hintWrap2.style.display = 'none';
+                    if (hint2)     hint2.innerHTML = '';
+                    return;
+                }
+                debounce = setTimeout(function() {
+                    (function(roomsCache) {
+                        var fn = typeof getRoomsCache === 'function' ? getRoomsCache : function(cb) { cb(roomsCache || []); };
+                        fn(function(rooms) {
+                            var result = buildHint(rooms, val, null);
+                            if (!result || !result.html) {
+                                if (hintWrap2) hintWrap2.style.display = 'none';
+                                if (hint2)     hint2.innerHTML = '';
+                            } else {
+                                if (hint2)     hint2.innerHTML = result.html;
+                                if (hintWrap2) hintWrap2.style.display = 'block';
+                                if (hintWrap2) hintWrap2.querySelectorAll('.room-hint-suggest-btn').forEach(function(btn) {
+                                    btn.addEventListener('click', function() {
+                                        renewRoomInput.value = this.dataset.room;
+                                        renewRoomInput.dispatchEvent(new Event('input'));
+                                    });
+                                });
+                            }
+                        });
+                    })();
+                }, 320);
+            });
         }
     }, 0);
 }
@@ -4289,6 +4379,13 @@ async function submitRenewTenant() {
         document.getElementById('renew-move-in-error').textContent = 'Move-in date is required.';
         document.getElementById('renew-move-in-error').style.display = 'block';
         document.getElementById('renew-move-in').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (!moveOut) {
+        document.getElementById('renew-move-out-error').textContent = 'Move-out date is required.';
+        document.getElementById('renew-move-out-error').style.display = 'block';
+        document.getElementById('renew-move-out').classList.add('field-invalid');
         valid = false;
     }
 
@@ -4421,7 +4518,7 @@ function renderTenantArchive() {
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
                 + '</form>'
             : tenantArchiveTab === 'move_out' && r.id && isAdmin
-            ? '<button type="button" onclick="openRenewModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\', \'' + escapeJs(r.room_number || '') + '\')" style="width:100%;margin-top:.75rem;padding:.45rem 0;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" onmouseout="this.style.background=\'var(--white)\';this.style.color=\'var(--hot-pink)\';this.style.borderColor=\'var(--pink-100)\';">Renew Stay</button>'
+            ? '<button type="button" onclick="openRenewModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\', \'' + escapeJs(r.room_number || '') + '\', \'' + escapeJs(r.stay_type || '') + '\')" style="width:100%;margin-top:.75rem;padding:.45rem 0;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" onmouseout="this.style.background=\'var(--white)\';this.style.color=\'var(--hot-pink)\';this.style.borderColor=\'var(--pink-100)\';">Renew Stay</button>'
             : '';
         var archivePhotoHtml = r.tenant_photo
             ? '<img src="/storage/' + r.tenant_photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--pink-100);flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);" alt="">'
