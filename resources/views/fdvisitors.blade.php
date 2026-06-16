@@ -2241,7 +2241,10 @@
     @endif
 
     @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ $errors->first() }}', 'error');
+            openModal('add-modal');
+        });
     @endif
 
     filtered = visitors.slice();
