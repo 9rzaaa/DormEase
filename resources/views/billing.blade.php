@@ -2178,6 +2178,17 @@ function openUpdateModal(room) {
                         </div>
                     </div>
                     ${receiptBtn}
+                    ${safeProofUrl ? `
+                    <div style="margin-top:8px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border-pink);cursor:pointer;background:var(--pink-bg-soft);"
+                         onclick="openLightbox('${safeProofUrl.replace(/'/g,"\\'")}', '${safeTenantName.replace(/'/g,"\\'")}')">
+                        <img src="${escapeHtml(safeProofUrl)}" alt="Proof of payment"
+                             style="width:100%;max-height:120px;object-fit:cover;display:block;transition:opacity .15s;"
+                             onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                        <div style="padding:.3rem .6rem;font-size:.7rem;font-weight:700;color:var(--hot-pink);display:flex;align-items:center;gap:.3rem;">
+                            <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                            Click to preview
+                        </div>
+                    </div>` : ''}
                     ${proofPreviewBtn}
                 </div>
             </div>`;
