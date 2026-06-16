@@ -2229,8 +2229,8 @@
             <div class="dm-modal-section-title"><span class="dm-modal-section-bar"></span>Fulfilled Document</div>
             <div class="modal-field" style="margin-bottom:0;">
                 <label>Attach file (optional, for digital delivery)</label>
-                <input type="file" id="upd-req-file" accept=".pdf">
-                <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
+                <input type="file" id="upd-req-file" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) · max 20MB · min 1KB</span>
             </div>
         </div>
         <div class="dm-modal-footer modal-footer-split">
@@ -2332,8 +2332,8 @@
         </div>
         <div class="modal-field">
             <label>PDF File</label>
-            <input type="file" id="uf-file" accept=".pdf">
-            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF only · max 20MB</span>
+            <input type="file" id="uf-file" accept=".pdf,.doc,.docx,.xls,.xlsx">
+            <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) · max 20MB · min 1KB</span>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('upload-form-modal')">Cancel</button>
@@ -3034,8 +3034,16 @@ async function submitUpdateReq() {
     }
 
     if (file) {
-        if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
-        if (file.size > 20 * 1024 * 1024)   { showToast('File must be under 20MB.', 'error'); return; }
+        const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+    if (!allowedTypes.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+    if (file.size < 1024)                  { showToast('File is too small (minimum 1KB).', 'error'); return; }
+    if (file.size > 20 * 1024 * 1024)     { showToast('File must be under 20MB.', 'error'); return; }
     }
 
     const fd = new FormData();
@@ -3438,9 +3446,17 @@ async function submitUploadForm() {
     const label = document.getElementById('uf-label').value.trim();
     const file  = document.getElementById('uf-file').files[0];
     if (!label) { showToast('Label is required.', 'error'); return; }
-    if (!file)  { showToast('Please select a PDF file.', 'error'); return; }
-    if (file.type !== 'application/pdf') { showToast('Only PDF files are allowed.', 'error'); return; }
-    if (file.size > 20 * 1024 * 1024)   { showToast('File must be under 20MB.', 'error'); return; }
+    if (!file)  { showToast('Please select a file.', 'error'); return; }
+    const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+    if (!allowedTypes.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+    if (file.size < 1024)                  { showToast('File is too small (minimum 1KB).', 'error'); return; }
+    if (file.size > 20 * 1024 * 1024)     { showToast('File must be under 20MB.', 'error'); return; }
 
     const fd = new FormData();
     fd.append('label', label);
