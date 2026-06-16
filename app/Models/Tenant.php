@@ -20,6 +20,7 @@ class Tenant extends Authenticatable
         'last_name',
         'email',
         'contact_number',
+        'guardian_number',
         'referred_by',
         'profile_photo',
         'room_number',
@@ -47,25 +48,27 @@ class Tenant extends Authenticatable
     ];
 
     public function setContactNumberAttribute($value)
-{
-    if (!$value) {
-        $this->attributes['contact_number'] = null;
-        return;
+    {
+        $this->attributes['contact_number'] = $this->normalizePhone($value);
     }
 
-    $digits = preg_replace('/\D/', '', $value);
-
-    if (strlen($digits) === 12 && str_starts_with($digits, '63')) {
-        $digits = '0' . substr($digits, 2);
+    public function setGuardianNumberAttribute($value)
+    {
+        $this->attributes['guardian_number'] = $this->normalizePhone($value);
     }
 
-    if (strlen($digits) === 11 && str_starts_with($digits, '09')) {
-        $this->attributes['contact_number'] = substr($digits, 0, 4) . '-' . substr($digits, 4, 3) . '-' . substr($digits, 7, 4);
-        return;
+    private function normalizePhone($value): ?string
+    {
+        if (!$value) return null;
+        $digits = preg_replace('/\D/', '', $value);
+        if (strlen($digits) === 12 && str_starts_with($digits, '63')) {
+            $digits = '0' . substr($digits, 2);
+        }
+        if (strlen($digits) === 11 && str_starts_with($digits, '09')) {
+            return substr($digits, 0, 4) . '-' . substr($digits, 4, 3) . '-' . substr($digits, 7, 4);
+        }
+        return $value;
     }
-
-    $this->attributes['contact_number'] = $value;
-}
 
     public function getAuthPassword()
     {
