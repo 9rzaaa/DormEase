@@ -2634,7 +2634,8 @@ function viewTenant(t) {
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.contact_number) + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Guardian Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.guardian_number) + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
+            + '<div class="tv-item full"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
+        + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item"><div class="tv-item-label">Floor &amp; Room</div><div class="tv-item-value">' + floorRoom + '</div></div>'
@@ -2646,7 +2647,7 @@ function viewTenant(t) {
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
             + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
-            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">🏖 On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
+            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
         + '</div>';
     openModal('view-modal');
 }
