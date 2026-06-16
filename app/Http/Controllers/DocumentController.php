@@ -63,7 +63,18 @@ class DocumentController extends Controller
             'document_type' => 'required|string|max:255',
             'visibility'    => 'required|in:all,specific,admin',
             'tenant_id'     => 'nullable|exists:tenants,tenant_id',
-            'file'          => 'nullable|file|max:20480',
+            'file' => [
+                'required',
+                'file',
+                'min:1',
+                'max:20480',
+                function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                        $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                    }
+                },
+            ],
         ]);
 
         $filePath = null;
@@ -257,7 +268,20 @@ class DocumentController extends Controller
                 'admin_remarks'       => 'nullable|string',
                 'rejection_reason'    => 'nullable|string',
                 'allow_resubmission'  => 'nullable|boolean',
-                'fulfilled_file'      => 'nullable|file|mimes:pdf|max:20480',
+                'fulfilled_file' => [
+                    'nullable',
+                    'file',
+                    'min:1',
+                    'max:20480',
+                    function ($attribute, $value, $fail) {
+                        if ($value) {
+                            $ext = strtolower($value->getClientOriginalExtension());
+                            if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                                $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                            }
+                        }
+                    },
+                ],
             ]);
 
             $oldStatus = $docRequest->status;
