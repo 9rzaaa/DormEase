@@ -20,7 +20,6 @@ class AuthController extends Controller
         ]);
 
         $identifier  = trim($request->identifier);
-        $isEmail     = filter_var($identifier, FILTER_VALIDATE_EMAIL) !== false;
         $throttleKey = 'login-attempts:' . Str::lower($identifier);
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
@@ -31,13 +30,10 @@ class AuthController extends Controller
             ], 429);
         }
 
-        $tenant = Tenant::where('account_id', $identifier)
-            ->orWhere('email', $identifier)
-            ->first();
+        $tenant = Tenant::where('account_id', $identifier)->first();
 
         if (!$tenant) {
             $isStaff = Staff::where('account_id', $identifier)
-                ->orWhere('email', $identifier)
                 ->orWhere('staff_code', $identifier)
                 ->exists();
 
@@ -47,11 +43,7 @@ class AuthController extends Controller
                 ], 403);
             }
 
-            $notFoundMessage = $isEmail
-                ? 'The email address you entered is not registered.'
-                : 'The Account ID you entered is not registered.';
-
-            return response()->json(['message' => $notFoundMessage], 404);
+            return response()->json(['message' => 'The Account ID you entered is not registered.'], 404);
         }
 
         if ($tenant->status === 'inactive' || !$tenant->is_active) {
