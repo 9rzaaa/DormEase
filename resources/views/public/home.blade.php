@@ -554,6 +554,29 @@
       .hero-stats { grid-template-columns: 1fr 1fr; }
     }
 
+    .de-chat-loading {
+      position: absolute; inset: 0; z-index: 10;
+      background: rgba(253,244,248,0.92);
+      backdrop-filter: blur(4px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      border-radius: 22px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .de-chat-loading.visible { opacity: 1; pointer-events: all; }
+    .de-chat-loading-spinner {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid var(--pink-pale);
+      border-top-color: var(--pink);
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .de-chat-loading-text {
+      font-family: var(--font-head); font-size: 0.78rem;
+      font-weight: 700; color: var(--brown-light);
+    }
+
     @media(max-width:600px){
       .gallery-grid { grid-template-columns:1fr; }
       .footer-inner { grid-template-columns:1fr; }
@@ -1398,6 +1421,10 @@
 </button>
 
 <div id="de-chat-window" role="dialog" aria-label="DormEase Info Assistant">
+  <div class="de-chat-loading" id="de-chat-loading">
+  <div class="de-chat-loading-spinner"></div>
+  <span class="de-chat-loading-text">Clearing conversation…</span>
+</div>
   <div class="de-cw-header">
     <div class="de-cw-avatar">
       <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
@@ -1435,7 +1462,6 @@
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>This chat is for general inquiries about Sanctissimo Rosario Ladies Dormitory only. It is not a substitute for official communication with the dorm administration.</span></div>
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>Responses are automated and may not reflect real-time availability or pricing. For confirmed details, please contact us directly at +63 917 535 9723.</span></div>
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>Do not share sensitive personal information such as full names, addresses, or financial details through this chat.</span></div>
-        <div class="de-policy-item"><div class="de-policy-dot"></div><span>Messages sent here are not monitored in real time. For urgent concerns, please call or visit us in person at 1229 Navarra St., Sampaloc, Manila.</span></div>
       </div>
       <p class="de-policy-note">Tap <strong>I Agree</strong> to start chatting, or <strong>I Disagree</strong> to close.</p>
     </div>
@@ -1739,12 +1765,19 @@
     }
 
     function resetToPolicy() {
-      chatBody.innerHTML = '';
-      clearSuggestions();
-      input.value = '';
-      initialized = false;
-      chatPanel.style.display = 'none';
-      policyPanel.style.display = 'flex';
+      const loader = document.getElementById('de-chat-loading');
+      loader.classList.add('visible');
+
+      setTimeout(() => {
+        chatBody.innerHTML = '';
+        clearSuggestions();
+        input.value = '';
+        initialized = false;
+        chatPanel.style.display = 'none';
+        policyPanel.style.display = 'flex';
+
+        setTimeout(() => loader.classList.remove('visible'), 200);
+      }, 8000);
     }
 
     chatBtn.addEventListener('click', toggleChat);
