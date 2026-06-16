@@ -113,13 +113,13 @@
     }
 
     .tab-btn img {
-    width: 15px;
-    height: 15px;
-    object-fit: contain;
-    opacity: .6;
-    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
-    transition: opacity .2s, filter .2s;
-}
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+        transition: opacity .2s, filter .2s;
+    }
 
     .tab-btn.active {
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
@@ -708,7 +708,6 @@
         letter-spacing: .06em;
     }
 
-    /* ── Other modal fields ── */
     .modal-field {
         display: flex;
         flex-direction: column;
@@ -1924,92 +1923,91 @@
             </div>
 
             <div class="drawer-panel" id="dpanel-denied">
-            <div class="drawer-toolbar">
-                <span class="toolbar-label">Sort:</span>
-                <select class="toolbar-select" id="adenied-sort" onchange="adeniedApplyFilters()">
-                    <option value="newest">Newest Archived</option>
-                    <option value="oldest">Oldest Archived</option>
-                </select>
-                <div class="search-wrap" style="margin-left:auto;">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="adenied-search" placeholder="Search tenant, form type..." oninput="adeniedApplyFilters()">
-                </div>
-            </div>
-            <div class="table-card" style="flex:unset;">
-                <div class="table-card-header">
-                    <div>
-                        <div class="table-card-title">Denied Submissions</div>
-                        <div class="table-card-sub">Denied and resubmission-flagged form submissions</div>
+                <div class="drawer-toolbar">
+                    <span class="toolbar-label">Sort:</span>
+                    <select class="toolbar-select" id="adenied-sort" onchange="adeniedApplyFilters()">
+                        <option value="newest">Newest Archived</option>
+                        <option value="oldest">Oldest Archived</option>
+                    </select>
+                    <div class="search-wrap" style="margin-left:auto;">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="adenied-search" placeholder="Search tenant, form type..." oninput="adeniedApplyFilters()">
                     </div>
                 </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Submission ID</th>
-                                <th>Tenant</th>
-                                <th>Form Type</th>
-                                <th>File</th>
-                                <th class="th-center">Status</th>
-                                <th>Submitted</th>
-                                <th>Archived On</th>
-                                <th class="th-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adenied-tbody"></tbody>
-                    </table>
-                </div>
-                <div class="table-footer">
-                    <div class="table-info" id="adenied-info">Showing 0 entries</div>
-                    <div class="pagination" id="adenied-pagination"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="drawer-panel" id="dpanel-cancelled">
-            <div class="drawer-toolbar">
-                <span class="toolbar-label">Sort:</span>
-                <select class="toolbar-select" id="acancelled-sort" onchange="acancelledApplyFilters()">
-                    <option value="newest">Newest Archived</option>
-                    <option value="oldest">Oldest Archived</option>
-                </select>
-                <div class="search-wrap" style="margin-left:auto;">
-                    <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
-                    <input type="text" id="acancelled-search" placeholder="Search tenant, document type..." oninput="acancelledApplyFilters()">
-                </div>
-            </div>
-            <div class="table-card" style="flex:unset;">
-                <div class="table-card-header">
-                    <div>
-                        <div class="table-card-title">Cancelled Requests</div>
-                        <div class="table-card-sub">Document requests and form submissions cancelled by tenants</div>
+                <div class="table-card" style="flex:unset;">
+                    <div class="table-card-header">
+                        <div>
+                            <div class="table-card-title">Denied Submissions</div>
+                            <div class="table-card-sub">Denied and resubmission-flagged form submissions</div>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Submission ID</th>
+                                    <th>Tenant</th>
+                                    <th>Form Type</th>
+                                    <th>File</th>
+                                    <th class="th-center">Status</th>
+                                    <th>Submitted</th>
+                                    <th>Archived On</th>
+                                    <th class="th-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adenied-tbody"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <div class="table-info" id="adenied-info">Showing 0 entries</div>
+                        <div class="pagination" id="adenied-pagination"></div>
                     </div>
                 </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Request ID</th>
-                                <th>Tenant</th>
-                                <th>Document/Form Type</th>
-                                <th>Purpose</th>
-                                <th>Delivery/File</th>
-                                <th class="th-center">Status</th>
-                                <th>Submitted</th>
-                                <th>Cancelled On</th>
-                                <th class="th-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="acancelled-tbody"></tbody>
-                    </table>
+            </div>
+
+            <div class="drawer-panel" id="dpanel-cancelled">
+                <div class="drawer-toolbar">
+                    <span class="toolbar-label">Sort:</span>
+                    <select class="toolbar-select" id="acancelled-sort" onchange="acancelledApplyFilters()">
+                        <option value="newest">Newest Archived</option>
+                        <option value="oldest">Oldest Archived</option>
+                    </select>
+                    <div class="search-wrap" style="margin-left:auto;">
+                        <img src="{{ asset('icons/search.png') }}" class="search-icon" alt="">
+                        <input type="text" id="acancelled-search" placeholder="Search tenant, document type..." oninput="acancelledApplyFilters()">
+                    </div>
                 </div>
-                <div class="table-footer">
-                    <div class="table-info" id="acancelled-info">Showing 0 entries</div>
-                    <div class="pagination" id="acancelled-pagination"></div>
+                <div class="table-card" style="flex:unset;">
+                    <div class="table-card-header">
+                        <div>
+                            <div class="table-card-title">Cancelled Requests</div>
+                            <div class="table-card-sub">Document requests and form submissions cancelled by tenants</div>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Tenant</th>
+                                    <th>Document/Form Type</th>
+                                    <th>Purpose</th>
+                                    <th>Delivery/File</th>
+                                    <th class="th-center">Status</th>
+                                    <th>Submitted</th>
+                                    <th>Cancelled On</th>
+                                    <th class="th-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="acancelled-tbody"></tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <div class="table-info" id="acancelled-info">Showing 0 entries</div>
+                        <div class="pagination" id="acancelled-pagination"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-
         </div>
     </div>
 </div>
@@ -2331,7 +2329,7 @@
             <input type="text" id="uf-label" placeholder="e.g. Guards Form">
         </div>
         <div class="modal-field">
-            <label>PDF File</label>
+            <label>File</label>
             <input type="file" id="uf-file" accept=".pdf,.doc,.docx,.xls,.xlsx">
             <span style="font-size:.72rem;color:var(--ink-muted);margin-top:.15rem;">PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) · max 20MB · min 1KB</span>
         </div>
@@ -2426,6 +2424,14 @@ const TYPE_COLORS = {
 const eyeIcon    = "{{ asset('icons/eye.png') }}";
 const editIcon   = "{{ asset('icons/edit.png') }}";
 const deleteIcon = "{{ asset('icons/delete.png') }}";
+
+const ALLOWED_MIME_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+];
 
 let docState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let reqState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -2693,6 +2699,14 @@ function viewDoc(r) {
     if (r.attachment) {
         const ext = r.attachment.split('.').pop().toLowerCase();
         const isPdf = ext === 'pdf';
+        const isWord = ['doc', 'docx'].includes(ext);
+        const isExcel = ['xls', 'xlsx'].includes(ext);
+        let fileLabel = 'Document';
+        if (isPdf) fileLabel = 'PDF Document';
+        else if (isWord) fileLabel = 'Word Document';
+        else if (isExcel) fileLabel = 'Excel Spreadsheet';
+        else fileLabel = ext.toUpperCase() + ' File';
+
         document.getElementById('vd-file-content').innerHTML = `
             <div class="vd-file-box">
                 <div class="vd-file-icon">
@@ -2702,7 +2716,7 @@ function viewDoc(r) {
                     </svg>
                 </div>
                 <div>
-                    <strong>${isPdf ? 'PDF Document' : ext.toUpperCase() + ' File'}</strong>
+                    <strong>${fileLabel}</strong>
                     <p>Tap the button below to open the uploaded file in a new tab.</p>
                 </div>
                 <a class="btn-view-file" href="/storage/${escHtml(r.attachment)}" target="_blank">
@@ -3034,16 +3048,9 @@ async function submitUpdateReq() {
     }
 
     if (file) {
-        const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ];
-    if (!allowedTypes.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
-    if (file.size < 1024)                  { showToast('File is too small (minimum 1KB).', 'error'); return; }
-    if (file.size > 20 * 1024 * 1024)     { showToast('File must be under 20MB.', 'error'); return; }
+        if (!ALLOWED_MIME_TYPES.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+        if (file.size < 1024)                        { showToast('File is too small (minimum 1KB).', 'error'); return; }
+        if (file.size > 20 * 1024 * 1024)           { showToast('File must be under 20MB.', 'error'); return; }
     }
 
     const fd = new FormData();
@@ -3133,9 +3140,9 @@ async function fetchArchive() {
             r.data?.status === 'cancelled'
         );
 
-        document.getElementById('dtab-docs-count').textContent   = adocState.data.length;
-        document.getElementById('dtab-reqs-count').textContent   = areqState.data.length;
-        document.getElementById('dtab-denied-count').textContent = adeniedState.data.length;
+        document.getElementById('dtab-docs-count').textContent      = adocState.data.length;
+        document.getElementById('dtab-reqs-count').textContent      = areqState.data.length;
+        document.getElementById('dtab-denied-count').textContent    = adeniedState.data.length;
         document.getElementById('dtab-cancelled-count').textContent = acancelledState.data.length;
 
         adocApplyFilters();
@@ -3447,16 +3454,9 @@ async function submitUploadForm() {
     const file  = document.getElementById('uf-file').files[0];
     if (!label) { showToast('Label is required.', 'error'); return; }
     if (!file)  { showToast('Please select a file.', 'error'); return; }
-    const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ];
-    if (!allowedTypes.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
-    if (file.size < 1024)                  { showToast('File is too small (minimum 1KB).', 'error'); return; }
-    if (file.size > 20 * 1024 * 1024)     { showToast('File must be under 20MB.', 'error'); return; }
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+    if (file.size < 1024)                        { showToast('File is too small (minimum 1KB).', 'error'); return; }
+    if (file.size > 20 * 1024 * 1024)           { showToast('File must be under 20MB.', 'error'); return; }
 
     const fd = new FormData();
     fd.append('label', label);
