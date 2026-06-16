@@ -1682,9 +1682,22 @@ function toggleRejectionReason(select) {
     if (!wrap) return;
     if (select.value === 'rejected') {
         wrap.classList.add('visible');
-        wrap.querySelector('textarea').focus();
+        wrap.querySelector('.rejection-reason-select').focus();
     } else {
         wrap.classList.remove('visible');
+    }
+}
+
+function toggleRejectionOther(select) {
+    const wrap = select.closest('.rejection-reason-wrap');
+    const textarea = wrap.querySelector('.rejection-reason-input');
+    if (select.value === 'other') {
+        textarea.style.display = 'block';
+        textarea.value = '';
+        textarea.focus();
+    } else {
+        textarea.style.display = 'none';
+        textarea.value = select.value;
     }
 }
 
@@ -1718,7 +1731,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     return {
                         billing_id:       parseInt(select.dataset.billingId),
                         payment_status:   select.value,
-                        rejection_reason: (select.value === 'rejected' && textarea) ? textarea.value.trim() : null,
+                        rejection_reason: (select.value === 'rejected' && field) ? (function() {
+                            const sel = field.querySelector('.rejection-reason-select');
+                            const ta  = field.querySelector('.rejection-reason-input');
+                            if (!sel) return ta ? ta.value.trim() : null;
+                            return sel.value === 'other' ? (ta ? ta.value.trim() : null) : sel.value;
+                        })() : null,
                     };
                 })
                 .filter(update => Number.isInteger(update.billing_id));
@@ -2138,7 +2156,17 @@ function openUpdateModal(room) {
                         </select>
                         <div class="rejection-reason-wrap ${t.payment_status==='rejected'?'visible':''}">
                             <label class="rejection-reason-label">Reason for rejection</label>
-                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="e.g. Blurry image, wrong reference number...">${escapeHtml(t.rejection_reason||'')}</textarea>
+                            <select class="rejection-reason-select" onchange="toggleRejectionOther(this)" style="width:100%;padding:.55rem .8rem;border-radius:10px;border:1.5px solid #ffb380;background:#fff8f4;font-size:.82rem;color:var(--ink-deep);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:.4rem;cursor:pointer;">
+                                <option value="">Select a reason...</option>
+                                <option value="Blurry or unreadable image" ${(t.rejection_reason||'').startsWith('Blurry')?'selected':''}>Blurry or unreadable image</option>
+                                <option value="Wrong reference number" ${(t.rejection_reason||'').startsWith('Wrong reference')?'selected':''}>Wrong reference number</option>
+                                <option value="Amount does not match" ${(t.rejection_reason||'').startsWith('Amount')?'selected':''}>Amount does not match</option>
+                                <option value="Payment already expired" ${(t.rejection_reason||'').startsWith('Payment already')?'selected':''}>Payment already expired</option>
+                                <option value="Duplicate submission" ${(t.rejection_reason||'').startsWith('Duplicate')?'selected':''}>Duplicate submission</option>
+                                <option value="No proof attached" ${(t.rejection_reason||'').startsWith('No proof')?'selected':''}>No proof attached</option>
+                                <option value="other" ${(t.rejection_reason && !['Blurry or unreadable image','Wrong reference number','Amount does not match','Payment already expired','Duplicate submission','No proof attached'].some(r => (t.rejection_reason||'').startsWith(r.split(' ')[0])) && t.rejection_reason !== '')?'selected':''}>Other (specify)...</option>
+                            </select>
+                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="Describe the reason..." style="display:${(t.rejection_reason && !['Blurry or unreadable image','Wrong reference number','Amount does not match','Payment already expired','Duplicate submission','No proof attached'].some(r => (t.rejection_reason||'').startsWith(r.split(' ')[0])) && t.rejection_reason !== '') ? 'block' : 'none'};">${escapeHtml(t.rejection_reason||'')}</textarea>
                         </div>
                     </div>
                     ${receiptBtn}
