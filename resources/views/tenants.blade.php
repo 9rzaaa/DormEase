@@ -1542,6 +1542,9 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
                                 <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
+                            <div class="modal-field full" id="add-stay-duration-wrap" style="display:none;">
+                                <div id="add-stay-duration-display"></div>
+                            </div>
                             <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                                 <label>Reservation Notes</label>
                                 <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" maxlength="500" value="{{ old('reservation_notes') }}">
@@ -1688,6 +1691,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                         <button type="button" class="extend-stay-btn" onclick="extendStay(180)">+6 months</button>
                                         <button type="button" class="extend-stay-btn" onclick="extendStay(365)">+1 year</button>
                                     </div>
+                                    <div style="font-size:.72rem;color:var(--ink-muted);margin-top:.3rem;font-weight:500;">To change rooms, update the Room No. field above.</div>
                                 </div>
                             </div>
                         </div>
@@ -1698,6 +1702,9 @@ tbody tr:hover { background: var(--soft-bg); }
                             @error('move_out_date')
                                 <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
                             @enderror
+                        </div>
+                        <div class="modal-field full" id="edit-stay-duration-wrap" style="display:none;">
+                            <div id="edit-stay-duration-display"></div>
                         </div>
                         <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
@@ -1906,6 +1913,9 @@ tbody tr:hover { background: var(--soft-bg); }
                     <input type="text" id="renew-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input">
                     <span id="renew-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
+                <div class="modal-field full" id="renew-stay-duration-wrap" style="display:none;">
+                    <div id="renew-stay-duration-display"></div>
+                </div>
                 <div class="modal-field full" id="renew-room-hint-wrap" style="display:none;">
                     <div id="renew-room-hint"></div>
                 </div>
@@ -2053,7 +2063,7 @@ var selectedRoomNumber = null;
 
 var EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
-function validateEmailField(inputId, errorId) {
+function validateEmailField(inputId, errorId, excludeTenantId) {
     var input = document.getElementById(inputId);
     var error = document.getElementById(errorId);
     if (!input || !error) return true;
@@ -2069,6 +2079,16 @@ function validateEmailField(inputId, errorId) {
         msg = 'Email cannot contain more than one "@".';
     } else if (!EMAIL_REGEX.test(val)) {
         msg = 'Please enter a valid email address (e.g. name@example.com).';
+    }
+    if (!msg && val) {
+        var duplicate = tenants.find(function(t) {
+            if (excludeTenantId && t.tenant_id == excludeTenantId) return false;
+            if (t.status === 'inactive') return false;
+            return (t.email || '').toLowerCase() === val.toLowerCase();
+        });
+        if (duplicate) {
+            msg = 'This email is already in use by ' + duplicate.first_name + ' ' + duplicate.last_name + '.';
+        }
     }
     if (msg) {
         input.classList.add('field-invalid');
@@ -2188,14 +2208,16 @@ function attachPhoneFormatter(inputId, errorId, required) {
     });
 }
 
-function attachEmailValidator(inputId, errorId) {
+function attachEmailValidator(inputId, errorId, excludeTenantIdFn) {
     var input = document.getElementById(inputId);
     if (!input) return;
     input.addEventListener('input', function() {
-        validateEmailField(inputId, errorId);
+        var exId = excludeTenantIdFn ? excludeTenantIdFn() : null;
+        validateEmailField(inputId, errorId, exId);
     });
     input.addEventListener('blur', function() {
-        validateEmailField(inputId, errorId);
+        var exId = excludeTenantIdFn ? excludeTenantIdFn() : null;
+        validateEmailField(inputId, errorId, exId);
     });
 }
 
@@ -2422,6 +2444,66 @@ function checkMoveoutWarning() {
     }
 }
 
+function calcStayDuration(moveInVal, moveOutVal) {
+    if (!moveInVal || !moveOutVal) return null;
+    var start = new Date(moveInVal + 'T00:00:00');
+    var end   = new Date(moveOutVal + 'T00:00:00');
+    if (isNaN(start) || isNaN(end) || end <= start) return null;
+    var years  = 0, months = 0, days = 0;
+    var y = end.getFullYear() - start.getFullYear();
+    var m = end.getMonth()    - start.getMonth();
+    var d = end.getDate()     - start.getDate();
+    if (d < 0) {
+        m--;
+        var prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        d += prevMonth.getDate();
+    }
+    if (m < 0) { y--; m += 12; }
+    years  = y;
+    months = m;
+    days   = d;
+    var parts = [];
+    if (years  > 0) parts.push(years  + ' yr'    + (years  !== 1 ? 's' : ''));
+    if (months > 0) parts.push(months + ' mo'    + (months !== 1 ? 's' : ''));
+    if (days   > 0) parts.push(days   + ' day'   + (days   !== 1 ? 's' : ''));
+    if (parts.length === 0) return '0 days';
+    return parts.join(', ');
+}
+
+function renderStayDuration(wrapId, displayId, moveInVal, moveOutVal) {
+    var wrap    = document.getElementById(wrapId);
+    var display = document.getElementById(displayId);
+    if (!wrap || !display) return;
+    var dur = calcStayDuration(moveInVal, moveOutVal);
+    if (!dur) { wrap.style.display = 'none'; display.innerHTML = ''; return; }
+    var start = new Date(moveInVal + 'T00:00:00');
+    var end   = new Date(moveOutVal + 'T00:00:00');
+    var totalDays = Math.round((end - start) / 86400000);
+    display.innerHTML =
+        '<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .8rem;border-radius:10px;background:#f0faf6;border:1.5px solid #8ce0bb;">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+            + '<div style="flex:1;min-width:0;">'
+                + '<span style="font-size:.75rem;font-weight:800;color:#1a7a52;">Stay duration: ' + dur + '</span>'
+                + '<span style="font-size:.72rem;color:#2e9e68;margin-left:.5rem;font-weight:500;">(' + totalDays + ' total day' + (totalDays !== 1 ? 's' : '') + ')</span>'
+            + '</div>'
+        + '</div>';
+    wrap.style.display = '';
+}
+
+function attachStayDuration(moveInId, moveOutId, displayId) {
+    var wrapId  = displayId.replace('-display', '-wrap');
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    if (!moveIn || !moveOut) return;
+    function update() {
+        renderStayDuration(wrapId, displayId, moveIn.value, moveOut.value);
+    }
+    moveIn.addEventListener('change', update);
+    moveOut.addEventListener('change', update);
+    moveIn.addEventListener('input', update);
+    moveOut.addEventListener('input', update);
+}
+
 function extendStay(days) {
     var moveoutInput = document.getElementById('edit-moveout');
     if (!moveoutInput) return;
@@ -2439,6 +2521,7 @@ function extendStay(days) {
     moveoutInput.dispatchEvent(new Event('change'));
     checkMoveoutWarning();
     validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    renderStayDuration('edit-stay-duration-wrap', 'edit-stay-duration-display', document.getElementById('edit-date').value, moveoutInput.value);
 }
 
 function showPhotoValidationModal(message) {
@@ -2505,7 +2588,7 @@ function toggleVacationNote() {
 }
 
 function validateAddTenantForm(e) {
-    var emailOk    = validateEmailField('add-email', 'add-email-error');
+    var emailOk    = validateEmailField('add-email', 'add-email-error', null);
     var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
     var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
@@ -2559,7 +2642,7 @@ function validateAddTenantForm(e) {
 }
 
 function validateEditTenantForm(e) {
-    var emailOk    = validateEmailField('edit-email', 'edit-email-error');
+    var emailOk    = validateEmailField('edit-email', 'edit-email-error', currentTenant ? currentTenant.tenant_id : null);
     var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', false);
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
@@ -2583,11 +2666,12 @@ function validateEditTenantForm(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-   attachEmailValidator('add-email', 'add-email-error');
-    attachEmailValidator('edit-email', 'edit-email-error');
+   attachEmailValidator('add-email', 'add-email-error', null);
+    attachEmailValidator('edit-email', 'edit-email-error', function() { return currentTenant ? currentTenant.tenant_id : null; });
     attachPhoneFormatter('add-contact', 'add-contact-error', false);
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
     var addMoveInEl = document.getElementById('add-move-in-date');
     if (addMoveInEl) {
         addMoveInEl.addEventListener('change', function() {
@@ -2600,6 +2684,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
+    attachStayDuration('edit-date', 'edit-moveout', 'edit-stay-duration-display');
     attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
     attachEstimatedMoveInValidator('edit-estimated-move-in', 'edit-estimated-move-in-error');
 });
@@ -4319,6 +4404,7 @@ function openRenewModal(id, name, roomNumber, stayType) {
     if (hint)     hint.innerHTML = '';
 
     openModal('renew-modal');
+    renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', document.getElementById('renew-move-in').value, document.getElementById('renew-move-out').value);
     setTimeout(function() {
         var moveInEl  = document.getElementById('renew-move-in');
         var moveOutEl = document.getElementById('renew-move-out');
@@ -4331,8 +4417,12 @@ function openRenewModal(id, name, roomNumber, stayType) {
                     d.setFullYear(d.getFullYear() + 1);
                     moveOutEl.value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
                 }
+                renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', moveInEl.value, moveOutEl.value);
             });
-            moveOutEl.addEventListener('change', validateRenewDates);
+            moveOutEl.addEventListener('change', function() {
+                validateRenewDates();
+                renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', moveInEl.value, moveOutEl.value);
+            });
         }
         var renewRoomInput = document.getElementById('renew-room');
         if (renewRoomInput && !renewRoomInput._renewHintAttached) {
@@ -4449,7 +4539,17 @@ async function submitRenewTenant() {
             body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
         });
         var data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to renew tenant.');
+        if (!res.ok) {
+            var errMsg = data.message || 'Failed to renew tenant.';
+            if (res.status === 422 && errMsg.toLowerCase().indexOf('full') !== -1) {
+                document.getElementById('renew-room-error').textContent = errMsg;
+                document.getElementById('renew-room-error').style.display = 'block';
+                document.getElementById('renew-room').classList.add('field-invalid');
+                document.getElementById('renew-room').focus();
+                throw new Error(errMsg);
+            }
+            throw new Error(errMsg);
+        }
 
         var tenantName = document.getElementById('renew-tenant-name').textContent;
 
