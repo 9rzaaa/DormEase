@@ -71,7 +71,9 @@ function isGibberishWord(string $word): bool
         if (in_array($word, $exactKeysmashes3)) {
             return true;
         }
-        return !preg_match('/[aeiouy]/i', $word);
+        if (!preg_match('/[aeiouy]/i', $word)) {
+            return true;
+        }
     }
     
     // 3.5 Forbidden keysmash substrings check (for length >= 3)
@@ -100,29 +102,29 @@ function isGibberishWord(string $word): bool
     // 5. Row-based checks
     // Home row only
     if (preg_match('/^[asdfghjkl]+$/i', $word)) {
-        $homeRowWhitelist = ['salamat', 'salsal', 'gasgas', 'glass', 'flask', 'shall', 'salad', 'flash', 'slash', 'galahs', 'alfalfa', 'shashlik', 'falls', 'flags', 'halls', 'flasks', 'salads'];
-        if ($len >= 5 && !in_array($word, $homeRowWhitelist)) {
+        $homeRowWhitelist = ['salamat', 'salsal', 'gasgas', 'glass', 'flask', 'shall', 'salad', 'flash', 'slash', 'galahs', 'alfalfa', 'shashlik', 'falls', 'flags', 'halls', 'flasks', 'salads', 'glad', 'fall', 'gall', 'hall', 'alas', 'half', 'flag', 'gash', 'lash', 'sash', 'flak', 'dahl', 'hala', 'sasa', 'laga', 'daga', 'lala', 'gaga', 'haha', 'lads', 'fags', 'gags', 'lags', 'hash', 'dash', 'ash', 'ask', 'has', 'had', 'add', 'all', 'gal', 'lag', 'sag', 'gas', 'fad', 'ala', 'aha', 'las', 'sal', 'lad', 'dag'];
+        if ($len >= 3 && !in_array($word, $homeRowWhitelist)) {
             return true;
         }
     }
     // Top row only
     if (preg_match('/^[qwertyuiop]+$/i', $word)) {
-        $topRowWhitelist = ['typewriter', 'proprietor', 'perpetuity', 'repertoire', 'territory', 'priority', 'property', 'poverty', 'pretty', 'purity', 'poetry', 'equity', 'writer', 'output', 'putter', 'potter', 'route', 'power', 'write', 'quiet', 'quite', 'outer', 'worry', 'tower', 'paper', 'prior', 'trite', 'puppy', 'piety', 'upper', 'wiper', 'pique', 'tuyor', 'tuyot'];
-        if ($len >= 5 && !in_array($word, $topRowWhitelist)) {
+        $topRowWhitelist = ['typewriter', 'proprietor', 'perpetuity', 'repertoire', 'territory', 'priority', 'property', 'poverty', 'pretty', 'purity', 'poetry', 'equity', 'writer', 'output', 'putter', 'potter', 'route', 'power', 'write', 'quiet', 'quite', 'outer', 'worry', 'tower', 'paper', 'prior', 'trite', 'puppy', 'piety', 'upper', 'wiper', 'pique', 'tuyor', 'tuyot', 'prey', 'port', 'pour', 'riot', 'root', 'pipe', 'uwi', 'opo', 'tuyo', 'puto', 'puri', 'turo', 'itoy', 'pity', 'rope', 'type', 'ripe', 'pure', 'true', 'tour', 'your', 'pore', 'poet', 'tore', 'peer', 'weep', 'quit', 'were', 'trip', 'prop', 'pope', 'wire', 'tire', 'wore', 'yeti', 'wipe', 'rite', 'ryot', 'troy', 'typo', 'writ', 'weir', 'reap', 'perp', 'prow', 'tipe', 'out', 'our', 'you', 'try', 'put', 'toy', 'pot', 'top', 'row', 'wet', 'rye', 'toe', 'tie', 'pit', 'pet', 'pie', 'tip', 'per', 'pro', 'pew', 'weo', 'ryo', 'yup'];
+        if ($len >= 3 && !in_array($word, $topRowWhitelist)) {
             return true;
         }
     }
     // Bottom row only
     if (preg_match('/^[zxcvbnm]+$/i', $word)) {
-        if ($len >= 4 && $word !== 'baba') {
+        if ($len >= 3 && $word !== 'baba' && $word !== 'mmm') {
             return true;
         }
     }
     
     // 6. Keyboard distance check
     $dist = getKeyboardDistance($word);
-    if ($dist <= 1.3 && $len >= 4) {
-        $leftHandWhitelist = ['sewer', 'referee', 'defer', 'dress', 'free', 'feed', 'seed', 'weed', 'steer', 'street', 'reed', 'deer', 'fees', 'sees', 'assert', 'estate', 'arrest', 'fever', 'newer', 'severe', 'secret', 'create', 'decree', 'desert', 'exert', 'drew', 'crew', 'grew', 'screw', 'stew', 'sweet', 'sweat', 'swear'];
+    if ($dist <= 1.3 && $len >= 3) {
+        $leftHandWhitelist = ['sewer', 'referee', 'defer', 'dress', 'free', 'feed', 'seed', 'weed', 'steer', 'street', 'reed', 'deer', 'fees', 'sees', 'assert', 'estate', 'arrest', 'fever', 'newer', 'severe', 'secret', 'create', 'decree', 'desert', 'exert', 'drew', 'crew', 'grew', 'screw', 'stew', 'sweet', 'sweat', 'swear', 'see', 'ref', 'red', 'fed', 'few', 'wed', 'dew', 'ere', 'err', 'res', 'sex', 'fee', 'was'];
         if (!in_array($word, $leftHandWhitelist)) {
             return true;
         }
@@ -227,7 +229,12 @@ $testCases = [
     'water',
     'constantly',
     'salamat',
-    'laga'
+    'laga',
+    'akd',
+    'jfhk',
+    'poiq',
+    'laks',
+    'jdhf'
 ];
 
 foreach ($testCases as $tc) {
