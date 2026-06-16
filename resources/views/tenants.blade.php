@@ -2217,6 +2217,58 @@ async function submitTenantPhoto(input) {
             viewTenant(currentTenant);
         }
 
+        function renderMoveOutDateView(dateStr) {
+            if (!dateStr) return '\u2014';
+            var today   = new Date();
+            today.setHours(0, 0, 0, 0);
+            var moveout = new Date(dateStr + 'T00:00:00');
+            var diff    = Math.floor((moveout - today) / 86400000);
+            var formatted = fmtDate(dateStr);
+
+            if (diff < 0) {
+                var overdueDays = Math.abs(diff);
+                var overdueLabel = overdueDays === 1 ? '1 day overdue' : overdueDays + ' days overdue';
+                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+                    + '<span style="color:#e04867;font-weight:700;">' + formatted + '</span>'
+                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff0f2;border:1px solid #ffc2ce;font-size:.68rem;font-weight:800;color:#c0163a;">'
+                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c0163a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                        + overdueLabel
+                    + '</span>'
+                + '</span>';
+            }
+
+            if (diff === 0) {
+                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+                    + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                        + 'Today'
+                    + '</span>'
+                + '</span>';
+            }
+
+            if (diff <= 7) {
+                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+                    + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                        + 'In ' + diff + ' day' + (diff === 1 ? '' : 's')
+                    + '</span>'
+                + '</span>';
+            }
+
+            if (diff <= 14) {
+                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+                    + '<span style="color:#9a6200;font-weight:600;">' + formatted + '</span>'
+                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff8e0;border:1px solid #f0c840;font-size:.68rem;font-weight:700;color:#9a6200;">'
+                        + 'In ' + diff + ' days'
+                    + '</span>'
+                + '</span>';
+            }
+
+            return '<span style="color:#5a1e38;font-weight:500;">' + formatted + '</span>';
+        }
+
         function checkMoveoutWarning() {
         var moveoutInput = document.getElementById('edit-moveout');
         var warningBar   = document.getElementById('edit-moveout-warning');
@@ -2951,7 +3003,7 @@ function viewTenant(t) {
             + '<div class="tv-item"><div class="tv-item-label">Floor &amp; Room</div><div class="tv-item-value">' + floorRoom + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Stay Type</div><div class="tv-item-value">' + (t.stay_type || '\u2014') + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Move-In Date</div><div class="tv-item-value">' + fmtDate(t.move_in_date) + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Move-Out Date</div><div class="tv-item-value">' + fmtDate(t.move_out_date) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Move-Out Date</div><div class="tv-item-value">' + renderMoveOutDateView(t.move_out_date) + '</div></div>'
             + reservationItems
         + '</div>'
         + '<div class="modal-section-title">Account Status</div>'
