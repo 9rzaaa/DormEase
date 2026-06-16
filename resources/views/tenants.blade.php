@@ -1351,6 +1351,11 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
+                                <label>Parent / Guardian Contact No.</label>
+                                <input type="text" name="guardian_number" id="add-guardian" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('guardian_number') }}">
+                                <span class="field-error" id="add-guardian-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            </div>
+                            <div class="modal-field full">
                                 <label>Referred By</label>
                                 <select id="add-referred-source" onchange="handleReferredSource('add')" style="margin-bottom:.4rem;">
                                     <option value="">Not referred / N/A</option>
@@ -1485,6 +1490,11 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Contact No.</label>
                             <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Parent / Guardian Contact No.</label>
+                            <input type="text" name="guardian_number" id="edit-guardian" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <span class="field-error" id="edit-guardian-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
@@ -2023,11 +2033,13 @@ function toggleVacationNote() {
     if (!cb.checked) {
         document.getElementById('edit-vacation-note').value = '';
     }
+    enableSubmit('#edit-modal .btn-submit');
 }
 
 function validateAddTenantForm(e) {
     var emailOk    = validateEmailField('add-email', 'add-email-error');
     var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
     var mode       = document.getElementById('add-mode-input').value;
@@ -2052,12 +2064,14 @@ function validateAddTenantForm(e) {
         return false;
     }
 
-    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+    if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('add-email').focus();
         } else if (!contactOk) {
             document.getElementById('add-contact').focus();
+        } else if (!guardianOk) {
+            document.getElementById('add-guardian').focus();
         } else if (!moveOutOk) {
             document.getElementById('add-move-out-date').focus();
         } else if (!estOk) {
@@ -2069,16 +2083,19 @@ function validateAddTenantForm(e) {
 }
 
 function validateEditTenantForm(e) {
-    var emailOk   = validateEmailField('edit-email', 'edit-email-error');
-    var contactOk = validatePhoneField('edit-contact', 'edit-contact-error', false);
-    var moveOutOk = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
-    var estOk     = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
-    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+    var emailOk    = validateEmailField('edit-email', 'edit-email-error');
+    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
+    var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
+    if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('edit-email').focus();
         } else if (!contactOk) {
             document.getElementById('edit-contact').focus();
+        } else if (!guardianOk) {
+            document.getElementById('edit-guardian').focus();
         } else if (!moveOutOk) {
             document.getElementById('edit-moveout').focus();
         } else if (!estOk) {
@@ -2090,9 +2107,10 @@ function validateEditTenantForm(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    attachEmailValidator('add-email', 'add-email-error');
+   attachEmailValidator('add-email', 'add-email-error');
     attachEmailValidator('edit-email', 'edit-email-error');
     attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
     attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
@@ -2160,6 +2178,10 @@ function closeModal(id) {
         var acErr = document.getElementById('add-contact-error');
         if (ac) ac.classList.remove('field-invalid');
         if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
+        var ag = document.getElementById('add-guardian');
+        var agErr = document.getElementById('add-guardian-error');
+        if (ag) { ag.value = ''; ag.classList.remove('field-invalid'); }
+        if (agErr) { agErr.style.display = 'none'; agErr.textContent = ''; }
         var ast = document.getElementById('add-stay-type-select');
         if (ast) ast.classList.remove('field-invalid');
         var ami = document.getElementById('add-move-in-date');
@@ -2611,8 +2633,8 @@ function viewTenant(t) {
         + '<div class="tv-grid">'
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.contact_number) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Guardian Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.guardian_number) + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
-        + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item"><div class="tv-item-label">Floor &amp; Room</div><div class="tv-item-value">' + floorRoom + '</div></div>'
@@ -2651,6 +2673,7 @@ function openEditModal(t) {
         last_name:              '{{ old("last_name") }}',
         email:                  '{{ old("email") }}',
         contact_number:         '{{ old("contact_number") }}',
+        guardian_number:        '{{ old("guardian_number") }}',
         room_number:            '{{ old("room_number") }}',
         floor:                  '{{ old("floor") }}',
         stay_type:              '{{ old("stay_type") }}',
@@ -2673,6 +2696,7 @@ function openEditModal(t) {
     document.getElementById('edit-date').value              = hasOld && old.move_in_date           ? old.move_in_date           : (t.move_in_date  || '');
     document.getElementById('edit-moveout').value           = hasOld && old.move_out_date          ? old.move_out_date          : (t.move_out_date || '');
     document.getElementById('edit-contact').value           = hasOld && old.contact_number         ? old.contact_number         : (t.contact_number || '');
+    document.getElementById('edit-guardian').value          = hasOld && old.guardian_number        ? old.guardian_number        : (t.guardian_number || '');
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
@@ -2698,6 +2722,7 @@ function openEditModal(t) {
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
     openModal('edit-modal');
     var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
     var editSuggestBox  = document.getElementById('edit-room-suggest');
@@ -2721,6 +2746,10 @@ function openEditModal(t) {
     var editContactError = document.getElementById('edit-contact-error');
     if (editContact) editContact.classList.remove('field-invalid');
     if (editContactError) { editContactError.style.display = 'none'; editContactError.textContent = ''; }
+    var editGuardian = document.getElementById('edit-guardian');
+    var editGuardianError = document.getElementById('edit-guardian-error');
+    if (editGuardian) editGuardian.classList.remove('field-invalid');
+    if (editGuardianError) { editGuardianError.style.display = 'none'; editGuardianError.textContent = ''; }
     var editMoveout = document.getElementById('edit-moveout');
     var editMoveoutError = document.getElementById('edit-moveout-error');
     if (editMoveout) editMoveout.classList.remove('field-invalid');
