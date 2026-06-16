@@ -396,6 +396,87 @@ class TenantController extends Controller
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
+    public function renew(Request $request, $id)
+    {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        $archived = ArchivedTenant::where('original_id', $id)
+            ->where('archive_type', 'move_out')
+            ->latest('archived_at')
+            ->first();
+
+        if (!$archived) {
+            return response()->json(['message' => 'No move-out archive record found for this tenant.'], 404);
+        }
+
+        $request->validate([
+            'move_in_date'  => 'required|date',
+            'move_out_date' => 'nullable|date|after_or_equal:move_in_date',
+            'room_number'   => 'nullable|string|min:3|max:20',
+        ]);
+
+        $roomNumber = $request->room_number ?: $archived->room_number;
+        $floor      = $archived->floor;
+
+        if ($roomNumber) {
+            $room = \App\Models\Room::where('room_number', $roomNumber)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$room) {
+                return response()->json(['message' => 'Room ' . $roomNumber . ' does not exist or is inactive.'], 422);
+            }
+
+            $occupancy = Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                ->where('room_number', $roomNumber)
+                ->count();
+
+            if ($occupancy >= $room->capacity) {
+                return response()->json(['message' => 'Room ' . $roomNumber . ' is at full capacity.'], 422);
+            }
+
+            $floor = $room->floor;
+        }
+
+        [$accountId, $tempPassword] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+            $accountId    = Tenant::generateAccountId();
+            $tempPassword = Tenant::generateTempPassword();
+
+            $tenant = Tenant::create([
+                'account_id'       => $accountId,
+                'password_hash'    => \Illuminate\Support\Facades\Hash::make($tempPassword),
+                'is_temp_password' => true,
+                'first_name'       => $archived->first_name,
+                'last_name'        => $archived->last_name,
+                'email'            => $archived->email,
+                'contact_number'   => $archived->contact_number,
+                'room_number'      => $roomNumber,
+                'floor'            => $floor,
+                'stay_type'        => $archived->stay_type,
+                'move_in_date'     => $request->move_in_date,
+                'move_out_date'    => $request->move_out_date,
+                'status'           => 'pending',
+                'is_active'        => true,
+            ]);
+
+            return [$accountId, $tempPassword];
+        });
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_renewed',
+            message: "{$archived->first_name} {$archived->last_name} has been renewed and a new account has been created.",
+            ref_id: $id,
+        );
+
+        return response()->json([
+            'message'      => 'Tenant renewed successfully.',
+            'account_id'   => $accountId,
+            'temp_password' => $tempPassword,
+        ]);
+    }
+
     public function reschedule(Request $request, $id)
     {
         $tenant = Tenant::findOrFail($id);
