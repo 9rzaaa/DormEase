@@ -1662,18 +1662,18 @@ document.addEventListener('DOMContentLoaded', () => {
     currentReq = r;
 
     const alreadyRequested = !!r.resubmission_requested_at;
-    const resubmitBtnHtml = `
-        <button
-            class="btn-resubmit-request${alreadyRequested ? ' already-requested' : ''}"
-            id="resubmit-request-btn"
-            onclick="openResubmitConfirm()"
-        >
-            <img src="{{ asset('icons/reset.png') }}" alt="">
-            ${alreadyRequested
-                ? 'Resubmission already requested on ' + fmtDatePlain(r.resubmission_requested_at)
-                : 'Request Photo Resubmission'}
-        </button>
-    `;
+    const resubmitBtnHtml = r.photo_url ? `
+    <button
+        class="btn-resubmit-request${alreadyRequested ? ' already-requested' : ''}"
+        id="resubmit-request-btn"
+        onclick="openResubmitConfirm()"
+    >
+        <img src="{{ asset('icons/reset.png') }}" alt="">
+        ${alreadyRequested
+            ? 'Resubmission already requested on ' + fmtDatePlain(r.resubmission_requested_at)
+            : 'Request Photo Resubmission'}
+    </button>
+` : '';
 
     document.getElementById('view-content').innerHTML = `
         <div style="display:flex;gap:.6rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;">
