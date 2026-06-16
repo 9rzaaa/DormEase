@@ -170,6 +170,11 @@ class TenantController extends Controller
                 $accountId    = Tenant::generateAccountId();
                 $tempPassword = Tenant::generateTempPassword();
 
+                $moveOutDate = $request->move_out_date;
+                if (!$moveOutDate && $request->filled('move_in_date')) {
+                    $moveOutDate = \Carbon\Carbon::parse($request->move_in_date)->addYear()->format('Y-m-d');
+                }
+
                 $tenant = Tenant::create([
                     'account_id'             => $accountId,
                     'password_hash'          => Hash::make($tempPassword),
@@ -183,6 +188,7 @@ class TenantController extends Controller
                     'floor'                  => $request->floor,
                     'stay_type'              => $request->stay_type,
                     'move_in_date'           => $request->move_in_date,
+                    'move_out_date'          => $moveOutDate,
                     'estimated_move_in_date' => $request->estimated_move_in_date,
                     'reservation_notes'      => $request->reservation_notes,
                     'referred_by'            => $request->referred_by,
@@ -416,6 +422,12 @@ class TenantController extends Controller
             'move_out_date' => 'nullable|date|after_or_equal:move_in_date',
             'room_number'   => 'nullable|string|min:3|max:20',
         ]);
+
+        if (!$request->filled('move_out_date') && $request->filled('move_in_date')) {
+            $request->merge([
+                'move_out_date' => \Carbon\Carbon::parse($request->move_in_date)->addYear()->format('Y-m-d'),
+            ]);
+        }
 
         $roomNumber = $request->room_number ?: $archived->room_number;
         $floor      = $archived->floor;

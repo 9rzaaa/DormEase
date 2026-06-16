@@ -1538,7 +1538,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                             </div>
                             <div class="modal-field full" id="add-moveout-wrap">
-                                <label>Move-Out Date (Optional)</label>
+                                <label>Move-Out Date</label>
                                 <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
                                 <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
@@ -2532,6 +2532,14 @@ function validateAddTenantForm(e) {
         return false;
     }
 
+    var moveOutVal = document.getElementById('add-move-out-date').value;
+    if (!moveOutVal && moveInDate) {
+        var d = new Date(moveInDate + 'T00:00:00');
+        d.setFullYear(d.getFullYear() + 1);
+        var autoMoveOut = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        document.getElementById('add-move-out-date').value = autoMoveOut;
+    }
+
     if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
@@ -2580,6 +2588,17 @@ document.addEventListener('DOMContentLoaded', function() {
     attachPhoneFormatter('add-contact', 'add-contact-error', false);
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    var addMoveInEl = document.getElementById('add-move-in-date');
+    if (addMoveInEl) {
+        addMoveInEl.addEventListener('change', function() {
+            var moveOutEl = document.getElementById('add-move-out-date');
+            if (moveOutEl && !moveOutEl.value && this.value) {
+                var d = new Date(this.value + 'T00:00:00');
+                d.setFullYear(d.getFullYear() + 1);
+                moveOutEl.value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            }
+        });
+    }
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
     attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
     attachEstimatedMoveInValidator('edit-estimated-move-in', 'edit-estimated-move-in-error');
@@ -4270,7 +4289,10 @@ function openRenewModal(id, name, roomNumber, stayType) {
     var dd    = String(today.getDate()).padStart(2, '0');
     var todayStr = yyyy + '-' + mm + '-' + dd;
     document.getElementById('renew-move-in').value  = todayStr;
-    document.getElementById('renew-move-out').value = '';
+    var oneYearOut = new Date(today);
+    oneYearOut.setFullYear(oneYearOut.getFullYear() + 1);
+    var oneYearStr = oneYearOut.getFullYear() + '-' + String(oneYearOut.getMonth()+1).padStart(2,'0') + '-' + String(oneYearOut.getDate()).padStart(2,'0');
+    document.getElementById('renew-move-out').value = oneYearStr;
     document.getElementById('renew-room').value     = roomNumber || '';
     document.getElementById('renew-move-in').classList.remove('field-invalid');
     document.getElementById('renew-move-out').classList.remove('field-invalid');
@@ -4302,7 +4324,14 @@ function openRenewModal(id, name, roomNumber, stayType) {
         var moveOutEl = document.getElementById('renew-move-out');
         if (moveInEl && !moveInEl._renewValidatorAttached) {
             moveInEl._renewValidatorAttached = true;
-            moveInEl.addEventListener('change', validateRenewDates);
+            moveInEl.addEventListener('change', function() {
+                validateRenewDates();
+                if (this.value && !moveOutEl.value) {
+                    var d = new Date(this.value + 'T00:00:00');
+                    d.setFullYear(d.getFullYear() + 1);
+                    moveOutEl.value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                }
+            });
             moveOutEl.addEventListener('change', validateRenewDates);
         }
         var renewRoomInput = document.getElementById('renew-room');
