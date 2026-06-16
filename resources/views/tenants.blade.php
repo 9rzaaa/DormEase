@@ -782,11 +782,13 @@ tbody tr:hover { background: var(--soft-bg); }
     color: #b0163a;
     margin: 0 0 .35rem;
     line-height: 1.45;
+    transition: color .2s;
 }
 .moveout-warning-bar small {
     font-size: .72rem;
     color: #c0163a;
     font-weight: 500;
+    transition: color .2s;
 }
 .extend-stay-row {
     display: flex;
@@ -1869,6 +1871,90 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="modal-overlay" id="renew-modal">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </span>
+                Renew Tenant Stay
+            </div>
+            <button class="modal-close" onclick="closeModal('renew-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:.92rem;color:var(--ink);font-weight:600;margin:0 0 .75rem;">
+                Renewing stay for <strong id="renew-tenant-name" style="color:var(--bright-pink);"></strong>
+            </p>
+            <div class="modal-info-banner" style="margin-bottom:.85rem;">
+                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will be set to <strong>Pending</strong> until their first login.</span>
+            </div>
+            <div class="modal-grid">
+                <div class="modal-field">
+                    <label>New Move-In Date</label>
+                    <input type="date" id="renew-move-in" required>
+                    <span id="renew-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+                <div class="modal-field">
+                    <label>New Move-Out Date</label>
+                    <input type="date" id="renew-move-out">
+                    <span id="renew-move-out-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+                <div class="modal-field full">
+                    <label>Room No.</label>
+                    <input type="text" id="renew-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <span id="renew-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeModal('renew-modal')">Cancel</button>
+            <button type="button" class="btn-submit" onclick="submitRenewTenant()">Renew &amp; Generate Credentials</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="renew-credentials-modal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/nav-tenants.png') }}" class="icon-sm" alt="">
+                Tenant Renewed Successfully
+            </div>
+            <button class="modal-close" onclick="closeModal('renew-credentials-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                The account for <strong id="renew-cred-name" style="color:var(--ink);"></strong> has been renewed. Provide these credentials to the tenant:
+            </p>
+            <div class="credentials-box">
+                <h4>New Login Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Account ID</div>
+                        <div class="credential-value" id="renew-cred-account-id"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-account-id', this)">Copy</button>
+                </div>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Temporary Password</div>
+                        <div class="credential-value" id="renew-cred-password"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-password', this)">Copy</button>
+                </div>
+            </div>
+            <div class="credentials-warning">
+                This temporary password will <strong>not be shown again</strong>. Inform the tenant immediately.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('renew-credentials-modal')">Close</button>
+            <button class="btn-submit" onclick="closeModal('renew-credentials-modal')">Got it</button>
+        </div>
+    </div>
+</div>
+
 <input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
 
 @endsection
@@ -2217,99 +2303,94 @@ async function submitTenantPhoto(input) {
             viewTenant(currentTenant);
         }
 
-        function renderMoveOutDateView(dateStr) {
-            if (!dateStr) return '\u2014';
-            var today   = new Date();
-            today.setHours(0, 0, 0, 0);
-            var moveout = new Date(dateStr + 'T00:00:00');
-            var diff    = Math.floor((moveout - today) / 86400000);
-            var formatted = fmtDate(dateStr);
+        var renewTenantId = null;
 
-            if (diff < 0) {
-                var overdueDays = Math.abs(diff);
-                var overdueLabel = overdueDays === 1 ? '1 day overdue' : overdueDays + ' days overdue';
-                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
-                    + '<span style="color:#e04867;font-weight:700;">' + formatted + '</span>'
-                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff0f2;border:1px solid #ffc2ce;font-size:.68rem;font-weight:800;color:#c0163a;">'
-                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c0163a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-                        + overdueLabel
-                    + '</span>'
-                + '</span>';
-            }
-
-            if (diff === 0) {
-                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
-                    + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
-                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
-                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-                        + 'Today'
-                    + '</span>'
-                + '</span>';
-            }
-
-            if (diff <= 7) {
-                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
-                    + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
-                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
-                        + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
-                        + 'In ' + diff + ' day' + (diff === 1 ? '' : 's')
-                    + '</span>'
-                + '</span>';
-            }
-
-            if (diff <= 14) {
-                return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
-                    + '<span style="color:#9a6200;font-weight:600;">' + formatted + '</span>'
-                    + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff8e0;border:1px solid #f0c840;font-size:.68rem;font-weight:700;color:#9a6200;">'
-                        + 'In ' + diff + ' days'
-                    + '</span>'
-                + '</span>';
-            }
-
-            return '<span style="color:#5a1e38;font-weight:500;">' + formatted + '</span>';
+        function openRenewModal(id, name, roomNumber) {
+            renewTenantId = id;
+            document.getElementById('renew-tenant-name').textContent = name;
+            var today = new Date();
+            var yyyy  = today.getFullYear();
+            var mm    = String(today.getMonth() + 1).padStart(2, '0');
+            var dd    = String(today.getDate()).padStart(2, '0');
+            document.getElementById('renew-move-in').value  = yyyy + '-' + mm + '-' + dd;
+            document.getElementById('renew-move-out').value = '';
+            document.getElementById('renew-room').value     = roomNumber || '';
+            document.getElementById('renew-move-in-error').style.display  = 'none';
+            document.getElementById('renew-move-out-error').style.display = 'none';
+            document.getElementById('renew-room-error').style.display     = 'none';
+            openModal('renew-modal');
         }
 
-        function checkMoveoutWarning() {
-        var moveoutInput = document.getElementById('edit-moveout');
-        var warningBar   = document.getElementById('edit-moveout-warning');
-        var warningText  = document.getElementById('edit-moveout-warning-text');
-        if (!moveoutInput || !warningBar) return;
-        var val = moveoutInput.value;
-        if (!val) {
-            warningBar.classList.remove('visible');
-            return;
-        }
-        var today    = new Date();
-        today.setHours(0, 0, 0, 0);
-        var moveout  = new Date(val + 'T00:00:00');
-        var diffDays = Math.floor((today - moveout) / 86400000);
-        if (diffDays >= 1) {
-            var dayLabel = diffDays === 1 ? '1 day ago' : diffDays + ' days ago';
-            warningText.textContent = 'This tenant\'s move-out date has passed (' + dayLabel + ').';
-            warningBar.classList.add('visible');
-        } else {
-            warningBar.classList.remove('visible');
-        }
-    }
+        async function submitRenewTenant() {
+            var moveIn  = document.getElementById('renew-move-in').value;
+            var moveOut = document.getElementById('renew-move-out').value;
+            var room    = document.getElementById('renew-room').value.trim();
+            var valid   = true;
 
-    function extendStay(days) {
-        var moveoutInput = document.getElementById('edit-moveout');
-        if (!moveoutInput) return;
-        var base = moveoutInput.value
-            ? new Date(moveoutInput.value + 'T00:00:00')
-            : new Date();
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (base < today) base = today;
-        base.setDate(base.getDate() + days);
-        var yyyy = base.getFullYear();
-        var mm   = String(base.getMonth() + 1).padStart(2, '0');
-        var dd   = String(base.getDate()).padStart(2, '0');
-        moveoutInput.value = yyyy + '-' + mm + '-' + dd;
-        moveoutInput.dispatchEvent(new Event('change'));
-        checkMoveoutWarning();
-        validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
-    }
+            document.getElementById('renew-move-in-error').style.display  = 'none';
+            document.getElementById('renew-move-out-error').style.display = 'none';
+            document.getElementById('renew-room-error').style.display     = 'none';
+
+            if (!moveIn) {
+                document.getElementById('renew-move-in-error').textContent = 'Move-in date is required.';
+                document.getElementById('renew-move-in-error').style.display = 'block';
+                document.getElementById('renew-move-in').classList.add('field-invalid');
+                valid = false;
+            } else {
+                document.getElementById('renew-move-in').classList.remove('field-invalid');
+            }
+
+            if (moveOut && moveIn && moveOut < moveIn) {
+                document.getElementById('renew-move-out-error').textContent = 'Move-out date cannot be earlier than move-in date.';
+                document.getElementById('renew-move-out-error').style.display = 'block';
+                document.getElementById('renew-move-out').classList.add('field-invalid');
+                valid = false;
+            } else {
+                document.getElementById('renew-move-out').classList.remove('field-invalid');
+            }
+
+            if (room && room.length < 3) {
+                document.getElementById('renew-room-error').textContent = 'Room number must be at least 3 digits.';
+                document.getElementById('renew-room-error').style.display = 'block';
+                document.getElementById('renew-room').classList.add('field-invalid');
+                valid = false;
+            } else {
+                document.getElementById('renew-room').classList.remove('field-invalid');
+            }
+
+            if (!valid) return;
+
+            showActionLoading('Renewing tenant stay...');
+
+            try {
+                var res = await fetch('/tenants/' + renewTenantId + '/renew', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
+                });
+                var data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed to renew tenant.');
+
+                closeModal('renew-modal');
+
+                var tenantName = document.getElementById('renew-tenant-name').textContent;
+                document.getElementById('renew-cred-name').textContent         = tenantName;
+                document.getElementById('renew-cred-account-id').textContent   = data.account_id;
+                document.getElementById('renew-cred-password').textContent     = data.temp_password;
+                openModal('renew-credentials-modal');
+
+                moveoutTenantArchive = moveoutTenantArchive.filter(function(r) { return r.id !== renewTenantId; });
+                document.getElementById('tcount-moveout').textContent = moveoutTenantArchive.length;
+                renderTenantArchive();
+
+                showToast(tenantName + ' has been renewed successfully.', 'success');
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                document.getElementById('action-loading').classList.remove('open');
+            }
+        }
+
         applyFilters();
         showToast('Photo uploaded successfully.', 'success');
     } catch (e) {
@@ -2317,6 +2398,121 @@ async function submitTenantPhoto(input) {
     } finally {
         document.getElementById('action-loading').classList.remove('open');
     }
+}
+
+function renderMoveOutDateView(dateStr) {
+    if (!dateStr) return '\u2014';
+    var today   = new Date();
+    today.setHours(0, 0, 0, 0);
+    var moveout = new Date(dateStr + 'T00:00:00');
+    var diff    = Math.floor((moveout - today) / 86400000);
+    var formatted = fmtDate(dateStr);
+    if (diff < 0) {
+        var overdueDays = Math.abs(diff);
+        var overdueLabel = overdueDays === 1 ? '1 day overdue' : overdueDays + ' days overdue';
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#e04867;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff0f2;border:1px solid #ffc2ce;font-size:.68rem;font-weight:800;color:#c0163a;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c0163a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                + overdueLabel
+            + '</span>'
+        + '</span>';
+    }
+    if (diff === 0) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                + 'Today'
+            + '</span>'
+        + '</span>';
+    }
+    if (diff <= 7) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                + 'In ' + diff + ' day' + (diff === 1 ? '' : 's')
+            + '</span>'
+        + '</span>';
+    }
+    if (diff <= 14) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#9a6200;font-weight:600;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff8e0;border:1px solid #f0c840;font-size:.68rem;font-weight:700;color:#9a6200;">'
+                + 'In ' + diff + ' days'
+            + '</span>'
+        + '</span>';
+    }
+    return '<span style="color:#5a1e38;font-weight:500;">' + formatted + '</span>';
+}
+
+function checkMoveoutWarning() {
+    var moveoutInput = document.getElementById('edit-moveout');
+    var warningBar   = document.getElementById('edit-moveout-warning');
+    var warningText  = document.getElementById('edit-moveout-warning-text');
+    var warnSmall    = warningBar ? warningBar.querySelector('small') : null;
+    if (!moveoutInput || !warningBar) return;
+    var val = moveoutInput.value;
+    if (!val) {
+        warningBar.classList.remove('visible');
+        warningBar.style.background = '#fff0f4';
+        warningBar.style.borderColor = '#ffc2d1';
+        if (warningText) warningText.style.color = '#b0163a';
+        if (warnSmall) warnSmall.style.color = '#c0163a';
+        return;
+    }
+    var today   = new Date();
+    today.setHours(0, 0, 0, 0);
+    var moveout = new Date(val + 'T00:00:00');
+    var diff    = Math.floor((moveout - today) / 86400000);
+    if (diff < 0) {
+        var dayLabel = Math.abs(diff) === 1 ? '1 day ago' : Math.abs(diff) + ' days ago';
+        if (warningText) warningText.textContent = 'This tenant\'s move-out date has passed (' + dayLabel + ').';
+        if (warnSmall) warnSmall.textContent = 'The account will be automatically archived at midnight if no action is taken.';
+        warningBar.style.background = '#fff0f4';
+        warningBar.style.borderColor = '#ffc2d1';
+        if (warningText) warningText.style.color = '#b0163a';
+        if (warnSmall) warnSmall.style.color = '#c0163a';
+        warningBar.classList.add('visible');
+    } else if (diff === 0) {
+        if (warningText) warningText.textContent = 'This tenant\'s move-out date is today.';
+        if (warnSmall) warnSmall.textContent = 'Extend their stay now to keep their account active past tonight.';
+        warningBar.style.background = '#fff9e6';
+        warningBar.style.borderColor = '#f0c040';
+        if (warningText) warningText.style.color = '#9a6200';
+        if (warnSmall) warnSmall.style.color = '#c8960c';
+        warningBar.classList.add('visible');
+    } else if (diff <= 7) {
+        if (warningText) warningText.textContent = 'Move-out date is in ' + diff + ' day' + (diff === 1 ? '' : 's') + '.';
+        if (warnSmall) warnSmall.textContent = 'Use the extend buttons below if the tenant is renewing their stay.';
+        warningBar.style.background = '#fff9e6';
+        warningBar.style.borderColor = '#f0c040';
+        if (warningText) warningText.style.color = '#9a6200';
+        if (warnSmall) warnSmall.style.color = '#c8960c';
+        warningBar.classList.add('visible');
+    } else {
+        warningBar.classList.remove('visible');
+    }
+}
+
+function extendStay(days) {
+    var moveoutInput = document.getElementById('edit-moveout');
+    if (!moveoutInput) return;
+    var base = moveoutInput.value
+        ? new Date(moveoutInput.value + 'T00:00:00')
+        : new Date();
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (base < today) base = new Date(today);
+    base.setDate(base.getDate() + days);
+    var yyyy = base.getFullYear();
+    var mm   = String(base.getMonth() + 1).padStart(2, '0');
+    var dd   = String(base.getDate()).padStart(2, '0');
+    moveoutInput.value = yyyy + '-' + mm + '-' + dd;
+    moveoutInput.dispatchEvent(new Event('change'));
+    checkMoveoutWarning();
+    validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
 }
 
 function showPhotoValidationModal(message) {
@@ -4182,6 +4378,8 @@ function renderTenantArchive() {
                 + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
                 + '</form>'
+            : tenantArchiveTab === 'move_out' && r.id && isAdmin
+            ? '<button type="button" onclick="openRenewModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\', \'' + escapeJs(r.room_number || '') + '\')" style="width:100%;margin-top:.75rem;padding:.45rem 0;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" onmouseout="this.style.background=\'var(--white)\';this.style.color=\'var(--hot-pink)\';this.style.borderColor=\'var(--pink-100)\';">Renew Stay</button>'
             : '';
         var archivePhotoHtml = r.tenant_photo
             ? '<img src="/storage/' + r.tenant_photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--pink-100);flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);" alt="">'
