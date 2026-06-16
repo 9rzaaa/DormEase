@@ -611,7 +611,8 @@ class EmergencyController extends Controller
         ];
         
         $exactKeysmashes3 = [
-            'asd', 'qwe', 'zxc', 'fgh', 'hjk', 'iop', 'jkl', 'dfg', 'xcv', 'rty', 'cvb', 'bnm', 'xyz'
+            'asd', 'qwe', 'zxc', 'fgh', 'hjk', 'iop', 'jkl', 'dfg', 'xcv', 'rty', 'cvb', 'bnm', 'xyz',
+            'yui', 'tyu', 'wer', 'ert', 'sdf', 'ghj', 'vbn'
         ];
         
         $words = preg_split('/\s+/', preg_replace('/[^a-z\s]/', '', $cleanText), -1, PREG_SPLIT_NO_EMPTY);
@@ -637,27 +638,25 @@ class EmergencyController extends Controller
                     continue;
                 }
             }
-            if (strlen($word) === 2) {
-                if (!preg_match('/[aeiouy]/i', $word) && $word !== 'ng') {
+            
+            $hasStandardVowel = preg_match('/[aeiou]/i', $word);
+            if (!$hasStandardVowel) {
+                $allowedY = [
+                    2 => ['by', 'my', 'ng'],
+                    3 => ['dry', 'fly', 'gym', 'try', 'why', 'sky'],
+                    4 => ['myth', 'sync', 'lynx', 'cyst', 'bldg', 'brgy', 'ctrl'],
+                    5 => ['crypt', 'gypsy', 'lymph', 'myrrh', 'nymph', 'pygmy', 'slyly']
+                ];
+                $len = strlen($word);
+                $allowedList = $allowedY[$len] ?? null;
+                if (!$allowedList || !in_array($word, $allowedList)) {
                     $gibberishWordCount++;
                     continue;
                 }
-            }
-            if (strlen($word) === 3) {
-                if (!preg_match('/[aeiouy]/i', $word)) {
-                    $gibberishWordCount++;
-                    continue;
-                }
-            }
-            if (strlen($word) <= 3) {
-                continue;
             }
             
-            if (!in_array($word, ['bldg', 'brgy', 'ctrl', 'tjpg', 'tpng', 'fb', 'ig'])) {
-                if (!preg_match('/[aeiouy]/i', $word)) {
-                    $gibberishWordCount++;
-                    continue;
-                }
+            if (strlen($word) <= 3) {
+                continue;
             }
             
             if (preg_match('/[^aeiouy]{7,}/i', $word)) {
