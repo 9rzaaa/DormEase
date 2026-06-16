@@ -1519,7 +1519,7 @@ function recalcRate() {
 
     if (m3 > 0 && amount > 0) {
         const rate = amount / m3;
-        rp.textContent = '₱' + rate.toFixed(4) + ' / m³';
+        rp.textContent = '₱' + rate.toFixed(2) + ' / m³';
         box.classList.add('visible');
         document.querySelectorAll('.floor-reading-row').forEach(row => recalcFloorRow(row));
     } else {
