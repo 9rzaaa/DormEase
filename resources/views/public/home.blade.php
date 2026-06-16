@@ -1436,7 +1436,6 @@
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>Responses are automated and may not reflect real-time availability or pricing. For confirmed details, please contact us directly at +63 917 535 9723.</span></div>
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>Do not share sensitive personal information such as full names, addresses, or financial details through this chat.</span></div>
         <div class="de-policy-item"><div class="de-policy-dot"></div><span>Messages sent here are not monitored in real time. For urgent concerns, please call or visit us in person at 1229 Navarra St., Sampaloc, Manila.</span></div>
-        <div class="de-policy-item"><div class="de-policy-dot"></div><span>By proceeding, you acknowledge that this assistant provides general information only and that Sanctissimo Rosario is not liable for decisions made based solely on this chat.</span></div>
       </div>
       <p class="de-policy-note">Tap <strong>I Agree</strong> to start chatting, or <strong>I Disagree</strong> to close.</p>
     </div>
