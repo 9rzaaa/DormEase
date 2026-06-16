@@ -515,7 +515,12 @@ class TenantController extends Controller
         }
 
         $request->validate([
-            'tenant_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'tenant_photo' => 'required|image|mimes:jpg,jpeg,png|max:4096',
+        ], [
+            'tenant_photo.required' => 'Please select a photo to upload.',
+            'tenant_photo.image'    => 'The file must be an image.',
+            'tenant_photo.mimes'    => 'Only JPG and PNG files are accepted.',
+            'tenant_photo.max'      => 'The photo must not exceed 4MB.',
         ]);
 
         $tenant   = Tenant::findOrFail($id);
