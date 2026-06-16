@@ -2431,7 +2431,17 @@ const ALLOWED_MIME_TYPES = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/zip',
+    'application/x-zip-compressed',
+    '',
 ];
+
+const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+
+function isAllowedFile(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    return ALLOWED_EXTENSIONS.includes(ext);
+}
 
 let docState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let reqState  = { status: '', sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -3048,7 +3058,7 @@ async function submitUpdateReq() {
     }
 
     if (file) {
-        if (!ALLOWED_MIME_TYPES.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+    if (!isAllowedFile(file)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
         if (file.size < 1024)                        { showToast('File is too small (minimum 1KB).', 'error'); return; }
         if (file.size > 20 * 1024 * 1024)           { showToast('File must be under 20MB.', 'error'); return; }
     }
@@ -3454,7 +3464,7 @@ async function submitUploadForm() {
     const file  = document.getElementById('uf-file').files[0];
     if (!label) { showToast('Label is required.', 'error'); return; }
     if (!file)  { showToast('Please select a file.', 'error'); return; }
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
+    if (!isAllowedFile(file)) { showToast('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.', 'error'); return; }
     if (file.size < 1024)                        { showToast('File is too small (minimum 1KB).', 'error'); return; }
     if (file.size > 20 * 1024 * 1024)           { showToast('File must be under 20MB.', 'error'); return; }
 
