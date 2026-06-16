@@ -1887,7 +1887,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 Renewing stay for <strong id="renew-tenant-name" style="color:var(--bright-pink);"></strong>
             </p>
             <div class="modal-info-banner" style="margin-bottom:.85rem;">
-                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will be set to <strong>Pending</strong> until their first login.</span>
+                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will be set to <strong>Pending</strong> until their first login. Their previous record will remain in the archive for reference.</span>
             </div>
             <div class="modal-grid">
                 <div class="modal-field">
@@ -1896,7 +1896,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     <span id="renew-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
                 <div class="modal-field">
-                    <label>New Move-Out Date</label>
+                    <label>New Move-Out Date <span style="font-weight:500;color:var(--ink-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
                     <input type="date" id="renew-move-out">
                     <span id="renew-move-out-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
@@ -2301,94 +2301,6 @@ async function submitTenantPhoto(input) {
             img.src = data.url + '?t=' + Date.now();
         } else {
             viewTenant(currentTenant);
-        }
-
-        var renewTenantId = null;
-
-        function openRenewModal(id, name, roomNumber) {
-            renewTenantId = id;
-            document.getElementById('renew-tenant-name').textContent = name;
-            var today = new Date();
-            var yyyy  = today.getFullYear();
-            var mm    = String(today.getMonth() + 1).padStart(2, '0');
-            var dd    = String(today.getDate()).padStart(2, '0');
-            document.getElementById('renew-move-in').value  = yyyy + '-' + mm + '-' + dd;
-            document.getElementById('renew-move-out').value = '';
-            document.getElementById('renew-room').value     = roomNumber || '';
-            document.getElementById('renew-move-in-error').style.display  = 'none';
-            document.getElementById('renew-move-out-error').style.display = 'none';
-            document.getElementById('renew-room-error').style.display     = 'none';
-            openModal('renew-modal');
-        }
-
-        async function submitRenewTenant() {
-            var moveIn  = document.getElementById('renew-move-in').value;
-            var moveOut = document.getElementById('renew-move-out').value;
-            var room    = document.getElementById('renew-room').value.trim();
-            var valid   = true;
-
-            document.getElementById('renew-move-in-error').style.display  = 'none';
-            document.getElementById('renew-move-out-error').style.display = 'none';
-            document.getElementById('renew-room-error').style.display     = 'none';
-
-            if (!moveIn) {
-                document.getElementById('renew-move-in-error').textContent = 'Move-in date is required.';
-                document.getElementById('renew-move-in-error').style.display = 'block';
-                document.getElementById('renew-move-in').classList.add('field-invalid');
-                valid = false;
-            } else {
-                document.getElementById('renew-move-in').classList.remove('field-invalid');
-            }
-
-            if (moveOut && moveIn && moveOut < moveIn) {
-                document.getElementById('renew-move-out-error').textContent = 'Move-out date cannot be earlier than move-in date.';
-                document.getElementById('renew-move-out-error').style.display = 'block';
-                document.getElementById('renew-move-out').classList.add('field-invalid');
-                valid = false;
-            } else {
-                document.getElementById('renew-move-out').classList.remove('field-invalid');
-            }
-
-            if (room && room.length < 3) {
-                document.getElementById('renew-room-error').textContent = 'Room number must be at least 3 digits.';
-                document.getElementById('renew-room-error').style.display = 'block';
-                document.getElementById('renew-room').classList.add('field-invalid');
-                valid = false;
-            } else {
-                document.getElementById('renew-room').classList.remove('field-invalid');
-            }
-
-            if (!valid) return;
-
-            showActionLoading('Renewing tenant stay...');
-
-            try {
-                var res = await fetch('/tenants/' + renewTenantId + '/renew', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-                    body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
-                });
-                var data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Failed to renew tenant.');
-
-                closeModal('renew-modal');
-
-                var tenantName = document.getElementById('renew-tenant-name').textContent;
-                document.getElementById('renew-cred-name').textContent         = tenantName;
-                document.getElementById('renew-cred-account-id').textContent   = data.account_id;
-                document.getElementById('renew-cred-password').textContent     = data.temp_password;
-                openModal('renew-credentials-modal');
-
-                moveoutTenantArchive = moveoutTenantArchive.filter(function(r) { return r.id !== renewTenantId; });
-                document.getElementById('tcount-moveout').textContent = moveoutTenantArchive.length;
-                renderTenantArchive();
-
-                showToast(tenantName + ' has been renewed successfully.', 'success');
-            } catch (e) {
-                showToast(e.message, 'error');
-            } finally {
-                document.getElementById('action-loading').classList.remove('open');
-            }
         }
 
         applyFilters();
@@ -3094,6 +3006,13 @@ document.addEventListener('DOMContentLoaded', function() {
         inp.addEventListener('blur', function() { validateRoomNumberField(this); });
         inp.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
     });
+    var renewRoomInput = document.getElementById('renew-room');
+    if (renewRoomInput && !renewRoomInput._enforced) {
+        renewRoomInput._enforced = true;
+        enforceRoomNumberInput(renewRoomInput);
+        renewRoomInput.addEventListener('blur', function() { validateRoomNumberField(this); });
+        renewRoomInput.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
+    }
 });
     function setStatusFilter(val) {
     statusFilter = val;
@@ -4304,6 +4223,129 @@ function setAddMode(mode) {
         tooltip.style.top  = top  + 'px';
     }
 })();
+
+var renewTenantId = null;
+
+function openRenewModal(id, name, roomNumber) {
+    renewTenantId = id;
+    document.getElementById('renew-tenant-name').textContent = name;
+    var today = new Date();
+    var yyyy  = today.getFullYear();
+    var mm    = String(today.getMonth() + 1).padStart(2, '0');
+    var dd    = String(today.getDate()).padStart(2, '0');
+    var todayStr = yyyy + '-' + mm + '-' + dd;
+    document.getElementById('renew-move-in').value  = todayStr;
+    document.getElementById('renew-move-out').value = '';
+    document.getElementById('renew-room').value     = roomNumber || '';
+    document.getElementById('renew-move-in').classList.remove('field-invalid');
+    document.getElementById('renew-move-out').classList.remove('field-invalid');
+    document.getElementById('renew-room').classList.remove('field-invalid');
+    document.getElementById('renew-move-in-error').style.display  = 'none';
+    document.getElementById('renew-move-out-error').style.display = 'none';
+    document.getElementById('renew-room-error').style.display     = 'none';
+    openModal('renew-modal');
+    setTimeout(function() {
+        var moveInEl  = document.getElementById('renew-move-in');
+        var moveOutEl = document.getElementById('renew-move-out');
+        if (moveInEl && !moveInEl._renewValidatorAttached) {
+            moveInEl._renewValidatorAttached = true;
+            moveInEl.addEventListener('change', validateRenewDates);
+            moveOutEl.addEventListener('change', validateRenewDates);
+        }
+    }, 0);
+}
+
+function validateRenewDates() {
+    var moveIn  = document.getElementById('renew-move-in').value;
+    var moveOut = document.getElementById('renew-move-out').value;
+    var errEl   = document.getElementById('renew-move-out-error');
+    var outEl   = document.getElementById('renew-move-out');
+    if (moveOut && moveIn && moveOut < moveIn) {
+        outEl.classList.add('field-invalid');
+        errEl.textContent = 'Move-out date cannot be earlier than move-in date.';
+        errEl.style.display = 'block';
+        return false;
+    }
+    outEl.classList.remove('field-invalid');
+    errEl.style.display = 'none';
+    errEl.textContent = '';
+    return true;
+}
+
+async function submitRenewTenant() {
+    var moveIn  = document.getElementById('renew-move-in').value;
+    var moveOut = document.getElementById('renew-move-out').value;
+    var room    = document.getElementById('renew-room').value.trim();
+    var valid   = true;
+
+    document.getElementById('renew-move-in-error').style.display  = 'none';
+    document.getElementById('renew-move-out-error').style.display = 'none';
+    document.getElementById('renew-room-error').style.display     = 'none';
+    document.getElementById('renew-move-in').classList.remove('field-invalid');
+    document.getElementById('renew-move-out').classList.remove('field-invalid');
+    document.getElementById('renew-room').classList.remove('field-invalid');
+
+    if (!moveIn) {
+        document.getElementById('renew-move-in-error').textContent = 'Move-in date is required.';
+        document.getElementById('renew-move-in-error').style.display = 'block';
+        document.getElementById('renew-move-in').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (moveOut && moveIn && moveOut < moveIn) {
+        document.getElementById('renew-move-out-error').textContent = 'Move-out date cannot be earlier than move-in date.';
+        document.getElementById('renew-move-out-error').style.display = 'block';
+        document.getElementById('renew-move-out').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (room && room.length < 3) {
+        document.getElementById('renew-room-error').textContent = 'Room number must be at least 3 digits.';
+        document.getElementById('renew-room-error').style.display = 'block';
+        document.getElementById('renew-room').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (!valid) {
+        if (!moveIn) document.getElementById('renew-move-in').focus();
+        return;
+    }
+
+    var submitBtn = document.querySelector('#renew-modal .btn-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; }
+
+    showActionLoading('Renewing tenant stay...');
+
+    try {
+        var res = await fetch('/tenants/' + renewTenantId + '/renew', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to renew tenant.');
+
+        var tenantName = document.getElementById('renew-tenant-name').textContent;
+
+        closeModal('renew-modal');
+
+        document.getElementById('renew-cred-name').textContent       = tenantName;
+        document.getElementById('renew-cred-account-id').textContent = data.account_id;
+        document.getElementById('renew-cred-password').textContent   = data.temp_password;
+        openModal('renew-credentials-modal');
+
+        moveoutTenantArchive = moveoutTenantArchive.filter(function(r) { return r.id !== renewTenantId; });
+        document.getElementById('tcount-moveout').textContent = moveoutTenantArchive.length;
+        renderTenantArchive();
+
+        showToast(tenantName + ' has been renewed successfully.', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
 
 applyFilters();
 
