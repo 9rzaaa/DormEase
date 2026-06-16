@@ -305,6 +305,8 @@ class TenantController extends Controller
             'referred_by'            => $request->referred_by,
             'status'                 => $request->status,
             'is_active'              => $request->status !== 'inactive',
+            'is_on_vacation'         => $request->boolean('is_on_vacation'),
+            'vacation_note'          => $request->boolean('is_on_vacation') ? $request->vacation_note : null,
         ]);
 
         $fresh = $tenant->fresh();

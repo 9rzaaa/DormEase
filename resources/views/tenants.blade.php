@@ -625,6 +625,74 @@ tbody tr:hover { background: var(--soft-bg); }
     height: 25px;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
+.vacation-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .6rem .85rem;
+    border-radius: 12px;
+    background: #fffafd;
+    border: 1.5px solid var(--pink-100);
+    transition: border-color .2s, background .2s;
+}
+.vacation-toggle-row:has(#edit-is-on-vacation:checked) {
+    background: #fff0f6;
+    border-color: var(--bright-pink);
+}
+.vacation-toggle-label {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+.vacation-toggle-title {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.vacation-toggle-sub {
+    font-size: .72rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+.vacation-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.vacation-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.vacation-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #e0d0d8;
+    border-radius: 999px;
+    transition: background .22s;
+}
+.vacation-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .22s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.18);
+}
+.vacation-switch input:checked + .vacation-slider {
+    background: var(--gradient-pink);
+}
+.vacation-switch input:checked + .vacation-slider::before {
+    transform: translateX(20px);
+}
 </style>
 @endsection
 
@@ -1519,6 +1587,23 @@ tbody tr:hover { background: var(--soft-bg); }
                         This tenant has no login credentials yet. Setting status to <strong>Pending</strong> has no effect until you use <strong>Tag as Moved In</strong> to generate their account.
                     </div>
                 </div>
+                <div class="modal-section" id="edit-vacation-section">
+                    <div class="modal-section-title">Vacation</div>
+                    <div class="vacation-toggle-row">
+                        <div class="vacation-toggle-label">
+                            <span class="vacation-toggle-title">On Vacation</span>
+                            <span class="vacation-toggle-sub">Tenant is temporarily away from the dormitory</span>
+                        </div>
+                        <label class="vacation-switch">
+                            <input type="checkbox" name="is_on_vacation" id="edit-is-on-vacation" value="1" onchange="toggleVacationNote()">
+                            <span class="vacation-slider"></span>
+                        </label>
+                    </div>
+                    <div class="modal-field full" id="edit-vacation-note-wrap" style="display:none;margin-top:.6rem;">
+                        <label>Vacation Note <span style="font-weight:500;color:var(--ink-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <input type="text" name="vacation_note" id="edit-vacation-note" placeholder="e.g. Home for semestral break, back Nov 5" maxlength="200">
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
@@ -1929,6 +2014,15 @@ function attachEstimatedMoveInValidator(inputId, errorId) {
     var input = document.getElementById(inputId);
     if (!input) return;
     input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
+}
+
+function toggleVacationNote() {
+    var cb   = document.getElementById('edit-is-on-vacation');
+    var wrap = document.getElementById('edit-vacation-note-wrap');
+    wrap.style.display = cb.checked ? '' : 'none';
+    if (!cb.checked) {
+        document.getElementById('edit-vacation-note').value = '';
+    }
 }
 
 function validateAddTenantForm(e) {
@@ -2591,6 +2685,16 @@ function openEditModal(t) {
         if (warn) warn.style.display = (this.value === 'pending' && noAccount) ? '' : 'none';
     };
     restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
+
+    var vacationCb   = document.getElementById('edit-is-on-vacation');
+    var vacationNote = document.getElementById('edit-vacation-note');
+    var vacationWrap = document.getElementById('edit-vacation-note-wrap');
+    if (vacationCb) {
+        vacationCb.checked = !!t.is_on_vacation;
+        vacationNote.value = t.vacation_note || '';
+        vacationWrap.style.display = t.is_on_vacation ? '' : 'none';
+    }
+
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
     attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
