@@ -104,13 +104,22 @@ class VisitorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'visitor_name' => 'required|string|max:100',
+            'visitor_name' => [
+                'required',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s\'\-\.]+$/u',
+            ],
             'tenant_id'    => 'required|exists:tenants,tenant_id',
             'purpose'      => 'required|string|max:100',
-            'contact_no'   => 'nullable|string|max:20',
-            'id_type'      => 'nullable|string|max:50',
-            'arrival_time' => 'nullable|date',
+            'contact_no'   => ['nullable', 'regex:/^(09|\+?639)\d{9}$/'],
+            'id_type'      => 'required|string|max:50',
+            'arrival_time' => 'required|date',
             'status'       => 'nullable|string|max:20',
+        ], [
+            'visitor_name.regex' => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
+            'id_type.required' => 'Please select an ID type.',
+            'contact_no.regex' => 'The contact number must start with 09 or 639/+639 (e.g. 09123456789 or +639123456789).',
         ]);
 
         $arrivalTime = $request->filled('arrival_time')
