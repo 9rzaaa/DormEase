@@ -763,6 +763,56 @@ tbody tr:hover { background: var(--soft-bg); }
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+.moveout-warning-bar {
+    display: none;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .65rem .85rem;
+    border-radius: 10px;
+    background: #fff0f4;
+    border: 1.5px solid #ffc2d1;
+    margin-bottom: .5rem;
+}
+.moveout-warning-bar.visible {
+    display: flex;
+}
+.moveout-warning-bar p {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #b0163a;
+    margin: 0 0 .35rem;
+    line-height: 1.45;
+}
+.moveout-warning-bar small {
+    font-size: .72rem;
+    color: #c0163a;
+    font-weight: 500;
+}
+.extend-stay-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-top: .5rem;
+}
+.extend-stay-btn {
+    padding: .38rem .9rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--hot-pink);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s, border-color .2s, color .2s;
+    white-space: nowrap;
+}
+.extend-stay-btn:hover {
+    background: var(--gradient-pink);
+    color: var(--white);
+    border-color: transparent;
+}
 </style>
 @endsection
 
@@ -1623,6 +1673,22 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
                         </div>
+                        <div class="modal-field full">
+                            <div class="moveout-warning-bar" id="edit-moveout-warning">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <div>
+                                    <p id="edit-moveout-warning-text">This tenant's move-out date has passed.</p>
+                                    <small>The account will be automatically archived at midnight if no action is taken.</small>
+                                    <div class="extend-stay-row">
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(30)">+30 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(60)">+60 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(90)">+90 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(180)">+6 months</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(365)">+1 year</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
                             <input type="date" name="move_out_date" id="edit-moveout" @error('move_out_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
@@ -2151,6 +2217,47 @@ async function submitTenantPhoto(input) {
             viewTenant(currentTenant);
         }
 
+        function checkMoveoutWarning() {
+        var moveoutInput = document.getElementById('edit-moveout');
+        var warningBar   = document.getElementById('edit-moveout-warning');
+        var warningText  = document.getElementById('edit-moveout-warning-text');
+        if (!moveoutInput || !warningBar) return;
+        var val = moveoutInput.value;
+        if (!val) {
+            warningBar.classList.remove('visible');
+            return;
+        }
+        var today    = new Date();
+        today.setHours(0, 0, 0, 0);
+        var moveout  = new Date(val + 'T00:00:00');
+        var diffDays = Math.floor((today - moveout) / 86400000);
+        if (diffDays >= 1) {
+            var dayLabel = diffDays === 1 ? '1 day ago' : diffDays + ' days ago';
+            warningText.textContent = 'This tenant\'s move-out date has passed (' + dayLabel + ').';
+            warningBar.classList.add('visible');
+        } else {
+            warningBar.classList.remove('visible');
+        }
+    }
+
+    function extendStay(days) {
+        var moveoutInput = document.getElementById('edit-moveout');
+        if (!moveoutInput) return;
+        var base = moveoutInput.value
+            ? new Date(moveoutInput.value + 'T00:00:00')
+            : new Date();
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (base < today) base = today;
+        base.setDate(base.getDate() + days);
+        var yyyy = base.getFullYear();
+        var mm   = String(base.getMonth() + 1).padStart(2, '0');
+        var dd   = String(base.getDate()).padStart(2, '0');
+        moveoutInput.value = yyyy + '-' + mm + '-' + dd;
+        moveoutInput.dispatchEvent(new Event('change'));
+        checkMoveoutWarning();
+        validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    }
         applyFilters();
         showToast('Photo uploaded successfully.', 'success');
     } catch (e) {
@@ -2927,6 +3034,13 @@ function openEditModal(t) {
     toggleReservationFields('edit');
     attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
     attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
+    checkMoveoutWarning();
+    var editMoveoutEl = document.getElementById('edit-moveout');
+    if (editMoveoutEl && !editMoveoutEl._moveoutWarningAttached) {
+        editMoveoutEl._moveoutWarningAttached = true;
+        editMoveoutEl.addEventListener('change', checkMoveoutWarning);
+        editMoveoutEl.addEventListener('input',  checkMoveoutWarning);
+    }
     openModal('edit-modal');
     var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
     var editSuggestBox  = document.getElementById('edit-room-suggest');

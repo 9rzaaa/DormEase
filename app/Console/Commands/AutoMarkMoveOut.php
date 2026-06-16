@@ -15,7 +15,7 @@ class AutoMarkMoveOut extends Command
     {
         $tenants = Tenant::whereIn('status', ['active', 'pending'])
             ->whereNotNull('move_out_date')
-            ->whereDate('move_out_date', '<=', now()->toDateString())
+            ->whereDate('move_out_date', '<', now()->toDateString())
             ->get();
 
         foreach ($tenants as $tenant) {
@@ -40,6 +40,7 @@ class AutoMarkMoveOut extends Command
                 'status'    => 'move_out',
                 'is_active' => false,
             ]);
+            $tenant->tokens()->delete();
 
             \App\Helpers\NotificationHelper::sendToAll(
                 type: 'tenant_moveout_reminder',
