@@ -2204,14 +2204,10 @@ function openUpdateModal(room) {
         const safeName = t.name;
 
         const imgHtml = proofUrl
-            ? `<div style="position:relative;">
-                   <a href="${proofUrl}" target="_blank" style="display:block;border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);">
-                       <img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;">
-                   </a>
-                   <button type="button" class="btn-preview-proof" onclick="openLightbox('${safeUrl.replace(/'/g,"\\'")}', '${safeName.replace(/'/g,"\\'")}')">
-                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                       Preview full image
-                   </button>
+            ? `<div style="border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);cursor:pointer;"
+                    onclick="openLightbox('${safeUrl.replace(/'/g,"\\'")}', '${safeName.replace(/'/g,"\\'")}')">
+                   <img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;transition:opacity .15s;"
+                        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
                </div>`
             : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
 
