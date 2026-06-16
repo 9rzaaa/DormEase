@@ -37,7 +37,20 @@ class DocumentRequestController extends Controller
                 'admin_remarks'      => 'nullable|string|max:1000',
                 'rejection_reason'   => 'nullable|string|max:500',
                 'allow_resubmission' => 'nullable|boolean',
-                'fulfilled_file'     => 'nullable|file|max:20480',
+                'fulfilled_file' => [
+                    'nullable',
+                    'file',
+                    'min:1',
+                    'max:20480',
+                    function ($attribute, $value, $fail) {
+                        if ($value) {
+                            $ext = strtolower($value->getClientOriginalExtension());
+                            if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                                $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                            }
+                        }
+                    },
+                ],
             ]);
 
             $oldStatus    = $documentRequest->status;
@@ -142,7 +155,18 @@ class DocumentRequestController extends Controller
             }
 
             $request->validate([
-                'file' => 'required|file|max:20480',
+                'file' => [
+                    'required',
+                    'file',
+                    'min:1',
+                    'max:20480',
+                    function ($attribute, $value, $fail) {
+                        $ext = strtolower($value->getClientOriginalExtension());
+                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                        }
+                    },
+                ],
             ]);
 
             if ($documentRequest->attachment) {
