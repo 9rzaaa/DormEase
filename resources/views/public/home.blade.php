@@ -318,7 +318,6 @@
     .gal-occupants { font-size:0.82rem; color:var(--brown-light); font-weight:600; }
     .gal-title { font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--brown); margin-bottom:4px; }
     .gal-desc { font-size:0.85rem; color:var(--brown-light); line-height:1.7; }
-
     .gal-item-overlay { display: none; }
 
     .how { background:var(--cream); position:relative; overflow:hidden; }
@@ -568,7 +567,6 @@
       .how-img-main { padding:24px 16px; border-radius:var(--r-lg); }
       .de-phone.center { width:200px; height:370px; }
       .hero-stats { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-      .hero-stat-number { font-size: 1.3rem; }
     }
 
     @media(max-width:420px){
@@ -666,6 +664,313 @@
       .room-modal-img-wrap { min-height: 200px; }
       .room-modal-body { padding: 28px 24px; }
       .room-modal-title { font-size: 1.5rem; }
+    }
+
+    #de-chat-btn {
+      position: fixed; bottom: 96px; right: 32px; z-index: 3000;
+      width: 56px; height: 56px; border-radius: 50%; border: none;
+      background: var(--gradient-pink);
+      color: white; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(232,23,93,0.40);
+      transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), box-shadow 0.22s;
+    }
+    #de-chat-btn:hover { transform: translateY(-3px) scale(1.07); box-shadow: 0 12px 32px rgba(232,23,93,0.52); }
+    #de-chat-btn svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    #de-chat-btn.open svg#de-btn-open { transform: scale(0) rotate(90deg); }
+    #de-chat-btn.open svg#de-btn-close { transform: scale(1) rotate(0deg); }
+    #de-btn-close { position: absolute; transform: scale(0) rotate(-90deg); }
+
+    #de-chat-pulse {
+      position: fixed; bottom: 160px; right: 28px; z-index: 3001;
+      background: white; color: var(--brown);
+      font-family: var(--font-body); font-size: 12px; font-weight: 700;
+      padding: 7px 13px 7px 10px; border-radius: 20px;
+      border: 1.5px solid rgba(232,23,93,0.18);
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(36,16,24,0.12);
+      display: flex; align-items: center; gap: 7px;
+      animation: pulseFloat 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+    #de-chat-pulse::before {
+      content: '';
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--pink);
+      flex-shrink: 0;
+      animation: pulseDot 1.4s ease-in-out infinite;
+    }
+    #de-chat-pulse::after {
+      content: '';
+      position: absolute; bottom: -7px; right: 18px;
+      border-left: 6px solid transparent; border-right: 6px solid transparent;
+      border-top: 7px solid white;
+    }
+    @keyframes pulseFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.5; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    #de-chat-window {
+      position: fixed; bottom: 168px; right: 32px; z-index: 3000;
+      width: 420px;
+      background: #fdf4f8;
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(36,16,24,0.18), 0 0 0 1px rgba(232,23,93,0.10);
+      display: flex; flex-direction: column; overflow: hidden;
+      transform: scale(0.90) translateY(20px); opacity: 0; pointer-events: none;
+      transition: transform 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.28s ease;
+      max-height: 600px;
+      overflow: hidden;
+    }
+    #de-chat-window.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+    .de-cw-header {
+      background: var(--gradient-pink);
+      padding: 16px 18px 14px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+      position: relative;
+    }
+    .de-cw-header::after {
+      content: '';
+      position: absolute; bottom: -6px; left: 0; right: 0; height: 6px;
+      background: linear-gradient(to bottom, rgba(232,23,93,0.08), transparent);
+    }
+    .de-cw-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 1.5px solid rgba(255,255,255,0.30);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .de-cw-avatar svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .de-cw-header-text { flex: 1; min-width: 0; }
+    .de-cw-header-name { font-family: var(--font-head); font-size: 0.9rem; font-weight: 800; color: white; line-height: 1.2; }
+    .de-cw-header-sub { font-size: 0.70rem; color: rgba(255,255,255,0.76); font-weight: 600; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .de-cw-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .de-cw-status { display: flex; align-items: center; gap: 5px; }
+    .de-cw-online { width: 7px; height: 7px; border-radius: 50%; background: #7EF08A; box-shadow: 0 0 0 2px rgba(255,255,255,0.25); }
+    .de-cw-status-lbl { font-size: 0.65rem; color: rgba(255,255,255,0.80); font-weight: 600; }
+    .de-cw-icon-btn {
+      width: 30px; height: 30px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.18); color: white;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: background 0.18s; flex-shrink: 0;
+    }
+    .de-cw-icon-btn:hover { background: rgba(255,255,255,0.30); }
+    .de-cw-icon-btn svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+    .de-policy-screen {
+      flex: 1; overflow-y: auto; padding: 20px 18px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .de-policy-screen::-webkit-scrollbar { width: 4px; }
+    .de-policy-screen::-webkit-scrollbar-thumb { background: rgba(232,23,93,0.20); border-radius: 99px; }
+    .de-policy-icon {
+      width: 48px; height: 48px; border-radius: 50%; background: var(--pink-pale);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .de-policy-icon svg { width: 24px; height: 24px; stroke: var(--pink); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .de-policy-title {
+      font-family: var(--font-head); font-size: 0.95rem; font-weight: 800;
+      color: var(--brown); line-height: 1.3;
+    }
+    .de-policy-subtitle {
+      font-size: 0.72rem; font-weight: 600; color: var(--brown-light);
+      margin-top: 2px;
+    }
+    .de-policy-box {
+      background: white; border-radius: 14px;
+      border: 1.5px solid var(--border);
+      padding: 14px 16px;
+      max-height: 200px; overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .de-policy-box::-webkit-scrollbar { width: 3px; }
+    .de-policy-box::-webkit-scrollbar-thumb { background: rgba(232,23,93,0.20); border-radius: 99px; }
+    .de-policy-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(232,23,93,0.08);
+      font-size: 0.76rem; color: var(--brown-light); line-height: 1.55; font-weight: 600;
+    }
+    .de-policy-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .de-policy-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--pink); flex-shrink: 0; margin-top: 5px;
+    }
+    .de-policy-note {
+      font-size: 0.68rem; color: var(--brown-light); font-weight: 600;
+      text-align: center; line-height: 1.5; opacity: 0.75;
+    }
+    .de-policy-actions {
+      display: flex; gap: 8px; padding: 12px 18px 16px;
+      flex-shrink: 0;
+    }
+    .de-policy-agree {
+      flex: 1; padding: 11px 0; border: none; border-radius: 100px;
+      background: var(--gradient-pink); color: white;
+      font-family: var(--font-body); font-size: 0.84rem; font-weight: 700;
+      cursor: pointer; transition: filter 0.2s, transform 0.15s;
+      box-shadow: 0 6px 18px rgba(232,23,93,0.30);
+    }
+    .de-policy-agree:hover { filter: brightness(0.94); transform: translateY(-1px); }
+    .de-policy-disagree {
+      flex: 1; padding: 11px 0; border: 1.5px solid rgba(36,16,24,0.18); border-radius: 100px;
+      background: transparent; color: var(--brown-light);
+      font-family: var(--font-body); font-size: 0.84rem; font-weight: 700;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .de-policy-disagree:hover { border-color: var(--brown-mid); color: var(--brown); }
+
+    .de-cw-body {
+      flex: 1; overflow-y: auto; padding: 16px 14px 8px;
+      display: flex; flex-direction: column; gap: 10px;
+      scroll-behavior: smooth;
+    }
+    .de-cw-body::-webkit-scrollbar { width: 4px; }
+    .de-cw-body::-webkit-scrollbar-track { background: transparent; }
+    .de-cw-body::-webkit-scrollbar-thumb { background: rgba(232,23,93,0.20); border-radius: 99px; }
+
+    .de-msg { display: flex; flex-direction: column; gap: 3px; }
+    .de-msg.user {
+      align-items: flex-end;
+      max-width: calc(100% - 28px);
+      margin-left: auto;
+    }
+    .de-msg.bot { align-items: flex-start; }
+
+    .de-msg-row { display: flex; gap: 8px; align-items: flex-end; }
+    .de-msg.user .de-msg-row {
+      flex-direction: row-reverse;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .de-msg-bubble {
+      max-width: 82%; padding: 10px 14px;
+      border-radius: 18px 18px 18px 4px;
+      font-size: 0.83rem; line-height: 1.55; font-family: var(--font-body); font-weight: 600; color: var(--brown);
+      background: white;
+      box-shadow: 0 2px 10px rgba(36,16,24,0.07);
+    }
+
+    .de-msg.user .de-msg-bubble {
+      background: var(--gradient-pink); color: white;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 4px 14px rgba(232,23,93,0.26);
+      width: fit-content;
+      max-width: 100%;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .de-msg-ico {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gradient-pink);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(232,23,93,0.28);
+    }
+    .de-msg-ico svg { width: 13px; height: 13px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .de-msg-time {
+      font-size: 0.60rem; color: rgba(116,75,93,0.55); font-weight: 600;
+      padding: 0 6px;
+    }
+    .de-msg.user .de-msg-time { text-align: right; }
+    .de-msg.bot .de-msg-time { padding-left: 36px; }
+
+    .de-typing-bubble {
+      display: flex; gap: 8px; align-items: flex-end;
+    }
+    .de-typing {
+      display: flex; gap: 5px; align-items: center;
+      padding: 12px 16px;
+      background: white; border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 2px 10px rgba(36,16,24,0.07);
+    }
+    .de-typing span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--pink-light); opacity: 0.6;
+      animation: typingDot 1.1s infinite;
+    }
+    .de-typing span:nth-child(2) { animation-delay: 0.18s; }
+    .de-typing span:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes typingDot {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.75); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .de-suggestions {
+      padding: 6px 14px 4px;
+      flex-shrink: 0;
+    }
+    .de-suggestions-label {
+      font-size: 0.60rem; font-weight: 700; color: var(--brown-light);
+      text-transform: uppercase; letter-spacing: 0.09em;
+      margin-bottom: 7px; font-family: var(--font-head);
+    }
+    .de-suggestions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-bottom: 4px;
+    }
+    .de-sug-btn {
+      background: white;
+      border: 1.5px solid rgba(232,23,93,0.20);
+      border-radius: 100px;
+      padding: 6px 13px;
+      white-space: nowrap;
+      font-size: 0.74rem; font-weight: 600; color: var(--brown-mid);
+      font-family: var(--font-body);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.16s, background 0.16s, color 0.16s, transform 0.14s, box-shadow 0.14s;
+      display: inline-flex; align-items: center; gap: 5px;
+      box-shadow: 0 1px 6px rgba(36,16,24,0.06);
+      line-height: 1.2;
+    }
+    .de-sug-btn:hover {
+      border-color: var(--pink);
+      background: #fff5f8;
+      color: var(--pink);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(232,23,93,0.18);
+    }
+    .de-sug-btn .de-sug-icon { font-size: 0.80rem; }
+
+    .de-cw-input-wrap {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px 14px;
+      border-top: 1px solid rgba(232,23,93,0.08);
+      flex-shrink: 0; background: #fdf4f8;
+    }
+    #de-chat-input {
+      flex: 1; border: 1.5px solid rgba(232,23,93,0.18); border-radius: 14px;
+      padding: 9px 13px; font-size: 0.83rem; font-family: var(--font-body); font-weight: 600;
+      color: var(--brown); background: white; outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    #de-chat-input:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(232,23,93,0.09); }
+    #de-chat-input::placeholder { color: #c4a8b3; font-weight: 500; }
+    #de-chat-send {
+      width: 36px; height: 36px; border-radius: 12px; border: none; flex-shrink: 0;
+      background: var(--gradient-pink);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 12px rgba(232,23,93,0.30);
+    }
+    #de-chat-send:hover { transform: scale(1.10); box-shadow: 0 6px 18px rgba(232,23,93,0.44); }
+    #de-chat-send svg { width: 15px; height: 15px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+    @media(max-width:760px){
+      #de-chat-btn { right: 18px; bottom: 80px; }
+      #de-chat-pulse { right: 20px; bottom: 142px; }
+      #de-chat-window { width: calc(100vw - 24px); right: 12px; bottom: 148px; }
     }
   </style>
 </head>
@@ -869,7 +1174,6 @@
 
     <div class="how-img-main reveal from-right">
       <div class="de-mockup-wrap">
-
         <div class="de-phone side">
           <div class="de-notch"></div>
           <div class="de-screen">
@@ -930,7 +1234,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
@@ -1051,7 +1354,6 @@
         </a>
       </div>
       <div class="footer-links">
-        <a href="{{ route('privacy') }}">Privacy Policy</a>
         <a href="{{ route('faqs') }}">FAQs</a>
         <a href="{{ route('login') }}">Admin Portal</a>
       </div>
@@ -1088,6 +1390,74 @@
   </div>
 </div>
 
+<div id="de-chat-pulse">Ask about the dorm!</div>
+
+<button id="de-chat-btn" aria-label="Open dorm info chat">
+  <svg id="de-btn-open" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <svg id="de-btn-close" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+</button>
+
+<div id="de-chat-window" role="dialog" aria-label="DormEase Info Assistant">
+  <div class="de-cw-header">
+    <div class="de-cw-avatar">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    </div>
+    <div class="de-cw-header-text">
+      <div class="de-cw-header-name">DormEase Assistant</div>
+      <div class="de-cw-header-sub">Sanctissimo Rosario Ladies Dorm</div>
+    </div>
+    <div class="de-cw-header-actions">
+      <div class="de-cw-status">
+        <div class="de-cw-online"></div>
+        <span class="de-cw-status-lbl">Online</span>
+      </div>
+      <button class="de-cw-icon-btn" id="de-cw-clear-btn" aria-label="Clear conversation" title="Clear conversation">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      </button>
+      <button class="de-cw-icon-btn" id="de-cw-close-header" aria-label="Close chat">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="de-policy-panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="de-policy-screen">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="de-policy-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"/><path d="M9.5 12l1.8 1.8 3.7-4"/></svg>
+        </div>
+        <div>
+          <div class="de-policy-title">Before we begin</div>
+          <div class="de-policy-subtitle">Please read and accept our chat guidelines</div>
+        </div>
+      </div>
+      <div class="de-policy-box">
+        <div class="de-policy-item"><div class="de-policy-dot"></div><span>This chat is for general inquiries about Sanctissimo Rosario Ladies Dormitory only. It is not a substitute for official communication with the dorm administration.</span></div>
+        <div class="de-policy-item"><div class="de-policy-dot"></div><span>Responses are automated and may not reflect real-time availability or pricing. For confirmed details, please contact us directly at +63 917 535 9723.</span></div>
+        <div class="de-policy-item"><div class="de-policy-dot"></div><span>Do not share sensitive personal information such as full names, addresses, or financial details through this chat.</span></div>
+        <div class="de-policy-item"><div class="de-policy-dot"></div><span>Messages sent here are not monitored in real time. For urgent concerns, please call or visit us in person at 1229 Navarra St., Sampaloc, Manila.</span></div>
+        <div class="de-policy-item"><div class="de-policy-dot"></div><span>By proceeding, you acknowledge that this assistant provides general information only and that Sanctissimo Rosario is not liable for decisions made based solely on this chat.</span></div>
+      </div>
+      <p class="de-policy-note">Tap <strong>I Agree</strong> to start chatting, or <strong>I Disagree</strong> to close.</p>
+    </div>
+    <div class="de-policy-actions">
+      <button class="de-policy-disagree" id="de-policy-no">I Disagree</button>
+      <button class="de-policy-agree" id="de-policy-yes">I Agree</button>
+    </div>
+  </div>
+
+  <div id="de-chat-panel" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="de-cw-body" id="de-chat-body"></div>
+    <div class="de-suggestions" id="de-suggestions"></div>
+    <div class="de-cw-input-wrap">
+      <input type="text" id="de-chat-input" placeholder="Ask anything about the dorm…" autocomplete="off" maxlength="200">
+      <button id="de-chat-send" aria-label="Send">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
@@ -1118,10 +1488,7 @@
   const revealEls = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
-      }
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
   }, { threshold: 0.10 });
   revealEls.forEach(el => obs.observe(el));
@@ -1158,65 +1525,46 @@
   const counterEls = document.querySelectorAll('.hero-stat-number[data-target]');
   const counterObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        animateCounter(e.target);
-        counterObs.unobserve(e.target);
-      }
+      if (e.isIntersecting) { animateCounter(e.target); counterObs.unobserve(e.target); }
     });
   }, { threshold: 0.5 });
   counterEls.forEach(el => counterObs.observe(el));
 
   const roomData = {
     solo: {
-      title: 'Solo Room',
-      occupants: '1 Occupant',
-      badge: 'Solo',
+      title: 'Solo Room', occupants: '1 Occupant', badge: 'Solo',
       img: "{{ asset('images/solo.jpg') }}",
       desc: 'A semi-furnished private room ideal for one student who values quiet, focus, and personal space. Comes with a comfortable bed, a dedicated wardrobe, and a study desk set up for long sessions.',
       features: [
-        { icon: 'bed', label: '1 bed, 1 wardrobe' },
-        { icon: 'desk', label: 'Private study desk' },
-        { icon: 'bath', label: 'Own bathroom' },
-        { icon: 'snow', label: 'Aircon slot included' }
+        { icon: 'bed', label: '1 bed, 1 wardrobe' }, { icon: 'desk', label: 'Private study desk' },
+        { icon: 'bath', label: 'Own bathroom' }, { icon: 'snow', label: 'Aircon slot included' }
       ]
     },
     double: {
-      title: 'Double Room',
-      occupants: '2 Occupants',
-      badge: 'Double',
+      title: 'Double Room', occupants: '2 Occupants', badge: 'Double',
       img: "{{ asset('images/two.jpg') }}",
       desc: 'A semi-furnished room designed for two students. Each occupant gets their own bed and individual wardrobe, with a shared study area that keeps things organized and comfortable.',
       features: [
-        { icon: 'bed', label: '2 beds, 2 wardrobes' },
-        { icon: 'desk', label: 'Shared study area' },
-        { icon: 'bath', label: 'Own bathroom' },
-        { icon: 'snow', label: 'Aircon slot included' }
+        { icon: 'bed', label: '2 beds, 2 wardrobes' }, { icon: 'desk', label: 'Shared study area' },
+        { icon: 'bath', label: 'Own bathroom' }, { icon: 'snow', label: 'Aircon slot included' }
       ]
     },
     triple: {
-      title: 'Triple Room',
-      occupants: '3 Occupants',
-      badge: 'Triple',
+      title: 'Triple Room', occupants: '3 Occupants', badge: 'Triple',
       img: "{{ asset('images/three.jpg') }}",
       desc: 'A spacious room built for three students. Three individual beds and wardrobes are paired with a shared study corner, giving everyone enough room to settle in comfortably.',
       features: [
-        { icon: 'bed', label: '3 beds, 3 wardrobes' },
-        { icon: 'desk', label: 'Shared study corner' },
-        { icon: 'bath', label: 'Own bathroom' },
-        { icon: 'snow', label: 'Aircon slot included' }
+        { icon: 'bed', label: '3 beds, 3 wardrobes' }, { icon: 'desk', label: 'Shared study corner' },
+        { icon: 'bath', label: 'Own bathroom' }, { icon: 'snow', label: 'Aircon slot included' }
       ]
     },
     quad: {
-      title: 'Quad Room',
-      occupants: '4 Occupants',
-      badge: 'Quad',
+      title: 'Quad Room', occupants: '4 Occupants', badge: 'Quad',
       img: "{{ asset('images/four.jpg') }}",
       desc: 'The best value option for groups of four. This room makes the most of shared space with four beds and communal storage, perfect for students who want to stay close to friends.',
       features: [
-        { icon: 'bed', label: '4 beds, communal storage' },
-        { icon: 'desk', label: 'Shared study space' },
-        { icon: 'bath', label: 'Own bathroom' },
-        { icon: 'snow', label: 'Aircon slot included' }
+        { icon: 'bed', label: '4 beds, communal storage' }, { icon: 'desk', label: 'Shared study space' },
+        { icon: 'bath', label: 'Own bathroom' }, { icon: 'snow', label: 'Aircon slot included' }
       ]
     }
   };
@@ -1239,12 +1587,9 @@
   function openRoomModal(key) {
     const data = roomData[key];
     if (!data) return;
-    roomModalImg.src = data.img;
-    roomModalImg.alt = data.title;
-    roomModalBadge.textContent = data.badge;
-    roomModalOccupants.textContent = data.occupants;
-    roomModalTitle.textContent = data.title;
-    roomModalDesc.textContent = data.desc;
+    roomModalImg.src = data.img; roomModalImg.alt = data.title;
+    roomModalBadge.textContent = data.badge; roomModalOccupants.textContent = data.occupants;
+    roomModalTitle.textContent = data.title; roomModalDesc.textContent = data.desc;
     roomModalFeatures.innerHTML = data.features.map(f =>
       `<div class="room-modal-feature"><span class="room-modal-feature-icon">${roomIcons[f.icon]}</span>${f.label}</div>`
     ).join('');
@@ -1260,12 +1605,9 @@
   document.querySelectorAll('.gal-item[data-room]').forEach(item => {
     item.addEventListener('click', () => openRoomModal(item.dataset.room));
   });
-
   document.getElementById('roomModalClose').addEventListener('click', closeRoomModal);
   document.getElementById('roomModalCloseBtn').addEventListener('click', closeRoomModal);
-  roomModalOverlay.addEventListener('click', (e) => {
-    if (e.target === roomModalOverlay) closeRoomModal();
-  });
+  roomModalOverlay.addEventListener('click', (e) => { if (e.target === roomModalOverlay) closeRoomModal(); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && roomModalOverlay.classList.contains('open')) closeRoomModal();
   });
@@ -1279,6 +1621,244 @@
   } else {
     cursorGlow.style.display = 'none';
   }
+
+  (function(){
+    const ANSWERS = [
+      { id: 'solo', keys: ['solo','1 person','1 occupant','private room','single room','para sa isa','isang tao'], answer: "🛏️ The Solo Room is a private semi-furnished room for 1 student. It includes 1 bed, 1 wardrobe, a study desk, your own private bathroom, and an aircon slot. Perfect if you love your own space!", follow: ['double','amenities','price'] },
+      { id: 'sleepover', keys: ['sleepover', 'visiting', 'guest', 'stay over', 'stay the night', 'matulog', 'makitulog'], answer: "Only Female family members, friends, or classmates are allowed to stay overnight. However, tenants must first submit a 'Sleepover of Non-Tenants' request through the DormEase app. The overnight stay will only be permitted once the request has been approved, and a ₱200 sleepover fee must be paid."},    { id: 'double', keys: ['double','2 person','2 occupant','two person','for two','room for 2','dalawa','dalawang tao'], answer: "🛏️🛏️ The Double Room fits 2 students. Each gets their own bed and wardrobe, plus a shared study area, private bathroom, and an aircon slot. Great for roommates!", follow: ['triple','amenities','price'] },
+      { id: 'triple', keys: ['triple','3 person','3 occupant','three person','for three','room for 3','tatlo','tatlong tao'], answer: "🛏️🛏️🛏️ The Triple Room fits 3 students — 3 beds, 3 wardrobes, a shared study corner, private bathroom, and aircon slot. Spacious and perfect for study groups!", follow: ['quad','amenities','price'] },
+      { id: 'quad', keys: ['quad','4 person','4 occupant','four person','for four','room for 4','apat','apat na tao'], answer: "🛏️×4 The Quad Room is best value for 4 students. It has 4 beds, communal storage, shared study space, private bathroom, and an aircon slot. Ideal for friend groups!", follow: ['solo','amenities','price'] },
+      { id: 'roomtypes', keys: ['room type','room types','available room','what room','kinds of room','types of room','ano ang kwarto','uri ng kwarto','what rooms are available'], answer: "🏠 We have four room types:\n\n• Solo Room — 1 student, fully private\n• Double Room — 2 students, individual beds & wardrobes\n• Triple Room — 3 students, spacious shared setup\n• Quad Room — 4 students, best value option\n\nAll rooms include a private bathroom and aircon slot. Want details on a specific type?", follow: ['solo','price','amenities'] },
+      { id: 'price', keys: ['price','rate','fee','cost','how much','monthly','rent','bayad','magkano','presyo','rental fee','room rate'], answer: "💰 For the latest room rates and availability, please contact us directly:\n\n📞 +63 917 535 9723\n📍 1229 Navarra St., Sampaloc, Manila\n\nOur admin team will give you an updated price list!", follow: ['contact','roomtypes','apply'] },
+      { id: 'curfew', keys: ['curfew','gating time','lock time','gate time','anong oras pasok','uwi','gabi}','hours}','anong oras}','gate close}','time in}','time out'], answer: "🕙 Our curfew is strictly at 10:00 PM every night. Tenants arriving later must coordinate with the front desk in advance. Late arrivals without prior notice may not be allowed in.", follow: ['rules ','visitor ','security '] },
+      { id: 'visitor', keys: ['visitor','bisita','guest','bring visitor','male visitor','lalaki','boyfriend','puwede bang magdala','pwede bang magdala','visitor policy','bisita policy'], answer: "👤 All visitors must register at the front desk before entering. Visitors are only allowed in common areas and must leave before curfew. Male visitors are not permitted inside dormitory rooms.", follow: ['curfew','rules','security'] },
+      { id: 'inspection', keys: ['inspection','inspect','room check','room inspection','linis','clean room','cleanliness check','monthly inspection'], answer: "🔍 Monthly room inspections are conducted to ensure cleanliness and safety. Tenants are notified in advance via DormEase announcements. Please keep your room tidy and free of prohibited items.", follow: ['rules','dormease','announcements'] },
+      { id: 'rules', keys: ['rule','rules','policy','policies','conduct','allowed','prohibited','bawal','alak','alcohol','house rule','house rules','dorm rules','dorm policy'], answer: "📋 Key house rules:\n\n• Curfew at 10:00 PM strictly enforced\n• All visitors must register at the front desk\n• Male visitors not allowed inside rooms\n• No alcohol or illegal substances\n• No cooking appliances without admin approval\n• Noise must be minimal, especially at night\n• Monthly room inspections conducted\n• Own furniture allowed with admin permission\n\nViolations may result in a warning or termination of tenancy.", follow: ['curfew','visitor','furniture'] },
+      { id: 'wifi', keys: ['wifi','wi-fi','internet','connection','internet connection','may wifi','may internet','signal'], answer: "📶 Yes! Wi-Fi is available in the dormitory. For speed and coverage details, contact our admin at +63 917 535 9723.", follow: ['amenities','dormease','contact'] },
+      { id: 'aircon', keys: ['aircon','air con','air conditioning','ac unit','malamig','cold room','may aircon','aircon slot'], answer: "❄️ Every room has an aircon slot — you can install your own air conditioning unit. Contact our admin for more details on aircon policies.", follow: ['amenities','furnished','price'] },
+      { id: 'elevator', keys: ['elevator', 'elev', 'lift','may elevator','floor','storey','floors','palapag','piso','gaano kataas'], answer: "🏢 Sanctissimo Rosario is a 5-storey building with elevator access, so you don't have to worry about climbing stairs with your luggage!", follow: ['amenities','location','about'] },
+      { id: 'bathroom', keys: ['bathroom','cr','comfort room','toilet','shower','own cr','private cr','banyo','may sariling cr','sariling banyo'], answer: "🚿 Every room has its own private bathroom — no sharing with other rooms. You get your own comfort room regardless of room type.", follow: ['amenities','roomtypes','furnished'] },
+      { id: 'amenities', keys: ['amenity','amenities','facilities','what is included','kasama','may nandoon','what does it include','ano ang kasama','dorm facilities'], answer: "🏠 Our amenities include:\n\n• 24/7 Security + CCTV\n• Elevator access (5 floors)\n• Wi-Fi available\n• Private bathroom per room\n• Aircon slot in every room\n• Semi-furnished rooms (bed, wardrobe, desk)\n• Strong, reliable water supply\n• DormEase app for bills & announcements", follow: ['price','security','dormease'] },
+      { id: 'nogym', keys: ['gym','pool','swimming pool','swimming','exercise room','fitness','may gym','may pool','may swimming'], answer: "ℹ️ Sanctissimo Rosario does not have a gym or swimming pool. However, we do have a safe, comfortable environment with Wi-Fi, elevator, private bathrooms, and 24/7 security. For fitness needs, there are nearby public facilities in the area.", follow: ['amenities','location','contact'] },
+      { id: 'security', keys: ['security','cctv','camera','safe','safety','secure','guard','bantay','safe ba','is it safe','24 7','24/7 security'], answer: "🔒 We have 24/7 security with CCTV cameras throughout the building, a secure entry system, and front desk monitoring to keep all tenants safe at all times.", follow: ['rules','curfew','amenities'] },
+      { id: 'water', keys: ['water supply','tubig','water bill','bill sa tubig','water interruption','water pressure','suplay ng tubig'], answer: "💧 We have a strong and reliable water supply. Water bills are tracked and viewable through the DormEase app. For billing questions, contact our admin team.", follow: ['dormease','price','contact'] },
+      { id: 'location', keys: ['location','address','where','saan','how to get there','directions','map','navarra','sampaloc','manila','nasaan','how to go'], answer: "📍 We are located at 1229 Navarra Street, Sampaloc, Manila — just a short walk from UST and the University Belt area.\n\nNearby landmarks include the Barangay Hall and a tricycle station, making it very easy to get around. Click the map on our homepage for full directions!", follow: ['near','transport','contact'] },
+      { id: 'near', keys: ['near','close to','how far','malapit','ust','university','school','campus','espana','nearby','nearby places','paligid'], answer: "🎓 We are very close to UST (University of Santo Tomas) and the University Belt. Nearby landmarks include:\n\n• Barangay Hall — just around the corner\n• Tricycle station — steps away from the dorm\n• Major universities (FEU, CEU, UE) — short commute\n• Espana Blvd — easy jeepney and bus access", follow: ['transport','location','contact'] },
+      { id: 'transport', keys: ['transport','tricycle','jeepney','commute','paano pumunta','how to commute','sakay','lrt','bus','mrt','tricycle station','trike'], answer: "🛺 Getting to the dorm is easy! There is a tricycle station right near the dormitory. You can also take a jeepney or bus along Espana Blvd and ride a tricycle to Navarra Street. The Barangay Hall is also nearby, making the area very accessible.", follow: ['location','near','contact'] },
+      { id: 'barangay', keys: ['barangay','barangay hall','brgy','brgy hall','malapit sa barangay','near barangay'], answer: "🏛️ Yes! The Barangay Hall is located near the dormitory, making it very convenient for official documents, community services, and local needs.", follow: ['location','near','transport'] },
+      { id: 'furniture', keys: ['furniture','bring furniture','own furniture','magdala ng gamit','sariling kasangkapan','ref','refrigerator','appliance','cabinet','sala set','pwede magdala','puwede magdala','bring own','own items','furniture policy','kasangkapan'], answer: "🛋️ Yes, tenants may bring their own furniture or appliances! However, you will need to get the admin's permission first, and some paperwork will need to be completed. Please contact the admin team to find out the specific requirements before bringing in any additional furniture or appliances.\n\n📞 +63 917 535 9723\n📍 1229 Navarra St., Sampaloc, Manila", follow: ['rules','contact','apply'] },
+      { id: 'apply', keys: ['apply','reserve','reservation','how to apply','how to avail','sign up','mag-apply','mag-reserve','slot','availability','available','vacant','book a room','how to reserve'], answer: "📝 To reserve a room:\n\n1️⃣ Call or message us at +63 917 535 9723\n2️⃣ Visit us at 1229 Navarra St., Sampaloc, Manila\n3️⃣ Our admin team will walk you through the requirements\n\nOnce you're a tenant, you'll get DormEase app access for all dorm services!", follow: ['requirements','price','contact'] },
+      { id: 'requirements', keys: ['requirement','requirements','needed','documents','bring','id','contract','ano ang kailangan','papeles','what to bring','requirements to apply'], answer: "📄 For requirements and documentary needs, please contact our admin team directly:\n\n📞 +63 917 535 9723\n📍 1229 Navarra St., Sampaloc, Manila\n\nThey'll give you a complete checklist based on current policies.", follow: ['apply','contact','price'] },
+      { id: 'contact', keys: ['contact','number','phone','call','message','reach','fb','facebook','instagram','ig','social media','email','makipag-ugnayan','how to contact','contact number'], answer: "📞 Contact us through:\n\n• Phone / Viber: +63 917 535 9723\n• Facebook: facebook.com/USTNavarra\n• Instagram: @SRBdormitory\n• Address: 1229 Navarra St., Sampaloc, Manila\n\nFeel free to drop by or message us anytime!", follow: ['location','apply','price'] },
+      { id: 'dormease', keys: ['dormease','app','system','features','portal','how it works','platform','tenant app','dorm app','what is dormease'], answer: "📱 DormEase is our dormitory management app for all tenants. Features include:\n\n• View and track your water bill\n• Submit maintenance requests\n• Receive real-time announcements\n• Register visitors at the front desk\n• Access documents and notices\n• Emergency reports and alerts\n\nAll tenants get access upon move-in!", follow: ['apply','announcements','maintenance'] },
+      { id: 'maintenance', keys: ['maintenance','repair','fix','broken','issue','request','problem','leaky','faucet','sira','report problem','report issue','repair request'], answer: "🔧 Tenants can submit maintenance requests directly through the DormEase app — just describe the issue and our team will respond. You can also track the status of your request in real time.", follow: ['dormease','announcements','water'] },
+      { id: 'announcements', keys: ['announcement','notice','update','notification','alert','emergency','balita','dorm announcement','mga abiso'], answer: "📢 All announcements, notices, and emergency alerts are sent through the DormEase app in real time. You'll never miss an important update from the dorm administration!", follow: ['dormease','maintenance','rules'] },
+      { id: 'furnished', keys: ['furnished','furniture included','semi-furnished','kasama na ba','what furniture','bed included','may bed','may lamesa','desk included','wardrobe included'], answer: "🛋️ All rooms are semi-furnished and include a bed, wardrobe/cabinet, and study desk per occupant. If you want to bring additional furniture or appliances, you may do so with admin permission and proper paperwork.", follow: ['furniture','aircon','amenities'] },
+      { id: 'about', keys: ['about','sino kayo','what is','ano ang','history','about the dorm','tell me about','about dormitory'], answer: "🏠 Sanctissimo Rosario Ladies Dormitory is a five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. We provide a safe, comfortable, and study-friendly home for female students near UST and the University Belt. The Barangay Hall and a tricycle station are conveniently located nearby.", follow: ['amenities','location','contact'] },
+      { id: 'greeting', keys: ['hi','hello','hey','good morning','good afternoon','good evening','kumusta','kamusta','musta','magandang umaga','magandang hapon','magandang gabi'], answer: "👋 Hi there! Welcome to Sanctissimo Rosario Ladies Dormitory. I'm here to help you with anything about our rooms, amenities, rules, and more.\n\nWhat would you like to know?", follow: ['roomtypes','price','location'] },
+      { id: 'thanks', keys: ['thank','thanks','salamat','ty','maraming salamat','thank you','appreciated'], answer: "😊 You're welcome! Feel free to ask anytime if you have more questions. We'd love to have you at Sanctissimo Rosario! 🏠", follow: ['apply','contact','price'] },
+      { id: 'bye', keys: ['bye','goodbye','paalam','see you','sige na','take care'], answer: "👋 Take care! Feel free to come back anytime. We hope to welcome you to Sanctissimo Rosario soon! 🌸", follow: ['contact','apply','location'] }
+    ];
+
+    const SUGGESTION_MAP = {
+      solo:          { icon: '🛏️', text: 'Solo rooms' },
+      double:        { icon: '🛏️', text: 'Double rooms' },
+      triple:        { icon: '🛏️', text: 'Triple rooms' },
+      quad:          { icon: '🛏️', text: 'Quad rooms' },
+      roomtypes:     { icon: '🏠', text: 'Room types' },
+      price:         { icon: '💰', text: 'Monthly rate' },
+      curfew:        { icon: '🕙', text: 'Curfew' },
+      visitor:       { icon: '👤', text: 'Visitors' },
+      inspection:    { icon: '🔍', text: 'Room inspections' },
+      rules:         { icon: '📋', text: 'House rules' },
+      wifi:          { icon: '📶', text: 'Wi-Fi' },
+      aircon:        { icon: '❄️', text: 'Aircon slots' },
+      elevator:      { icon: '🏢', text: 'Elevator' },
+      bathroom:      { icon: '🚿', text: 'Own bathroom' },
+      amenities:     { icon: '🏠', text: 'Amenities' },
+      nogym:         { icon: 'ℹ️', text: 'Gym / Pool?' },
+      security:      { icon: '🔒', text: 'Security' },
+      water:         { icon: '💧', text: 'Water supply' },
+      location:      { icon: '📍', text: 'Location' },
+      near:          { icon: '🎓', text: 'Nearby places' },
+      transport:     { icon: '🛺', text: 'How to commute' },
+      barangay:      { icon: '🏛️', text: 'Barangay Hall' },
+      furniture:     { icon: '🛋️', text: 'Bring furniture' },
+      apply:         { icon: '📝', text: 'How to apply' },
+      requirements:  { icon: '📄', text: 'Requirements' },
+      contact:       { icon: '📞', text: 'Contact us' },
+      dormease:      { icon: '📱', text: 'DormEase app' },
+      maintenance:   { icon: '🔧', text: 'Report a repair' },
+      announcements: { icon: '📢', text: 'Notices' },
+      furnished:     { icon: '🛋️', text: 'Furniture included' },
+      about:         { icon: 'ℹ️', text: 'About the dorm' }
+    };
+
+    function matchAnswer(text) {
+      const t = text.toLowerCase().trim();
+      for (const item of ANSWERS) {
+        for (const kw of item.keys) {
+          if (t.includes(kw)) return item;
+        }
+      }
+      return null;
+    }
+
+    const chatBody      = document.getElementById('de-chat-body');
+    const suggestionsEl = document.getElementById('de-suggestions');
+    const chatWindow    = document.getElementById('de-chat-window');
+    const chatBtn       = document.getElementById('de-chat-btn');
+    const pulse         = document.getElementById('de-chat-pulse');
+    const input         = document.getElementById('de-chat-input');
+    const sendBtn       = document.getElementById('de-chat-send');
+    const headerClose   = document.getElementById('de-cw-close-header');
+    const clearBtn      = document.getElementById('de-cw-clear-btn');
+    const policyPanel   = document.getElementById('de-policy-panel');
+    const chatPanel     = document.getElementById('de-chat-panel');
+    const policyYes     = document.getElementById('de-policy-yes');
+    const policyNo      = document.getElementById('de-policy-no');
+
+    let isOpen = false, initialized = false;
+
+    function getTime() {
+      return new Date().toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function toggleChat() {
+      isOpen = !isOpen;
+      chatWindow.classList.toggle('open', isOpen);
+      chatBtn.classList.toggle('open', isOpen);
+      pulse.style.display = isOpen ? 'none' : 'flex';
+    }
+
+    function closeChat() {
+      isOpen = false;
+      chatWindow.classList.remove('open');
+      chatBtn.classList.remove('open');
+      pulse.style.display = 'flex';
+    }
+
+    function resetToPolicy() {
+      chatBody.innerHTML = '';
+      clearSuggestions();
+      input.value = '';
+      initialized = false;
+      chatPanel.style.display = 'none';
+      policyPanel.style.display = 'flex';
+    }
+
+    chatBtn.addEventListener('click', toggleChat);
+    if (headerClose) headerClose.addEventListener('click', closeChat);
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        resetToPolicy();
+      });
+    }
+
+    policyNo.addEventListener('click', () => {
+      closeChat();
+    });
+
+    policyYes.addEventListener('click', () => {
+      policyPanel.style.display = 'none';
+      chatPanel.style.display = 'flex';
+      if (!initialized) {
+        initialized = true;
+        startChat();
+      }
+      setTimeout(() => input.focus(), 100);
+    });
+
+    function addBotMsg(text, delay) {
+      return new Promise(resolve => {
+        const typingWrap = document.createElement('div');
+        typingWrap.className = 'de-typing-bubble';
+        typingWrap.innerHTML = `<div class="de-msg-ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div><div class="de-typing"><span></span><span></span><span></span></div>`;
+        chatBody.appendChild(typingWrap);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        setTimeout(() => {
+          typingWrap.remove();
+          const msg = document.createElement('div');
+          msg.className = 'de-msg bot';
+          const lines = text.split('\n').map(l =>
+            l ? `<span style="display:block;margin-bottom:2px">${l}</span>` : '<span style="display:block;height:4px"></span>'
+          ).join('');
+          msg.innerHTML = `<div class="de-msg-row"><div class="de-msg-ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div><div class="de-msg-bubble">${lines}</div></div><span class="de-msg-time">${getTime()}</span>`;
+          chatBody.appendChild(msg);
+          chatBody.scrollTop = chatBody.scrollHeight;
+          resolve();
+        }, delay || 850);
+      });
+    }
+
+    function addUserMsg(text) {
+      const msg = document.createElement('div');
+      msg.className = 'de-msg user';
+      msg.innerHTML = `<div class="de-msg-row"><div class="de-msg-bubble">${text}</div></div><span class="de-msg-time">${getTime()}</span>`;
+      chatBody.appendChild(msg);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function clearSuggestions() { suggestionsEl.innerHTML = ''; }
+
+    function showSuggestions(followIds) {
+      clearSuggestions();
+      const valid = (followIds || []).filter(id => SUGGESTION_MAP[id]).slice(0, 4);
+      if (!valid.length) return;
+
+      const lbl = document.createElement('div');
+      lbl.className = 'de-suggestions-label';
+      lbl.textContent = 'Quick topics';
+      suggestionsEl.appendChild(lbl);
+
+      const row = document.createElement('div');
+      row.className = 'de-suggestions-row';
+
+      valid.forEach(id => {
+        const sug = SUGGESTION_MAP[id];
+        const btn = document.createElement('button');
+        btn.className = 'de-sug-btn';
+        btn.innerHTML = `<span class="de-sug-icon">${sug.icon}</span>${sug.text}`;
+        btn.addEventListener('click', () => handleUserMessage(sug.text));
+        row.appendChild(btn);
+      });
+
+      suggestionsEl.appendChild(row);
+    }
+
+    async function handleUserMessage(text) {
+      text = text.trim();
+      if (!text) return;
+
+      addUserMsg(text);
+      clearSuggestions();
+      input.value = '';
+
+      const match = matchAnswer(text);
+
+      if (match) {
+        await addBotMsg(match.answer, 800);
+        showSuggestions(match.follow);
+      } else {
+        await addBotMsg(
+          "Hmm, I'm not sure about that one. 😊 For the best answer, reach out to us directly:\n\n📞 +63 917 535 9723\n📘 facebook.com/USTNavarra\n📍 1229 Navarra St., Sampaloc, Manila\n\nFeel free to try another question!",
+          950
+        );
+        showSuggestions(['roomtypes','price','contact']);
+      }
+    }
+
+    sendBtn.addEventListener('click', () => handleUserMessage(input.value));
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') handleUserMessage(input.value); });
+
+    async function startChat() {
+      await addBotMsg("Hi there! 👋 Welcome to Sanctissimo Rosario Ladies Dormitory. I'm here to help!", 700);
+      await addBotMsg("Type any question below, or tap a topic to get started. 😊", 550);
+      showSuggestions(['roomtypes','price','location']);
+    }
+  })();
 </script>
 </body>
 </html>
