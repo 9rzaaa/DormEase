@@ -1453,7 +1453,7 @@
   </div>
   <div class="de-cw-header">
     <div class="de-cw-avatar">
-      <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      <img src="{{ asset('images/logo.png') }}" alt="DormEase" style="width:28px;height:28px;object-fit:contain;border-radius:50%;">
     </div>
     <div class="de-cw-header-text">
       <div class="de-cw-header-name">DormEase Assistant</div>
@@ -1822,7 +1822,7 @@
       return new Promise(resolve => {
         const typingWrap = document.createElement('div');
         typingWrap.className = 'de-typing-bubble';
-        typingWrap.innerHTML = `<div class="de-msg-ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div><div class="de-typing"><span></span><span></span><span></span></div>`;
+        typingWrap.innerHTML = `<div class="de-msg-ico" style="background:white;border:1px solid rgba(232,23,93,0.18);"><img src="{{ asset('images/logo.png') }}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:50%;"></div>`
         chatBody.appendChild(typingWrap);
         chatBody.scrollTop = chatBody.scrollHeight;
         setTimeout(() => {
