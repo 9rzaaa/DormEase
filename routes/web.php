@@ -167,6 +167,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
     Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);
     Route::get('/tenant-logs',            [App\Http\Controllers\TenantLogController::class, 'logs']);
+    Route::post('/tenants/{id}/upload-photo', [TenantController::class, 'uploadTenantPhoto']);
     Route::get('/rooms',          [RoomController::class, 'index']);
     Route::post('/rooms',         [RoomController::class, 'store']);
     Route::put('/rooms/{id}',     [RoomController::class, 'update']);
