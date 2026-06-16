@@ -63,15 +63,17 @@ class DocumentController extends Controller
             'document_type' => 'required|string|max:255',
             'visibility'    => 'required|in:all,specific,admin',
             'tenant_id'     => 'nullable|exists:tenants,tenant_id',
-            'file' => [
-                'required',
+            'file'          => [
+                'nullable',
                 'file',
                 'min:1',
                 'max:20480',
                 function ($attribute, $value, $fail) {
-                    $ext = strtolower($value->getClientOriginalExtension());
-                    if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                        $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                    if ($value) {
+                        $ext = strtolower($value->getClientOriginalExtension());
+                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                        }
                     }
                 },
             ],
@@ -268,7 +270,7 @@ class DocumentController extends Controller
                 'admin_remarks'       => 'nullable|string',
                 'rejection_reason'    => 'nullable|string',
                 'allow_resubmission'  => 'nullable|boolean',
-                'fulfilled_file' => [
+                'fulfilled_file'      => [
                     'nullable',
                     'file',
                     'min:1',
@@ -305,9 +307,9 @@ class DocumentController extends Controller
                     'archived_by'     => auth('staff')->id(),
                     'archived_at'     => now(),
                     'data'            => array_merge($docRequest->toArray(), [
-                        'rejection_reason' => $validated['rejection_reason'] ?? null,
-                        'allow_resubmission' => $validated['allow_resubmission'] ?? false,
-                        'tenant_name'   => $docRequest->tenant_name ?? 'Unknown',
+                        'rejection_reason'    => $validated['rejection_reason'] ?? null,
+                        'allow_resubmission'  => $validated['allow_resubmission'] ?? false,
+                        'tenant_name'         => $docRequest->tenant_name ?? 'Unknown',
                     ]),
                 ]);
             }
@@ -339,7 +341,7 @@ class DocumentController extends Controller
             $docRequest->delete();
 
             return response()->json(['message' => 'Request archived successfully']);
-            } catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -362,7 +364,18 @@ class DocumentController extends Controller
         try {
             $request->validate([
                 'label' => 'required|string|max:255',
-                'file'  => 'required|file|mimes:pdf|max:20480',
+                'file'  => [
+                    'required',
+                    'file',
+                    'min:1',
+                    'max:20480',
+                    function ($attribute, $value, $fail) {
+                        $ext = strtolower($value->getClientOriginalExtension());
+                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                        }
+                    },
+                ],
             ]);
 
             $path = $request->file('file')->store('downloadable-forms', 'public');
