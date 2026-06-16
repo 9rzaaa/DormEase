@@ -39,14 +39,20 @@ class RoomController extends Controller
     {
         $request->validate([
             'room_number' => 'required|string|max:10|unique:rooms,room_number',
-            'floor'       => 'required|integer|min:1|max:10',
+            'floor'       => 'nullable|integer|min:1|max:99',
             'capacity'    => 'required|integer|min:1|max:10',
             'stay_type'   => 'required|in:Solo Room,Shared Room',
         ]);
-
+        $roomNum = trim($request->room_number);
+        $derivedFloor = strlen($roomNum) > 2
+            ? (int) substr($roomNum, 0, strlen($roomNum) - 2)
+            : (int) $request->floor;
+        if ($derivedFloor < 1) {
+            return response()->json(['message' => 'Could not determine a valid floor from the room number.'], 422);
+        }
         $room = Room::create([
-            'room_number' => $request->room_number,
-            'floor'       => $request->floor,
+            'room_number' => $roomNum,
+            'floor'       => $derivedFloor,
             'capacity'    => $request->capacity,
             'stay_type'   => $request->stay_type,
             'is_active'   => true,
@@ -61,11 +67,18 @@ class RoomController extends Controller
 
         $request->validate([
             'room_number' => 'required|string|max:10|unique:rooms,room_number,' . $id,
-            'floor'       => 'required|integer|min:1|max:10',
+            'floor'       => 'nullable|integer|min:1|max:99',
             'capacity'    => 'required|integer|min:1|max:10',
             'stay_type'   => 'required|in:Solo Room,Shared Room',
             'is_active'   => 'required|boolean',
         ]);
+        $roomNum = trim($request->room_number);
+        $derivedFloor = strlen($roomNum) > 2
+            ? (int) substr($roomNum, 0, strlen($roomNum) - 2)
+            : (int) $request->floor;
+        if ($derivedFloor < 1) {
+            return response()->json(['message' => 'Could not determine a valid floor from the room number.'], 422);
+        }
 
         $currentOccupancy = Tenant::whereNotIn('status', ['inactive', 'move_out'])
             ->where('room_number', $room->room_number)
@@ -78,8 +91,8 @@ class RoomController extends Controller
         }
 
         $room->update([
-            'room_number' => $request->room_number,
-            'floor'       => $request->floor,
+            'room_number' => $roomNum,
+            'floor'       => $derivedFloor,
             'capacity'    => $request->capacity,
             'stay_type'   => $request->stay_type,
             'is_active'   => $request->is_active,
