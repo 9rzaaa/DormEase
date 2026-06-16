@@ -936,12 +936,12 @@
     }
 
     .de-msg-ico {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: white;
-      border: 1.5px solid rgba(232,23,93,0.22);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      box-shadow: 0 3px 10px rgba(232,23,93,0.14);
-      overflow: hidden;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--gradient-pink);
+    border: 1.5px solid rgba(232,23,93,0.22);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(232,23,93,0.14);
+    overflow: hidden;
     }
     .de-msg-ico svg { width: 13px; height: 13px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -1824,9 +1824,7 @@
       return new Promise(resolve => {
         const typingWrap = document.createElement('div');
         typingWrap.className = 'de-typing-bubble';
-        typingWrap.innerHTML = `<div class="de-msg-ico" style="background:white;border:1px solid rgba(232,23,93,0.18);"><img src="{{ asset('images/logo.png') }}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:50%;"></div><div class="de-typing"><span></span><span></span><span></span></div>`;        chatBody.appendChild(typingWrap);
-        chatBody.scrollTop = chatBody.scrollHeight;
-        setTimeout(() => {
+        typingWrap.innerHTML = `<div class="de-msg-ico"><img src="{{ asset('images/logo.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div><div class="de-typing"><span></span><span></span><span></span></div>`;        setTimeout(() => {
           typingWrap.remove();
           const msg = document.createElement('div');
           msg.className = 'de-msg bot';
