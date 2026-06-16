@@ -71,6 +71,7 @@ class VisitorController extends Controller
                 'required',
                 'string',
                 'max:255',
+                'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s\'\-\.]+$/u',
                 function ($attribute, $value, $fail) {
                     $parts = array_filter(explode(' ', trim($value)));
                     if (count($parts) < 2) {
@@ -84,6 +85,8 @@ class VisitorController extends Controller
             'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
             'date_of_visit' => 'required|date',
             'time_of_visit' => 'required|string|max:20',
+        ], [
+            'visitor_name.regex' => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
         ]);
 
         $user     = $request->user();
