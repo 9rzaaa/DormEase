@@ -1824,8 +1824,7 @@
       return new Promise(resolve => {
         const typingWrap = document.createElement('div');
         typingWrap.className = 'de-typing-bubble';
-        typingWrap.innerHTML = `<div class="de-msg-ico" style="background:white;border:1px solid rgba(232,23,93,0.18);"><img src="{{ asset('images/logo.png') }}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:50%;"></div><div class="de-typing"><span></span><span></span><span></span></div>`;
-        chatBody.appendChild(typingWrap);
+        typingWrap.innerHTML = `<div class="de-msg-ico" style="background:white;border:1px solid rgba(232,23,93,0.18);"><img src="{{ asset('images/logo.png') }}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:50%;"></div><div class="de-typing"><span></span><span></span><span></span></div>`;        chatBody.appendChild(typingWrap);
         chatBody.scrollTop = chatBody.scrollHeight;
         setTimeout(() => {
           typingWrap.remove();
@@ -1834,8 +1833,7 @@
           const lines = text.split('\n').map(l =>
             l ? `<span style="display:block;margin-bottom:2px">${l}</span>` : '<span style="display:block;height:4px"></span>'
           ).join('');
-          msg.innerHTML = `<div class="de-msg-row"><div class="de-msg-ico" style="background:white;border:1px solid rgba(232,23,93,0.18);"><img src="{{ asset('images/logo.png') }}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:50%;"></div><div class="de-msg-bubble">${lines}</div></div><span class="de-msg-time">${getTime()}</span>`;
-          chatBody.appendChild(msg);
+          msg.innerHTML = `<div class="de-msg-row"><div class="de-msg-ico"><img src="{{ asset('images/logo.png') }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div><div class="de-msg-bubble">${lines}</div></div><span class="de-msg-time">${getTime()}</span>`;          chatBody.appendChild(msg);
           chatBody.scrollTop = chatBody.scrollHeight;
           resolve();
         }, delay || 850);
