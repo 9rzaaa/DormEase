@@ -323,6 +323,7 @@ class TenantController extends Controller
 
         if ($previousStatus !== 'move_out' && $request->status === 'move_out') {
             $this->archiveTenant($fresh, 'move_out');
+            $tenant->tokens()->delete();
         }
 
         NotificationHelper::sendToAll(
