@@ -2126,6 +2126,14 @@ function openUpdateModal(room) {
     room.tenants.forEach(function(t) {
         const initials = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
         const isPaid = t.payment_status === 'paid';
+        const safeProofUrl = t.proof_of_payment_url ? t.proof_of_payment_url : '';
+        const safeTenantName = t.name;
+        const proofPreviewBtn = safeProofUrl
+            ? `<button type="button" class="btn-preview-proof" onclick="openLightbox('${safeProofUrl.replace(/'/g,"\\'")}', '${safeTenantName.replace(/'/g,"\\'")}')">
+                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 10L13 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                   Preview proof of payment
+               </button>`
+            : '';
         const receiptBtn = isPaid && t.billing_id
             ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">
                    <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
@@ -2170,6 +2178,7 @@ function openUpdateModal(room) {
                         </div>
                     </div>
                     ${receiptBtn}
+                    ${proofPreviewBtn}
                 </div>
             </div>`;
     });
