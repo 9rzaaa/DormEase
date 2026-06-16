@@ -23,6 +23,7 @@ class Tenant extends Authenticatable
         'guardian_number',
         'referred_by',
         'profile_photo',
+        'tenant_photo',
         'room_number',
         'floor',
         'stay_type',

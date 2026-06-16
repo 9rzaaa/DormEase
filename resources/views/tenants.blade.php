@@ -693,6 +693,76 @@ tbody tr:hover { background: var(--soft-bg); }
 .vacation-switch input:checked + .vacation-slider::before {
     transform: translateX(20px);
 }
+.tenant-photo-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+.tenant-photo-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--pink-100);
+    box-shadow: 0 4px 14px rgba(232,23,93,.18);
+    display: block;
+}
+.tenant-photo-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px dashed var(--pink-200);
+    background: #fffafd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    gap: .2rem;
+}
+.tenant-photo-placeholder:hover {
+    border-color: var(--bright-pink);
+    background: #fff0f6;
+}
+.tenant-photo-placeholder span {
+    font-size: .58rem;
+    font-weight: 700;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    text-align: center;
+    line-height: 1.3;
+}
+.tenant-photo-edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    border: 2px solid var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(232,23,93,.3);
+    transition: transform .15s;
+}
+.tenant-photo-edit-btn:hover {
+    transform: scale(1.12);
+}
+.tenant-photo-edit-btn svg {
+    width: 10px;
+    height: 10px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 </style>
 @endsection
 
@@ -1733,6 +1803,8 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png,image/webp" style="display:none;" onchange="submitTenantPhoto(this)">
+
 @endsection
 
 @section('scripts')
@@ -2024,6 +2096,60 @@ function attachEstimatedMoveInValidator(inputId, errorId) {
     var input = document.getElementById(inputId);
     if (!input) return;
     input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
+}
+
+function triggerTenantPhotoUpload(tenantId) {
+    var input = document.getElementById('tenant-photo-upload-input');
+    input.dataset.tenantId = tenantId;
+    input.value = '';
+    input.click();
+}
+
+async function submitTenantPhoto(input) {
+    var tenantId = input.dataset.tenantId;
+    var file     = input.files[0];
+    if (!file) return;
+
+    var maxBytes = 4 * 1024 * 1024;
+    if (file.size > maxBytes) {
+        showToast('Photo must be under 4MB.', 'error');
+        return;
+    }
+
+    showActionLoading('Uploading photo...');
+
+    var formData = new FormData();
+    formData.append('tenant_photo', file);
+
+    try {
+        var res = await fetch('/tenants/' + tenantId + '/upload-photo', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: formData,
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Upload failed.');
+
+        var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
+        if (idx !== -1) {
+            tenants[idx].tenant_photo = data.tenant_photo;
+            currentTenant = tenants[idx];
+        }
+
+        var img = document.getElementById('view-tenant-photo-img');
+        if (img) {
+            img.src = data.url + '?t=' + Date.now();
+        } else {
+            viewTenant(currentTenant);
+        }
+
+        applyFilters();
+        showToast('Photo uploaded successfully.', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
 }
 
 function toggleVacationNote() {
@@ -2620,9 +2746,25 @@ function viewTenant(t) {
             reservationItems += '<div class="tv-item full"><div class="tv-item-label">Reservation Notes</div><div class="tv-item-value">' + t.reservation_notes + '</div></div>';
         }
     }
+
+    var photoHtml;
+    if (t.tenant_photo) {
+        photoHtml = '<div class="tenant-photo-wrap">'
+            + '<img src="/storage/' + t.tenant_photo + '" class="tenant-photo-img" id="view-tenant-photo-img" alt="Tenant Photo">'
+            + '<div class="tenant-photo-edit-btn" title="Change photo" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')">'
+                + '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+            + '</div>'
+            + '</div>';
+    } else {
+        photoHtml = '<div class="tenant-photo-placeholder" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')" title="Upload photo">'
+            + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+            + '<span>Upload<br>Photo</span>'
+            + '</div>';
+    }
+
     document.getElementById('view-content').innerHTML =
         '<div class="tv-header">'
-            + '<div class="tv-avatar">' + initials(t) + '</div>'
+            + photoHtml
             + '<div class="tv-header-info">'
                 + '<div class="tv-name">' + escapeHtml(t.first_name) + ' ' + escapeHtml(t.last_name) + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
@@ -3814,10 +3956,22 @@ function renderTenantArchive() {
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
                 + '</form>'
             : '';
+        var archivePhotoHtml = r.tenant_photo
+            ? '<img src="/storage/' + r.tenant_photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--pink-100);flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);" alt="">'
+            : '<div style="width:38px;height:38px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.78rem;flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);">' + (r.first_name.charAt(0) + r.last_name.charAt(0)).toUpperCase() + '</div>';
+
         return '<div class="tad-card" style="animation-delay:' + (i*0.04) + 's;">'
-            + '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id||'\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>'
-            + '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
-            + '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>'
+            + '<div class="tad-card-top" style="align-items:center;">'
+                + archivePhotoHtml
+                + '<div style="flex:1;min-width:0;">'
+                    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.2rem;">'
+                        + '<div class="tad-card-id">' + (r.account_id||'\u2014') + '</div>'
+                        + '<div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div>'
+                    + '</div>'
+                    + '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
+                    + '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>'
+                + '</div>'
+            + '</div>'
             + '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status||'\u2014') + '</span></div>'
             + '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>'
             + reactivateForm

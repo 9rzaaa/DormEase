@@ -24,6 +24,7 @@ class ArchivedTenant extends Model
         'estimated_move_in_date',
         'reservation_notes',
         'status',
+        'tenant_photo',
         'archived_at',
     ];
     protected $casts = [

@@ -64,20 +64,21 @@ class TenantController extends Controller
     private function formatArchive(ArchivedTenant $r): array
     {
         return [
-            'id'             => $r->original_id,
-            'archive_id'     => $r->id,
-            'account_id'     => $r->account_id,
-            'first_name'     => $r->first_name,
-            'last_name'      => $r->last_name,
-            'email'          => $r->email,
+            'id'           => $r->original_id,
+            'archive_id'   => $r->id,
+            'account_id'   => $r->account_id,
+            'first_name'   => $r->first_name,
+            'last_name'    => $r->last_name,
+            'email'        => $r->email,
             'contact_number' => $r->contact_number,
-            'room_number'    => $r->room_number,
-            'floor'          => $r->floor,
-            'stay_type'      => $r->stay_type,
-            'move_in_date'   => $r->move_in_date?->format('Y-m-d'),
-            'move_out_date'  => $r->move_out_date?->format('Y-m-d'),
-            'status'         => $r->status,
-            'archived_at'    => $r->archived_at?->format('Y-m-d H:i:s'),
+            'room_number'  => $r->room_number,
+            'floor'        => $r->floor,
+            'stay_type'    => $r->stay_type,
+            'move_in_date' => $r->move_in_date?->format('Y-m-d'),
+            'move_out_date'=> $r->move_out_date?->format('Y-m-d'),
+            'status'       => $r->status,
+            'tenant_photo' => $r->tenant_photo,
+            'archived_at'  => $r->archived_at?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -97,6 +98,7 @@ class TenantController extends Controller
             'move_in_date'   => $t->move_in_date,
             'move_out_date'  => $t->move_out_date,
             'status'         => $t->status,
+            'tenant_photo'   => $t->tenant_photo,
             'archived_at'    => now(),
         ]);
     }
@@ -503,6 +505,38 @@ class TenantController extends Controller
         return response()->json([
             'message'       => 'Profile photo updated successfully.',
             'profile_photo' => $path,
+        ]);
+    }
+
+    public function uploadTenantPhoto(Request $request, $id)
+    {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        $request->validate([
+            'tenant_photo' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        $tenant   = Tenant::findOrFail($id);
+        $oldPhoto = $tenant->tenant_photo;
+        $path     = $request->file('tenant_photo')->store('tenant_photos', 'public');
+
+        try {
+            $tenant->update(['tenant_photo' => $path]);
+        } catch (\Exception $e) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['message' => 'Failed to upload photo.'], 500);
+        }
+
+        if ($oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
+
+        return response()->json([
+            'message'      => 'Photo uploaded successfully.',
+            'tenant_photo' => $path,
+            'url'          => asset('storage/' . $path),
         ]);
     }
 
