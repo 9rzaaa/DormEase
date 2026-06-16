@@ -1432,7 +1432,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type).replace(/"/g, '&quot;')})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
