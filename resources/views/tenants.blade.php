@@ -902,9 +902,6 @@ tbody tr:hover { background: var(--soft-bg); }
                 </select>
                 <select class="sort-select" id="floor-filter" onchange="applyFilters()">
                     <option value="">All Floors</option>
-                    @for($i = 2; $i <= 5; $i++)
-                    <option value="{{ $i }}">Floor {{ $i }}</option>
-                    @endfor
                 </select>
                 <select class="sort-select" id="status-filter" onchange="setStatusFilter(this.value)">
                     <option value="">All Statuses</option>
@@ -1100,11 +1097,7 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="modal-field">
                     <label>Floor</label>
                     <select id="ar-floor" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
-                        <option value="">Select</option>
-                        <option value="2">Floor 2</option>
-                        <option value="3">Floor 3</option>
-                        <option value="4">Floor 4</option>
-                        <option value="5">Floor 5</option>
+                        <option value="">Auto-detected</option>
                     </select>
                 </div>
                 <div class="modal-field">
@@ -3153,6 +3146,24 @@ function applyFilters() {
     var q     = document.getElementById('search-input').value.toLowerCase();
     var sort  = document.getElementById('sort-select').value;
     var floor = document.getElementById('floor-filter').value;
+    (function() {
+        var sel = document.getElementById('floor-filter');
+        var existingVals = Array.from(sel.options).map(function(o) { return o.value; });
+        var allFloors = tenants
+            .filter(function(t) { return t.floor; })
+            .map(function(t) { return parseInt(t.floor, 10); })
+            .filter(function(f) { return !isNaN(f); });
+        var uniqueFloors = allFloors.filter(function(f, i, a) { return a.indexOf(f) === i; }).sort(function(a,b){return a-b;});
+        uniqueFloors.forEach(function(f) {
+            if (existingVals.indexOf(String(f)) === -1) {
+                var opt = document.createElement('option');
+                opt.value = f;
+                opt.textContent = 'Floor ' + f;
+                sel.appendChild(opt);
+                existingVals.push(String(f));
+            }
+        });
+    })();
     var base = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
         var matchesSearch =
@@ -3794,10 +3805,21 @@ function openAddRoomModal() {
         if (arNum && !arNum._floorAutoSet) {
             arNum._floorAutoSet = true;
             arNum.addEventListener('input', function() {
-                var firstChar = this.value.trim().charAt(0);
-                var floorSel  = document.getElementById('ar-floor');
-                if (floorSel && firstChar >= '2' && firstChar <= '5') {
-                    floorSel.value = firstChar;
+                var val = this.value.trim();
+                var floorSel = document.getElementById('ar-floor');
+                if (!floorSel || val.length < 3) return;
+                var derivedFloor = val.length > 2 ? parseInt(val.slice(0, val.length - 2), 10) : null;
+                if (derivedFloor && derivedFloor >= 1) {
+                    var opt = Array.from(floorSel.options).find(function(o) { return parseInt(o.value, 10) === derivedFloor; });
+                    if (opt) {
+                        floorSel.value = String(derivedFloor);
+                    } else {
+                        var newOpt = document.createElement('option');
+                        newOpt.value = derivedFloor;
+                        newOpt.textContent = 'Floor ' + derivedFloor;
+                        floorSel.appendChild(newOpt);
+                        floorSel.value = String(derivedFloor);
+                    }
                 }
             });
         }
@@ -4096,9 +4118,20 @@ async function submitDeleteRoom() {
             var val = this.value.trim();
             if (floorSelectId) {
                 var floorSelect = document.getElementById(floorSelectId);
-                if (floorSelect) {
-                    var firstChar = val.charAt(0);
-                    if (firstChar >= '2' && firstChar <= '5') floorSelect.value = firstChar;
+                if (floorSelect && val.length >= 3) {
+                    var derivedFloor = parseInt(val.slice(0, val.length - 2), 10);
+                    if (derivedFloor >= 1) {
+                        var existingOpt = Array.from(floorSelect.options).find(function(o) { return parseInt(o.value, 10) === derivedFloor; });
+                        if (existingOpt) {
+                            floorSelect.value = String(derivedFloor);
+                        } else {
+                            var dynOpt = document.createElement('option');
+                            dynOpt.value = derivedFloor;
+                            dynOpt.textContent = 'Floor ' + derivedFloor;
+                            floorSelect.appendChild(dynOpt);
+                            floorSelect.value = String(derivedFloor);
+                        }
+                    }
                 }
             }
             if (val === lastVal) return;
