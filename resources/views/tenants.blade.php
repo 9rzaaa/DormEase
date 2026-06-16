@@ -1803,7 +1803,7 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-<input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png,image/webp" style="display:none;" onchange="submitTenantPhoto(this)">
+<input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
 
 @endsection
 
@@ -2110,9 +2110,17 @@ async function submitTenantPhoto(input) {
     var file     = input.files[0];
     if (!file) return;
 
+    var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedTypes.indexOf(file.type) === -1) {
+        showPhotoValidationModal('Invalid file type. Only JPG and PNG photos are accepted.');
+        input.value = '';
+        return;
+    }
+
     var maxBytes = 4 * 1024 * 1024;
     if (file.size > maxBytes) {
-        showToast('Photo must be under 4MB.', 'error');
+        showPhotoValidationModal('File is too large. Maximum allowed size is 4MB.');
+        input.value = '';
         return;
     }
 
@@ -2150,6 +2158,59 @@ async function submitTenantPhoto(input) {
     } finally {
         document.getElementById('action-loading').classList.remove('open');
     }
+}
+
+function showPhotoValidationModal(message) {
+    var existing = document.getElementById('photo-validation-modal');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'photo-validation-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(90,30,56,.38);backdrop-filter:blur(4px);padding:1rem;';
+
+    overlay.innerHTML =
+        '<div style="background:var(--white);border-radius:20px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(232,23,93,.18),0 4px 16px rgba(0,0,0,.08);overflow:hidden;animation:modalIn .28s cubic-bezier(.34,1.3,.64,1) both;">'
+            + '<div style="padding:.9rem 1.1rem .6rem;display:flex;align-items:center;justify-content:space-between;">'
+                + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                    + '<div style="width:34px;height:34px;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                        + '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '</div>'
+                    + '<span style="font-size:1rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;">Photo Upload Error</span>'
+                + '</div>'
+                + '<button onclick="document.getElementById(\'photo-validation-modal\').remove()" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--petal);color:var(--bright-pink);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;">&#x2715;</button>'
+            + '</div>'
+            + '<div style="padding:.5rem 1.1rem 1rem;">'
+                + '<div style="background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:12px;padding:.85rem 1rem;margin-bottom:1rem;">'
+                    + '<p style="font-size:.88rem;color:#b0163a;font-weight:600;margin:0 0 .35rem;">' + message + '</p>'
+                + '</div>'
+                + '<div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:12px;padding:.8rem 1rem;">'
+                    + '<p style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin:0 0 .6rem;">Photo requirements</p>'
+                    + '<div style="display:flex;flex-direction:column;gap:.4rem;">'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Accepted formats: JPG, JPEG, PNG</span>'
+                        + '</div>'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Maximum file size: 4MB</span>'
+                        + '</div>'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Clear, well-lit front-facing photo recommended</span>'
+                        + '</div>'
+                    + '</div>'
+                + '</div>'
+            + '</div>'
+            + '<div style="padding:.6rem 1.1rem .8rem;border-top:1.5px solid var(--pink-100);display:flex;justify-content:flex-end;background:#fffafd;">'
+                + '<button onclick="document.getElementById(\'photo-validation-modal\').remove()" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(232,23,93,.25);">Got it</button>'
+            + '</div>'
+        + '</div>';
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
 }
 
 function toggleVacationNote() {
@@ -2751,14 +2812,14 @@ function viewTenant(t) {
     if (t.tenant_photo) {
         photoHtml = '<div class="tenant-photo-wrap">'
             + '<img src="/storage/' + t.tenant_photo + '" class="tenant-photo-img" id="view-tenant-photo-img" alt="Tenant Photo">'
-            + '<div class="tenant-photo-edit-btn" title="Change photo" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')">'
+            + '<div class="tenant-photo-edit-btn" title="Change photo. Accepted: JPG, PNG. Max 4MB." onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')">'
                 + '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
             + '</div>'
             + '</div>';
     } else {
-        photoHtml = '<div class="tenant-photo-placeholder" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')" title="Upload photo">'
+        photoHtml = '<div class="tenant-photo-placeholder" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')" title="Upload photo. Accepted: JPG, PNG. Max 4MB.">'
             + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-            + '<span>Upload<br>Photo</span>'
+            + '<span>JPG or PNG<br>Max 4MB</span>'
             + '</div>';
     }
 
