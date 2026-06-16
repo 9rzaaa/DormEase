@@ -154,9 +154,15 @@ class BillingController extends Controller
     {
         $request->validate([
             'billing_id' => 'required|integer',
-            'proof_of_payment' => 'required|image|max:4096',
+            'proof_of_payment' => 'required|image|mimes:jpg,jpeg,png|max:4096',
             'reference_code' => 'required|string|max:100',
             'payment_method' => 'nullable|string|max:100',
+        ], [
+            'proof_of_payment.required' => 'Please upload your proof of payment.',
+            'proof_of_payment.image' => 'The proof of payment must be a valid image file.',
+            'proof_of_payment.mimes' => 'Only JPG and PNG images are allowed.',
+            'proof_of_payment.max' => 'The proof of payment image size must not exceed 4 MB.',
+            'reference_code.required' => 'Please enter the payment reference code.',
         ]);
 
         /** @var Tenant $tenant */
