@@ -1004,13 +1004,14 @@
         </div>
     </div>
 
-    <div class="stat-card">
-    <div class="stat-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></div>
-        <div>
-            <div class="stat-label">Active Emergencies</div>
-            <div class="stat-num">{{ $activeCount }}</div>
+    <div class="stats-row fade-up d2">
+        <div class="stat-card">
+            <div class="stat-icon"><img src="{{ asset('icons/nav-emerg.png') }}" alt=""></div>
+            <div>
+                <div class="stat-label">Active Emergencies</div>
+                <div class="stat-num">{{ $activeCount }}</div>
+            </div>
         </div>
-    </div>
         <div class="stat-card">
             <div class="stat-icon"><img src="{{ asset('icons/warn.png') }}" alt=""></div>
             <div>
