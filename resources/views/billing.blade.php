@@ -1315,11 +1315,16 @@
         padding: .85rem 1rem;
         min-width: 300px;
         max-width: 340px;
-        z-index: 99999;
+        z-index: 999999;
         pointer-events: none;
+        overflow-y: auto;
+        max-height: 80vh;
     }
 
-    .billing-legend-popup.open { display: block; }
+    .billing-legend-popup.open {
+        display: block;
+        pointer-events: auto;
+    }
 
     .blp-title {
         font-size: .67rem;
