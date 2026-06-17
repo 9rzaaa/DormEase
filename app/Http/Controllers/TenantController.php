@@ -103,6 +103,20 @@ class TenantController extends Controller
         ]);
     }
 
+    private function releaseEmailForReuse(Tenant $tenant): void
+    {
+        $email = $tenant->email;
+
+        if (str_contains($email, '@')) {
+            [$local, $domain] = explode('@', $email, 2);
+            $newEmail = $local . '+old' . $tenant->tenant_id . '@' . $domain;
+        } else {
+            $newEmail = $email . '.old' . $tenant->tenant_id;
+        }
+
+        $tenant->update(['email' => $newEmail]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -167,6 +181,14 @@ class TenantController extends Controller
                     }
                 }
 
+                $blockingInactiveTenant = Tenant::where('email', $request->email)
+                    ->where('status', 'inactive')
+                    ->first();
+
+                if ($blockingInactiveTenant) {
+                    $this->releaseEmailForReuse($blockingInactiveTenant);
+                }
+
                 $accountId    = Tenant::generateAccountId();
                 $tempPassword = Tenant::generateTempPassword();
 
@@ -207,6 +229,8 @@ class TenantController extends Controller
                 return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$cap} pax)."])->withInput();
             }
             throw $e;
+        } catch (\Illuminate\Database\QueryException $e) {
+            return back()->withErrors(['email' => 'This email address is already in use by another account.'])->withInput();
         }
 
         $notifMessage = $isReserved
@@ -454,6 +478,12 @@ class TenantController extends Controller
 
         try {
             [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+                $conflictingTenant = Tenant::where('email', $archived->email)->first();
+
+                if ($conflictingTenant) {
+                    $this->releaseEmailForReuse($conflictingTenant);
+                }
+
                 $accountId    = Tenant::generateAccountId();
                 $tempPassword = Tenant::generateTempPassword();
 
@@ -476,8 +506,10 @@ class TenantController extends Controller
 
                 return [$accountId, $tempPassword, $tenant->tenant_id];
             });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'This tenant email is already linked to another account. Please try renewing again.'], 422);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create tenant account: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Failed to create tenant account. Please try again.'], 500);
         }
 
         NotificationHelper::sendToAll(
