@@ -47,7 +47,7 @@ class RoomController extends Controller
         $derivedFloor = strlen($roomNum) > 2
             ? (int) substr($roomNum, 0, strlen($roomNum) - 2)
             : (int) $request->floor;
-        if ($derivedFloor < 1) {
+        if ($derivedFloor < 1 || $derivedFloor > 99) {
             return response()->json(['message' => 'Could not determine a valid floor from the room number.'], 422);
         }
         $room = Room::create([
