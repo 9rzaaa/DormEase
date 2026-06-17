@@ -615,6 +615,11 @@ tbody tr:hover { background: var(--soft-bg); }
 .slp-row:last-child { border-bottom: none; }
 .slp-row .badge { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
+.inside-indicator { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; }
+.inside-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.dot-inside { background: #1f9d69; box-shadow: 0 0 0 3px rgba(31,157,105,.2); animation: pulseGreen 2s infinite; }
+.dot-outside { background: #c8c8d4; }
+.slp-row .inside-indicator { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 @media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
 .addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
 .addf-item:last-child { border-bottom: none; }
@@ -965,13 +970,16 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="status-legend-wrap" id="status-legend-trigger">
                     <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
                     <div class="status-legend-popup" id="status-legend-popup">
-                        <div class="slp-title">Status Guide</div>
-                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
-                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
-                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
-                        <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
-                        <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
-                    </div>
+                    <div class="slp-title">Status Guide</div>
+                    <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
+                    <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
+                    <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
+                    <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
+                    <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
+                    <div class="slp-title" style="margin-top:.6rem;">Location Guide</div>
+                    <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span><span class="slp-desc">Tenant has timed in and is currently inside the dormitory.</span></div>
+                    <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span><span class="slp-desc">Tenant has timed out, or hasn't timed in yet today.</span></div>
+                </div>
                 </div>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
