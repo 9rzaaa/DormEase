@@ -1832,6 +1832,10 @@
 
     var hideTimer = null;
 
+    if (!document.body.contains(popup)) {
+        document.body.appendChild(popup);
+    }
+
     function positionPopup() {
         var rect       = trigger.getBoundingClientRect();
         var popupWidth = 340;
@@ -1851,9 +1855,6 @@
 
     function showPopup() {
         clearTimeout(hideTimer);
-        if (!document.body.contains(popup)) {
-            document.body.appendChild(popup);
-        }
         positionPopup();
         popup.classList.add('open');
     }
@@ -1861,11 +1862,13 @@
     function hidePopup() {
         hideTimer = setTimeout(function() {
             popup.classList.remove('open');
-        }, 120);
+        }, 180);
     }
 
     trigger.addEventListener('mouseenter', showPopup);
     trigger.addEventListener('mouseleave', hidePopup);
+    popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+    popup.addEventListener('mouseleave', hidePopup);
 
     window.addEventListener('resize', function() {
         if (popup.classList.contains('open')) positionPopup();
@@ -1921,8 +1924,9 @@ function showConfirm(title, body, onConfirm) {
 @endphp
 const tenantsByFloor = {!! json_encode($tenantsByFloorData) !!};
 
-const activeFloors   = @json($activeFloors->values());
-const unloggedFloors = @json($unloggedFloors->values());
+const activeFloors      = @json($activeFloors->values());
+const unloggedFloors    = @json($unloggedFloors->values());
+const lastMonthReadings = @json($lastMonthReadings);
 const billingExportGroups = @json($billingGroups);
 const selectedBillingMonth = @json($selectedMonth);
 
@@ -2040,7 +2044,17 @@ function addFloorRow(defaultFloor) {
         const sel = row.querySelector('.frr-floor-sel');
         sel.value = defaultFloor;
         updateFloorPreview(sel);
+        autoFillPrevReading(row, defaultFloor);
     }
+}
+
+function autoFillPrevReading(row, floor) {
+    if (!floor || lastMonthReadings[floor] === undefined) return;
+    const prevInput = row.querySelector('[name$="[prev]"]');
+    if (!prevInput || prevInput.value !== '') return;
+    prevInput.value = parseFloat(lastMonthReadings[floor]).toFixed(2);
+    prevInput.classList.add('input-valid');
+    recalcFloorRow(row);
 }
 
 function removeFloorRow(btn) {
@@ -2097,6 +2111,7 @@ function updateFloorPreview(sel) {
     pill.textContent = `${count} tenant${count !== 1 ? 's' : ''} on Floor ${floor}`;
     pill.style.display = 'inline-flex';
 
+    autoFillPrevReading(row, floor);
     recalcFloorRow(row);
 }
 
