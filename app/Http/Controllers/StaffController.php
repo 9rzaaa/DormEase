@@ -181,6 +181,7 @@ class StaffController extends Controller
 
         return redirect()->route('staff.index')
             ->with('success', 'Staff account created successfully.')
+            ->with('new_staff_name', $staff->first_name . ' ' . $staff->last_name)
             ->with('new_email', $staff->email)
             ->with('new_staff_id', 'ST-' . str_pad($staff->staff_id, 3, '0', STR_PAD_LEFT))
             ->with('new_temp_password', $tempPassword);

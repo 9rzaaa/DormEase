@@ -1062,6 +1062,7 @@
                 Please inform the staff member immediately.
             </div>
             <div class="modal-actions">
+                <button class="btn-cancel" onclick="printStaffCredentialSlip('new')">Print / Save as PDF</button>
                 <button class="btn-submit" onclick="closeModal('staff-credentials-modal')">Got it</button>
             </div>
         </div>
@@ -1556,6 +1557,7 @@
     var currentPage  = 1;
     var filtered     = staffList.slice();
     var currentStaff = null;
+    var resetStaffName = '';
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -1999,6 +2001,7 @@
     function resetTempPassword(s) {
         var existing = document.getElementById('reset-confirm-modal');
         if (existing) existing.remove();
+        resetStaffName = s.first_name + ' ' + s.last_name;
         var initials = (s.first_name[0] || '') + (s.last_name[0] || '');
         document.body.insertAdjacentHTML('beforeend',
             '<div class="modal-overlay open" id="reset-confirm-modal">'
@@ -2077,7 +2080,7 @@
                         + '</div>'
                     + '</div>'
                     + '<div class="credentials-warning">This password will <strong>not be shown again</strong>.</div>'
-                    + '<div class="modal-actions"><button class="btn-submit" onclick="closeModal(\'reset-credentials-modal\')">Got it</button></div>'
+                    + '<div class="modal-actions"><button class="btn-cancel" onclick="printStaffCredentialSlip(\'reset\')">Print / Save as PDF</button><button class="btn-submit" onclick="closeModal(\'reset-credentials-modal\')">Got it</button></div>'
                 + '</div>'
                 + '</div>'
             );
@@ -2090,6 +2093,79 @@
             hideActionLoading();
             showToast('Failed to reset password.', 'error');
         });
+    }
+
+    function printStaffCredentialSlip(type) {
+        var staffName, email, staffId, tempPassword;
+        if (type === 'new') {
+            staffName    = @json(session('new_staff_name'));
+            email        = document.getElementById('new-email').innerText.trim();
+            staffId      = document.getElementById('new-staff-id').innerText.trim();
+            tempPassword = document.getElementById('new-temp-password').innerText.trim();
+        } else {
+            staffName    = resetStaffName;
+            email        = document.getElementById('reset-email').innerText.trim();
+            staffId      = document.getElementById('reset-staff-id').innerText.trim();
+            tempPassword = document.getElementById('reset-temp-password').innerText.trim();
+        }
+        var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        var win = window.open('', '_blank', 'width=400,height=560');
+        win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>DormEase Staff Login Credentials</title>
+<style>
+  @page { size: 80mm 150mm; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 150mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slip { width: 80mm; min-height: 150mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
+  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
+  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
+  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
+  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
+  .staff-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
+  .field { margin-bottom: 3mm; }
+  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
+  .field-value { font-size: 12pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .05em; text-align: center; word-break: break-all; }
+  .field-value.small { font-size: 9pt; letter-spacing: 0; }
+  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 3px; padding: 1.8mm 2mm; font-size: 6pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
+  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
+  .footer-date { font-size: 6pt; color: #b06080; }
+  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
+  @media print { body { margin: 0; } .slip { border: none; } }
+</style>
+</head>
+<body>
+<div class="slip">
+  <div class="header">
+    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
+    <div class="title">Staff Login Credentials</div>
+    <div class="subtitle">DormEase Staff Portal</div>
+  </div>
+  <div class="staff-name">${staffName}</div>
+  <div class="field">
+    <div class="field-label">Email</div>
+    <div class="field-value small">${email}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Staff ID</div>
+    <div class="field-value">${staffId}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Temporary Password</div>
+    <div class="field-value">${tempPassword}</div>
+  </div>
+  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
+  <div class="footer">
+    <div class="footer-date">Issued: ${today}</div>
+    <div class="footer-brand">DormEase</div>
+  </div>
+</div>
+<script>window.onload = function() { window.print(); };<\/script>
+</body>
+</html>`);
+        win.document.close();
     }
 
     var deletedStaffArchive   = @json($deletedArchive);
