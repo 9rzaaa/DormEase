@@ -1968,17 +1968,21 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="credentials-warning">
                 This temporary password will <strong>not be shown again</strong>. Inform the tenant immediately.
             </div>
-            <div id="renew-cred-photo-suggest" style="display:none;margin-top:.75rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.7rem .9rem;">
-                <div style="display:flex;align-items:flex-start;gap:.55rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8960c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div id="renew-cred-photo-suggest" style="display:none;margin-top:.75rem;background:linear-gradient(135deg,#fff5f9 0%,#ffe8f2 100%);border:1.5px solid var(--pink-100);border-radius:12px;padding:.8rem .9rem;">
+                <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                    <div style="width:30px;height:30px;border-radius:8px;background:var(--petal);border:1.5px solid var(--pink-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
                     <div style="flex:1;min-width:0;">
-                        <div style="font-size:.8rem;font-weight:700;color:#7a5400;margin-bottom:.25rem;">Photo update recommended</div>
-                        <div style="font-size:.75rem;color:#7a5400;line-height:1.5;margin-bottom:.55rem;">Since the tenant is renewing their contract, consider updating their photo to keep records current. This is optional.</div>
-                        <button type="button" id="renew-cred-upload-btn" onclick="triggerTenantPhotoUpload(this.dataset.tenantId)" style="display:inline-flex;align-items:center;gap:.4rem;padding:.38rem .9rem;border-radius:8px;border:1.5px solid #f0c040;background:var(--white);color:#7a5400;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background='#f0c040';this.style.color='#fff';" onmouseout="this.style.background='var(--white)';this.style.color='#7a5400';">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            Update Photo Now
-                        </button>
-                        <span style="font-size:.72rem;color:#a07020;margin-left:.5rem;">JPG or PNG, max 4MB</span>
+                        <div style="font-size:.8rem;font-weight:800;color:var(--ink);margin-bottom:.2rem;letter-spacing:-.01em;">Photo update recommended</div>
+                        <div style="font-size:.75rem;color:#7a3050;line-height:1.5;margin-bottom:.65rem;">Since the tenant is renewing their contract, consider updating their photo to keep records current. This is optional.</div>
+                        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+                            <button type="button" id="renew-cred-upload-btn" onclick="triggerTenantPhotoUpload(this.dataset.tenantId)" style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .2s;box-shadow:0 4px 12px rgba(232,23,93,.2);" onmouseover="this.style.opacity='.88';this.style.transform='translateY(-1px)';" onmouseout="this.style.opacity='1';this.style.transform='';">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Update Photo Now
+                            </button>
+                            <span style="font-size:.72rem;color:#b06080;font-weight:500;">JPG or PNG, max 4MB</span>
+                        </div>
                     </div>
                 </div>
             </div>
