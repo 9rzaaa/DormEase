@@ -763,6 +763,59 @@ tbody tr:hover { background: var(--soft-bg); }
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+.tenant-photo-img {
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+}
+.tenant-photo-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 22px rgba(232,23,93,.3);
+}
+.photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20,0,10,.82);
+    backdrop-filter: blur(6px);
+    padding: 2rem;
+}
+.photo-lightbox.open {
+    display: flex;
+}
+.photo-lightbox-img {
+    max-width: min(80vw, 480px);
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.4);
+    animation: photoLightboxIn .25s cubic-bezier(.22,1,.36,1);
+}
+@keyframes photoLightboxIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.photo-lightbox-close {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
+    color: var(--white);
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+.photo-lightbox-close:hover {
+    background: rgba(255,255,255,.25);
+}
 .moveout-warning-bar {
     display: none;
     align-items: flex-start;
@@ -2007,6 +2060,11 @@ tbody tr:hover { background: var(--soft-bg); }
 <input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
 <input type="file" id="renew-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitRenewPhoto(this)">
 
+<div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
+    <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
+    <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
+</div>
+
 @endsection
 @section('scripts')
 <script>
@@ -2771,6 +2829,17 @@ document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
+
+function openPhotoLightbox(url) {
+    document.getElementById('photo-lightbox-img').src = url;
+    document.getElementById('photo-lightbox').classList.add('open');
+}
+
+function closePhotoLightbox() {
+    document.getElementById('photo-lightbox').classList.remove('open');
+    document.getElementById('photo-lightbox-img').src = '';
+}
+
 function closeModal(id) {
     document.getElementById(id).classList.remove('open');
     if (id === 'add-modal') {
@@ -3324,6 +3393,10 @@ function viewTenant(t) {
             + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
             + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
         + '</div>';
+    var viewPhotoImg = document.getElementById('view-tenant-photo-img');
+    if (viewPhotoImg) {
+        viewPhotoImg.onclick = function() { openPhotoLightbox(viewPhotoImg.src); };
+    }
     openModal('view-modal');
 }
 
@@ -5087,6 +5160,13 @@ function closeAllExportDropdowns() {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
         closeAllExportDropdowns();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var lb = document.getElementById('photo-lightbox');
+        if (lb && lb.classList.contains('open')) closePhotoLightbox();
     }
 });
 
