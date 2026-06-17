@@ -452,29 +452,33 @@ class TenantController extends Controller
             $floor = $room->floor;
         }
 
-        [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
-            $accountId    = Tenant::generateAccountId();
-            $tempPassword = Tenant::generateTempPassword();
+        try {
+            [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+                $accountId    = Tenant::generateAccountId();
+                $tempPassword = Tenant::generateTempPassword();
 
-            $tenant = Tenant::create([
-                'account_id'       => $accountId,
-                'password_hash'    => \Illuminate\Support\Facades\Hash::make($tempPassword),
-                'is_temp_password' => true,
-                'first_name'       => $archived->first_name,
-                'last_name'        => $archived->last_name,
-                'email'            => $archived->email,
-                'contact_number'   => $archived->contact_number,
-                'room_number'      => $roomNumber,
-                'floor'            => $floor,
-                'stay_type'        => $archived->stay_type,
-                'move_in_date'     => $request->move_in_date,
-                'move_out_date'    => $request->move_out_date,
-                'status'           => 'pending',
-                'is_active'        => true,
-            ]);
+                $tenant = Tenant::create([
+                    'account_id'       => $accountId,
+                    'password_hash'    => \Illuminate\Support\Facades\Hash::make($tempPassword),
+                    'is_temp_password' => true,
+                    'first_name'       => $archived->first_name,
+                    'last_name'        => $archived->last_name,
+                    'email'            => $archived->email,
+                    'contact_number'   => $archived->contact_number,
+                    'room_number'      => $roomNumber,
+                    'floor'            => $floor,
+                    'stay_type'        => $archived->stay_type,
+                    'move_in_date'     => $request->move_in_date,
+                    'move_out_date'    => $request->move_out_date,
+                    'status'           => 'pending',
+                    'is_active'        => true,
+                ]);
 
-            return [$accountId, $tempPassword, $tenant->tenant_id];
-        });
+                return [$accountId, $tempPassword, $tenant->tenant_id];
+            });
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create tenant account: ' . $e->getMessage()], 500);
+        }
 
         NotificationHelper::sendToAll(
             type: 'tenant_renewed',
@@ -483,11 +487,11 @@ class TenantController extends Controller
         );
 
         return response()->json([
-            'message'        => 'Tenant renewed successfully.',
-            'account_id'     => $accountId,
-            'temp_password'  => $tempPassword,
-            'suggest_photo'  => true,
-            'new_tenant_id'  => $newTenantId,
+            'message'       => 'Tenant renewed successfully.',
+            'account_id'    => $accountId,
+            'temp_password' => $tempPassword,
+            'suggest_photo' => true,
+            'new_tenant_id' => $newTenantId,
         ]);
     }
 
