@@ -1649,7 +1649,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return validateEditTenantForm(event)">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return interceptMoveOut(event)">
             @csrf
             @method('PUT')
             <div class="modal-body">
@@ -1932,6 +1932,71 @@ tbody tr:hover { background: var(--soft-bg); }
                 @method('DELETE')
                 <button type="submit" class="btn-submit" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.3);">Delete</button>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="moveout-verify-modal">
+    <div class="modal" style="max-width:520px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </span>
+                Confirm Move Out
+            </div>
+            <button class="modal-close" onclick="closeMoveOutVerify()">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div id="moveout-verify-tenant-bar" style="display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:#fffafd;border:1.5px solid var(--pink-100);margin-bottom:1rem;">
+                <div id="moveout-verify-avatar" style="width:42px;height:42px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.95rem;flex-shrink:0;box-shadow:0 4px 12px rgba(232,23,93,.2);"></div>
+                <div style="flex:1;min-width:0;">
+                    <div id="moveout-verify-name" style="font-size:.95rem;font-weight:800;color:var(--ink);line-height:1.2;"></div>
+                    <div id="moveout-verify-meta" style="font-size:.75rem;color:var(--ink-muted);margin-top:.2rem;font-weight:500;"></div>
+                </div>
+                <div id="moveout-verify-date-pill" style="display:none;flex-shrink:0;padding:.3rem .75rem;border-radius:99px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.72rem;font-weight:700;color:var(--hot-pink);"></div>
+            </div>
+
+            <div id="moveout-bills-section" style="display:none;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem;padding-bottom:.45rem;border-bottom:1.5px solid #fff0f4;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span style="font-size:.72rem;font-weight:800;color:#e04867;text-transform:uppercase;letter-spacing:.07em;">Unpaid Bills Detected</span>
+                    <span id="moveout-bills-count-pill" style="font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);"></span>
+                </div>
+                <div style="background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:12px;padding:.7rem .85rem;margin-bottom:.75rem;">
+                    <p style="font-size:.82rem;font-weight:700;color:#b0163a;margin:0 0 .2rem;line-height:1.4;">This tenant has outstanding balance.</p>
+                    <p style="font-size:.76rem;color:#c0163a;margin:0;font-weight:500;line-height:1.45;">Moving out without settling the balance will leave bills unresolved. You may still proceed or print the bill slip for reference.</p>
+                </div>
+                <div id="moveout-bills-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--pink-200) transparent;"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .9rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">
+                    <span style="font-size:.8rem;font-weight:700;color:#b0163a;">Total Outstanding</span>
+                    <span id="moveout-bills-total" style="font-size:1.1rem;font-weight:800;color:#e04867;"></span>
+                </div>
+            </div>
+
+            <div id="moveout-clear-section" style="display:none;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:.55rem;padding:.75rem 1rem;border-radius:12px;background:#e8faf5;border:1.5px solid #8ce0bb;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <div>
+                        <p style="font-size:.82rem;font-weight:700;color:#1a7a52;margin:0 0 .1rem;">No outstanding balance.</p>
+                        <p style="font-size:.74rem;color:#2e9e68;margin:0;font-weight:500;">All bills have been settled. Safe to proceed with move-out.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .85rem;font-size:.78rem;color:#7a5400;line-height:1.5;">
+                Setting status to <strong>Move Out</strong> will archive this tenant record. This action takes effect immediately on save.
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content:space-between;">
+            <button type="button" id="moveout-print-btn" style="display:none;padding:.55rem 1.1rem;border-radius:10px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s;" onmouseover="this.style.background='var(--petal)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';" onclick="printMoveOutBillSlip()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px;margin-right:.35rem;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print Bill Slip
+            </button>
+            <div style="display:flex;align-items:center;gap:.55rem;margin-left:auto;">
+                <button type="button" class="btn-cancel" onclick="closeMoveOutVerify()">Cancel</button>
+                <button type="button" id="moveout-confirm-btn" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:#e04867;color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(224,72,103,.25);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 12px 28px rgba(224,72,103,.35)';" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 20px rgba(224,72,103,.25)';" onclick="confirmMoveOut()">Confirm Move Out</button>
+            </div>
         </div>
     </div>
 </div>
@@ -5520,6 +5585,122 @@ function fmtDateTime(d) {
     var dt = new Date(d);
     return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
         + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+var _moveOutPendingSubmit = false;
+var _moveOutBillsCache    = null;
+var _moveOutTenantCache   = null;
+
+function interceptMoveOut(e) {
+    var statusSel = document.getElementById('edit-status');
+    if (!statusSel || statusSel.value !== 'move_out') {
+        return validateEditTenantForm(e);
+    }
+    if (_moveOutPendingSubmit) {
+        _moveOutPendingSubmit = false;
+        return validateEditTenantForm(e);
+    }
+    e.preventDefault();
+    if (!validateEditTenantForm({ preventDefault: function() {} })) {
+        return false;
+    }
+    openMoveOutVerify();
+    return false;
+}
+
+function openMoveOutVerify() {
+    if (!currentTenant) return;
+    var t         = currentTenant;
+    var bills     = billingData[String(t.tenant_id)] || [];
+    var unpaid    = Array.isArray(bills) ? bills.filter(function(b) { return b.payment_status === 'unpaid' || b.payment_status === 'overdue'; }) : [];
+    _moveOutBillsCache  = unpaid;
+    _moveOutTenantCache = t;
+
+    var initials = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+    document.getElementById('moveout-verify-avatar').textContent = initials;
+    document.getElementById('moveout-verify-name').textContent   = t.first_name + ' ' + t.last_name;
+
+    var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ', Rm. ' + t.room_number : (t.room_number ? 'Rm. ' + t.room_number : 'No room assigned');
+    document.getElementById('moveout-verify-meta').textContent = roomLabel + (t.stay_type ? ' \u00b7 ' + t.stay_type : '');
+
+    var moveoutVal = document.getElementById('edit-moveout').value;
+    var datePill   = document.getElementById('moveout-verify-date-pill');
+    if (moveoutVal) {
+        datePill.textContent  = 'Move out: ' + fmtDate(moveoutVal);
+        datePill.style.display = '';
+    } else {
+        datePill.style.display = 'none';
+    }
+
+    var billsSection = document.getElementById('moveout-bills-section');
+    var clearSection = document.getElementById('moveout-clear-section');
+    var printBtn     = document.getElementById('moveout-print-btn');
+
+    if (unpaid.length > 0) {
+        billsSection.style.display = '';
+        clearSection.style.display = 'none';
+        printBtn.style.display     = '';
+
+        document.getElementById('moveout-bills-count-pill').textContent = unpaid.length + ' bill' + (unpaid.length !== 1 ? 's' : '');
+
+        var total = unpaid.reduce(function(s, b) { return s + parseFloat(b.room_share || 0); }, 0);
+        document.getElementById('moveout-bills-total').textContent = '\u20b1' + total.toFixed(2);
+
+        var listEl = document.getElementById('moveout-bills-list');
+        listEl.innerHTML = unpaid.map(function(b) {
+            var isOverdue  = b.payment_status === 'overdue';
+            var badgeBg    = isOverdue ? '#fff0f0' : '#fff9e6';
+            var badgeColor = isOverdue ? '#e04867' : '#c8960c';
+            var badgeBorder= isOverdue ? 'var(--pink-200)' : '#f0c040';
+            var badgeText  = isOverdue ? 'Overdue' : 'Unpaid';
+            var monthStr   = b.billing_month ? (function() {
+                var s = String(b.billing_month).trim();
+                if (s.length === 7) s = s + '-01';
+                var dt = new Date(s + 'T00:00:00');
+                return isNaN(dt.getTime()) ? b.billing_month : dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            })() : '\u2014';
+            var dueStr     = b.due_date ? fmtDate(b.due_date) : '\u2014';
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .85rem;border-radius:10px;background:var(--white);border:1.5px solid var(--pink-100);gap:.75rem;">'
+                + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.3;">' + monthStr + '</div>'
+                    + '<div style="font-size:.71rem;color:var(--ink-muted);margin-top:.15rem;">Due: ' + dueStr + '</div>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">'
+                    + '<span style="font-size:.65rem;font-weight:800;padding:.2rem .55rem;border-radius:99px;background:' + badgeBg + ';color:' + badgeColor + ';border:1px solid ' + badgeBorder + ';">' + badgeText + '</span>'
+                    + '<span style="font-size:.88rem;font-weight:800;color:#e04867;">\u20b1' + parseFloat(b.room_share || 0).toFixed(2) + '</span>'
+                + '</div>'
+                + '</div>';
+        }).join('');
+    } else {
+        billsSection.style.display = 'none';
+        clearSection.style.display = '';
+        printBtn.style.display     = 'none';
+    }
+
+    openModal('moveout-verify-modal');
+}
+
+function closeMoveOutVerify() {
+    closeModal('moveout-verify-modal');
+    _moveOutPendingSubmit = false;
+}
+
+function confirmMoveOut() {
+    closeModal('moveout-verify-modal');
+    _moveOutPendingSubmit = true;
+    var form = document.getElementById('edit-form');
+    if (form) {
+        showActionLoading('Saving changes...');
+        form.querySelectorAll('button[type="submit"]').forEach(function(b) { b.disabled = true; });
+        form.submit();
+    }
+}
+
+function printMoveOutBillSlip() {
+    var t     = _moveOutTenantCache;
+    var bills = _moveOutBillsCache;
+    if (!t || !bills) return;
+    printBillSlip(t);
 }
 
 function printBillSlip(t) {
