@@ -12,6 +12,15 @@ class Tenant extends Authenticatable
     use HasApiTokens;
     protected $primaryKey = 'tenant_id';
 
+    protected $appends = [
+        'role',
+    ];
+
+    public function getRoleAttribute(): string
+    {
+        return 'tenant';
+    }
+
     protected $fillable = [
         'account_id',
         'password_hash',
@@ -145,4 +154,3 @@ class Tenant extends Authenticatable
             ->exists();
     }
 }
-
