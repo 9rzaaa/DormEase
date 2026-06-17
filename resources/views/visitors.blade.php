@@ -1537,14 +1537,6 @@
                         + '<span class="modal-photo-no-icon"></span>'
                         + '<p>Could not load photo.</p>'
                     + '</div>'
-                + '</div>'
-                + '<div class="modal-photo-actions">'
-                    + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="event.stopPropagation(); openLightbox(window.__currentPhotoSrc, window.__currentPhotoCaption)">'
-                        + '&#x1F50D; View Photo'
-                    + '</button>'
-                    + '<a class="modal-photo-btn modal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener" onclick="event.stopPropagation();">'
-                        + '&#x2197; Open Full Image'
-                    + '</a>'
                 + '</div>';
         } else {
             photoArea =
