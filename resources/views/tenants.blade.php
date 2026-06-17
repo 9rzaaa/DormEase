@@ -2005,6 +2005,7 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 
 <input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
+<input type="file" id="renew-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitRenewPhoto(this)">
 
 @endsection
 @section('scripts')

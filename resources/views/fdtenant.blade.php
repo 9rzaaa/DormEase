@@ -243,6 +243,45 @@ tbody tr:hover { background: var(--soft-bg); }
     50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
 }
 
+.name-cell {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+}
+
+.name-cell-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.row-avatar-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(232,23,93,.2);
+}
+
+.row-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.row-avatar-initials {
+    font-size: .7rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: .02em;
+}
+
 .btn-timein {
     display: inline-flex; align-items: center; gap: .3rem;
     padding: .3rem .7rem; border-radius: 8px;
@@ -849,6 +888,47 @@ tbody tr:hover { background: var(--soft-bg); }
 
 .td-modal-close:hover { background: rgba(255,255,255,.28); }
 
+.td-modal-hero-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.td-modal-avatar-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: rgba(255,255,255,.18);
+    border: 2.5px solid rgba(255,255,255,.55);
+    box-shadow: 0 6px 18px rgba(0,0,0,.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.td-modal-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.td-modal-avatar-initials {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: .02em;
+}
+
+.td-modal-hero-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .td-modal-name {
     font-size: 1.2rem;
     font-weight: 800;
@@ -1125,6 +1205,7 @@ tbody tr:hover { background: var(--soft-bg); }
     font-size: .8rem; font-weight: 800; color: var(--white);
     flex-shrink: 0;
     letter-spacing: -.01em;
+    overflow: hidden;
 }
 
 .quick-result-avatar.avatar-inside {
@@ -1685,8 +1766,13 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="td-modal-card">
         <div class="td-modal-hero">
             <button class="td-modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
-            <div class="td-modal-name" id="td-modal-name">—</div>
-            <div class="td-modal-meta" id="td-modal-meta"></div>
+            <div class="td-modal-hero-inner">
+                <div class="td-modal-avatar-wrap" id="td-modal-avatar-wrap"></div>
+                <div class="td-modal-hero-text">
+                    <div class="td-modal-name" id="td-modal-name"></div>
+                    <div class="td-modal-meta" id="td-modal-meta"></div>
+                </div>
+            </div>
         </div>
         <div class="td-modal-body" id="td-modal-body"></div>
         <div class="td-modal-footer">
@@ -1821,6 +1907,33 @@ function insideIndicator(isInside) {
     return '<span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span>';
 }
 
+function tenantInitials(t) {
+    return (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+}
+
+function rowAvatarHtml(t) {
+    if (t.tenant_photo) {
+        return '<img src="/storage/' + t.tenant_photo + '" alt="">';
+    }
+    return '<span class="row-avatar-initials">' + tenantInitials(t) + '</span>';
+}
+
+function buildNameCell(t) {
+    var overdueHtml = '';
+    if (t.estimated_move_in_date) {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
+        if (est < today) {
+            var days = Math.floor((today - est) / 86400000);
+            overdueHtml = ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
+        }
+    }
+    return '<div class="name-cell">'
+        + '<span class="row-avatar-wrap">' + rowAvatarHtml(t) + '</span>'
+        + '<span class="name-cell-text">' + escapeHtml(t.first_name + ' ' + t.last_name) + overdueHtml + '</span>'
+        + '</div>';
+}
+
 function statusPillClass(status) {
     var map = {
         active:   'tad-pill-active',
@@ -1866,18 +1979,7 @@ function renderTable() {
                 : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
-                (function() {
-                    var nameCell = t.first_name + ' ' + t.last_name;
-                    if (t.estimated_move_in_date) {
-                        var today = new Date(); today.setHours(0,0,0,0);
-                        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
-                        if (est < today) {
-                            var days = Math.floor((today - est) / 86400000);
-                            nameCell += ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
-                        }
-                    }
-                    return '<td style="font-weight:600;">' + nameCell + '</td>';
-                })() +
+                '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
@@ -1931,7 +2033,7 @@ function renderReservedTable() {
     } else {
         tbody.innerHTML = pageData.map(function(t) {
             return '<tr id="reserved-tenant-row-' + t.tenant_id + '">' +
-                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
+                '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
@@ -2331,6 +2433,13 @@ function statusPillModalClass(status) {
 function viewTenant(t) {
     document.getElementById('td-modal-name').textContent = t.first_name + ' ' + t.last_name;
 
+    var avatarWrap = document.getElementById('td-modal-avatar-wrap');
+    if (t.tenant_photo) {
+        avatarWrap.innerHTML = '<img src="/storage/' + t.tenant_photo + '" alt="">';
+    } else {
+        avatarWrap.innerHTML = '<span class="td-modal-avatar-initials">' + tenantInitials(t) + '</span>';
+    }
+
     var statusLabel = { active: 'Active', pending: 'Pending', inactive: 'Inactive', move_out: 'Move Out' };
     var metaHtml = '';
 
@@ -2359,14 +2468,15 @@ function viewTenant(t) {
 
     bodyHtml += '<div class="td-section-label">Contact</div>';
     bodyHtml += '<div class="td-info-grid">';
-    bodyHtml += infoItem('Contact No.', t.contact_number);
-    bodyHtml += infoItem('Stay Type', t.stay_type);
+    bodyHtml += infoItem('Contact No.', normalizeContactDisplay(t.contact_number));
+    bodyHtml += infoItem('Parent / Guardian Contact No.', normalizeContactDisplay(t.guardian_number));
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="td-section-label">Room Assignment</div>';
     bodyHtml += '<div class="td-info-grid">';
     bodyHtml += infoItem('Floor', t.floor ? 'Floor ' + t.floor : '');
     bodyHtml += infoItem('Room No.', t.room_number);
+    bodyHtml += infoItem('Stay Type', t.stay_type, true);
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="td-section-label">Stay Period</div>';
@@ -2713,7 +2823,10 @@ function runQuickSearch() {
     }
 
     results.innerHTML = matches.map(function(t, i) {
-        var initials  = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+        var initials    = tenantInitials(t);
+        var avatarInner = t.tenant_photo
+            ? '<img src="/storage/' + t.tenant_photo + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
+            : initials;
         var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ' \u00b7 Rm ' + t.room_number : (t.room_number ? 'Rm ' + t.room_number : 'No room assigned');
         var isInside  = !!t.is_inside;
         var actionBtn = isInside
@@ -2722,7 +2835,7 @@ function runQuickSearch() {
 
         return '<div class="quick-result-item ' + (isInside ? 'is-inside' : '') + '" style="animation-delay:' + (i * 0.04) + 's;">'
             + '<div class="quick-result-left">'
-                + '<div class="quick-result-avatar ' + (isInside ? 'avatar-inside' : '') + '">' + initials + '</div>'
+                + '<div class="quick-result-avatar ' + (isInside ? 'avatar-inside' : '') + '">' + avatarInner + '</div>'
                 + '<div class="quick-result-info">'
                     + '<div class="quick-result-name">' + t.first_name + ' ' + t.last_name + '</div>'
                     + '<div class="quick-result-meta">' + roomLabel + '</div>'
