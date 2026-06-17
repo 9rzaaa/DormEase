@@ -216,7 +216,7 @@ class BillingController extends Controller
                 'floor_readings'         => 'required|array|min:1',
                 'floor_readings.*.floor' => 'required|integer|min:1|distinct',
                 'floor_readings.*.prev'  => 'required|numeric|min:0',
-                'floor_readings.*.curr'  => 'required|numeric|min:0',
+                'floor_readings.*.curr'  => 'required|numeric|min:0|gte:floor_readings.*.prev',
             ]);
 
             $billingMonthDate = Carbon::parse($request->billing_month)->startOfMonth();
@@ -397,10 +397,11 @@ class BillingController extends Controller
             foreach ($request->status_updates as $statusUpdate) {
                 $billingToUpdate = WaterBilling::findOrFail($statusUpdate['billing_id']);
 
-                if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment)) {
+                if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment) && !$request->boolean('force_paid_without_proof')) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Proof of payment is required before marking a tenant as paid.'
+                        'message' => 'Proof of payment is required before marking a tenant as paid.',
+                        'requires_proof_confirmation' => true,
                     ], 422);
                 }
 
@@ -456,10 +457,11 @@ class BillingController extends Controller
                 }
             }
         } else {
-            if ($request->payment_status === 'paid' && empty($billing->proof_of_payment)) {
+            if ($request->payment_status === 'paid' && empty($billing->proof_of_payment) && !$request->boolean('force_paid_without_proof')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Proof of payment is required before marking a tenant as paid.'
+                    'message' => 'Proof of payment is required before marking a tenant as paid.',
+                    'requires_proof_confirmation' => true,
                 ], 422);
             }
 

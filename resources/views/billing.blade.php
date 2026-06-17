@@ -420,6 +420,151 @@
         display: block;
     }
 
+    .field-error {
+        font-size: .72rem;
+        font-weight: 600;
+        color: #e04867;
+        margin-top: .3rem;
+        display: none;
+    }
+    .field-error.visible { display: block; }
+
+    .input-invalid {
+        border-color: #e04867 !important;
+        background: #fff5f7 !important;
+    }
+
+    .input-valid {
+        border-color: #2ec27e !important;
+    }
+
+    .char-counter {
+        font-size: .7rem;
+        color: var(--ink-soft);
+        text-align: right;
+        margin-top: .2rem;
+    }
+    .char-counter.near-limit { color: #f0a500; }
+    .char-counter.at-limit   { color: #e04867; font-weight: 700; }
+
+    .inline-notice {
+        padding: .6rem .85rem;
+        border-radius: 10px;
+        font-size: .8rem;
+        font-weight: 600;
+        margin-top: .6rem;
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+    }
+    .inline-notice-warn {
+        background: #fff6dc;
+        color: #c58a00;
+        border: 1px solid #f2cd63;
+    }
+    .inline-notice-error {
+        background: #ffe9ee;
+        color: #e04867;
+        border: 1px solid #ff9db0;
+    }
+    .inline-notice-info {
+        background: #edf1ff;
+        color: #5570ff;
+        border: 1px solid #b6c2ff;
+    }
+
+    .floor-reading-row.row-error {
+        border-color: #e04867;
+        background: #fff5f7;
+    }
+
+    .frr-error {
+        grid-column: 1 / -1;
+        font-size: .72rem;
+        font-weight: 600;
+        color: #e04867;
+        margin-top: -.3rem;
+        display: none;
+    }
+    .frr-error.visible { display: block; }
+
+    .modal-field-wrap { display: flex; flex-direction: column; }
+    .modal-field-wrap .modal-field { margin: 0; }
+
+    .section-divider {
+        grid-column: 1 / -1;
+        border: none;
+        border-top: 1px solid var(--border-pink-mid);
+        margin: .25rem 0;
+    }
+
+    .confirm-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        backdrop-filter: blur(4px);
+        z-index: 500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .confirm-overlay.open { display: flex; }
+
+    .confirm-box {
+        background: var(--white);
+        border-radius: 22px;
+        padding: 1.8rem;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0,0,0,.2);
+        animation: fadeUp .25s ease;
+    }
+
+    .confirm-box-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--ink-deep);
+        margin-bottom: .5rem;
+    }
+
+    .confirm-box-body {
+        font-size: .86rem;
+        color: var(--ink-soft);
+        line-height: 1.6;
+        margin-bottom: 1.4rem;
+    }
+
+    .confirm-box-actions {
+        display: flex;
+        gap: .6rem;
+        justify-content: flex-end;
+    }
+
+    .btn-confirm-yes {
+        padding: .6rem 1.3rem;
+        border-radius: 12px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .86rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--ease);
+    }
+    .btn-confirm-yes:hover { transform: translateY(-1px); }
+
+    .btn-confirm-no {
+        padding: .6rem 1.1rem;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        color: var(--ink-soft);
+        font-size: .86rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-confirm-no:hover { border-color: var(--bright-pink); color: var(--bright-pink); }
+
     .empty-floor {
         padding: 1.5rem;
         text-align: center;
@@ -1316,22 +1461,26 @@
                     <div class="modal-field">
                         <label>Billing Month</label>
                         <input type="date" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m-01') }}">
+                        <span class="field-error">Billing month is required.</span>
                     </div>
                     <div class="modal-field">
                         <label>Due Date</label>
                         <input type="date" name="due_date" id="log-due-date" required>
+                        <span class="field-error">Due date is required.</span>
                     </div>
                 </div>
 
                 <div class="section-label">Maynilad Bill (Mother Meter)</div>
                 <div class="modal-grid">
                     <div class="modal-field">
-                        <label>Total Cubic Meters (m³)</label>
+                        <label>Total Cubic Meters (m3)</label>
                         <input type="number" step="0.01" min="0.01" name="maynilad_total_m3" id="log-maynilad-m3" placeholder="e.g. 120.00" required oninput="recalcRate()">
+                        <span class="field-error">Enter the total cubic meters from the Maynilad bill.</span>
                     </div>
                     <div class="modal-field">
-                        <label>Total Amount Due (₱)</label>
-                        <input type="number" step="0.01" min="0.01" name="maynilad_total_amount" id="log-maynilad-amount" placeholder="e.g. 4,800.00" required oninput="recalcRate()">
+                        <label>Total Amount Due (P)</label>
+                        <input type="number" step="0.01" min="0.01" name="maynilad_total_amount" id="log-maynilad-amount" placeholder="e.g. 4800.00" required oninput="recalcRate()">
+                        <span class="field-error">Enter the total amount due from the Maynilad bill.</span>
                     </div>
                     <div class="rate-preview-box" id="rate-preview-box">
                         <span>Rate per m³: <strong id="rp-rate">—</strong></span>
@@ -1425,7 +1574,9 @@
             <div class="modal-field">
               <label>Due date</label>
               <input type="date" id="edit-due-date">
+              <span class="field-error">Please set a due date.</span>
             </div>
+            <div class="field-error full" id="edit-reading-error" style="grid-column:1/-1;display:none;"></div>
           </div>
         </div>
 
@@ -1465,6 +1616,17 @@
     </div>
 </div>
 
+<div class="confirm-overlay" id="confirm-dialog">
+    <div class="confirm-box">
+        <div class="confirm-box-title" id="confirm-title">Are you sure?</div>
+        <div class="confirm-box-body" id="confirm-body"></div>
+        <div class="confirm-box-actions">
+            <button class="btn-confirm-no" id="confirm-no">Cancel</button>
+            <button class="btn-confirm-yes" id="confirm-yes">Confirm</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1496,6 +1658,17 @@ function resetButton(btn, originalText) {
     btn.innerHTML = originalText || btn.dataset.originalText || originalText;
 }
 
+function showConfirm(title, body, onConfirm) {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-dialog').classList.add('open');
+    const yes = document.getElementById('confirm-yes');
+    const no  = document.getElementById('confirm-no');
+    const close = () => document.getElementById('confirm-dialog').classList.remove('open');
+    yes.onclick = () => { close(); onConfirm(); };
+    no.onclick  = close;
+}
+
 @php
     $tenantsByFloorData = $allTenants->whereIn('status', ['active', 'pending'])->groupBy('floor')->map(fn($tenants) =>
         $tenants->map(fn($t) => [
@@ -1517,6 +1690,9 @@ function recalcRate() {
     const box    = document.getElementById('rate-preview-box');
     const rp     = document.getElementById('rp-rate');
 
+    validateLogField(document.getElementById('log-maynilad-m3'));
+    validateLogField(document.getElementById('log-maynilad-amount'));
+
     if (m3 > 0 && amount > 0) {
         const rate = amount / m3;
         rp.textContent = '₱' + rate.toFixed(2) + ' / m³';
@@ -1527,6 +1703,36 @@ function recalcRate() {
     }
 }
 
+function validateLogField(input) {
+    if (!input) return true;
+    const val = parseFloat(input.value);
+    const errEl = input.parentElement?.querySelector('.field-error');
+    if (!input.value || isNaN(val) || val <= 0) {
+        input.classList.add('input-invalid');
+        input.classList.remove('input-valid');
+        if (errEl) { errEl.textContent = 'Enter a value greater than 0.'; errEl.classList.add('visible'); }
+        return false;
+    }
+    input.classList.remove('input-invalid');
+    input.classList.add('input-valid');
+    if (errEl) errEl.classList.remove('visible');
+    return true;
+}
+
+function validateLogDate(input) {
+    if (!input) return true;
+    const errEl = input.parentElement?.querySelector('.field-error');
+    if (!input.value) {
+        input.classList.add('input-invalid');
+        if (errEl) { errEl.textContent = 'This date is required.'; errEl.classList.add('visible'); }
+        return false;
+    }
+    input.classList.remove('input-invalid');
+    input.classList.add('input-valid');
+    if (errEl) errEl.classList.remove('visible');
+    return true;
+}
+
 let floorRowIdx = 0;
 
 function addFloorRow(defaultFloor) {
@@ -1535,7 +1741,7 @@ function addFloorRow(defaultFloor) {
     const floors = activeFloors;
 
     let opts = floors.map(f => {
-        const warned = unloggedFloors.includes(f) ? '' : ' ✓';
+        const warned = unloggedFloors.includes(f) ? '' : ' [already logged]';
         const sel    = (defaultFloor && f == defaultFloor) ? ' selected' : '';
         return `<option value="${f}"${sel}>Floor ${f}${warned}</option>`;
     }).join('');
@@ -1548,34 +1754,38 @@ function addFloorRow(defaultFloor) {
             <div class="frr-label">Floor</div>
             <select name="floor_readings[${idx}][floor]" class="frr-floor-sel"
                     style="width:100%;padding:.55rem .5rem;border-radius:8px;border:1.5px solid var(--gray-light);font-size:.83rem;font-family:var(--ff-body);background:var(--white);outline:none;"
-                    onchange="updateFloorPreview(this)" required>
-                <option value="">—</option>
+                    onchange="updateFloorPreview(this); checkDuplicateFloors();" required>
+                <option value="">Select floor</option>
                 ${opts}
             </select>
         </div>
         <div>
-            <div class="frr-label">Prev Reading (m³)</div>
+            <div class="frr-label">Prev Reading (m3)</div>
             <input type="number" step="0.01" min="0"
                    name="floor_readings[${idx}][prev]"
                    placeholder="0.00" required
-                   oninput="recalcFloorRow(this.closest('.floor-reading-row'))">
+                   oninput="recalcFloorRow(this.closest('.floor-reading-row')); validateFloorRow(this.closest('.floor-reading-row'));">
         </div>
         <div>
-            <div class="frr-label">Curr Reading (m³)</div>
+            <div class="frr-label">Curr Reading (m3)</div>
             <input type="number" step="0.01" min="0"
                    name="floor_readings[${idx}][curr]"
                    placeholder="0.00" required
-                   oninput="recalcFloorRow(this.closest('.floor-reading-row'))">
+                   oninput="recalcFloorRow(this.closest('.floor-reading-row')); validateFloorRow(this.closest('.floor-reading-row'));">
         </div>
         <div>
             <div class="frr-label">Consumption</div>
-            <input type="text" disabled placeholder="—" class="frr-consumption">
+            <input type="text" disabled placeholder="auto" class="frr-consumption">
         </div>
         <div style="display:flex;flex-direction:column;gap:.4rem;align-items:center;">
-            <span class="floor-bill-preview frr-bill-preview">—</span>
-            <button type="button" class="btn-remove-floor" onclick="removeFloorRow(this)" title="Remove">✕</button>
+            <span class="floor-bill-preview frr-bill-preview">--</span>
+            <button type="button" class="btn-remove-floor" onclick="removeFloorRow(this); checkDuplicateFloors();" title="Remove">x</button>
         </div>
     `;
+
+    const errorRow = document.createElement('div');
+    errorRow.className = 'frr-error';
+    row.appendChild(errorRow);
 
     const pillDiv = document.createElement('div');
     pillDiv.style.cssText = 'grid-column:1/-1;margin-top:-.3rem;';
@@ -1593,6 +1803,42 @@ function addFloorRow(defaultFloor) {
 
 function removeFloorRow(btn) {
     btn.closest('.floor-reading-row').remove();
+}
+
+function validateFloorRow(row) {
+    const prev    = parseFloat(row.querySelector('[name$="[prev]"]')?.value) || 0;
+    const curr    = parseFloat(row.querySelector('[name$="[curr]"]')?.value) || 0;
+    const errEl   = row.querySelector('.frr-error');
+    const currInp = row.querySelector('[name$="[curr]"]');
+
+    if (currInp && currInp.value !== '' && curr < prev) {
+        row.classList.add('row-error');
+        if (errEl) { errEl.textContent = 'Current reading cannot be less than previous reading.'; errEl.classList.add('visible'); }
+        currInp.classList.add('input-invalid');
+        return false;
+    }
+    row.classList.remove('row-error');
+    if (errEl) errEl.classList.remove('visible');
+    if (currInp) currInp.classList.remove('input-invalid');
+    return true;
+}
+
+function checkDuplicateFloors() {
+    const rows   = document.querySelectorAll('.floor-reading-row');
+    const seen   = {};
+    rows.forEach(row => {
+        const sel   = row.querySelector('.frr-floor-sel');
+        const errEl = row.querySelector('.frr-error');
+        if (!sel || !sel.value) return;
+        if (seen[sel.value]) {
+            row.classList.add('row-error');
+            if (errEl) { errEl.textContent = `Floor ${sel.value} is already added above. Remove the duplicate.`; errEl.classList.add('visible'); }
+        } else {
+            seen[sel.value] = true;
+            row.classList.remove('row-error');
+            if (errEl && errEl.textContent.includes('already added')) errEl.classList.remove('visible');
+        }
+    });
 }
 
 function updateFloorPreview(sel) {
@@ -1627,7 +1873,7 @@ function recalcFloorRow(row) {
     const curr        = parseFloat(currInput?.value) || 0;
     const consumption = Math.max(0, curr - prev);
 
-    if (consInput) consInput.value = consumption.toFixed(2) + ' m³';
+    if (consInput) consInput.value = consumption.toFixed(2) + ' m3';
 
     if (billSpan && ratePerM3 > 0) {
         const floorBill   = consumption * ratePerM3;
@@ -1636,16 +1882,38 @@ function recalcFloorRow(row) {
         const perHead     = tenantCount > 0 ? floorBill / tenantCount : 0;
 
         billSpan.textContent = tenantCount > 0
-            ? `₱${floorBill.toFixed(2)} · ₱${perHead.toFixed(2)}/head`
-            : `₱${floorBill.toFixed(2)}`;
+            ? `P${floorBill.toFixed(2)} / P${perHead.toFixed(2)} per head`
+            : `P${floorBill.toFixed(2)}`;
     } else if (billSpan) {
-        billSpan.textContent = '—';
+        billSpan.textContent = '--';
     }
 }
 
 function openLogModal() {
     document.getElementById('floor-readings-list').innerHTML = '';
     floorRowIdx = 0;
+
+    const billingMonthInput = document.getElementById('log-billing-month');
+    if (billingMonthInput) billingMonthInput.value = new Date().toISOString().slice(0, 7) + '-01';
+
+    const dueDateInput = document.getElementById('log-due-date');
+    if (dueDateInput) {
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        dueDateInput.min = new Date().toISOString().split('T')[0];
+        dueDateInput.value = '';
+    }
+
+    document.querySelectorAll('#log-form .field-error').forEach(e => e.classList.remove('visible'));
+    document.querySelectorAll('#log-form .input-invalid, #log-form .input-valid').forEach(e => {
+        e.classList.remove('input-invalid', 'input-valid');
+    });
+    document.getElementById('rate-preview-box')?.classList.remove('visible');
+
+    document.getElementById('log-maynilad-m3').value     = '';
+    document.getElementById('log-maynilad-amount').value = '';
+
     const toAdd = unloggedFloors.length > 0 ? unloggedFloors : [activeFloors[0] ?? ''];
     toAdd.forEach(f => addFloorRow(f));
     openModal('log-modal');
@@ -1682,23 +1950,44 @@ function toggleRejectionReason(select) {
     if (!wrap) return;
     if (select.value === 'rejected') {
         wrap.classList.add('visible');
-        wrap.querySelector('.rejection-reason-select').focus();
+        const sel = wrap.querySelector('.rejection-reason-select');
+        if (sel) { sel.value = ''; sel.focus(); }
+        const ta = wrap.querySelector('.rejection-reason-input');
+        if (ta) { ta.style.display = 'none'; ta.value = ''; }
     } else {
         wrap.classList.remove('visible');
+        const sel = wrap.querySelector('.rejection-reason-select');
+        if (sel) sel.value = '';
+        const ta = wrap.querySelector('.rejection-reason-input');
+        if (ta) { ta.style.display = 'none'; ta.value = ''; }
     }
 }
 
 function toggleRejectionOther(select) {
-    const wrap = select.closest('.rejection-reason-wrap');
+    const wrap     = select.closest('.rejection-reason-wrap');
     const textarea = wrap.querySelector('.rejection-reason-input');
+    const counter  = wrap.querySelector('.char-counter');
     if (select.value === 'other') {
         textarea.style.display = 'block';
         textarea.value = '';
+        if (counter) { counter.style.display = 'block'; counter.textContent = '0 / 500'; }
         textarea.focus();
     } else {
         textarea.style.display = 'none';
         textarea.value = select.value;
+        if (counter) counter.style.display = 'none';
     }
+}
+
+function updateCharCounter(textarea) {
+    const wrap    = textarea.closest('.rejection-reason-wrap');
+    const counter = wrap?.querySelector('.char-counter');
+    if (!counter) return;
+    const len = textarea.value.length;
+    counter.textContent = `${len} / 500`;
+    counter.className = 'char-counter';
+    if (len >= 500) counter.classList.add('at-limit');
+    else if (len >= 400) counter.classList.add('near-limit');
 }
 
 function recalcUpdateShare() {
@@ -1706,7 +1995,18 @@ function recalcUpdateShare() {
     const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
     const consumption = Math.max(0, curr - prev);
     if (document.getElementById('edit-consumption'))
-        document.getElementById('edit-consumption').value = consumption.toFixed(2) + ' m³';
+        document.getElementById('edit-consumption').value = consumption.toFixed(2) + ' m3';
+
+    const prevInp = document.getElementById('edit-prev');
+    const currInp = document.getElementById('edit-curr');
+    const errEl   = document.getElementById('edit-reading-error');
+    if (currInp && currInp.value !== '' && curr < prev) {
+        currInp.classList.add('input-invalid');
+        if (errEl) { errEl.textContent = 'Current reading cannot be less than previous reading.'; errEl.classList.add('visible'); }
+    } else {
+        if (currInp) currInp.classList.remove('input-invalid');
+        if (errEl) errEl.classList.remove('visible');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1715,28 +2015,54 @@ document.addEventListener('DOMContentLoaded', function() {
         updateForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const saveBtn        = updateForm.querySelector('.btn-submit');
-            const billing_id     = this.dataset.billingId;
-            const prev_reading   = document.getElementById('edit-prev').value;
-            const curr_reading   = document.getElementById('edit-curr').value;
-            const due_date       = document.getElementById('edit-due-date').value;
+            const prev = parseFloat(document.getElementById('edit-prev')?.value) || 0;
+            const curr = parseFloat(document.getElementById('edit-curr')?.value) || 0;
+            if (curr < prev) {
+                showToast('Current reading cannot be less than previous reading.', 'error');
+                return;
+            }
+
+            const due = document.getElementById('edit-due-date')?.value;
+            if (!due) {
+                showToast('Please set a due date before saving.', 'error');
+                document.getElementById('edit-due-date')?.classList.add('input-invalid');
+                return;
+            }
+
             const statusSelects  = updateForm.querySelectorAll('.status-select');
+            const rejectedWithoutReason = Array.from(statusSelects).some(sel => {
+                if (sel.value !== 'rejected') return false;
+                const field = sel.closest('.modal-field');
+                const reasonSel = field?.querySelector('.rejection-reason-select');
+                const ta        = field?.querySelector('.rejection-reason-input');
+                if (!reasonSel) return false;
+                if (reasonSel.value === '') return true;
+                if (reasonSel.value === 'other' && (!ta || !ta.value.trim())) return true;
+                return false;
+            });
+
+            if (rejectedWithoutReason) {
+                showToast('Please select a rejection reason for all rejected payments.', 'error');
+                return;
+            }
+
+            const billing_id     = this.dataset.billingId;
             const firstSelect    = Array.from(statusSelects).find(s => s.value !== 'pending-tenant' && s.value !== 'inactive-tenant');
             const payment_status = firstSelect ? firstSelect.value : 'unpaid';
             const status_updates = Array.from(statusSelects)
                 .filter(select => select.value !== 'pending-tenant' && select.value !== 'inactive-tenant')
                 .map(select => {
-                    const field = select.closest('.modal-field');
-                    const textarea = field ? field.querySelector('.rejection-reason-input') : null;
+                    const field    = select.closest('.modal-field');
+                    const sel      = field ? field.querySelector('.rejection-reason-select') : null;
+                    const ta       = field ? field.querySelector('.rejection-reason-input') : null;
+                    let rejReason  = null;
+                    if (select.value === 'rejected' && sel) {
+                        rejReason = sel.value === 'other' ? (ta ? ta.value.trim() : null) : sel.value;
+                    }
                     return {
                         billing_id:       parseInt(select.dataset.billingId),
                         payment_status:   select.value,
-                        rejection_reason: (select.value === 'rejected' && field) ? (function() {
-                            const sel = field.querySelector('.rejection-reason-select');
-                            const ta  = field.querySelector('.rejection-reason-input');
-                            if (!sel) return ta ? ta.value.trim() : null;
-                            return sel.value === 'other' ? (ta ? ta.value.trim() : null) : sel.value;
-                        })() : null,
+                        rejection_reason: rejReason,
                     };
                 })
                 .filter(update => Number.isInteger(update.billing_id));
@@ -1746,42 +2072,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            setButtonLoading(saveBtn, 'Saving...');
-            showActionLoading('Saving billing changes...');
+            const saveBtn = updateForm.querySelector('.btn-submit');
 
-            try {
-                const response = await fetch("{{ route('billing.updateFull') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        billing_id     : parseInt(billing_id),
-                        prev_reading   : parseFloat(prev_reading),
-                        curr_reading   : parseFloat(curr_reading),
-                        due_date       : due_date,
-                        payment_status : payment_status,
-                        status_updates : status_updates,
-                    })
-                });
+            const doSave = async () => {
+                setButtonLoading(saveBtn, 'Saving...');
+                showActionLoading('Saving billing changes...');
 
-                const data = await response.json();
-                if (response.ok && data.success) {
-                    saveBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Saved!`;
-                    showToast('Billing updated successfully!', 'success');
-                    closeModal('update-modal');
-                    hideActionLoading();
-                    setTimeout(() => location.reload(), 800);
-                } else {
-                    showToast(data.message || 'Failed to update.', 'error');
-                    resetButton(saveBtn, 'Save Changes');
+                try {
+                    const response = await fetch("{{ route('billing.updateFull') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            billing_id     : parseInt(billing_id),
+                            prev_reading   : parseFloat(prev),
+                            curr_reading   : parseFloat(curr),
+                            due_date       : due,
+                            payment_status : payment_status,
+                            status_updates : status_updates,
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        saveBtn.innerHTML = `<span style="font-size:1rem;">ok</span> Saved`;
+                        showToast('Billing updated successfully.', 'success');
+                        closeModal('update-modal');
+                        hideActionLoading();
+                        setTimeout(() => location.reload(), 800);
+                    } else {
+                        showToast(data.message || 'Failed to update. Please check your inputs.', 'error');
+                        resetButton(saveBtn, 'Save changes');
+                        hideActionLoading();
+                    }
+                } catch (err) {
+                    showToast('Network error. Please try again.', 'error');
+                    resetButton(saveBtn, 'Save changes');
                     hideActionLoading();
                 }
-            } catch (err) {
-                showToast('Network error.', 'error');
-                resetButton(saveBtn, 'Save Changes');
-                hideActionLoading();
+            };
+
+            const hasPaidWithoutProof = status_updates.some(u => {
+                if (u.payment_status !== 'paid') return false;
+                const billing = Array.from(statusSelects).find(s => parseInt(s.dataset.billingId) === u.billing_id);
+                return !billing?.dataset.hasProof || billing.dataset.hasProof === 'false';
+            });
+
+            if (hasPaidWithoutProof) {
+                showConfirm(
+                    'Mark as paid without proof?',
+                    'One or more tenants do not have a proof of payment uploaded. The system will block this unless you have confirmed the payment by other means. Are you sure you want to continue?',
+                    doSave
+                );
+            } else {
+                await doSave();
             }
         });
     }
@@ -1796,36 +2142,71 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const submitBtn = logForm.querySelector('.btn-submit');
 
-        const m3     = parseFloat(document.getElementById('log-maynilad-m3')?.value);
-        const amount = parseFloat(document.getElementById('log-maynilad-amount')?.value);
+        const m3Input     = document.getElementById('log-maynilad-m3');
+        const amountInput = document.getElementById('log-maynilad-amount');
+        const monthInput  = document.getElementById('log-billing-month');
+        const dueInput    = document.getElementById('log-due-date');
 
-        if (!m3 || !amount || m3 <= 0 || amount <= 0) {
-            showToast('Please enter valid Maynilad bill figures.', 'error');
-            return;
-        }
+        let formValid = true;
+
+        if (!validateLogDate(monthInput)) formValid = false;
+        if (!validateLogDate(dueInput))   formValid = false;
+        if (!validateLogField(m3Input))   formValid = false;
+        if (!validateLogField(amountInput)) formValid = false;
 
         const rows = document.querySelectorAll('.floor-reading-row');
         if (rows.length === 0) {
-            showToast('Please add at least one floor reading.', 'error');
+            showToast('Add at least one floor reading before logging.', 'error');
             return;
         }
 
-        let valid = true;
+        const floorsSeen = {};
         rows.forEach(row => {
-            const floorSel = row.querySelector('.frr-floor-sel');
-            const prev     = parseFloat(row.querySelector('[name$="[prev]"]')?.value) || 0;
-            const curr     = parseFloat(row.querySelector('[name$="[curr]"]')?.value) || 0;
+            const floorSel  = row.querySelector('.frr-floor-sel');
+            const prevInput = row.querySelector('[name$="[prev]"]');
+            const currInput = row.querySelector('[name$="[curr]"]');
+            const errEl     = row.querySelector('.frr-error');
+            let rowOk = true;
 
             if (!floorSel?.value) {
-                showToast('Please select a floor for every reading row.', 'error');
-                valid = false;
+                row.classList.add('row-error');
+                if (errEl) { errEl.textContent = 'Select a floor for this row.'; errEl.classList.add('visible'); }
+                formValid = false;
+                rowOk = false;
+            } else if (floorsSeen[floorSel.value]) {
+                row.classList.add('row-error');
+                if (errEl) { errEl.textContent = `Floor ${floorSel.value} is already added. Remove this duplicate.`; errEl.classList.add('visible'); }
+                formValid = false;
+                rowOk = false;
+            } else {
+                floorsSeen[floorSel.value] = true;
             }
-            if (curr < prev) {
-                showToast(`Floor ${floorSel?.value || ''}: Current reading cannot be less than previous.`, 'error');
-                valid = false;
+
+            if (rowOk) {
+                const prev = parseFloat(prevInput?.value) || 0;
+                const curr = parseFloat(currInput?.value) || 0;
+                if (currInput && currInput.value !== '' && curr < prev) {
+                    row.classList.add('row-error');
+                    const errEl2 = row.querySelector('.frr-error');
+                    if (errEl2) { errEl2.textContent = 'Current reading cannot be less than previous reading.'; errEl2.classList.add('visible'); }
+                    currInput.classList.add('input-invalid');
+                    formValid = false;
+                }
             }
         });
-        if (!valid) return;
+
+        if (!formValid) {
+            showToast('Please fix the errors highlighted in red before submitting.', 'error');
+            return;
+        }
+
+        const billingDate = new Date(monthInput.value);
+        const dueDate     = new Date(dueInput.value);
+        if (dueDate < billingDate) {
+            showToast('Due date should not be before the billing month start.', 'error');
+            dueInput.classList.add('input-invalid');
+            return;
+        }
 
         setButtonLoading(submitBtn, 'Logging...');
         showActionLoading('Logging water consumption...');
@@ -1843,18 +2224,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const contentType = response.headers.get('content-type') || '';
             if (!contentType.includes('application/json')) {
-                const text = await response.text();
-                console.error('Non-JSON response from server:', text);
-                showToast('Unexpected server response. Check Laravel logs.', 'error');
-                resetButton(submitBtn, 'Log & Distribute');
+                showToast('Unexpected server response. Please contact support.', 'error');
+                resetButton(submitBtn, 'Log and Distribute');
+                hideActionLoading();
                 return;
             }
 
             const data = await response.json();
 
             if (response.ok && data.success) {
-                submitBtn.innerHTML = `<span style="font-size:1rem;">✓</span> Done!`;
-                showToast('✓ ' + (data.message || 'Water billing logged successfully!'), 'success');
+                submitBtn.innerHTML = `<span style="font-size:1rem;">ok</span> Done`;
+                showToast(data.message || 'Water billing logged successfully.', 'success');
 
                 const billingMonth = document.getElementById('log-billing-month').value;
                 const monthForUrl  = billingMonth.substring(0, 7) + '-01';
@@ -1865,18 +2245,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 setTimeout(() => { window.location.href = url; }, 1000);
 
             } else {
-                const msg = data.message || data.errors
-                    ? (data.message || Object.values(data.errors).flat().join(' '))
-                    : 'Failed to log billing. Please check your inputs.';
-                showToast(msg, 'error');
-                resetButton(submitBtn, 'Log & Distribute');
+                let errMsg = 'Failed to log billing. Please check your inputs.';
+                if (data.message) errMsg = data.message;
+                else if (data.errors) errMsg = Object.values(data.errors).flat().join(' ');
+                showToast(errMsg, 'error');
+                resetButton(submitBtn, 'Log and Distribute');
                 hideActionLoading();
             }
 
         } catch (err) {
-            console.error('Fetch error:', err);
-            showToast('Network error — please try again.', 'error');
-            resetButton(submitBtn, 'Log & Distribute');
+            showToast('Network error. Please check your connection and try again.', 'error');
+            resetButton(submitBtn, 'Log and Distribute');
             hideActionLoading();
         }
     });
@@ -1938,7 +2317,7 @@ function exportBillingCsv() {
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-    showToast('Billing data exported as CSV!', 'success');
+    showToast('Billing data exported as CSV.', 'success');
 }
 
 function exportBillingPdf() {
@@ -1961,8 +2340,8 @@ function exportBillingPdf() {
                     + '<td>' + Number(tenant.room_share || 0).toFixed(2) + '</td>'
                     + '<td>' + escHtml(tenant.payment_status || '') + '</td>'
                     + '<td>' + escHtml(group.due_date || '') + '</td>'
-                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m³</td>'
-                    + '<td>₱' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
+                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m3</td>'
+                    + '<td>P' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
                     + '</tr>';
             });
         });
@@ -1973,7 +2352,7 @@ function exportBillingPdf() {
         + '</head><body>'
         + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
         + '<p>Water Billing - ' + escHtml(selectedBillingMonth || '') + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (₱)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
+        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (P)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
         + '<tbody>' + rows + '</tbody></table>'
         + '</body></html>');
     win.document.close();
@@ -2080,7 +2459,7 @@ function umTab(name, btn) {
 function openLightbox(proofUrl, tenantName) {
     document.getElementById('lb-img').src         = proofUrl;
     document.getElementById('lb-open-link').href  = proofUrl;
-    document.getElementById('lb-tenant-name').textContent = tenantName + ' — Proof of Payment';
+    document.getElementById('lb-tenant-name').textContent = tenantName + ' - Proof of Payment';
     document.getElementById('proof-lightbox').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -2092,7 +2471,7 @@ function closeLightbox() {
 }
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'Escape') { closeLightbox(); document.getElementById('confirm-dialog')?.classList.remove('open'); }
 });
 
 function openUpdateModal(room) {
@@ -2109,46 +2488,73 @@ function openUpdateModal(room) {
     });
 
     document.getElementById('um-room-title').textContent = 'Room ' + room.room_number;
-    document.getElementById('um-room-sub').textContent = 'Floor ' + room.floor + ' · ' + room.occupants_in_room + ' occupant' + (room.occupants_in_room !== 1 ? 's' : '');
+    document.getElementById('um-room-sub').textContent = 'Floor ' + room.floor + ' - ' + room.occupants_in_room + ' occupant' + (room.occupants_in_room !== 1 ? 's' : '');
 
-    document.getElementById('edit-prev').value = parseFloat(room.prev_reading ?? 0).toFixed(2);
-    document.getElementById('edit-curr').value = parseFloat(room.curr_reading ?? 0).toFixed(2);
-    document.getElementById('edit-due-date').value = room.due_date !== '—' ? new Date(room.due_date).toISOString().split('T')[0] : '';
+    const prevField = document.getElementById('edit-prev');
+    const currField = document.getElementById('edit-curr');
+    prevField.value = parseFloat(room.prev_reading ?? 0).toFixed(2);
+    currField.value = parseFloat(room.curr_reading ?? 0).toFixed(2);
+    prevField.classList.remove('input-invalid', 'input-valid');
+    currField.classList.remove('input-invalid', 'input-valid');
+
+    const dueDateField = document.getElementById('edit-due-date');
+    dueDateField.value = room.due_date !== '--' ? new Date(room.due_date).toISOString().split('T')[0] : '';
+    dueDateField.min   = new Date().toISOString().split('T')[0];
+    dueDateField.classList.remove('input-invalid');
+
+    const errEl = document.getElementById('edit-reading-error');
+    if (errEl) errEl.classList.remove('visible');
 
     const initCons = Math.max(0, parseFloat(room.curr_reading ?? 0) - parseFloat(room.prev_reading ?? 0));
-    document.getElementById('um-disp-cons').textContent = initCons.toFixed(2) + ' m³';
-    document.getElementById('um-disp-total').textContent = '₱' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
+    document.getElementById('um-disp-cons').textContent  = initCons.toFixed(2) + ' m3';
+    document.getElementById('um-disp-total').textContent = 'P' + parseFloat(room.total_floor_bill ?? 0).toFixed(2);
     const firstBilledTenant = room.tenants.find(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
-    document.getElementById('um-disp-share').textContent = firstBilledTenant ? '₱' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '-';
+    document.getElementById('um-disp-share').textContent = firstBilledTenant ? 'P' + parseFloat(firstBilledTenant.room_share ?? 0).toFixed(2) : '--';
     recalcUpdateShare();
 
     let paymentsHtml = '';
     room.tenants.forEach(function(t) {
-        const initials = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
-        const isPaid = t.payment_status === 'paid';
+        const initials     = t.name.split(' ').slice(0,2).map(n => n[0]).join('');
+        const isPaid       = t.payment_status === 'paid';
+        const hasProof     = t.proof_of_payment_url ? 'true' : 'false';
         const safeProofUrl = t.proof_of_payment_url ? t.proof_of_payment_url : '';
-        const safeTenantName = t.name;
-        const proofPreviewBtn = '';
-        const receiptBtn = isPaid && t.billing_id
+        const receiptBtn   = isPaid && t.billing_id
             ? `<a href="/billing/receipt/${t.billing_id}" target="_blank" class="btn-receipt" style="margin-top:8px;">
                    <img src="/icons/export.png" alt="" style="width:13px;height:13px;filter:brightness(0) invert(1);flex-shrink:0;">
                    Download invoice
                </a>`
             : '';
+
+        const isPendingOrInactive = t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant';
+
+        const predefinedReasons = ['Blurry or unreadable image','Wrong reference number','Amount does not match','Payment already expired','Duplicate submission','No proof attached'];
+        const currentRejReason  = t.rejection_reason || '';
+        const isOtherReason     = currentRejReason && !predefinedReasons.some(r => r === currentRejReason);
+        const rejReasonSelect   = predefinedReasons.map(r => `<option value="${escapeHtml(r)}" ${currentRejReason === r ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('') + `<option value="other" ${isOtherReason ? 'selected' : ''}>Other (specify)</option>`;
+
+        const textareaDisplay = isOtherReason ? 'block' : 'none';
+        const textareaValue   = isOtherReason ? escapeHtml(currentRejReason) : '';
+        const counterDisplay  = isOtherReason ? 'block' : 'none';
+        const charCount       = isOtherReason ? currentRejReason.length : 0;
+
+        const noProofWarning = !isPendingOrInactive && !t.proof_of_payment_url
+            ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been submitted for this tenant. You cannot mark them as paid until proof is uploaded via the tenant app.</div>`
+            : '';
+
         paymentsHtml += `
             <div style="border:1.5px solid var(--border-pink);border-radius:14px;overflow:hidden;margin-bottom:12px;">
                 <div style="padding:.7rem 1rem;background:var(--pink-bg-soft);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-pink-mid);">
                     <div style="width:30px;height:30px;border-radius:50%;background:#fff0f6;color:var(--bright-pink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${initials}</div>
                     <div style="flex:1;">
-                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}${t.is_temp_password ? '<span title="Tenant hasn\'t activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:4px;vertical-align:middle;position:relative;top:-1px;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>' : ''}</div>
-                        <div style="font-size:12px;color:var(--ink-soft);">${(t.payment_status === 'pending-tenant' || t.payment_status === 'inactive-tenant') ? 'No billing' : 'Share: ₱' + parseFloat(t.room_share).toFixed(2)}</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--ink-deep);">${escapeHtml(t.name)}${t.is_temp_password ? '<span title="Tenant has not activated their app account yet" style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#f2f2f5;border:1px solid #e0e0e8;flex-shrink:0;margin-left:4px;vertical-align:middle;position:relative;top:-1px;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>' : ''}</div>
+                        <div style="font-size:12px;color:var(--ink-soft);">${isPendingOrInactive ? 'No billing record' : 'Share: P' + parseFloat(t.room_share).toFixed(2)}</div>
                     </div>
                     <span class="badge badge-${String(t.payment_status||'unpaid').replaceAll(' ','-')}">${getBadgeLabel(t.payment_status)}</span>
                 </div>
                 <div style="padding:.9rem 1rem;">
                     <div class="modal-field">
                         <label>Payment status</label>
-                        <select class="status-select" data-billing-id="${t.billing_id??''}" onchange="toggleRejectionReason(this)">
+                        <select class="status-select" data-billing-id="${t.billing_id??''}" data-has-proof="${hasProof}" onchange="toggleRejectionReason(this)">
                             <option value="unpaid"   ${t.payment_status==='unpaid'  ?'selected':''}>Unpaid</option>
                             <option value="paid"     ${t.payment_status==='paid'    ?'selected':''}>Paid</option>
                             <option value="overdue"  ${t.payment_status==='overdue' ?'selected':''}>Overdue</option>
@@ -2160,18 +2566,14 @@ function openUpdateModal(room) {
                         <div class="rejection-reason-wrap ${t.payment_status==='rejected'?'visible':''}">
                             <label class="rejection-reason-label">Reason for rejection</label>
                             <select class="rejection-reason-select" onchange="toggleRejectionOther(this)" style="width:100%;padding:.55rem .8rem;border-radius:10px;border:1.5px solid #ffb380;background:#fff8f4;font-size:.82rem;color:var(--ink-deep);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:.4rem;cursor:pointer;">
-                                <option value="">Select a reason...</option>
-                                <option value="Blurry or unreadable image" ${(t.rejection_reason||'').startsWith('Blurry')?'selected':''}>Blurry or unreadable image</option>
-                                <option value="Wrong reference number" ${(t.rejection_reason||'').startsWith('Wrong reference')?'selected':''}>Wrong reference number</option>
-                                <option value="Amount does not match" ${(t.rejection_reason||'').startsWith('Amount')?'selected':''}>Amount does not match</option>
-                                <option value="Payment already expired" ${(t.rejection_reason||'').startsWith('Payment already')?'selected':''}>Payment already expired</option>
-                                <option value="Duplicate submission" ${(t.rejection_reason||'').startsWith('Duplicate')?'selected':''}>Duplicate submission</option>
-                                <option value="No proof attached" ${(t.rejection_reason||'').startsWith('No proof')?'selected':''}>No proof attached</option>
-                                <option value="other" ${(t.rejection_reason && !['Blurry or unreadable image','Wrong reference number','Amount does not match','Payment already expired','Duplicate submission','No proof attached'].some(r => (t.rejection_reason||'').startsWith(r.split(' ')[0])) && t.rejection_reason !== '')?'selected':''}>Other (specify)...</option>
+                                <option value="">Select a reason</option>
+                                ${rejReasonSelect}
                             </select>
-                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="Describe the reason..." style="display:${(t.rejection_reason && !['Blurry or unreadable image','Wrong reference number','Amount does not match','Payment already expired','Duplicate submission','No proof attached'].some(r => (t.rejection_reason||'').startsWith(r.split(' ')[0])) && t.rejection_reason !== '') ? 'block' : 'none'};">${escapeHtml(t.rejection_reason||'')}</textarea>
+                            <textarea class="rejection-reason-input" rows="2" maxlength="500" placeholder="Describe the reason" style="display:${textareaDisplay};" oninput="updateCharCounter(this)">${textareaValue}</textarea>
+                            <div class="char-counter" style="display:${counterDisplay};">${charCount} / 500</div>
                         </div>
                     </div>
+                    ${noProofWarning}
                     ${receiptBtn}
                 </div>
             </div>`;
@@ -2180,8 +2582,8 @@ function openUpdateModal(room) {
 
     let proofHtml = '';
     room.tenants.filter(t => t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant').forEach(function(t) {
-        const refCode  = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '—';
-        const subAt    = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '—';
+        const refCode  = t.payment_reference_code ? escapeHtml(t.payment_reference_code) : '--';
+        const subAt    = t.payment_submitted_at   ? escapeHtml(t.payment_submitted_at)   : '--';
         const proofUrl = t.proof_of_payment_url   ? escapeHtml(t.proof_of_payment_url)   : '';
         const safeUrl  = t.proof_of_payment_url   ? t.proof_of_payment_url               : '';
         const safeName = t.name;
@@ -2223,14 +2625,24 @@ function recalcUpdateShare() {
     const curr = parseFloat(document.getElementById('edit-curr')?.value) || 0;
     const cons = Math.max(0, curr - prev);
     const consField = document.getElementById('edit-consumption');
-    if (consField) consField.value = cons.toFixed(2) + ' m³';
+    if (consField) consField.value = cons.toFixed(2) + ' m3';
     const dispCons = document.getElementById('um-disp-cons');
-    if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m³';
+    if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m3';
     const dispShare = document.getElementById('um-disp-share');
-    if (dispShare && dispShare.textContent !== '—') {
-        dispShare.textContent = '~ recalculating on save';
+    if (dispShare && dispShare.textContent !== '--') {
+        dispShare.textContent = 'recalculating on save';
         dispShare.style.fontSize = '11px';
         dispShare.style.color = 'var(--ink-soft)';
+    }
+
+    const currInp = document.getElementById('edit-curr');
+    const errEl   = document.getElementById('edit-reading-error');
+    if (currInp && currInp.value !== '' && curr < prev) {
+        currInp.classList.add('input-invalid');
+        if (errEl) { errEl.textContent = 'Current reading cannot be less than previous reading.'; errEl.classList.add('visible'); }
+    } else {
+        if (currInp) currInp.classList.remove('input-invalid');
+        if (errEl) errEl.classList.remove('visible');
     }
 }
 
