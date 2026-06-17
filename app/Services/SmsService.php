@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 class SmsService
 {
     /**
-     * Send an SMS to the specified phone number.
+     * 
      *
      * @param string $number
      * @param string $message

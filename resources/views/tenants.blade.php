@@ -1053,12 +1053,16 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
     </div>
-    <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
+    <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;" id="rooms-floor-filters">
         <button class="page-btn active" id="rfloor-all" onclick="setRoomFloor('')">All</button>
-        <button class="page-btn" id="rfloor-2" onclick="setRoomFloor(2)">Floor 2</button>
-        <button class="page-btn" id="rfloor-3" onclick="setRoomFloor(3)">Floor 3</button>
-        <button class="page-btn" id="rfloor-4" onclick="setRoomFloor(4)">Floor 4</button>
-        <button class="page-btn" id="rfloor-5" onclick="setRoomFloor(5)">Floor 5</button>
+        <div id="rfloor-btn-group" style="display:contents;"></div>
+        <div id="rfloor-more-wrap" style="position:relative;display:none;">
+            <button class="page-btn" id="rfloor-more-btn" onclick="toggleFloorMoreDropdown()" style="display:flex;align-items:center;gap:.3rem;">
+                More
+                <svg id="rfloor-more-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--hot-pink)" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="rfloor-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:110px;overflow:hidden;z-index:600;"></div>
+        </div>
     </div>
     <div class="tad-list" id="rooms-list"></div>
     <div class="tad-footer">
@@ -3580,17 +3584,101 @@ function closeRoomsDrawer() {
     document.getElementById('rooms-backdrop').classList.remove('open');
 }
 
+var RFLOOR_MAX_BTNS = 5;
+var _floorMoreOpen = false;
+
+function toggleFloorMoreDropdown() {
+    _floorMoreOpen = !_floorMoreOpen;
+    var menu    = document.getElementById('rfloor-more-menu');
+    var chevron = document.getElementById('rfloor-more-chevron');
+    menu.style.display = _floorMoreOpen ? 'block' : 'none';
+    chevron.style.transform = _floorMoreOpen ? 'rotate(180deg)' : '';
+}
+
+function closeFloorMoreDropdown() {
+    _floorMoreOpen = false;
+    var menu    = document.getElementById('rfloor-more-menu');
+    var chevron = document.getElementById('rfloor-more-chevron');
+    if (menu)    menu.style.display = 'none';
+    if (chevron) chevron.style.transform = '';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#rfloor-more-wrap')) closeFloorMoreDropdown();
+});
+
+function rebuildFloorFilters(floors) {
+    var btnGroup  = document.getElementById('rfloor-btn-group');
+    var moreWrap  = document.getElementById('rfloor-more-wrap');
+    var moreMenu  = document.getElementById('rfloor-more-menu');
+    if (!btnGroup || !moreWrap || !moreMenu) return;
+
+    btnGroup.innerHTML = '';
+    moreMenu.innerHTML = '';
+    closeFloorMoreDropdown();
+
+    var visible = floors.slice(0, RFLOOR_MAX_BTNS);
+    var overflow = floors.slice(RFLOOR_MAX_BTNS);
+
+    visible.forEach(function(f) {
+        var btn = document.createElement('button');
+        btn.className = 'page-btn';
+        btn.id = 'rfloor-' + f;
+        btn.textContent = 'Floor ' + f;
+        btn.onclick = function() { setRoomFloor(f); };
+        btnGroup.appendChild(btn);
+    });
+
+    if (overflow.length > 0) {
+        moreWrap.style.display = '';
+        overflow.forEach(function(f) {
+            var item = document.createElement('button');
+            item.className = 'addf-item';
+            item.id = 'rfloor-' + f;
+            item.textContent = 'Floor ' + f;
+            item.onclick = function() { setRoomFloor(f); closeFloorMoreDropdown(); };
+            moreMenu.appendChild(item);
+        });
+    } else {
+        moreWrap.style.display = 'none';
+    }
+
+    syncFloorActiveState();
+}
+
+function syncFloorActiveState() {
+    document.querySelectorAll('[id^="rfloor-"]').forEach(function(el) {
+        if (el.id === 'rfloor-all') return;
+        if (el.id === 'rfloor-more-btn') return;
+        if (el.tagName === 'DIV') return;
+        var f = el.id.replace('rfloor-', '');
+        var isActive = (roomsFloorFilter !== '' && String(roomsFloorFilter) === String(f));
+        el.classList.toggle('active', isActive);
+    });
+    var allBtn = document.getElementById('rfloor-all');
+    if (allBtn) allBtn.classList.toggle('active', roomsFloorFilter === '');
+
+    var moreBtn = document.getElementById('rfloor-more-btn');
+    if (moreBtn) {
+        var moreMenu = document.getElementById('rfloor-more-menu');
+        var overflowActive = moreMenu && moreMenu.querySelector('.active') !== null;
+        moreBtn.classList.toggle('active', overflowActive);
+    }
+}
+
 function setRoomFloor(floor) {
     roomsFloorFilter = floor;
-    document.querySelectorAll('[id^="rfloor-"]').forEach(b => b.classList.remove('active'));
-    document.getElementById('rfloor-' + (floor === '' ? 'all' : floor)).classList.add('active');
+    syncFloorActiveState();
+    closeFloorMoreDropdown();
     renderRooms();
 }
 
 async function fetchRooms() {
     try {
-        const res  = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
-        roomsData  = await res.json();
+        const res = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        roomsData = await res.json();
+        var floors = [...new Set(roomsData.map(r => r.floor))].sort(function(a,b){return a-b;});
+        rebuildFloorFilters(floors);
         renderRooms();
     } catch {
         document.getElementById('rooms-list').innerHTML = '<div class="tad-empty">Failed to load rooms.</div>';
@@ -3809,7 +3897,7 @@ function openAddRoomModal() {
                 var floorSel = document.getElementById('ar-floor');
                 if (!floorSel || val.length < 3) return;
                 var derivedFloor = val.length > 2 ? parseInt(val.slice(0, val.length - 2), 10) : null;
-                if (derivedFloor && derivedFloor >= 1) {
+                if (derivedFloor && derivedFloor >= 1 && derivedFloor <= 99) {
                     var opt = Array.from(floorSel.options).find(function(o) { return parseInt(o.value, 10) === derivedFloor; });
                     if (opt) {
                         floorSel.value = String(derivedFloor);
@@ -3832,6 +3920,7 @@ async function submitAddRoom() {
     const capacity = document.getElementById('ar-capacity').value;
     const stayType = document.getElementById('ar-stay-type').value;
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (parseInt(floor, 10) > 99) { showToast('Floor cannot exceed 99.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     const duplicate = roomsData.find(function(r) { return r.room_number.toLowerCase() === number.toLowerCase(); });
     if (duplicate) { showToast('Room ' + number + ' already exists on Floor ' + duplicate.floor + '.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
@@ -3956,6 +4045,7 @@ async function submitEditRoom() {
     const isActive = document.getElementById('er-active').value === '1';
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('er-number').classList.add('field-invalid'); return; }
+    if (parseInt(floor, 10) > 99) { showToast('Floor cannot exceed 99.', 'error'); return; }
     showActionLoading('Saving room...');
     try {
         const res = await fetch('/rooms/' + id, {
