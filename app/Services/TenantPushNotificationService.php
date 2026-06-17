@@ -214,11 +214,20 @@ class TenantPushNotificationService
                 ->post(self::EXPO_PUSH_URL, $messages);
 
             if ($response->failed()) {
+                $responseBody = $response->body();
                 Log::warning('Expo push notification request was rejected.', [
                     'status' => $response->status(),
-                    'body' => $response->body(),
+                    'body' => $responseBody,
                     'message_count' => count($messages),
                 ]);
+
+                // Hybrid fallback: If too many Experience IDs are mixed in the same request, send them individually
+                if (str_contains($responseBody, 'PUSH_TOO_MANY_EXPERIENCE_IDS')) {
+                    Log::info('Falling back to sending push notifications individually due to mixed Experience IDs.');
+                    foreach ($messages as $message) {
+                        $this->sendIndividualExpoMessage($message);
+                    }
+                }
             } else {
                 $tickets = $response->json('data', []);
                 $failedTickets = collect($tickets)
@@ -260,6 +269,39 @@ class TenantPushNotificationService
             Log::warning('Expo push notification failed.', [
                 'message' => $error->getMessage(),
                 'message_count' => count($messages),
+            ]);
+        }
+    }
+
+    private function sendIndividualExpoMessage(array $message): void
+    {
+        try {
+            $response = Http::withOptions([
+                'verify' => (bool) config('services.expo.verify_ssl', true),
+            ])
+                ->timeout(3)
+                ->acceptJson()
+                ->post(self::EXPO_PUSH_URL, [$message]);
+
+            if ($response->failed()) {
+                Log::warning('Individual Expo push notification request was rejected.', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                    'token' => $message['to'] ?? null,
+                ]);
+            } else {
+                $tickets = $response->json('data', []);
+                $ticketId = $tickets[0]['id'] ?? null;
+                $token = $message['to'] ?? null;
+
+                if ($ticketId && $token) {
+                    $this->logExpoReceipts([$ticketId => $token]);
+                }
+            }
+        } catch (\Throwable $error) {
+            Log::warning('Individual Expo push notification failed.', [
+                'message' => $error->getMessage(),
+                'token' => $message['to'] ?? null,
             ]);
         }
     }
