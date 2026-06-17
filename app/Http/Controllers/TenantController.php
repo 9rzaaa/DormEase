@@ -452,7 +452,7 @@ class TenantController extends Controller
             $floor = $room->floor;
         }
 
-        [$accountId, $tempPassword] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+        [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
             $accountId    = Tenant::generateAccountId();
             $tempPassword = Tenant::generateTempPassword();
 
@@ -473,7 +473,7 @@ class TenantController extends Controller
                 'is_active'        => true,
             ]);
 
-            return [$accountId, $tempPassword];
+            return [$accountId, $tempPassword, $tenant->tenant_id];
         });
 
         NotificationHelper::sendToAll(
@@ -483,9 +483,11 @@ class TenantController extends Controller
         );
 
         return response()->json([
-            'message'      => 'Tenant renewed successfully.',
-            'account_id'   => $accountId,
-            'temp_password' => $tempPassword,
+            'message'        => 'Tenant renewed successfully.',
+            'account_id'     => $accountId,
+            'temp_password'  => $tempPassword,
+            'suggest_photo'  => true,
+            'new_tenant_id'  => $newTenantId,
         ]);
     }
 
