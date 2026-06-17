@@ -1659,7 +1659,7 @@
                 <div class="modal-grid">
                     <div class="modal-field">
                         <label>Billing Month</label>
-                        <input type="date" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m-01') }}" max="{{ now()->format('Y-m-d') }}">
+                        <input type="month" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m') }}" max="{{ now()->format('Y-m') }}">
                         <span class="field-error">Billing month is required.</span>
                     </div>
                     <div class="modal-field">
@@ -1772,7 +1772,7 @@
             </div>
             <div class="modal-field">
               <label>Due date</label>
-              <input type="date" id="edit-due-date" min="{{ now()->format('Y-m-d') }}">
+              <input type="date" id="edit-due-date">
               <span class="field-error">Please set a due date.</span>
             </div>
             <div class="field-error full" id="edit-reading-error" style="grid-column:1/-1;display:none;"></div>
@@ -2052,10 +2052,13 @@ function addFloorRow(defaultFloor) {
 }
 
 function autoFillPrevReading(row, floor) {
-    if (!floor || lastMonthReadings[floor] === undefined) return;
+    if (!floor) return;
+    var key = lastMonthReadings[floor] !== undefined ? floor : String(floor);
+    if (lastMonthReadings[key] === undefined) return;
+    floor = key;
     const prevInput = row.querySelector('[name$="[prev]"]');
     if (!prevInput || prevInput.value !== '') return;
-    prevInput.value = parseFloat(lastMonthReadings[floor]).toFixed(2);
+    prevInput.value = parseFloat(lastMonthReadings[floor] ?? lastMonthReadings[String(floor)] ?? 0).toFixed(2);
     prevInput.classList.add('input-valid');
     recalcFloorRow(row);
 }
@@ -2154,7 +2157,7 @@ function openLogModal() {
     floorRowIdx = 0;
 
     const billingMonthInput = document.getElementById('log-billing-month');
-    if (billingMonthInput) billingMonthInput.value = new Date().toISOString().slice(0, 7) + '-01';
+    if (billingMonthInput) billingMonthInput.value = new Date().toISOString().slice(0, 7);
 
     const dueDateInput = document.getElementById('log-due-date');
     if (dueDateInput) {
@@ -2302,6 +2305,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('Current reading cannot be less than previous reading.', 'error');
                 return;
             }
+            if (document.getElementById('edit-curr')?.value === '') {
+                showToast('Current reading is required.', 'error');
+                document.getElementById('edit-curr')?.classList.add('input-invalid');
+                return;
+            }
 
             const due = document.getElementById('edit-due-date')?.value;
             if (!due) {
@@ -2445,11 +2453,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!validateLogField(amountInput)) formValid = false;
 
         if (monthInput.value) {
-            const billingMonthDate = new Date(monthInput.value + 'T00:00:00');
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            if (billingMonthDate > firstDayThisMonth) {
+            const [mYear, mMonth] = monthInput.value.split('-').map(Number);
+            const now = new Date();
+            if (mYear > now.getFullYear() || (mYear === now.getFullYear() && mMonth > now.getMonth() + 1)) {
                 monthInput.classList.add('input-invalid');
                 const errEl = monthInput.parentElement?.querySelector('.field-error');
                 if (errEl) { errEl.textContent = 'Billing month cannot be in the future.'; errEl.classList.add('visible'); }
@@ -2458,7 +2464,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (monthInput.value && dueInput.value) {
-            const billingStart = new Date(monthInput.value + 'T00:00:00');
+            const [mYear, mMonth] = monthInput.value.split('-').map(Number);
+            const billingStart = new Date(mYear, mMonth - 1, 1);
             const dueDateVal   = new Date(dueInput.value + 'T00:00:00');
             if (dueDateVal <= billingStart) {
                 dueInput.classList.add('input-invalid');
@@ -2497,13 +2504,26 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (rowOk) {
-                const prev = parseFloat(prevInput?.value) || 0;
-                const curr = parseFloat(currInput?.value) || 0;
-                if (currInput && currInput.value !== '' && curr < prev) {
+                const prev = parseFloat(prevInput?.value);
+                const curr = parseFloat(currInput?.value);
+                const prevEmpty = !prevInput?.value && prevInput?.value !== '0';
+                const currEmpty = !currInput?.value && currInput?.value !== '0';
+                const errEl2 = row.querySelector('.frr-error');
+
+                if (prevEmpty || isNaN(prev) || prev < 0) {
                     row.classList.add('row-error');
-                    const errEl2 = row.querySelector('.frr-error');
+                    if (errEl2) { errEl2.textContent = 'Previous reading is required and must be 0 or greater.'; errEl2.classList.add('visible'); }
+                    if (prevInput) prevInput.classList.add('input-invalid');
+                    formValid = false;
+                } else if (currEmpty || isNaN(curr) || curr < 0) {
+                    row.classList.add('row-error');
+                    if (errEl2) { errEl2.textContent = 'Current reading is required and must be 0 or greater.'; errEl2.classList.add('visible'); }
+                    if (currInput) currInput.classList.add('input-invalid');
+                    formValid = false;
+                } else if (curr < prev) {
+                    row.classList.add('row-error');
                     if (errEl2) { errEl2.textContent = 'Current reading cannot be less than previous reading.'; errEl2.classList.add('visible'); }
-                    currInput.classList.add('input-invalid');
+                    if (currInput) currInput.classList.add('input-invalid');
                     formValid = false;
                 }
             }
@@ -2551,7 +2571,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 showToast(data.message || 'Water billing logged successfully.', 'success');
 
                 const billingMonth = document.getElementById('log-billing-month').value;
-                const monthForUrl  = billingMonth.substring(0, 7) + '-01';
+                const monthForUrl  = billingMonth + '-01';
                 const floor        = document.getElementById('filter-floor').value;
                 let   url          = "{{ route('billing.index') }}?month=" + monthForUrl;
                 if (floor) url    += '&floor=' + floor;
@@ -2727,6 +2747,8 @@ function toggleExportDropdown(id) {
 
 function closeAllExportDropdowns() {
     document.querySelectorAll('.export-menu').forEach(function(m) { m.classList.remove('open'); });
+    var lp = document.getElementById('billing-legend-popup');
+    if (lp) lp.classList.remove('open');
 }
 
 document.addEventListener('click', function(e) {
@@ -2813,7 +2835,7 @@ function openUpdateModal(room) {
 
     const dueDateField = document.getElementById('edit-due-date');
     dueDateField.value = room.due_date !== '--' ? new Date(room.due_date).toISOString().split('T')[0] : '';
-    dueDateField.min   = new Date().toISOString().split('T')[0];
+    dueDateField.removeAttribute('min');
     dueDateField.classList.remove('input-invalid');
 
     const errEl = document.getElementById('edit-reading-error');
@@ -2947,32 +2969,6 @@ function openUpdateModal(room) {
     const primaryBilling = room.tenants.find(t => t.billing_id && t.payment_status !== 'pending-tenant' && t.payment_status !== 'inactive-tenant');
     document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     openModal('update-modal');
-}
-
-function recalcUpdateShare() {
-    const prev = parseFloat(document.getElementById('edit-prev')?.value) || 0;
-    const curr = parseFloat(document.getElementById('edit-curr')?.value) || 0;
-    const cons = Math.max(0, curr - prev);
-    const consField = document.getElementById('edit-consumption');
-    if (consField) consField.value = cons.toFixed(2) + ' m3';
-    const dispCons = document.getElementById('um-disp-cons');
-    if (dispCons) dispCons.textContent = cons.toFixed(2) + ' m3';
-    const dispShare = document.getElementById('um-disp-share');
-    if (dispShare && dispShare.textContent !== '--') {
-        dispShare.textContent = 'recalculating on save';
-        dispShare.style.fontSize = '11px';
-        dispShare.style.color = 'var(--ink-soft)';
-    }
-
-    const currInp = document.getElementById('edit-curr');
-    const errEl   = document.getElementById('edit-reading-error');
-    if (currInp && currInp.value !== '' && curr < prev) {
-        currInp.classList.add('input-invalid');
-        if (errEl) { errEl.textContent = 'Current reading cannot be less than previous reading.'; errEl.classList.add('visible'); }
-    } else {
-        if (currInp) currInp.classList.remove('input-invalid');
-        if (errEl) errEl.classList.remove('visible');
-    }
 }
 
 @if(session('success'))

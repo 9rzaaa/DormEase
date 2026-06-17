@@ -188,7 +188,7 @@ class BillingController extends Controller
             ->whereIn('floor', $activeFloors->all())
             ->get()
             ->groupBy('floor')
-            ->map(fn($rows) => $rows->first()->curr_reading ?? 0);
+            ->map(fn($rows) => (float) ($rows->first()->curr_reading ?? 0));
 
         return view('billing', compact(
             'billingGroups',
