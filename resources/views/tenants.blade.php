@@ -4670,20 +4670,38 @@ async function submitRenewTenant() {
     showActionLoading('Renewing tenant stay...');
 
     try {
-        var res = await fetch('/tenants/' + renewTenantId + '/renew', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
-        });
-        var data = await res.json();
+        var res;
+        try {
+            res = await fetch('/tenants/' + renewTenantId + '/renew', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
+            });
+        } catch (networkErr) {
+            throw new Error('Network error. Check your connection and try again.');
+        }
+        var data;
+        try {
+            data = await res.json();
+        } catch (parseErr) {
+            throw new Error('Unexpected server response. The server may have returned an error page instead of JSON.');
+        }
         if (!res.ok) {
             var errMsg = data.message || 'Failed to renew tenant.';
-            if (res.status === 422 && errMsg.toLowerCase().indexOf('full') !== -1) {
-                document.getElementById('renew-room-error').textContent = errMsg;
-                document.getElementById('renew-room-error').style.display = 'block';
-                document.getElementById('renew-room').classList.add('field-invalid');
-                document.getElementById('renew-room').focus();
+            if (res.status === 404) {
+                throw new Error('No move-out record found for this tenant. Make sure the tenant has been marked as moved out first.');
+            }
+            if (res.status === 422) {
+                if (errMsg.toLowerCase().indexOf('full') !== -1 || errMsg.toLowerCase().indexOf('room') !== -1) {
+                    document.getElementById('renew-room-error').textContent = errMsg;
+                    document.getElementById('renew-room-error').style.display = 'block';
+                    document.getElementById('renew-room').classList.add('field-invalid');
+                    document.getElementById('renew-room').focus();
+                }
                 throw new Error(errMsg);
+            }
+            if (res.status === 401) {
+                throw new Error('Session expired. Please refresh the page and log in again.');
             }
             throw new Error(errMsg);
         }
@@ -4698,10 +4716,12 @@ async function submitRenewTenant() {
 
         var photoSuggestWrap = document.getElementById('renew-cred-photo-suggest');
         if (photoSuggestWrap) {
-            photoSuggestWrap.style.display = data.suggest_photo ? '' : 'none';
-            if (data.suggest_photo && data.new_tenant_id) {
+            if (data.new_tenant_id) {
                 var uploadBtn = document.getElementById('renew-cred-upload-btn');
-                if (uploadBtn) uploadBtn.dataset.tenantId = data.new_tenant_id;
+                if (uploadBtn) uploadBtn.dataset.tenantId = String(data.new_tenant_id);
+                photoSuggestWrap.style.display = '';
+            } else {
+                photoSuggestWrap.style.display = 'none';
             }
         }
 
@@ -4713,7 +4733,8 @@ async function submitRenewTenant() {
 
         showToast(tenantName + ' has been renewed successfully.', 'success');
     } catch (e) {
-        showToast(e.message, 'error');
+        var msg = e.message || 'An unexpected error occurred. Please try again.';
+        showToast(msg, 'error');
         if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
     } finally {
         document.getElementById('action-loading').classList.remove('open');
