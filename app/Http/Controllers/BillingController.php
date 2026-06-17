@@ -182,6 +182,14 @@ class BillingController extends Controller
             ];
         }
 
+        $prevMonth = Carbon::parse($selectedMonth)->subMonth();
+        $lastMonthReadings = WaterBilling::whereYear('billing_month', $prevMonth->year)
+            ->whereMonth('billing_month', $prevMonth->month)
+            ->whereIn('floor', $activeFloors->all())
+            ->get()
+            ->groupBy('floor')
+            ->map(fn($rows) => $rows->first()->curr_reading ?? 0);
+
         return view('billing', compact(
             'billingGroups',
             'months',
@@ -194,7 +202,8 @@ class BillingController extends Controller
             'selectedMonth',
             'selectedFloor',
             'activeFloors',
-            'unloggedFloors'
+            'unloggedFloors',
+            'lastMonthReadings'
         ));
     }
 
