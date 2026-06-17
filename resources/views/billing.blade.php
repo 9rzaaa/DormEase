@@ -1837,9 +1837,7 @@
 
     var hideTimer = null;
 
-    if (!document.body.contains(popup)) {
-        document.body.appendChild(popup);
-    }
+    document.body.appendChild(popup);
 
     function positionPopup() {
         var rect       = trigger.getBoundingClientRect();
