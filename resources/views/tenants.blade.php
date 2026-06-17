@@ -1096,7 +1096,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="5" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -1138,7 +1138,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="er-number" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <input type="text" id="er-number" inputmode="numeric" maxlength="5" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -1967,6 +1967,20 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <div class="credentials-warning">
                 This temporary password will <strong>not be shown again</strong>. Inform the tenant immediately.
+            </div>
+            <div id="renew-cred-photo-suggest" style="display:none;margin-top:.75rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.7rem .9rem;">
+                <div style="display:flex;align-items:flex-start;gap:.55rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8960c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:.8rem;font-weight:700;color:#7a5400;margin-bottom:.25rem;">Photo update recommended</div>
+                        <div style="font-size:.75rem;color:#7a5400;line-height:1.5;margin-bottom:.55rem;">Since the tenant is renewing their contract, consider updating their photo to keep records current. This is optional.</div>
+                        <button type="button" id="renew-cred-upload-btn" onclick="triggerTenantPhotoUpload(this.dataset.tenantId)" style="display:inline-flex;align-items:center;gap:.4rem;padding:.38rem .9rem;border-radius:8px;border:1.5px solid #f0c040;background:var(--white);color:#7a5400;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background='#f0c040';this.style.color='#fff';" onmouseout="this.style.background='var(--white)';this.style.color='#7a5400';">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Update Photo Now
+                        </button>
+                        <span style="font-size:.72rem;color:#a07020;margin-left:.5rem;">JPG or PNG, max 4MB</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
@@ -4681,6 +4695,16 @@ async function submitRenewTenant() {
         document.getElementById('renew-cred-name').textContent       = tenantName;
         document.getElementById('renew-cred-account-id').textContent = data.account_id;
         document.getElementById('renew-cred-password').textContent   = data.temp_password;
+
+        var photoSuggestWrap = document.getElementById('renew-cred-photo-suggest');
+        if (photoSuggestWrap) {
+            photoSuggestWrap.style.display = data.suggest_photo ? '' : 'none';
+            if (data.suggest_photo && data.new_tenant_id) {
+                var uploadBtn = document.getElementById('renew-cred-upload-btn');
+                if (uploadBtn) uploadBtn.dataset.tenantId = data.new_tenant_id;
+            }
+        }
+
         openModal('renew-credentials-modal');
 
         moveoutTenantArchive = moveoutTenantArchive.filter(function(r) { return r.id !== renewTenantId; });
