@@ -1936,6 +1936,75 @@ tbody tr:hover { background: var(--soft-bg); }
 </div>
 
 <div class="modal-overlay" id="renew-credentials-modal">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/nav-tenants.png') }}" class="icon-sm" alt="">
+                Tenant Renewed Successfully
+            </div>
+            <button class="modal-close" onclick="closeModal('renew-credentials-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                The account for <strong id="renew-cred-name" style="color:var(--ink);"></strong> has been renewed. Provide these credentials to the tenant:
+            </p>
+            <div class="credentials-box">
+                <h4>New Login Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Account ID</div>
+                        <div class="credential-value" id="renew-cred-account-id"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-account-id', this)">Copy</button>
+                </div>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Temporary Password</div>
+                        <div class="credential-value" id="renew-cred-password"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-password', this)">Copy</button>
+                </div>
+            </div>
+            <div class="credentials-warning">
+                This temporary password will <strong>not be shown again</strong>. Inform the tenant immediately.
+            </div>
+            <div id="renew-cred-photo-suggest" style="display:none;margin-top:.75rem;background:linear-gradient(135deg,#fff5f9 0%,#ffe8f2 100%);border:1.5px solid var(--pink-100);border-radius:12px;padding:.8rem .9rem;">
+                <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                    <div style="width:30px;height:30px;border-radius:8px;background:var(--petal);border:1.5px solid var(--pink-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:.8rem;font-weight:800;color:var(--ink);margin-bottom:.2rem;letter-spacing:-.01em;">Tenant photo</div>
+                        <div style="font-size:.75rem;color:#7a3050;line-height:1.5;margin-bottom:.65rem;">Upload or update the tenant photo for this renewed account. JPG or PNG, max 4MB.</div>
+                        <div id="renew-cred-photo-preview-wrap" style="display:none;margin-bottom:.65rem;">
+                            <div style="font-size:.7rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Current photo</div>
+                            <div style="position:relative;display:inline-block;">
+                                <img id="renew-cred-photo-preview-img" src="" alt="Tenant photo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--pink-100);box-shadow:0 4px 12px rgba(232,23,93,.15);display:block;">
+                                <div id="renew-cred-photo-preview-check" style="position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:#1f9d69;border:2px solid #fff;display:flex;align-items:center;justify-content:center;">
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+                            <button type="button" id="renew-cred-upload-btn" onclick="triggerRenewPhotoUpload()" style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .2s;box-shadow:0 4px 12px rgba(232,23,93,.2);">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                <span id="renew-cred-upload-btn-label">Upload Photo</span>
+                            </button>
+                            <span style="font-size:.72rem;color:#b06080;font-weight:500;">JPG or PNG, max 4MB</span>
+                        </div>
+                        <div id="renew-cred-upload-status" style="display:none;margin-top:.45rem;font-size:.75rem;font-weight:600;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('renew-credentials-modal')">Close</button>
+            <button class="btn-submit" onclick="closeModal('renew-credentials-modal')">Got it</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="renew-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitRenewPhoto(this)">
     <div class="modal" style="max-width:440px;">
         <div class="modal-header">
             <div class="modal-title">
@@ -1997,9 +2066,33 @@ tbody tr:hover { background: var(--soft-bg); }
 <input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
 
 @endsection
-
 @section('scripts')
 <script>
+function showToast(message, type) {
+    var existing = document.getElementById('dormease-toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.id = 'dormease-toast';
+    var bg = type === 'success' ? '#1f9d69' : type === 'error' ? '#e04867' : '#5a1e38';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:.65rem;padding:.75rem 1.2rem;border-radius:14px;background:' + bg + ';color:#fff;font-size:.875rem;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.18);opacity:0;transform:translateY(12px);transition:opacity .25s,transform .25s;max-width:360px;line-height:1.4;font-family:inherit;';
+    var icon = type === 'success'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    toast.innerHTML = icon + '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        });
+    });
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+        setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+    }, 4000);
+}
+
 function printCredentialSlip(type) {
     var accountId, tempPassword, tenantName;
     if (type === 'new') {
@@ -4504,7 +4597,86 @@ function setAddMode(mode) {
     }
 })();
 
-var renewTenantId = null;
+var _renewCredNewTenantId = null;
+
+function triggerRenewPhotoUpload() {
+    var input = document.getElementById('renew-photo-upload-input');
+    input.value = '';
+    input.click();
+}
+
+async function submitRenewPhoto(input) {
+    var tenantId = _renewCredNewTenantId;
+    if (!tenantId) {
+        showRenewPhotoStatus('error', 'No tenant ID found. Please close and try again.');
+        input.value = '';
+        return;
+    }
+    var file = input.files[0];
+    if (!file) return;
+
+    var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedTypes.indexOf(file.type) === -1) {
+        showRenewPhotoStatus('error', 'Invalid file type. Only JPG and PNG are accepted.');
+        input.value = '';
+        return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+        showRenewPhotoStatus('error', 'File is too large. Maximum size is 4MB.');
+        input.value = '';
+        return;
+    }
+
+    var btn = document.getElementById('renew-cred-upload-btn');
+    var btnLabel = document.getElementById('renew-cred-upload-btn-label');
+    if (btn) { btn.disabled = true; btn.style.opacity = '.65'; }
+    if (btnLabel) btnLabel.textContent = 'Uploading...';
+    showRenewPhotoStatus('loading', 'Uploading photo...');
+
+    var formData = new FormData();
+    formData.append('tenant_photo', file);
+
+    try {
+        var res = await fetch('/tenants/' + tenantId + '/upload-photo', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: formData,
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Upload failed.');
+
+        var previewWrap = document.getElementById('renew-cred-photo-preview-wrap');
+        var previewImg  = document.getElementById('renew-cred-photo-preview-img');
+        if (previewWrap && previewImg) {
+            previewImg.src = data.url + '?t=' + Date.now();
+            previewWrap.style.display = '';
+        }
+
+        if (btnLabel) btnLabel.textContent = 'Change Photo';
+        showRenewPhotoStatus('success', 'Photo uploaded successfully.');
+
+        var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
+        if (idx !== -1) tenants[idx].tenant_photo = data.tenant_photo;
+        applyFilters();
+    } catch (e) {
+        showRenewPhotoStatus('error', e.message || 'Upload failed. Please try again.');
+        if (btnLabel) btnLabel.textContent = 'Try Again';
+    } finally {
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    }
+}
+
+function showRenewPhotoStatus(type, message) {
+    var el = document.getElementById('renew-cred-upload-status');
+    if (!el) return;
+    var colorMap = { success: '#1f9d69', error: '#e04867', loading: '#7a3050' };
+    el.style.color = colorMap[type] || '#7a3050';
+    el.textContent = message;
+    el.style.display = '';
+    if (type === 'success') {
+        setTimeout(function() { el.style.display = 'none'; }, 5000);
+    }
+}
 
 function openRenewModal(id, name, roomNumber, stayType) {
     renewTenantId = id;
@@ -4721,10 +4893,18 @@ async function submitRenewTenant() {
         var photoSuggestWrap = document.getElementById('renew-cred-photo-suggest');
         if (photoSuggestWrap) {
             if (data.new_tenant_id) {
-                var uploadBtn = document.getElementById('renew-cred-upload-btn');
-                if (uploadBtn) uploadBtn.dataset.tenantId = String(data.new_tenant_id);
+                _renewCredNewTenantId = data.new_tenant_id;
                 photoSuggestWrap.style.display = '';
+                var previewWrap = document.getElementById('renew-cred-photo-preview-wrap');
+                if (previewWrap) previewWrap.style.display = 'none';
+                var statusEl = document.getElementById('renew-cred-upload-status');
+                if (statusEl) statusEl.style.display = 'none';
+                var btnLabel = document.getElementById('renew-cred-upload-btn-label');
+                if (btnLabel) btnLabel.textContent = 'Upload Photo';
+                var btn = document.getElementById('renew-cred-upload-btn');
+                if (btn) { btn.disabled = false; btn.style.opacity = ''; }
             } else {
+                _renewCredNewTenantId = null;
                 photoSuggestWrap.style.display = 'none';
             }
         }
@@ -4751,6 +4931,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('sort-select').value = 'newest';
     document.getElementById('status-filter').value = '';
     applyFilters();
+
+    document.querySelectorAll('#add-modal input[required], #edit-modal input[required]').forEach(function(inp) {
+        inp.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('field-invalid');
+            } else {
+                this.classList.remove('field-invalid');
+            }
+        });
+        inp.addEventListener('input', function() {
+            if (this.value.trim()) this.classList.remove('field-invalid');
+        });
+    });
 });
 
 var deletedTenantArchive  = {!! json_encode($deletedArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
