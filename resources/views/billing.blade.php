@@ -1831,6 +1831,19 @@
 @section('scripts')
 <script>
 (function() {
+    var url = new URL(window.location.href);
+    var hasParams = url.searchParams.has('month') || url.searchParams.has('floor');
+    if (!hasParams) {
+        var selects = document.querySelectorAll('.filter-select');
+        selects.forEach(function(s) { s.selectedIndex = 0; });
+    }
+    var inputs = document.querySelectorAll('input[type="text"], input[type="search"], input[type="month"], input[type="date"]');
+    inputs.forEach(function(inp) {
+        if (!inp.closest('form') || inp.closest('.modal-overlay')) return;
+        inp.setAttribute('autocomplete', 'off');
+    });
+})();
+(function() {
     var trigger = document.getElementById('billing-legend-trigger');
     var popup   = document.getElementById('billing-legend-popup');
     if (!trigger || !popup) return;
