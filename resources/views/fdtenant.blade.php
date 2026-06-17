@@ -902,12 +902,91 @@ tbody tr:hover { background: var(--soft-bg); }
     border-radius: 50%;
     flex-shrink: 0;
     overflow: hidden;
+    position: relative;
     background: rgba(255,255,255,.18);
     border: 2.5px solid rgba(255,255,255,.55);
     box-shadow: 0 6px 18px rgba(0,0,0,.14);
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform .18s, box-shadow .18s;
+}
+
+.td-modal-avatar-wrap.is-clickable {
+    cursor: pointer;
+}
+
+.td-modal-avatar-wrap.is-clickable:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+}
+
+.td-modal-avatar-zoom-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0);
+    opacity: 0;
+    transition: opacity .18s, background .18s;
+    pointer-events: none;
+}
+
+.td-modal-avatar-wrap.is-clickable:hover .td-modal-avatar-zoom-hint {
+    opacity: 1;
+    background: rgba(20,0,10,.34);
+}
+
+.photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20,0,10,.82);
+    backdrop-filter: blur(6px);
+    padding: 2rem;
+}
+
+.photo-lightbox.open {
+    display: flex;
+}
+
+.photo-lightbox-img {
+    max-width: min(80vw, 480px);
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.4);
+    animation: photoLightboxIn .25s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes photoLightboxIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.photo-lightbox-close {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
+    color: var(--white);
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+
+.photo-lightbox-close:hover {
+    background: rgba(255,255,255,.25);
 }
 
 .td-modal-avatar-wrap img {
@@ -1781,6 +1860,11 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
+    <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
+    <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
+</div>
+
 <div class="modal-overlay" id="notes-modal">
     <div class="modal" style="max-width:420px;">
         <div class="modal-header">
@@ -2435,9 +2519,15 @@ function viewTenant(t) {
 
     var avatarWrap = document.getElementById('td-modal-avatar-wrap');
     if (t.tenant_photo) {
-        avatarWrap.innerHTML = '<img src="/storage/' + t.tenant_photo + '" alt="">';
+        var photoUrl = '/storage/' + t.tenant_photo;
+        avatarWrap.innerHTML = '<img src="' + photoUrl + '" alt="">'
+            + '<span class="td-modal-avatar-zoom-hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>';
+        avatarWrap.classList.add('is-clickable');
+        avatarWrap.onclick = function() { openPhotoLightbox(photoUrl); };
     } else {
         avatarWrap.innerHTML = '<span class="td-modal-avatar-initials">' + tenantInitials(t) + '</span>';
+        avatarWrap.classList.remove('is-clickable');
+        avatarWrap.onclick = null;
     }
 
     var statusLabel = { active: 'Active', pending: 'Pending', inactive: 'Inactive', move_out: 'Move Out' };
@@ -2784,6 +2874,16 @@ function closeModal(id) {
     }
 }
 
+function openPhotoLightbox(url) {
+    document.getElementById('photo-lightbox-img').src = url;
+    document.getElementById('photo-lightbox').classList.add('open');
+}
+
+function closePhotoLightbox() {
+    document.getElementById('photo-lightbox').classList.remove('open');
+    document.getElementById('photo-lightbox-img').src = '';
+}
+
 window.addEventListener('click', function(e) {
     var vm = document.getElementById('view-modal');
     if (e.target === vm) vm.style.display = 'none';
@@ -2905,6 +3005,13 @@ document.addEventListener('click', function(e) {
     if (!panel || !input) return;
     if (panel.contains(e.target) || e.target === input) return;
     panel.classList.remove('open');
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var lb = document.getElementById('photo-lightbox');
+        if (lb && lb.classList.contains('open')) closePhotoLightbox();
+    }
 });
 
 applyFilters();
