@@ -1315,11 +1315,10 @@
         padding: .85rem 1rem;
         min-width: 300px;
         max-width: 340px;
-        z-index: 9999;
+        z-index: 99999;
         pointer-events: none;
     }
 
-    .billing-legend-wrap:hover .billing-legend-popup,
     .billing-legend-popup.open { display: block; }
 
     .blp-title {
@@ -1523,6 +1522,14 @@
                         <span class="blp-dot-label" style="color:#bbb;">Gray</span>
                     </div>
                     <div class="blp-desc">Not billed, inactive tenant, or account pending activation.</div>
+                </div>
+                <div class="blp-title" style="margin-top:.65rem;">Other Indicators</div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell" style="align-items:center;gap:.35rem;display:flex;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b0b0c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        <span style="font-size:.72rem;font-weight:700;color:#b0b0c0;">Phone</span>
+                    </div>
+                    <div class="blp-desc">Tenant has not activated their mobile app account yet. A temporary password is still in use.</div>
                 </div>
             </div>
         </div>
@@ -1823,9 +1830,11 @@
     var popup   = document.getElementById('billing-legend-popup');
     if (!trigger || !popup) return;
 
+    var hideTimer = null;
+
     function positionPopup() {
         var rect       = trigger.getBoundingClientRect();
-        var popupWidth = 330;
+        var popupWidth = 340;
         var left       = rect.left;
         var top        = rect.bottom + 8;
 
@@ -1834,24 +1843,35 @@
         }
         if (left < 12) left = 12;
 
-        var spaceBelow = window.innerHeight - rect.bottom;
-        var popupH     = popup.offsetHeight || 420;
-        if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
-            top = rect.top - popupH - 8;
-        }
-
-        popup.style.left = left + 'px';
-        popup.style.top  = top  + 'px';
-        popup.style.right = 'auto';
+        popup.style.left   = left + 'px';
+        popup.style.top    = top + 'px';
+        popup.style.right  = 'auto';
         popup.style.bottom = 'auto';
     }
 
-    trigger.addEventListener('mouseenter', positionPopup);
+    function showPopup() {
+        clearTimeout(hideTimer);
+        if (!document.body.contains(popup)) {
+            document.body.appendChild(popup);
+        }
+        positionPopup();
+        popup.classList.add('open');
+    }
+
+    function hidePopup() {
+        hideTimer = setTimeout(function() {
+            popup.classList.remove('open');
+        }, 120);
+    }
+
+    trigger.addEventListener('mouseenter', showPopup);
+    trigger.addEventListener('mouseleave', hidePopup);
+
     window.addEventListener('resize', function() {
-        if (popup.style.display !== 'none') positionPopup();
+        if (popup.classList.contains('open')) positionPopup();
     });
     window.addEventListener('scroll', function() {
-        if (popup.style.display !== 'none') positionPopup();
+        if (popup.classList.contains('open')) positionPopup();
     }, true);
 })();
 function showActionLoading(message) {
