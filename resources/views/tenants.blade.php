@@ -4742,6 +4742,10 @@ async function submitRenewTenant() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('floor-filter').value = '';
+    document.getElementById('sort-select').value = 'newest';
+    document.getElementById('status-filter').value = '';
     applyFilters();
 });
 
