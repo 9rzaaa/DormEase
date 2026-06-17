@@ -645,6 +645,10 @@ tbody tr:hover { background: var(--soft-bg); }
     background: #fff0f6;
     border-color: var(--bright-pink);
 }
+.vacation-toggle-row:has(#edit-change-room-toggle:checked) {
+    background: #fff0f6;
+    border-color: var(--bright-pink);
+}
 .vacation-toggle-label {
     display: flex;
     flex-direction: column;
@@ -1702,6 +1706,18 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
                         <div class="modal-field full">
+                            <div class="vacation-toggle-row" id="edit-room-toggle-row">
+                                <div class="vacation-toggle-label">
+                                    <span class="vacation-toggle-title">Change Room</span>
+                                    <span class="vacation-toggle-sub" id="edit-room-toggle-sub">No room currently assigned</span>
+                                </div>
+                                <label class="vacation-switch">
+                                    <input type="checkbox" id="edit-change-room-toggle" onchange="toggleEditRoomChange(this)">
+                                    <span class="vacation-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-field full">
                             <label>Stay Type</label>
                             <select name="stay_type" id="edit-stay-type" onchange="onEditStayTypeChange()">
                                 <option value="" disabled>Select type</option>
@@ -2241,6 +2257,8 @@ var sectionPages = { active: 1, reserved: 1 };
 var sectionData  = { active: [], reserved: [] };
 var addCurrentStep = 1;
 var selectedRoomNumber = null;
+var editOriginalRoomNumber = null;
+var editOriginalStayType = null;
 
 var EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
@@ -2997,6 +3015,11 @@ function closeModal(id) {
         document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
+        selectedRoomNumber = null;
+        editOriginalRoomNumber = null;
+        editOriginalStayType = null;
+        var roomToggleReset = document.getElementById('edit-change-room-toggle');
+        if (roomToggleReset) roomToggleReset.checked = false;
     }
 }
 
@@ -3480,6 +3503,67 @@ function switchToEdit() {
     }
 }
 
+function lockEditRoomFields(locked) {
+    var roomInput = document.getElementById('edit-room');
+    var stayType  = document.getElementById('edit-stay-type');
+    [roomInput, stayType].forEach(function(el) {
+        if (!el) return;
+        if (locked) {
+            el.style.pointerEvents = 'none';
+            el.style.opacity = '.65';
+            el.style.cursor = 'default';
+            el.style.background = '#f5f0f3';
+        } else {
+            el.style.pointerEvents = '';
+            el.style.opacity = '';
+            el.style.cursor = '';
+            el.style.background = '';
+        }
+    });
+}
+
+function toggleEditRoomChange(checkboxEl) {
+    var enabled     = checkboxEl.checked;
+    var roomInput   = document.getElementById('edit-room');
+    var stayTypeEl  = document.getElementById('edit-stay-type');
+    var suggestWrap = document.getElementById('edit-room-suggest-wrap');
+    var suggestBox  = document.getElementById('edit-room-suggest');
+    var hintWrap    = document.getElementById('edit-room-hint-wrap');
+    var hintBox     = document.getElementById('edit-room-hint');
+    var roomError   = document.getElementById('edit-room-error');
+    var roomSub     = document.getElementById('edit-room-toggle-sub');
+
+    lockEditRoomFields(!enabled);
+
+    if (enabled) {
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Reassigning from Rm. ' + editOriginalRoomNumber
+                : 'Pick a room for this tenant';
+        }
+        if (stayTypeEl.value) onEditStayTypeChange();
+        if (roomInput.value.trim()) roomInput.dispatchEvent(new Event('input'));
+    } else {
+        roomInput.value  = editOriginalRoomNumber || '';
+        stayTypeEl.value = editOriginalStayType   || '';
+        if (suggestWrap) suggestWrap.style.display = 'none';
+        if (suggestBox)  suggestBox.innerHTML = '';
+        if (hintWrap)    hintWrap.style.display = 'none';
+        if (hintBox)     hintBox.innerHTML = '';
+        if (roomError)   { roomError.style.display = 'none'; roomError.textContent = ''; }
+        roomInput.classList.remove('field-invalid');
+        selectedRoomNumber = null;
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Tenant stays in Rm. ' + editOriginalRoomNumber
+                : 'No room currently assigned';
+        }
+        document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+            b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+        });
+    }
+}
+
 function openEditModal(t) {
     currentTenant = t;
     document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
@@ -3507,6 +3591,7 @@ function openEditModal(t) {
         status:                 '{{ old("status") }}',
     };
     var hasOld = {{ session('edit_tenant_id') ? 'true' : 'false' }} && String(t.tenant_id) === '{{ session("edit_tenant_id", "") }}';
+    var hasRoomServerError = hasOld && {{ $errors->has('room_number') ? 'true' : 'false' }};
 
     document.getElementById('edit-form').action             = '/tenants/' + t.tenant_id;
     document.getElementById('edit-first-name').value        = hasOld && old.first_name             ? old.first_name             : (t.first_name || '');
@@ -3553,18 +3638,49 @@ function openEditModal(t) {
         editMoveoutEl.addEventListener('input',  checkMoveoutWarning);
     }
     openModal('edit-modal');
+
     var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
     var editSuggestBox  = document.getElementById('edit-room-suggest');
     if (editSuggestWrap) editSuggestWrap.style.display = 'none';
     if (editSuggestBox) editSuggestBox.innerHTML = '';
 
-    var editRoomInput = document.getElementById('edit-room');
-    if (editRoomInput && editRoomInput.value.trim()) {
-        setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
+    selectedRoomNumber     = null;
+    editOriginalRoomNumber = document.getElementById('edit-room').value || null;
+    editOriginalStayType   = document.getElementById('edit-stay-type').value || null;
+
+    var roomToggle  = document.getElementById('edit-change-room-toggle');
+    var roomSub     = document.getElementById('edit-room-toggle-sub');
+    var roomInputEl = document.getElementById('edit-room');
+    var stayTypeEl  = document.getElementById('edit-stay-type');
+
+    if (roomToggle) roomToggle.checked = false;
+    lockEditRoomFields(true);
+    if (roomSub) {
+        roomSub.textContent = editOriginalRoomNumber
+            ? 'Tenant stays in Rm. ' + editOriginalRoomNumber
+            : 'No room currently assigned';
     }
 
-    if (document.getElementById('edit-stay-type').value) {
-        onEditStayTypeChange();
+    if (editOriginalRoomNumber && window.getRoomsCache) {
+        window.getRoomsCache(function(rooms) {
+            var actualRoom = rooms.find(function(r) { return r.room_number.toLowerCase() === editOriginalRoomNumber.toLowerCase(); });
+            if (actualRoom && actualRoom.stay_type && roomToggle && !roomToggle.checked) {
+                stayTypeEl.value     = actualRoom.stay_type;
+                editOriginalStayType = actualRoom.stay_type;
+            }
+        });
+    }
+
+    if (hasRoomServerError && roomToggle) {
+        roomToggle.checked = true;
+        lockEditRoomFields(false);
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Reassigning from Rm. ' + editOriginalRoomNumber
+                : 'Pick a room for this tenant';
+        }
+        if (stayTypeEl.value) onEditStayTypeChange();
+        if (roomInputEl.value.trim()) roomInputEl.dispatchEvent(new Event('input'));
     }
 
     var editEmail = document.getElementById('edit-email');
@@ -4301,6 +4417,8 @@ async function submitDeleteRoom() {
             .catch(function() { cb([]); });
     }
 
+    window.getRoomsCache = getRoomsCache;
+
     function invalidateRoomsCache() { roomsCache = null; }
 
     var origFetchRooms = window.fetchRooms;
@@ -4355,8 +4473,23 @@ async function submitDeleteRoom() {
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">Reopen it in <strong>Manage Rooms</strong> before assigning tenants.</div></div></div>'
             };
         }
-        var effectiveOccupancy = room.occupancy;
+        var isOwnRoom = !!(excludeTenantId && currentTenant && currentTenant.tenant_id == excludeTenantId
+            && currentTenant.room_number && currentTenant.room_number.toLowerCase() === room.room_number.toLowerCase()
+            && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out');
+        var effectiveOccupancy = isOwnRoom ? Math.max(0, room.occupancy - 1) : room.occupancy;
         var remaining = room.capacity - effectiveOccupancy;
+        if (isOwnRoom) {
+            var otherCount = effectiveOccupancy;
+            return {
+                state: 'current',
+                html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#eef4ff;border:1.5px solid #a8c4f5;">'
+                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b6fd4" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:.8rem;font-weight:700;color:#2952a3;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is currently assigned to this tenant.</div>'
+                    + '<div style="font-size:.74rem;color:#3b6fd4;margin-top:.2rem;">' + otherCount + ' other slot' + (otherCount !== 1 ? 's' : '') + ' occupied besides this one, out of ' + room.capacity + ' total. Leave it as is to keep them here, or choose a different room above.</div>'
+                    + '</div></div>'
+            };
+        }
         if (remaining <= 0) {
             return {
                 state: 'full',
@@ -4481,12 +4614,16 @@ async function submitDeleteRoom() {
             var matched = rooms.filter(function(r) {
                 return r.stay_type === stayType;
             }).map(function(r) {
+                var isCurrent = !!(excludeId && currentTenant && currentTenant.room_number
+                    && currentTenant.room_number.toLowerCase() === r.room_number.toLowerCase()
+                    && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out');
                 var effOccupancy = r.occupancy;
-                if (excludeId && currentTenant && currentTenant.room_number === r.room_number && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out') {
+                if (isCurrent) {
                     effOccupancy = Math.max(0, effOccupancy - 1);
                 }
-                return Object.assign({}, r, { occupancy: effOccupancy });
+                return Object.assign({}, r, { occupancy: effOccupancy, isCurrent: isCurrent });
             }).sort(function(a, b) {
+                if (a.isCurrent !== b.isCurrent) return a.isCurrent ? -1 : 1;
                 var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
                 var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
                 if (aUnavail !== bUnavail) return aUnavail - bUnavail;
@@ -4499,21 +4636,35 @@ async function submitDeleteRoom() {
                 return r.is_active && (r.capacity - r.occupancy) > 0;
             }).length;
 
+            var currentRoom = matched.find(function(r) { return r.isCurrent; });
+            var currentBanner = currentRoom
+                ? '<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:9px;background:#eef4ff;border:1.5px solid #a8c4f5;margin-bottom:.6rem;">'
+                    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b6fd4" stroke-width="2.2" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                    + '<span style="font-size:.74rem;font-weight:700;color:#2952a3;">This tenant is currently in Rm.' + currentRoom.room_number + '.</span>'
+                    + '</div>'
+                : '';
+
             var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
                 + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
                 + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;">All rooms \u00b7 ' + stayType + '</div>'
                 + '<div style="font-size:.68rem;font-weight:700;color:#1f9d69;">' + availCount + ' available</div>'
                 + '</div>'
+                + currentBanner
                 + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;">';
 
             matched.forEach(function(r) {
                 var remaining  = r.capacity - r.occupancy;
                 var isFull     = remaining <= 0;
                 var isInactive = !r.is_active;
-                var unavail    = isFull || isInactive;
+                var unavail    = (isFull || isInactive) && !r.isCurrent;
                 var pct        = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
                 var chipBg, chipBorder, chipColor, badgeBg, badgeColor, badgeText, cursor, clickAttr;
-                if (isInactive) {
+                var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
+                if (r.isCurrent) {
+                    chipBg = '#eef4ff'; chipBorder = '#a8c4f5'; chipColor = '#2952a3';
+                    badgeBg = '#dce8fb'; badgeColor = '#2952a3'; badgeText = 'Current';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
+                } else if (isInactive) {
                     chipBg = '#f5f5f5'; chipBorder = '#d0d0d0'; chipColor = '#999';
                     badgeBg = '#efefef'; badgeColor = '#999'; badgeText = 'Closed';
                     cursor = 'not-allowed'; clickAttr = '';
@@ -4524,24 +4675,29 @@ async function submitDeleteRoom() {
                 } else if (pct >= 75) {
                     chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
                     badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                    var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
                     cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 } else {
                     chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                    var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
                     cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 }
-                var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
-                var displayBg     = isSelected ? '#fffbf0' : chipBg;
-                var displayBorder = isSelected ? '#f0c040' : chipBorder;
+                var isSelected    = (selectedRoomNumber === r.room_number) && !unavail;
+                var displayBorder = isSelected ? 'var(--bright-pink)' : chipBorder;
+                var displayBg     = isSelected ? '#fff0f6' : chipBg;
+                var ringStyle     = isSelected ? 'box-shadow:0 0 0 3px rgba(232,23,93,.16);' : '';
                 var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
-                var hoverOut = unavail ? '' : 'onmouseout="if(\'' + r.room_number + '\'===selectedRoomNumber){this.style.borderColor=\'#f0c040\';this.style.background=\'#fffbf0\';}else{this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';}";';
+                var hoverOut = unavail ? '' : 'onmouseout="if(\'' + r.room_number + '\'===selectedRoomNumber){this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';}else{this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';}";';
                 var chipClass = unavail ? '' : 'room-chip-selectable';
                 var chipData  = unavail ? '' : 'data-room="' + r.room_number + '" data-default-border="' + chipBorder + '" data-default-bg="' + chipBg + '"';
+                var checkMark = isSelected
+                    ? '<div style="position:absolute;top:5px;right:5px;width:15px;height:15px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(232,23,93,.4);">'
+                        + '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                        + '</div>'
+                    : '';
                 html += '<div ' + clickAttr + ' ' + chipClass + ' ' + chipData + ' ' + hoverIn + ' ' + hoverOut
-                    + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
-                    + displayBorder + ';background:' + displayBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
+                    + ' style="position:relative;display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
+                    + displayBorder + ';background:' + displayBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s,box-shadow .15s;user-select:none;' + ringStyle + '">'
+                    + checkMark
                     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
                         + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
                         + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
@@ -4550,7 +4706,7 @@ async function submitDeleteRoom() {
                         + '<span style="font-size:.66rem;font-weight:800;color:' + badgeColor + ';letter-spacing:.02em;">' + badgeText + '</span>'
                     + '</div>'
                     + '<div style="height:3px;background:#e0e0e0;border-radius:99px;overflow:hidden;">'
-                        + '<div style="height:100%;width:' + pct + '%;background:' + (isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
+                        + '<div style="height:100%;width:' + pct + '%;background:' + (r.isCurrent ? '#3b6fd4' : isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
                     + '</div>'
                     + '</div>';
             });
