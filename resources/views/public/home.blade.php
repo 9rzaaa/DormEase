@@ -690,7 +690,7 @@
       white-space: nowrap;
       box-shadow: 0 4px 20px rgba(36,16,24,0.12);
       display: flex; align-items: center; gap: 7px;
-      animation: pulseFloat 3s ease-in-out infinite;
+      animation: pulseFloat 3s ease-in-out 3;
       pointer-events: none;
     }
     #de-chat-pulse::before {
@@ -698,7 +698,7 @@
       width: 8px; height: 8px; border-radius: 50%;
       background: var(--pink);
       flex-shrink: 0;
-      animation: pulseDot 1.4s ease-in-out infinite;
+      animation: pulseDot 1.4s ease-in-out;
     }
     #de-chat-pulse::after {
       content: '';
@@ -1686,8 +1686,7 @@
       { id: 'drinking', keys: ['drinking','alcohol','alak','beer','wine','liquor','no drinking','bawal uminom'], answer: "No drinking of alcohol is allowed inside the building. This rule is strictly enforced. Violations may result in a warning or termination of tenancy.", follow: ['smoking','rules','contact'] },
       { id: 'tipping', keys: ['tip','tipping','gifts','gift','give money','bribe','palakol','lagay','suhulan'], answer: "No tipping or giving of money or gifts to our staff and guards. Favoritism shall not be tolerated — equal and fair treatment to all.", follow: ['rules','contact','security'] },
       { id: 'inspection', keys: ['inspection','inspect','room check','room inspection','monthly inspection','cleanliness check'], answer: "Monthly room inspections are conducted to ensure cleanliness and safety. Tenants are notified in advance via DormEase announcements. Please keep your room neat and free of prohibited items.", follow: ['cleanliness','dormease','rules'] },
-      { id: 'rules', keys: ['rule','rules','policy','policies','conduct','allowed','prohibited','bawal','house rule','house rules','dorm rules','dorm policy'], answer: "Here are the key house rules at Sanctissimo Rosario:\n\n• Male visitors are NOT allowed inside units\n• Log in/log out required with the guard\n• Curfew is strictly at 10:00 PM\n• Keep your room neat and clean\n• Garbage disposal is your responsibility\n• Laundries are not allowed\n• Flat ironing is not allowed\n• Report maintenance to the Admin office\n• No smoking inside the building\n• No drinking of alcohol\n• No tipping or giving gifts to staff\n\nFor specific rules, feel free to ask!", follow: ['curfew','visitor','contact'] },
-      { id: 'wifi', keys: ['wifi','wi-fi','internet','connection','internet connection','may wifi','may internet','signal'], answer: "You have two options: self-connect your own internet/Wi-Fi line, or use the dorm's Wi-Fi for ₱300 per device per month. Contact our admin for setup details.", follow: ['furnished','dormease','contact'] },      { id: 'aircon', keys: ['aircon','air con','air conditioning','ac unit','malamig','cold room','may aircon','aircon slot'], answer: "Every room has an aircon slot — you can install your own air conditioning unit. Contact our admin for more details on aircon policies.", follow: ['amenities','furnished','price'] },
+      { id: 'rules', keys: ['rule','rules','policy','policies','conduct','allowed','prohibited','bawal','house rule','house rules','dorm rules','dorm policy'], answer: "We have a few important house rules here at Sanctissimo Rosario! Which one would you like to know about?", follow: ['curfew','visitor','smoking','laundry','cleanliness','garbage','ironing','drinking','tipping','login_logout','inspection'] },      { id: 'wifi', keys: ['wifi','wi-fi','internet','connection','internet connection','may wifi','may internet','signal'], answer: "You have two options: self-connect your own internet/Wi-Fi line, or use the dorm's Wi-Fi for ₱300 per device per month. Contact our admin for setup details.", follow: ['furnished','dormease','contact'] },      { id: 'aircon', keys: ['aircon','air con','air conditioning','ac unit','malamig','cold room','may aircon','aircon slot'], answer: "Every room has an aircon slot — you can install your own air conditioning unit. Contact our admin for more details on aircon policies.", follow: ['amenities','furnished','price'] },
       { id: 'elevator', keys: ['elevator','elev','lift','may elevator','floor','storey','floors','palapag','piso','gaano kataas'], answer: "Sanctissimo Rosario is a 5-storey building with elevator access, so you don't have to worry about climbing stairs with your luggage!", follow: ['amenities','location','about'] },
       { id: 'bathroom', keys: ['bathroom','cr','comfort room','toilet','shower','own cr','private cr','banyo','may sariling cr','sariling banyo'], answer: "Every room has its own private bathroom — no sharing with other rooms. You get your own comfort room regardless of room type.", follow: ['amenities','roomtypes','furnished'] },
       { id: 'amenities', keys: ['amenity','amenities','facilities','what is included','kasama','may nandoon','what does it include','ano ang kasama','dorm facilities'], answer: "Our amenities include:\n\n• 24/7 Security + CCTV\n• Elevator access (5 floors)\n• Wi-Fi available\n• Private bathroom per room\n• Aircon slot in every room\n• Semi-furnished rooms (bed, wardrobe, desk)\n• Strong, reliable water supply\n• DormEase app for bills & announcements", follow: ['price','security','dormease'] },
