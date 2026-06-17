@@ -640,6 +640,9 @@
         border-radius: 22px;
         padding: 0;
         overflow: hidden;
+        max-height: 90vh;    
+        display: flex;        
+        flex-direction: column;
         box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
     }
 
@@ -673,7 +676,14 @@
     }
     .add-modal-close:hover { border-color: var(--hot-pink); color: var(--hot-pink); background: #fff0f5; }
 
-    .add-modal-body { padding: 1.4rem 1.8rem; }
+    .add-modal-body {
+        padding: 1.4rem 1.8rem;
+        overflow-y: auto;
+        max-height: calc(80vh - 140px);
+    }
+    .add-modal-body::-webkit-scrollbar { width: 4px; }
+    .add-modal-body::-webkit-scrollbar-track { background: transparent; }
+    .add-modal-body::-webkit-scrollbar-thumb { background: #f5b8cf; border-radius: 99px; }
 
     .add-modal-section {
         font-size: .67rem; font-weight: 800; text-transform: uppercase;
