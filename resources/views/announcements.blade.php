@@ -958,6 +958,83 @@
 @media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
 @media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-compose-chip { display: none; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
+.ann-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.ann-legend-wrap img {
+    display: block;
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    opacity: .65;
+    transition: opacity .2s;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+.ann-legend-wrap:hover img { opacity: 1; }
+.ann-legend-popup {
+    display: none;
+    position: fixed;
+    background: #fff;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(232,23,93,.16), 0 2px 8px rgba(0,0,0,.08);
+    padding: .85rem 1rem;
+    min-width: 300px;
+    max-width: 340px;
+    z-index: 999999;
+    pointer-events: none;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+.ann-legend-popup.open {
+    display: block;
+    pointer-events: auto;
+}
+.alp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink, #E8175D);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal, #ffeef4);
+}
+.alp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+}
+.alp-row:last-child { border-bottom: none; }
+.alp-badge-cell {
+    flex-shrink: 0;
+    width: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.alp-dot-cell {
+    flex-shrink: 0;
+    width: 82px;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+.alp-dot-label { font-size: .75rem; font-weight: 700; }
+.alp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted, #888);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .1rem;
+    flex: 1;
+}
 .fade-up { animation: fadeUp .42s ease both; }
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
@@ -1065,9 +1142,55 @@
                 <option value="this_month">This Month</option>
             </select>
         </div>
-        <div class="ann-search-wrap">
-            <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
-            <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <div class="ann-legend-wrap" id="ann-legend-trigger">
+                <img src="{{ asset('icons/info.png') }}" alt="Guide">
+                <div class="ann-legend-popup" id="ann-legend-popup">
+                    <div class="alp-title">Status Guide</div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-active">Active</span></div>
+                        <div class="alp-desc">Announcement is live and visible to all tenants.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-scheduled">Scheduled</span></div>
+                        <div class="alp-desc">Set to go live automatically at a future date and time.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-closed">Closed</span></div>
+                        <div class="alp-desc">No longer active. Moved to the archive and hidden from tenants.</div>
+                    </div>
+                    <div class="alp-title" style="margin-top:.65rem;">Priority Guide</div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-high"></span><span class="alp-dot-label" style="color:#e04867;">High</span></div>
+                        <div class="alp-desc">Urgent or time-sensitive. Shown with a red indicator.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-moderate"></span><span class="alp-dot-label" style="color:#f59e0b;">Moderate</span></div>
+                        <div class="alp-desc">Important but not urgent. Shown with an orange indicator.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-low"></span><span class="alp-dot-label" style="color:#1f9d69;">Low</span></div>
+                        <div class="alp-desc">General information. Shown with a green indicator.</div>
+                    </div>
+                    <div class="alp-title" style="margin-top:.65rem;">Quick Actions</div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Close</div>
+                        <div class="alp-desc">Archives the announcement. It can be reopened from the archive drawer.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Publish Now</div>
+                        <div class="alp-desc">Immediately publishes a scheduled announcement ahead of its set time.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Reopen</div>
+                        <div class="alp-desc">Sets a closed announcement back to active from the archive drawer.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ann-search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
+                <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+            </div>
         </div>
     </div>
 
@@ -1547,6 +1670,46 @@
 
 @section('scripts')
 <script>
+(function() {
+    var trigger = document.getElementById('ann-legend-trigger');
+    var popup   = document.getElementById('ann-legend-popup');
+    if (!trigger || !popup) return;
+
+    document.body.appendChild(popup);
+
+    var hideTimer = null;
+
+    function positionPopup() {
+        var rect       = trigger.getBoundingClientRect();
+        var popupWidth = 340;
+        var left       = rect.left;
+        var top        = rect.bottom + 8;
+        if (left + popupWidth > window.innerWidth - 12) left = window.innerWidth - popupWidth - 12;
+        if (left < 12) left = 12;
+        popup.style.left   = left + 'px';
+        popup.style.top    = top + 'px';
+        popup.style.right  = 'auto';
+        popup.style.bottom = 'auto';
+    }
+
+    function showPopup() {
+        clearTimeout(hideTimer);
+        positionPopup();
+        popup.classList.add('open');
+    }
+
+    function hidePopup() {
+        hideTimer = setTimeout(function() { popup.classList.remove('open'); }, 180);
+    }
+
+    trigger.addEventListener('mouseenter', showPopup);
+    trigger.addEventListener('mouseleave', hidePopup);
+    popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+    popup.addEventListener('mouseleave', hidePopup);
+
+    window.addEventListener('resize', function() { if (popup.classList.contains('open')) positionPopup(); });
+    window.addEventListener('scroll', function() { if (popup.classList.contains('open')) positionPopup(); }, true);
+})();
 const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
 const deletedAnnArchive = @json($deletedArchive);
 const closedAnnArchive  = @json($closedArchive);
