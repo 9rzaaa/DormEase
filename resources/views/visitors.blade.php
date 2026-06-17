@@ -1504,8 +1504,10 @@
             + infoItem('Contact No.', v.contact_no  ?? '—');
 
         document.getElementById('minfo-visit').innerHTML =
-            infoItem('Purpose',        v.purpose            ?? '—')
-            + infoItem('Tenant Visited', v.tenant?.full_name ?? '—');
+            infoItem('Purpose',          v.purpose            ?? '—')
+            + infoItem('Relationship',   v.relationship       ?? '—')
+            + infoItem('Tenant Visited', v.tenant?.full_name  ?? '—')
+            + infoItem('Room',           v.tenant?.room_number ? 'Rm ' + v.tenant.room_number : '—');
 
         const timeInVal  = v.arrival_time   ? fmtDateTime(v.arrival_time)   : '<span style="color:#bbb;font-style:italic;font-size:.8rem">Not yet</span>';
         const timeOutVal = v.departure_time ? fmtDateTime(v.departure_time) : (v.arrival_time ? '<span style="color:#c8960c;font-weight:700">Still Inside</span>' : '—');
