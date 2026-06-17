@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-{
-    Schema::table('visitor_logs', function (Blueprint $table) {
-        $table->string('relationship')->nullable()->after('purpose');
-    });
-}
+    {
+        Schema::table('visitor_logs', function (Blueprint $table) {
+            $table->string('relationship')->nullable()->after('purpose');
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('visitor_logs', function (Blueprint $table) {
-        $table->dropColumn('relationship');
-    });
-}
+    public function down(): void
+    {
+        Schema::table('visitor_logs', function (Blueprint $table) {
+            $table->dropColumn('relationship');
+        });
+    }
+};
