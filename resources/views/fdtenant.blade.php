@@ -282,6 +282,88 @@ tbody tr:hover { background: var(--soft-bg); }
     letter-spacing: .02em;
 }
 
+.status-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.status-legend-wrap img {
+    display: block;
+    opacity: .75;
+    transition: opacity .2s;
+}
+
+.status-legend-wrap:hover img {
+    opacity: 1;
+}
+
+.status-legend-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 280px;
+    z-index: 600;
+    pointer-events: none;
+}
+
+.status-legend-wrap:hover .status-legend-popup,
+.status-legend-popup.open {
+    display: block;
+}
+
+.slp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+
+.slp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+
+.slp-row:last-child {
+    border-bottom: none;
+}
+
+.slp-row .badge,
+.slp-row .inside-indicator {
+    flex-shrink: 0;
+    width: 88px;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.slp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .15rem;
+}
+
+@media (max-width: 680px) {
+    .status-legend-popup { right: 0; }
+}
+
 .btn-timein {
     display: inline-flex; align-items: center; gap: .3rem;
     padding: .3rem .7rem; border-radius: 8px;
@@ -1640,6 +1722,19 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="inside">Inside</option>
                     <option value="outside">Outside</option>
                 </select>
+                <div class="status-legend-wrap" id="status-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                    <div class="status-legend-popup" id="status-legend-popup">
+                        <div class="slp-title">Status Guide</div>
+                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Tenant is fully active and can log in to the portal.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has credentials, but hasn't logged in yet.</span></div>
+                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. They appear in the Reserved Tenants table below.</span></div>
+                        <div class="slp-row"><span class="badge" style="background:#FFF3CD;color:#856404;border:1px solid #FFEBAA;">On Vacation</span><span class="slp-desc">Tenant is temporarily away from the dorm but their account stays active.</span></div>
+                        <div class="slp-title" style="margin-top:.6rem;">Location Guide</div>
+                        <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span><span class="slp-desc">Tenant has timed in and is currently inside the dormitory.</span></div>
+                        <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span><span class="slp-desc">Tenant has timed out, or hasn't timed in yet today.</span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
