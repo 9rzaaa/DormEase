@@ -2911,6 +2911,12 @@ function setFormLoading(form, message) {
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
         form.addEventListener('submit', function() {
+            if (this.id === 'edit-form' && !_moveOutPendingSubmit) {
+                var statusSel = document.getElementById('edit-status');
+                if (statusSel && statusSel.value === 'move_out') {
+                    return;
+                }
+            }
             setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
         });
     });
