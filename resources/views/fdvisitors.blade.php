@@ -1164,6 +1164,29 @@
                     </div>
 
                     <div class="amf amf-full">
+                        <label for="av_relationship">Relationship to Tenant <span class="req">*</span></label>
+                        <div class="amf-input-wrap">
+                            <select
+                                id="av_relationship"
+                                name="relationship"
+                                onchange="avValidateRelationship(this)"
+                                onblur="avValidateRelationship(this, true)"
+                            >
+                                <option value="">Select Relationship</option>
+                                <option value="Parent" {{ old('relationship') === 'Parent' ? 'selected' : '' }}>Parent</option>
+                                <option value="Guardian" {{ old('relationship') === 'Guardian' ? 'selected' : '' }}>Guardian</option>
+                                <option value="Sibling" {{ old('relationship') === 'Sibling' ? 'selected' : '' }}>Sibling</option>
+                                <option value="Relative" {{ old('relationship') === 'Relative' ? 'selected' : '' }}>Relative</option>
+                                <option value="Friend" {{ old('relationship') === 'Friend' ? 'selected' : '' }}>Friend</option>
+                                <option value="Classmate" {{ old('relationship') === 'Classmate' ? 'selected' : '' }}>Classmate</option>
+                                <option value="Delivery Personnel" {{ old('relationship') === 'Delivery Personnel' ? 'selected' : '' }}>Delivery Personnel</option>
+                                <option value="Other" {{ old('relationship') === 'Other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+                        <div class="amf-error" id="av_relationship_err">Please select the visitor's relationship to the tenant.</div>
+                    </div>
+
+                    <div class="amf amf-full">
                         <label for="av_purpose">Purpose of Visit <span class="req">*</span></label>
                         <div class="amf-input-wrap">
                             <select
@@ -1561,6 +1584,7 @@
 
         document.getElementById('vminfo-visit').innerHTML =
             vmInfoItem('Purpose',        v.purpose  || '—')
+            + vmInfoItem('Relationship', v.relationship || '—')
             + vmInfoItem('Tenant Visited', tenantName)
             + vmInfoItem('Room',           roomNum);
 
@@ -2050,6 +2074,18 @@
         return valid;
     }
 
+    function avValidateRelationship(select, strict) {
+        var valid = select.value !== '';
+        if (strict || select.value) {
+            avSetFieldState(select, valid ? 'valid' : 'invalid');
+            avShowErr('av_relationship_err', !valid);
+        } else {
+            avSetFieldState(select, '');
+            avShowErr('av_relationship_err', false);
+        }
+        return valid;
+    }
+
     function avValidatePurpose(select, strict) {
         var valid = select.value !== '';
         if (strict || select.value) {
@@ -2200,14 +2236,15 @@
     }
 
     function avSubmit(e) {
-        var nameOk    = avValidateName(document.getElementById('av_visitor_name'), true);
-        var contactOk = avValidateContact(document.getElementById('av_contact_no'), true);
-        var tenantOk  = avValidateTenant();
-        var idOk      = avValidateIdType(document.getElementById('av_id_type'), true);
-        var purposeOk = avValidatePurpose(document.getElementById('av_purpose'), true);
-        var arrivalOk = avValidateArrival(document.getElementById('av_arrival_time'), true);
+        var nameOk         = avValidateName(document.getElementById('av_visitor_name'), true);
+        var contactOk      = avValidateContact(document.getElementById('av_contact_no'), true);
+        var tenantOk       = avValidateTenant();
+        var idOk           = avValidateIdType(document.getElementById('av_id_type'), true);
+        var relationshipOk = avValidateRelationship(document.getElementById('av_relationship'), true);
+        var purposeOk      = avValidatePurpose(document.getElementById('av_purpose'), true);
+        var arrivalOk      = avValidateArrival(document.getElementById('av_arrival_time'), true);
 
-        if (!nameOk || !contactOk || !tenantOk || !idOk || !purposeOk || !arrivalOk) {
+        if (!nameOk || !contactOk || !tenantOk || !idOk || !relationshipOk || !purposeOk || !arrivalOk) {
             e.preventDefault();
             return false;
         }
@@ -2224,11 +2261,11 @@
         var ti = document.getElementById('av_tenant_id');
         if (ti) ti.value = '';
         avCloseTenantDropdown();
-        ['av_visitor_name','av_contact_no','av_id_type','av_purpose','av_arrival_time'].forEach(function(id) {
+        ['av_visitor_name','av_contact_no','av_id_type','av_relationship','av_purpose','av_arrival_time'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.classList.remove('valid', 'invalid');
         });
-        ['av_visitor_name_err','av_contact_err','av_tenant_err','av_id_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
+        ['av_visitor_name_err','av_contact_err','av_tenant_err','av_id_err','av_relationship_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
             avShowErr(id, false);
         });
     }
