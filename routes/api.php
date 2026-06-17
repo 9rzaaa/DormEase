@@ -17,6 +17,11 @@ use App\Http\Controllers\Api\NotificationController;
 
 // public route
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/debug-logs-temp', function() {
+    $logPath = storage_path('logs/laravel.log');
+    if (!file_exists($logPath)) return 'No log file';
+    return implode('', array_slice(file($logPath), -250));
+});
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
