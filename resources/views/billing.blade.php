@@ -498,6 +498,39 @@
         margin: .25rem 0;
     }
 
+    .onsite-track {
+        width: 42px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--border-pink);
+        border: 1.5px solid var(--border-pink);
+        transition: background .2s, border-color .2s;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .onsite-track::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--white);
+        box-shadow: 0 1px 4px rgba(0,0,0,.15);
+        transition: transform .2s;
+    }
+
+    input[type="checkbox"].onsite-toggle:checked + .onsite-track {
+        background: #2ec27e;
+        border-color: #2ec27e;
+    }
+
+    input[type="checkbox"].onsite-toggle:checked + .onsite-track::after {
+        transform: translateX(18px);
+    }
+
     .confirm-overlay {
         position: fixed;
         inset: 0;
@@ -1990,6 +2023,27 @@ function updateCharCounter(textarea) {
     else if (len >= 400) counter.classList.add('near-limit');
 }
 
+function handleOnsiteToggle(checkbox) {
+    const billingId  = checkbox.dataset.billingId;
+    const statusSel  = document.querySelector(`.status-select[data-billing-id="${billingId}"]`);
+    const wrap       = checkbox.closest('div[style]').parentElement;
+    const noticeEl   = wrap?.querySelector('.inline-notice-warn');
+
+    if (checkbox.checked) {
+        if (statusSel) {
+            statusSel.value = 'paid';
+            toggleRejectionReason(statusSel);
+        }
+        if (noticeEl) noticeEl.style.display = 'none';
+        checkbox.closest('label').previousElementSibling?.querySelector('div:last-child')?.setAttribute('style', 'font-size:.72rem;color:#2ec27e;margin-top:.1rem;');
+    } else {
+        if (statusSel && statusSel.value === 'paid') {
+            statusSel.value = 'unpaid';
+        }
+        if (noticeEl) noticeEl.style.display = '';
+    }
+}
+
 function recalcUpdateShare() {
     const prev        = parseFloat(document.getElementById('edit-prev')?.value) || 0;
     const curr        = parseFloat(document.getElementById('edit-curr')?.value) || 0;
@@ -2074,7 +2128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const saveBtn = updateForm.querySelector('.btn-submit');
 
-            const doSave = async () => {
+            const doSave = async (forcePaid = false) => {
                 setButtonLoading(saveBtn, 'Saving...');
                 showActionLoading('Saving billing changes...');
 
@@ -2086,12 +2140,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         body: JSON.stringify({
-                            billing_id     : parseInt(billing_id),
-                            prev_reading   : parseFloat(prev),
-                            curr_reading   : parseFloat(curr),
-                            due_date       : due,
-                            payment_status : payment_status,
-                            status_updates : status_updates,
+                            billing_id               : parseInt(billing_id),
+                            prev_reading             : parseFloat(prev),
+                            curr_reading             : parseFloat(curr),
+                            due_date                 : due,
+                            payment_status           : payment_status,
+                            status_updates           : status_updates,
+                            force_paid_without_proof : forcePaid,
                         })
                     });
 
@@ -2114,20 +2169,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
-            const hasPaidWithoutProof = status_updates.some(u => {
+            const onsiteChecked = new Set(
+                Array.from(document.querySelectorAll('.onsite-toggle:checked'))
+                    .map(cb => parseInt(cb.dataset.billingId))
+            );
+
+            const hasPaidWithoutProofOrOnsite = status_updates.some(u => {
                 if (u.payment_status !== 'paid') return false;
+                if (onsiteChecked.has(u.billing_id)) return false;
                 const billing = Array.from(statusSelects).find(s => parseInt(s.dataset.billingId) === u.billing_id);
                 return !billing?.dataset.hasProof || billing.dataset.hasProof === 'false';
             });
 
-            if (hasPaidWithoutProof) {
+            const forcePaid = onsiteChecked.size > 0;
+
+            if (hasPaidWithoutProofOrOnsite) {
                 showConfirm(
                     'Mark as paid without proof?',
-                    'One or more tenants do not have a proof of payment uploaded. The system will block this unless you have confirmed the payment by other means. Are you sure you want to continue?',
-                    doSave
+                    'One or more tenants do not have a proof of payment and were not marked as onsite payments. Are you sure you want to continue?',
+                    () => doSave(forcePaid)
                 );
             } else {
-                await doSave();
+                await doSave(forcePaid);
             }
         });
     }
@@ -2538,7 +2601,21 @@ function openUpdateModal(room) {
         const charCount       = isOtherReason ? currentRejReason.length : 0;
 
         const noProofWarning = !isPendingOrInactive && !t.proof_of_payment_url
-            ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been submitted for this tenant. You cannot mark them as paid until proof is uploaded via the tenant app.</div>`
+            ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been submitted. If this was paid onsite, toggle the switch below before marking as paid.</div>`
+            : '';
+
+        const onsiteToggle = !isPendingOrInactive
+            ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:.75rem;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1.5px solid var(--border-pink);">
+                <div>
+                    <div style="font-size:.8rem;font-weight:700;color:var(--ink-deep);">Paid onsite (face to face)</div>
+                    <div style="font-size:.72rem;color:var(--ink-soft);margin-top:.1rem;">Toggle this if the tenant paid in person. No proof required.</div>
+                </div>
+                <label style="position:relative;display:inline-flex;align-items:center;cursor:pointer;flex-shrink:0;">
+                    <input type="checkbox" class="onsite-toggle" data-billing-id="${t.billing_id??''}" style="opacity:0;width:0;height:0;position:absolute;"
+                        onchange="handleOnsiteToggle(this)" ${t.payment_status === 'paid' && !t.proof_of_payment_url ? 'checked' : ''}>
+                    <div class="onsite-track"></div>
+                </label>
+              </div>`
             : '';
 
         paymentsHtml += `
@@ -2574,6 +2651,7 @@ function openUpdateModal(room) {
                         </div>
                     </div>
                     ${noProofWarning}
+                    ${onsiteToggle}
                     ${receiptBtn}
                 </div>
             </div>`;
