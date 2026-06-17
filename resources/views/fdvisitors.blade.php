@@ -1122,9 +1122,9 @@
                     </div>
 
                     <div class="amf">
-                        <label for="av_id_type">ID Type</label>
+                        <label for="av_id_type">ID Type <span class="req">*</span></label>
                         <div class="amf-input-wrap">
-                            <select id="av_id_type" name="id_type">
+                            <select id="av_id_type" name="id_type" onchange="avValidateIdType(this)" onblur="avValidateIdType(this, true)">
                                 <option value="">Select ID Type</option>
                                 <option value="School ID" {{ old('id_type') === 'School ID' ? 'selected' : '' }}>School ID</option>
                                 <option value="Government ID" {{ old('id_type') === 'Government ID' ? 'selected' : '' }}>Government ID</option>
@@ -1133,7 +1133,7 @@
                                 <option value="Other" {{ old('id_type') === 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
-                        <div class="amf-hint">Optional — for ID verification</div>
+                        <div class="amf-error" id="av_id_err">Please select an ID type.</div>
                     </div>
 
                 </div>
@@ -1597,7 +1597,7 @@
                     + '<button class="vmodal-photo-btn vmodal-photo-btn-primary" onclick="openLightbox(window.__currentPhotoSrc, \'' + (v.id_type || 'ID Photo') + '\')">'
                         + 'View Photo'
                     + '</button>'
-                    + '<a class="vmodal-photo-btn vmodal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
+                    + '<a class="vmodal-photo-btn-outline vmodal-photo-btn" href="' + src + '" target="_blank" rel="noopener">'
                         + 'Open Full Image &#x2197;'
                     + '</a>'
                 + '</div>';
@@ -2030,10 +2030,22 @@
             avShowErr('av_contact_err', false);
             return true;
         }
-        var valid = /^(\+?63|0)[0-9]{9,10}$/.test(v.replace(/[\s\-]/g, ''));
+        var valid = /^(09|\+?639)\d{9}$/.test(v.replace(/[\s\-]/g, ''));
         if (strict || v.length > 3) {
             avSetFieldState(input, valid ? 'valid' : 'invalid');
             avShowErr('av_contact_err', !valid);
+        }
+        return valid;
+    }
+
+    function avValidateIdType(select, strict) {
+        var valid = select.value !== '';
+        if (strict || select.value) {
+            avSetFieldState(select, valid ? 'valid' : 'invalid');
+            avShowErr('av_id_err', !valid);
+        } else {
+            avSetFieldState(select, '');
+            avShowErr('av_id_err', false);
         }
         return valid;
     }
@@ -2191,10 +2203,11 @@
         var nameOk    = avValidateName(document.getElementById('av_visitor_name'), true);
         var contactOk = avValidateContact(document.getElementById('av_contact_no'), true);
         var tenantOk  = avValidateTenant();
+        var idOk      = avValidateIdType(document.getElementById('av_id_type'), true);
         var purposeOk = avValidatePurpose(document.getElementById('av_purpose'), true);
         var arrivalOk = avValidateArrival(document.getElementById('av_arrival_time'), true);
 
-        if (!nameOk || !contactOk || !tenantOk || !purposeOk || !arrivalOk) {
+        if (!nameOk || !contactOk || !tenantOk || !idOk || !purposeOk || !arrivalOk) {
             e.preventDefault();
             return false;
         }
@@ -2211,11 +2224,11 @@
         var ti = document.getElementById('av_tenant_id');
         if (ti) ti.value = '';
         avCloseTenantDropdown();
-        ['av_visitor_name','av_contact_no','av_purpose','av_arrival_time'].forEach(function(id) {
+        ['av_visitor_name','av_contact_no','av_id_type','av_purpose','av_arrival_time'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.classList.remove('valid', 'invalid');
         });
-        ['av_visitor_name_err','av_contact_err','av_tenant_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
+        ['av_visitor_name_err','av_contact_err','av_tenant_err','av_id_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
             avShowErr(id, false);
         });
     }
@@ -2241,7 +2254,10 @@
     @endif
 
     @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('{{ $errors->first() }}', 'error');
+            openModal('add-modal');
+        });
     @endif
 
     filtered = visitors.slice();
