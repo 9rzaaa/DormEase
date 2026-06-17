@@ -1285,6 +1285,93 @@
         0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
     }
+    .billing-legend-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .billing-legend-wrap img {
+        display: block;
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .75;
+        transition: opacity .2s;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+
+    .billing-legend-wrap:hover img { opacity: 1; }
+
+    .billing-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--border-pink);
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(232,23,93,.16), 0 2px 8px rgba(0,0,0,.08);
+        padding: .85rem 1rem;
+        min-width: 300px;
+        max-width: 340px;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    .billing-legend-wrap:hover .billing-legend-popup,
+    .billing-legend-popup.open { display: block; }
+
+    .blp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+
+    .blp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--border-pink-mid);
+    }
+
+    .blp-row:last-child { border-bottom: none; }
+
+    .blp-badge-cell {
+        flex-shrink: 0;
+        width: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .blp-desc {
+        font-size: .75rem;
+        color: var(--ink-soft);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .1rem;
+        flex: 1;
+    }
+
+    .blp-dot-cell {
+        flex-shrink: 0;
+        width: 80px;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .blp-dot-label {
+        font-size: .75rem;
+        font-weight: 700;
+    }
 
     .export-dropdown { position: relative; display: inline-flex; }
     .export-menu { display: none; background: var(--white); border: 1.5px solid var(--pink-100, #fce8f1); border-radius: 12px; box-shadow: 0 8px 24px rgba(232,23,93,.15); min-width: 160px; overflow: hidden; }
@@ -1372,6 +1459,73 @@
             <img src="{{ asset('icons/filter.png') }}" alt="" style="width:14px;height:14px;filter:brightness(0) invert(1);flex-shrink:0;">
             Filter
         </button>
+        <div class="billing-legend-wrap" id="billing-legend-trigger">
+            <img src="{{ asset('icons/info.png') }}" alt="Status guide">
+            <div class="billing-legend-popup" id="billing-legend-popup">
+                <div class="blp-title">Payment Status Guide</div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-paid">Paid</span></div>
+                    <div class="blp-desc">Tenant has submitted proof and payment has been verified.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-unpaid">Unpaid</span></div>
+                    <div class="blp-desc">Bill has been issued but no payment has been submitted yet.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-overdue">Overdue</span></div>
+                    <div class="blp-desc">The due date has passed and the tenant has not paid.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-pending">Pending</span></div>
+                    <div class="blp-desc">Tenant has submitted proof and it is awaiting admin review.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-rejected">Rejected</span></div>
+                    <div class="blp-desc">Submitted proof was rejected. Tenant must resubmit payment.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-not-billed">Not Billed</span></div>
+                    <div class="blp-desc">No billing record exists for this tenant for the current period.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-pending-tenant">Pending</span></div>
+                    <div class="blp-desc">Tenant account exists but has not activated the app yet. No billing assigned.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-badge-cell"><span class="badge badge-inactive-tenant">Inactive</span></div>
+                    <div class="blp-desc">Tenant account is disabled. Billing is paused for this tenant.</div>
+                </div>
+                <div class="blp-title" style="margin-top:.65rem;">Dot Indicators</div>
+                <div class="blp-row">
+                    <div class="blp-dot-cell">
+                        <span class="dot dot-green"></span>
+                        <span class="blp-dot-label" style="color:#1f9d69;">Green</span>
+                    </div>
+                    <div class="blp-desc">Payment is verified and confirmed as paid.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-dot-cell">
+                        <span class="dot dot-orange"></span>
+                        <span class="blp-dot-label" style="color:#f0a500;">Orange</span>
+                    </div>
+                    <div class="blp-desc">Payment is unpaid, pending review, or not yet submitted.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-dot-cell">
+                        <span class="dot dot-red"></span>
+                        <span class="blp-dot-label" style="color:#ff5d73;">Red</span>
+                    </div>
+                    <div class="blp-desc">Payment is overdue or has been rejected.</div>
+                </div>
+                <div class="blp-row">
+                    <div class="blp-dot-cell">
+                        <span class="dot dot-gray"></span>
+                        <span class="blp-dot-label" style="color:#bbb;">Gray</span>
+                    </div>
+                    <div class="blp-desc">Not billed, inactive tenant, or account pending activation.</div>
+                </div>
+            </div>
+        </div>
         <button class="ms-auto btn-primary" onclick="openLogModal()">Log Water Consumption</button>
         <a href="{{ route('billing.history') }}" class="btn-outline">
             <img src="{{ asset('icons/pending.png') }}" alt="" class="export-icon">
@@ -1493,13 +1647,13 @@
                 <div class="modal-grid">
                     <div class="modal-field">
                         <label>Billing Month</label>
-                        <input type="date" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m-01') }}">
+                        <input type="date" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m-01') }}" max="{{ now()->format('Y-m-d') }}">
                         <span class="field-error">Billing month is required.</span>
                     </div>
                     <div class="modal-field">
                         <label>Due Date</label>
-                        <input type="date" name="due_date" id="log-due-date" required>
-                        <span class="field-error">Due date is required.</span>
+                        <input type="date" name="due_date" id="log-due-date" required min="{{ now()->format('Y-m-d') }}">
+                        <span class="field-error">Due date is required and must be after the billing month.</span>
                     </div>
                 </div>
 
@@ -1606,7 +1760,7 @@
             </div>
             <div class="modal-field">
               <label>Due date</label>
-              <input type="date" id="edit-due-date">
+              <input type="date" id="edit-due-date" min="{{ now()->format('Y-m-d') }}">
               <span class="field-error">Please set a due date.</span>
             </div>
             <div class="field-error full" id="edit-reading-error" style="grid-column:1/-1;display:none;"></div>
@@ -1664,7 +1818,42 @@
 
 @section('scripts')
 <script>
+(function() {
+    var trigger = document.getElementById('billing-legend-trigger');
+    var popup   = document.getElementById('billing-legend-popup');
+    if (!trigger || !popup) return;
 
+    function positionPopup() {
+        var rect       = trigger.getBoundingClientRect();
+        var popupWidth = 330;
+        var left       = rect.left;
+        var top        = rect.bottom + 8;
+
+        if (left + popupWidth > window.innerWidth - 12) {
+            left = window.innerWidth - popupWidth - 12;
+        }
+        if (left < 12) left = 12;
+
+        var spaceBelow = window.innerHeight - rect.bottom;
+        var popupH     = popup.offsetHeight || 420;
+        if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
+            top = rect.top - popupH - 8;
+        }
+
+        popup.style.left = left + 'px';
+        popup.style.top  = top  + 'px';
+        popup.style.right = 'auto';
+        popup.style.bottom = 'auto';
+    }
+
+    trigger.addEventListener('mouseenter', positionPopup);
+    window.addEventListener('resize', function() {
+        if (popup.style.display !== 'none') positionPopup();
+    });
+    window.addEventListener('scroll', function() {
+        if (popup.style.display !== 'none') positionPopup();
+    }, true);
+})();
 function showActionLoading(message) {
     const overlay = document.getElementById('action-loading');
     document.getElementById('action-loading-text').textContent = message || 'Please wait...';
@@ -2217,6 +2406,30 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!validateLogField(m3Input))   formValid = false;
         if (!validateLogField(amountInput)) formValid = false;
 
+        if (monthInput.value) {
+            const billingMonthDate = new Date(monthInput.value + 'T00:00:00');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            if (billingMonthDate > firstDayThisMonth) {
+                monthInput.classList.add('input-invalid');
+                const errEl = monthInput.parentElement?.querySelector('.field-error');
+                if (errEl) { errEl.textContent = 'Billing month cannot be in the future.'; errEl.classList.add('visible'); }
+                formValid = false;
+            }
+        }
+
+        if (monthInput.value && dueInput.value) {
+            const billingStart = new Date(monthInput.value + 'T00:00:00');
+            const dueDateVal   = new Date(dueInput.value + 'T00:00:00');
+            if (dueDateVal <= billingStart) {
+                dueInput.classList.add('input-invalid');
+                const errEl = dueInput.parentElement?.querySelector('.field-error');
+                if (errEl) { errEl.textContent = 'Due date must be after the start of the billing month.'; errEl.classList.add('visible'); }
+                formValid = false;
+            }
+        }
+
         const rows = document.querySelectorAll('.floor-reading-row');
         if (rows.length === 0) {
             showToast('Add at least one floor reading before logging.', 'error');
@@ -2601,7 +2814,7 @@ function openUpdateModal(room) {
         const charCount       = isOtherReason ? currentRejReason.length : 0;
 
         const noProofWarning = !isPendingOrInactive && !t.proof_of_payment_url
-            ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been submitted. If this was paid onsite, toggle the switch below before marking as paid.</div>`
+            ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been uploaded. If this tenant paid in person or via cash, enable the onsite payment toggle below and then set the status to Paid.</div>`
             : '';
 
         const onsiteToggle = !isPendingOrInactive
