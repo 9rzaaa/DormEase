@@ -47,6 +47,10 @@ class TenantPushNotificationService
 
         Notification::pruneToLimit(tenantId: $tenantId);
 
+        $unreadCount = Notification::where('tenant_id', $tenantId)
+            ->where('is_read', 0)
+            ->count();
+
         $tokens = DeviceToken::where('tenant_id', $tenantId)
             ->pluck('expo_push_token')
             ->filter()
@@ -63,6 +67,7 @@ class TenantPushNotificationService
             'priority' => 'high',
             'title' => $title,
             'body' => $body,
+            'badge' => $unreadCount,
             'data' => [
                 'type' => $type,
                 'route' => $route,
@@ -84,6 +89,10 @@ class TenantPushNotificationService
         $tenantId = $tenant instanceof Tenant ? $tenant->tenant_id : $tenant;
         $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
 
+        $unreadCount = Notification::where('tenant_id', $tenantId)
+            ->where('is_read', 0)
+            ->count();
+
         $tokens = DeviceToken::where('tenant_id', $tenantId)
             ->pluck('expo_push_token')
             ->filter()
@@ -100,6 +109,7 @@ class TenantPushNotificationService
             'priority' => 'high',
             'title' => $title,
             'body' => $body,
+            'badge' => $unreadCount,
             'data' => [
                 'type' => $type,
                 'route' => $route,
@@ -148,17 +158,26 @@ class TenantPushNotificationService
                     Notification::insert($notificationChunk);
                 }
 
+                $unreadCounts = Notification::whereIn('tenant_id', $tenantIds)
+                    ->where('is_read', 0)
+                    ->select('tenant_id', \DB::raw('count(*) as count'))
+                    ->groupBy('tenant_id')
+                    ->pluck('count', 'tenant_id')
+                    ->all();
+
                 $messages = DeviceToken::whereIn('tenant_id', $tenantIds)
-                    ->pluck('expo_push_token')
-                    ->filter()
-                    ->unique()
-                    ->map(fn(string $token) => [
-                        'to' => $token,
+                    ->select('expo_push_token', 'tenant_id')
+                    ->get()
+                    ->filter(fn($dt) => !empty($dt->expo_push_token))
+                    ->unique('expo_push_token')
+                    ->map(fn($dt) => [
+                        'to' => $dt->expo_push_token,
                         'sound' => 'default',
                         'channelId' => 'default',
                         'priority' => 'high',
                         'title' => $title,
                         'body' => $body,
+                        'badge' => $unreadCounts[$dt->tenant_id] ?? 0,
                         'data' => [
                             'type' => $type,
                             'route' => $route,
