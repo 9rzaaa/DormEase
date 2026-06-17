@@ -41,6 +41,7 @@ class VisitorController extends Controller
             ->where('status', 'inside')
             ->count();
         $tenants = Tenant::where('is_active', true)
+            ->where('status', 'active')
             ->orderBy('first_name')
             ->get();
 
@@ -86,6 +87,7 @@ class VisitorController extends Controller
             ->where('status', 'inside')
             ->count();
         $tenants = Tenant::where('is_active', true)
+            ->where('status', 'active')
             ->orderBy('first_name')
             ->get();
 
