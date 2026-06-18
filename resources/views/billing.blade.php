@@ -1383,6 +1383,84 @@
     .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--black); cursor: pointer; transition: background .15s; font-family: inherit; }
     .export-menu button:hover { background: var(--pink-bg-soft, #fff5f8); color: var(--hot-pink); }
 
+    .form-progress-wrap {
+        padding: .5rem 1.8rem .4rem;
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--border-pink-mid);
+        background: var(--pink-bg-soft);
+    }
+    .form-progress-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--border-pink);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .form-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+    }
+    .form-progress-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+    }
+    .form-progress-label span.ready {
+        color: #1f9d69;
+        font-weight: 800;
+    }
+    .form-progress-label span.partial {
+        color: var(--bright-pink);
+    }
+    .field-req-star {
+        color: var(--bright-pink);
+        font-size: .75rem;
+        font-weight: 900;
+        margin-left: .15rem;
+        opacity: .8;
+        vertical-align: middle;
+        pointer-events: none;
+        user-select: none;
+    }
+    .um-progress-wrap {
+        padding: .6rem 1rem .35rem;
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        border-bottom: 1px solid var(--border-pink-mid);
+        background: var(--pink-bg-soft);
+        flex-shrink: 0;
+    }
+    .um-progress-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--border-pink);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .um-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+    }
+    .um-progress-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-soft);
+    }
+    .um-progress-label span.ready { color: #1f9d69; font-weight: 800; }
+    .um-progress-label span.partial { color: var(--bright-pink); }
+
     .tab-icon {
         width: 14px;
         height: 14px;
@@ -1653,17 +1731,26 @@
 
         <form method="POST" action="{{ route('billing.log') }}" id="log-form">
             @csrf
+            <div class="form-progress-wrap" id="log-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="log-progress-text">Fill in required fields</span>
+                    <span id="log-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="log-progress-fill" style="width:0%;background:linear-gradient(90deg,#E8175D,#FF2D78);"></div>
+                </div>
+            </div>
             <div class="log-modal-body">
 
                 <div class="section-label">Billing Period</div>
                 <div class="modal-grid">
                     <div class="modal-field">
-                        <label>Billing Month</label>
+                        <label>Billing Month <span class="field-req-star">*</span></label>
                         <input type="month" name="billing_month" id="log-billing-month" required value="{{ now()->format('Y-m') }}" max="{{ now()->format('Y-m') }}">
                         <span class="field-error">Billing month is required.</span>
                     </div>
                     <div class="modal-field">
-                        <label>Due Date</label>
+                        <label>Due Date <span class="field-req-star">*</span></label>
                         <input type="date" name="due_date" id="log-due-date" required min="{{ now()->format('Y-m-d') }}">
                         <span class="field-error">Due date is required and must be after the billing month.</span>
                     </div>
@@ -1672,12 +1759,12 @@
                 <div class="section-label">Maynilad Bill (Mother Meter)</div>
                 <div class="modal-grid">
                     <div class="modal-field">
-                        <label>Total Cubic Meters (m3)</label>
+                        <label>Total Cubic Meters (m3) <span class="field-req-star">*</span></label>
                         <input type="number" step="0.01" min="0.01" name="maynilad_total_m3" id="log-maynilad-m3" placeholder="e.g. 120.00" required oninput="recalcRate()">
                         <span class="field-error">Enter the total cubic meters from the Maynilad bill.</span>
                     </div>
                     <div class="modal-field">
-                        <label>Total Amount Due (P)</label>
+                        <label>Total Amount Due (P) <span class="field-req-star">*</span></label>
                         <input type="number" step="0.01" min="0.01" name="maynilad_total_amount" id="log-maynilad-amount" placeholder="e.g. 4800.00" required oninput="recalcRate()">
                         <span class="field-error">Enter the total amount due from the Maynilad bill.</span>
                     </div>
@@ -1743,6 +1830,15 @@
       <div style="padding:1.25rem 1.5rem;max-height:420px;overflow-y:auto;">
 
         <div class="um-panel" id="um-tab-readings">
+          <div class="um-progress-wrap" id="um-progress-wrap">
+              <div class="um-progress-label">
+                  <span id="um-progress-text">Fill in required fields</span>
+                  <span id="um-progress-count" class="partial"></span>
+              </div>
+              <div class="um-progress-bar">
+                  <div class="um-progress-fill" id="um-progress-fill" style="width:0%;background:linear-gradient(90deg,#E8175D,#FF2D78);"></div>
+              </div>
+          </div>
           <div style="display:flex;gap:8px;margin-bottom:14px;" id="um-stat-row">
             <div style="flex:1;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1px solid var(--border-pink);">
               <div style="font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Consumption</div>
@@ -1759,11 +1855,11 @@
           </div>
           <div class="modal-grid">
             <div class="modal-field">
-              <label>Previous reading (m³)</label>
+              <label>Previous reading (m³) <span class="field-req-star">*</span></label>
               <input type="number" step="0.01" id="edit-prev" oninput="recalcUpdateShare()">
             </div>
             <div class="modal-field">
-              <label>Current reading (m³)</label>
+              <label>Current reading (m³) <span class="field-req-star">*</span></label>
               <input type="number" step="0.01" id="edit-curr" oninput="recalcUpdateShare()">
             </div>
             <div class="modal-field">
@@ -1771,7 +1867,7 @@
               <input type="text" id="edit-consumption" disabled>
             </div>
             <div class="modal-field">
-              <label>Due date</label>
+              <label>Due date <span class="field-req-star">*</span></label>
               <input type="date" id="edit-due-date">
               <span class="field-error">Please set a due date.</span>
             </div>
@@ -2983,6 +3079,129 @@ function openUpdateModal(room) {
     document.getElementById('update-form').dataset.billingId = primaryBilling?.billing_id ?? '';
     openModal('update-modal');
 }
+
+function refreshLogProgress() {
+    var m3El     = document.getElementById('log-maynilad-m3');
+    var amountEl = document.getElementById('log-maynilad-amount');
+    var monthEl  = document.getElementById('log-billing-month');
+    var dueEl    = document.getElementById('log-due-date');
+    var fill     = document.getElementById('log-progress-fill');
+    var text     = document.getElementById('log-progress-text');
+    var count    = document.getElementById('log-progress-count');
+    if (!fill || !text || !count) return;
+
+    var fields = [m3El, amountEl, monthEl, dueEl];
+    var filled = fields.filter(function(el) {
+        return el && el.value && el.value.trim() !== '' && parseFloat(el.value) !== 0;
+    }).length;
+
+    var rows         = document.querySelectorAll('.floor-reading-row');
+    var hasFloorRows = rows.length > 0;
+    var total        = fields.length + 1;
+    var filledTotal  = filled + (hasFloorRows ? 1 : 0);
+    var pct          = Math.round((filledTotal / total) * 100);
+
+    fill.style.width = pct + '%';
+
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        text.textContent = 'All required fields filled';
+        text.className = 'ready';
+        count.textContent = filledTotal + '/' + total;
+        count.className = 'ready';
+    } else if (pct >= 50) {
+        fill.style.background = 'linear-gradient(90deg,#E8175D,#FF2D78)';
+        text.textContent = 'Almost there';
+        text.className = 'partial';
+        count.textContent = filledTotal + '/' + total;
+        count.className = 'partial';
+    } else {
+        fill.style.background = 'linear-gradient(90deg,#E8175D,#FF2D78)';
+        text.textContent = 'Fill in required fields';
+        text.className = '';
+        count.textContent = filledTotal + '/' + total;
+        count.className = '';
+    }
+}
+
+function refreshUmProgress() {
+    var currEl = document.getElementById('edit-curr');
+    var dueEl  = document.getElementById('edit-due-date');
+    var fill   = document.getElementById('um-progress-fill');
+    var text   = document.getElementById('um-progress-text');
+    var count  = document.getElementById('um-progress-count');
+    if (!fill || !text || !count) return;
+
+    var prevEl = document.getElementById('edit-prev');
+    var fields = [prevEl, currEl, dueEl];
+    var filled = fields.filter(function(el) {
+        return el && el.value && el.value.trim() !== '';
+    }).length;
+    var total = fields.length;
+    var pct   = Math.round((filled / total) * 100);
+
+    fill.style.width = pct + '%';
+
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        text.textContent = 'Required fields complete';
+        text.className = 'ready';
+        count.textContent = filled + '/' + total;
+        count.className = 'ready';
+    } else {
+        fill.style.background = 'linear-gradient(90deg,#E8175D,#FF2D78)';
+        text.textContent = 'Fill in required fields';
+        text.className = '';
+        count.textContent = filled + '/' + total;
+        count.className = 'partial';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var logModal = document.getElementById('log-modal');
+    if (logModal) {
+        logModal.addEventListener('input', refreshLogProgress);
+        logModal.addEventListener('change', refreshLogProgress);
+    }
+
+    var updateModal = document.getElementById('update-modal');
+    if (updateModal) {
+        updateModal.addEventListener('input', function(e) {
+            if (e.target.id === 'edit-curr' || e.target.id === 'edit-due-date') {
+                refreshUmProgress();
+            }
+        });
+        updateModal.addEventListener('change', function(e) {
+            if (e.target.id === 'edit-curr' || e.target.id === 'edit-due-date') {
+                refreshUmProgress();
+            }
+        });
+    }
+
+    var origOpenLogModal = window.openLogModal;
+    window.openLogModal = function() {
+        origOpenLogModal();
+        setTimeout(refreshLogProgress, 80);
+    };
+
+    var origOpenUpdateModal = window.openUpdateModal;
+    window.openUpdateModal = function(room) {
+        origOpenUpdateModal(room);
+        setTimeout(refreshUmProgress, 80);
+    };
+
+    var origAddFloorRow = window.addFloorRow;
+    window.addFloorRow = function(defaultFloor) {
+        origAddFloorRow(defaultFloor);
+        setTimeout(refreshLogProgress, 50);
+    };
+
+    var origRemoveFloorRow = window.removeFloorRow;
+    window.removeFloorRow = function(btn) {
+        origRemoveFloorRow(btn);
+        setTimeout(refreshLogProgress, 50);
+    };
+});
 
 @if(session('success'))
     document.addEventListener('DOMContentLoaded', function() {
