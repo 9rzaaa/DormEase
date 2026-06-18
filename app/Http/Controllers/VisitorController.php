@@ -114,16 +114,19 @@ class VisitorController extends Controller
             ],
             'tenant_id'    => 'required|exists:tenants,tenant_id',
             'purpose'      => 'required|string|max:100',
-            'relationship' => 'required|string|max:50', 
-            'contact_no'   => ['nullable', 'regex:/^(09|\+?639)\d{9}$/'],
+            'contact_no'   => ['nullable', 'regex:/^09\d{9}$/'],
             'id_type'      => 'required|string|max:50',
             'arrival_time' => 'required|date',
             'status'       => 'nullable|string|max:20',
         ], [
             'visitor_name.regex' => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
-            'id_type.required' => 'Please select an ID type.',
-            'contact_no.regex' => 'The contact number must start with 09 or 639/+639 (e.g. 09123456789 or +639123456789).',
+            'id_type.required'   => 'Please select an ID type.',
+            'contact_no.regex'   => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
         ]);
+
+        if ($request->filled('contact_no')) {
+            $request->merge(['contact_no' => preg_replace('/\D/', '', $request->contact_no)]);
+        }
 
         $arrivalTime = $request->filled('arrival_time')
             ? Carbon::parse($request->arrival_time)

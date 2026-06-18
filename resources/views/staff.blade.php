@@ -1379,7 +1379,7 @@
                     </div>
                 </div>
                 <div class="modal-field">
-                    <<label>First Name <span class="field-req-star">*</span></label>
+                    <label>First Name <span class="field-req-star">*</span></label>
                     <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
                     <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
