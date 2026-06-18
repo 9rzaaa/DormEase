@@ -3096,9 +3096,16 @@ function refreshLogProgress() {
     }).length;
 
     var rows         = document.querySelectorAll('.floor-reading-row');
+    var floorRowsFilled = Array.from(rows).every(function(row) {
+        var prevInput = row.querySelector('[name$="[prev]"]');
+        var currInput = row.querySelector('[name$="[curr]"]');
+        var prevOk = prevInput && prevInput.value && prevInput.value.trim() !== '';
+        var currOk = currInput && currInput.value && currInput.value.trim() !== '';
+        return prevOk && currOk;
+    });
     var hasFloorRows = rows.length > 0;
     var total        = fields.length + 1;
-    var filledTotal  = filled + (hasFloorRows ? 1 : 0);
+    var filledTotal  = filled + (hasFloorRows && floorRowsFilled ? 1 : 0);
     var pct          = Math.round((filledTotal / total) * 100);
 
     fill.style.width = pct + '%';
