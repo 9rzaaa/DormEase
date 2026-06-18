@@ -25,30 +25,5 @@ class EmergencyReport extends Model
     {
         return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
     }
-
-    protected static function booted()
-    {
-        static::created(function ($report) {
-            if ($report->tenant_id && $report->tenant) {
-                $tenant = $report->tenant;
-                $guardianNumber = $tenant->guardian_number;
-
-                if ($guardianNumber) {
-                    $tenantName = "{$tenant->first_name} {$tenant->last_name}";
-                    $type = $report->emergency_type;
-                    $location = $report->location ?: "Room {$tenant->room_number}";
-                    $urgency = strtoupper($report->urgency_level ?: 'moderate');
-                    
-                    $message = "DormEase EMERGENCY ALERT: Tenant {$tenantName} (Room {$tenant->room_number}) has submitted a {$urgency} emergency report. Type: {$type}. Location: {$location}.";
-                    
-                    try {
-                        \App\Services\SmsService::send($guardianNumber, $message);
-                    } catch (\Exception $e) {
-                        \Illuminate\Support\Facades\Log::error("Failed to send guardian SMS for report {$report->report_id}: " . $e->getMessage());
-                    }
-                }
-            }
-        });
-    }
 }
 

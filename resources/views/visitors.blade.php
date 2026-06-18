@@ -516,6 +516,33 @@
         object-fit: cover;
         display: block;
         border-radius: 12px;
+        cursor: zoom-in;
+        transition: filter .2s;
+    }
+
+    .modal-photo-frame img:hover {
+        filter: brightness(.92);
+    }
+
+    .modal-photo-frame.clickable {
+        position: relative;
+    }
+
+    .modal-photo-zoom-hint {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(20,0,10,.55);
+        color: var(--white);
+        font-size: .68rem;
+        font-weight: 700;
+        padding: .3rem .6rem;
+        border-radius: 99px;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: .3rem;
+        letter-spacing: .02em;
     }
 
     .modal-photo-no {
@@ -1477,8 +1504,10 @@
             + infoItem('Contact No.', v.contact_no  ?? '—');
 
         document.getElementById('minfo-visit').innerHTML =
-            infoItem('Purpose',        v.purpose            ?? '—')
-            + infoItem('Tenant Visited', v.tenant?.full_name ?? '—');
+            infoItem('Purpose',          v.purpose            ?? '—')
+            + infoItem('Relationship',   v.relationship       ?? '—')
+            + infoItem('Tenant Visited', v.tenant?.full_name  ?? '—')
+            + infoItem('Room',           v.tenant?.room_number ? 'Rm ' + v.tenant.room_number : '—');
 
         const timeInVal  = v.arrival_time   ? fmtDateTime(v.arrival_time)   : '<span style="color:#bbb;font-style:italic;font-size:.8rem">Not yet</span>';
         const timeOutVal = v.departure_time ? fmtDateTime(v.departure_time) : (v.arrival_time ? '<span style="color:#c8960c;font-weight:700">Still Inside</span>' : '—');
@@ -1499,22 +1528,17 @@
         var photoArea = '';
         if (v.id_photo) {
             var src = v.id_photo.startsWith('http') ? v.id_photo : '/storage/' + v.id_photo;
-            window.__currentPhotoSrc = src;
+            var caption = v.id_type ?? 'ID Photo';
+            window.__currentPhotoSrc     = src;
+            window.__currentPhotoCaption = caption;
             photoArea =
-                '<div class="modal-photo-frame">'
-                    + '<img src="' + src + '" alt="ID Photo" id="modal-id-photo" onerror="document.getElementById(\'modal-id-photo\').style.display=\'none\'; document.getElementById(\'modal-photo-error\').style.display=\'flex\';">'
+                '<div class="modal-photo-frame clickable" onclick="openLightbox(window.__currentPhotoSrc, window.__currentPhotoCaption)">'
+                    + '<img src="' + src + '" alt="ID Photo" id="modal-id-photo" onerror="document.getElementById(\'modal-id-photo\').style.display=\'none\'; document.getElementById(\'modal-photo-error\').style.display=\'flex\'; document.getElementById(\'modal-photo-zoom-hint\').style.display=\'none\';">'
+                    + '<div class="modal-photo-zoom-hint" id="modal-photo-zoom-hint">&#x1F50D; Click to enlarge</div>'
                     + '<div id="modal-photo-error" class="modal-photo-no" style="display:none;">'
                         + '<span class="modal-photo-no-icon"></span>'
                         + '<p>Could not load photo.</p>'
                     + '</div>'
-                + '</div>'
-                + '<div class="modal-photo-actions">'
-                    + '<button class="modal-photo-btn modal-photo-btn-primary" onclick="openLightbox(window.__currentPhotoSrc, \'' + (v.id_type ?? 'ID Photo') + '\')">'
-                        + '🔍 View Photo'
-                    + '</button>'
-                    + '<a class="modal-photo-btn modal-photo-btn-outline" href="' + src + '" target="_blank" rel="noopener">'
-                        + '↗ Open Full Image'
-                    + '</a>'
                 + '</div>';
         } else {
             photoArea =
@@ -1556,6 +1580,15 @@
     function closeLightboxBtn() {
         document.getElementById('photoLightbox').style.display = 'none';
     }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var lb = document.getElementById('photoLightbox');
+            if (lb && lb.style.display === 'flex') {
+                lb.style.display = 'none';
+            }
+        }
+    });
 
     function openArchive() {
         document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
@@ -1851,16 +1884,6 @@
             closeAllExportDropdowns();
         }
     });
-
-    function clearDates() {
-        document.getElementById('date-from').value              = '';
-        document.getElementById('date-to').value                = '';
-        document.getElementById('date-from').style.borderColor  = '';
-        document.getElementById('date-to').style.borderColor    = '';
-        document.getElementById('date-error').style.display     = 'none';
-        document.getElementById('date-clear-btn').style.display = 'none';
-        applyFilters();
-    }
 
     applyFilters();
 

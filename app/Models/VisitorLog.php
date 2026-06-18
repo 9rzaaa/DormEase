@@ -28,6 +28,7 @@ class VisitorLog extends Model
         'visitor_name',
         'contact_no',
         'purpose',
+        'relationship',
         'id_type',
         'id_photo',
         'date_of_visit',
