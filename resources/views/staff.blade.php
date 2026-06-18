@@ -587,6 +587,47 @@
         .sort-select { width: 100%; }
     }
 
+    .form-progress-wrap {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        padding: .5rem 0 .15rem;
+        margin-bottom: -.3rem;
+    }
+    .form-progress-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--gray-light);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .form-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+    }
+    .form-progress-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+    }
+    .form-progress-label span.ready   { color: #1f9d69; font-weight: 800; }
+    .form-progress-label span.partial { color: var(--hot-pink); }
+    .field-req-star {
+        color: var(--hot-pink);
+        font-size: .75rem;
+        font-weight: 900;
+        margin-left: .15rem;
+        opacity: .8;
+        vertical-align: middle;
+        pointer-events: none;
+        user-select: none;
+    }
+
     .action-loading-overlay {
         position: fixed; inset: 0; z-index: 1200;
         display: none; align-items: center; justify-content: center;
@@ -1328,23 +1369,32 @@
         <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
             @csrf
             <div class="modal-grid">
+                <div class="form-progress-wrap full">
+                    <div class="form-progress-label">
+                        <span id="add-staff-progress-text">Fill in required fields</span>
+                        <span id="add-staff-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div class="modal-field">
-                    <label>First Name</label>
+                    <<label>First Name <span class="field-req-star">*</span></label>
                     <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
                     <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
-                    <label>Last Name</label>
+                    <label>Last Name <span class="field-req-star">*</span></label>
                     <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
                     <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
-                    <label>Email</label>
+                    <label>Email <span class="field-req-star">*</span></label>
                     <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
                     <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
-                    <label>Role</label>
+                    <label>Role <span class="field-req-star">*</span></label>
                     <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':' var(--red)'">
                         <option value="">Select role</option>
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
@@ -1402,18 +1452,27 @@
             @csrf
             @method('PUT')
             <div class="modal-grid">
+                <div class="form-progress-wrap full">
+                    <div class="form-progress-label">
+                        <span id="edit-staff-progress-text">Fill in required fields</span>
+                        <span id="edit-staff-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="edit-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div class="modal-field">
-                    <label>First Name</label>
+                    <label>First Name <span class="field-req-star">*</span></label>
                     <input type="text" name="first_name" id="edit-first-name" required maxlength="100" oninput="validateName(this)">
                     <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
-                    <label>Last Name</label>
+                    <label>Last Name <span class="field-req-star">*</span></label>
                     <input type="text" name="last_name" id="edit-last-name" required maxlength="100" oninput="validateName(this)">
                     <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
-                    <label>Email</label>
+                    <label>Email <span class="field-req-star">*</span></label>
                     <input type="email" name="email" id="edit-email" required oninput="validateEmail(this)">
                     <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
@@ -2716,6 +2775,62 @@
             showToast('{{ session("success") }}', 'success');
         });
     @endif
+
+    function refreshStaffProgress(prefix, fields) {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById(prefix + '-progress-fill');
+        var text  = document.getElementById(prefix + '-progress-text');
+        var count = document.getElementById(prefix + '-progress-count');
+        if (!fill || !text || !count) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            text.textContent = 'All required fields filled';
+            text.className = 'ready';
+            count.textContent = filled + '/' + total;
+            count.className = 'ready';
+        } else if (pct >= 50) {
+            fill.style.background = 'var(--gradient-pink)';
+            text.textContent = 'Almost there';
+            text.className = 'partial';
+            count.textContent = filled + '/' + total;
+            count.className = 'partial';
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            text.textContent = 'Fill in required fields';
+            text.className = '';
+            count.textContent = filled + '/' + total;
+            count.className = '';
+        }
+    }
+
+    var ADD_STAFF_FIELDS  = ['add-first-name', 'add-last-name', 'add-email', 'add-role'];
+    var EDIT_STAFF_FIELDS = ['edit-first-name', 'edit-last-name', 'edit-email'];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var addModal = document.getElementById('add-modal');
+        if (addModal) {
+            addModal.addEventListener('input',  function() { refreshStaffProgress('add-staff', ADD_STAFF_FIELDS); });
+            addModal.addEventListener('change', function() { refreshStaffProgress('add-staff', ADD_STAFF_FIELDS); });
+        }
+
+        var editModal = document.getElementById('edit-modal');
+        if (editModal) {
+            editModal.addEventListener('input',  function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); });
+            editModal.addEventListener('change', function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); });
+        }
+
+        var origOpenEditModal = window.openEditModal;
+        window.openEditModal = function(s) {
+            origOpenEditModal(s);
+            setTimeout(function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); }, 80);
+        };
+    });
 
     filtered = staffList.slice();
     renderTable();
