@@ -3080,6 +3080,79 @@ function openUpdateModal(room) {
     openModal('update-modal');
 }
 
+function enforceIntegerInput(input) {
+    if (input._intEnforced) return;
+    input._intEnforced = true;
+    input.addEventListener('keydown', function(e) {
+        var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End'];
+        if (allowed.indexOf(e.key) !== -1 || e.ctrlKey || e.metaKey) return;
+        if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    input.addEventListener('input', function() {
+        var clean = this.value.replace(/[^\d]/g, '');
+        if (this.value !== clean) this.value = clean;
+    });
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^\d]/g, '');
+        var max = parseInt(this.getAttribute('maxlength')) || 20;
+        this.value = (this.value + pasted).substring(0, max);
+        this.dispatchEvent(new Event('input'));
+    });
+}
+
+function enforceDecimalInput(input) {
+    if (input._decimalEnforced) return;
+    input._decimalEnforced = true;
+    input.addEventListener('keydown', function(e) {
+        var allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Tab','Home','End'];
+        if (allowed.indexOf(e.key) !== -1 || e.ctrlKey || e.metaKey) return;
+        if (e.key === '.' && this.value.indexOf('.') === -1) return;
+        if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    input.addEventListener('input', function() {
+        var clean = this.value.replace(/[^\d.]/g, '');
+        var parts = clean.split('.');
+        if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+        if (this.value !== clean) this.value = clean;
+    });
+    input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^\d.]/g, '');
+        var combined = this.value + pasted;
+        var parts = combined.split('.');
+        if (parts.length > 2) combined = parts[0] + '.' + parts.slice(1).join('');
+        this.value = combined;
+        this.dispatchEvent(new Event('input'));
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var decimalIds = [
+        'log-maynilad-m3',
+        'log-maynilad-amount',
+        'edit-prev',
+        'edit-curr'
+    ];
+    decimalIds.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) enforceDecimalInput(el);
+    });
+
+    var origAddFloorRowEnforce = window.addFloorRow;
+    window.addFloorRow = function(defaultFloor) {
+        origAddFloorRowEnforce(defaultFloor);
+        setTimeout(function() {
+            document.querySelectorAll('.floor-reading-row').forEach(function(row) {
+                var prevInp = row.querySelector('[name$="[prev]"]');
+                var currInp = row.querySelector('[name$="[curr]"]');
+                if (prevInp) enforceDecimalInput(prevInp);
+                if (currInp) enforceDecimalInput(currInp);
+            });
+        }, 30);
+    };
+});
+
 function refreshLogProgress() {
     var m3El     = document.getElementById('log-maynilad-m3');
     var amountEl = document.getElementById('log-maynilad-amount');

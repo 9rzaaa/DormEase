@@ -4299,11 +4299,13 @@ function syncRoomType(capacityId, stayTypeId) {
 document.addEventListener('DOMContentLoaded', function() {
     var arCap = document.getElementById('ar-capacity');
     if (arCap) {
+        enforceRoomNumberInput(arCap);
         arCap.addEventListener('input',  function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
         arCap.addEventListener('change', function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
     }
     var erCap = document.getElementById('er-capacity');
     if (erCap) {
+        enforceRoomNumberInput(erCap);
         erCap.addEventListener('input',  function() { syncRoomType('er-capacity', 'er-stay-type'); });
         erCap.addEventListener('change', function() { syncRoomType('er-capacity', 'er-stay-type'); });
     }
