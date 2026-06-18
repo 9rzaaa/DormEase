@@ -877,6 +877,76 @@ tbody tr:hover { background: var(--soft-bg); }
     color: var(--white);
     border-color: transparent;
 }
+.req-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    vertical-align: middle;
+    margin-left: .18rem;
+    opacity: .7;
+}
+.field-req-star {
+    color: var(--bright-pink);
+    font-size: .75rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-left: .18rem;
+    opacity: .75;
+    vertical-align: middle;
+    pointer-events: none;
+    user-select: none;
+}
+.form-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--pink-100);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: .55rem;
+    flex-shrink: 0;
+}
+.form-progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+}
+.form-progress-wrap {
+    padding: .5rem .9rem .1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--pink-100);
+    background: #fffafd;
+}
+.form-progress-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+}
+.form-progress-label span.ready {
+    color: #1f9d69;
+    font-weight: 800;
+}
+.form-progress-label span.partial {
+    color: var(--bright-pink);
+}
+.modal-field label .field-req-star {
+    color: var(--bright-pink);
+    font-size: .75rem;
+    font-weight: 900;
+    margin-left: .15rem;
+    opacity: .8;
+    vertical-align: middle;
+}
 </style>
 @endsection
 
@@ -1158,9 +1228,18 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('add-room-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
+            <div class="form-progress-wrap" id="ar-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="ar-progress-text">Fill in required fields</span>
+                    <span id="ar-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="ar-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="modal-grid">
                 <div class="modal-field">
-                    <label>Room Number</label>
+                    <label>Room Number <span class="field-req-star">*</span></label>
                     <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="5" class="room-number-input">
                 </div>
                 <div class="modal-field">
@@ -1170,7 +1249,7 @@ tbody tr:hover { background: var(--soft-bg); }
                     </select>
                 </div>
                 <div class="modal-field">
-                    <label>Capacity (pax)</label>
+                    <label>Capacity (pax) <span class="field-req-star">*</span></label>
                     <input type="number" id="ar-capacity" min="1" max="10" placeholder="e.g. 3">
                 </div>
                 <div class="modal-field">
@@ -1493,6 +1572,15 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
             <div class="modal-body">
+                <div class="form-progress-wrap" id="add-progress-wrap">
+                    <div class="form-progress-label">
+                        <span id="add-progress-text">Fill in required fields</span>
+                        <span id="add-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="add-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div id="add-step-panel-1">
                     <div class="modal-info-banner" style="margin-bottom:.75rem;">
                         <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
@@ -1517,15 +1605,15 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-section-title">Personal Information</div>
                         <div class="modal-grid">
                             <div class="modal-field">
-                                <label>First Name</label>
+                                <label>First Name <span class="field-req-star">*</span></label>
                                 <input type="text" name="first_name" placeholder="e.g. Maria" required maxlength="100" value="{{ old('first_name') }}" autocomplete="given-name">
                             </div>
                             <div class="modal-field">
-                                <label>Last Name</label>
+                                <label>Last Name <span class="field-req-star">*</span></label>
                                 <input type="text" name="last_name" placeholder="e.g. Ramos" required maxlength="100" value="{{ old('last_name') }}" autocomplete="family-name">
                             </div>
                             <div class="modal-field full">
-                                <label>Email Address</label>
+                                <label>Email Address <span class="field-req-star">*</span></label>
                                 <input type="email" name="email" id="add-email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
                                 <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
@@ -1564,7 +1652,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-section-title">Room &amp; Stay Details</div>
                         <div class="modal-grid">
                             <div class="modal-field full">
-                                <label>Stay Type</label>
+                                <label>Stay Type <span class="field-req-star">*</span></label>
                                 <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
                                     <option value="" disabled selected>Select type</option>
                                     <option value="Solo Room"   {{ old('stay_type') === 'Solo Room'   ? 'selected' : '' }}>Solo Room</option>
@@ -1596,7 +1684,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full" id="add-movein-wrap">
-                                <label>Move-In Date</label>
+                                <label>Move-In Date <span class="field-req-star">*</span></label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                             </div>
                             <div class="modal-field full" id="add-moveout-wrap">
@@ -1657,19 +1745,28 @@ tbody tr:hover { background: var(--soft-bg); }
             @csrf
             @method('PUT')
             <div class="modal-body">
+                <div class="form-progress-wrap" id="edit-progress-wrap">
+                    <div class="form-progress-label">
+                        <span id="edit-progress-text">Fill in required fields</span>
+                        <span id="edit-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
                         <div class="modal-field">
-                            <label>First Name</label>
+                            <label>First Name <span class="field-req-star">*</span></label>
                             <input type="text" name="first_name" id="edit-first-name" placeholder="First name" required>
                         </div>
                         <div class="modal-field">
-                            <label>Last Name</label>
+                            <label>Last Name <span class="field-req-star">*</span></label>
                             <input type="text" name="last_name" id="edit-last-name" placeholder="Last name" required>
                         </div>
                         <div class="modal-field full">
-                            <label>Email Address</label>
+                            <label>Email Address <span class="field-req-star">*</span></label>
                             <input type="email" name="email" id="edit-email" placeholder="Email address" required>
                             <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
@@ -2029,6 +2126,15 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('renew-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
+            <div class="form-progress-wrap" id="renew-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="renew-progress-text">Fill in required fields</span>
+                    <span id="renew-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="renew-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <p style="font-size:.92rem;color:var(--ink);font-weight:600;margin:0 0 .75rem;">
                 Renewing stay for <strong id="renew-tenant-name" style="color:var(--bright-pink);"></strong>
             </p>
@@ -2059,12 +2165,12 @@ tbody tr:hover { background: var(--soft-bg); }
                     <div id="renew-room-hint"></div>
                 </div>
                 <div class="modal-field">
-                    <label>New Move-In Date</label>
+                    <label>New Move-In Date <span class="field-req-star">*</span></label>
                     <input type="date" id="renew-move-in" required>
                     <span id="renew-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
                 <div class="modal-field">
-                    <label>New Move-Out Date</label>
+                    <label>New Move-Out Date <span class="field-req-star">*</span></label>
                     <input type="date" id="renew-move-out" required>
                     <span id="renew-move-out-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                 </div>
@@ -5540,6 +5646,250 @@ function renderAdminLogDrawer() {
     });
     list.innerHTML = html;
 }
+
+function updateFormProgress(formId, fields) {
+    var filled = fields.filter(function(f) {
+        var el = document.getElementById(f);
+        return el && el.value && el.value.trim() !== '';
+    }).length;
+    var total  = fields.length;
+    var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+    var fill   = document.getElementById(formId + '-fill');
+    var text   = document.getElementById(formId + '-text');
+    var count  = document.getElementById(formId + '-count');
+    if (!fill || !text || !count) return;
+    fill.style.width = pct + '%';
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        text.textContent = 'All required fields filled';
+        text.className = 'ready';
+        count.textContent = filled + '/' + total;
+        count.className = 'ready';
+    } else if (pct >= 50) {
+        fill.style.background = 'var(--gradient-pink)';
+        text.textContent = 'Almost there';
+        text.className = 'partial';
+        count.textContent = filled + '/' + total;
+        count.className = 'partial';
+    } else {
+        fill.style.background = 'var(--gradient-pink)';
+        text.textContent = 'Fill in required fields';
+        text.className = '';
+        count.textContent = filled + '/' + total;
+        count.className = '';
+    }
+}
+
+function attachAddModalProgress() {
+    var step1Fields = ['add-modal input[name="first_name"]', 'add-modal input[name="last_name"]', 'add-email'];
+    var step2Fields = ['add-stay-type-select', 'add-move-in-date'];
+
+    function getStep1Vals() {
+        var fn = document.querySelector('#add-modal input[name="first_name"]');
+        var ln = document.querySelector('#add-modal input[name="last_name"]');
+        var em = document.getElementById('add-email');
+        return [fn, ln, em].filter(Boolean);
+    }
+
+    function getStep2Vals() {
+        return [
+            document.getElementById('add-stay-type-select'),
+            document.getElementById('add-move-in-date')
+        ].filter(Boolean);
+    }
+
+    function refreshProgress() {
+        if (addCurrentStep === 1) {
+            var els    = getStep1Vals();
+            var filled = els.filter(function(e) { return e.value && e.value.trim() !== ''; }).length;
+            var total  = els.length;
+            var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+            var fill   = document.getElementById('add-progress-fill');
+            var text   = document.getElementById('add-progress-text');
+            var count  = document.getElementById('add-progress-count');
+            if (!fill) return;
+            fill.style.width = pct + '%';
+            if (pct === 100) {
+                fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+                if (text) { text.textContent = 'Step 1 complete'; text.className = 'ready'; }
+                if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+            } else {
+                fill.style.background = 'var(--gradient-pink)';
+                if (text) { text.textContent = 'Fill in required fields'; text.className = ''; }
+                if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+            }
+        } else {
+            var mode   = document.getElementById('add-mode-input') ? document.getElementById('add-mode-input').value : 'moved_in';
+            var st     = document.getElementById('add-stay-type-select');
+            var mi     = document.getElementById('add-move-in-date');
+            var est    = document.getElementById('add-estimated-move-in');
+            var checkEls = [st];
+            if (mode === 'moved_in') {
+                checkEls.push(mi);
+            } else {
+                checkEls.push(est);
+            }
+            var filled2 = checkEls.filter(function(e) { return e && e.value && e.value.trim() !== ''; }).length;
+            var total2  = checkEls.length;
+            var pct2    = total2 > 0 ? Math.round((filled2 / total2) * 100) : 0;
+            var fill2   = document.getElementById('add-progress-fill');
+            var text2   = document.getElementById('add-progress-text');
+            var count2  = document.getElementById('add-progress-count');
+            if (!fill2) return;
+            fill2.style.width = pct2 + '%';
+            if (pct2 === 100) {
+                fill2.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+                if (text2) { text2.textContent = 'Step 2 complete'; text2.className = 'ready'; }
+                if (count2) { count2.textContent = filled2 + '/' + total2; count2.className = 'ready'; }
+            } else {
+                fill2.style.background = 'var(--gradient-pink)';
+                if (text2) { text2.textContent = 'Fill in required fields'; text2.className = ''; }
+                if (count2) { count2.textContent = filled2 + '/' + total2; count2.className = 'partial'; }
+            }
+        }
+    }
+
+    var addModal = document.getElementById('add-modal');
+    if (!addModal) return;
+    addModal.addEventListener('input', refreshProgress);
+    addModal.addEventListener('change', refreshProgress);
+
+    var origGoAddStep = window.goAddStep;
+    window.goAddStep = function(step) {
+        origGoAddStep(step);
+        setTimeout(refreshProgress, 50);
+    };
+
+    var origSetAddMode = window.setAddMode;
+    window.setAddMode = function(mode) {
+        origSetAddMode(mode);
+        setTimeout(refreshProgress, 50);
+    };
+
+    refreshProgress();
+}
+
+function attachEditModalProgress() {
+    var fields = ['edit-first-name', 'edit-last-name', 'edit-email'];
+
+    function refreshEditProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('edit-progress-fill');
+        var text  = document.getElementById('edit-progress-text');
+        var count = document.getElementById('edit-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var editModal = document.getElementById('edit-modal');
+    if (!editModal) return;
+    editModal.addEventListener('input', refreshEditProgress);
+    editModal.addEventListener('change', refreshEditProgress);
+    refreshEditProgress();
+
+    var origOpenEditModal = window.openEditModal;
+    window.openEditModal = function(t) {
+        origOpenEditModal(t);
+        setTimeout(refreshEditProgress, 80);
+    };
+}
+
+function attachAddRoomProgress() {
+    var fields = ['ar-number', 'ar-capacity'];
+
+    function refreshArProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('ar-progress-fill');
+        var text  = document.getElementById('ar-progress-text');
+        var count = document.getElementById('ar-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var arModal = document.getElementById('add-room-modal');
+    if (!arModal) return;
+    arModal.addEventListener('input', refreshArProgress);
+    arModal.addEventListener('change', refreshArProgress);
+
+    var origOpenAddRoomModal = window.openAddRoomModal;
+    window.openAddRoomModal = function() {
+        origOpenAddRoomModal();
+        setTimeout(refreshArProgress, 50);
+    };
+}
+
+function attachRenewProgress() {
+    var fields = ['renew-move-in', 'renew-move-out'];
+
+    function refreshRenewProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('renew-progress-fill');
+        var text  = document.getElementById('renew-progress-text');
+        var count = document.getElementById('renew-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var renewModal = document.getElementById('renew-modal');
+    if (!renewModal) return;
+    renewModal.addEventListener('input', refreshRenewProgress);
+    renewModal.addEventListener('change', refreshRenewProgress);
+
+    var origOpenRenewModal = window.openRenewModal;
+    window.openRenewModal = function(id, name, roomNumber, stayType) {
+        origOpenRenewModal(id, name, roomNumber, stayType);
+        setTimeout(refreshRenewProgress, 80);
+    };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachAddModalProgress();
+    attachEditModalProgress();
+    attachAddRoomProgress();
+    attachRenewProgress();
+});
 
 function exportAdminLog(format) {
     var q    = document.getElementById('admin-log-search').value.toLowerCase();
