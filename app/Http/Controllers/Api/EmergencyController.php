@@ -203,10 +203,6 @@ class EmergencyController extends Controller
         ];
     }
 
-    // ---------------------------------------------------------------------------
-    // Tagalog morphology: roots that the stemmer should know about.
-    // Add more roots here as needed; the stemmer will expand them automatically.
-    // ---------------------------------------------------------------------------
     private const TAGALOG_ROOTS = [
         // Medical
         'himatay',
@@ -324,12 +320,6 @@ class EmergencyController extends Controller
         return array_unique($candidates);
     }
 
-    /**
-     * Checks whether a keyword appears in the text, using both:
-     *  - direct substring match
-     *  - English -ing suffix stemming
-     *  - Tagalog morphological stemming (for every word in the text)
-     */
     private function matchesKeyword(string $text, string $keyword): bool
     {
         if (str_contains($text, $keyword)) {
@@ -353,9 +343,6 @@ class EmergencyController extends Controller
             }
         }
 
-        // ── Tagalog morphological matching ───────────────────────────────────
-        // For each word in the text, generate all possible roots via the Tagalog
-        // stemmer and check if any root matches the keyword (or vice-versa).
         foreach ($words as $word) {
             $roots = $this->tagalogStem($word);
             foreach ($roots as $root) {
@@ -519,11 +506,6 @@ class EmergencyController extends Controller
         return trim($text ?? '');
     }
 
-    /**
-     * Strips common -ing suffixes from a word to produce candidate stems.
-     * Returns an array of the original word plus any derived stems.
-     *
-     */
     private function expandIngForms(string $word): array
     {
         $forms = [$word];
