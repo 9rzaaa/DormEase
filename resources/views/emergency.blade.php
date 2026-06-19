@@ -971,6 +971,200 @@
         font-weight: 500;
         line-height: 1.45;
     }
+
+    .kw-tabs {
+        display: flex;
+        gap: 0;
+        padding: 0 1.1rem;
+        border-top: 1.5px solid var(--pink-100);
+        border-bottom: 1.5px solid var(--pink-100);
+        flex-shrink: 0;
+        background: var(--white);
+    }
+
+    .kw-tab {
+        position: relative;
+        padding: .7rem .9rem;
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: none;
+        border: none;
+        margin-bottom: -1.5px;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .kw-tab::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 50%;
+        transform: translateX(-50%) scaleX(0);
+        width: 60%; height: 2.5px;
+        background: var(--hot-pink);
+        border-radius: 2px 2px 0 0;
+        transition: transform .22s ease;
+    }
+
+    .kw-tab.active { color: var(--hot-pink); }
+    .kw-tab.active::after { transform: translateX(-50%) scaleX(1); }
+
+    .kw-tab-count {
+        font-size: .65rem; font-weight: 800; padding: .08rem .4rem;
+        border-radius: 99px; background: var(--pink-100); color: var(--hot-pink);
+    }
+
+    .kw-list {
+        flex: 1; overflow-y: auto;
+        padding: 1rem 1.1rem;
+        display: flex; flex-direction: column; gap: .7rem;
+    }
+
+    .kw-card {
+        background: var(--blush);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 14px;
+        padding: .85rem .95rem;
+    }
+
+    .kw-card-snippet {
+        font-size: .82rem;
+        color: var(--ink-muted);
+        line-height: 1.5;
+        margin-bottom: .65rem;
+    }
+
+    .kw-word-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .3rem;
+        margin-bottom: .65rem;
+    }
+
+    .kw-word {
+        display: inline-flex;
+        padding: .25rem .55rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        transition: .15s;
+        user-select: none;
+    }
+
+    .kw-word:hover { border-color: var(--bright-pink); }
+
+    .kw-word.selected {
+        background: var(--gradient-pink);
+        color: var(--white);
+        border-color: transparent;
+    }
+
+    .kw-phrase-input {
+        width: 100%;
+        padding: .5rem .75rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .85rem;
+        color: var(--ink);
+        outline: none;
+        box-sizing: border-box;
+        margin-bottom: .6rem;
+        font-family: var(--ff-body);
+    }
+
+    .kw-phrase-input:focus { border-color: var(--bright-pink); }
+
+    .kw-card-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .5rem;
+        margin-bottom: .6rem;
+    }
+
+    .kw-card-row select {
+        padding: .45rem .7rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .8rem;
+        color: var(--ink);
+        outline: none;
+        font-family: var(--ff-body);
+    }
+
+    .kw-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        font-size: .76rem;
+        color: var(--ink-muted);
+        margin-bottom: .65rem;
+        font-weight: 600;
+    }
+
+    .kw-card-actions {
+        display: flex;
+        gap: .5rem;
+        justify-content: flex-end;
+    }
+
+    .kw-btn-ignore {
+        padding: .42rem .85rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+    }
+
+    .kw-btn-ignore:hover { border-color: #e04867; color: #e04867; }
+
+    .kw-btn-save {
+        padding: .42rem .95rem;
+        border-radius: 9px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+    }
+
+    .kw-trained-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .7rem;
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 12px;
+        padding: .65rem .85rem;
+    }
+
+    .kw-trained-left { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+    .kw-trained-phrase { font-size: .85rem; font-weight: 700; color: var(--ink); }
+    .kw-trained-meta { font-size: .72rem; color: var(--ink-muted); }
+
+    .kw-trained-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+
+    .kw-empty {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
 </style>
 @endsection
 
@@ -986,6 +1180,10 @@
             <button class="btn-directory" onclick="openModal('dir-modal')">
                 <img src="{{ asset('icons/emergdir.png') }}" alt="">
                 Emergency Directory
+            </button>
+            <button class="btn-archive-open" onclick="openKeywordModal()">
+                <img src="{{ asset('icons/emergdir.png') }}" alt="">
+                Keyword Training
             </button>
             <button class="btn-archive-open" onclick="openArchive()">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
@@ -1283,6 +1481,27 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="keyword-modal" onclick="handleOverlayClick(event, 'keyword-modal')">
+    <div class="modal dir-modal" style="max-width:600px;">
+        <div class="modal-header">
+            <div class="modal-title">Keyword Training</div>
+            <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+        </div>
+        <div class="kw-tabs">
+            <button class="kw-tab active" id="kwtab-pending" onclick="switchKwTab('pending')">
+                Pending <span class="kw-tab-count" id="kwcount-pending">0</span>
+            </button>
+            <button class="kw-tab" id="kwtab-trained" onclick="switchKwTab('trained')">
+                Trained Keywords <span class="kw-tab-count" id="kwcount-trained">0</span>
+            </button>
+        </div>
+        <div class="kw-list" id="kw-list"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('keyword-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1291,6 +1510,8 @@
     const closedArchive    = @json($closedArchive);
     const resolvedArchive  = @json($resolvedArchive);
     const deletedArchive   = @json($deletedArchive);
+    let pendingTerms       = @json($pendingTerms);
+    let trainedKeywords    = @json($trainedKeywords);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -2043,7 +2264,6 @@
         showToast('{{ session("success") }}', 'success');
     @endif
 
-
     (function() {
         var lastPanicId = null;
         function checkPanic() {
@@ -2059,5 +2279,250 @@
         }
         setInterval(checkPanic, 30000);
     })();
+
+    const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Security', 'Flood/Water Leak', 'Other'];
+    let kwActiveTab = 'pending';
+    const kwPhraseState = {};
+
+    function typeOptionsHtml(selected) {
+        return EMERGENCY_TYPE_OPTIONS.map(function(t) {
+            return '<option value="' + escHtml(t) + '"' + (t === selected ? ' selected' : '') + '>' + escHtml(t) + '</option>';
+        }).join('');
+    }
+
+    function urgencyOptionsHtml(selected) {
+        const opts = [['', 'Use type default'], ['moderate', 'Moderate'], ['urgent', 'Urgent'], ['critical', 'Critical']];
+        return opts.map(function(o) {
+            return '<option value="' + o[0] + '"' + (o[0] === (selected || '') ? ' selected' : '') + '>' + o[1] + '</option>';
+        }).join('');
+    }
+
+    function openKeywordModal() {
+        kwActiveTab = 'pending';
+        document.getElementById('kwtab-pending').classList.add('active');
+        document.getElementById('kwtab-trained').classList.remove('active');
+        renderKwList();
+        openModal('keyword-modal');
+    }
+
+    function switchKwTab(tab) {
+        kwActiveTab = tab;
+        document.getElementById('kwtab-pending').classList.toggle('active', tab === 'pending');
+        document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
+        renderKwList();
+    }
+
+    function renderKwList() {
+        document.getElementById('kwcount-pending').textContent = pendingTerms.length;
+        document.getElementById('kwcount-trained').textContent = trainedKeywords.length;
+        if (kwActiveTab === 'pending') {
+            renderPendingTerms();
+        } else {
+            renderTrainedKeywords();
+        }
+    }
+
+    function renderPendingTerms() {
+        const list = document.getElementById('kw-list');
+        if (pendingTerms.length === 0) {
+            list.innerHTML = '<div class="kw-empty">No pending snippets to classify.</div>';
+            return;
+        }
+        list.innerHTML = pendingTerms.map(function(term) {
+            const words = (term.description_snapshot || '').split(/\s+/).filter(Boolean);
+            if (!kwPhraseState[term.id]) {
+                kwPhraseState[term.id] = [];
+            }
+            const wordSpans = words.map(function(w, i) {
+                const selected = kwPhraseState[term.id].some(function(s) { return s.index === i; });
+                return '<span class="kw-word' + (selected ? ' selected' : '') + '" onclick="toggleKwWord(' + term.id + ', ' + i + ', \'' + escHtml(w).replace(/'/g, "\\'") + '\')">' + escHtml(w) + '</span>';
+            }).join('');
+            return '' +
+                '<div class="kw-card" id="kw-card-' + term.id + '">' +
+                '<div class="kw-card-snippet">' + escHtml(term.description_snapshot || '') + '</div>' +
+                '<div class="kw-word-wrap">' + wordSpans + '</div>' +
+                '<input type="text" class="kw-phrase-input" id="kw-phrase-' + term.id + '" placeholder="Selected phrase" value="' + escHtml(buildKwPhrase(term.id)) + '">' +
+                '<div class="kw-card-row">' +
+                '<select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select>' +
+                '<select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select>' +
+                '</div>' +
+                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Reclassify matching past reports</label>' +
+                '<div class="kw-card-actions">' +
+                '<button class="kw-btn-ignore" onclick="ignoreKwTerm(' + term.id + ')">Ignore</button>' +
+                '<button class="kw-btn-save" onclick="submitKwClassify(' + term.id + ')">Save Keyword</button>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function buildKwPhrase(termId) {
+        const sel = kwPhraseState[termId] || [];
+        return sel.sort(function(a, b) { return a.index - b.index; }).map(function(s) { return s.word; }).join(' ');
+    }
+
+    function toggleKwWord(termId, index, word) {
+        if (!kwPhraseState[termId]) kwPhraseState[termId] = [];
+        const existing = kwPhraseState[termId].findIndex(function(s) { return s.index === index; });
+        if (existing >= 0) {
+            kwPhraseState[termId].splice(existing, 1);
+        } else {
+            kwPhraseState[termId].push({ index: index, word: word });
+        }
+        renderPendingTerms();
+    }
+
+    async function submitKwClassify(termId) {
+        const phraseInput = document.getElementById('kw-phrase-' + termId);
+        const keyword = phraseInput.value.trim();
+        if (!keyword) {
+            showToast('Select or type a phrase first.', 'error');
+            return;
+        }
+        const type = document.getElementById('kw-type-' + termId).value;
+        const urgency = document.getElementById('kw-urgency-' + termId).value;
+        const reclassify = document.getElementById('kw-reclassify-' + termId).checked;
+
+        showActionLoading('Saving keyword...');
+        try {
+            const res = await fetch('/emergency/terms/' + termId + '/classify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({
+                    keyword: keyword,
+                    emergency_type: type,
+                    urgency_level: urgency || null,
+                    reclassify_matching: reclassify,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Keyword saved' + (data.reclassified_count > 0 ? ' and ' + data.reclassified_count + ' report(s) reclassified' : ''), 'success');
+                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
+                delete kwPhraseState[termId];
+                trainedKeywords.unshift(data.keyword);
+                renderKwList();
+            } else {
+                showToast('Failed to save keyword.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    async function ignoreKwTerm(termId) {
+        showActionLoading('Ignoring snippet...');
+        try {
+            const res = await fetch('/emergency/terms/' + termId + '/ignore', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
+                delete kwPhraseState[termId];
+                renderKwList();
+            } else {
+                showToast('Failed to ignore snippet.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    function renderTrainedKeywords() {
+        const list = document.getElementById('kw-list');
+        if (trainedKeywords.length === 0) {
+            list.innerHTML = '<div class="kw-empty">No trained keywords yet.</div>';
+            return;
+        }
+        list.innerHTML = trainedKeywords.map(function(kw) {
+            return '' +
+                '<div class="kw-trained-card" id="kw-trained-' + kw.id + '">' +
+                '<div class="kw-trained-left">' +
+                '<div class="kw-trained-phrase">' + escHtml(kw.keyword) + '</div>' +
+                '<div class="kw-trained-meta">' + escHtml(kw.emergency_type) + (kw.urgency_level ? ' &middot; ' + escHtml(kw.urgency_level) : '') + '</div>' +
+                '</div>' +
+                '<div class="kw-trained-actions">' +
+                '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="{{ asset(\'icons/edit.png\') }}" alt="Edit"></button>' +
+                '<button class="act-btn danger" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="{{ asset(\'icons/delete.png\') }}" alt="Delete"></button>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function editKwKeyword(id) {
+        const kw = trainedKeywords.find(function(k) { return k.id === id; });
+        if (!kw) return;
+        const card = document.getElementById('kw-trained-' + id);
+        card.outerHTML = '' +
+            '<div class="kw-card" id="kw-trained-' + id + '">' +
+            '<input type="text" class="kw-phrase-input" id="kw-edit-phrase-' + id + '" value="' + escHtml(kw.keyword) + '">' +
+            '<div class="kw-card-row">' +
+            '<select id="kw-edit-type-' + id + '">' + typeOptionsHtml(kw.emergency_type) + '</select>' +
+            '<select id="kw-edit-urgency-' + id + '">' + urgencyOptionsHtml(kw.urgency_level) + '</select>' +
+            '</div>' +
+            '<div class="kw-card-actions">' +
+            '<button class="kw-btn-ignore" onclick="renderTrainedKeywords()">Cancel</button>' +
+            '<button class="kw-btn-save" onclick="saveKwKeywordEdit(' + id + ')">Save</button>' +
+            '</div>' +
+            '</div>';
+    }
+
+    async function saveKwKeywordEdit(id) {
+        const keyword = document.getElementById('kw-edit-phrase-' + id).value.trim();
+        const type = document.getElementById('kw-edit-type-' + id).value;
+        const urgency = document.getElementById('kw-edit-urgency-' + id).value;
+        if (!keyword) {
+            showToast('Keyword cannot be empty.', 'error');
+            return;
+        }
+        showActionLoading('Updating keyword...');
+        try {
+            const res = await fetch('/emergency/keywords/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ keyword: keyword, emergency_type: type, urgency_level: urgency || null }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const idx = trainedKeywords.findIndex(function(k) { return k.id === id; });
+                if (idx >= 0) trainedKeywords[idx] = data.keyword;
+                showToast('Keyword updated.', 'success');
+                renderTrainedKeywords();
+            } else {
+                showToast('Failed to update keyword.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    async function deleteKwKeyword(id) {
+        showActionLoading('Deleting keyword...');
+        try {
+            const res = await fetch('/emergency/keywords/' + id, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                trainedKeywords = trainedKeywords.filter(function(k) { return k.id !== id; });
+                showToast('Keyword deleted.', 'success');
+                renderKwList();
+            } else {
+                showToast('Failed to delete keyword.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
 </script>
 @endsection

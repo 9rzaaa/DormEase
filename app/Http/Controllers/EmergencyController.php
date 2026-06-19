@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
 use App\Models\ArchivedEmergencyReport;
+use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
+use App\Models\UnclassifiedEmergencyTerm;
 use App\Services\TenantPushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +23,8 @@ class EmergencyController extends Controller
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
+        $pendingTerms    = UnclassifiedEmergencyTerm::where('status', 'pending')->orderByDesc('created_at')->get();
+        $trainedKeywords = CustomEmergencyKeyword::orderByDesc('created_at')->get();
 
         return view('emergency', compact(
             'reports',
@@ -30,7 +34,9 @@ class EmergencyController extends Controller
             'panicCount',
             'closedArchive',
             'resolvedArchive',
-            'deletedArchive'
+            'deletedArchive',
+            'pendingTerms',
+            'trainedKeywords'
         ));
     }
 
@@ -340,5 +346,96 @@ class EmergencyController extends Controller
             ]);
 
         return response()->json(['reports' => $reports]);
+    }
+
+    public function classifyTerm(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+            'reclassify_matching' => 'nullable|boolean',
+        ]);
+
+        $term = UnclassifiedEmergencyTerm::findOrFail($id);
+        $staff = Auth::guard('staff')->user();
+
+        $keyword = CustomEmergencyKeyword::create([
+            'keyword' => strtolower(trim($validated['keyword'])),
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        $term->update(['status' => 'classified']);
+
+        $reclassifiedCount = 0;
+
+        if ($request->boolean('reclassify_matching')) {
+            $needle = strtolower(trim($validated['keyword']));
+
+            $matchingReports = EmergencyReport::where('emergency_type', 'Other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingReports as $report) {
+                $report->update([
+                    'emergency_type' => $validated['emergency_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $report->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+
+            $matchingArchives = ArchivedEmergencyReport::where('emergency_type', 'Other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingArchives as $archive) {
+                $archive->update([
+                    'emergency_type' => $validated['emergency_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $archive->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'keyword' => $keyword,
+            'reclassified_count' => $reclassifiedCount,
+        ]);
+    }
+
+    public function ignoreTerm($id)
+    {
+        $term = UnclassifiedEmergencyTerm::findOrFail($id);
+        $term->update(['status' => 'ignored']);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updateKeyword(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+        ]);
+
+        $keyword = CustomEmergencyKeyword::findOrFail($id);
+        $keyword->update([
+            'keyword' => strtolower(trim($validated['keyword'])),
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+        ]);
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
+    public function destroyKeyword($id)
+    {
+        CustomEmergencyKeyword::findOrFail($id)->delete();
+
+        return response()->json(['success' => true]);
     }
 }

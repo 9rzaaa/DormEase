@@ -249,6 +249,11 @@ Route::middleware('auth:staff')->group(function () {
     Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
     Route::get('/emergency/poll/panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
+    Route::post('/emergency/terms/{id}/classify', [EmergencyController::class, 'classifyTerm'])->name('emergency.terms.classify');
+    Route::post('/emergency/terms/{id}/ignore', [EmergencyController::class, 'ignoreTerm'])->name('emergency.terms.ignore');
+    Route::put('/emergency/keywords/{id}', [EmergencyController::class, 'updateKeyword'])->name('emergency.keywords.update');
+    Route::delete('/emergency/keywords/{id}', [EmergencyController::class, 'destroyKeyword'])->name('emergency.keywords.destroy');
+    
 
     // frontdesk
     Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
