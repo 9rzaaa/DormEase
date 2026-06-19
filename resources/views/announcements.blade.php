@@ -844,6 +844,9 @@
 .em-pill-opt.sel-closed   { border-color: var(--ink-muted); color: var(--ink-muted); background: #f3f4f6; }
 .em-file-zone { border: 1.5px dashed var(--pink-200); border-radius: 12px; padding: 1rem 1.1rem; background: var(--blush); display: flex; flex-direction: column; gap: .45rem; }
 .em-file-note { font-size: .72rem; color: var(--ink-muted); line-height: 1.5; }
+.em-file-error { font-size: .76rem; font-weight: 700; color: #e04867; line-height: 1.5; display: none; }
+.em-file-error.show { display: block; }
+.em-file-zone.has-error { border-color: #e04867; background: #fff5f5; }
 .em-replace-row { display: flex; align-items: center; gap: .5rem; padding: .5rem .75rem; border-radius: 9px; border: 1px solid var(--pink-100); background: var(--petal); cursor: pointer; }
 .em-replace-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--hot-pink); cursor: pointer; }
 .em-replace-row span { font-size: .77rem; font-weight: 600; color: var(--hot-pink); }
@@ -1445,8 +1448,9 @@
                 </div>
                 <div class="em-panel" id="pm-panel-2">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
-                        <div class="em-file-note">Attach images, PDFs, or documents (optional).</div>
+                        <input type="file" name="files[]" id="post-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'post-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Optional, up to 10 files.</div>
+                        <div class="em-file-error" id="post-file-error"></div>
                     </div>
                 </div>
             </div>
@@ -1525,8 +1529,10 @@
                 </div>
                 <div class="em-panel" id="em-panel-2">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <input type="file" name="files[]" id="edit-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'edit-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Up to 10 files.</div>
                         <div class="em-file-note" id="edit-current-files">No existing files.</div>
+                        <div class="em-file-error" id="edit-file-error"></div>
                     </div>
                     <label class="em-replace-row">
                         <input type="checkbox" name="replace_attachments" value="1">
@@ -1618,8 +1624,10 @@
                 </div>
                 <div class="em-panel" id="vm-panel-3">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <input type="file" name="files[]" id="view-edit-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'view-edit-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Up to 10 files.</div>
                         <div class="em-file-note" id="view-current-files">No existing files.</div>
+                        <div class="em-file-error" id="view-edit-file-error"></div>
                     </div>
                     <label class="em-replace-row">
                         <input type="checkbox" name="replace_attachments" value="1">
@@ -1928,9 +1936,50 @@ function selectPostPill(type, val) {
     row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
     document.getElementById('post-' + type).value = val;
 }
+const ALLOWED_FILE_TYPES = ['image/png','image/jpeg','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+const ALLOWED_EXTENSIONS = ['png','jpg','jpeg','pdf','docx'];
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_FILE_COUNT = 10;
+
+function validateFileInput(input, errorId) {
+    const errorBox = document.getElementById(errorId);
+    const zone      = input.closest('.em-file-zone');
+    const files     = Array.from(input.files || []);
+    let message     = '';
+
+    if (files.length > MAX_FILE_COUNT) {
+        message = 'You can attach up to ' + MAX_FILE_COUNT + ' files at a time.';
+    } else {
+        for (const file of files) {
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (!ALLOWED_EXTENSIONS.includes(ext)) {
+                message = '"' + file.name + '" is not a supported file type. Use PNG, JPG, PDF, or DOCX.';
+                break;
+            }
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                message = '"' + file.name + '" is too large. Maximum size is 5 MB per file.';
+                break;
+            }
+        }
+    }
+
+    if (message) {
+        errorBox.textContent = message;
+        errorBox.classList.add('show');
+        zone.classList.add('has-error');
+        input.value = '';
+        return false;
+    }
+
+    errorBox.textContent = '';
+    errorBox.classList.remove('show');
+    zone.classList.remove('has-error');
+    return true;
+}
 function submitPostModal() {
     const form = document.getElementById('post-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('post-files-input'), 'post-file-error')) return;
     setFormLoading(form, 'Posting...'); form.submit();
 }
 function openPostModal() {
@@ -1986,6 +2035,7 @@ function openEditModal(id, e) {
 function submitEditModal() {
     const form = document.getElementById('edit-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('edit-files-input'), 'edit-file-error')) return;
     setFormLoading(form, 'Saving changes...'); form.submit();
 }
 
@@ -2059,6 +2109,7 @@ function openViewModal(id) {
 function submitViewEditModal() {
     const form = document.getElementById('view-edit-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('view-edit-files-input'), 'view-edit-file-error')) return;
     setFormLoading(form, 'Saving changes...'); form.submit();
 }
 function openDeleteModal(id, name, e) {
@@ -2311,5 +2362,8 @@ updateEmptyState();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
+@if($errors->any())
+    showToast("{{ $errors->first() }}", 'error');
+@endif
 </script>
 @endsection
