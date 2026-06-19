@@ -1089,15 +1089,118 @@
 .kw-search-bar { padding: 0 1.1rem .8rem; flex-shrink: 0; }
 
 .kw-summary-bar {
+    flex-shrink: 0;
     padding: 0 1.1rem .6rem;
-    font-size: .72rem;
+}
+
+.kw-summary-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    width: 100%;
+    background: var(--blush);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 10px;
+    padding: .5rem .75rem;
+    cursor: pointer;
+    font-family: var(--ff-body);
+    transition: border-color .2s, background .2s;
+}
+
+.kw-summary-toggle:hover {
+    border-color: var(--bright-pink);
+    background: var(--petal);
+}
+
+.kw-summary-toggle-text {
+    font-size: .73rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+
+.kw-summary-toggle-text strong {
+    color: var(--hot-pink);
+    font-weight: 800;
+}
+
+.kw-summary-chevron {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--hot-pink);
+    transition: transform .25s ease;
+}
+
+.kw-summary-bar.open .kw-summary-chevron {
+    transform: rotate(180deg);
+}
+
+.kw-summary-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .28s ease, opacity .2s ease, margin-top .25s ease;
+    opacity: 0;
+}
+
+.kw-summary-bar.open .kw-summary-detail {
+    max-height: 110px;
+    opacity: 1;
+    margin-top: .5rem;
+}
+
+.kw-summary-split {
+    display: flex;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--baby-pink);
+    margin-bottom: .55rem;
+}
+
+.kw-summary-split-builtin {
+    background: var(--pink-100);
+    transition: width .3s ease;
+}
+
+.kw-summary-split-trained {
+    background: var(--bright-pink);
+    transition: width .3s ease;
+}
+
+.kw-summary-rows {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.kw-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .73rem;
     color: var(--ink-muted);
     font-weight: 600;
+}
+
+.kw-summary-row-label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.kw-summary-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     flex-shrink: 0;
 }
 
-.kw-summary-bar strong {
-    color: var(--hot-pink);
+.kw-summary-dot.builtin { background: var(--pink-100); border: 1px solid var(--baby-pink); }
+.kw-summary-dot.trained { background: var(--bright-pink); }
+
+.kw-summary-row-val {
+    color: var(--ink);
     font-weight: 800;
 }
 
@@ -1989,7 +2092,18 @@
                 Built-in Rules <span class="kw-tab-count" id="kwcount-reference">0</span>
             </button>
         </div>
-        <div class="kw-summary-bar" id="kw-summary-bar"></div>
+        <div class="kw-summary-bar" id="kw-summary-bar">
+            <button class="kw-summary-toggle" id="kw-summary-toggle" onclick="toggleKwSummary()">
+                <span class="kw-summary-toggle-text" id="kw-summary-toggle-text"></span>
+                <svg class="kw-summary-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="kw-summary-detail">
+                <div class="kw-summary-split" id="kw-summary-split"></div>
+                <div class="kw-summary-rows" id="kw-summary-rows"></div>
+            </div>
+        </div>
         <div class="kw-search-bar" style="display:flex;gap:.5rem;">
             <div class="kw-search-inner" style="flex:1;">
                 <img src="{{ asset('icons/search.png') }}" class="kw-search-icon" alt="">
@@ -2850,16 +2964,41 @@ document.addEventListener('DOMContentLoaded', () => {
         renderKwList();
     }
 
-    function renderKwList() {
-        document.getElementById('kwcount-pending').textContent = pendingTerms.length;
-        document.getElementById('kwcount-trained').textContent = trainedKeywords.length;
+    let kwSummaryOpen = false;
+
+    function toggleKwSummary() {
+        kwSummaryOpen = !kwSummaryOpen;
+        document.getElementById('kw-summary-bar').classList.toggle('open', kwSummaryOpen);
+    }
+
+    function renderKwSummary() {
         const refCount = Object.values(hardcodedRules.issue_rules || {}).reduce(function(sum, rule) {
             return sum + (rule.keywords ? rule.keywords.length : 0);
         }, 0);
+        const trainedCount = trainedKeywords.length;
+        const totalCount = refCount + trainedCount;
+        const builtinPct = totalCount === 0 ? 50 : (refCount / totalCount) * 100;
+        const trainedPct = totalCount === 0 ? 50 : 100 - builtinPct;
+
+        document.getElementById('kw-summary-toggle-text').innerHTML =
+            '<strong>' + refCount + '</strong> built-in + <strong>' + trainedCount + '</strong> trained = <strong>' + totalCount + '</strong> active keyword rules';
+
+        document.getElementById('kw-summary-split').innerHTML =
+            '<div class="kw-summary-split-builtin" style="width:' + builtinPct + '%;"></div>' +
+            '<div class="kw-summary-split-trained" style="width:' + trainedPct + '%;"></div>';
+
+        document.getElementById('kw-summary-rows').innerHTML =
+            '<div class="kw-summary-row"><span class="kw-summary-row-label"><span class="kw-summary-dot builtin"></span>Built-in rules</span><span class="kw-summary-row-val">' + refCount + '</span></div>' +
+            '<div class="kw-summary-row"><span class="kw-summary-row-label"><span class="kw-summary-dot trained"></span>Trained by your team</span><span class="kw-summary-row-val">' + trainedCount + '</span></div>';
+
+        return refCount;
+    }
+
+    function renderKwList() {
+        document.getElementById('kwcount-pending').textContent = pendingTerms.length;
+        document.getElementById('kwcount-trained').textContent = trainedKeywords.length;
+        const refCount = renderKwSummary();
         document.getElementById('kwcount-reference').textContent = refCount;
-        const totalCount = refCount + trainedKeywords.length;
-        document.getElementById('kw-summary-bar').innerHTML =
-            '<strong>' + refCount + '</strong> built-in + <strong>' + trainedKeywords.length + '</strong> trained = <strong>' + totalCount + '</strong> active keyword rules';
         if (kwActiveTab === 'pending') {
             renderPendingTerms();
         } else if (kwActiveTab === 'trained') {
