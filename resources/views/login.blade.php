@@ -354,9 +354,9 @@
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        padding: 2.5rem 3.5rem 3rem;
+        padding: 2rem 3.5rem;
         position: relative;
         overflow-y: auto;
         overflow-x: hidden;
@@ -364,6 +364,10 @@
 
     .right::-webkit-scrollbar {
         width: 0px;
+    }
+
+    .form-wrap {
+        margin: auto 0;
     }
 
     .right::before {
