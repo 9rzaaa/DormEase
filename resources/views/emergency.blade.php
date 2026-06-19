@@ -1421,6 +1421,29 @@
         color: var(--ink-muted);
         font-style: italic;
     }
+
+    .kw-add-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        padding: .5rem .9rem;
+        border-radius: 10px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+        box-shadow: 0 5px 14px rgba(232,23,93,.25);
+        flex-shrink: 0;
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .kw-add-btn.visible { display: inline-flex; }
+    .kw-add-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
 </style>
 @endsection
 
@@ -1765,11 +1788,12 @@
                 Built-in Rules <span class="kw-tab-count" id="kwcount-reference">0</span>
             </button>
         </div>
-        <div class="kw-search-bar">
-            <div class="kw-search-inner">
+        <div class="kw-search-bar" style="display:flex;gap:.5rem;">
+            <div class="kw-search-inner" style="flex:1;">
                 <img src="{{ asset('icons/search.png') }}" class="kw-search-icon" alt="">
                 <input type="text" id="kw-search" placeholder="Search..." oninput="renderKwList()">
             </div>
+            <button class="kw-add-btn" id="kw-add-btn" onclick="showAddKeywordForm()">+ Add Keyword</button>
         </div>
         <div class="kw-list" id="kw-list"></div>
         <div class="modal-footer">
@@ -2613,6 +2637,8 @@
         kwActiveTab = 'pending';
         document.getElementById('kwtab-pending').classList.add('active');
         document.getElementById('kwtab-trained').classList.remove('active');
+        document.getElementById('kwtab-reference').classList.remove('active');
+        document.getElementById('kw-add-btn').classList.remove('visible');
         document.getElementById('kw-search').value = '';
         document.getElementById('kw-search').placeholder = 'Search pending snippets...';
         renderKwList();
@@ -2624,6 +2650,7 @@
         document.getElementById('kwtab-pending').classList.toggle('active', tab === 'pending');
         document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
         document.getElementById('kwtab-reference').classList.toggle('active', tab === 'reference');
+        document.getElementById('kw-add-btn').classList.toggle('visible', tab === 'trained');
         document.getElementById('kw-search').value = '';
         const placeholders = { pending: 'Search pending snippets...', trained: 'Search trained keywords...', reference: 'Search built-in rules...' };
         document.getElementById('kw-search').placeholder = placeholders[tab];
@@ -2677,7 +2704,7 @@
         }
 
         list.innerHTML = '' +
-            '<div class="kw-ref-note">These are hardcoded in the system and cannot be edited or removed here. To handle a phrase differently, add it as a trained keyword in the Pending or Trained tabs.</div>' +
+            '<div class="kw-ref-note">These are hardcoded in the system and cannot be edited or removed here. They take priority when no trained keyword matches the same phrase. Use the Add Keyword button on the Trained tab to set a different rule for a specific phrase.</div>' +
             groupsHtml;
     }
 
@@ -2832,6 +2859,65 @@
                 '</div>' +
                 '</div>';
         }).join('');
+    }
+
+    function showAddKeywordForm() {
+        if (document.getElementById('kw-add-new')) return;
+        const list = document.getElementById('kw-list');
+        const formHtml = '' +
+            '<div class="kw-card" id="kw-add-new">' +
+            '<div class="kw-card-label-row"><span class="kw-card-label">New keyword</span></div>' +
+            '<span class="kw-field-label">Phrase to match</span>' +
+            '<div class="kw-phrase-preview">' +
+            '<input type="text" class="kw-phrase-input" id="kw-add-phrase" placeholder="Type the phrase, e.g. amoy gas">' +
+            '</div>' +
+            '<div class="kw-card-row">' +
+            '<div><span class="kw-field-label">Emergency type</span><select id="kw-add-type">' + typeOptionsHtml('Other') + '</select></div>' +
+            '<div><span class="kw-field-label">Urgency override</span><select id="kw-add-urgency">' + urgencyOptionsHtml('') + '</select></div>' +
+            '</div>' +
+            '<div class="kw-card-actions">' +
+            '<button class="kw-btn-ignore" onclick="cancelAddKeywordForm()">Cancel</button>' +
+            '<button class="kw-btn-save" onclick="submitAddKeyword()">Save Keyword</button>' +
+            '</div>' +
+            '</div>';
+        list.insertAdjacentHTML('afterbegin', formHtml);
+        document.getElementById('kw-add-phrase').focus();
+    }
+
+    function cancelAddKeywordForm() {
+        const el = document.getElementById('kw-add-new');
+        if (el) el.remove();
+    }
+
+    async function submitAddKeyword() {
+        const keyword = document.getElementById('kw-add-phrase').value.trim();
+        if (!keyword) {
+            showToast('Type a phrase first.', 'error');
+            return;
+        }
+        const type = document.getElementById('kw-add-type').value;
+        const urgency = document.getElementById('kw-add-urgency').value;
+
+        showActionLoading('Saving keyword...');
+        try {
+            const res = await fetch('/emergency/keywords', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ keyword: keyword, emergency_type: type, urgency_level: urgency || null }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                trainedKeywords.unshift(data.keyword);
+                showToast('Keyword added.', 'success');
+                renderKwList();
+            } else {
+                showToast('Failed to add keyword.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
     }
 
     function editKwKeyword(id) {

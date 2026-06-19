@@ -251,6 +251,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
     Route::post('/emergency/terms/{id}/classify', [EmergencyController::class, 'classifyTerm'])->name('emergency.terms.classify');
     Route::post('/emergency/terms/{id}/ignore', [EmergencyController::class, 'ignoreTerm'])->name('emergency.terms.ignore');
+    Route::post('/emergency/keywords', [EmergencyController::class, 'storeKeyword'])->name('emergency.keywords.store');
     Route::put('/emergency/keywords/{id}', [EmergencyController::class, 'updateKeyword'])->name('emergency.keywords.update');
     Route::delete('/emergency/keywords/{id}', [EmergencyController::class, 'destroyKeyword'])->name('emergency.keywords.destroy');
     

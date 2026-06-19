@@ -351,6 +351,26 @@ class EmergencyController extends Controller
         return response()->json(['reports' => $reports]);
     }
 
+    public function storeKeyword(Request $request)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+        ]);
+
+        $staff = Auth::guard('staff')->user();
+
+        $keyword = CustomEmergencyKeyword::create([
+            'keyword' => strtolower(trim($validated['keyword'])),
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
     public function classifyTerm(Request $request, $id)
     {
         $validated = $request->validate([
