@@ -2820,6 +2820,16 @@
         renderPendingTerms();
     }
 
+    function extractErrorMessage(data, fallback) {
+        if (data && data.errors) {
+            const firstKey = Object.keys(data.errors)[0];
+            if (firstKey && data.errors[firstKey] && data.errors[firstKey][0]) {
+                return data.errors[firstKey][0];
+            }
+        }
+        return (data && data.message) ? data.message : fallback;
+    }
+
     async function submitKwClassify(termId) {
         const phraseInput = document.getElementById('kw-phrase-' + termId);
         const keyword = phraseInput.value.trim();
@@ -2827,10 +2837,16 @@
             showToast('Select or type a phrase first.', 'error');
             return;
         }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-card-' + termId + ' .kw-btn-save');
         const type = document.getElementById('kw-type-' + termId).value;
         const urgency = document.getElementById('kw-urgency-' + termId).value;
         const reclassify = document.getElementById('kw-reclassify-' + termId).checked;
 
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
         showActionLoading('Saving keyword...');
         try {
             const res = await fetch('/emergency/terms/' + termId + '/classify', {
@@ -2851,10 +2867,12 @@
                 trainedKeywords.unshift(data.keyword);
                 renderKwList();
             } else {
-                showToast('Failed to save keyword.', 'error');
+                showToast(extractErrorMessage(data, 'Failed to save keyword.'), 'error');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
             }
         } catch (err) {
-            showToast('Error: ' + err.message, 'error');
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
         } finally {
             hideActionLoading();
         }
@@ -2944,9 +2962,15 @@
             showToast('Type a phrase first.', 'error');
             return;
         }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-add-new .kw-btn-save');
         const type = document.getElementById('kw-add-type').value;
         const urgency = document.getElementById('kw-add-urgency').value;
 
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
         showActionLoading('Saving keyword...');
         try {
             const res = await fetch('/emergency/keywords', {
@@ -2961,10 +2985,12 @@
                 showToast('Keyword added.', 'success');
                 renderKwList();
             } else {
-                showToast('Failed to add keyword.', 'error');
+                showToast(extractErrorMessage(data, 'Failed to add keyword.'), 'error');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
             }
         } catch (err) {
-            showToast('Error: ' + err.message, 'error');
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
         } finally {
             hideActionLoading();
         }
@@ -2996,6 +3022,12 @@
             showToast('Keyword cannot be empty.', 'error');
             return;
         }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-trained-' + id + ' .kw-btn-save');
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
         showActionLoading('Updating keyword...');
         try {
             const res = await fetch('/emergency/keywords/' + id, {
@@ -3010,16 +3042,23 @@
                 showToast('Keyword updated.', 'success');
                 renderTrainedKeywords();
             } else {
-                showToast('Failed to update keyword.', 'error');
+                showToast(extractErrorMessage(data, 'Failed to update keyword.'), 'error');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
             }
         } catch (err) {
-            showToast('Error: ' + err.message, 'error');
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
         } finally {
             hideActionLoading();
         }
     }
 
     async function deleteKwKeyword(id) {
+        const kw = trainedKeywords.find(function(k) { return k.id === id; });
+        const label = kw ? kw.keyword : 'this keyword';
+        if (!window.confirm('Delete trained keyword "' + label + '"? This cannot be undone.')) {
+            return;
+        }
         showActionLoading('Deleting keyword...');
         try {
             const res = await fetch('/emergency/keywords/' + id, {

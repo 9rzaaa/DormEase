@@ -354,15 +354,33 @@ class EmergencyController extends Controller
     public function storeKeyword(Request $request)
     {
         $validated = $request->validate([
-            'keyword' => 'required|string|max:255',
+            'keyword' => 'required|string|min:2|max:255',
             'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
 
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+            ], 422);
+        }
+
         $staff = Auth::guard('staff')->user();
 
         $keyword = CustomEmergencyKeyword::create([
-            'keyword' => strtolower(trim($validated['keyword'])),
+            'keyword' => $normalizedKeyword,
             'emergency_type' => $validated['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? null,
             'added_by_staff_id' => $staff?->staff_id,
@@ -374,17 +392,36 @@ class EmergencyController extends Controller
     public function classifyTerm(Request $request, $id)
     {
         $validated = $request->validate([
-            'keyword' => 'required|string|max:255',
+            'keyword' => 'required|string|min:2|max:255',
             'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
             'reclassify_matching' => 'nullable|boolean',
         ]);
 
         $term = UnclassifiedEmergencyTerm::findOrFail($id);
+
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+            ], 422);
+        }
+
         $staff = Auth::guard('staff')->user();
 
         $keyword = CustomEmergencyKeyword::create([
-            'keyword' => strtolower(trim($validated['keyword'])),
+            'keyword' => $normalizedKeyword,
             'emergency_type' => $validated['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? null,
             'added_by_staff_id' => $staff?->staff_id,
@@ -440,14 +477,34 @@ class EmergencyController extends Controller
     public function updateKeyword(Request $request, $id)
     {
         $validated = $request->validate([
-            'keyword' => 'required|string|max:255',
+            'keyword' => 'required|string|min:2|max:255',
             'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
 
         $keyword = CustomEmergencyKeyword::findOrFail($id);
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'Another trained keyword already uses this exact phrase.',
+                'errors' => ['keyword' => ['Another trained keyword already uses this exact phrase.']],
+            ], 422);
+        }
+
         $keyword->update([
-            'keyword' => strtolower(trim($validated['keyword'])),
+            'keyword' => $normalizedKeyword,
             'emergency_type' => $validated['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? null,
         ]);
