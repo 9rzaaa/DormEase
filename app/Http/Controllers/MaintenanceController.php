@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MaintenanceRequest;
 use App\Models\ArchivedMaintReq;
+use App\Models\CustomMaintenanceKeyword;
+use App\Models\UnclassifiedMaintenanceTerm;
 use App\Helpers\NotificationHelper;
 use App\Services\TenantPushNotificationService;
+use App\Http\Controllers\Api\MaintenanceController as ApiMaintenanceController;
 
 class MaintenanceController extends Controller
 {
@@ -64,7 +67,22 @@ class MaintenanceController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        return view('maintenance', compact('staff', 'requests', 'stats', 'closedArchive', 'resolvedArchive', 'deletedArchive', 'cancelledArchive'));
+        $pendingTerms    = UnclassifiedMaintenanceTerm::where('status', 'pending')->orderByDesc('created_at')->get();
+        $trainedKeywords = CustomMaintenanceKeyword::with('staff')->orderByDesc('created_at')->get();
+        $hardcodedRules  = ApiMaintenanceController::getHardcodedRules();
+
+        return view('maintenance', compact(
+            'staff',
+            'requests',
+            'stats',
+            'closedArchive',
+            'resolvedArchive',
+            'deletedArchive',
+            'cancelledArchive',
+            'pendingTerms',
+            'trainedKeywords',
+            'hardcodedRules'
+        ));
     }
 
     private function formatArchive(ArchivedMaintReq $r): array
@@ -215,6 +233,180 @@ class MaintenanceController extends Controller
             "Photo resubmission requested for {$reqLabel}.",
             $maintenance->request_id
         );
+
+        return response()->json(['success' => true]);
+    }
+    public function storeKeyword(Request $request)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'urgency_level' => 'nullable|in:low,moderate,urgent',
+        ]);
+
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+            ], 422);
+        }
+
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
+
+        $keyword = CustomMaintenanceKeyword::create([
+            'keyword' => $normalizedKeyword,
+            'issue_type' => $validated['issue_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        $keyword->load('staff');
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
+    public function classifyTerm(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'urgency_level' => 'nullable|in:low,moderate,urgent',
+            'reclassify_matching' => 'nullable|boolean',
+        ]);
+
+        $term = UnclassifiedMaintenanceTerm::findOrFail($id);
+
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+            ], 422);
+        }
+
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
+
+        $keyword = CustomMaintenanceKeyword::create([
+            'keyword' => $normalizedKeyword,
+            'issue_type' => $validated['issue_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        $keyword->load('staff');
+
+        $term->update(['status' => 'classified']);
+
+        $reclassifiedCount = 0;
+
+        if ($request->boolean('reclassify_matching')) {
+            $needle = strtolower(trim($validated['keyword']));
+            $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
+
+            $matchingRequests = MaintenanceRequest::where('issue_type', 'other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingRequests as $maintenance) {
+                $maintenance->update([
+                    'issue_type' => $validated['issue_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $maintenance->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+
+            $matchingArchives = ArchivedMaintReq::where('issue_type', 'other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingArchives as $archive) {
+                $archive->update([
+                    'issue_type' => $validated['issue_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $archive->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'keyword' => $keyword,
+            'reclassified_count' => $reclassifiedCount,
+        ]);
+    }
+
+    public function ignoreTerm($id)
+    {
+        $term = UnclassifiedMaintenanceTerm::findOrFail($id);
+        $term->update(['status' => 'ignored']);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updateKeyword(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'urgency_level' => 'nullable|in:low,moderate,urgent',
+        ]);
+
+        $keyword = CustomMaintenanceKeyword::findOrFail($id);
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'Another trained keyword already uses this exact phrase.',
+                'errors' => ['keyword' => ['Another trained keyword already uses this exact phrase.']],
+            ], 422);
+        }
+
+        $keyword->update([
+            'keyword' => $normalizedKeyword,
+            'issue_type' => $validated['issue_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+        ]);
+
+        $keyword->load('staff');
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
+    public function destroyKeyword($id)
+    {
+        CustomMaintenanceKeyword::findOrFail($id)->delete();
 
         return response()->json(['success' => true]);
     }

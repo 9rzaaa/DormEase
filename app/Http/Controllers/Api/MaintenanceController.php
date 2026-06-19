@@ -6,6 +6,8 @@ use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRequest;
 use App\Models\ArchivedMaintReq;
+use App\Models\CustomMaintenanceKeyword;
+use App\Models\UnclassifiedMaintenanceTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -244,17 +246,20 @@ class MaintenanceController extends Controller
         ],
     ];
 
-    // Priority weight used for tie-breaking when two issue types score equally.
     private const PRIORITY_WEIGHT = [
         'urgent'   => 3,
         'moderate' => 2,
         'low'      => 1,
     ];
 
-    // ---------------------------------------------------------------------------
-    // Tagalog morphology: roots the stemmer should recognise.
-    // Add more roots here as needed; the stemmer expands them automatically.
-    // ---------------------------------------------------------------------------
+    public static function getHardcodedRules(): array
+    {
+        return [
+            'issue_rules' => self::ISSUE_RULES,
+            'priority_rules' => self::PRIORITY_RULES,
+        ];
+    }
+
     private const TAGALOG_ROOTS = [
         // Plumbing
         'tagas',
@@ -301,9 +306,6 @@ class MaintenanceController extends Controller
         'tulong',
     ];
 
-    // =========================================================================
-    // Tagalog Morphological Stemmer
-    // =========================================================================
     private function tagalogStem(string $word): array
     {
         $candidates = [$word];
@@ -405,12 +407,6 @@ class MaintenanceController extends Controller
         return array_unique($forms);
     }
 
-    /**
-     * Checks whether a keyword appears in the text using:
-     *  - direct substring match
-     *  - English -ing suffix stemming
-     *  - Tagalog morphological stemming (for every word in the text)
-     */
     private function matchesKeyword(string $text, string $keyword): bool
     {
         if (str_contains($text, $keyword)) {
@@ -434,9 +430,6 @@ class MaintenanceController extends Controller
             }
         }
 
-        // ── Tagalog morphological matching ───────────────────────────────────
-        // Stem each word in the text; also stem the keyword itself.
-        // Match when any derived root pair is equal (min 4 chars to avoid noise).
         $keywordRoots = $this->tagalogStem($keyword);
 
         foreach ($words as $word) {
@@ -494,14 +487,12 @@ class MaintenanceController extends Controller
     {
         $tenantId = $request->user()?->tenant_id;
 
-        // Try to find the active maintenance request first
         $maintenance = MaintenanceRequest::where('tenant_id', $tenantId)
             ->where('request_id', $id)
             ->first();
 
         if ($maintenance) {
             if ($maintenance->status === 'pending') {
-                // Archive as cancelled
                 $this->archiveRequest($maintenance, 'cancelled');
                 $maintenance->delete();
 
@@ -528,7 +519,6 @@ class MaintenanceController extends Controller
                 ], 403);
             }
 
-            // Fallback soft-delete for other active statuses if any
             $maintenance->update(['hidden_from_tenant' => true]);
 
             return response()->json([
@@ -537,7 +527,6 @@ class MaintenanceController extends Controller
             ]);
         }
 
-        // Try to find the archived resolved request
         $archived = ArchivedMaintReq::where('tenant_id', $tenantId)
             ->where('original_id', $id)
             ->where('archive_type', 'resolved')
@@ -621,6 +610,14 @@ class MaintenanceController extends Controller
             'submitted_at'  => now(),
         ]);
 
+        if ($maintenance->issue_type === 'other' && !empty($cleanedDescription)) {
+            UnclassifiedMaintenanceTerm::create([
+                'request_id' => $maintenance->request_id,
+                'description_snapshot' => $cleanedDescription,
+                'status' => 'pending',
+            ]);
+        }
+
         NotificationHelper::sendToAll(
             type: 'maintenance_new',
             message: "New maintenance request from {$tenant?->first_name} {$tenant?->last_name} in room {$tenant?->room_number}.",
@@ -666,9 +663,6 @@ class MaintenanceController extends Controller
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // Formatting
-    // -------------------------------------------------------------------------
     private function formatRequest(MaintenanceRequest $maintenance): array
     {
         return [
@@ -720,10 +714,6 @@ class MaintenanceController extends Controller
             : null;
     }
 
-    // -------------------------------------------------------------------------
-    // Text cleaning
-    // -------------------------------------------------------------------------
-
     private function cleanText(string $text): string
     {
         $text = Str::lower($text);
@@ -733,9 +723,10 @@ class MaintenanceController extends Controller
         return trim($text ?? '');
     }
 
-    // -------------------------------------------------------------------------
-    // Classification
-    // -------------------------------------------------------------------------
+    private function getCustomKeywords()
+    {
+        return CustomMaintenanceKeyword::all();
+    }
 
     private function classify(string $text, ?string $requestedIssue = null): array
     {
@@ -743,6 +734,7 @@ class MaintenanceController extends Controller
         $bestIssue = $normalizedIssue ?? 'other';
         $bestScore = ($normalizedIssue && $normalizedIssue !== 'other') ? 1 : 0;
         $bestPriorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$bestIssue]['priority'] ?? 'low'] ?? 0;
+        $decidingCustomKeyword = null;
 
         foreach (self::ISSUE_RULES as $issue => $rule) {
             $score = 0;
@@ -761,12 +753,38 @@ class MaintenanceController extends Controller
                 $bestIssue          = $issue;
                 $bestScore          = $score;
                 $bestPriorityWeight = $priorityWeight;
+                $decidingCustomKeyword = null;
+            }
+        }
+
+        $customKeywords = $this->getCustomKeywords();
+        $customScoresByIssue = [];
+
+        foreach ($customKeywords as $custom) {
+            if ($this->matchesKeyword($text, strtolower($custom->keyword))) {
+                $customScoresByIssue[$custom->issue_type] = ($customScoresByIssue[$custom->issue_type] ?? 0) + 1;
+                if (!isset($customScoresByIssue[$custom->issue_type . '_match'])) {
+                    $customScoresByIssue[$custom->issue_type . '_match'] = $custom;
+                }
+            }
+        }
+
+        foreach ($customScoresByIssue as $issue => $score) {
+            if (str_ends_with((string) $issue, '_match')) {
+                continue;
+            }
+            $priorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$issue]['priority'] ?? 'low'] ?? 0;
+            if ($score > $bestScore || ($score === $bestScore && $priorityWeight > $bestPriorityWeight)) {
+                $bestIssue = $issue;
+                $bestScore = $score;
+                $bestPriorityWeight = $priorityWeight;
+                $decidingCustomKeyword = $customScoresByIssue[$issue . '_match'] ?? null;
             }
         }
 
         return [
             'issue_type'    => $bestIssue,
-            'urgency_level' => $this->classifyPriority($text, $bestIssue),
+            'urgency_level' => $this->classifyPriority($text, $bestIssue, $decidingCustomKeyword),
         ];
     }
 
@@ -793,7 +811,7 @@ class MaintenanceController extends Controller
         };
     }
 
-    private function classifyPriority(string $text, string $issue): string
+    private function classifyPriority(string $text, string $issue, ?CustomMaintenanceKeyword $decidingCustomKeyword = null): string
     {
         foreach (self::PRIORITY_RULES as $priority => $keywords) {
             foreach ($keywords as $keyword) {
@@ -801,6 +819,10 @@ class MaintenanceController extends Controller
                     return $priority;
                 }
             }
+        }
+
+        if ($decidingCustomKeyword && $decidingCustomKeyword->urgency_level) {
+            return $decidingCustomKeyword->urgency_level;
         }
 
         return self::ISSUE_RULES[$issue]['priority'] ?? 'low';
