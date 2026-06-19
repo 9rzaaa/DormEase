@@ -86,6 +86,7 @@
     button { font-family: var(--ff-body); cursor: pointer; }
 
     .sidebar {
+        --nav-scale: 1;
         width: var(--sidebar-w);
         background: var(--white);
         display: flex; flex-direction: column;
@@ -96,38 +97,38 @@
         transition: transform .3s ease;
     }
     .sidebar-logo {
-        padding: 1.4rem 1.5rem 1rem;
+        padding: calc(1.4rem * var(--nav-scale)) calc(1.5rem * var(--nav-scale)) calc(1rem * var(--nav-scale));
         display: flex; align-items: center; gap: .65rem;
         border-bottom: 1.5px solid var(--baby-pink);
     }
     .sidebar-logo-icon {
-        width: 38px; height: 38px; border-radius: 10px;
+        width: calc(38px * var(--nav-scale)); height: calc(38px * var(--nav-scale)); border-radius: 10px;
         background: linear-gradient(135deg, var(--bright-pink) 0%, var(--hot-pink) 100%);
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; flex-shrink: 0;
     }
     .sidebar-logo-icon img { width: 24px; height: 24px; object-fit: contain; }
     .sidebar-logo-text {
-        font-family: var(--ff-display); font-size: 1.3rem;
+        font-family: var(--ff-display); font-size: calc(1.3rem * var(--nav-scale));
         font-weight: 700; color: var(--ink); letter-spacing: -.01em;
     }
     .sidebar-logo-text em { font-style: italic; color: var(--hot-pink); }
 
     .sidebar-role {
-        margin: .8rem 1.5rem;
+        margin: calc(.8rem * var(--nav-scale)) calc(1.5rem * var(--nav-scale));
         display: inline-flex; align-items: center; gap: .4rem;
         background: var(--petal); border: 1.5px solid var(--baby-pink);
-        border-radius: 6px; padding: .28rem .7rem;
-        font-size: .72rem; font-weight: 800; color: var(--hot-pink);
+        border-radius: 6px; padding: calc(.28rem * var(--nav-scale)) calc(.7rem * var(--nav-scale));
+        font-size: calc(.72rem * var(--nav-scale)); font-weight: 800; color: var(--hot-pink);
         letter-spacing: .06em; text-transform: uppercase;
     }
 
-    .sidebar-nav { flex: 1; padding: .5rem 1rem 1rem; overflow-y: auto; }
+    .sidebar-nav { flex: 1; padding: calc(.5rem * var(--nav-scale)) calc(1rem * var(--nav-scale)) calc(1rem * var(--nav-scale)); overflow-y: auto; }
     .nav-item {
         display: flex; align-items: center; gap: .75rem;
-        padding: .68rem .85rem; border-radius: 10px;
-        font-size: .87rem; font-weight: 500; color: var(--black);
-        cursor: pointer; margin-bottom: .15rem;
+        padding: calc(.68rem * var(--nav-scale)) calc(.85rem * var(--nav-scale)); border-radius: 10px;
+        font-size: calc(.87rem * var(--nav-scale)); font-weight: 500; color: var(--black);
+        cursor: pointer; margin-bottom: calc(.15rem * var(--nav-scale));
         transition: background .2s, color .2s;
         border: none; background: none; width: 100%; text-align: left;
     }
@@ -141,21 +142,21 @@
         box-shadow: 0 4px 14px rgba(232,23,93,.30);
     }
     .nav-item.active .nav-icon img { filter: brightness(0) invert(1); }
-    .nav-icon { font-size: 1.05rem; width: 22px; text-align: center; flex-shrink: 0; }
+    .nav-icon { font-size: 1.05rem; width: calc(22px * var(--nav-scale)); text-align: center; flex-shrink: 0; }
     .nav-icon img {
-        width: 18px; height: 18px; object-fit: contain; vertical-align: middle;
+        width: calc(18px * var(--nav-scale)); height: calc(18px * var(--nav-scale)); object-fit: contain; vertical-align: middle;
         filter: brightness(0);
     }
 
-    .nav-divider { height: 1.5px; background: var(--baby-pink); margin: .6rem 0; }
+    .nav-divider { height: 1.5px; background: var(--baby-pink); margin: calc(.6rem * var(--nav-scale)) 0; }
 
-    .sidebar-logout { padding: 1rem 1.5rem; border-top: 1.5px solid var(--baby-pink); }
+    .sidebar-logout { padding: calc(1rem * var(--nav-scale)) calc(1.5rem * var(--nav-scale)); border-top: 1.5px solid var(--baby-pink); }
 
     .logout-btn {
         display: flex; align-items: center; justify-content: center; gap: .5rem;
-        width: 100%; padding: .55rem .8rem; border: none; border-radius: 10px;
+        width: 100%; padding: calc(.55rem * var(--nav-scale)) calc(.8rem * var(--nav-scale)); border: none; border-radius: 10px;
         background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: var(--white); font-size: .8rem; font-weight: 700; cursor: pointer;
+        color: var(--white); font-size: calc(.8rem * var(--nav-scale)); font-weight: 700; cursor: pointer;
         transition: var(--ease);
         box-shadow: 0 3px 10px rgba(232,23,93,.22);
     }
@@ -524,25 +525,6 @@
         .breadcrumb { font-size: .72rem; }
         .topbar-right { gap: .6rem; }
     }
-
-    
-    @media (max-height: 800px) {
-        .sidebar-logo { padding: 1rem 1.5rem .75rem; }
-        .sidebar-role { margin: .6rem 1.5rem; }
-        .sidebar-nav  { padding: .35rem .75rem .75rem; }
-        .nav-item     { padding: .5rem .75rem; margin-bottom: .1rem; font-size: .84rem; }
-        .nav-divider  { margin: .4rem 0; }
-        .sidebar-logout { padding: .75rem 1.5rem; }
-    }
-    @media (max-height: 680px) {
-        .sidebar-logo { padding: .75rem 1.25rem .5rem; }
-        .sidebar-logo-icon { width: 32px; height: 32px; }
-        .sidebar-role { margin: .45rem 1.25rem; padding: .22rem .6rem; font-size: .68rem; }
-        .nav-item     { padding: .42rem .7rem; font-size: .81rem; }
-        .nav-icon img { width: 16px; height: 16px; }
-        .sidebar-logout { padding: .6rem 1.25rem; }
-        .logout-btn   { padding: .45rem .7rem; font-size: .76rem; }
-    }
     </style>
 
     @yield('styles')
@@ -561,7 +543,7 @@
 
     <div class="sidebar-role">{{ auth('staff')->user()->role === 'secretary' ? 'Secretary' : 'Admin' }}</div>
 
-    <nav class="sidebar-nav">
+    <nav class="sidebar-nav" id="sidebar-nav">
         <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-db.png') }}" alt=""></span> Dashboard
         </a>
@@ -924,6 +906,32 @@
         document.getElementById('sidebar').classList.toggle('open');
         document.getElementById('sidebar-backdrop').classList.toggle('open');
     }
+
+    // measure the sidebar nav for real overflow and shrink it only as much as needed,
+    // per device — fits as-is when there's room, shrinks gradually when there isn't
+    (function() {
+        var sidebar = document.getElementById('sidebar');
+        var nav = document.getElementById('sidebar-nav');
+        if (!sidebar || !nav) return;
+
+        function fitSidebarNav() {
+            var scale = 1;
+            sidebar.style.setProperty('--nav-scale', scale);
+
+            var tries = 0;
+            while (nav.scrollHeight > nav.clientHeight + 1 && scale > 0.65 && tries < 14) {
+                scale = Math.round((scale - 0.025) * 1000) / 1000;
+                sidebar.style.setProperty('--nav-scale', scale);
+                tries++;
+            }
+        }
+
+        window.addEventListener('load', fitSidebarNav);
+        window.addEventListener('resize', fitSidebarNav);
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(fitSidebarNav);
+        }
+    })();
 </script>
 
 @include('partials.emergency-live-alerts')
