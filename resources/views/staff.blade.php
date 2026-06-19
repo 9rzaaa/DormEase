@@ -1599,6 +1599,14 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+window.addEventListener('load', function() {
+    if (typeof window.jspdf === 'undefined' && typeof jspdf !== 'undefined') {
+        window.jspdf = jspdf;
+    }
+});
+</script>
 <script>
     function showActionLoading(message) {
         var overlay = document.getElementById('action-loading');
@@ -2206,64 +2214,137 @@
             staffId      = document.getElementById('reset-staff-id').innerText.trim();
             tempPassword = document.getElementById('reset-temp-password').innerText.trim();
         }
+
         var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        var win = window.open('', '_blank', 'width=400,height=560');
-        win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>DormEase Staff Login Credentials</title>
-<style>
-  @page { size: 80mm 150mm; margin: 0; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 150mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .slip { width: 80mm; min-height: 150mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
-  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
-  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
-  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
-  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
-  .staff-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
-  .field { margin-bottom: 3mm; }
-  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
-  .field-value { font-size: 12pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .05em; text-align: center; word-break: break-all; }
-  .field-value.small { font-size: 9pt; letter-spacing: 0; }
-  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 3px; padding: 1.8mm 2mm; font-size: 6pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
-  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
-  .footer-date { font-size: 6pt; color: #b06080; }
-  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
-  @media print { body { margin: 0; } .slip { border: none; } }
-</style>
-</head>
-<body>
-<div class="slip">
-  <div class="header">
-    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
-    <div class="title">Staff Login Credentials</div>
-    <div class="subtitle">DormEase Staff Portal</div>
-  </div>
-  <div class="staff-name">${staffName}</div>
-  <div class="field">
-    <div class="field-label">Email</div>
-    <div class="field-value small">${email}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Staff ID</div>
-    <div class="field-value">${staffId}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Temporary Password</div>
-    <div class="field-value">${tempPassword}</div>
-  </div>
-  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
-  <div class="footer">
-    <div class="footer-date">Issued: ${today}</div>
-    <div class="footer-brand">DormEase</div>
-  </div>
-</div>
-<script>window.onload = function() { window.print(); };<\/script>
-</body>
-</html>`);
-        win.document.close();
+
+        var { jsPDF } = window.jspdf;
+
+        var slipW  = 80;
+        var slipH  = 148;
+
+        var doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [slipW, slipH],
+            compress: true,
+        });
+
+        doc.setProperties({
+            title: 'Staff Credentials - ' + staffName,
+            subject: 'Login Credentials Slip',
+            author: 'DormEase',
+            creator: 'DormEase',
+        });
+
+        var pink   = [232, 23, 93];
+        var ink    = [26, 26, 46];
+        var muted  = [140, 100, 120];
+        var white  = [255, 255, 255];
+        var petal  = [255, 243, 248];
+        var border = [244, 184, 208];
+        var warn   = [255, 249, 230];
+        var warnTx = [122, 84, 0];
+        var warnBd = [240, 192, 64];
+        var greenL = [232, 250, 245];
+        var greenD = [31, 157, 105];
+        var greenB = [140, 224, 187];
+
+        doc.setFillColor(pink[0], pink[1], pink[2]);
+        doc.rect(0, 0, slipW, 26, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(white[0], white[1], white[2]);
+        doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', slipW / 2, 7.5, { align: 'center' });
+
+        doc.setFontSize(11);
+        doc.text('Staff Login Credentials', slipW / 2, 14.5, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(255, 210, 230);
+        doc.text('DormEase Staff Portal', slipW / 2, 20.5, { align: 'center' });
+
+        var y = 31;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(ink[0], ink[1], ink[2]);
+        doc.text(staffName, slipW / 2, y, { align: 'center' });
+
+        y += 3.5;
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 5;
+
+        function drawField(label, value, isMonospace) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(5.5);
+            doc.setTextColor(pink[0], pink[1], pink[2]);
+            doc.text(label.toUpperCase(), 6, y);
+
+            y += 1.8;
+
+            doc.setFillColor(petal[0], petal[1], petal[2]);
+            doc.setDrawColor(border[0], border[1], border[2]);
+            doc.setLineWidth(0.4);
+            doc.roundedRect(6, y, slipW - 12, 10, 1.8, 1.8, 'FD');
+
+            if (isMonospace) {
+                doc.setFont('courier', 'bold');
+            } else {
+                doc.setFont('helvetica', 'bold');
+            }
+            doc.setFontSize(9);
+            doc.setTextColor(ink[0], ink[1], ink[2]);
+            doc.text(value, slipW / 2, y + 6.8, { align: 'center' });
+
+            y += 14;
+        }
+
+        drawField('Email', email, false);
+        drawField('Staff ID', staffId, true);
+        drawField('Temporary Password', tempPassword, true);
+
+        doc.setFillColor(warn[0], warn[1], warn[2]);
+        doc.setDrawColor(warnBd[0], warnBd[1], warnBd[2]);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(6, y, slipW - 12, 15, 1.8, 1.8, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(warnTx[0], warnTx[1], warnTx[2]);
+        doc.text('Important', 11, y + 5);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.8);
+        var warnLines = doc.splitTextToSize(
+            'This is a temporary password. You will be prompted to change it on first login. Keep this slip private and do not share it with others.',
+            slipW - 16
+        );
+        doc.text(warnLines, 9, y + 9, { lineHeightFactor: 1.6 });
+
+        y += 19;
+
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 4.5;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.5);
+        doc.setTextColor(muted[0], muted[1], muted[2]);
+        doc.text('Issued: ' + today, 6, y);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text('DormEase', slipW - 6, y, { align: 'right' });
+
+        var safeName = (staffName || 'staff').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+        doc.save('credentials-' + safeName + '.pdf');
     }
 
     var deletedStaffArchive   = @json($deletedArchive);
