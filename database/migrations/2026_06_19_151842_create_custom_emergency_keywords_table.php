@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('keyword');
             $table->string('emergency_type');
             $table->string('urgency_level')->nullable();
-            $table->unsignedBigInteger('added_by_staff_id')->nullable();
+            $table->foreignId('added_by_staff_id')->nullable()->constrained('staff', 'staff_id')->nullOnDelete();
             $table->timestamps();
         });
     }

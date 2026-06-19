@@ -25,7 +25,7 @@ class EmergencyController extends Controller
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
         $pendingTerms    = UnclassifiedEmergencyTerm::where('status', 'pending')->orderByDesc('created_at')->get();
-        $trainedKeywords = CustomEmergencyKeyword::orderByDesc('created_at')->get();
+        $trainedKeywords = CustomEmergencyKeyword::with('staff')->orderByDesc('created_at')->get();
         $hardcodedRules  = ApiEmergencyController::getHardcodedRules();
 
         return view('emergency', compact(
@@ -386,6 +386,8 @@ class EmergencyController extends Controller
             'added_by_staff_id' => $staff?->staff_id,
         ]);
 
+        $keyword->load('staff');
+
         return response()->json(['success' => true, 'keyword' => $keyword]);
     }
 
@@ -426,6 +428,8 @@ class EmergencyController extends Controller
             'urgency_level' => $validated['urgency_level'] ?? null,
             'added_by_staff_id' => $staff?->staff_id,
         ]);
+
+        $keyword->load('staff');
 
         $term->update(['status' => 'classified']);
 
@@ -508,6 +512,8 @@ class EmergencyController extends Controller
             'emergency_type' => $validated['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? null,
         ]);
+
+        $keyword->load('staff');
 
         return response()->json(['success' => true, 'keyword' => $keyword]);
     }
