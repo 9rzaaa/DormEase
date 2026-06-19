@@ -56,9 +56,7 @@
         justify-content: space-between;
         padding: 3rem;
         position: relative;
-        overflow-x: hidden;
-        overflow-y: auto;
-        max-height: 100vh;
+        overflow: hidden;
         z-index: 2;
         box-shadow: 6px 0 48px rgba(232,23,93,.22);
     }
@@ -360,9 +358,7 @@
         justify-content: center;
         padding: 1.5rem 3.5rem 3rem;
         position: relative;
-        overflow-x: hidden;
-        overflow-y: auto;
-        max-height: 100vh;
+        overflow: hidden;
     }
 
     .right::before {
