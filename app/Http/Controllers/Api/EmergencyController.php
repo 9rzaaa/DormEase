@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
+use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
+use App\Models\UnclassifiedEmergencyTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -429,6 +431,14 @@ class EmergencyController extends Controller
             'reported_at' => now(),
         ]);
 
+        if ($report->emergency_type === 'Other' && !empty($cleanedDescription)) {
+            UnclassifiedEmergencyTerm::create([
+                'report_id' => $report->report_id,
+                'description_snapshot' => $cleanedDescription,
+                'status' => 'pending',
+            ]);
+        }
+
         NotificationHelper::sendToAll(
             type: 'emergency_new',
             message: "Emergency reported: {$report->emergency_type} at " . ($report->location ?: 'unspecified location') . ".",
@@ -512,6 +522,7 @@ class EmergencyController extends Controller
         $normalizedType = $this->normalizeEmergencyType($requestedType);
         $bestType = $normalizedType ?? 'Other';
         $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1 : 0;
+        $decidingCustomKeyword = null;
 
         foreach (self::EMERGENCY_RULES as $type => $rule) {
             $score = 0;
@@ -525,16 +536,45 @@ class EmergencyController extends Controller
             if ($score > $bestScore) {
                 $bestType = $type;
                 $bestScore = $score;
+                $decidingCustomKeyword = null;
+            }
+        }
+
+        $customKeywords = $this->getCustomKeywords();
+        $customScoresByType = [];
+
+        foreach ($customKeywords as $custom) {
+            if ($this->matchesKeyword($text, strtolower($custom->keyword))) {
+                $customScoresByType[$custom->emergency_type] = ($customScoresByType[$custom->emergency_type] ?? 0) + 1;
+                if (!isset($customScoresByType[$custom->emergency_type . '_match'])) {
+                    $customScoresByType[$custom->emergency_type . '_match'] = $custom;
+                }
+            }
+        }
+
+        foreach ($customScoresByType as $type => $score) {
+            if (str_ends_with((string) $type, '_match')) {
+                continue;
+            }
+            if ($score > $bestScore) {
+                $bestType = $type;
+                $bestScore = $score;
+                $decidingCustomKeyword = $customScoresByType[$type . '_match'] ?? null;
             }
         }
 
         return [
             'emergency_type' => $bestType,
-            'urgency_level' => $this->classifyUrgency($text, $bestType),
+            'urgency_level' => $this->classifyUrgency($text, $bestType, $decidingCustomKeyword),
         ];
     }
 
-    private function classifyUrgency(string $text, string $type): string
+    private function getCustomKeywords()
+    {
+        return CustomEmergencyKeyword::all();
+    }
+
+    private function classifyUrgency(string $text, string $type, ?CustomEmergencyKeyword $decidingCustomKeyword = null): string
     {
         foreach (self::URGENCY_RULES as $urgency => $keywords) {
             foreach ($keywords as $keyword) {
@@ -542,6 +582,10 @@ class EmergencyController extends Controller
                     return $urgency;
                 }
             }
+        }
+
+        if ($decidingCustomKeyword && $decidingCustomKeyword->urgency_level) {
+            return $decidingCustomKeyword->urgency_level;
         }
 
         return self::EMERGENCY_RULES[$type]['urgency'] ?? 'moderate';
