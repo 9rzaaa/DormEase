@@ -320,6 +320,15 @@ class MaintenanceController extends Controller
 
         $reclassifiedCount = 0;
 
+        $originatingRequest = MaintenanceRequest::find($term->request_id);
+        if ($originatingRequest && strtolower($originatingRequest->issue_type) === 'other') {
+            $originatingRequest->update([
+                'issue_type'    => $validated['issue_type'],
+                'urgency_level' => $validated['urgency_level'] ?? $originatingRequest->urgency_level,
+            ]);
+            $reclassifiedCount++;
+        }
+
         if ($request->boolean('reclassify_matching')) {
             $needle = strtolower(trim($validated['keyword']));
             $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);

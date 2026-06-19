@@ -437,6 +437,15 @@ class EmergencyController extends Controller
 
         $reclassifiedCount = 0;
 
+        $originatingReport = EmergencyReport::find($term->report_id);
+        if ($originatingReport && $originatingReport->emergency_type === 'Other') {
+            $originatingReport->update([
+                'emergency_type' => $validated['emergency_type'],
+                'urgency_level'  => $validated['urgency_level'] ?? $originatingReport->urgency_level,
+            ]);
+            $reclassifiedCount++;
+        }
+
         if ($request->boolean('reclassify_matching')) {
             $needle = strtolower(trim($validated['keyword']));
             $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
