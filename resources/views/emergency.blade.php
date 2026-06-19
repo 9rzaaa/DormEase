@@ -2502,6 +2502,7 @@
 
     const kwEditIcon = "{{ asset('icons/edit.png') }}";
     const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
+    const kwEmptyIcon = "{{ asset('icons/nav-emerg.png') }}";
     const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Security', 'Flood/Water Leak', 'Other'];
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
@@ -2584,7 +2585,7 @@
         });
         if (visible.length === 0) {
             list.innerHTML = pendingTerms.length === 0
-                ? '<div class="kw-empty"><img class="kw-empty-icon" src="{{ asset(\'icons/nav-emerg.png\') }}" alt="">No pending snippets to classify.</div>'
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="' + kwEmptyIcon + '" alt="">No pending snippets to classify.</div>'
                 : '<div class="kw-empty">No pending snippets match your search.</div>';
             return;
         }
@@ -2706,7 +2707,7 @@
         });
         if (visible.length === 0) {
             list.innerHTML = trainedKeywords.length === 0
-                ? '<div class="kw-empty"><img class="kw-empty-icon" src="{{ asset(\'icons/nav-emerg.png\') }}" alt="">No trained keywords yet.</div>'
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="' + kwEmptyIcon + '" alt="">No trained keywords yet.</div>'
                 : '<div class="kw-empty">No trained keywords match your search.</div>';
             return;
         }
