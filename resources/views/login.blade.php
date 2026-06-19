@@ -56,7 +56,9 @@
         justify-content: space-between;
         padding: 3rem;
         position: relative;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 100vh;
         z-index: 2;
         box-shadow: 6px 0 48px rgba(232,23,93,.22);
     }
@@ -358,7 +360,9 @@
         justify-content: center;
         padding: 1.5rem 3.5rem 3rem;
         position: relative;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
+        max-height: 100vh;
     }
 
     .right::before {
@@ -1032,6 +1036,51 @@
         .form-header h2 { font-size: 1.5rem; }
         .role-row { grid-template-columns: 1fr; }
         .field-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
+    }
+
+    @media (min-width: 1024px) and (max-height: 800px) {
+        .left {
+            padding: 1.8rem 2.5rem;
+        }
+        .left-body h1 {
+            margin-bottom: .7rem;
+        }
+        .left-body p {
+            margin-bottom: 1rem;
+        }
+        .right {
+            padding: 1rem 3rem 1.5rem;
+        }
+        .form-wrap {
+            padding: 1.6rem 2rem;
+        }
+        .form-header {
+            margin-bottom: .8rem;
+        }
+        .form-header h2 {
+            font-size: 1.85rem;
+        }
+        .form-header p {
+            margin-top: .35rem;
+        }
+        .role-label {
+            margin-bottom: .35rem;
+        }
+        .role-row {
+            margin-bottom: .8rem;
+        }
+        .role-btn {
+            padding: .65rem .85rem;
+        }
+        .field {
+            margin-bottom: .65rem;
+        }
+        .field-row {
+            margin-bottom: .65rem;
+        }
+        .de-btn-primary {
+            padding: .65rem 1.4rem;
+        }
     }
 
     #fp-overlay {
