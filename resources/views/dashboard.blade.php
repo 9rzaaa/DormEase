@@ -403,6 +403,21 @@
         .chart-wrap { height: 180px; }
         .chart-card-header { flex-direction: column; align-items: flex-start; }
     }
+    @media (max-width: 1400px) and (max-height: 800px) {
+        .page-body { padding: 1.2rem 1.5rem; gap: 1.2rem; }
+        .stats-grid { gap: .75rem; margin-top: .75rem; }
+        .stat-box { padding: .85rem; }
+        .stat-icon { width: 34px; height: 34px; margin-bottom: .6rem; }
+        .stat-icon img { width: 17px; height: 17px; }
+        .stat-num { font-size: 1.6rem; }
+        .stat-label { font-size: .8rem; }
+        .stat-sub { font-size: .72rem; }
+        .chart-card { padding: 1.1rem 1.3rem; }
+        .chart-card-header { margin-bottom: .7rem; }
+        .chart-legend { margin-bottom: .5rem; }
+        .chart-wrap { height: 150px; }
+        .card-header { margin-bottom: .8rem; }
+    }
     @media (max-width: 540px) {
         .page-body  { padding: 1rem; gap: 1rem; }
         .stats-grid { grid-template-columns: 1fr 1fr; }
