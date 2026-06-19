@@ -389,7 +389,8 @@
     }
 
     #keyword-modal .modal {
-        max-height: 88vh;
+        max-height: 85vh;
+        height: 85vh;
     }
 
     .maint-modal-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .9rem; }
@@ -1111,12 +1112,12 @@
 .kw-search-icon { position: absolute; left: .65rem; width: 13px; height: 13px; opacity: .35; pointer-events: none; }
 
 .kw-list {
-    flex: 1; overflow-y: auto;
+    flex: 1 1 auto; overflow-y: scroll;
     padding: 0 1.1rem 1.1rem;
     display: flex; flex-direction: column; gap: .75rem;
     scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent;
-    max-height: 60vh;
     min-height: 0;
+    max-height: none;
 }
 
 .kw-list::-webkit-scrollbar { width: 4px; }
@@ -1129,9 +1130,9 @@
     border: 1.5px solid var(--baby-pink);
     border-radius: 16px;
     padding: 1rem 1.1rem 1.1rem 1.3rem;
-    overflow: hidden;
     animation: kwCardIn .3s ease both;
     transition: border-color .2s, box-shadow .2s;
+    flex-shrink: 0;
 }
 
 .kw-card:hover { border-color: var(--bright-pink); box-shadow: 0 8px 22px rgba(232,23,93,.08); }
@@ -1278,13 +1279,6 @@
     display: flex;
     gap: .5rem;
     justify-content: flex-end;
-    position: sticky;
-    bottom: -1.1rem;
-    margin: .3rem -1.1rem -1.1rem -1.3rem;
-    padding: .6rem 1.1rem .6rem 1.3rem;
-    background: var(--white);
-    border-top: 1px solid var(--baby-pink);
-    border-radius: 0 0 16px 16px;
 }
 
 .kw-btn-ignore {
