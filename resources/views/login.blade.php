@@ -354,37 +354,38 @@
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         position: relative;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
+        overflow: hidden;
     }
 
     .right-inner {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 2rem 3.5rem;
         box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
     }
 
-    .right::-webkit-scrollbar {
+    .right-inner::-webkit-scrollbar {
         width: 6px;
     }
 
-    .right::-webkit-scrollbar-track {
+    .right-inner::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .right::-webkit-scrollbar-thumb {
+    .right-inner::-webkit-scrollbar-thumb {
         background: rgba(232, 23, 93, 0.15);
         border-radius: 10px;
     }
 
-    .right::-webkit-scrollbar-thumb:hover {
+    .right-inner::-webkit-scrollbar-thumb:hover {
         background: rgba(232, 23, 93, 0.3);
     }
 
@@ -1039,8 +1040,8 @@
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 0; overflow-y: visible; }
-        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
+        .right { width: 100%; padding: 0; overflow: visible; height: auto; }
+        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; overflow: visible; height: auto; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
