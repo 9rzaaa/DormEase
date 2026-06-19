@@ -1024,26 +1024,68 @@
     .kw-help-popup {
         display: none;
         position: fixed;
-        background: var(--ink);
+        background: #2a1320;
         color: var(--white);
-        border-radius: 10px;
-        padding: .6rem .75rem;
-        font-size: .73rem;
+        border-radius: 14px;
+        padding: .9rem 1rem;
+        font-size: .76rem;
         font-weight: 500;
         line-height: 1.5;
-        max-width: 260px;
+        width: 280px;
         z-index: 9999;
-        box-shadow: 0 10px 28px rgba(0,0,0,.25);
+        box-shadow: 0 16px 36px rgba(0,0,0,.3);
+        --kw-arrow-left: 50%;
     }
 
     .kw-help-popup::before {
         content: '';
         position: absolute;
-        top: -5px; left: 14px;
-        width: 10px; height: 10px;
-        background: var(--ink);
+        top: -6px;
+        left: var(--kw-arrow-left);
+        width: 12px; height: 12px;
+        background: #2a1320;
         transform: rotate(45deg);
+        border-radius: 2px;
     }
+
+    .kw-help-popup-title {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-bottom: .7rem;
+        padding-bottom: .55rem;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .kw-help-step {
+        display: flex;
+        align-items: flex-start;
+        gap: .55rem;
+        margin-bottom: .6rem;
+    }
+
+    .kw-help-step:last-child { margin-bottom: 0; }
+
+    .kw-help-step-num {
+        flex-shrink: 0;
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .67rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .kw-help-step span:last-child {
+        color: rgba(255,255,255,.92);
+    }
+
+    .kw-help-step strong { color: var(--white); }
 
     .kw-segmented {
         display: flex;
@@ -1795,6 +1837,7 @@
             </div>
             <button class="kw-add-btn" id="kw-add-btn" onclick="showAddKeywordForm()">+ Add Keyword</button>
         </div>
+        <div id="kw-add-form-wrap" style="padding:0 1.1rem;flex-shrink:0;"></div>
         <div class="kw-list" id="kw-list"></div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('keyword-modal')">Close</button>
@@ -1803,7 +1846,11 @@
 </div>
 
 <div class="kw-help-popup" id="kw-help-popup">
-    Reports that do not match any known keyword land here as Pending. Tap the words in the snippet to build the exact phrase that should trigger a type, then save it. Saved phrases move to Trained Keywords, where you can edit or delete them anytime.
+    <div class="kw-help-popup-title">How Keyword Training Works</div>
+    <div class="kw-help-step"><span class="kw-help-step-num">1</span><span>Reports that miss every known keyword land in <strong>Pending</strong>.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">2</span><span>Tap words in the snippet to build the exact phrase, then assign a type.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">3</span><span>Saved phrases appear in <strong>Trained</strong>, editable or removable anytime.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">4</span><span><strong>Built-in Rules</strong> shows the system defaults for reference only.</span></div>
 </div>
 
 @endsection
@@ -2603,10 +2650,14 @@
         function show() {
             clearTimeout(hideTimer);
             var rect = trigger.getBoundingClientRect();
-            var width = 260;
-            var left = rect.right - width;
+            var width = 280;
+            var centerX = rect.left + rect.width / 2;
+            var left = centerX - width / 2;
             if (left < 12) left = 12;
-            popup.style.top = (rect.bottom + 10) + 'px';
+            if (left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
+            var arrowLeft = centerX - left - 6;
+            popup.style.setProperty('--kw-arrow-left', arrowLeft + 'px');
+            popup.style.top = (rect.bottom + 12) + 'px';
             popup.style.left = left + 'px';
             popup.style.display = 'block';
         }
@@ -2651,6 +2702,7 @@
         document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
         document.getElementById('kwtab-reference').classList.toggle('active', tab === 'reference');
         document.getElementById('kw-add-btn').classList.toggle('visible', tab === 'trained');
+        document.getElementById('kw-add-form-wrap').innerHTML = '';
         document.getElementById('kw-search').value = '';
         const placeholders = { pending: 'Search pending snippets...', trained: 'Search trained keywords...', reference: 'Search built-in rules...' };
         document.getElementById('kw-search').placeholder = placeholders[tab];
@@ -2862,10 +2914,9 @@
     }
 
     function showAddKeywordForm() {
-        if (document.getElementById('kw-add-new')) return;
-        const list = document.getElementById('kw-list');
-        const formHtml = '' +
-            '<div class="kw-card" id="kw-add-new">' +
+        const wrap = document.getElementById('kw-add-form-wrap');
+        wrap.innerHTML = '' +
+            '<div class="kw-card" id="kw-add-new" style="margin-bottom:.75rem;">' +
             '<div class="kw-card-label-row"><span class="kw-card-label">New keyword</span></div>' +
             '<span class="kw-field-label">Phrase to match</span>' +
             '<div class="kw-phrase-preview">' +
@@ -2880,13 +2931,11 @@
             '<button class="kw-btn-save" onclick="submitAddKeyword()">Save Keyword</button>' +
             '</div>' +
             '</div>';
-        list.insertAdjacentHTML('afterbegin', formHtml);
         document.getElementById('kw-add-phrase').focus();
     }
 
     function cancelAddKeywordForm() {
-        const el = document.getElementById('kw-add-new');
-        if (el) el.remove();
+        document.getElementById('kw-add-form-wrap').innerHTML = '';
     }
 
     async function submitAddKeyword() {
@@ -2908,6 +2957,7 @@
             const data = await res.json();
             if (res.ok && data.success) {
                 trainedKeywords.unshift(data.keyword);
+                document.getElementById('kw-add-form-wrap').innerHTML = '';
                 showToast('Keyword added.', 'success');
                 renderKwList();
             } else {
