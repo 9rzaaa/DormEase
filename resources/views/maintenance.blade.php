@@ -1039,6 +1039,560 @@
 .export-menu.open { display: block; }
 .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
 .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
+.kw-segmented {
+    display: flex;
+    gap: .25rem;
+    padding: .9rem 1.1rem .8rem;
+    flex-shrink: 0;
+    background: var(--white);
+}
+
+.kw-tab {
+    flex: 1;
+    position: relative;
+    padding: .55rem .7rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: var(--blush);
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--ff-body);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    transition: .2s;
+}
+
+.kw-tab:hover { border-color: var(--baby-pink); }
+
+.kw-tab.active {
+    background: var(--gradient-pink);
+    color: var(--white);
+    box-shadow: 0 6px 16px rgba(232,23,93,.25);
+}
+
+.kw-tab-count {
+    font-size: .65rem; font-weight: 800; padding: .08rem .42rem;
+    border-radius: 99px; background: rgba(255,255,255,.85); color: var(--hot-pink);
+}
+
+.kw-tab.active .kw-tab-count { background: rgba(255,255,255,.3); color: var(--white); }
+
+.kw-search-bar { padding: 0 1.1rem .8rem; flex-shrink: 0; }
+
+.kw-search-inner { position: relative; display: flex; align-items: center; }
+
+.kw-search-inner input {
+    width: 100%;
+    padding: .5rem .85rem .5rem 2rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--baby-pink);
+    background: #fffafd;
+    color: var(--ink);
+    font-size: .82rem;
+    font-family: var(--ff-body);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.kw-search-inner input:focus {
+    border-color: var(--bright-pink);
+    box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+}
+
+.kw-search-icon { position: absolute; left: .65rem; width: 13px; height: 13px; opacity: .35; pointer-events: none; }
+
+.kw-list {
+    flex: 1; overflow-y: auto;
+    padding: 0 1.1rem 1.1rem;
+    display: flex; flex-direction: column; gap: .75rem;
+    scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent;
+    max-height: 50vh;
+}
+
+.kw-list::-webkit-scrollbar { width: 4px; }
+.kw-list::-webkit-scrollbar-track { background: transparent; }
+.kw-list::-webkit-scrollbar-thumb { background: var(--baby-pink); border-radius: 99px; }
+
+.kw-card {
+    position: relative;
+    background: var(--white);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 16px;
+    padding: 1rem 1.1rem 1.1rem 1.3rem;
+    overflow: hidden;
+    animation: kwCardIn .3s ease both;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.kw-card:hover { border-color: var(--bright-pink); box-shadow: 0 8px 22px rgba(232,23,93,.08); }
+
+.kw-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: var(--gradient-pink);
+}
+
+@keyframes kwCardIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.kw-card-label-row {
+    display: flex; align-items: center; gap: .4rem;
+    margin-bottom: .5rem;
+}
+
+.kw-card-label {
+    font-size: .65rem; font-weight: 800; color: var(--bright-pink);
+    text-transform: uppercase; letter-spacing: .07em;
+}
+
+.kw-card-snippet {
+    font-size: .85rem;
+    color: var(--ink);
+    line-height: 1.55;
+    background: var(--blush);
+    border-radius: 10px;
+    padding: .65rem .8rem;
+    margin-bottom: .8rem;
+    font-style: italic;
+}
+
+.kw-word-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin-bottom: .7rem;
+}
+
+.kw-word {
+    display: inline-flex;
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--baby-pink);
+    background: var(--white);
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    transition: .15s;
+    user-select: none;
+}
+
+.kw-word:hover { border-color: var(--bright-pink); transform: translateY(-1px); }
+
+.kw-word.selected {
+    background: var(--gradient-pink);
+    color: var(--white);
+    border-color: transparent;
+    box-shadow: 0 4px 10px rgba(232,23,93,.3);
+}
+
+.kw-phrase-preview {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    background: #fff5f9;
+    border: 1.5px dashed var(--baby-pink);
+    border-radius: 10px;
+    padding: .5rem .7rem;
+    margin-bottom: .8rem;
+}
+
+.kw-phrase-preview-label {
+    font-size: .67rem; font-weight: 800; color: var(--hot-pink);
+    text-transform: uppercase; letter-spacing: .05em;
+    flex-shrink: 0;
+}
+
+.kw-phrase-input {
+    flex: 1;
+    padding: .35rem .1rem;
+    border: none;
+    background: transparent;
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--ink);
+    outline: none;
+    font-family: var(--ff-body);
+    min-width: 0;
+}
+
+.kw-field-label {
+    font-size: .67rem; font-weight: 700; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: .04em;
+    margin-bottom: .25rem;
+    display: block;
+}
+
+.kw-card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .6rem;
+    margin-bottom: .7rem;
+}
+
+.kw-card-row select {
+    width: 100%;
+    padding: .5rem .7rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--baby-pink);
+    background: var(--white);
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink);
+    outline: none;
+    box-sizing: border-box;
+    font-family: var(--ff-body);
+    cursor: pointer;
+    transition: border-color .2s;
+}
+
+.kw-card-row select:focus { border-color: var(--bright-pink); }
+
+.kw-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    font-size: .77rem;
+    color: var(--ink-muted);
+    margin-bottom: .8rem;
+    font-weight: 600;
+}
+
+.kw-checkbox-row input { accent-color: var(--bright-pink); cursor: pointer; }
+
+.kw-card-actions {
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+}
+
+.kw-btn-ignore {
+    padding: .45rem .9rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--baby-pink);
+    background: var(--white);
+    color: var(--ink-muted);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--ff-body);
+    transition: .2s;
+}
+
+.kw-btn-ignore:hover { border-color: #e04867; color: #e04867; background: #fff0f0; }
+
+.kw-btn-save {
+    padding: .45rem 1rem;
+    border-radius: 9px;
+    border: none;
+    background: var(--gradient-pink);
+    color: var(--white);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--ff-body);
+    box-shadow: 0 5px 14px rgba(232,23,93,.25);
+    transition: transform .15s, box-shadow .15s;
+}
+
+.kw-btn-save:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
+
+.kw-btn-save:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.kw-trained-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .8rem;
+    background: var(--white);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 14px;
+    padding: .75rem .95rem;
+    animation: kwCardIn .3s ease both;
+    transition: border-color .2s, transform .2s;
+}
+
+.kw-trained-card:hover { border-color: var(--bright-pink); transform: translateX(2px); }
+
+.kw-trained-left { display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+
+.kw-trained-phrase {
+    font-size: .87rem; font-weight: 700; color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.kw-trained-meta { display: flex; align-items: center; gap: .4rem; }
+
+.kw-trained-audit {
+    font-size: .68rem;
+    color: var(--ink-muted);
+    font-weight: 600;
+    margin-top: .25rem;
+}
+
+.kw-validation-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    margin: .3rem 0 .7rem;
+    min-height: 16px;
+}
+
+.kw-char-counter {
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    flex-shrink: 0;
+}
+
+.kw-validation-msg {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #1a9d6e;
+    text-align: right;
+}
+
+.kw-validation-msg.error { color: #c0303a; }
+
+.kw-type-pill {
+    font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+    border-radius: 999px; background: var(--petal); color: var(--hot-pink);
+    text-transform: uppercase; letter-spacing: .03em;
+}
+
+.kw-urgency-pill {
+    font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+    border-radius: 999px; text-transform: uppercase; letter-spacing: .03em;
+}
+
+.kw-urgency-pill.low { background: #e8f5e9; color: #2e7d32; }
+.kw-urgency-pill.moderate { background: #fff8e1; color: #c07800; }
+.kw-urgency-pill.urgent { background: #fff0f0; color: #c0303a; }
+
+.kw-trained-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+
+.kw-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--ink-muted);
+    font-size: .85rem;
+}
+
+.kw-empty-icon {
+    width: 40px; height: 40px;
+    margin: 0 auto .8rem;
+    opacity: .25;
+    display: block;
+}
+
+.kw-ref-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    background: #fff9e6;
+    border: 1.5px solid #f0c040;
+    border-radius: 10px;
+    padding: .6rem .8rem;
+    font-size: .77rem;
+    color: #7a5400;
+    line-height: 1.5;
+    margin-bottom: .4rem;
+}
+
+.kw-ref-group {
+    background: var(--white);
+    border: 1.5px solid var(--baby-pink);
+    border-radius: 14px;
+    padding: .85rem 1rem;
+}
+
+.kw-ref-group-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .6rem;
+}
+
+.kw-ref-group-title {
+    font-size: .85rem;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.kw-ref-chip-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.kw-ref-chip {
+    display: inline-flex;
+    padding: .28rem .6rem;
+    border-radius: 999px;
+    background: var(--blush);
+    border: 1.5px solid var(--baby-pink);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+}
+
+.kw-ref-empty-type {
+    font-size: .76rem;
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+.kw-add-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: .5rem .9rem;
+    border-radius: 10px;
+    border: none;
+    background: var(--gradient-pink);
+    color: var(--white);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+    box-shadow: 0 5px 14px rgba(232,23,93,.25);
+    flex-shrink: 0;
+    transition: transform .15s, box-shadow .15s;
+}
+
+.kw-add-btn.visible { display: inline-flex; }
+.kw-add-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
+.kw-modal-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .8rem;
+}
+
+.kw-modal-icon-badge {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    background: var(--gradient-pink);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(232,23,93,.3);
+}
+
+.kw-modal-icon-badge img {
+    width: 19px; height: 19px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.kw-modal-title-block { display: flex; flex-direction: column; gap: .1rem; }
+
+.kw-modal-sub {
+    font-size: .76rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.kw-help-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--petal);
+    color: var(--hot-pink);
+    font-size: .68rem;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    transition: background .2s, color .2s;
+}
+
+.kw-help-wrap:hover { background: var(--bright-pink); color: var(--white); }
+
+.kw-help-popup {
+    display: none;
+    position: fixed;
+    background: #2a1320;
+    color: var(--white);
+    border-radius: 14px;
+    padding: .9rem 1rem;
+    font-size: .76rem;
+    font-weight: 500;
+    line-height: 1.5;
+    width: 280px;
+    z-index: 9999;
+    box-shadow: 0 16px 36px rgba(0,0,0,.3);
+    --kw-arrow-left: 50%;
+}
+
+.kw-help-popup::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: var(--kw-arrow-left);
+    width: 12px; height: 12px;
+    background: #2a1320;
+    transform: rotate(45deg);
+    border-radius: 2px;
+}
+
+.kw-help-popup-title {
+    font-size: .72rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: .7rem;
+    padding-bottom: .55rem;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.kw-help-step {
+    display: flex;
+    align-items: flex-start;
+    gap: .55rem;
+    margin-bottom: .6rem;
+}
+
+.kw-help-step:last-child { margin-bottom: 0; }
+
+.kw-help-step-num {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    color: var(--white);
+    font-size: .67rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kw-help-step span:last-child {
+    color: rgba(255,255,255,.92);
+}
+
+.kw-help-step strong { color: var(--white); }
 </style>
 @endsection
 
@@ -1391,8 +1945,19 @@
 <div class="modal-overlay" id="keyword-modal">
     <div class="modal" style="max-width:620px;">
         <div class="modal-header">
-            <div class="modal-title">Keyword Training</div>
-            <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+            <div class="kw-modal-header-row">
+                <div class="kw-modal-icon-badge">
+                    <img src="{{ asset('icons/keyword.png') }}" alt="">
+                </div>
+                <div class="kw-modal-title-block">
+                    <div class="modal-title">Keyword Training</div>
+                    <div class="kw-modal-sub">Teach the system to recognize unmatched requests</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+                <div class="kw-help-wrap" id="kw-help-trigger">?</div>
+                <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+            </div>
         </div>
         <div class="kw-segmented">
             <button class="kw-tab active" id="kwtab-pending" onclick="switchKwTab('pending')">
@@ -1418,6 +1983,14 @@
             <button class="btn-cancel" onclick="closeModal('keyword-modal')">Close</button>
         </div>
     </div>
+</div>
+
+<div class="kw-help-popup" id="kw-help-popup">
+    <div class="kw-help-popup-title">How Keyword Training Works</div>
+    <div class="kw-help-step"><span class="kw-help-step-num">1</span><span>Requests that miss every known keyword land in <strong>Pending</strong>.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">2</span><span>Tap words in the snippet to build the exact phrase, then assign an issue type.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">3</span><span>Saved phrases appear in <strong>Trained</strong>, editable or removable anytime.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">4</span><span><strong>Built-in Rules</strong> shows the system defaults for reference only.</span></div>
 </div>
 
 <div class="modal-overlay" id="delete-modal">
@@ -2202,6 +2775,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return '<option value="' + o[0] + '"' + (o[0] === (selected || '') ? ' selected' : '') + '>' + o[1] + '</option>';
         }).join('');
     }
+
+    (function() {
+        var popup = document.getElementById('kw-help-popup');
+        var trigger = document.getElementById('kw-help-trigger');
+        if (!popup || !trigger) return;
+        document.body.appendChild(popup);
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+        var hideTimer = null;
+        function show() {
+            clearTimeout(hideTimer);
+            var rect = trigger.getBoundingClientRect();
+            var width = 280;
+            var centerX = rect.left + rect.width / 2;
+            var left = centerX - width / 2;
+            if (left < 12) left = 12;
+            if (left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
+            var arrowLeft = centerX - left - 6;
+            popup.style.setProperty('--kw-arrow-left', arrowLeft + 'px');
+            popup.style.top = (rect.bottom + 12) + 'px';
+            popup.style.left = left + 'px';
+            popup.style.display = 'block';
+        }
+        function hide() {
+            hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
+        }
+        trigger.addEventListener('mouseenter', show);
+        trigger.addEventListener('mouseleave', hide);
+        trigger.addEventListener('click', show);
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+        popup.addEventListener('mouseleave', hide);
+    })();
 
     function openKeywordModal() {
         kwActiveTab = 'pending';
