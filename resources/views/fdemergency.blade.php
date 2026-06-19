@@ -1048,6 +1048,46 @@
     .report-hotline-wrap { margin-bottom: 1rem; display: none; }
     .report-hotline-wrap.visible { display: block; }
 
+    .type-suggest-banner {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: .7rem;
+        background: linear-gradient(135deg, #fff0f3, #fff7fb);
+        border: 1.5px solid var(--pink-200);
+        border-radius: 12px;
+        padding: .55rem .8rem;
+        margin-top: .5rem;
+    }
+
+    .type-suggest-banner.visible { display: flex; }
+
+    .type-suggest-text {
+        font-size: .78rem;
+        color: var(--ink);
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .type-suggest-text strong { color: var(--hot-pink); }
+
+    .type-suggest-apply {
+        flex-shrink: 0;
+        padding: .35rem .8rem;
+        border-radius: 8px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .76rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .type-suggest-apply:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,23,93,.3); }
+
     .status-legend-wrap {
         display: inline-flex;
         align-items: center;
@@ -1382,6 +1422,8 @@
                         <option value="">Select type</option>
                         <option value="Medical">Medical</option>
                         <option value="Fire">Fire</option>
+                        <option value="Electrical Hazard">Electrical Hazard</option>
+                        <option value="Flood/Water Leak">Flood/Water Leak</option>
                         <option value="Lockout">Lockout</option>
                         <option value="Security">Security</option>
                         <option value="Structural">Structural</option>
@@ -1394,7 +1436,11 @@
                 </div>
                 <div class="em-modal-field modal-field-full">
                     <label>Description</label>
-                    <textarea name="description" placeholder="Describe the emergency..."></textarea>
+                    <textarea name="description" placeholder="Describe the emergency..." oninput="handleDescriptionInput(this.value)"></textarea>
+                    <div class="type-suggest-banner" id="type-suggest-banner">
+                        <span class="type-suggest-text" id="type-suggest-text"></span>
+                        <button type="button" class="type-suggest-apply" id="type-suggest-apply">Apply</button>
+                    </div>
                 </div>
                 <div class="em-modal-field modal-field-full" style="flex-direction:row;align-items:center;gap:.6rem;">
                     <input type="checkbox" name="is_panic_alert" value="1" id="panic-check" style="width:16px;height:16px;accent-color:var(--bright-pink);flex-shrink:0;">
@@ -1669,6 +1715,98 @@
             wrap.innerHTML = '';
             wrap.classList.remove('visible');
         }
+    }
+    const TYPE_SUGGEST_MAP = {
+        'Medical': 'Medical',
+        'Fire/Smoke': 'Fire',
+        'Security': 'Security',
+        'Electrical Hazard': 'Electrical Hazard',
+        'Flood/Water Leak': 'Flood/Water Leak',
+    };
+
+    let suggestDebounceTimer = null;
+    let lastSuggestedDescription = '';
+
+    function handleDescriptionInput(value) {
+        clearTimeout(suggestDebounceTimer);
+        const trimmed = value.trim();
+
+        if (trimmed.length < 4) {
+            hideTypeSuggestion();
+            return;
+        }
+
+        suggestDebounceTimer = setTimeout(function() {
+            fetchTypeSuggestion(trimmed);
+        }, 600);
+    }
+
+    async function fetchTypeSuggestion(description) {
+        if (description === lastSuggestedDescription) return;
+        lastSuggestedDescription = description;
+
+        try {
+            const res = await fetch('{{ route("frontdesk.emergency.suggestType") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({ description: description }),
+            });
+
+            if (!res.ok) {
+                hideTypeSuggestion();
+                return;
+            }
+
+            const data = await res.json();
+            renderTypeSuggestion(data.emergency_type, data.urgency_level);
+        } catch {
+            hideTypeSuggestion();
+        }
+    }
+
+    function renderTypeSuggestion(emergencyType, urgencyLevel) {
+        const select = document.getElementById('report-type-select');
+        const banner = document.getElementById('type-suggest-banner');
+        const text   = document.getElementById('type-suggest-text');
+        const apply  = document.getElementById('type-suggest-apply');
+
+        if (emergencyType === 'Panic Alert') {
+            const checkbox = document.getElementById('panic-check');
+            if (checkbox.checked) {
+                hideTypeSuggestion();
+                return;
+            }
+            text.innerHTML = 'This sounds urgent. Consider marking it as a <strong>Panic Alert</strong>.';
+            apply.textContent = 'Mark as Panic';
+            apply.onclick = function() {
+                checkbox.checked = true;
+                hideTypeSuggestion();
+            };
+            banner.classList.add('visible');
+            return;
+        }
+
+        const mapped = TYPE_SUGGEST_MAP[emergencyType];
+        if (!mapped || select.value === mapped) {
+            hideTypeSuggestion();
+            return;
+        }
+
+        text.innerHTML = 'Based on the description, this looks like <strong>' + escHtml(mapped) + '</strong>.';
+        apply.textContent = 'Apply';
+        apply.onclick = function() {
+            select.value = mapped;
+            updateReportHotlines(mapped);
+            hideTypeSuggestion();
+        };
+        banner.classList.add('visible');
+    }
+
+    function hideTypeSuggestion() {
+        document.getElementById('type-suggest-banner').classList.remove('visible');
     }
 
     function copyHotline(number, btn) {
