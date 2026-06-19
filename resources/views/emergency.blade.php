@@ -1376,6 +1376,45 @@
 
     .kw-trained-meta { display: flex; align-items: center; gap: .4rem; }
 
+    .kw-trained-audit {
+        font-size: .68rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+        margin-top: .25rem;
+    }
+
+    .kw-validation-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .6rem;
+        margin: .3rem 0 .7rem;
+        min-height: 16px;
+    }
+
+    .kw-char-counter {
+        font-size: .68rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        flex-shrink: 0;
+    }
+
+    .kw-validation-msg {
+        font-size: .72rem;
+        font-weight: 600;
+        color: #1a9d6e;
+        text-align: right;
+    }
+
+    .kw-validation-msg.error { color: #c0303a; }
+
+    .kw-btn-save:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
     .kw-type-pill {
         font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
         border-radius: 999px; background: var(--pink-100); color: var(--hot-pink);
@@ -1503,7 +1542,7 @@
                 Emergency Directory
             </button>
             <button class="btn-archive-open" onclick="openKeywordModal()">
-                <img src="{{ asset('icons/emergdir.png') }}" alt="">
+                <img src="{{ asset('icons/keyword.png') }}" alt="">
                 Keyword Training
             </button>
             <button class="btn-archive-open" onclick="openArchive()">
@@ -1807,7 +1846,7 @@
         <div class="modal-header">
             <div class="kw-modal-header-row">
                 <div class="kw-modal-icon-badge">
-                    <img src="{{ asset('icons/emergdir.png') }}" alt="">
+                    <img src="{{ asset('icons/keyword.png') }}" alt="">
                 </div>
                 <div class="kw-modal-title-block">
                     <div class="modal-title">Keyword Training</div>
@@ -2789,8 +2828,9 @@
                 '<div class="kw-word-wrap">' + wordSpans + '</div>' +
                 '<div class="kw-phrase-preview">' +
                 '<span class="kw-phrase-preview-label">Phrase</span>' +
-                '<input type="text" class="kw-phrase-input" id="kw-phrase-' + term.id + '" placeholder="Selected phrase" value="' + escHtml(buildKwPhrase(term.id)) + '">' +
+                '<input type="text" class="kw-phrase-input" id="kw-phrase-' + term.id + '" placeholder="Selected phrase" value="' + escHtml(buildKwPhrase(term.id)) + '" oninput="validateKwPhraseInput(\'kw-phrase-' + term.id + '\', \'kw-counter-' + term.id + '\', \'kw-msg-' + term.id + '\', \'#kw-card-' + term.id + ' .kw-btn-save\', null)">' +
                 '</div>' +
+                '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-counter-' + term.id + '">' + buildKwPhrase(term.id).length + '/255</span><span class="kw-validation-msg" id="kw-msg-' + term.id + '"></span></div>' +
                 '<div class="kw-card-row">' +
                 '<div><span class="kw-field-label">Emergency type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select></div>' +
                 '<div><span class="kw-field-label">Urgency override</span><select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select></div>' +
@@ -2802,6 +2842,10 @@
                 '</div>' +
                 '</div>';
         }).join('');
+
+        visible.forEach(function(term) {
+            validateKwPhraseInput('kw-phrase-' + term.id, 'kw-counter-' + term.id, 'kw-msg-' + term.id, '#kw-card-' + term.id + ' .kw-btn-save', null);
+        });
     }
 
     function buildKwPhrase(termId) {
@@ -2818,6 +2862,36 @@
             kwPhraseState[termId].push({ index: index, word: word });
         }
         renderPendingTerms();
+    }
+
+    function validateKwPhraseInput(inputId, counterId, msgId, saveBtnSelector, excludeId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const counter = counterId ? document.getElementById(counterId) : null;
+        const msg = msgId ? document.getElementById(msgId) : null;
+        const saveBtn = saveBtnSelector ? document.querySelector(saveBtnSelector) : null;
+        const value = input.value.trim();
+
+        if (counter) counter.textContent = input.value.length + '/255';
+
+        let error = '';
+        if (value.length === 0) {
+            error = '';
+        } else if (value.length < 2) {
+            error = 'Phrase must contain at least 2 characters';
+        } else if (!/[a-zA-Z0-9]/.test(value)) {
+            error = 'Phrase must contain at least one letter or number';
+        } else if (trainedKeywords.some(function(k) {
+            return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
+        })) {
+            error = 'This keyword already exists';
+        }
+
+        if (msg) {
+            msg.textContent = error;
+            msg.className = 'kw-validation-msg' + (error ? ' error' : '');
+        }
+        if (saveBtn) saveBtn.disabled = value.length === 0 || !!error;
     }
 
     function extractErrorMessage(data, fallback) {
@@ -2914,6 +2988,8 @@
         }
         list.innerHTML = visible.map(function(kw) {
             const urgencyClass = kw.urgency_level ? kw.urgency_level : '';
+            const addedBy = kw.added_by_name || 'Unknown';
+            const addedAt = kw.added_at_formatted;
             return '' +
                 '<div class="kw-trained-card" id="kw-trained-' + kw.id + '">' +
                 '<div class="kw-trained-left">' +
@@ -2922,6 +2998,7 @@
                 '<span class="kw-type-pill">' + escHtml(kw.emergency_type) + '</span>' +
                 (kw.urgency_level ? '<span class="kw-urgency-pill ' + urgencyClass + '">' + escHtml(kw.urgency_level) + '</span>' : '') +
                 '</div>' +
+                '<div class="kw-trained-audit">Added by ' + escHtml(addedBy) + (addedAt ? ' on ' + escHtml(addedAt) : '') + '</div>' +
                 '</div>' +
                 '<div class="kw-trained-actions">' +
                 '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
@@ -2938,15 +3015,16 @@
             '<div class="kw-card-label-row"><span class="kw-card-label">New keyword</span></div>' +
             '<span class="kw-field-label">Phrase to match</span>' +
             '<div class="kw-phrase-preview">' +
-            '<input type="text" class="kw-phrase-input" id="kw-add-phrase" placeholder="Type the phrase, e.g. amoy gas">' +
+            '<input type="text" class="kw-phrase-input" id="kw-add-phrase" placeholder="Type the phrase, e.g. amoy gas" oninput="validateKwPhraseInput(\'kw-add-phrase\', \'kw-add-counter\', \'kw-add-msg\', \'#kw-add-new .kw-btn-save\', null)">' +
             '</div>' +
+            '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-add-counter">0/255</span><span class="kw-validation-msg" id="kw-add-msg"></span></div>' +
             '<div class="kw-card-row">' +
             '<div><span class="kw-field-label">Emergency type</span><select id="kw-add-type">' + typeOptionsHtml('Other') + '</select></div>' +
             '<div><span class="kw-field-label">Urgency override</span><select id="kw-add-urgency">' + urgencyOptionsHtml('') + '</select></div>' +
             '</div>' +
             '<div class="kw-card-actions">' +
             '<button class="kw-btn-ignore" onclick="cancelAddKeywordForm()">Cancel</button>' +
-            '<button class="kw-btn-save" onclick="submitAddKeyword()">Save Keyword</button>' +
+            '<button class="kw-btn-save" id="kw-add-save-btn" onclick="submitAddKeyword()" disabled>Save Keyword</button>' +
             '</div>' +
             '</div>';
         document.getElementById('kw-add-phrase').focus();
@@ -3002,7 +3080,8 @@
         const card = document.getElementById('kw-trained-' + id);
         card.outerHTML = '' +
             '<div class="kw-card" id="kw-trained-' + id + '">' +
-            '<input type="text" class="kw-phrase-input" id="kw-edit-phrase-' + id + '" value="' + escHtml(kw.keyword) + '">' +
+            '<input type="text" class="kw-phrase-input" id="kw-edit-phrase-' + id + '" value="' + escHtml(kw.keyword) + '" oninput="validateKwPhraseInput(\'kw-edit-phrase-' + id + '\', \'kw-edit-counter-' + id + '\', \'kw-edit-msg-' + id + '\', \'#kw-trained-' + id + ' .kw-btn-save\', ' + id + ')">' +
+            '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-edit-counter-' + id + '">' + kw.keyword.length + '/255</span><span class="kw-validation-msg" id="kw-edit-msg-' + id + '"></span></div>' +
             '<div class="kw-card-row">' +
             '<select id="kw-edit-type-' + id + '">' + typeOptionsHtml(kw.emergency_type) + '</select>' +
             '<select id="kw-edit-urgency-' + id + '">' + urgencyOptionsHtml(kw.urgency_level) + '</select>' +
