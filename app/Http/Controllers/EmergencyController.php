@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
+use App\Http\Controllers\Api\EmergencyController as ApiEmergencyController;
 use App\Models\ArchivedEmergencyReport;
 use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
@@ -25,6 +26,7 @@ class EmergencyController extends Controller
         $deletedArchive  = $this->archiveCollection('deleted');
         $pendingTerms    = UnclassifiedEmergencyTerm::where('status', 'pending')->orderByDesc('created_at')->get();
         $trainedKeywords = CustomEmergencyKeyword::orderByDesc('created_at')->get();
+        $hardcodedRules  = ApiEmergencyController::getHardcodedRules();
 
         return view('emergency', compact(
             'reports',
@@ -36,7 +38,8 @@ class EmergencyController extends Controller
             'resolvedArchive',
             'deletedArchive',
             'pendingTerms',
-            'trainedKeywords'
+            'trainedKeywords',
+            'hardcodedRules'
         ));
     }
 

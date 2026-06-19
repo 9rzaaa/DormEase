@@ -1364,6 +1364,63 @@
         opacity: .25;
         display: block;
     }
+
+    .kw-ref-note {
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+        background: #fff9e6;
+        border: 1.5px solid #f0c040;
+        border-radius: 10px;
+        padding: .6rem .8rem;
+        font-size: .77rem;
+        color: #7a5400;
+        line-height: 1.5;
+        margin-bottom: .4rem;
+    }
+
+    .kw-ref-group {
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 14px;
+        padding: .85rem 1rem;
+    }
+
+    .kw-ref-group-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: .6rem;
+    }
+
+    .kw-ref-group-title {
+        font-size: .85rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .kw-ref-chip-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+    }
+
+    .kw-ref-chip {
+        display: inline-flex;
+        padding: .28rem .6rem;
+        border-radius: 999px;
+        background: var(--blush);
+        border: 1.5px solid var(--pink-100);
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+    }
+
+    .kw-ref-empty-type {
+        font-size: .76rem;
+        color: var(--ink-muted);
+        font-style: italic;
+    }
 </style>
 @endsection
 
@@ -1702,7 +1759,10 @@
                 Pending <span class="kw-tab-count" id="kwcount-pending">0</span>
             </button>
             <button class="kw-tab" id="kwtab-trained" onclick="switchKwTab('trained')">
-                Trained Keywords <span class="kw-tab-count" id="kwcount-trained">0</span>
+                Trained <span class="kw-tab-count" id="kwcount-trained">0</span>
+            </button>
+            <button class="kw-tab" id="kwtab-reference" onclick="switchKwTab('reference')">
+                Built-in Rules <span class="kw-tab-count" id="kwcount-reference">0</span>
             </button>
         </div>
         <div class="kw-search-bar">
@@ -1732,6 +1792,7 @@
     const deletedArchive   = @json($deletedArchive);
     let pendingTerms       = @json($pendingTerms);
     let trainedKeywords    = @json($trainedKeywords);
+    const hardcodedRules   = @json($hardcodedRules);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -2562,19 +2623,62 @@
         kwActiveTab = tab;
         document.getElementById('kwtab-pending').classList.toggle('active', tab === 'pending');
         document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
+        document.getElementById('kwtab-reference').classList.toggle('active', tab === 'reference');
         document.getElementById('kw-search').value = '';
-        document.getElementById('kw-search').placeholder = tab === 'pending' ? 'Search pending snippets...' : 'Search trained keywords...';
+        const placeholders = { pending: 'Search pending snippets...', trained: 'Search trained keywords...', reference: 'Search built-in rules...' };
+        document.getElementById('kw-search').placeholder = placeholders[tab];
         renderKwList();
     }
 
     function renderKwList() {
         document.getElementById('kwcount-pending').textContent = pendingTerms.length;
         document.getElementById('kwcount-trained').textContent = trainedKeywords.length;
+        const refCount = Object.values(hardcodedRules.emergency_rules || {}).reduce(function(sum, rule) {
+            return sum + (rule.keywords ? rule.keywords.length : 0);
+        }, 0);
+        document.getElementById('kwcount-reference').textContent = refCount;
         if (kwActiveTab === 'pending') {
             renderPendingTerms();
-        } else {
+        } else if (kwActiveTab === 'trained') {
             renderTrainedKeywords();
+        } else {
+            renderHardcodedReference();
         }
+    }
+
+    function renderHardcodedReference() {
+        const list = document.getElementById('kw-list');
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const rules = hardcodedRules.emergency_rules || {};
+        const types = Object.keys(rules).filter(function(t) { return t !== 'Other'; });
+
+        const groupsHtml = types.map(function(type) {
+            const rule = rules[type];
+            const keywords = (rule.keywords || []).filter(function(k) {
+                return !q || k.toLowerCase().includes(q) || type.toLowerCase().includes(q);
+            });
+            if (q && keywords.length === 0) return '';
+            const chips = keywords.length > 0
+                ? keywords.map(function(k) { return '<span class="kw-ref-chip">' + escHtml(k) + '</span>'; }).join('')
+                : '<span class="kw-ref-empty-type">No keywords defined</span>';
+            return '' +
+                '<div class="kw-ref-group">' +
+                '<div class="kw-ref-group-title-row">' +
+                '<span class="kw-ref-group-title">' + escHtml(type) + '</span>' +
+                '<span class="kw-urgency-pill ' + escHtml(rule.urgency || 'moderate') + '">' + escHtml(rule.urgency || 'moderate') + '</span>' +
+                '</div>' +
+                '<div class="kw-ref-chip-wrap">' + chips + '</div>' +
+                '</div>';
+        }).filter(Boolean).join('');
+
+        if (!groupsHtml) {
+            list.innerHTML = '<div class="kw-empty">No built-in keywords match your search.</div>';
+            return;
+        }
+
+        list.innerHTML = '' +
+            '<div class="kw-ref-note">These are hardcoded in the system and cannot be edited or removed here. To handle a phrase differently, add it as a trained keyword in the Pending or Trained tabs.</div>' +
+            groupsHtml;
     }
 
     function renderPendingTerms() {
