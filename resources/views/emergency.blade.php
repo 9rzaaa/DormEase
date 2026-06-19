@@ -1508,9 +1508,8 @@
 
     .kw-validation-row {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: .6rem;
+        flex-direction: column;
+        gap: .3rem;
         margin: .3rem 0 .7rem;
         min-height: 16px;
     }
@@ -1526,11 +1525,54 @@
         font-size: .72rem;
         font-weight: 600;
         color: #1a9d6e;
-        text-align: right;
+        line-height: 1.45;
     }
 
-    .kw-validation-msg.error { color: #c0303a; }
-    .kw-validation-msg.warning { color: #c07800; }
+    .kw-validation-msg.error {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        background: #fff0f0;
+        border: 1.5px solid #ffc8d0;
+        border-radius: 8px;
+        padding: .4rem .6rem;
+        color: #c0303a;
+    }
+
+    .kw-validation-msg.error::before {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin-top: .05rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .kw-validation-msg.warning {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        background: #fff9e6;
+        border: 1.5px solid #f0c040;
+        border-radius: 8px;
+        padding: .4rem .6rem;
+        color: #7a5400;
+    }
+
+    .kw-validation-msg.warning::before {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin-top: .05rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
 
     .kw-btn-save:disabled {
         opacity: .45;
