@@ -354,9 +354,8 @@
             linear-gradient(to right, rgba(232,23,93,.08) 0%, transparent 38%),
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
-        display: flex;
-        align-items: safe center;
-        justify-content: safe center;
+        display: grid;
+        place-items: center;
         padding: 2.5rem 3.5rem;
         position: relative;
         overflow-y: auto;
@@ -1007,7 +1006,7 @@
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: flex-start; overflow-y: visible; }
+        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: start; overflow-y: visible; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
