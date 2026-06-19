@@ -1468,9 +1468,8 @@
 
 .kw-validation-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: .6rem;
+    flex-direction: column;
+    gap: .3rem;
     margin: .3rem 0 .7rem;
     min-height: 16px;
 }
@@ -1486,10 +1485,54 @@
     font-size: .72rem;
     font-weight: 600;
     color: #1a9d6e;
-    text-align: right;
+    line-height: 1.45;
 }
 
-.kw-validation-msg.error { color: #c0303a; }
+.kw-validation-msg.error {
+    display: flex;
+    align-items: flex-start;
+    gap: .4rem;
+    background: #fff0f0;
+    border: 1.5px solid #ffc8d0;
+    border-radius: 8px;
+    padding: .4rem .6rem;
+    color: #c0303a;
+}
+
+.kw-validation-msg.error::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: .05rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.kw-validation-msg.warning {
+    display: flex;
+    align-items: flex-start;
+    gap: .4rem;
+    background: #fff9e6;
+    border: 1.5px solid #f0c040;
+    border-radius: 8px;
+    padding: .4rem .6rem;
+    color: #7a5400;
+}
+
+.kw-validation-msg.warning::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: .05rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 
 .kw-type-pill {
     font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
@@ -3119,23 +3162,63 @@ document.addEventListener('DOMContentLoaded', () => {
         if (counter) counter.textContent = input.value.length + '/255';
 
         let error = '';
+        let warning = '';
+        let isHardBlock = false;
+
         if (value.length === 0) {
             error = '';
         } else if (value.length < 2) {
             error = 'Phrase must contain at least 2 characters';
+            isHardBlock = true;
         } else if (!/[a-zA-Z0-9]/.test(value)) {
             error = 'Phrase must contain at least one letter or number';
-        } else if (trainedKeywords.some(function(k) {
-            return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
-        })) {
-            error = 'This keyword already exists';
+            isHardBlock = true;
+        } else {
+            const dupTrained = trainedKeywords.find(function(k) {
+                return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
+            });
+            if (dupTrained) {
+                const urgencyLabel = dupTrained.urgency_level
+                    ? dupTrained.urgency_level.charAt(0).toUpperCase() + dupTrained.urgency_level.slice(1)
+                    : 'default urgency';
+                error = 'Already trained as ' + dupTrained.issue_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.';
+                isHardBlock = true;
+            } else {
+                const builtinMatch = findBuiltinMatch(value);
+                if (builtinMatch) {
+                    const urgencyLabel = builtinMatch.urgency.charAt(0).toUpperCase() + builtinMatch.urgency.slice(1);
+                    warning = 'Covered by built-in rule for ' + builtinMatch.type + ' at ' + urgencyLabel + '. Your keyword will take priority.';
+                }
+            }
         }
 
         if (msg) {
-            msg.textContent = error;
-            msg.className = 'kw-validation-msg' + (error ? ' error' : '');
+            if (error) {
+                msg.textContent = error;
+                msg.className = 'kw-validation-msg error';
+            } else if (warning) {
+                msg.textContent = warning;
+                msg.className = 'kw-validation-msg warning';
+            } else {
+                msg.textContent = '';
+                msg.className = 'kw-validation-msg';
+            }
         }
-        if (saveBtn) saveBtn.disabled = value.length === 0 || !!error;
+
+        if (saveBtn) saveBtn.disabled = value.length === 0 || isHardBlock;
+    }
+
+    function findBuiltinMatch(value) {
+        const rules = hardcodedRules.issue_rules || {};
+        const lower = value.toLowerCase();
+        for (const type in rules) {
+            if (type === 'other') continue;
+            const rule = rules[type];
+            if ((rule.keywords || []).some(function(k) { return k.toLowerCase() === lower; })) {
+                return { type: type, urgency: rule.priority || 'low' };
+            }
+        }
+        return null;
     }
 
     function extractErrorMessage(data, fallback) {
@@ -3181,7 +3264,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 trainedKeywords.unshift(data.keyword);
                 renderKwList();
             } else {
-                showToast(extractErrorMessage(data, 'Failed to save keyword.'), 'error');
+                const errMsg = extractErrorMessage(data, 'Failed to save keyword.');
+                if (data.existing_keyword) {
+                    const ek = data.existing_keyword;
+                    const urgencyLabel = ek.urgency_level
+                        ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                        : 'default urgency';
+                    showToast('Already trained as ' + ek.issue_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                    highlightTrainedKeyword(ek.id);
+                } else {
+                    showToast(errMsg, 'error');
+                }
                 if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
             }
         } catch (err) {
@@ -3299,7 +3392,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Keyword added.', 'success');
                 renderKwList();
             } else {
-                showToast(extractErrorMessage(data, 'Failed to add keyword.'), 'error');
+                const errMsg = extractErrorMessage(data, 'Failed to add keyword.');
+                if (data.existing_keyword) {
+                    const ek = data.existing_keyword;
+                    const urgencyLabel = ek.urgency_level
+                        ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                        : 'default urgency';
+                    showToast('Already trained as ' + ek.issue_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                    highlightTrainedKeyword(ek.id);
+                } else {
+                    showToast(errMsg, 'error');
+                }
                 if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
             }
         } catch (err) {
@@ -3362,6 +3465,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             hideActionLoading();
         }
+    }
+
+    function highlightTrainedKeyword(id) {
+        switchKwTab('trained');
+        setTimeout(function() {
+            const card = document.getElementById('kw-trained-' + id);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow .2s, border-color .2s';
+            card.style.borderColor = 'var(--bright-pink)';
+            card.style.boxShadow = '0 0 0 3px rgba(232,23,93,.25)';
+            setTimeout(function() {
+                card.style.borderColor = '';
+                card.style.boxShadow = '';
+            }, 2500);
+        }, 320);
     }
 
     async function deleteKwKeyword(id) {

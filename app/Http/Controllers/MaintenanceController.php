@@ -256,9 +256,16 @@ class MaintenanceController extends Controller
         $duplicate = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
 
         if ($duplicate) {
+            $existing = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
             return response()->json([
                 'message' => 'This phrase is already trained.',
                 'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'           => $existing->id,
+                    'keyword'      => $existing->keyword,
+                    'issue_type'   => $existing->issue_type,
+                    'urgency_level' => $existing->urgency_level,
+                ],
             ], 422);
         }
 
@@ -299,9 +306,16 @@ class MaintenanceController extends Controller
         $duplicate = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
 
         if ($duplicate) {
+            $existing = CustomMaintenanceKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
             return response()->json([
                 'message' => 'This phrase is already trained.',
                 'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'            => $existing->id,
+                    'keyword'       => $existing->keyword,
+                    'issue_type'    => $existing->issue_type,
+                    'urgency_level' => $existing->urgency_level,
+                ],
             ], 422);
         }
 
