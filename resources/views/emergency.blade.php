@@ -528,6 +528,10 @@
         border-bottom: none;
         padding-bottom: .75rem;
     }
+    
+    .dir-modal {
+        max-height: 88vh;
+    }
 
     .dir-tabs {
         display: flex;
@@ -1159,6 +1163,8 @@
         padding: 0 1.1rem 1.1rem;
         display: flex; flex-direction: column; gap: .75rem;
         scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
+        max-height: 48vh;
+        min-height: 0;
     }
 
     .kw-list::-webkit-scrollbar { width: 4px; }

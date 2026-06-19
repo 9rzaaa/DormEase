@@ -388,6 +388,10 @@
         box-shadow: 0 3px 10px rgba(232,23,93,.3);
     }
 
+    #keyword-modal .modal {
+        max-height: 88vh;
+    }
+
     .maint-modal-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .9rem; }
 
     .maint-modal-field label {
@@ -1111,7 +1115,8 @@
     padding: 0 1.1rem 1.1rem;
     display: flex; flex-direction: column; gap: .75rem;
     scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent;
-    max-height: 50vh;
+    max-height: 48vh;
+    min-height: 0;
 }
 
 .kw-list::-webkit-scrollbar { width: 4px; }
