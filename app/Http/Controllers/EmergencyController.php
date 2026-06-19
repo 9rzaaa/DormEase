@@ -213,7 +213,7 @@ class EmergencyController extends Controller
             'archived_by_role' => $staff?->role ?? 'admin',
             'tenant_id' => $report->tenant_id,
             'tenant_name' => $tenantName,
-            'room_number' => $tenant->room_number ?? '-',
+            'room_number' => $tenant?->room_number ?? '-',
             'is_panic_alert' => $report->is_panic_alert,
             'emergency_type' => $report->emergency_type,
             'urgency_level' => $report->urgency_level,
@@ -377,7 +377,7 @@ class EmergencyController extends Controller
             ], 422);
         }
 
-        $staff = Auth::guard('staff')->user();
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
 
         $keyword = CustomEmergencyKeyword::create([
             'keyword' => $normalizedKeyword,
@@ -420,7 +420,7 @@ class EmergencyController extends Controller
             ], 422);
         }
 
-        $staff = Auth::guard('staff')->user();
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
 
         $keyword = CustomEmergencyKeyword::create([
             'keyword' => $normalizedKeyword,
@@ -437,6 +437,7 @@ class EmergencyController extends Controller
 
         if ($request->boolean('reclassify_matching')) {
             $needle = strtolower(trim($validated['keyword']));
+            $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
 
             $matchingReports = EmergencyReport::where('emergency_type', 'Other')
                 ->where('description', 'like', '%' . $needle . '%')
