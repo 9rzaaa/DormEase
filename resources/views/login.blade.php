@@ -43,7 +43,7 @@
     body {
         font-family: var(--ff-body);
         display: flex;
-        min-height: 100vh;
+        height: 100vh;
         overflow: hidden;
         background: #fff;
     }
@@ -356,7 +356,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem 3.5rem 3rem;
+        padding: 2.5rem 3.5rem;
         position: relative;
         overflow: hidden;
     }
@@ -1002,7 +1002,7 @@
     }
 
     @media (max-width: 820px) {
-        body { flex-direction: column; overflow: auto; }
+        body { flex-direction: column; height: auto; min-height: 100vh; overflow: auto; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
@@ -1045,7 +1045,7 @@
             margin-bottom: 1rem;
         }
         .right {
-            padding: 1rem 3rem 1.5rem;
+            padding: 1.5rem 3rem;
         }
         .form-wrap {
             padding: 1.6rem 2rem;
