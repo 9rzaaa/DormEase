@@ -43,7 +43,7 @@
     body {
         font-family: var(--ff-body);
         display: flex;
-        min-height: 100vh;
+        height: 100vh;
         overflow: hidden;
         background: #fff;
     }
@@ -354,20 +354,36 @@
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         padding: 2rem 3.5rem;
         position: relative;
         overflow-y: auto;
         overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
     }
 
     .right::-webkit-scrollbar {
-        width: 0px;
+        width: 6px;
+    }
+
+    .right::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .right::-webkit-scrollbar-thumb {
+        background: rgba(232, 23, 93, 0.15);
+        border-radius: 10px;
+    }
+
+    .right::-webkit-scrollbar-thumb:hover {
+        background: rgba(232, 23, 93, 0.3);
     }
 
     .form-wrap {
-        margin: auto 0;
+        margin: auto;
     }
 
     .right::before {
@@ -1011,7 +1027,7 @@
     }
 
     @media (max-width: 820px) {
-        body { flex-direction: column; overflow: auto; }
+        body { flex-direction: column; overflow: auto; height: auto; min-height: 100vh; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
