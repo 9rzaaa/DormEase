@@ -2280,6 +2280,8 @@
         setInterval(checkPanic, 30000);
     })();
 
+    const kwEditIcon = "{{ asset('icons/edit.png') }}";
+    const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
     const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Security', 'Flood/Water Leak', 'Other'];
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
@@ -2447,8 +2449,8 @@
                 '<div class="kw-trained-meta">' + escHtml(kw.emergency_type) + (kw.urgency_level ? ' &middot; ' + escHtml(kw.urgency_level) : '') + '</div>' +
                 '</div>' +
                 '<div class="kw-trained-actions">' +
-                '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="{{ asset(\'icons/edit.png\') }}" alt="Edit"></button>' +
-                '<button class="act-btn danger" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="{{ asset(\'icons/delete.png\') }}" alt="Delete"></button>' +
+                '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
+                '<button class="act-btn danger" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="' + kwDeleteIcon + '" alt="Delete"></button>' +
                 '</div>' +
                 '</div>';
         }).join('');
