@@ -1115,7 +1115,7 @@
     padding: 0 1.1rem 1.1rem;
     display: flex; flex-direction: column; gap: .75rem;
     scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent;
-    max-height: 48vh;
+    max-height: 60vh;
     min-height: 0;
 }
 
@@ -1278,6 +1278,13 @@
     display: flex;
     gap: .5rem;
     justify-content: flex-end;
+    position: sticky;
+    bottom: -1.1rem;
+    margin: .3rem -1.1rem -1.1rem -1.3rem;
+    padding: .6rem 1.1rem .6rem 1.3rem;
+    background: var(--white);
+    border-top: 1px solid var(--baby-pink);
+    border-radius: 0 0 16px 16px;
 }
 
 .kw-btn-ignore {
