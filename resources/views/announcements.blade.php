@@ -805,6 +805,13 @@
 .schedule-fields .modal-field { margin-bottom: 0; }
 .schedule-fields input[type="datetime-local"] { width: 100%; box-sizing: border-box; border: 1.5px solid var(--pink-100); border-radius: 9px; padding: .55rem .85rem; font-size: .88rem; color: var(--ink); background: #fff; font-family: var(--ff-body); }
 .schedule-note { font-size: .75rem; color: var(--bright-pink); margin-top: .3rem; line-height: 1.5; }
+.form-progress-wrap { padding: .7rem 1.5rem .1rem; display: flex; flex-direction: column; gap: .35rem; flex-shrink: 0; }
+.form-progress-bar { width: 100%; height: 3px; background: var(--pink-100); border-radius: 99px; overflow: hidden; }
+.form-progress-fill { height: 100%; border-radius: 99px; transition: width .35s cubic-bezier(.4,0,.2,1), background .35s; }
+.form-progress-label { display: flex; align-items: center; justify-content: space-between; font-size: .68rem; font-weight: 700; color: var(--ink-muted); }
+.form-progress-label span.ready { color: #1f9d69; font-weight: 800; }
+.form-progress-label span.partial { color: var(--hot-pink); }
+.field-req-star { color: var(--bright-pink); font-size: .75rem; font-weight: 900; margin-left: .18rem; opacity: .8; vertical-align: middle; }
 #edit-modal .modal, #post-modal .modal, #view-modal .modal {
     max-width: 560px; width: 100%; padding: 0;
     overflow: hidden; max-height: 92vh;
@@ -1402,14 +1409,23 @@
         </div>
         <form method="POST" action="{{ route('announcements.store') }}" id="post-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
+            <div class="form-progress-wrap" id="post-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="post-progress-text">Fill in required fields</span>
+                    <span id="post-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="post-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels">
                 <div class="em-panel active" id="pm-panel-0">
                     <div class="modal-field">
-                        <label>Title *</label>
+                        <label>Title <span class="field-req-star">*</span></label>
                         <input type="text" name="title" id="post-title" placeholder="e.g. Water Interruption Notice" required>
                     </div>
                     <div class="modal-field">
-                        <label>Content *</label>
+                        <label>Content <span class="field-req-star">*</span></label>
                         <textarea name="content" id="post-content" placeholder="Write your announcement here..." required></textarea>
                     </div>
                 </div>
@@ -1489,10 +1505,19 @@
         </div>
         <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf @method('PUT')
+            <div class="form-progress-wrap" id="edit-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="edit-progress-text">Fill in required fields</span>
+                    <span id="edit-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels">
                 <div class="em-panel active" id="em-panel-0">
-                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="edit-title" required placeholder="Announcement title"></div>
-                    <div class="modal-field"><label>Content *</label><textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea></div>
+                    <div class="modal-field"><label>Title <span class="field-req-star">*</span></label><input type="text" name="title" id="edit-title" required placeholder="Announcement title"></div>
+                    <div class="modal-field"><label>Content <span class="field-req-star">*</span></label><textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea></div>
                 </div>
                 <div class="em-panel" id="em-panel-1">
                     <div class="modal-field">
@@ -1584,10 +1609,19 @@
         </div>
         <form method="POST" id="view-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf @method('PUT')
+            <div class="form-progress-wrap" id="view-edit-progress-wrap" style="display:none;">
+                <div class="form-progress-label">
+                    <span id="view-edit-progress-text">Fill in required fields</span>
+                    <span id="view-edit-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="view-edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels" id="vm-edit-panels" style="display:none;">
                 <div class="em-panel" id="vm-panel-1">
-                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="view-edit-title" required></div>
-                    <div class="modal-field"><label>Content *</label><textarea name="content" id="view-edit-content" required></textarea></div>
+                    <div class="modal-field"><label>Title <span class="field-req-star">*</span></label><input type="text" name="title" id="view-edit-title" required></div>
+                    <div class="modal-field"><label>Content <span class="field-req-star">*</span></label><textarea name="content" id="view-edit-content" required></textarea></div>
                 </div>
                 <div class="em-panel" id="vm-panel-2">
                     <div class="modal-field">
@@ -1989,6 +2023,7 @@ function openPostModal() {
     toggleSchedule('post', false);
     switchPostTab(0);
     openModal('post-modal');
+    setTimeout(function() { updateAnnFormProgress('post', ['post-title', 'post-content']); }, 50);
 }
 
 window._emTab = 0;
@@ -2014,6 +2049,7 @@ function openEditModal(id, e) {
     const ann = annData[id];
     if (!ann) return;
     document.getElementById('edit-form').reset();
+    setTimeout(function() { updateAnnFormProgress('edit', ['edit-title', 'edit-content']); }, 50);
     document.getElementById('edit-form').action = '{{ url("announcements") }}/' + id;
     document.getElementById('edit-title').value   = ann.title   || '';
     document.getElementById('edit-content').value = ann.content || '';
@@ -2062,7 +2098,14 @@ function switchViewTab(idx) {
         document.getElementById('vm-next-btn').disabled = (idx === VM_TABS - 1);
     }
 }
-function enableViewEdit() { _vmEditOn = true; document.getElementById('vm-tab-0').classList.remove('active'); switchViewTab(1); }
+function enableViewEdit() {
+    _vmEditOn = true;
+    document.getElementById('vm-tab-0').classList.remove('active');
+    switchViewTab(1);
+    var bar = document.getElementById('view-edit-progress-wrap');
+    if (bar) bar.style.display = '';
+    updateAnnFormProgress('view-edit', ['view-edit-title', 'view-edit-content']);
+}
 function selectViewPill(type, val) {
     const row = document.getElementById('view-edit-' + type + '-pills');
     row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
@@ -2072,6 +2115,8 @@ function openViewModal(id) {
     const ann = annData[id];
     if (!ann) return;
     _vmEditOn = false; window._vmTab = 0;
+    var bar = document.getElementById('view-edit-progress-wrap');
+    if (bar) bar.style.display = 'none';
     for (let i = 0; i < VM_TABS; i++) document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
     for (let i = 1; i < VM_TABS; i++) document.getElementById('vm-panel-' + i).classList.remove('active');
     document.getElementById('vm-panel-0').classList.add('active');
@@ -2121,6 +2166,51 @@ function openDeleteModal(id, name, e) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+function updateAnnFormProgress(prefix, fieldIds) {
+    var filled = fieldIds.filter(function(id) {
+        var el = document.getElementById(id);
+        return el && el.value && el.value.trim() !== '';
+    }).length;
+    var total = fieldIds.length;
+    var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+    var fill  = document.getElementById(prefix + '-progress-fill');
+    var text  = document.getElementById(prefix + '-progress-text');
+    var count = document.getElementById(prefix + '-progress-count');
+    if (!fill) return;
+    fill.style.width = pct + '%';
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        if (text)  { text.textContent = 'All required fields filled'; text.className = 'ready'; }
+        if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+    } else {
+        fill.style.background = 'var(--gradient-pink)';
+        if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+        if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var postFields = ['post-title', 'post-content'];
+    var postModalEl = document.getElementById('post-modal');
+    if (postModalEl) {
+        postModalEl.addEventListener('input', function() { updateAnnFormProgress('post', postFields); });
+        updateAnnFormProgress('post', postFields);
+    }
+
+    var editFields = ['edit-title', 'edit-content'];
+    var editModalEl = document.getElementById('edit-modal');
+    if (editModalEl) {
+        editModalEl.addEventListener('input', function() { updateAnnFormProgress('edit', editFields); });
+    }
+
+    var viewEditFields = ['view-edit-title', 'view-edit-content'];
+    var viewModalEl = document.getElementById('view-modal');
+    if (viewModalEl) {
+        viewModalEl.addEventListener('input', function() { updateAnnFormProgress('view-edit', viewEditFields); });
+    }
+});
+
 function getAttachments(att) {
     if (!att) return [];
     return String(att).split(',').map(p => p.trim()).filter(Boolean);
