@@ -9,7 +9,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
-
 <style>
     :root {
         --hot-pink:    #E8175D;
@@ -33,13 +32,11 @@
         --radius-md:   10px;
         --radius-pill: 999px;
     }
-
     *, *::before, *::after {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
     }
-
     body {
         font-family: var(--ff-body);
         display: flex;
@@ -47,7 +44,6 @@
         overflow: hidden;
         background: #fff;
     }
-
     .left {
         flex: 1;
         background: linear-gradient(160deg, #FF2D78 0%, #E8175D 45%, #a50e37 100%);
@@ -60,7 +56,6 @@
         z-index: 2;
         box-shadow: 6px 0 48px rgba(232,23,93,.22);
     }
-
     .left::before {
         content: '';
         position: absolute;
@@ -70,8 +65,6 @@
         top: -120px; left: -120px;
         pointer-events: none;
     }
-
-
     .left::after {
         content: '';
         position: absolute;
@@ -81,7 +74,6 @@
         bottom: -90px; right: -90px;
         pointer-events: none;
     }
-
     .ring {
         position: absolute;
         border-radius: 50%;
@@ -90,29 +82,24 @@
         background: transparent;
         pointer-events: none;
     }
-
     .ring-1 {
         width: 220px; height: 220px;
         border: 1.5px dashed rgba(255,255,255,.8);
         animation: spinSlow 22s linear infinite;
     }
-
     .ring-2 {
         width: 360px; height: 360px;
         border: 1px dashed rgba(255,255,255,.55);
         animation: spinSlow 38s linear infinite reverse;
     }
-
     .ring-3 {
         width: 500px; height: 500px;
         border: 1px dashed rgba(255,255,255,.35);
         animation: spinSlow 55s linear infinite;
     }
-
     @keyframes spinSlow {
         to { transform: translate(-50%,-50%) rotate(360deg); }
     }
-
     .dot-grid {
         position: absolute;
         bottom: 130px; left: 3rem;
@@ -122,14 +109,12 @@
         opacity: .18;
         pointer-events: none;
     }
-
     .dot-grid span {
         width: 4px; height: 4px;
         border-radius: 50%;
         background: #fff;
         display: block;
     }
-
     .student-wrap {
         position: absolute;
         bottom: 0; right: 0;
@@ -142,7 +127,6 @@
         will-change: transform;
         transition: transform .1s ease-out;
     }
-
     .student-img {
         width: 100%;
         height: 100%;
@@ -157,20 +141,16 @@
         z-index: 1;
         opacity: 1;
     }
-
     .student-img-cover {
         opacity: 0;
         top: 0;
     }
-
     #student-normal {
         opacity: 1;
     }
-
     #student-cover {
         opacity: 0;
     }
-
     .student-wrap::after {
         content: '';
         position: absolute;
@@ -180,12 +160,10 @@
         pointer-events: none;
         z-index: 2;
     }
-
     @keyframes float {
         0%,100% { transform: translateY(0) translateX(0); }
         50%      { transform: translateY(-14px) translateX(0); }
     }
-
     .left-logo {
         position: relative;
         z-index: 2;
@@ -194,7 +172,6 @@
         gap: .75rem;
         animation: leftSlide .6s ease .10s both;
     }
-
     .logo-mark {
         width: 44px; height: 44px;
         background: rgba(255,255,255,.2);
@@ -207,31 +184,25 @@
         overflow: hidden;
         transition: background var(--transition);
     }
-
     .logo-mark:hover { background: rgba(255,255,255,.32); }
-
     .logo-mark img {
         width: 26px; height: 26px;
         object-fit: contain;
     }
-
     .logo-text {
         font-family: var(--ff-display);
         font-size: 1.5rem;
         color: #fff;
         letter-spacing: -.01em;
     }
-
     .logo-text span {
         font-style: italic;
         opacity: .85;
     }
-
     .left-body {
         position: relative;
         z-index: 2;
     }
-
     .left-body h1 {
         font-family: var(--ff-display);
         font-size: clamp(2.2rem,3.4vw,3.3rem);
@@ -240,20 +211,17 @@
         letter-spacing: -.02em;
         margin-bottom: 1.1rem;
     }
-
     .left-body h1 em {
         font-style: italic;
         color: var(--pink-light);
         display: inline-block;
         animation: confidenceBloom .9s cubic-bezier(.22,1,.36,1) .72s both;
     }
-
     @keyframes confidenceBloom {
         0%   { opacity: 0; transform: translateY(12px); color: #fff; }
         60%  { color: #fff; }
         100% { opacity: 1; transform: translateY(0); color: var(--pink-light); }
     }
-
     .left-body p {
         font-size: .94rem;
         color: rgba(255,255,255,.72);
@@ -263,27 +231,22 @@
         opacity: 0;
         animation: leftFadeUp .6s ease .88s forwards;
     }
-
     @keyframes leftFadeUp {
         from { opacity: 0; transform: translateY(10px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-
     .h1-line {
         display: block;
         opacity: 0;
         animation: h1LineIn .55s cubic-bezier(.34,1.56,.64,1) both;
     }
-
     .h1-line-1 { animation-delay: .18s; }
     .h1-line-2 { animation-delay: .34s; }
     .h1-line-3 { animation-delay: .52s; }
-
     @keyframes h1LineIn {
         from { opacity: 0; transform: translateX(-22px); }
         to   { opacity: 1; transform: translateX(0); }
     }
-
     .feature-strip {
         display: flex;
         align-items: center;
@@ -296,7 +259,6 @@
         backdrop-filter: blur(6px);
         animation: leftSlide .6s ease .32s both;
     }
-
     .feature-strip-icon {
         width: 26px; height: 26px;
         border-radius: 50%;
@@ -307,13 +269,11 @@
         flex-shrink: 0;
         transition: background .3s;
     }
-
     .feature-strip-icon img {
         width: 14px; height: 14px;
         filter: brightness(0) invert(1);
         object-fit: contain;
     }
-
     .feature-strip-text {
         font-size: .82rem;
         font-weight: 600;
@@ -321,7 +281,6 @@
         letter-spacing: .01em;
         min-width: 170px;
     }
-
     .feature-cursor {
         display: inline-block;
         width: 2px;
@@ -331,12 +290,10 @@
         vertical-align: middle;
         animation: blink .75s step-end infinite;
     }
-
     @keyframes blink {
         0%,100% { opacity: 1; }
         50%      { opacity: 0; }
     }
-
     .left-footer {
         position: relative;
         z-index: 2;
@@ -344,23 +301,21 @@
         color: rgba(255,255,255,.38);
         animation: leftSlide .6s ease .38s both;
     }
-
     .right {
         width: 500px;
         flex-shrink: 0;
-        min-height: 100vh;
         background-color: #fdf6f9;
         background-image:
             linear-gradient(to right, rgba(232,23,93,.08) 0%, transparent 38%),
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
-        display: grid;
-        place-items: center;
-        padding: 2.5rem 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 3.5rem 3rem;
         position: relative;
-        overflow-y: auto;
+        overflow: hidden;
     }
-
     .right::before {
         content: '';
         position: absolute;
@@ -371,7 +326,6 @@
         pointer-events: none;
         animation: orbDrift1 12s ease-in-out infinite;
     }
-
     .right::after {
         content: '';
         position: absolute;
@@ -382,17 +336,14 @@
         pointer-events: none;
         animation: orbDrift2 16s ease-in-out infinite;
     }
-
     @keyframes orbDrift1 {
         0%,100% { transform: translate(0,0) scale(1); }
         50%      { transform: translate(-18px, 22px) scale(1.08); }
     }
-
     @keyframes orbDrift2 {
         0%,100% { transform: translate(0,0) scale(1); }
         50%      { transform: translate(14px,-18px) scale(1.06); }
     }
-
     .form-wrap {
         width: 100%;
         max-width: 380px;
@@ -410,12 +361,10 @@
         border: 1px solid rgba(255,255,255,.7);
         overflow: visible;
     }
-
     .form-wrap > * {
         opacity: 0;
         animation: slideUp .55s ease forwards;
     }
-
     .form-wrap > *:nth-child(1) { animation-delay: .06s; }
     .form-wrap > *:nth-child(2) { animation-delay: .13s; }
     .form-wrap > *:nth-child(3) { animation-delay: .19s; }
@@ -423,14 +372,11 @@
     .form-wrap > *:nth-child(5) { animation-delay: .33s; }
     .form-wrap > *:nth-child(6) { animation-delay: .40s; }
     .form-wrap > *:nth-child(7) { animation-delay: .47s; }
-
     .form-header { margin-bottom: 1.2rem; }
-
     .form-header-eyebrow {
         opacity: 0;
         animation: slideUp .5s cubic-bezier(.22,1,.36,1) .08s forwards;
     }
-
     .form-header-title {
         opacity: 0;
         animation: slideUp .55s cubic-bezier(.34,1.56,.64,1) .18s forwards;
@@ -439,13 +385,11 @@
         isolation: isolate;
         overflow: visible;
     }
-
     .form-header-title em {
         font-style: italic;
         color: var(--hot-pink);
         display: inline-block;
     }
-
     .form-header-title .title-halo {
         position: absolute;
         top: 50%;
@@ -460,17 +404,14 @@
         transition: opacity .35s ease, transform .4s cubic-bezier(.22,1,.36,1);
         z-index: 0;
     }
-
     .form-header-title:hover .title-halo {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
     }
-
     .form-header-sub {
         opacity: 0;
         animation: slideUp .5s cubic-bezier(.22,1,.36,1) .28s forwards;
     }
-
     .eyebrow {
         font-size: .72rem;
         font-weight: 700;
@@ -484,11 +425,9 @@
         position: relative;
         padding-bottom: .3rem;
     }
-
     .eyebrow::before {
         display: none;
     }
-
     .eyebrow::after {
         content: '';
         position: absolute;
@@ -502,30 +441,24 @@
         transform-origin: left center;
         transition: transform .38s cubic-bezier(.22,1,.36,1);
     }
-
     .eyebrow.line-drawn::after {
         transform: scaleX(1);
     }
-
     .eyebrow-inner {
         display: inline-block;
         transition: opacity .22s ease, transform .22s cubic-bezier(.4,0,.2,1);
     }
-
     .eyebrow-inner.switching {
         opacity: 0;
         transform: translateY(-6px);
     }
-
     .eyebrow-inner.entering {
         animation: eyebrowEnter .28s cubic-bezier(.22,1,.36,1) forwards;
     }
-
     @keyframes eyebrowEnter {
         from { opacity: 0; transform: translateY(8px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-
     .form-header h2 {
         font-family: var(--ff-display);
         font-size: 2.1rem;
@@ -534,19 +467,16 @@
         line-height: 1.15;
         letter-spacing: -.02em;
     }
-
     .form-header h2 em {
         font-style: italic;
         color: var(--hot-pink);
     }
-
     .form-header p {
         font-size: .86rem;
         color: var(--ink-muted);
         margin-top: .55rem;
         line-height: 1.6;
     }
-
     .role-label {
         font-size: .78rem;
         font-weight: 600;
@@ -554,14 +484,12 @@
         margin-bottom: .5rem;
         display: block;
     }
-
     .role-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: .6rem;
         margin-bottom: 1.1rem;
     }
-
     .role-btn {
         border: 1.5px solid var(--gray-light);
         border-radius: 14px;
@@ -578,7 +506,6 @@
         cursor: pointer;
         will-change: transform;
     }
-
     .role-btn::before {
         content: '';
         position: absolute;
@@ -587,22 +514,17 @@
         opacity: 0;
         transition: opacity var(--transition);
     }
-
     .role-btn:hover::before { opacity: 1; }
-
     .role-btn:hover {
         border-color: var(--pink-light);
     }
-
     .role-btn:active { transform: scale(.97); }
-
     .role-btn.active {
         border-color: var(--bright-pink);
         background: var(--pink-tint);
         box-shadow: 0 0 0 3px rgba(255,45,120,.12);
         transform: scale(1.03);
     }
-
     .ripple {
         position: absolute;
         border-radius: 50%;
@@ -611,11 +533,9 @@
         animation: rippleAnim .5s linear;
         pointer-events: none;
     }
-
     @keyframes rippleAnim {
         to { transform: scale(4); opacity: 0; }
     }
-
     .role-icon {
         width: 38px; height: 38px;
         flex-shrink: 0;
@@ -627,20 +547,16 @@
         transition: background var(--transition);
         position: relative;
     }
-
     .role-icon img {
         width: 20px; height: 20px;
         object-fit: contain;
         position: relative;
         z-index: 1;
     }
-
     .role-btn.active .role-icon {
         background: linear-gradient(135deg,var(--hot-pink),var(--bright-pink));
     }
-
     .role-btn.active .role-icon img { filter: brightness(0) invert(1); }
-
     .role-icon::after {
         content: '';
         position: absolute;
@@ -653,34 +569,27 @@
         transform: scale(0);
         transition: opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
     }
-
     .role-btn.active .role-icon::after {
         opacity: 1;
         transform: scale(1);
         animation: pulseDot 1.8s ease-in-out infinite;
     }
-
     @keyframes pulseDot {
         0%,100% { box-shadow: 0 0 0 0 rgba(255,45,120,.5); }
         50%      { box-shadow: 0 0 0 5px rgba(255,45,120,0); }
     }
-
     .role-name {
         font-size: .84rem;
         font-weight: 600;
         color: var(--ink);
     }
-
     .role-desc {
         font-size: .71rem;
         color: var(--ink-muted);
         margin-top: .1rem;
     }
-
     .role-btn.active .role-name { color: var(--hot-pink); }
-
     .field { margin-bottom: .9rem; }
-
     .field label {
         display: block;
         font-size: .78rem;
@@ -688,9 +597,7 @@
         color: var(--ink);
         margin-bottom: .42rem;
     }
-
     .input-wrap { position: relative; }
-
     .input-wrap::after {
         content: '';
         position: absolute;
@@ -702,9 +609,7 @@
         transition: left .25s ease, right .25s ease;
         pointer-events: none;
     }
-
     .input-wrap:focus-within::after { left: 1px; right: 1px; }
-
     .input-icon {
         position: absolute;
         left: .9rem; top: 50%;
@@ -713,7 +618,6 @@
         pointer-events: none;
         opacity: .35;
     }
-
     .toggle-pw {
         position: absolute;
         right: .9rem; top: 50%;
@@ -729,9 +633,7 @@
         transition: opacity var(--transition);
         cursor: pointer;
     }
-
     .toggle-pw:hover { opacity: .85; }
-
     .caps-icon {
         position: absolute;
         right: 2.8rem;
@@ -744,16 +646,13 @@
         height: 18px;
         pointer-events: none;
     }
-
     .caps-icon.visible {
         display: flex;
     }
-
     .caps-icon svg {
         width: 15px;
         height: 15px;
     }
-
     .email-check {
         position: absolute;
         right: .9rem; top: 50%;
@@ -763,20 +662,16 @@
         transition: opacity .25s;
         pointer-events: none;
     }
-
     .email-check.visible { opacity: 1; }
-
     .email-check svg {
         width: 18px; height: 18px;
     }
-
     .field-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: .9rem;
     }
-
     .remember {
         display: flex;
         align-items: center;
@@ -786,11 +681,9 @@
         cursor: pointer;
         user-select: none;
     }
-
     .remember input[type="checkbox"] {
         display: none;
     }
-
     .toggle-track {
         width: 34px;
         height: 19px;
@@ -801,7 +694,6 @@
         flex-shrink: 0;
         transition: background .22s ease, border-color .22s ease, box-shadow .22s ease;
     }
-
     .toggle-knob {
         position: absolute;
         top: 2px;
@@ -813,28 +705,23 @@
         box-shadow: 0 1px 4px rgba(0,0,0,.18);
         transition: transform .22s cubic-bezier(.34,1.56,.64,1);
     }
-
     .remember input[type="checkbox"]:checked ~ .toggle-track {
         background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
         border-color: var(--hot-pink);
         box-shadow: 0 0 0 3px rgba(255,45,120,.15);
     }
-
     .remember input[type="checkbox"]:checked ~ .toggle-track .toggle-knob {
         transform: translateX(15px);
     }
-
     .remember-label {
         font-size: .82rem;
         color: var(--ink-muted);
         transition: color .2s;
     }
-
     .remember:has(input:checked) .remember-label {
         color: var(--hot-pink);
         font-weight: 600;
     }
-
     .forgot {
         font-size: .82rem;
         color: var(--hot-pink);
@@ -842,9 +729,7 @@
         text-decoration: none;
         transition: opacity var(--transition);
     }
-
     .forgot:hover { opacity: .7; }
-
     .de-input {
         width: 100%;
         padding: .72rem .9rem .72rem 2.6rem;
@@ -857,19 +742,15 @@
         outline: none;
         transition: border-color var(--transition), background var(--transition);
     }
-
     .de-input:focus {
         border-color: var(--bright-pink);
         background: var(--white);
     }
-
     .de-input::placeholder { color: var(--gray); }
-
     .de-input.input-valid {
         border-color: var(--green);
         padding-right: 2.6rem;
     }
-
     @keyframes shake {
         0%,100% { transform: translateX(0); }
         15%      { transform: translateX(-6px); }
@@ -879,9 +760,7 @@
         75%      { transform: translateX(-2px); }
         90%      { transform: translateX(2px); }
     }
-
     .input-error-state { border-color: var(--hot-pink) !important; }
-
     .field-error {
         font-size: .74rem;
         font-weight: 600;
@@ -892,11 +771,9 @@
         margin-top: .3rem;
         visibility: hidden;
     }
-
     .field-error.visible {
         visibility: visible;
     }
-
     .de-alert-error {
         display: flex;
         align-items: center;
@@ -911,17 +788,14 @@
         margin-bottom: .75rem;
         animation: slideDown .2s ease;
     }
-
     .de-alert-error img {
         width: 13px; height: 13px;
         flex-shrink: 0;
     }
-
     @keyframes slideDown {
         from { opacity: 0; transform: translateY(-6px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-
     .de-btn-primary {
         width: 100%;
         padding: .75rem 1.4rem;
@@ -943,7 +817,6 @@
         position: relative;
         overflow: hidden;
     }
-
     .de-btn-primary::after {
         content: '';
         position: absolute;
@@ -963,21 +836,17 @@
         transition: left .52s cubic-bezier(.4,0,.2,1);
         pointer-events: none;
     }
-
     .de-btn-primary:hover::after {
         left: 160%;
     }
-
     .de-btn-primary:hover {
         box-shadow: 0 10px 32px rgba(232,23,93,.48);
         transform: translateY(-2px);
     }
-
     .de-btn-primary:active {
         transform: translateY(0);
         box-shadow: 0 4px 12px rgba(232,23,93,.3);
     }
-
     .btn-spinner {
         width: 16px; height: 16px;
         border: 2.5px solid rgba(255,255,255,.35);
@@ -986,31 +855,26 @@
         animation: spinBtn .6s linear infinite;
         display: none;
     }
-
     @keyframes spinBtn {
         to { transform: rotate(360deg); }
     }
-
     @keyframes slideUp {
         from { opacity: 0; transform: translateY(18px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes leftSlide {
         from { opacity: 0; transform: translateX(-28px); }
         to   { opacity: 1; transform: translateX(0); }
     }
-
     @media (max-width: 820px) {
-        body { flex-direction: column; height: auto; min-height: 100vh; overflow: auto; }
+        body { flex-direction: column; overflow: auto; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: start; overflow-y: visible; }
+        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: flex-start; overflow-y: visible; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
-
     @media (max-width: 540px) {
         .left { min-height: 180px; padding: 1.5rem 1.2rem; }
         .left-body h1 { font-size: 1.5rem; }
@@ -1024,7 +888,6 @@
         .de-input { font-size: .85rem; }
         .de-btn-primary { font-size: .88rem; padding: .7rem 1rem; }
     }
-
     @media (max-width: 380px) {
         .left { min-height: 160px; padding: 1.2rem 1rem; }
         .logo-text { font-size: 1.2rem; }
@@ -1033,7 +896,6 @@
         .role-row { grid-template-columns: 1fr; }
         .field-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
     }
-
     #fp-overlay {
         position: fixed;
         inset: 0;
@@ -1046,7 +908,6 @@
         padding: 1.5rem;
         animation: fpFadeIn .22s ease;
     }
-
     #fp-sheet {
         background: #fff;
         border-radius: 22px;
@@ -1059,7 +920,6 @@
         max-height: 90vh;
         overflow-y: auto;
     }
-
     #fp-close {
         position: absolute;
         top: 1.1rem; right: 1.1rem;
@@ -1074,13 +934,11 @@
         transition: background .2s, transform .15s;
         color: #CA5D86;
     }
-
     #fp-close:hover {
         background: #E8175D;
         color: #fff;
         transform: rotate(90deg);
     }
-
     .fp-eyebrow {
         font-size: .68rem;
         font-weight: 700;
@@ -1092,7 +950,6 @@
         align-items: center;
         gap: .4rem;
     }
-
     .fp-eyebrow::before {
         content: '';
         display: block;
@@ -1100,7 +957,6 @@
         background: linear-gradient(90deg,#E8175D,#FF2D78);
         border-radius: 2px;
     }
-
     .fp-title {
         font-family: 'DM Serif Display', Georgia, serif;
         font-size: 1.95rem;
@@ -1110,18 +966,14 @@
         letter-spacing: -.02em;
         margin-bottom: .6rem;
     }
-
     .fp-title em { font-style: italic; color: #E8175D; }
-
     .fp-sub {
         font-size: .85rem;
         color: #7a5f6e;
         line-height: 1.65;
         margin-bottom: 1.4rem;
     }
-
     .fp-role-row { display: flex; flex-direction: column; gap: .7rem; }
-
     .fp-role-btn {
         display: flex;
         align-items: center;
@@ -1136,7 +988,6 @@
         position: relative;
         overflow: hidden;
     }
-
     .fp-role-btn::before {
         content: '';
         position: absolute;
@@ -1145,16 +996,13 @@
         opacity: 0;
         transition: opacity .2s;
     }
-
     .fp-role-btn:hover {
         border-color: #FFB0CE;
         transform: translateY(-1px);
         box-shadow: 0 4px 16px rgba(232,23,93,.12);
     }
-
     .fp-role-btn:hover::before { opacity: 1; }
     .fp-role-btn:active { transform: translateY(0); }
-
     .fp-role-icon {
         width: 42px; height: 42px;
         flex-shrink: 0;
@@ -1164,25 +1012,20 @@
         align-items: center;
         justify-content: center;
     }
-
     .fp-role-icon img {
         width: 22px; height: 22px;
         object-fit: contain;
         filter: brightness(0) invert(1);
     }
-
     .fp-role-name { font-size: .86rem; font-weight: 700; color: #1a1a2e; }
     .fp-role-desc { font-size: .72rem; color: #7a5f6e; margin-top: .1rem; }
-
     .fp-arrow {
         margin-left: auto;
         flex-shrink: 0;
         color: #CA5D86;
         transition: transform .2s, opacity .2s;
     }
-
     .fp-role-btn:hover .fp-arrow { transform: translateX(3px); opacity: .7; }
-
     .fp-back {
         display: inline-flex;
         align-items: center;
@@ -1197,11 +1040,8 @@
         margin-bottom: 1.2rem;
         transition: color .2s;
     }
-
     .fp-back:hover { color: #E8175D; }
-
     .fp-field { margin-bottom: 1.1rem; }
-
     .fp-field label {
         display: block;
         font-size: .76rem;
@@ -1209,9 +1049,7 @@
         color: #1a1a2e;
         margin-bottom: .4rem;
     }
-
     .fp-input-wrap { position: relative; }
-
     .fp-input-wrap::after {
         content: '';
         position: absolute;
@@ -1223,9 +1061,7 @@
         transition: left .25s ease, right .25s ease;
         pointer-events: none;
     }
-
     .fp-input-wrap:focus-within::after { left: 1px; right: 1px; }
-
     .fp-input-icon {
         position: absolute;
         left: .85rem; top: 50%;
@@ -1234,7 +1070,6 @@
         pointer-events: none;
         opacity: .35;
     }
-
     .fp-input {
         width: 100%;
         padding: .7rem .85rem .7rem 2.55rem;
@@ -1247,10 +1082,8 @@
         outline: none;
         transition: border-color .2s, background .2s;
     }
-
     .fp-input:focus { border-color: #FF2D78; background: #fff; }
     .fp-input::placeholder { color: #B5B7C0; }
-
     .fp-eye-btn {
         position: absolute;
         right: .8rem; top: 50%;
@@ -1262,15 +1095,12 @@
         align-items: center;
         cursor: pointer;
     }
-
     .fp-eye-btn img {
         width: 18px; height: 18px;
         opacity: .35;
         transition: opacity .2s;
     }
-
     .fp-eye-btn:hover img { opacity: .8; }
-
     .fp-strength-bar {
         height: 3px;
         background: #E5ECF6;
@@ -1278,14 +1108,12 @@
         margin-top: .55rem;
         overflow: hidden;
     }
-
     #fp-strength-fill {
         height: 100%;
         width: 0%;
         border-radius: 3px;
         transition: width .35s ease, background .35s ease;
     }
-
     .fp-strength-label {
         font-size: .7rem;
         font-weight: 600;
@@ -1293,14 +1121,12 @@
         height: .9rem;
         transition: color .3s;
     }
-
     .fp-requirements {
         margin-top: .65rem;
         display: flex;
         flex-direction: column;
         gap: .28rem;
     }
-
     .fp-req {
         display: flex;
         align-items: center;
@@ -1310,9 +1136,7 @@
         font-weight: 500;
         transition: color .25s;
     }
-
     .fp-req.met { color: #16a34a; }
-
     .fp-req-dot {
         width: 7px; height: 7px;
         border-radius: 50%;
@@ -1320,9 +1144,7 @@
         flex-shrink: 0;
         transition: background .25s;
     }
-
     .fp-req.met .fp-req-dot { background: #16a34a; }
-
     .fp-btn-primary {
         width: 100%;
         padding: .75rem 1.2rem;
@@ -1342,10 +1164,8 @@
         gap: .5rem;
         margin-top: .4rem;
     }
-
     .fp-btn-primary:hover { opacity: .9; transform: translateY(-1px); }
     .fp-btn-primary:active { transform: translateY(0); }
-
     .fp-btn-outline {
         width: 100%;
         padding: .72rem 1.2rem;
@@ -1360,10 +1180,8 @@
         transition: background .2s, color .2s, transform .15s;
         margin-top: .6rem;
     }
-
     .fp-btn-outline:hover { background: #E8175D; color: #fff; transform: translateY(-1px); }
     .fp-btn-outline:active { transform: translateY(0); }
-
     .fp-alert {
         display: flex;
         align-items: center;
@@ -1377,9 +1195,7 @@
         color: #E8175D;
         margin-bottom: .9rem;
     }
-
     .fp-alert img { width: 15px; height: 15px; flex-shrink: 0; }
-
     .fp-loader {
         width: 16px; height: 16px;
         border: 2.5px solid rgba(255,255,255,.35);
@@ -1388,9 +1204,7 @@
         animation: fpSpin .7s linear infinite;
         display: inline-block;
     }
-
     .fp-success-wrap { text-align: center; padding: .8rem 0 .4rem; }
-
     .fp-success-icon {
         width: 64px; height: 64px;
         background: linear-gradient(135deg,#E8175D,#FF2D78);
@@ -1402,21 +1216,18 @@
         box-shadow: 0 10px 32px rgba(232,23,93,.35);
         animation: fpPop .4s cubic-bezier(.22,1,.36,1);
     }
-
     .fp-done-title {
         font-family: 'DM Serif Display', Georgia, serif;
         font-size: 1.5rem;
         color: #1a1a2e;
         margin-bottom: .6rem;
     }
-
     .fp-done-sub {
         font-size: .84rem;
         color: #7a5f6e;
         line-height: 1.65;
         margin-bottom: 1.4rem;
     }
-
     .fp-fd-card {
         display: flex;
         align-items: flex-start;
@@ -1427,7 +1238,6 @@
         padding: 1rem 1.1rem;
         margin-bottom: 1.3rem;
     }
-
     .fp-fd-icon-wrap {
         width: 40px; height: 40px;
         flex-shrink: 0;
@@ -1438,20 +1248,15 @@
         justify-content: center;
         margin-top: .1rem;
     }
-
     .fp-fd-icon-wrap img {
         width: 20px; height: 20px;
         object-fit: contain;
         filter: brightness(0) invert(1);
     }
-
     .fp-fd-card-title { font-size: .85rem; font-weight: 700; color: #1a1a2e; margin-bottom: .25rem; }
     .fp-fd-card-desc  { font-size: .78rem; color: #7a5f6e; line-height: 1.6; }
-
     .fp-fd-steps { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.2rem; }
-
     .fp-fd-step { display: flex; align-items: flex-start; gap: .85rem; }
-
     .fp-fd-step-num {
         width: 26px; height: 26px;
         flex-shrink: 0;
@@ -1466,45 +1271,35 @@
         box-shadow: 0 3px 10px rgba(232,23,93,.3);
         margin-top: .05rem;
     }
-
     .fp-fd-step-text { font-size: .82rem; color: #7a5f6e; line-height: 1.6; }
-
     @keyframes fpFadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes fpSlideUp { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes fpSpin    { to { transform: rotate(360deg); } }
     @keyframes fpPop     { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
     @media (max-width: 480px) {
         #fp-sheet { padding: 1.8rem 1.5rem 2rem; border-radius: 18px; }
         .fp-title { font-size: 1.65rem; }
     }
 </style>
-
-
 <div class="left" id="left-panel">
-
     <div class="ring ring-1"></div>
     <div class="ring ring-2"></div>
     <div class="ring ring-3"></div>
-
     <div class="dot-grid">
         @for ($i = 0; $i < 30; $i++)
             <span></span>
         @endfor
     </div>
-
     <div class="student-wrap" id="student-wrap">
         <img src="{{ asset('images/girl.png') }}" alt="Student" class="student-img" id="student-normal">
         <img src="{{ asset('images/girl-cover.png') }}" alt="Student covering eyes" class="student-img student-img-cover" id="student-cover">
     </div>
-
     <a href="{{ route('home') }}" class="left-logo" style="text-decoration:none;">
         <div class="logo-mark">
             <img src="{{ asset('images/logo.png') }}" alt="DormEase">
         </div>
         <div class="logo-text">Dorm<span>Ease</span></div>
     </a>
-
     <div class="left-body">
         <h1>
             <span class="h1-line h1-line-1">Manage with</span>
@@ -1512,7 +1307,6 @@
             <span class="h1-line h1-line-3"><em>confidence.</em></span>
         </h1>
         <p>Keeping up with tenants, rooms, and requests has never been this straightforward. Everything in one place, the way it should be.</p>
-
         <div class="feature-strip" id="feature-strip">
             <div class="feature-strip-icon" id="feature-icon">
                 <img src="{{ asset('icons/bed.png') }}" alt="" id="feature-img">
@@ -1522,15 +1316,10 @@
             </div>
         </div>
     </div>
-
     <div class="left-footer">&copy; {{ date('Y') }} DormEase. All rights reserved.</div>
-
 </div>
-
-
 <div class="right">
     <div class="form-wrap">
-
         <div class="form-header">
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
                 <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
@@ -1541,9 +1330,7 @@
             </h2>
             <p class="form-header-sub">Select your role and sign in with your credentials to continue.</p>
         </div>
-
         <span class="role-label">Sign in as</span>
-
         <div class="role-row">
             <button type="button" class="role-btn {{ old('role', 'admin') === 'admin' ? 'active' : '' }}" id="role-admin" onclick="setRole('admin')">
                 <div class="role-icon">
@@ -1554,7 +1341,6 @@
                     <div class="role-desc">Full access</div>
                 </div>
             </button>
-
             <button type="button" class="role-btn {{ old('role') === 'frontdesk' ? 'active' : '' }}" id="role-frontdesk" onclick="setRole('frontdesk')">
                 <div class="role-icon">
                     <img src="{{ asset('icons/staff.png') }}" alt="Front Desk">
@@ -1565,12 +1351,9 @@
                 </div>
             </button>
         </div>
-
         <form method="POST" action="/login" id="login-form">
             @csrf
-
             <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
-
             <div class="field">
                 <label for="email">Email Address</label>
                 <div class="input-wrap">
@@ -1594,7 +1377,6 @@
                     <span id="email-error-text">{{ $errors->first('email') }}</span>
                 </div>
             </div>
-
             <div class="field">
                 <label for="password">Password</label>
                 <div class="input-wrap">
@@ -1632,7 +1414,6 @@
                     <span id="pw-error-text"></span>
                 </div>
             </div>
-
             <div class="field-row">
                 <label class="remember">
                     <input type="checkbox" name="remember" id="remember-cb" aria-label="Remember me">
@@ -1643,31 +1424,24 @@
                 </label>
                 <a href="#" class="forgot" onclick="event.preventDefault(); openFP()">Forgot password?</a>
             </div>
-
             <button type="submit" class="de-btn-primary" id="login-btn">
                 <span id="login-btn-text">Sign In</span>
                 <span class="btn-spinner" id="login-spinner"></span>
             </button>
         </form>
-
     </div>
 </div>
-
-
 <div id="fp-overlay" style="display:none;" onclick="if(event.target===this)closeFP()">
     <div id="fp-sheet">
-
         <button id="fp-close" type="button" onclick="closeFP()" aria-label="Close">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <path d="M2 2L16 16M16 2L2 16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
             </svg>
         </button>
-
         <div id="fp-step-role">
             <div class="fp-eyebrow">Account Recovery</div>
             <h3 class="fp-title">Reset your<br><em>password</em></h3>
             <p class="fp-sub">First, tell us which role your account belongs to.</p>
-
             <div class="fp-role-row">
                 <button type="button" class="fp-role-btn" onclick="fpSetRole('admin')">
                     <div class="fp-role-icon"><img src="{{ asset('icons/admin.png') }}" alt="Admin"></div>
@@ -1679,7 +1453,6 @@
                         <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-
                 <button type="button" class="fp-role-btn" onclick="fpSetRole('frontdesk')">
                     <div class="fp-role-icon"><img src="{{ asset('icons/staff.png') }}" alt="Front Desk"></div>
                     <div>
@@ -1692,7 +1465,6 @@
                 </button>
             </div>
         </div>
-
         <div id="fp-step-admin" style="display:none;">
             <button type="button" class="fp-back" onclick="fpBack('admin')">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -1700,10 +1472,8 @@
                 </svg>
                 Back
             </button>
-
             <div class="fp-eyebrow">Admin Recovery</div>
             <h3 class="fp-title">Reset your<br><em>password</em></h3>
-
             <div id="fp-admin-email-step">
                 <p class="fp-sub">Enter your admin email address to verify your account.</p>
                 <div id="fp-admin-err" class="fp-alert" style="display:none;">
@@ -1721,7 +1491,6 @@
                     <span id="fp-verify-loader" class="fp-loader" style="display:none;"></span>
                 </button>
             </div>
-
             <div id="fp-admin-pw-step" style="display:none;">
                 <p class="fp-sub">Choose a strong new password for your account.</p>
                 <div id="fp-pw-err" class="fp-alert" style="display:none;">
@@ -1766,7 +1535,6 @@
                     <span id="fp-reset-loader" class="fp-loader" style="display:none;"></span>
                 </button>
             </div>
-
             <div id="fp-admin-done" style="display:none;">
                 <div class="fp-success-wrap">
                     <div class="fp-success-icon">
@@ -1780,7 +1548,6 @@
                 </div>
             </div>
         </div>
-
         <div id="fp-step-frontdesk" style="display:none;">
             <button type="button" class="fp-back" onclick="fpBack('frontdesk')">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -1788,10 +1555,8 @@
                 </svg>
                 Back
             </button>
-
             <div class="fp-eyebrow">Staff Recovery</div>
             <h3 class="fp-title">Contact your<br><em>Admin</em></h3>
-
             <div class="fp-fd-card">
                 <div class="fp-fd-icon-wrap"><img src="{{ asset('icons/lock.png') }}" alt=""></div>
                 <div class="fp-fd-card-body">
@@ -1799,7 +1564,6 @@
                     <div class="fp-fd-card-desc">Ask your admin to reset your account. They will generate a temporary password for you to use.</div>
                 </div>
             </div>
-
             <div class="fp-fd-steps">
                 <div class="fp-fd-step">
                     <div class="fp-fd-step-num">1</div>
@@ -1814,14 +1578,10 @@
                     <div class="fp-fd-step-text">Use that temporary password to log in. You will be prompted to set a personal password right away.</div>
                 </div>
             </div>
-
             <button type="button" class="fp-btn-outline" onclick="closeFP()">Got it, I'll contact admin</button>
         </div>
-
     </div>
 </div>
-
-
 <script>
     var features = [
         { text: 'Room Management',     icon: "{{ asset('icons/bed.png') }}" },
@@ -1833,7 +1593,6 @@
     var fIdx = 0, fCharIdx = 0, fDeleting = false, fPause = 0;
     var fTextEl = document.getElementById('feature-text');
     var fImgEl  = document.getElementById('feature-img');
-
     function typeFeature() {
         var current = features[fIdx].text;
         if (fPause > 0) { fPause--; setTimeout(typeFeature, 80); return; }
@@ -1855,10 +1614,8 @@
         }
     }
     setTimeout(typeFeature, 900);
-
     var leftPanel  = document.getElementById('left-panel');
     var studentWrap = document.getElementById('student-wrap');
-
     leftPanel.addEventListener('mousemove', function (e) {
         var rect = leftPanel.getBoundingClientRect();
         var cx   = rect.width  / 2;
@@ -1867,11 +1624,9 @@
         var dy   = (e.clientY - rect.top  - cy) / cy;
         studentWrap.style.transform = 'translateX(' + (dx * 14) + 'px) translateY(' + (dy * 8) + 'px)';
     });
-
     leftPanel.addEventListener('mouseleave', function () {
         studentWrap.style.transform = '';
     });
-
     (function () {
         var cards = document.querySelectorAll('.role-btn');
         cards.forEach(function (card) {
@@ -1890,7 +1645,6 @@
             card.addEventListener('mouseup', function () { card.style.transform = ''; });
         });
     })();
-
     (function () {
         var pwInput = document.getElementById('password');
         var normal  = document.getElementById('student-normal');
@@ -1899,9 +1653,7 @@
         pwInput.addEventListener('focus', function () { normal.style.opacity = '0'; cover.style.opacity = '1'; });
         pwInput.addEventListener('blur',  function () { normal.style.opacity = '1'; cover.style.opacity = '0'; });
     })();
-
     var fpAdminEmail = '';
-
     function setRole(role, skipAnim) {
         ['admin', 'frontdesk'].forEach(function (r) {
             document.getElementById('role-' + r).classList.toggle('active', r === role);
@@ -1925,12 +1677,10 @@
         }, 220);
         setTimeout(function () { eyebrow.classList.add('line-drawn'); }, 280);
     }
-
     (function () {
         var saved = document.getElementById('role-input').value;
         if (saved) setRole(saved, true);
     })();
-
     document.querySelectorAll('.role-btn').forEach(function (btn) {
         btn.addEventListener('click', function (e) {
             var r    = document.createElement('span');
@@ -1944,7 +1694,6 @@
             setTimeout(function () { r.remove(); }, 500);
         });
     });
-
     function togglePw() {
         var input = document.getElementById('password');
         var icon  = document.getElementById('pw-eye-icon');
@@ -1952,66 +1701,53 @@
         input.type = show ? 'text' : 'password';
         icon.src   = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
     }
-
     (function () {
         var pwInput  = document.getElementById('password');
         var capsIcon = document.getElementById('caps-icon');
-
         function checkCaps(e) {
             var caps = e.getModifierState && e.getModifierState('CapsLock');
             capsIcon.classList.toggle('visible', !!caps);
         }
-
         pwInput.addEventListener('keyup',  checkCaps);
         pwInput.addEventListener('keydown', checkCaps);
         pwInput.addEventListener('focus', function (e) { checkCaps(e); });
         pwInput.addEventListener('blur',  function () { capsIcon.classList.remove('visible'); });
     })();
-
     var emailInput    = document.getElementById('email');
     var emailFieldErr = document.getElementById('email-field-error');
     var emailErrText  = document.getElementById('email-error-text');
-
     function isValidEmail(v) {
         return /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v);
     }
-
     function showEmailErr(msg) {
         emailErrText.textContent = msg;
         emailFieldErr.classList.add('visible');
         emailInput.style.borderColor = 'var(--hot-pink)';
     }
-
     function clearEmailErr() {
         emailFieldErr.classList.remove('visible');
         emailInput.style.borderColor = '';
     }
-
     function showPwErr(msg) {
         document.getElementById('pw-error-text').textContent = msg;
         document.getElementById('pw-field-error').classList.add('visible');
         document.getElementById('password').style.borderColor = 'var(--hot-pink)';
     }
-
     function clearPwErr() {
         document.getElementById('pw-field-error').classList.remove('visible');
         document.getElementById('password').style.borderColor = '';
     }
-
     emailInput.addEventListener('input', function () {
         clearEmailErr();
     });
-
     emailInput.addEventListener('blur', function () {
         var val = this.value.trim();
         if (!val) { clearEmailErr(); return; }
         if (!isValidEmail(val)) showEmailErr('Invalid email format.');
     });
-
     document.getElementById('password').addEventListener('input', function () {
         clearPwErr();
     });
-
     @if ($errors->has('email'))
         (function () {
             var inp = document.getElementById('email');
@@ -2022,16 +1758,13 @@
             }, { once: true });
         })();
     @endif
-
     document.getElementById('login-btn').addEventListener('click', function () {
         var form     = document.getElementById('login-form');
         var emailVal = emailInput.value.trim();
         var pwVal    = document.getElementById('password').value;
         var valid    = true;
-
         clearEmailErr();
         clearPwErr();
-
         if (!emailVal) {
             showEmailErr('This field is required.');
             valid = false;
@@ -2039,30 +1772,24 @@
             showEmailErr('Invalid email format.');
             valid = false;
         }
-
         if (!pwVal) {
             showPwErr('This field is required.');
             valid = false;
         }
-
         if (!valid) return;
-
         var btn = this;
         btn.disabled = true;
         document.getElementById('login-btn-text').style.display = 'none';
         document.getElementById('login-spinner').style.display  = 'inline-block';
-
         var timeout = setTimeout(function () {
             btn.disabled = false;
             document.getElementById('login-btn-text').style.display = 'inline';
             document.getElementById('login-spinner').style.display  = 'none';
             showEmailErr('Connection timed out. Try again.');
         }, 12000);
-
         form.addEventListener('submit', function () { clearTimeout(timeout); }, { once: true });
         form.submit();
     });
-
     function openFP() {
         document.getElementById('fp-overlay').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -2073,20 +1800,17 @@
             if (first) first.focus();
         }, 50);
     }
-
     function closeFP() {
         document.getElementById('fp-overlay').style.display = 'none';
         document.body.style.overflow = '';
         document.removeEventListener('keydown', fpKeyHandler);
     }
-
     function getFocusable() {
         var sheet = document.getElementById('fp-sheet');
         return Array.from(sheet.querySelectorAll(
             'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
         )).filter(function (el) { return el.offsetParent !== null; });
     }
-
     function fpKeyHandler(e) {
         if (e.key === 'Escape') { closeFP(); return; }
         if (e.key !== 'Tab') return;
@@ -2100,7 +1824,6 @@
             if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
         }
     }
-
     function fpResetAll() {
         document.getElementById('fp-step-role').style.display        = '';
         document.getElementById('fp-step-admin').style.display       = 'none';
@@ -2117,17 +1840,14 @@
         fpVerifyInFlight = false;
         fpResetInFlight  = false;
     }
-
     function fpSetRole(role) {
         document.getElementById('fp-step-role').style.display    = 'none';
         document.getElementById('fp-step-' + role).style.display = '';
     }
-
     function fpBack(role) {
         document.getElementById('fp-step-' + role).style.display = 'none';
         document.getElementById('fp-step-role').style.display    = '';
     }
-
     function fpShowErr(id, msg) {
         var el   = document.getElementById(id);
         var span = el.querySelector('span');
@@ -2135,9 +1855,7 @@
         else el.textContent = msg;
         el.style.display = 'flex';
     }
-
     function fpHideErr(id) { document.getElementById(id).style.display = 'none'; }
-
     function fpTogglePw(inputId, btn) {
         var input = document.getElementById(inputId);
         var img   = btn.querySelector('img');
@@ -2145,7 +1863,6 @@
         input.type = show ? 'text' : 'password';
         if (img) img.src = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
     }
-
     function fpCheckStrength(pw) {
         var score = 0;
         if (pw.length >= 8)          score++;
@@ -2154,7 +1871,6 @@
         if (/[^A-Za-z0-9]/.test(pw)) score++;
         return score;
     }
-
     document.getElementById('fp-new-pw').addEventListener('input', function () {
         var val    = this.value;
         var score  = fpCheckStrength(val);
@@ -2177,13 +1893,11 @@
         toggle('req-number',  /[0-9]/.test(val));
         toggle('req-special', /[^A-Za-z0-9]/.test(val));
     });
-
     function fpGetCsrf() {
         var meta  = document.querySelector('meta[name="csrf-token"]');
         var input = document.querySelector('input[name="_token"]');
         return meta ? meta.content : (input ? input.value : '');
     }
-
     var fpVerifyInFlight = false;
     function fpVerifyAdmin() {
         if (fpVerifyInFlight) return;
@@ -2224,7 +1938,6 @@
             fpShowErr('fp-admin-err', 'Something went wrong. Please try again.');
         });
     }
-
     var fpResetInFlight = false;
     function fpResetAdminPassword() {
         if (fpResetInFlight) return;
@@ -2282,18 +1995,15 @@
             fpShowErr('fp-pw-err', 'Something went wrong. Please try again.');
         });
     }
-
    (function () {
         var fpNewPw      = document.getElementById('fp-new-pw');
         var fpConfirmPw  = document.getElementById('fp-confirm-pw');
         var fpCapsNew    = document.getElementById('fp-caps-icon');
         var fpCapsConf   = document.getElementById('fp-confirm-caps-icon');
-
         function checkFpCaps(e, iconEl) {
             var caps = e.getModifierState && e.getModifierState('CapsLock');
             iconEl.style.display = caps ? 'inline-flex' : 'none';
         }
-
         ['keyup', 'keydown', 'focus'].forEach(function(evt) {
             if (fpNewPw && fpCapsNew) {
                 fpNewPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsNew); });
@@ -2302,7 +2012,6 @@
                 fpConfirmPw.addEventListener(evt, function(e) { checkFpCaps(e, fpCapsConf); });
             }
         });
-
         if (fpNewPw && fpCapsNew) {
             fpNewPw.addEventListener('blur', function() { fpCapsNew.style.display = 'none'; });
         }
@@ -2310,11 +2019,9 @@
             fpConfirmPw.addEventListener('blur', function() { fpCapsConf.style.display = 'none'; });
         }
     })();
-
     document.getElementById('remember-cb').addEventListener('change', function () {
         document.getElementById('remember-track').setAttribute('aria-checked', this.checked ? 'true' : 'false');
     });
 </script>
-
 </body>
 </html>
