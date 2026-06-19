@@ -715,9 +715,9 @@
                 <img src="{{ asset('icons/pending.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Scheduled Announcements</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','scheduled')->count() }}</div>
-                <div class="ann-stat-sub">Waiting to publish</div>
+                <div class="ann-stat-label">Posted This Week</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->filter(fn ($a) => \Carbon\Carbon::parse($a->posted_at ?? $a->created_at)->isCurrentWeek())->count() }}</div>
+                <div class="ann-stat-sub">New since Sunday</div>
             </div>
         </div>
     </div>

@@ -60,7 +60,12 @@ class AnnouncementController extends Controller
             'priority'     => 'nullable|in:low,moderate,high',
             'status'       => 'nullable|in:active,closed,scheduled',
             'scheduled_at' => 'nullable|date|after:now',
-            'files.*'      => 'nullable|file|max:5120',
+            'files'        => 'nullable|array|max:10',
+            'files.*'      => 'nullable|file|mimes:png,jpg,jpeg,pdf,docx|max:5120',
+        ], [
+            'files.max'      => 'You can attach up to 10 files at a time.',
+            'files.*.mimes'  => 'Each file must be a PNG, JPG, PDF, or DOCX.',
+            'files.*.max'    => 'Each file must not exceed 5 MB.',
         ]);
 
         $attachment = null;
@@ -133,7 +138,12 @@ class AnnouncementController extends Controller
             'priority'     => 'nullable|in:low,moderate,high',
             'status'       => 'nullable|in:active,closed,scheduled',
             'scheduled_at' => 'nullable|date',
-            'files.*'      => 'nullable|file|max:5120',
+            'files'        => 'nullable|array|max:10',
+            'files.*'      => 'nullable|file|mimes:png,jpg,jpeg,pdf,docx|max:5120',
+        ], [
+            'files.max'      => 'You can attach up to 10 files at a time.',
+            'files.*.mimes'  => 'Each file must be a PNG, JPG, PDF, or DOCX.',
+            'files.*.max'    => 'Each file must not exceed 5 MB.',
         ]);
 
         $attachment = $announcement->attachment;
