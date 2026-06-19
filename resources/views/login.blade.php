@@ -44,7 +44,7 @@
         font-family: var(--ff-body);
         display: flex;
         min-height: 100vh;
-        overflow-y: auto;
+        overflow: hidden;
         background: #fff;
     }
 
@@ -355,11 +355,11 @@
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: safe center;
+        justify-content: safe center;
         padding: 2.5rem 3.5rem;
         position: relative;
-        overflow: hidden;
+        overflow-y: auto;
     }
 
     .right::before {
