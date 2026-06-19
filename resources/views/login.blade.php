@@ -353,16 +353,22 @@
             linear-gradient(to right, rgba(232,23,93,.08) 0%, transparent 38%),
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 2rem 3.5rem;
         position: relative;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
         scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
+    }
+
+    .right-inner {
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 3.5rem;
+        box-sizing: border-box;
     }
 
     .right::-webkit-scrollbar {
@@ -383,7 +389,7 @@
     }
 
     .form-wrap {
-        margin: auto;
+        margin: 0;
     }
 
     .right::before {
@@ -1026,12 +1032,94 @@
         to   { opacity: 1; transform: translateX(0); }
     }
 
+    /* Scale down elements on small viewport heights to prevent scrolling / overflow */
+    @media (max-height: 840px) and (min-width: 821px) {
+        .right-inner {
+            padding: 1.5rem 3.5rem;
+        }
+        .form-wrap {
+            padding: 1.8rem 1.6rem;
+            border-radius: 18px;
+        }
+        .form-header {
+            margin-bottom: 0.8rem;
+        }
+        .form-header h2 {
+            font-size: 1.8rem;
+        }
+        .form-header p {
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+        }
+        .role-label {
+            margin-bottom: 0.4rem;
+            font-size: 0.74rem;
+        }
+        .role-row {
+            margin-bottom: 0.8rem;
+            gap: 0.5rem;
+        }
+        .role-btn {
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+        }
+        .role-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+        .role-icon img {
+            width: 16px;
+            height: 16px;
+        }
+        .role-name {
+            font-size: 0.8rem;
+        }
+        .role-desc {
+            font-size: 0.68rem;
+        }
+        .field {
+            margin-bottom: 0.6rem;
+        }
+        .field label {
+            font-size: 0.74rem;
+            margin-bottom: 0.35rem;
+        }
+        .de-input {
+            padding: 0.6rem 0.8rem 0.6rem 2.4rem;
+            font-size: 0.82rem;
+        }
+        .input-icon {
+            left: 0.8rem;
+            width: 16px;
+            height: 16px;
+        }
+        .field-error {
+            height: 0.85rem;
+            line-height: 0.85rem;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+        }
+        .field-row {
+            margin-bottom: 0.7rem;
+        }
+        .remember-label, .forgot {
+            font-size: 0.78rem;
+        }
+        .de-btn-primary {
+            padding: 0.65rem 1.2rem;
+            font-size: 0.86rem;
+            margin-top: 0.1rem;
+        }
+    }
+
     @media (max-width: 820px) {
         body { flex-direction: column; overflow: auto; height: auto; min-height: 100vh; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: flex-start; overflow-y: visible; }
+        .right { width: 100%; padding: 0; overflow-y: visible; }
+        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
@@ -1041,7 +1129,7 @@
         .left-body h1 { font-size: 1.5rem; }
         .left-body p { display: none; }
         .feature-strip { display: none; }
-        .right { padding: 1.5rem 1rem 2.5rem; }
+        .right-inner { padding: 1.5rem 1rem 2.5rem; }
         .form-wrap { padding: 1.6rem 1.2rem; border-radius: 16px; }
         .form-header h2 { font-size: 1.7rem; }
         .role-row { gap: .4rem; }
@@ -1554,7 +1642,8 @@
 
 
 <div class="right">
-    <div class="form-wrap">
+    <div class="right-inner">
+        <div class="form-wrap">
 
         <div class="form-header">
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
@@ -1675,6 +1764,7 @@
             </button>
         </form>
 
+    </div>
     </div>
 </div>
 
