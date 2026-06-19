@@ -1136,6 +1136,19 @@
 
     .kw-search-bar { padding: 0 1.1rem .8rem; flex-shrink: 0; }
 
+    .kw-summary-bar {
+        padding: 0 1.1rem .6rem;
+        font-size: .72rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .kw-summary-bar strong {
+        color: var(--hot-pink);
+        font-weight: 800;
+    }
+
     .kw-search-inner { position: relative; display: flex; align-items: center; }
 
     .kw-search-inner input {
@@ -1876,6 +1889,7 @@
                 Built-in Rules <span class="kw-tab-count" id="kwcount-reference">0</span>
             </button>
         </div>
+        <div class="kw-summary-bar" id="kw-summary-bar"></div>
         <div class="kw-search-bar" style="display:flex;gap:.5rem;">
             <div class="kw-search-inner" style="flex:1;">
                 <img src="{{ asset('icons/search.png') }}" class="kw-search-icon" alt="">
@@ -2762,6 +2776,9 @@
             return sum + (rule.keywords ? rule.keywords.length : 0);
         }, 0);
         document.getElementById('kwcount-reference').textContent = refCount;
+        const totalCount = refCount + trainedKeywords.length;
+        document.getElementById('kw-summary-bar').innerHTML =
+            '<strong>' + refCount + '</strong> built-in + <strong>' + trainedKeywords.length + '</strong> trained = <strong>' + totalCount + '</strong> active keyword rules';
         if (kwActiveTab === 'pending') {
             renderPendingTerms();
         } else if (kwActiveTab === 'trained') {
