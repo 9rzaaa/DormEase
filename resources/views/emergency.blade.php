@@ -972,82 +972,215 @@
         line-height: 1.45;
     }
 
-    .kw-tabs {
+    .kw-modal-header-row {
         display: flex;
-        gap: 0;
-        padding: 0 1.1rem;
-        border-top: 1.5px solid var(--pink-100);
-        border-bottom: 1.5px solid var(--pink-100);
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .8rem;
+    }
+
+    .kw-modal-icon-badge {
+        width: 38px; height: 38px;
+        border-radius: 11px;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(232,23,93,.3);
+    }
+
+    .kw-modal-icon-badge img {
+        width: 19px; height: 19px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+    }
+
+    .kw-modal-title-block { display: flex; flex-direction: column; gap: .1rem; }
+
+    .kw-modal-sub {
+        font-size: .76rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .kw-help-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        background: var(--pink-100);
+        color: var(--hot-pink);
+        font-size: .68rem;
+        font-weight: 800;
+        cursor: pointer;
+        flex-shrink: 0;
+        user-select: none;
+        transition: background .2s, color .2s;
+    }
+
+    .kw-help-wrap:hover { background: var(--bright-pink); color: var(--white); }
+
+    .kw-help-popup {
+        display: none;
+        position: fixed;
+        background: var(--ink);
+        color: var(--white);
+        border-radius: 10px;
+        padding: .6rem .75rem;
+        font-size: .73rem;
+        font-weight: 500;
+        line-height: 1.5;
+        max-width: 260px;
+        z-index: 9999;
+        box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    }
+
+    .kw-help-popup::before {
+        content: '';
+        position: absolute;
+        top: -5px; left: 14px;
+        width: 10px; height: 10px;
+        background: var(--ink);
+        transform: rotate(45deg);
+    }
+
+    .kw-segmented {
+        display: flex;
+        gap: .25rem;
+        padding: .9rem 1.1rem .8rem;
         flex-shrink: 0;
         background: var(--white);
     }
 
     .kw-tab {
+        flex: 1;
         position: relative;
-        padding: .7rem .9rem;
+        padding: .55rem .7rem;
         font-size: .78rem;
         font-weight: 700;
         color: var(--ink-muted);
-        background: none;
-        border: none;
-        margin-bottom: -1.5px;
+        background: var(--blush);
+        border: 1.5px solid transparent;
+        border-radius: 10px;
         cursor: pointer;
         font-family: var(--ff-body);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: .4rem;
+        transition: .2s;
     }
 
-    .kw-tab::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 50%;
-        transform: translateX(-50%) scaleX(0);
-        width: 60%; height: 2.5px;
-        background: var(--hot-pink);
-        border-radius: 2px 2px 0 0;
-        transition: transform .22s ease;
-    }
+    .kw-tab:hover { border-color: var(--pink-200); }
 
-    .kw-tab.active { color: var(--hot-pink); }
-    .kw-tab.active::after { transform: translateX(-50%) scaleX(1); }
+    .kw-tab.active {
+        background: var(--gradient-pink);
+        color: var(--white);
+        box-shadow: 0 6px 16px rgba(232,23,93,.25);
+    }
 
     .kw-tab-count {
-        font-size: .65rem; font-weight: 800; padding: .08rem .4rem;
-        border-radius: 99px; background: var(--pink-100); color: var(--hot-pink);
+        font-size: .65rem; font-weight: 800; padding: .08rem .42rem;
+        border-radius: 99px; background: rgba(255,255,255,.85); color: var(--hot-pink);
     }
+
+    .kw-tab.active .kw-tab-count { background: rgba(255,255,255,.3); color: var(--white); }
+
+    .kw-search-bar { padding: 0 1.1rem .8rem; flex-shrink: 0; }
+
+    .kw-search-inner { position: relative; display: flex; align-items: center; }
+
+    .kw-search-inner input {
+        width: 100%;
+        padding: .5rem .85rem .5rem 2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-100);
+        background: #fffafd;
+        color: var(--ink);
+        font-size: .82rem;
+        font-family: var(--ff-body);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .kw-search-inner input:focus {
+        border-color: var(--bright-pink);
+        box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+    }
+
+    .kw-search-icon { position: absolute; left: .65rem; width: 13px; height: 13px; opacity: .35; pointer-events: none; }
 
     .kw-list {
         flex: 1; overflow-y: auto;
-        padding: 1rem 1.1rem;
-        display: flex; flex-direction: column; gap: .7rem;
+        padding: 0 1.1rem 1.1rem;
+        display: flex; flex-direction: column; gap: .75rem;
+        scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
     }
 
+    .kw-list::-webkit-scrollbar { width: 4px; }
+    .kw-list::-webkit-scrollbar-track { background: transparent; }
+    .kw-list::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
     .kw-card {
-        background: var(--blush);
+        position: relative;
+        background: var(--white);
         border: 1.5px solid var(--pink-100);
-        border-radius: 14px;
-        padding: .85rem .95rem;
+        border-radius: 16px;
+        padding: 1rem 1.1rem 1.1rem 1.3rem;
+        overflow: hidden;
+        animation: kwCardIn .3s ease both;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .kw-card:hover { border-color: var(--pink-200); box-shadow: 0 8px 22px rgba(232,23,93,.08); }
+
+    .kw-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        width: 4px;
+        background: var(--gradient-pink);
+    }
+
+    @keyframes kwCardIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .kw-card-label-row {
+        display: flex; align-items: center; gap: .4rem;
+        margin-bottom: .5rem;
+    }
+
+    .kw-card-label {
+        font-size: .65rem; font-weight: 800; color: var(--bright-pink);
+        text-transform: uppercase; letter-spacing: .07em;
     }
 
     .kw-card-snippet {
-        font-size: .82rem;
-        color: var(--ink-muted);
-        line-height: 1.5;
-        margin-bottom: .65rem;
+        font-size: .85rem;
+        color: var(--ink);
+        line-height: 1.55;
+        background: var(--blush);
+        border-radius: 10px;
+        padding: .65rem .8rem;
+        margin-bottom: .8rem;
+        font-style: italic;
     }
 
     .kw-word-wrap {
         display: flex;
         flex-wrap: wrap;
-        gap: .3rem;
-        margin-bottom: .65rem;
+        gap: .35rem;
+        margin-bottom: .7rem;
     }
 
     .kw-word {
         display: inline-flex;
-        padding: .25rem .55rem;
-        border-radius: 8px;
+        padding: .3rem .65rem;
+        border-radius: 999px;
         border: 1.5px solid var(--pink-200);
         background: var(--white);
         font-size: .8rem;
@@ -1058,57 +1191,88 @@
         user-select: none;
     }
 
-    .kw-word:hover { border-color: var(--bright-pink); }
+    .kw-word:hover { border-color: var(--bright-pink); transform: translateY(-1px); }
 
     .kw-word.selected {
         background: var(--gradient-pink);
         color: var(--white);
         border-color: transparent;
+        box-shadow: 0 4px 10px rgba(232,23,93,.3);
+    }
+
+    .kw-phrase-preview {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        background: #fff5f9;
+        border: 1.5px dashed var(--pink-200);
+        border-radius: 10px;
+        padding: .5rem .7rem;
+        margin-bottom: .8rem;
+    }
+
+    .kw-phrase-preview-label {
+        font-size: .67rem; font-weight: 800; color: var(--hot-pink);
+        text-transform: uppercase; letter-spacing: .05em;
+        flex-shrink: 0;
     }
 
     .kw-phrase-input {
-        width: 100%;
-        padding: .5rem .75rem;
-        border-radius: 10px;
-        border: 1.5px solid var(--pink-200);
-        background: var(--white);
+        flex: 1;
+        padding: .35rem .1rem;
+        border: none;
+        background: transparent;
         font-size: .85rem;
+        font-weight: 700;
         color: var(--ink);
         outline: none;
-        box-sizing: border-box;
-        margin-bottom: .6rem;
         font-family: var(--ff-body);
+        min-width: 0;
     }
 
-    .kw-phrase-input:focus { border-color: var(--bright-pink); }
+    .kw-field-label {
+        font-size: .67rem; font-weight: 700; color: var(--ink-muted);
+        text-transform: uppercase; letter-spacing: .04em;
+        margin-bottom: .25rem;
+        display: block;
+    }
 
     .kw-card-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: .5rem;
-        margin-bottom: .6rem;
+        gap: .6rem;
+        margin-bottom: .7rem;
     }
 
     .kw-card-row select {
-        padding: .45rem .7rem;
+        width: 100%;
+        padding: .5rem .7rem;
         border-radius: 9px;
         border: 1.5px solid var(--pink-200);
         background: var(--white);
         font-size: .8rem;
+        font-weight: 600;
         color: var(--ink);
         outline: none;
+        box-sizing: border-box;
         font-family: var(--ff-body);
+        cursor: pointer;
+        transition: border-color .2s;
     }
+
+    .kw-card-row select:focus { border-color: var(--bright-pink); }
 
     .kw-checkbox-row {
         display: flex;
         align-items: center;
         gap: .45rem;
-        font-size: .76rem;
+        font-size: .77rem;
         color: var(--ink-muted);
-        margin-bottom: .65rem;
+        margin-bottom: .8rem;
         font-weight: 600;
     }
+
+    .kw-checkbox-row input { accent-color: var(--bright-pink); cursor: pointer; }
 
     .kw-card-actions {
         display: flex;
@@ -1117,7 +1281,7 @@
     }
 
     .kw-btn-ignore {
-        padding: .42rem .85rem;
+        padding: .45rem .9rem;
         border-radius: 9px;
         border: 1.5px solid var(--pink-200);
         background: var(--white);
@@ -1126,12 +1290,13 @@
         font-weight: 700;
         cursor: pointer;
         font-family: var(--ff-body);
+        transition: .2s;
     }
 
-    .kw-btn-ignore:hover { border-color: #e04867; color: #e04867; }
+    .kw-btn-ignore:hover { border-color: #e04867; color: #e04867; background: #fff0f0; }
 
     .kw-btn-save {
-        padding: .42rem .95rem;
+        padding: .45rem 1rem;
         border-radius: 9px;
         border: none;
         background: var(--gradient-pink);
@@ -1140,30 +1305,64 @@
         font-weight: 700;
         cursor: pointer;
         font-family: var(--ff-body);
+        box-shadow: 0 5px 14px rgba(232,23,93,.25);
+        transition: transform .15s, box-shadow .15s;
     }
+
+    .kw-btn-save:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
 
     .kw-trained-card {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: .7rem;
+        gap: .8rem;
         background: var(--white);
         border: 1.5px solid var(--pink-100);
-        border-radius: 12px;
-        padding: .65rem .85rem;
+        border-radius: 14px;
+        padding: .75rem .95rem;
+        animation: kwCardIn .3s ease both;
+        transition: border-color .2s, transform .2s;
     }
 
-    .kw-trained-left { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
-    .kw-trained-phrase { font-size: .85rem; font-weight: 700; color: var(--ink); }
-    .kw-trained-meta { font-size: .72rem; color: var(--ink-muted); }
+    .kw-trained-card:hover { border-color: var(--pink-200); transform: translateX(2px); }
+
+    .kw-trained-left { display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+    .kw-trained-phrase {
+        font-size: .87rem; font-weight: 700; color: var(--ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .kw-trained-meta { display: flex; align-items: center; gap: .4rem; }
+
+    .kw-type-pill {
+        font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+        border-radius: 999px; background: var(--pink-100); color: var(--hot-pink);
+        text-transform: uppercase; letter-spacing: .03em;
+    }
+
+    .kw-urgency-pill {
+        font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+        border-radius: 999px; text-transform: uppercase; letter-spacing: .03em;
+    }
+
+    .kw-urgency-pill.critical { background: #fff0f0; color: #c0303a; }
+    .kw-urgency-pill.urgent { background: #fff8e1; color: #c07800; }
+    .kw-urgency-pill.moderate { background: #eef2ff; color: #4f6ef7; }
 
     .kw-trained-actions { display: flex; gap: .35rem; flex-shrink: 0; }
 
     .kw-empty {
         text-align: center;
-        padding: 2.5rem 1rem;
+        padding: 3rem 1rem;
         color: var(--ink-muted);
         font-size: .85rem;
+    }
+
+    .kw-empty-icon {
+        width: 40px; height: 40px;
+        margin: 0 auto .8rem;
+        opacity: .25;
+        display: block;
     }
 </style>
 @endsection
@@ -1482,12 +1681,23 @@
 </div>
 
 <div class="modal-overlay" id="keyword-modal" onclick="handleOverlayClick(event, 'keyword-modal')">
-    <div class="modal dir-modal" style="max-width:600px;">
+    <div class="modal dir-modal" style="max-width:620px;">
         <div class="modal-header">
-            <div class="modal-title">Keyword Training</div>
-            <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+            <div class="kw-modal-header-row">
+                <div class="kw-modal-icon-badge">
+                    <img src="{{ asset('icons/emergdir.png') }}" alt="">
+                </div>
+                <div class="kw-modal-title-block">
+                    <div class="modal-title">Keyword Training</div>
+                    <div class="kw-modal-sub">Teach the system to recognize unmatched reports</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+                <div class="kw-help-wrap" id="kw-help-trigger">?</div>
+                <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+            </div>
         </div>
-        <div class="kw-tabs">
+        <div class="kw-segmented">
             <button class="kw-tab active" id="kwtab-pending" onclick="switchKwTab('pending')">
                 Pending <span class="kw-tab-count" id="kwcount-pending">0</span>
             </button>
@@ -1495,11 +1705,21 @@
                 Trained Keywords <span class="kw-tab-count" id="kwcount-trained">0</span>
             </button>
         </div>
+        <div class="kw-search-bar">
+            <div class="kw-search-inner">
+                <img src="{{ asset('icons/search.png') }}" class="kw-search-icon" alt="">
+                <input type="text" id="kw-search" placeholder="Search..." oninput="renderKwList()">
+            </div>
+        </div>
         <div class="kw-list" id="kw-list"></div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('keyword-modal')">Close</button>
         </div>
     </div>
+</div>
+
+<div class="kw-help-popup" id="kw-help-popup">
+    Reports that do not match any known keyword land here as Pending. Tap the words in the snippet to build the exact phrase that should trigger a type, then save it. Saved phrases move to Trained Keywords, where you can edit or delete them anytime.
 </div>
 
 @endsection
@@ -2286,6 +2506,34 @@
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
 
+    (function() {
+        var popup = document.getElementById('kw-help-popup');
+        var trigger = document.getElementById('kw-help-trigger');
+        if (!popup || !trigger) return;
+        document.body.appendChild(popup);
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+        var hideTimer = null;
+        function show() {
+            clearTimeout(hideTimer);
+            var rect = trigger.getBoundingClientRect();
+            var width = 260;
+            var left = rect.right - width;
+            if (left < 12) left = 12;
+            popup.style.top = (rect.bottom + 10) + 'px';
+            popup.style.left = left + 'px';
+            popup.style.display = 'block';
+        }
+        function hide() {
+            hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
+        }
+        trigger.addEventListener('mouseenter', show);
+        trigger.addEventListener('mouseleave', hide);
+        trigger.addEventListener('click', show);
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+        popup.addEventListener('mouseleave', hide);
+    })();
+
     function typeOptionsHtml(selected) {
         return EMERGENCY_TYPE_OPTIONS.map(function(t) {
             return '<option value="' + escHtml(t) + '"' + (t === selected ? ' selected' : '') + '>' + escHtml(t) + '</option>';
@@ -2303,6 +2551,8 @@
         kwActiveTab = 'pending';
         document.getElementById('kwtab-pending').classList.add('active');
         document.getElementById('kwtab-trained').classList.remove('active');
+        document.getElementById('kw-search').value = '';
+        document.getElementById('kw-search').placeholder = 'Search pending snippets...';
         renderKwList();
         openModal('keyword-modal');
     }
@@ -2311,6 +2561,8 @@
         kwActiveTab = tab;
         document.getElementById('kwtab-pending').classList.toggle('active', tab === 'pending');
         document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
+        document.getElementById('kw-search').value = '';
+        document.getElementById('kw-search').placeholder = tab === 'pending' ? 'Search pending snippets...' : 'Search trained keywords...';
         renderKwList();
     }
 
@@ -2326,11 +2578,17 @@
 
     function renderPendingTerms() {
         const list = document.getElementById('kw-list');
-        if (pendingTerms.length === 0) {
-            list.innerHTML = '<div class="kw-empty">No pending snippets to classify.</div>';
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const visible = pendingTerms.filter(function(t) {
+            return !q || normalizeFilterValue(t.description_snapshot).includes(q);
+        });
+        if (visible.length === 0) {
+            list.innerHTML = pendingTerms.length === 0
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="{{ asset(\'icons/nav-emerg.png\') }}" alt="">No pending snippets to classify.</div>'
+                : '<div class="kw-empty">No pending snippets match your search.</div>';
             return;
         }
-        list.innerHTML = pendingTerms.map(function(term) {
+        list.innerHTML = visible.map(function(term) {
             const words = (term.description_snapshot || '').split(/\s+/).filter(Boolean);
             if (!kwPhraseState[term.id]) {
                 kwPhraseState[term.id] = [];
@@ -2341,14 +2599,19 @@
             }).join('');
             return '' +
                 '<div class="kw-card" id="kw-card-' + term.id + '">' +
+                '<div class="kw-card-label-row"><span class="kw-card-label">Unclassified snippet</span></div>' +
                 '<div class="kw-card-snippet">' + escHtml(term.description_snapshot || '') + '</div>' +
+                '<span class="kw-field-label">Tap words to build the phrase</span>' +
                 '<div class="kw-word-wrap">' + wordSpans + '</div>' +
+                '<div class="kw-phrase-preview">' +
+                '<span class="kw-phrase-preview-label">Phrase</span>' +
                 '<input type="text" class="kw-phrase-input" id="kw-phrase-' + term.id + '" placeholder="Selected phrase" value="' + escHtml(buildKwPhrase(term.id)) + '">' +
-                '<div class="kw-card-row">' +
-                '<select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select>' +
-                '<select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select>' +
                 '</div>' +
-                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Reclassify matching past reports</label>' +
+                '<div class="kw-card-row">' +
+                '<div><span class="kw-field-label">Emergency type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select></div>' +
+                '<div><span class="kw-field-label">Urgency override</span><select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select></div>' +
+                '</div>' +
+                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past reports still marked Other</label>' +
                 '<div class="kw-card-actions">' +
                 '<button class="kw-btn-ignore" onclick="ignoreKwTerm(' + term.id + ')">Ignore</button>' +
                 '<button class="kw-btn-save" onclick="submitKwClassify(' + term.id + ')">Save Keyword</button>' +
@@ -2437,16 +2700,26 @@
 
     function renderTrainedKeywords() {
         const list = document.getElementById('kw-list');
-        if (trainedKeywords.length === 0) {
-            list.innerHTML = '<div class="kw-empty">No trained keywords yet.</div>';
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const visible = trainedKeywords.filter(function(k) {
+            return !q || normalizeFilterValue(k.keyword).includes(q) || normalizeFilterValue(k.emergency_type).includes(q);
+        });
+        if (visible.length === 0) {
+            list.innerHTML = trainedKeywords.length === 0
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="{{ asset(\'icons/nav-emerg.png\') }}" alt="">No trained keywords yet.</div>'
+                : '<div class="kw-empty">No trained keywords match your search.</div>';
             return;
         }
-        list.innerHTML = trainedKeywords.map(function(kw) {
+        list.innerHTML = visible.map(function(kw) {
+            const urgencyClass = kw.urgency_level ? kw.urgency_level : '';
             return '' +
                 '<div class="kw-trained-card" id="kw-trained-' + kw.id + '">' +
                 '<div class="kw-trained-left">' +
-                '<div class="kw-trained-phrase">' + escHtml(kw.keyword) + '</div>' +
-                '<div class="kw-trained-meta">' + escHtml(kw.emergency_type) + (kw.urgency_level ? ' &middot; ' + escHtml(kw.urgency_level) : '') + '</div>' +
+                '<div class="kw-trained-phrase" title="' + escHtml(kw.keyword) + '">' + escHtml(kw.keyword) + '</div>' +
+                '<div class="kw-trained-meta">' +
+                '<span class="kw-type-pill">' + escHtml(kw.emergency_type) + '</span>' +
+                (kw.urgency_level ? '<span class="kw-urgency-pill ' + urgencyClass + '">' + escHtml(kw.urgency_level) + '</span>' : '') +
+                '</div>' +
                 '</div>' +
                 '<div class="kw-trained-actions">' +
                 '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
