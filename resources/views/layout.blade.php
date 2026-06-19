@@ -524,6 +524,25 @@
         .breadcrumb { font-size: .72rem; }
         .topbar-right { gap: .6rem; }
     }
+
+    
+    @media (max-height: 800px) {
+        .sidebar-logo { padding: 1rem 1.5rem .75rem; }
+        .sidebar-role { margin: .6rem 1.5rem; }
+        .sidebar-nav  { padding: .35rem .75rem .75rem; }
+        .nav-item     { padding: .5rem .75rem; margin-bottom: .1rem; font-size: .84rem; }
+        .nav-divider  { margin: .4rem 0; }
+        .sidebar-logout { padding: .75rem 1.5rem; }
+    }
+    @media (max-height: 680px) {
+        .sidebar-logo { padding: .75rem 1.25rem .5rem; }
+        .sidebar-logo-icon { width: 32px; height: 32px; }
+        .sidebar-role { margin: .45rem 1.25rem; padding: .22rem .6rem; font-size: .68rem; }
+        .nav-item     { padding: .42rem .7rem; font-size: .81rem; }
+        .nav-icon img { width: 16px; height: 16px; }
+        .sidebar-logout { padding: .6rem 1.25rem; }
+        .logout-btn   { padding: .45rem .7rem; font-size: .76rem; }
+    }
     </style>
 
     @yield('styles')
