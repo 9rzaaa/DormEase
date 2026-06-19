@@ -153,11 +153,16 @@ class StaffController extends Controller
             'last_name'      => 'required|string|max:100',
             'email'          => 'required|email|unique:staff,email',
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|min:11|max:20',
+            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
             'shift_schedule' => 'nullable|string|max:50',
         ]);
 
-        $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $suffix = '';
+        for ($i = 0; $i < 6; $i++) {
+            $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        $tempPassword = 'Staff@' . $suffix;
 
         $shiftTimes = $this->shiftTimes($request->shift_schedule);
 
@@ -201,7 +206,7 @@ class StaffController extends Controller
                 Rule::unique('staff', 'email')->ignore($staff->staff_id, 'staff_id'),
             ],
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|min:11|max:20',
+            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
@@ -247,7 +252,12 @@ class StaffController extends Controller
     {
         $staff = Staff::findOrFail($id);
 
-        $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $suffix = '';
+        for ($i = 0; $i < 6; $i++) {
+            $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        $tempPassword = 'Staff@' . $suffix;
 
         $staff->update([
             'password_hash'    => Hash::make($tempPassword),

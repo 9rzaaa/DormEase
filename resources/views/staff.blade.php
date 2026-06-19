@@ -170,6 +170,7 @@
     .badge-admin     { background: var(--petal); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .badge-frontdesk { background: var(--gray-light); color: var(--badge-frontdesk-text); border: 1.5px solid var(--badge-frontdesk-border); }
     .badge-staff     { background: var(--mint); color: var(--green); border: 1.5px solid var(--green); }
+    .input-valid     { border-color: var(--green, #1f9d69) !important; }
 
     .action-group { display: flex; align-items: center; justify-content: center; gap: .4rem; }
     .act-btn {
@@ -1413,7 +1414,7 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
                     <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
             </div>
@@ -1493,7 +1494,7 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
                     <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
                 <div class="modal-field full">
@@ -1758,7 +1759,6 @@
             var matchDuty = duty === '' || (duty === 'on_leave' ? !!s.is_on_leave : s.duty_status === duty);
             return matchSearch && matchRole && matchDuty;
         });
-        currentPage = 1;
         sortTable();
     }
 
@@ -1806,9 +1806,10 @@
         document.getElementById('edit-email').value           = s.email          || '';
         document.getElementById('edit-role').value            = s.role           || '';
         document.getElementById('edit-shift').value           = s.shift_schedule || '';
-        document.getElementById('edit-contact').value         = '';
-        document.getElementById('edit-contact').value         = s.contact_number || '';
-        formatContactNumber(document.getElementById('edit-contact'));
+        var editContactEl = document.getElementById('edit-contact');
+        editContactEl.value = s.contact_number || '';
+        formatContactNumber(editContactEl);
+        validateContactNumber(editContactEl);
         document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
@@ -1823,16 +1824,16 @@
         var raw    = input.value;
         var digits = raw.replace(/\D/g, '');
 
-        if (raw.trim().charAt(0) === '+' || (digits.length >= 2 && digits.substring(0, 2) === '63')) {
-            if (digits.length === 12 && digits.substring(0, 2) === '63') {
-                digits = '0' + digits.substring(2);
-            } else if (digits.startsWith('6') && digits.length <= 12) {
-                digits = ('63' + digits.substring(1)).substring(0, 12);
-                if (digits.length === 12) digits = '0' + digits.substring(2);
-            }
+        if (digits.length >= 2 && digits.substring(0, 2) === '63') {
+            digits = '0' + digits.substring(2);
         }
 
-        digits = digits.replace(/\D/g, '').slice(0, 11);
+        if (digits.length > 0 && digits.charAt(0) !== '0') {
+            digits = '0' + digits;
+        }
+
+        digits = digits.slice(0, 11);
+
         var formatted = digits;
         if (digits.length > 4 && digits.length <= 7) {
             formatted = digits.slice(0, 4) + '-' + digits.slice(4);
@@ -1843,15 +1844,29 @@
     }
 
     function validateContactNumber(input) {
-        var val = input.value.replace(/\D/g, '');
+        var raw   = input.value.trim();
+        var val   = raw.replace(/\D/g, '');
         var errId = input.id + '-error';
         var errEl = document.getElementById(errId);
-        if (val.length > 0 && val.length < 11) {
+
+        if (raw === '') {
+            input.style.borderColor = '';
+            if (errEl) errEl.style.display = 'none';
+            return true;
+        }
+
+        var validFormat = /^09\d{2}-\d{3}-\d{4}$/.test(raw);
+
+        if (!validFormat) {
             input.style.borderColor = 'var(--red)';
-            if (errEl) errEl.style.display = 'block';
+            if (errEl) {
+                errEl.textContent = 'Enter a valid number in 09XX-XXX-XXXX format.';
+                errEl.style.display = 'block';
+            }
             return false;
         }
-        input.style.borderColor = '';
+
+        input.style.borderColor = 'var(--green, #1f9d69)';
         if (errEl) errEl.style.display = 'none';
         return true;
     }
@@ -1907,15 +1922,15 @@
 
     function validateAddForm() {
         var ok = true;
-        ok = validateName(document.getElementById('add-first-name')) && ok;
-        ok = validateName(document.getElementById('add-last-name'))  && ok;
-        ok = validateEmail(document.getElementById('add-email'))         && ok;
-        ok = validateContactNumber(document.getElementById('add-contact')) && ok;
-        var roleEl = document.getElementById('add-role');
+        if (!validateName(document.getElementById('add-first-name')))       ok = false;
+        if (!validateName(document.getElementById('add-last-name')))        ok = false;
+        if (!validateEmail(document.getElementById('add-email')))           ok = false;
+        if (!validateContactNumber(document.getElementById('add-contact'))) ok = false;
+        var roleEl  = document.getElementById('add-role');
         var roleErr = document.getElementById('add-role-error');
         if (!roleEl.value) {
             roleEl.style.borderColor = 'var(--red)';
-            if (roleErr) roleErr.style.display = 'block';
+            if (roleErr) { roleErr.textContent = 'Please select a role.'; roleErr.style.display = 'block'; }
             ok = false;
         } else {
             roleEl.style.borderColor = '';
@@ -1926,12 +1941,12 @@
 
     function validateEditForm() {
         var ok = true;
-        ok = validateName(document.getElementById('edit-first-name')) && ok;
-        ok = validateName(document.getElementById('edit-last-name'))  && ok;
-        ok = validateEmail(document.getElementById('edit-email'))         && ok;
-        ok = validateContactNumber(document.getElementById('edit-contact')) && ok;
+        if (!validateName(document.getElementById('edit-first-name')))       ok = false;
+        if (!validateName(document.getElementById('edit-last-name')))        ok = false;
+        if (!validateEmail(document.getElementById('edit-email')))           ok = false;
+        if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
         if (document.getElementById('edit-is-on-leave').checked) {
-            ok = validateLeaveDates() && ok;
+            if (!validateLeaveDates()) ok = false;
         }
         return ok;
     }
@@ -2022,6 +2037,7 @@
             + '</body></html>');
         win.document.close();
         win.print();
+        showToast('Staff list opened for printing.', 'success');
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -2322,7 +2338,8 @@
 
     function fmtDatePlain(d) {
         if (!d) return '\u2014';
-        var dt   = new Date(d);
+        var dt = new Date(d);
+        if (isNaN(dt.getTime())) return '\u2014';
         var date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
         var time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         return date + ' ' + time;
@@ -2828,7 +2845,7 @@
         var origOpenEditModal = window.openEditModal;
         window.openEditModal = function(s) {
             origOpenEditModal(s);
-            setTimeout(function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); }, 80);
+            setTimeout(function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); }, 120);
         };
     });
 
