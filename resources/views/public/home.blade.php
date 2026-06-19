@@ -520,6 +520,7 @@
     @media(max-width:1130px){
       .nav-links { display:none; }
       .nav-toggle { display:inline-flex; }
+      nav { overflow: visible; }
     }
 
     @media(max-width:960px){
