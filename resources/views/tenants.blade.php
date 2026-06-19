@@ -1136,6 +1136,23 @@ tbody tr:hover { background: var(--soft-bg); }
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
+    <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
+        <div class="modal-header" style="margin-bottom:.85rem;">
+            <div class="modal-title">Document Preview</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="btn-submit" style="padding:.45rem 1rem;font-size:.82rem;" onclick="downloadPdfFromPreview()">Download</button>
+                <button class="modal-close" onclick="closePdfPreview()">&#x2715;</button>
+            </div>
+        </div>
+        <div style="width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--pink-100);background:var(--soft-bg);">
+            <iframe id="pdf-preview-iframe" src="" style="width:100%;height:520px;border:none;display:block;"></iframe>
+        </div>
+        <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
+            Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -2288,7 +2305,29 @@ function showToast(message, type) {
         setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
     }, 4000);
 }
+var _pdfBlobUrl = null;
+var _pdfDownloadName = 'document.pdf';
 
+function openPdfPreview(blobUrl, downloadName) {
+    _pdfBlobUrl = blobUrl;
+    _pdfDownloadName = downloadName || 'document.pdf';
+    document.getElementById('pdf-preview-iframe').src = blobUrl;
+    openModal('pdf-preview-modal');
+}
+
+function closePdfPreview() {
+    closeModal('pdf-preview-modal');
+    document.getElementById('pdf-preview-iframe').src = '';
+    if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+}
+
+function downloadPdfFromPreview() {
+    if (!_pdfBlobUrl) return;
+    var a = document.createElement('a');
+    a.href = _pdfBlobUrl;
+    a.download = _pdfDownloadName;
+    a.click();
+}
 function printCredentialSlip(type) {
     var accountId, tempPassword, tenantName;
     if (type === 'new') {
@@ -2408,7 +2447,8 @@ function printCredentialSlip(type) {
     doc.text('DormEase', W - 6, y, { align: 'right' });
 
     var safeName = (tenantName || 'tenant').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
-    doc.save('credentials-' + safeName + '.pdf');
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'credentials-' + safeName + '.pdf');
 }
 
 var tenants = {!! json_encode($tenants, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
@@ -3296,7 +3336,11 @@ function toggleReservationFields(context) {
 }
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
-    m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+    m.addEventListener('click', function(e) {
+        if (e.target !== m) return;
+        if (m.id === 'pdf-preview-modal') { closePdfPreview(); return; }
+        m.classList.remove('open');
+    });
 });
 
 function updateStatusDot(select) {
@@ -6534,7 +6578,8 @@ function printBillSlip(t) {
     doc.text('DormEase', W - 6, y, { align: 'right' });
 
     var safeName = (t.first_name + '-' + t.last_name).replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
-    doc.save('bill-slip-' + safeName + '.pdf');
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'bill-slip-' + safeName + '.pdf');
 }
 </script>
 @endsection
