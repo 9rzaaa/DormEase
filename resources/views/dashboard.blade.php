@@ -405,13 +405,13 @@
     }
     @media (max-width: 1400px) and (max-height: 800px) {
         .page-body { padding: 1.2rem 1.5rem; gap: 1.2rem; }
-        .stats-grid { gap: .75rem; margin-top: .75rem; }
-        .stat-box { padding: .85rem; }
-        .stat-icon { width: 34px; height: 34px; margin-bottom: .6rem; }
-        .stat-icon img { width: 17px; height: 17px; }
-        .stat-num { font-size: 1.6rem; }
-        .stat-label { font-size: .8rem; }
-        .stat-sub { font-size: .72rem; }
+        .stats-grid { grid-template-columns: repeat(4, 1fr); gap: .6rem; margin-top: .75rem; }
+        .stat-box { padding: .75rem .65rem; }
+        .stat-icon { width: 32px; height: 32px; margin-bottom: .55rem; }
+        .stat-icon img { width: 16px; height: 16px; }
+        .stat-num { font-size: 1.4rem; }
+        .stat-label { font-size: .76rem; }
+        .stat-sub { font-size: .68rem; }
         .chart-card { padding: 1.1rem 1.3rem; }
         .chart-card-header { margin-bottom: .7rem; }
         .chart-legend { margin-bottom: .5rem; }
