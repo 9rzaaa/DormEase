@@ -23,6 +23,7 @@ class StaffController extends Controller
                 'leave_start' => null,
                 'leave_end'   => null,
                 'leave_note'  => null,
+                'duty_status' => 'on_duty',
             ]);
 
         Staff::where('is_on_leave', true)
@@ -132,6 +133,53 @@ class StaffController extends Controller
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'attendanceLogs'  => $attendanceLogs,
+        ]);
+    }
+
+    public function poll()
+    {
+        $today = now()->toDateString();
+
+        Staff::where('is_on_leave', true)
+            ->whereNotNull('leave_end')
+            ->whereDate('leave_end', '<', $today)
+            ->update([
+                'is_on_leave' => false,
+                'leave_start' => null,
+                'leave_end'   => null,
+                'leave_note'  => null,
+                'duty_status' => 'on_duty',
+            ]);
+
+        $staff = Staff::orderByDesc('staff_id')->get();
+
+        $staffList = $staff->where('is_active', true)->map(function ($s) {
+            return [
+                'staff_id'       => $s->staff_id,
+                'account_id'     => $s->account_id,
+                'first_name'     => $s->first_name,
+                'last_name'      => $s->last_name,
+                'email'          => $s->email,
+                'role'           => $s->role,
+                'contact_number' => $s->contact_number,
+                'shift_schedule' => $s->shift_schedule,
+                'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
+                'is_active'      => $s->is_active,
+                'created_at'     => $s->created_at,
+            ];
+        })->values();
+
+        $activeStaff = $staff->where('is_active', true);
+
+        return response()->json([
+            'staffList'      => $staffList,
+            'totalStaff'     => $activeStaff->count(),
+            'onDutyCount'    => $activeStaff->where('duty_status', 'on_duty')->count(),
+            'offDutyCount'   => $activeStaff->where('duty_status', 'off_duty')->count(),
         ]);
     }
 

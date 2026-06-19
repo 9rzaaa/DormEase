@@ -563,6 +563,28 @@
     .fade-up { animation: fadeIn .45s ease both; }
     .d1{animation-delay:.05s;} .d2{animation-delay:.12s;} .d3{animation-delay:.2s;}
 
+    @media(max-width:1400px) {
+        .stat-box { padding: 1.2rem 1.2rem; gap: 1rem; }
+        .stat-num { font-size: 1.8rem; }
+        .stat-icon-circle { width: 58px; height: 58px; }
+        .stat-icon-circle img { width: 28px; height: 28px; }
+        .search-wrap input { width: 160px; }
+        .sort-select { max-width: 130px; }
+    }
+
+    @media(max-width:1200px) {
+        .page-body { padding: 1.2rem 1.2rem; }
+        .stat-box { padding: 1rem 1rem; gap: .85rem; }
+        .stat-num { font-size: 1.6rem; }
+        .stat-label { font-size: .78rem; }
+        .stat-sub { font-size: .7rem; }
+        .header-actions { gap: .5rem; }
+        .btn-primary, .btn-outline { padding: .5rem .9rem; font-size: .82rem; }
+        .search-wrap input { width: 140px; }
+        .filter-label { display: none; }
+        .filter-divider { display: none; }
+    }
+
     @media(max-width:900px) {
         .stats-row  { grid-template-columns: 1fr 1fr 1fr; }
         .modal-grid { grid-template-columns: 1fr; }
@@ -577,6 +599,7 @@
         .sad-tabs { padding: 0 1rem; }
         .sad-tab { padding: .75rem .75rem; font-size: .76rem; }
     }
+
     @media(max-width:600px) {
         .stats-row { grid-template-columns: 1fr; }
         .header-actions { width: 100%; }
@@ -2851,5 +2874,69 @@
 
     filtered = staffList.slice();
     renderTable();
+
+    var pollHash = '';
+
+    function simpleHash(str) {
+        var h = 0;
+        for (var i = 0; i < str.length; i++) {
+            h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+        }
+        return h;
+    }
+
+    function isAnyModalOpen() {
+        var modals = document.querySelectorAll('.modal-overlay.open');
+        return modals.length > 0;
+    }
+
+    function isAnyDrawerOpen() {
+        var drawers = [
+            document.getElementById('sad-drawer'),
+            document.getElementById('atdlog-drawer'),
+        ];
+        return drawers.some(function(d) { return d && d.classList.contains('open'); });
+    }
+
+    function updateStatsRow(data) {
+        var statNums = document.querySelectorAll('.stat-num');
+        if (statNums[0]) statNums[0].textContent = data.totalStaff;
+        if (statNums[1]) statNums[1].textContent = data.onDutyCount;
+        if (statNums[2]) statNums[2].textContent = data.offDutyCount;
+    }
+
+    function pollStaffData() {
+        if (isAnyModalOpen() || isAnyDrawerOpen()) return;
+
+        fetch('{{ route("staff.poll") }}', {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var newHash = String(simpleHash(JSON.stringify(data.staffList)));
+            if (newHash === pollHash) return;
+            pollHash = newHash;
+
+            staffList = data.staffList;
+            filtered  = staffList.slice();
+
+            var searchVal = document.getElementById('search-input').value;
+            var roleVal   = document.getElementById('filter-role').value;
+            var dutyVal   = document.getElementById('filter-duty').value;
+
+            if (searchVal || roleVal || dutyVal) {
+                filterTable();
+            } else {
+                sortTable();
+            }
+
+            updateStatsRow(data);
+        })
+        .catch(function() {});
+    }
+
+    pollHash = String(simpleHash(JSON.stringify(staffList)));
+
+    setInterval(pollStaffData, 15000);
 </script>
 @endsection
