@@ -47,6 +47,7 @@ class EmergencyController extends Controller
     {
         $staff = Auth::guard('staff')->user();
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
+        $totalCount    = EmergencyReport::count();
         $activeCount    = EmergencyReport::where('status', 'active')->count();
         $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $panicCount = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
@@ -57,6 +58,7 @@ class EmergencyController extends Controller
         return view('fdemergency', compact(
             'staff',
             'reports',
+            'totalCount',
             'activeCount',
             'criticalCount',
             'panicCount',
