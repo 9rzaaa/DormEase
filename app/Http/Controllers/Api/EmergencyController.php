@@ -383,6 +383,32 @@ class EmergencyController extends Controller
         return false;
     }
 
+    public function suggestType(Request $request)
+    {
+        $validated = $request->validate([
+            'description' => 'nullable|string|max:5000',
+        ]);
+
+        $rawDescription = trim($validated['description'] ?? '');
+
+        if ($rawDescription === '') {
+            return response()->json(['emergency_type' => null, 'urgency_level' => null]);
+        }
+
+        $cleanedDescription = $this->cleanText($rawDescription);
+        $isPanicAlert = $this->isPanicAlert(null, $cleanedDescription);
+        $classification = $this->classify($cleanedDescription, null, $isPanicAlert);
+
+        if ($classification['emergency_type'] === 'Other') {
+            return response()->json(['emergency_type' => null, 'urgency_level' => null]);
+        }
+
+        return response()->json([
+            'emergency_type' => $classification['emergency_type'],
+            'urgency_level' => $classification['urgency_level'],
+        ]);
+    }
+
     public function index(Request $request)
     {
         $tenantId = $request->user()?->tenant_id;

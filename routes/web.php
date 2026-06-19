@@ -262,6 +262,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
     Route::get('/frontdesk/emergency', [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
     Route::post('/frontdesk/emergency', [EmergencyController::class, 'store'])->name('frontdesk.emergency.store');
+    Route::post('/frontdesk/emergency/suggest-type', [\App\Http\Controllers\Api\EmergencyController::class, 'suggestType'])->name('frontdesk.emergency.suggestType');
     Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
     Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
     Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
