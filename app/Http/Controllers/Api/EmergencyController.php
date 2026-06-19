@@ -195,6 +195,14 @@ class EmergencyController extends Controller
         ],
     ];
 
+    public static function getHardcodedRules(): array
+    {
+        return [
+            'emergency_rules' => self::EMERGENCY_RULES,
+            'urgency_rules' => self::URGENCY_RULES,
+        ];
+    }
+
     // ---------------------------------------------------------------------------
     // Tagalog morphology: roots that the stemmer should know about.
     // Add more roots here as needed; the stemmer will expand them automatically.
