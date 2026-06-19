@@ -373,9 +373,16 @@ class EmergencyController extends Controller
         $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
 
         if ($duplicate) {
+            $existing = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
             return response()->json([
                 'message' => 'This phrase is already trained.',
                 'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'             => $existing->id,
+                    'keyword'        => $existing->keyword,
+                    'emergency_type' => $existing->emergency_type,
+                    'urgency_level'  => $existing->urgency_level,
+                ],
             ], 422);
         }
 
@@ -416,9 +423,16 @@ class EmergencyController extends Controller
         $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
 
         if ($duplicate) {
+            $existing = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
             return response()->json([
                 'message' => 'This phrase is already trained.',
                 'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'             => $existing->id,
+                    'keyword'        => $existing->keyword,
+                    'emergency_type' => $existing->emergency_type,
+                    'urgency_level'  => $existing->urgency_level,
+                ],
             ], 422);
         }
 

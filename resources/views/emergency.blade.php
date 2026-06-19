@@ -1530,6 +1530,7 @@
     }
 
     .kw-validation-msg.error { color: #c0303a; }
+    .kw-validation-msg.warning { color: #c07800; }
 
     .kw-btn-save:disabled {
         opacity: .45;
@@ -3038,23 +3039,63 @@
         if (counter) counter.textContent = input.value.length + '/255';
 
         let error = '';
+        let warning = '';
+        let isHardBlock = false;
+
         if (value.length === 0) {
             error = '';
         } else if (value.length < 2) {
             error = 'Phrase must contain at least 2 characters';
+            isHardBlock = true;
         } else if (!/[a-zA-Z0-9]/.test(value)) {
             error = 'Phrase must contain at least one letter or number';
-        } else if (trainedKeywords.some(function(k) {
-            return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
-        })) {
-            error = 'This keyword already exists';
+            isHardBlock = true;
+        } else {
+            const dupTrained = trainedKeywords.find(function(k) {
+                return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
+            });
+            if (dupTrained) {
+                const urgencyLabel = dupTrained.urgency_level
+                    ? dupTrained.urgency_level.charAt(0).toUpperCase() + dupTrained.urgency_level.slice(1)
+                    : 'default urgency';
+                error = 'Already trained as ' + dupTrained.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.';
+                isHardBlock = true;
+            } else {
+                const builtinMatch = findBuiltinMatch(value);
+                if (builtinMatch) {
+                    const urgencyLabel = builtinMatch.urgency.charAt(0).toUpperCase() + builtinMatch.urgency.slice(1);
+                    warning = 'Covered by built-in rule for ' + builtinMatch.type + ' at ' + urgencyLabel + '. Your keyword will take priority.';
+                }
+            }
         }
 
         if (msg) {
-            msg.textContent = error;
-            msg.className = 'kw-validation-msg' + (error ? ' error' : '');
+            if (error) {
+                msg.textContent = error;
+                msg.className = 'kw-validation-msg error';
+            } else if (warning) {
+                msg.textContent = warning;
+                msg.className = 'kw-validation-msg warning';
+            } else {
+                msg.textContent = '';
+                msg.className = 'kw-validation-msg';
+            }
         }
-        if (saveBtn) saveBtn.disabled = value.length === 0 || !!error;
+
+        if (saveBtn) saveBtn.disabled = value.length === 0 || isHardBlock;
+    }
+
+    function findBuiltinMatch(value) {
+        const rules = hardcodedRules.emergency_rules || {};
+        const lower = value.toLowerCase();
+        for (const type in rules) {
+            if (type === 'Other') continue;
+            const rule = rules[type];
+            if ((rule.keywords || []).some(function(k) { return k.toLowerCase() === lower; })) {
+                return { type: type, urgency: rule.urgency };
+            }
+        }
+        return null;
     }
 
     function extractErrorMessage(data, fallback) {
@@ -3104,8 +3145,18 @@
                 trainedKeywords.unshift(data.keyword);
                 renderKwList();
             } else {
-                showToast(extractErrorMessage(data, 'Failed to save keyword.'), 'error');
-                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+                const errMsg = extractErrorMessage(data, 'Failed to save keyword.');
+                    if (data.existing_keyword) {
+                        const ek = data.existing_keyword;
+                        const urgencyLabel = ek.urgency_level
+                            ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                            : 'default urgency';
+                        showToast('Already trained as ' + ek.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                        highlightTrainedKeyword(ek.id);
+                    } else {
+                        showToast(errMsg, 'error');
+                    }
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
             }
         } catch (err) {
             showToast('Network error: ' + err.message, 'error');
@@ -3226,9 +3277,19 @@
                 showToast('Keyword added.', 'success');
                 renderKwList();
             } else {
-                showToast(extractErrorMessage(data, 'Failed to add keyword.'), 'error');
-                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
-            }
+                const errMsg = extractErrorMessage(data, 'Failed to add keyword.');
+                    if (data.existing_keyword) {
+                        const ek = data.existing_keyword;
+                        const urgencyLabel = ek.urgency_level
+                            ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                            : 'default urgency';
+                        showToast('Already trained as ' + ek.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                        highlightTrainedKeyword(ek.id);
+                    } else {
+                        showToast(errMsg, 'error');
+                    }
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+                }
         } catch (err) {
             showToast('Network error: ' + err.message, 'error');
             if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
@@ -3293,6 +3354,22 @@
         } finally {
             hideActionLoading();
         }
+    }
+
+    function highlightTrainedKeyword(id) {
+        switchKwTab('trained');
+        setTimeout(function() {
+            const card = document.getElementById('kw-trained-' + id);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow .2s, border-color .2s';
+            card.style.borderColor = 'var(--bright-pink)';
+            card.style.boxShadow = '0 0 0 3px rgba(232,23,93,.25)';
+            setTimeout(function() {
+                card.style.borderColor = '';
+                card.style.boxShadow = '';
+            }, 2500);
+        }, 320);
     }
 
     async function deleteKwKeyword(id) {
