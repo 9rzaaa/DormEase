@@ -203,6 +203,56 @@ class EmergencyController extends Controller
         ];
     }
 
+    private const STOP_WORDS = [
+        'the',
+        'a',
+        'an',
+        'is',
+        'are',
+        'was',
+        'were',
+        'and',
+        'or',
+        'but',
+        'in',
+        'on',
+        'at',
+        'to',
+        'for',
+        'of',
+        'with',
+        'by',
+        'ang',
+        'mga',
+        'ng',
+        'sa',
+        'at',
+        'ay',
+        'na',
+        'o',
+        'ni',
+        'kay',
+        'nila',
+        'nito',
+        'nong',
+        'nang'
+    ];
+
+    private const NEGATIONS = [
+        'no',
+        'not',
+        'none',
+        'never',
+        'without',
+        'cannot',
+        'cant',
+        'hindi',
+        'wala',
+        'huwag',
+        'di',
+        'ayaw'
+    ];
+
     private const TAGALOG_ROOTS = [
         // Medical
         'himatay',
@@ -315,54 +365,129 @@ class EmergencyController extends Controller
             if (strlen($c) >= 6 && substr($c, 0, 3) === substr($c, 3, 3)) {
                 $candidates[] = substr($c, 3);
             }
+            if (str_starts_with($c, 'r') && strlen($c) > 2) {
+                $candidates[] = 'd' . substr($c, 1);
+            }
+            if (preg_match('/^([aeiou])\1/u', $c)) {
+                $candidates[] = substr($c, 1);
+            }
         }
 
         return array_unique($candidates);
     }
 
-    private function matchesKeyword(string $text, string $keyword): bool
+    private function isFuzzyMatch(string $w1, string $w2): bool
     {
-        if (str_contains($text, $keyword)) {
+        if ($w1 === $w2) {
             return true;
         }
-        $words = explode(' ', $text);
-        $expandedWords = array_map(fn($w) => $this->expandIngForms($w), $words);
-        $candidates = [''];
-        foreach ($expandedWords as $forms) {
-            $next = [];
-            foreach ($candidates as $prefix) {
-                foreach ($forms as $form) {
-                    $next[] = ($prefix === '' ? '' : $prefix . ' ') . $form;
-                }
-            }
-            $candidates = array_slice($next, 0, 512);
+        $len = min(strlen($w1), strlen($w2));
+        if ($len <= 3) {
+            return false;
         }
-        foreach ($candidates as $candidate) {
-            if (str_contains($candidate, $keyword)) {
-                return true;
+        $dist = levenshtein($w1, $w2);
+        if ($len <= 7) {
+            return $dist <= 1;
+        }
+        return $dist <= 2;
+    }
+
+    private function tokenMatches(string $textToken, string $keywordToken): bool
+    {
+        if (in_array($textToken, self::STOP_WORDS, true)) {
+            return false;
+        }
+
+        $textStems = array_merge([$textToken], $this->expandIngForms($textToken));
+        $tagalogStems = [];
+        foreach ($textStems as $ts) {
+            $tagalogStems = array_merge($tagalogStems, $this->tagalogStem($ts));
+        }
+        $textStems = array_unique(array_merge($textStems, $tagalogStems));
+
+        $keywordStems = array_merge([$keywordToken], $this->expandIngForms($keywordToken));
+        $tagalogKStems = [];
+        foreach ($keywordStems as $ks) {
+            $tagalogKStems = array_merge($tagalogKStems, $this->tagalogStem($ks));
+        }
+        $keywordStems = array_unique(array_merge($keywordStems, $tagalogKStems));
+
+        foreach ($textStems as $ts) {
+            foreach ($keywordStems as $ks) {
+                if ($this->isFuzzyMatch($ts, $ks)) {
+                    return true;
+                }
+                if (str_contains($ts, $ks) && strlen($ks) >= 4) {
+                    return true;
+                }
+                if (str_contains($ks, $ts) && strlen($ts) >= 4) {
+                    return true;
+                }
             }
         }
 
-        foreach ($words as $word) {
-            $roots = $this->tagalogStem($word);
-            foreach ($roots as $root) {
-                if ($root === $keyword) {
-                    return true;
-                }
-                if (str_contains($keyword, $root) && strlen($root) >= 4) {
-                    return true;
-                }
-                if (str_contains($root, $keyword) && strlen($keyword) >= 4) {
+        return false;
+    }
+
+    private function isIndexNegated(array $textTokens, int $index): bool
+    {
+        for ($j = 1; $j <= 2; $j++) {
+            if (isset($textTokens[$index - $j])) {
+                if (in_array($textTokens[$index - $j], self::NEGATIONS, true)) {
                     return true;
                 }
             }
+        }
+        return false;
+    }
 
-            $keywordRoots = $this->tagalogStem($keyword);
-            foreach ($keywordRoots as $kRoot) {
-                foreach ($roots as $root) {
-                    if ($root === $kRoot && strlen($root) >= 4) {
-                        return true;
+    private function matchesKeyword(string $text, string $keyword): bool
+    {
+        $text = strtolower($text);
+        $text = preg_replace('/[^\p{L}\p{N}\s\-\/]/u', ' ', $text);
+        $textTokens = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        $keyword = strtolower(trim($keyword));
+        $keywordTokens = preg_split('/\s+/', $keyword, -1, PREG_SPLIT_NO_EMPTY);
+
+        if (empty($textTokens) || empty($keywordTokens)) {
+            return false;
+        }
+
+        $kCount = count($keywordTokens);
+        $tCount = count($textTokens);
+
+        for ($i = 0; $i < $tCount; $i++) {
+            if ($this->tokenMatches($textTokens[$i], $keywordTokens[0])) {
+                if ($this->isIndexNegated($textTokens, $i)) {
+                    continue;
+                }
+
+                if ($kCount === 1) {
+                    return true;
+                }
+
+                $textIdx = $i + 1;
+                $matchedAll = true;
+
+                for ($k = 1; $k < $kCount; $k++) {
+                    $foundNext = false;
+                    $maxIdx = min($textIdx + 4, $tCount);
+                    for ($t = $textIdx; $t < $maxIdx; $t++) {
+                        if ($this->tokenMatches($textTokens[$t], $keywordTokens[$k])) {
+                            $textIdx = $t + 1;
+                            $foundNext = true;
+                            break;
+                        }
                     }
+                    if (!$foundNext) {
+                        $matchedAll = false;
+                        break;
+                    }
+                }
+
+                if ($matchedAll) {
+                    return true;
                 }
             }
         }
@@ -653,30 +778,30 @@ class EmergencyController extends Controller
             return false;
         }
         $cleanText = trim(strtolower($text));
-        
+
         if (strlen($cleanText) < 3) {
             $validShorts = ['ac', 'tv', 'ng', 'ok', 'hi', 'go', 'no', 'my', 'by', 'to', 'in', 'on', 'at', 'an', 'as', 'he', 'we', 'me', 'us', 'up', 'so', 'do', 'if', 'of', 'or', 'is', 'it', 'am'];
             if (!in_array($cleanText, $validShorts)) {
                 return true;
             }
         }
-        
+
         if (preg_match('/(.)\1{3,}/u', $cleanText)) {
             return true;
         }
-        
+
         $words = preg_split('/\s+/', preg_replace('/[^a-z\s]/', '', $cleanText), -1, PREG_SPLIT_NO_EMPTY);
         if (empty($words)) {
             return true;
         }
-        
+
         $gibberishWordCount = 0;
         foreach ($words as $word) {
             if ($this->isGibberishWord($word)) {
                 $gibberishWordCount++;
             }
         }
-        
+
         $totalWords = count($words);
         if ($totalWords === 1 && $gibberishWordCount >= 1) {
             return true;
@@ -684,7 +809,7 @@ class EmergencyController extends Controller
         if ($totalWords > 1 && ($gibberishWordCount / $totalWords) >= 0.4) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -694,11 +819,11 @@ class EmergencyController extends Controller
         if ($len === 0) {
             return false;
         }
-        
+
         if ($len === 1) {
             return !in_array($word, ['a', 'i', 'o']);
         }
-        
+
         if ($len === 2) {
             $validShorts2 = ['ac', 'tv', 'ng', 'ok', 'hi', 'go', 'no', 'my', 'by', 'to', 'in', 'on', 'at', 'an', 'as', 'he', 'we', 'me', 'us', 'up', 'so', 'do', 'if', 'of', 'or', 'is', 'it', 'am'];
             if (in_array($word, $validShorts2)) {
@@ -706,11 +831,36 @@ class EmergencyController extends Controller
             }
             return !preg_match('/[aeiouy]/i', $word);
         }
-        
+
         if ($len === 3) {
             $exactKeysmashes3 = [
-                'asd', 'qwe', 'zxc', 'fgh', 'hjk', 'iop', 'jkl', 'dfg', 'xcv', 'rty', 'cvb', 'bnm', 'xyz',
-                'yui', 'tyu', 'wer', 'ert', 'sdf', 'ghj', 'vbn', 'sds', 'sde', 'fgd', 'gfd', 'hgf', 'fds', 'dsa'
+                'asd',
+                'qwe',
+                'zxc',
+                'fgh',
+                'hjk',
+                'iop',
+                'jkl',
+                'dfg',
+                'xcv',
+                'rty',
+                'cvb',
+                'bnm',
+                'xyz',
+                'yui',
+                'tyu',
+                'wer',
+                'ert',
+                'sdf',
+                'ghj',
+                'vbn',
+                'sds',
+                'sde',
+                'fgd',
+                'gfd',
+                'hgf',
+                'fds',
+                'dsa'
             ];
             if (in_array($word, $exactKeysmashes3)) {
                 return true;
@@ -719,19 +869,56 @@ class EmergencyController extends Controller
                 return true;
             }
         }
-        
+
         $forbiddenSubstrings = [
-            'plm', 'okn', 'ijn', 'uhb', 'ygv', 'tfc', 'rdx', 'esz', 'waq', 'qaz', 'wsx', 'rfv', 'tgb', 'yhn', 'ujm',
-            'zxc', 'xcv', 'cvb', 'vbn', 'bnm', 'mnb', 'nbv', 'bvc', 'vcx', 'cxz',
-            'sdf', 'fgh', 'hjk', 'jkl', 'lkj', 'kjh', 'jhg', 'hgf', 'gfd', 'fds', 'dsa',
-            'qwe', 'tyu', 'yui', 'oiu', 'ewq'
+            'plm',
+            'okn',
+            'ijn',
+            'uhb',
+            'ygv',
+            'tfc',
+            'rdx',
+            'esz',
+            'waq',
+            'qaz',
+            'wsx',
+            'rfv',
+            'tgb',
+            'yhn',
+            'ujm',
+            'zxc',
+            'xcv',
+            'cvb',
+            'vbn',
+            'bnm',
+            'mnb',
+            'nbv',
+            'bvc',
+            'vcx',
+            'cxz',
+            'sdf',
+            'fgh',
+            'hjk',
+            'jkl',
+            'lkj',
+            'kjh',
+            'jhg',
+            'hgf',
+            'gfd',
+            'fds',
+            'dsa',
+            'qwe',
+            'tyu',
+            'yui',
+            'oiu',
+            'ewq'
         ];
         foreach ($forbiddenSubstrings as $sub) {
             if (str_contains($word, $sub)) {
                 return true;
             }
         }
-        
+
         $double = $word . $word;
         $periodLen = strpos($double, $word, 1);
         if ($periodLen !== false && $periodLen < $len) {
@@ -740,7 +927,7 @@ class EmergencyController extends Controller
                 return true;
             }
         }
-        
+
         if (preg_match('/^[asdfghjkl]+$/i', $word)) {
             $homeRowWhitelist = ['salamat', 'salsal', 'gasgas', 'glass', 'flask', 'shall', 'salad', 'flash', 'slash', 'galahs', 'alfalfa', 'shashlik', 'falls', 'flags', 'halls', 'flasks', 'salads', 'glad', 'fall', 'gall', 'hall', 'alas', 'half', 'flag', 'gash', 'lash', 'sash', 'flak', 'dahl', 'hala', 'sasa', 'laga', 'daga', 'lala', 'gaga', 'haha', 'lads', 'fags', 'gags', 'lags', 'hash', 'dash', 'ash', 'ask', 'has', 'had', 'add', 'all', 'gal', 'lag', 'sag', 'gas', 'fad', 'ala', 'aha', 'las', 'sal', 'lad', 'dag'];
             if ($len >= 3 && !in_array($word, $homeRowWhitelist)) {
@@ -758,7 +945,7 @@ class EmergencyController extends Controller
                 return true;
             }
         }
-        
+
         $dist = $this->getKeyboardDistance($word);
         if ($dist <= 1.3 && $len >= 3) {
             $leftHandWhitelist = ['sewer', 'referee', 'defer', 'dress', 'free', 'feed', 'seed', 'weed', 'steer', 'street', 'reed', 'deer', 'fees', 'sees', 'assert', 'estate', 'arrest', 'fever', 'newer', 'severe', 'secret', 'create', 'decree', 'desert', 'exert', 'drew', 'crew', 'grew', 'screw', 'stew', 'sweet', 'sweat', 'swear', 'see', 'ref', 'red', 'fed', 'few', 'wed', 'dew', 'ere', 'err', 'res', 'sex', 'fee', 'was'];
@@ -766,7 +953,7 @@ class EmergencyController extends Controller
                 return true;
             }
         }
-        
+
         if (preg_match('/[^aeiouy]{5,}/i', $word)) {
             $allowedConsWords = ['strength', 'length', 'catchphrase', 'watchstrap', 'nightshift', 'poststructural', 'warmth', 'months'];
             $isAllowed = false;
@@ -780,7 +967,7 @@ class EmergencyController extends Controller
                 return true;
             }
         }
-        
+
         if ($len >= 7) {
             preg_match_all('/[aeiouy]/i', $word, $matches);
             $vowelsCount = count($matches[0] ?? []);
@@ -791,7 +978,7 @@ class EmergencyController extends Controller
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -799,9 +986,32 @@ class EmergencyController extends Controller
     {
         $word = strtolower($word);
         $layout = [
-            'q' => [0, 0], 'w' => [1, 0], 'e' => [2, 0], 'r' => [3, 0], 't' => [4, 0], 'y' => [5, 0], 'u' => [6, 0], 'i' => [7, 0], 'o' => [8, 0], 'p' => [9, 0],
-            'a' => [0.2, 1], 's' => [1.2, 1], 'd' => [2.2, 1], 'f' => [3.2, 1], 'g' => [4.2, 1], 'h' => [5.2, 1], 'j' => [6.2, 1], 'k' => [7.2, 1], 'l' => [8.2, 1],
-            'z' => [0.5, 2], 'x' => [1.5, 2], 'c' => [2.5, 2], 'v' => [3.5, 2], 'b' => [4.5, 2], 'n' => [5.5, 2], 'm' => [6.5, 2]
+            'q' => [0, 0],
+            'w' => [1, 0],
+            'e' => [2, 0],
+            'r' => [3, 0],
+            't' => [4, 0],
+            'y' => [5, 0],
+            'u' => [6, 0],
+            'i' => [7, 0],
+            'o' => [8, 0],
+            'p' => [9, 0],
+            'a' => [0.2, 1],
+            's' => [1.2, 1],
+            'd' => [2.2, 1],
+            'f' => [3.2, 1],
+            'g' => [4.2, 1],
+            'h' => [5.2, 1],
+            'j' => [6.2, 1],
+            'k' => [7.2, 1],
+            'l' => [8.2, 1],
+            'z' => [0.5, 2],
+            'x' => [1.5, 2],
+            'c' => [2.5, 2],
+            'v' => [3.5, 2],
+            'b' => [4.5, 2],
+            'n' => [5.5, 2],
+            'm' => [6.5, 2]
         ];
 
         $len = strlen($word);
@@ -825,4 +1035,3 @@ class EmergencyController extends Controller
         return $count > 0 ? ($totalDist / $count) : 0.0;
     }
 }
-
