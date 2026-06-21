@@ -777,7 +777,13 @@ class EmergencyController extends Controller
         if (empty($text)) {
             return false;
         }
-        $cleanText = trim(strtolower($text));
+
+        // Normalize censored/masked words (e.g. f**k, s**t, ****) to a valid placeholder
+        $normalizedText = preg_replace('/\b[a-z]*\*+[a-z]*\b/i', 'censor', $text);
+        $normalizedText = preg_replace('/\*+/i', 'censor', $normalizedText);
+        $normalizedText = preg_replace('/\[[^\]]*censor[^\]]*\]/i', 'censor', $normalizedText);
+
+        $cleanText = trim(strtolower($normalizedText));
 
         if (strlen($cleanText) < 3) {
             $validShorts = ['ac', 'tv', 'ng', 'ok', 'hi', 'go', 'no', 'my', 'by', 'to', 'in', 'on', 'at', 'an', 'as', 'he', 'we', 'me', 'us', 'up', 'so', 'do', 'if', 'of', 'or', 'is', 'it', 'am'];
