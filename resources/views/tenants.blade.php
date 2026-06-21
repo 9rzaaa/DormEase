@@ -5384,6 +5384,46 @@ async function submitRenewTenant() {
     }
 }
 
+(function () {
+    var liveFingerprint = null;
+    var pollInterval = 5000;
+
+    function anyOverlayOpen() {
+        return !!document.querySelector('.modal-overlay.open')
+            || document.getElementById('tad-drawer').classList.contains('open')
+            || document.getElementById('rooms-drawer').classList.contains('open')
+            || document.getElementById('admin-log-drawer').classList.contains('open');
+    }
+
+    function checkForTenantUpdates() {
+        if (anyOverlayOpen()) return;
+
+        fetch('{{ route("tenants.live") }}', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (liveFingerprint === null) {
+                    liveFingerprint = data.fingerprint;
+                    return;
+                }
+                if (data.fingerprint === liveFingerprint) return;
+
+                liveFingerprint = data.fingerprint;
+                tenants = data.tenants;
+
+                var totalEl = document.getElementById('count-total');
+                var activeEl = document.getElementById('count-active');
+                if (totalEl) totalEl.textContent = data.totalTenants;
+                if (activeEl) activeEl.textContent = data.activeCount;
+
+                applyFilters();
+            })
+            .catch(function () {});
+    }
+
+    checkForTenantUpdates();
+    setInterval(checkForTenantUpdates, pollInterval);
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('search-input').value = '';
     document.getElementById('floor-filter').value = '';
