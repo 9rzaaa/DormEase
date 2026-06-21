@@ -154,6 +154,7 @@ Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset']
 Route::middleware('auth:staff')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/live', [DashboardController::class, 'live'])->name('dashboard.live');
 
     // tenants
     Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
