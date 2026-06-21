@@ -1201,7 +1201,170 @@
     buildChart('payment');
 
 })();
+(function () {
+    var liveFingerprint = null;
+    var pollInterval = 5000;
+    var anyModalOpen = function () {
+        return !!document.querySelector('.modal-overlay.open');
+    };
 
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function updateStats(data) {
+        var nums = document.querySelectorAll('.stat-num');
+        if (nums.length >= 4) {
+            nums[0].textContent = data.totalTenants;
+            nums[1].textContent = data.pendingPayments;
+            nums[2].textContent = data.pendingMaintenance;
+            nums[3].textContent = data.unresolvedReports;
+        }
+        var maintBadge = document.querySelector('#panel-maint .panel-badge');
+        if (maintBadge) maintBadge.textContent = data.pendingMaintenance + ' open';
+        var annBadge = document.querySelector('#panel-ann .panel-badge');
+        if (annBadge) annBadge.textContent = data.announcementsCount + ' posted';
+    }
+
+    function urgencyClass(level) {
+        var l = (level || '').toLowerCase();
+        if (l === 'urgent') return 'tag-urgent';
+        if (l === 'moderate') return 'tag-moderate';
+        return 'tag-low';
+    }
+
+    function statusClass(status) {
+        var s = (status || '').toLowerCase();
+        return s === 'in_progress' ? 'tag-progress' : 'tag-pending';
+    }
+
+    function iconForType(type) {
+        var t = (type || '').toLowerCase();
+        if (t.indexOf('plumb') !== -1) return 'plumbing';
+        if (t.indexOf('elec') !== -1) return 'electrical';
+        if (t.indexOf('hvac') !== -1) return 'hvac';
+        return 'maintenance';
+    }
+
+    function updateMaintenancePanel(items) {
+        var inner = document.querySelector('#body-maint .panel-inner');
+        if (!inner) return;
+
+        if (!items.length) {
+            inner.innerHTML = '<div class="empty-state">No pending maintenance requests.</div>';
+            return;
+        }
+
+        var html = items.map(function (req) {
+            var iconName = iconForType(req.issue_type);
+            var safeType = escapeHtml(req.issue_type);
+            var safeDesc = escapeHtml(req.description);
+            var safeUrgency = escapeHtml(req.urgency_level);
+            var safeStatus = escapeHtml(req.status);
+            var safeAssign = escapeHtml(req.assigned_to || 'Unassigned');
+            var safeRoom = escapeHtml(req.room_number);
+            var reqIdPadded = String(req.request_id).padStart(3, '0');
+
+            var args = [
+                req.request_id,
+                JSON.stringify(req.issue_type || ''),
+                JSON.stringify(req.description || ''),
+                JSON.stringify(req.urgency_level || ''),
+                JSON.stringify(req.status || ''),
+                JSON.stringify(req.assigned_to || 'Unassigned'),
+                JSON.stringify(req.room_number || 'N/A'),
+                JSON.stringify(req.photo_url || null)
+            ].join(', ').replace(/"/g, '&quot;');
+
+            return '' +
+                '<div class="maint-row" onclick="openMaintenanceModal(' + args + ')">' +
+                    '<div class="maint-type-icon"><img src="/icons/' + iconName + '.png" alt="" onerror="this.src=\'/icons/maintenance.png\'"></div>' +
+                    '<div class="maint-info">' +
+                        '<div class="maint-title">' + safeType + (safeRoom !== 'N/A' ? ' | ' + safeRoom : '') + '</div>' +
+                        '<div class="maint-id">REQ-' + reqIdPadded + '</div>' +
+                    '</div>' +
+                    '<div class="maint-desc-col">' +
+                        '<div class="maint-desc">' + safeDesc + '</div>' +
+                        '<div class="maint-tags">' +
+                            '<span class="tag ' + urgencyClass(req.urgency_level) + '">' + escapeHtml((req.urgency_level || '').charAt(0).toUpperCase() + (req.urgency_level || '').slice(1)) + '</span>' +
+                            '<span class="tag ' + statusClass(req.status) + '">' + escapeHtml((req.status || '').replace('_', ' ')) + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="maint-assign">' + safeAssign + '</div>' +
+                    '<div class="maint-arrow">&#8250;</div>' +
+                '</div>';
+        }).join('');
+
+        inner.innerHTML = html;
+    }
+
+    function updateAnnouncementsPanel(items) {
+        var inner = document.querySelector('#body-ann .panel-inner');
+        if (!inner) return;
+
+        if (!items.length) {
+            inner.innerHTML = '<div class="empty-state" id="ann-empty">No announcements yet.</div>';
+            return;
+        }
+
+        var html = items.map(function (ann) {
+            var priority = (ann.priority || 'low').toLowerCase();
+            var safeTitle = escapeHtml(ann.title);
+            var args = [
+                ann.announcement_id,
+                JSON.stringify(ann.title || ''),
+                JSON.stringify(ann.content || ''),
+                JSON.stringify(ann.priority || ''),
+                JSON.stringify(ann.status || '')
+            ].join(', ').replace(/"/g, '&quot;');
+
+            return '' +
+                '<div class="announce-item" id="ann-row-' + ann.announcement_id + '">' +
+                    '<div class="announce-item-left">' +
+                        '<div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">' +
+                            '<div class="announce-title">' + safeTitle + '</div>' +
+                            '<span class="priority-badge priority-' + priority + '">' + escapeHtml(priority.charAt(0).toUpperCase() + priority.slice(1)) + '</span>' +
+                        '</div>' +
+                        '<div class="announce-date">' + escapeHtml(ann.posted_at) + '</div>' +
+                    '</div>' +
+                    '<div class="announce-actions">' +
+                        '<button class="announce-action-btn" onclick="openEditModal(' + args + ')">Edit</button>' +
+                        '<button class="announce-action-btn delete" onclick="openDeleteModal(' + ann.announcement_id + ')">Delete</button>' +
+                    '</div>' +
+                '</div>';
+        }).join('');
+
+        inner.innerHTML = html;
+    }
+
+    function checkForUpdates() {
+        if (anyModalOpen()) return;
+
+        fetch('{{ route("dashboard.live") }}', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (liveFingerprint === null) {
+                    liveFingerprint = data.fingerprint;
+                    return;
+                }
+                if (data.fingerprint === liveFingerprint) return;
+
+                liveFingerprint = data.fingerprint;
+                updateStats(data);
+                updateMaintenancePanel(data.maintenanceRequests);
+                updateAnnouncementsPanel(data.announcements);
+            })
+            .catch(function () {});
+    }
+
+    checkForUpdates();
+    setInterval(checkForUpdates, pollInterval);
+})();
 window.togglePanel = function(id) {
     var body = document.getElementById('body-' + id);
     var chev = document.getElementById('chevron-' + id);
