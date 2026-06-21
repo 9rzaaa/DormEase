@@ -1635,8 +1635,8 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
-                                <label>Contact No.</label>
-                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('contact_number') }}">
+                                <label>Contact No. <span class="field-req-star">*</span></label>
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required value="{{ old('contact_number') }}">
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
@@ -1788,8 +1788,8 @@ tbody tr:hover { background: var(--soft-bg); }
                             <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
-                            <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <label>Contact No. <span class="field-req-star">*</span></label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required>
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
@@ -2991,7 +2991,7 @@ function toggleVacationNote() {
 
 function validateAddTenantForm(e) {
     var emailOk    = validateEmailField('add-email', 'add-email-error', null);
-    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', true);
     var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
@@ -3045,7 +3045,7 @@ function validateAddTenantForm(e) {
 
 function validateEditTenantForm(e) {
     var emailOk    = validateEmailField('edit-email', 'edit-email-error', currentTenant ? currentTenant.tenant_id : null);
-    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', true);
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
     var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
@@ -3070,7 +3070,7 @@ function validateEditTenantForm(e) {
 document.addEventListener('DOMContentLoaded', function() {
    attachEmailValidator('add-email', 'add-email-error', null);
     attachEmailValidator('edit-email', 'edit-email-error', function() { return currentTenant ? currentTenant.tenant_id : null; });
-    attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('add-contact', 'add-contact-error', true);
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
@@ -3237,17 +3237,19 @@ function goAddStep(step) {
         var firstName = document.querySelector('#add-modal input[name="first_name"]');
         var lastName  = document.querySelector('#add-modal input[name="last_name"]');
         var email     = document.querySelector('#add-modal input[name="email"]');
-        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+        var contact   = document.getElementById('add-contact');
+        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim() || !contact.value.trim()) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            contact.reportValidity();
             return;
         }
         if (!validateEmailField('add-email', 'add-email-error')) {
             document.getElementById('add-email').focus();
             return;
         }
-        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+        if (!validatePhoneField('add-contact', 'add-contact-error', true)) {
             document.getElementById('add-contact').focus();
             return;
         }
@@ -3841,7 +3843,7 @@ function openEditModal(t) {
 
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
-    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', true);
     attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
     checkMoveoutWarning();
     var editMoveoutEl = document.getElementById('edit-moveout');
@@ -5831,7 +5833,8 @@ function attachAddModalProgress() {
         var fn = document.querySelector('#add-modal input[name="first_name"]');
         var ln = document.querySelector('#add-modal input[name="last_name"]');
         var em = document.getElementById('add-email');
-        return [fn, ln, em].filter(Boolean);
+        var co = document.getElementById('add-contact');
+        return [fn, ln, em, co].filter(Boolean);
     }
 
     function getStep2Vals() {
@@ -5913,7 +5916,7 @@ function attachAddModalProgress() {
 }
 
 function attachEditModalProgress() {
-    var fields = ['edit-first-name', 'edit-last-name', 'edit-email'];
+    var fields = ['edit-first-name', 'edit-last-name', 'edit-email', 'edit-contact'];
 
     function refreshEditProgress() {
         var filled = fields.filter(function(id) {
