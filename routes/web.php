@@ -158,6 +158,7 @@ Route::middleware('auth:staff')->group(function () {
 
     // tenants
     Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
+    Route::get('/tenants/live', [TenantController::class, 'live'])->name('tenants.live');
     Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
     Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
     Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');

@@ -831,5 +831,24 @@ class TenantController extends Controller
                 'reservation_notes'      => $tenant->reservation_notes,
             ],
         ]);
+   }
+
+    public function live()
+    {
+        $tenants = Tenant::orderBy('created_at', 'desc')->get();
+
+        $fingerprint = md5(
+            $tenants->max('updated_at') .
+            $tenants->count() .
+            \App\Models\Room::max('updated_at')
+        );
+
+        return response()->json([
+            'fingerprint' => $fingerprint,
+            'tenants'     => $tenants,
+            'totalTenants'  => $tenants->count(),
+            'activeCount'   => $tenants->where('status', 'active')->count(),
+            'reservedCount' => $tenants->where('status', 'reserved')->count(),
+        ]);
     }
 }
