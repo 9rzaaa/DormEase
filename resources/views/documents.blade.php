@@ -1762,7 +1762,7 @@
             <div class="table-card-header">
                 <div>
                     <div class="table-card-title">Downloadable Forms</div>
-                    <div class="table-card-sub">PDF forms tenants can download and fill out, automatically listed in the mobile app</div>
+                    <div class="table-card-sub">Forms tenants can download and fill out, automatically listed in the mobile app</div>
                 </div>
             </div>
             <div class="table-wrap">
