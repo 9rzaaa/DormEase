@@ -103,6 +103,16 @@ class VisitorController extends Controller
         ]);
     }
 
+    public function poll()
+    {
+        $signature = VisitorLog::selectRaw('COUNT(*) as cnt, MAX(updated_at) as latest')
+            ->first();
+
+        return response()->json([
+            'signature' => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0'),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

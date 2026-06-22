@@ -1888,6 +1888,137 @@
     applyFilters();
 
     (function() {
+        const pollUrl = "{{ route('visitors.poll') }}";
+        const fetchUrl = "{{ route('visitors.index') }}";
+        let lastSignature = null;
+        let pollTimer = null;
+        let inFlight = false;
+
+        function isUserBusy() {
+            if (document.getElementById('visitorModal').style.display === 'flex') return true;
+            if (document.getElementById('photoLightbox').style.display === 'flex') return true;
+            if (document.getElementById('archive-drawer').classList.contains('open')) return true;
+            if (document.querySelector('.export-menu.open')) return true;
+            if (document.getElementById('visitor-legend-popup')?.style.display === 'block') return true;
+
+            const active = document.activeElement;
+            if (active && active !== document.body) {
+                const tag = active.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+            }
+            return false;
+        }
+
+        function showVisitorPollToast() {
+            const existing = document.getElementById('visitor-poll-toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.id = 'visitor-poll-toast';
+            toast.style.cssText = `
+                position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+                background:var(--white);border:1.5px solid var(--gray-light);
+                border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+                color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+                z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+                pointer-events:none;
+            `;
+            toast.textContent = 'Data refreshed';
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => { toast.style.opacity = '1'; });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        async function softReloadVisitors() {
+            try {
+                const res = await fetch(fetchUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!res.ok) return;
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                const freshScript = Array.from(doc.querySelectorAll('script')).find(s =>
+                    s.textContent.includes('const logs ')
+                );
+                if (!freshScript) return;
+
+                const logsMatch = freshScript.textContent.match(/const logs\s*=\s*(\[[\s\S]*?\]);/);
+                const completedMatch = freshScript.textContent.match(/const completedVisitors\s*=\s*(\[[\s\S]*?\]);/);
+                const deletedMatch = freshScript.textContent.match(/const deletedVisitors\s*=\s*(\[[\s\S]*?\]);/);
+                const cancelledMatch = freshScript.textContent.match(/const cancelledVisitors\s*=\s*(\[[\s\S]*?\]);/);
+
+                if (logsMatch) {
+                    window.logs = JSON.parse(logsMatch[1]);
+                }
+                if (completedMatch) window.completedVisitors = JSON.parse(completedMatch[1]);
+                if (deletedMatch) window.deletedVisitors = JSON.parse(deletedMatch[1]);
+                if (cancelledMatch) window.cancelledVisitors = JSON.parse(cancelledMatch[1]);
+
+                const freshStatsToday = doc.querySelector('.stats-row .stat-box:nth-child(1) .stat-num');
+                const freshStatsInside = doc.querySelector('.stats-row .stat-box:nth-child(2) .stat-num');
+                const currentStatsToday = document.querySelector('.stats-row .stat-box:nth-child(1) .stat-num');
+                const currentStatsInside = document.querySelector('.stats-row .stat-box:nth-child(2) .stat-num');
+                if (freshStatsToday && currentStatsToday) currentStatsToday.textContent = freshStatsToday.textContent;
+                if (freshStatsInside && currentStatsInside) currentStatsInside.textContent = freshStatsInside.textContent;
+
+                applyFilters();
+                showVisitorPollToast();
+            } catch {
+            }
+        }
+
+        async function pollVisitors() {
+            if (inFlight || isUserBusy()) return;
+            inFlight = true;
+            try {
+                const res = await fetch(pollUrl, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+
+                if (lastSignature === null) {
+                    lastSignature = data.signature;
+                    return;
+                }
+                if (data.signature !== lastSignature) {
+                    lastSignature = data.signature;
+                    if (!isUserBusy()) await softReloadVisitors();
+                }
+            } catch {
+            } finally {
+                inFlight = false;
+            }
+        }
+
+        function startPolling() {
+            if (pollTimer) return;
+            pollTimer = setInterval(pollVisitors, 12000);
+        }
+
+        function stopPolling() {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                startPolling();
+                pollVisitors();
+            }
+        });
+
+        startPolling();
+    })();
+
+    (function() {
         var popup = document.getElementById('visitor-legend-popup');
         if (!popup) return;
 
