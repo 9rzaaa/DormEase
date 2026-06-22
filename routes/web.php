@@ -169,9 +169,6 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/tenants/{id}/reschedule', [TenantController::class, 'reschedule'])->name('tenants.reschedule');
         Route::post('/tenants/{id}/renew', [TenantController::class, 'renew'])->name('tenants.renew');
         Route::middleware('dormhead')->post('/tenants/{id}/reactivate', [TenantController::class, 'reactivate'])->name('tenants.reactivate');
-        Route::post('/tenants/{id}/time-in',  [App\Http\Controllers\TenantLogController::class, 'timeIn']);
-        Route::post('/tenants/{id}/time-out', [App\Http\Controllers\TenantLogController::class, 'timeOut']);
-        Route::get('/tenant-logs',            [App\Http\Controllers\TenantLogController::class, 'logs']);
         Route::post('/tenants/{id}/upload-photo', [TenantController::class, 'uploadTenantPhoto']);
         Route::get('/rooms',          [RoomController::class, 'index']);
         Route::post('/rooms',         [RoomController::class, 'store']);
@@ -280,6 +277,11 @@ Route::middleware('auth:staff')->group(function () {
             Route::post('/settings/archive/clear-now', [ArchiveSettingsController::class, 'clearNow'])->name('settings.archive.clearNow');
         });
     });
+
+    // shared staff 
+    Route::post('/tenants/{id}/time-in',  [\App\Http\Controllers\TenantLogController::class, 'timeIn']);
+    Route::post('/tenants/{id}/time-out', [\App\Http\Controllers\TenantLogController::class, 'timeOut']);
+    Route::get('/tenant-logs',            [\App\Http\Controllers\TenantLogController::class, 'logs']);
 
     // frontdesk
     Route::middleware('staffrole:frontdesk')->group(function () {
