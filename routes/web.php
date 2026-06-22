@@ -286,6 +286,7 @@ Route::middleware('auth:staff')->group(function () {
     // frontdesk
     Route::middleware('staffrole:frontdesk')->group(function () {
         Route::get('/frontdesk/dashboard', [FrontdeskController::class, 'index'])->name('frontdesk.dashboard');
+        Route::get('/frontdesk/dashboard/data', [FrontdeskController::class, 'dashboardData'])->name('frontdesk.dashboard.data');
         Route::get('/frontdesk/visitors', [VisitorController::class, 'index'])->name('frontdesk.visitors');
         Route::get('/frontdesk/tenants', [TenantController::class, 'frontdeskIndex'])->name('frontdesk.tenants');
         Route::get('/frontdesk/emergency', [EmergencyController::class, 'frontdeskIndex'])->name('frontdesk.emergency');
