@@ -1915,7 +1915,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
-                                    <option value="reserved">Reserved</option>
+                                    <option value="reserved" id="edit-status-reserved-option">Reserved</option>
                                     <option value="move_out">Move Out</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
@@ -3822,6 +3822,13 @@ function openEditModal(t) {
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var reservedOption = document.getElementById('edit-status-reserved-option');
+    if (reservedOption) {
+        var hasCredentials = !!(t.account_id);
+        reservedOption.disabled = hasCredentials;
+        reservedOption.title = hasCredentials ? 'Cannot revert to Reserved: this tenant already has login credentials.' : '';
+        reservedOption.textContent = hasCredentials ? 'Reserved (unavailable)' : 'Reserved';
+    }
     var editStatusSel = document.getElementById('edit-status');
     editStatusSel.onchange = function() {
         updateStatusDot(this);
