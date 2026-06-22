@@ -2993,6 +2993,16 @@
         return drawers.some(function(d) { return d && d.classList.contains('open'); });
     }
 
+    function isStaffUserBusy() {
+        if (isAnyModalOpen() || isAnyDrawerOpen()) return true;
+        var active = document.activeElement;
+        if (active && active !== document.body) {
+            var tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
     function updateStatsRow(data) {
         var statNums = document.querySelectorAll('.stat-num');
         if (statNums[0]) statNums[0].textContent = data.totalStaff;
@@ -3001,7 +3011,7 @@
     }
 
     function pollStaffData() {
-        if (isAnyModalOpen() || isAnyDrawerOpen()) return;
+        if (isStaffUserBusy()) return;
 
         fetch('{{ route("staff.poll") }}', {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -3012,18 +3022,29 @@
             if (newHash === pollHash) return;
             pollHash = newHash;
 
-            staffList = data.staffList;
-            filtered  = staffList.slice();
+            if (isStaffUserBusy()) return;
 
-            var searchVal = document.getElementById('search-input').value;
-            var roleVal   = document.getElementById('filter-role').value;
-            var dutyVal   = document.getElementById('filter-duty').value;
+            staffList = data.staffList;
+
+            var keepPage   = currentPage;
+            var searchVal  = document.getElementById('search-input').value;
+            var roleVal    = document.getElementById('filter-role').value;
+            var dutyVal    = document.getElementById('filter-duty').value;
 
             if (searchVal || roleVal || dutyVal) {
                 filterTable();
             } else {
-                sortTable();
+                filtered = staffList.slice();
+                var sortVal = document.getElementById('sort-select').value;
+                if (sortVal === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+                if (sortVal === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+                if (sortVal === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+                if (sortVal === 'role')   filtered.sort(function(a, b) { return (a.role || '').localeCompare(b.role || ''); });
             }
+
+            var totalPages = Math.ceil(filtered.length / PER_PAGE);
+            currentPage = Math.min(keepPage, Math.max(1, totalPages));
+            renderTable();
 
             updateStatsRow(data);
         })
