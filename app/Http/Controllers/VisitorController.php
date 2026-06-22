@@ -105,11 +105,11 @@ class VisitorController extends Controller
 
     public function poll()
     {
-        $signature = VisitorLog::selectRaw('COUNT(*) as cnt, MAX(updated_at) as latest')
+        $signature = VisitorLog::selectRaw('COUNT(*) as cnt, MAX(arrival_time) as latest, MAX(departure_time) as latest_out, SUM(CASE WHEN status = \'inside\' THEN 1 ELSE 0 END) as inside_cnt')
             ->first();
 
         return response()->json([
-            'signature' => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0'),
+            'signature' => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0') . '-' . ($signature->latest_out ?? '0') . '-' . ($signature->inside_cnt ?? 0),
         ]);
     }
 

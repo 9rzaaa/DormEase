@@ -2326,6 +2326,69 @@
 
     filtered = visitors.slice();
     renderTable();
+    (function () {
+        var _pollSignature = null;
+        var _pollInterval  = null;
+        var _pollPaused    = false;
+        var _pollUrl       = '{{ route("visitors.poll") }}';
+
+        function isUserBusy() {
+            var activeTag = document.activeElement ? document.activeElement.tagName : '';
+            var isTyping  = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT';
+
+            var modals = [
+                document.getElementById('add-modal'),
+                document.getElementById('timein-modal'),
+                document.getElementById('timeout-modal'),
+                document.getElementById('status-modal'),
+                document.getElementById('visitorDetailModal'),
+                document.getElementById('photoLightbox'),
+            ];
+            var isModalOpen = modals.some(function (m) {
+                if (!m) return false;
+                var display = window.getComputedStyle(m).display;
+                return display !== 'none';
+            });
+
+            var isDrawerOpen = document.getElementById('archive-drawer') &&
+                document.getElementById('archive-drawer').classList.contains('open');
+
+            return isTyping || isModalOpen || isDrawerOpen;
+        }
+
+        function doPoll() {
+            if (_pollPaused) return;
+            fetch(_pollUrl, { credentials: 'same-origin' })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (_pollSignature === null) {
+                        _pollSignature = data.signature;
+                        return;
+                    }
+                    if (data.signature !== _pollSignature) {
+                        _pollSignature = data.signature;
+                        if (!isUserBusy()) {
+                            window.location.reload();
+                        } else {
+                            var _retryTimer = setInterval(function () {
+                                if (!isUserBusy()) {
+                                    clearInterval(_retryTimer);
+                                    window.location.reload();
+                                }
+                            }, 2000);
+                        }
+                    }
+                })
+                .catch(function () {});
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            _pollPaused = document.hidden;
+        });
+
+        _pollInterval = setInterval(doPoll, 15000);
+        doPoll();
+    })();
 
     (function() {
         var popup = document.getElementById('fd-visitor-legend-popup');
