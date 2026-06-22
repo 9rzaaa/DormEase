@@ -239,14 +239,15 @@ Route::middleware('auth:staff')->group(function () {
 
         // maintenance
         Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
-        Route::put('/maintenance/{id}', [MaintenanceController::class, 'update'])->name('maintenance.update');
-        Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
-        Route::post('/maintenance/{id}/request-resubmission', [MaintenanceController::class, 'requestResubmission']);
+        Route::get('/maintenance/poll/requests', [MaintenanceController::class, 'pollRequests']);
         Route::post('/maintenance/keywords', [\App\Http\Controllers\MaintenanceController::class, 'storeKeyword'])->name('maintenance.keywords.store');
         Route::put('/maintenance/keywords/{id}', [\App\Http\Controllers\MaintenanceController::class, 'updateKeyword'])->name('maintenance.keywords.update');
         Route::delete('/maintenance/keywords/{id}', [\App\Http\Controllers\MaintenanceController::class, 'destroyKeyword'])->name('maintenance.keywords.destroy');
         Route::post('/maintenance/terms/{id}/classify', [\App\Http\Controllers\MaintenanceController::class, 'classifyTerm'])->name('maintenance.terms.classify');
         Route::post('/maintenance/terms/{id}/ignore', [\App\Http\Controllers\MaintenanceController::class, 'ignoreTerm'])->name('maintenance.terms.ignore');
+        Route::put('/maintenance/{id}', [MaintenanceController::class, 'update'])->name('maintenance.update');
+        Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy'])->name('maintenance.destroy');
+        Route::post('/maintenance/{id}/request-resubmission', [MaintenanceController::class, 'requestResubmission']);
 
         // emergency
         Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');

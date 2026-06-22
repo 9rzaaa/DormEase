@@ -2423,7 +2423,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('date-to').style.borderColor   = '';
         document.getElementById('date-clear-btn').style.display = (from || to) ? 'inline' : 'none';
 
-        filtered = requests.filter(function(r) {
+        filtered = requestsData.filter(function(r) {
             var matchSearch =
                 ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
                 (r.tenant_name || '').toLowerCase().includes(q) ||
@@ -2857,6 +2857,78 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('{{ session("success") }}', 'success')
         );
     @endif
+
+    const MAINT_POLL_INTERVAL = 30000;
+    let requestsData = [...requests];
+
+    function isAnyMaintModalOpen() {
+        return document.querySelector('.modal-overlay.open') !== null ||
+            document.getElementById('archive-drawer').classList.contains('open') ||
+            document.getElementById('resubmit-confirm-overlay').classList.contains('open');
+    }
+
+    function showMaintPollToast() {
+        const existing = document.getElementById('maint-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'maint-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:var(--white);border:1.5px solid var(--baby-pink);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Data refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function pollMaintRequests() {
+        if (isAnyMaintModalOpen()) return;
+
+        const activeEl = document.activeElement;
+
+        try {
+            const res = await fetch('/maintenance/poll/requests', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const fresh = await res.json();
+
+            const prevIds = new Set(requestsData.map(r => r.id));
+            const freshIds = new Set(fresh.map(r => r.id));
+
+            const hasChanges =
+                fresh.length !== requestsData.length ||
+                fresh.some(r => {
+                    const old = requestsData.find(o => o.id === r.id);
+                    return !old || old.status !== r.status || old.urgency !== r.urgency;
+                }) ||
+                [...prevIds].some(id => !freshIds.has(id));
+
+            if (!hasChanges) return;
+
+            requestsData = fresh;
+            fresh.forEach(r => { _rowDataMap[r.id] = r; });
+
+            applyFilters();
+            showMaintPollToast();
+
+            if (activeEl && activeEl.id) {
+                const refocus = document.getElementById(activeEl.id);
+                if (refocus && refocus !== document.activeElement) refocus.focus();
+            }
+        } catch {
+        }
+    }
+
+    setInterval(pollMaintRequests, MAINT_POLL_INTERVAL);
 
     applyFilters();
 
