@@ -2444,20 +2444,127 @@
     populateTypeFilter();
     applyFilters();
     renderDirList();
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
+    (function () {
+        var POLL_INTERVAL     = 30000;
+        var pollTimer         = null;
+        var lastPanicId       = null;
+        var lastReportFingerprint = null;
+
+        function isAnyModalOpen() {
+            var overlays = document.querySelectorAll('.modal-overlay');
+            for (var i = 0; i < overlays.length; i++) {
+                if (overlays[i].classList.contains('open')) return true;
+            }
+            return false;
         }
-        setInterval(checkPanic, 30000);
+
+        function isArchiveDrawerOpen() {
+            var drawer = document.getElementById('archive-drawer');
+            return drawer && drawer.classList.contains('open');
+        }
+
+        function isUserTyping() {
+            var active = document.activeElement;
+            if (!active) return false;
+            var tag = active.tagName.toLowerCase();
+            return tag === 'input' || tag === 'textarea' || tag === 'select' || active.isContentEditable;
+        }
+
+        function shouldSkipDataPoll() {
+            return isAnyModalOpen() || isArchiveDrawerOpen() || isUserTyping();
+        }
+
+        function updateStats(freshReports) {
+            var total    = freshReports.length;
+            var critical = freshReports.filter(function (r) {
+                return r.urgency_level === 'critical' || r.urgency_level === 'urgent';
+            }).length;
+            var panic = freshReports.filter(function (r) {
+                return r.is_panic_alert && r.status === 'active';
+            }).length;
+
+            var statNums = document.querySelectorAll('.stat-num');
+            if (statNums[0]) statNums[0].textContent = total;
+            if (statNums[1]) statNums[1].textContent = critical;
+            if (statNums[2]) statNums[2].textContent = panic;
+        }
+
+        function applyFreshReports(freshReports) {
+            var fingerprint = JSON.stringify(freshReports.map(function (r) {
+                return r.report_id + '|' + r.status + '|' + r.urgency_level + '|' + r.is_panic_alert;
+            }));
+
+            if (fingerprint === lastReportFingerprint) return;
+            lastReportFingerprint = fingerprint;
+
+            reports.length = 0;
+            freshReports.forEach(function (r) { reports.push(r); });
+
+            populateTypeFilter();
+            applyFilters();
+            updateStats(freshReports);
+        }
+
+        function checkPanic(freshReports) {
+            var panicReport = null;
+            for (var i = 0; i < freshReports.length; i++) {
+                if (freshReports[i].is_panic_alert && freshReports[i].status === 'active') {
+                    panicReport = freshReports[i];
+                    break;
+                }
+            }
+            if (panicReport && panicReport.report_id !== lastPanicId) {
+                lastPanicId = panicReport.report_id;
+                showToast('PANIC ALERT: ' + (panicReport.emergency_type || 'Emergency') + ' at ' + (panicReport.location || 'unknown'), 'error');
+            }
+        }
+
+        function poll() {
+            var skipData = shouldSkipDataPoll();
+
+            fetch('{{ url("/frontdesk/emergency/poll/panic") }}', {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.has_panic && data.report_id !== lastPanicId) {
+                    lastPanicId = data.report_id;
+                    showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                }
+            })
+            .catch(function () {});
+
+            if (skipData) {
+                pollTimer = setTimeout(poll, POLL_INTERVAL);
+                return;
+            }
+
+            fetch('{{ url("/frontdesk/emergency/poll/reports") }}', {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (freshReports) {
+                if (Array.isArray(freshReports)) {
+                    applyFreshReports(freshReports);
+                    checkPanic(freshReports);
+                }
+            })
+            .catch(function () {})
+            .finally(function () {
+                pollTimer = setTimeout(poll, POLL_INTERVAL);
+            });
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                clearTimeout(pollTimer);
+                poll();
+            } else {
+                clearTimeout(pollTimer);
+            }
+        });
+
+        pollTimer = setTimeout(poll, POLL_INTERVAL);
     })();
 </script>
 @endsection
