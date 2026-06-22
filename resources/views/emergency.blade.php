@@ -2825,12 +2825,12 @@
         applyFilters();
     }
 
+    const EM_POLL_INTERVAL = 30000;
+    let reportsData = [...reports];
+
     populateTypeFilter();
     applyFilters();
     renderDirList();
-
-    const EM_POLL_INTERVAL = 30000;
-    let reportsData = [...reports];
 
     function isAnyEmModalOpen() {
         return document.querySelector('.modal-overlay.open') !== null ||
