@@ -1815,6 +1815,151 @@ function checkScheduledAnnouncements() {
 checkScheduledAnnouncements();
 setInterval(checkScheduledAnnouncements, 30000);
 
+(function() {
+    const pollUrl = "{{ route('announcements.poll') }}";
+    const fetchUrl = "{{ route('announcements.index') }}";
+    let lastSignature = null;
+    let pollTimer = null;
+    let inFlight = false;
+
+    function isAnnBusy() {
+        if (document.querySelector('.modal-overlay.open')) return true;
+        if (document.getElementById('aad-drawer').classList.contains('open')) return true;
+        if (document.getElementById('aadd-modal').classList.contains('open')) return true;
+        if (globalDropdown.classList.contains('open')) return true;
+
+        const active = document.activeElement;
+        if (active && active !== document.body) {
+            const tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
+    function showAnnPollToast() {
+        const existing = document.getElementById('ann-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'ann-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:#fff;border:1.5px solid var(--pink-100);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Announcements refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function softReloadAnnouncements() {
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!res.ok) return;
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            const freshListPanel = doc.getElementById('ann-list-panel');
+            const currentListPanel = document.getElementById('ann-list-panel');
+            if (freshListPanel && currentListPanel) {
+                currentListPanel.innerHTML = freshListPanel.innerHTML;
+            }
+
+            const freshSidebar = doc.querySelector('.ann-sidebar');
+            const currentSidebar = document.querySelector('.ann-sidebar');
+            if (freshSidebar && currentSidebar) {
+                currentSidebar.innerHTML = freshSidebar.innerHTML;
+            }
+
+            const freshStats = doc.querySelector('.ann-stats-row');
+            const currentStats = document.querySelector('.ann-stats-row');
+            if (freshStats && currentStats) {
+                currentStats.innerHTML = freshStats.innerHTML;
+            }
+
+            const freshScript = Array.from(doc.querySelectorAll('script')).find(s =>
+                s.textContent.includes('const annData ')
+            );
+            if (freshScript) {
+                const annMatch = freshScript.textContent.match(/const annData\s*=\s*(\{[\s\S]*?\});/);
+                const closedMatch = freshScript.textContent.match(/const closedAnnArchive\s*=\s*(\[[\s\S]*?\]);/);
+                const deletedMatch = freshScript.textContent.match(/const deletedAnnArchive\s*=\s*(\[[\s\S]*?\]);/);
+
+                if (annMatch) {
+                    const fresh = JSON.parse(annMatch[1]);
+                    Object.keys(annData).forEach(k => delete annData[k]);
+                    Object.assign(annData, fresh);
+                }
+                if (closedMatch) {
+                    closedAnnArchive.length = 0;
+                    closedAnnArchive.push(...JSON.parse(closedMatch[1]));
+                }
+                if (deletedMatch) {
+                    deletedAnnArchive.length = 0;
+                    deletedAnnArchive.push(...JSON.parse(deletedMatch[1]));
+                }
+            }
+
+            applyDropdownFilters();
+            showAnnPollToast();
+        } catch {
+        }
+    }
+
+    async function pollAnnouncements() {
+        if (inFlight || isAnnBusy()) return;
+        inFlight = true;
+        try {
+            const res = await fetch(pollUrl, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (lastSignature === null) {
+                lastSignature = data.signature;
+                return;
+            }
+            if (data.signature !== lastSignature) {
+                lastSignature = data.signature;
+                if (!isAnnBusy()) await softReloadAnnouncements();
+            }
+        } catch {
+        } finally {
+            inFlight = false;
+        }
+    }
+
+    function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(pollAnnouncements, 15000);
+    }
+
+    function stopPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            startPolling();
+            pollAnnouncements();
+        }
+    });
+
+    startPolling();
+})();
+
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 

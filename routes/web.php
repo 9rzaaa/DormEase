@@ -181,6 +181,7 @@ Route::middleware('auth:staff')->group(function () {
 
         // announcements
         Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/poll', [AnnouncementController::class, 'poll'])->name('announcements.poll');
         Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store');
         Route::put('/announcements/{id}', [AnnouncementController::class, 'update'])->name('announcements.update');
         Route::post('/announcements/{id}/archive', [AnnouncementController::class, 'archive'])->name('announcements.archive');
