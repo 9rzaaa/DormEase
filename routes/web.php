@@ -190,6 +190,7 @@ Route::middleware('auth:staff')->group(function () {
 
         // visitors
         Route::get('/visitors', [VisitorController::class, 'adminIndex'])->name('visitors.index');
+        Route::get('/visitors/poll', [VisitorController::class, 'poll'])->name('visitors.poll');
 
         // staff
         Route::middleware('dormhead')->group(function () {
