@@ -52,6 +52,19 @@ class AnnouncementController extends Controller
         ]);
     }
 
+    public function poll()
+    {
+        $active = Announcement::selectRaw('COUNT(*) as cnt, MAX(updated_at) as latest')
+            ->whereIn('status', ['active', 'scheduled', 'closed'])
+            ->first();
+
+        $deletedCount = Announcement::onlyTrashed()->count();
+
+        $signature = ($active->cnt ?? 0) . '-' . ($active->latest ?? '0') . '-' . $deletedCount;
+
+        return response()->json(['signature' => $signature]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
