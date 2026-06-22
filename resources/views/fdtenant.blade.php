@@ -3111,5 +3111,106 @@ document.addEventListener('keydown', function(e) {
 
 applyFilters();
 applyReservedFilters();
+(function () {
+    var POLL_INTERVAL  = 30000;
+    var pollTimer      = null;
+    var lastFingerprint = null;
+
+    function isAnyDrawerOpen() {
+        var logDrawer = document.getElementById('log-drawer');
+        var tadDrawer = document.getElementById('tad-drawer');
+        if (logDrawer && logDrawer.classList.contains('open')) return true;
+        if (tadDrawer && tadDrawer.classList.contains('open')) return true;
+        return false;
+    }
+
+    function isAnyModalOpen() {
+        var viewModal = document.getElementById('view-modal');
+        if (viewModal && viewModal.style.display === 'flex') return true;
+        var overlays = document.querySelectorAll('.modal-overlay');
+        for (var i = 0; i < overlays.length; i++) {
+            if (overlays[i].classList.contains('open')) return true;
+        }
+        return false;
+    }
+
+    function isUserTyping() {
+        var active = document.activeElement;
+        if (!active) return false;
+        var tag = active.tagName.toLowerCase();
+        return tag === 'input' || tag === 'textarea' || tag === 'select' || active.isContentEditable;
+    }
+
+    function shouldSkipPoll() {
+        return isAnyDrawerOpen() || isAnyModalOpen() || isUserTyping();
+    }
+
+    function applyLiveInsideStates(freshTenants) {
+        var changed = false;
+
+        freshTenants.forEach(function (fresh) {
+            var local = tenants.find(function (t) { return t.tenant_id === fresh.tenant_id; });
+            if (!local) return;
+            if (local.is_inside !== fresh.is_inside) {
+                local.is_inside = fresh.is_inside;
+                changed = true;
+
+                var cell = document.getElementById('inside-cell-' + fresh.tenant_id);
+                if (cell) cell.innerHTML = insideIndicator(fresh.is_inside);
+
+                var btnWrap = document.getElementById('timebtn-' + fresh.tenant_id);
+                if (btnWrap) {
+                    btnWrap.innerHTML = fresh.is_inside
+                        ? '<button class="btn-timeout" onclick="doTimeOut(' + fresh.tenant_id + ', this)">Time Out</button>'
+                        : '<button class="btn-timein"  onclick="doTimeIn('  + fresh.tenant_id + ', this)">Time In</button>';
+                }
+            }
+        });
+
+        if (changed) {
+            var insideCount = tenants.filter(function (t) { return t.is_inside; }).length;
+            var statEl = document.getElementById('stat-inside-count');
+            if (statEl) statEl.textContent = insideCount;
+            var liveEl = document.getElementById('quick-live-num');
+            if (liveEl) liveEl.textContent = insideCount;
+        }
+    }
+
+    function poll() {
+        if (shouldSkipPoll()) {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+            return;
+        }
+
+        fetch('/frontdesk/tenants/live', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.fingerprint && data.fingerprint === lastFingerprint) {
+                return;
+            }
+            lastFingerprint = data.fingerprint || null;
+            if (data.tenants && Array.isArray(data.tenants)) {
+                applyLiveInsideStates(data.tenants);
+            }
+        })
+        .catch(function () {})
+        .finally(function () {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+        });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            clearTimeout(pollTimer);
+            poll();
+        } else {
+            clearTimeout(pollTimer);
+        }
+    });
+
+    pollTimer = setTimeout(poll, POLL_INTERVAL);
+})();
 </script>
 @endsection
