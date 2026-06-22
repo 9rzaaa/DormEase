@@ -191,8 +191,6 @@ Route::middleware('auth:staff')->group(function () {
 
         // visitors
         Route::get('/visitors', [VisitorController::class, 'adminIndex'])->name('visitors.index');
-        Route::get('/visitors/poll', [VisitorController::class, 'poll'])->name('visitors.poll');
-
         // staff
         Route::middleware('dormhead')->group(function () {
             Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
@@ -311,6 +309,7 @@ Route::middleware('auth:staff')->group(function () {
     });
 
     // visitors
+    Route::get('/visitors/poll', [VisitorController::class, 'poll'])->name('visitors.poll');
     Route::post('/visitors/store', [VisitorController::class, 'store'])->name('visitors.store');
     Route::post('/visitors/checkout/{id}', [VisitorController::class, 'checkout'])->name('visitors.checkout');
     Route::post('/visitors/{id}/notify-tenant', [VisitorController::class, 'notifyTenant'])->name('visitors.notify-tenant');
