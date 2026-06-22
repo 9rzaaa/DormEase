@@ -2825,7 +2825,7 @@
         applyFilters();
     }
 
-    const EM_POLL_INTERVAL = 30000;
+    const EM_POLL_INTERVAL = 7000;
     let reportsData = [...reports];
 
     populateTypeFilter();
@@ -2860,8 +2860,6 @@
     }
 
     async function pollEmReports() {
-        if (isAnyEmModalOpen()) return;
-
         const activeEl = document.activeElement;
 
         try {
@@ -2886,6 +2884,12 @@
 
             const newPanics = fresh.filter(r => r.is_panic_alert && !prevIds.has(r.report_id));
 
+            newPanics.forEach(r => {
+                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
+            });
+
+            if (isAnyEmModalOpen()) return;
+
             reportsData = fresh;
 
             const typeSelect = document.getElementById('type-filter');
@@ -2907,11 +2911,6 @@
             if (typeFilterVal) typeSelect.value = typeFilterVal;
 
             applyFilters();
-
-            newPanics.forEach(r => {
-                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
-            });
-
             showEmPollToast();
 
             if (activeEl && activeEl.id) {
@@ -2927,21 +2926,6 @@
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
-
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                    }
-                })
-                .catch(function() {});
-        }
-        setInterval(checkPanic, 30000);
-    })();
 
     const kwEditIcon = "{{ asset('icons/edit.png') }}";
     const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
