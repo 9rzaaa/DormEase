@@ -3779,5 +3779,24 @@ function renderAcancelledTable() {
 fetchDocs();
 fetchReqs();
 fetchForms();
+
+const POLL_INTERVAL = 30000;
+
+function getActiveTab() {
+    if (document.getElementById('panel-docs').classList.contains('active')) return 'docs';
+    if (document.getElementById('panel-reqs').classList.contains('active')) return 'reqs';
+    if (document.getElementById('panel-forms').classList.contains('active')) return 'forms';
+    return 'docs';
+}
+
+function pollActiveTab() {
+    const tab = getActiveTab();
+    if (tab === 'docs') fetchDocs();
+    if (tab === 'reqs') fetchReqs();
+    if (tab === 'forms') fetchForms();
+    if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
+}
+
+setInterval(pollActiveTab, POLL_INTERVAL);
 </script>
 @endsection
