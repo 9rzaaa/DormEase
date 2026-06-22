@@ -3439,10 +3439,10 @@ function renderFormTable() {
                     <button class="act-btn" title="Open" onclick="openFormFile('${escHtml(f.file_path)}')">
                         <img src="${eyeIcon}" alt="Open">
                     </button>
-                    <button class="act-btn" title="Rename" onclick="openEditForm(${f.id}, ${JSON.stringify(f.label)})">
+                    <button class="act-btn" title="Rename" onclick='openEditForm(${f.id}, ${JSON.stringify(f.label)})'>
                         <img src="${editIcon}" alt="Rename">
                     </button>
-                    <button class="act-btn danger" title="Delete" onclick="promptDeleteForm(${f.id}, ${JSON.stringify(f.label)})">
+                    <button class="act-btn danger" title="Delete" onclick='promptDeleteForm(${f.id}, ${JSON.stringify(f.label)})'>
                         <img src="${deleteIcon}" alt="Delete">
                     </button>
                 </div>
