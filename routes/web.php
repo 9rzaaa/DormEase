@@ -250,9 +250,6 @@ Route::middleware('auth:staff')->group(function () {
 
         // emergency
         Route::get('/emergency', [EmergencyController::class, 'adminIndex'])->name('emergency.index');
-        Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
-        Route::post('/emergency/{id}/acknowledge', [EmergencyController::class, 'acknowledge'])->name('emergency.acknowledge');
-        Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
         Route::get('/emergency/poll/panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
         Route::get('/emergency/poll/reports', [EmergencyController::class, 'pollReports']);
         Route::post('/emergency/terms/{id}/classify', [EmergencyController::class, 'classifyTerm'])->name('emergency.terms.classify');
@@ -260,6 +257,9 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/emergency/keywords', [EmergencyController::class, 'storeKeyword'])->name('emergency.keywords.store');
         Route::put('/emergency/keywords/{id}', [EmergencyController::class, 'updateKeyword'])->name('emergency.keywords.update');
         Route::delete('/emergency/keywords/{id}', [EmergencyController::class, 'destroyKeyword'])->name('emergency.keywords.destroy');
+        Route::match(['put', 'post'], '/emergency/{id}', [EmergencyController::class, 'update'])->name('emergency.update');
+        Route::post('/emergency/{id}/acknowledge', [EmergencyController::class, 'acknowledge'])->name('emergency.acknowledge');
+        Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
 
         // profile
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
