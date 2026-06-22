@@ -5417,13 +5417,19 @@ async function submitRenewTenant() {
                 if (totalEl) totalEl.textContent = data.totalTenants;
                 if (activeEl) activeEl.textContent = data.activeCount;
 
+                var keepActivePage   = sectionPages.active;
+                var keepReservedPage = sectionPages.reserved;
                 applyFilters();
+                sectionPages.active   = Math.min(keepActivePage,   Math.max(1, Math.ceil(sectionData.active.length   / PER_PAGE)));
+                sectionPages.reserved = Math.min(keepReservedPage, Math.max(1, Math.ceil(sectionData.reserved.length / PER_PAGE)));
+                renderSection('active');
+                renderSection('reserved');
             })
             .catch(function () {});
     }
 
     checkForTenantUpdates();
-    setInterval(checkForTenantUpdates, pollInterval);
+    setInterval(checkForTenantUpdates, 15000);
 })();
 
 document.addEventListener('DOMContentLoaded', function() {

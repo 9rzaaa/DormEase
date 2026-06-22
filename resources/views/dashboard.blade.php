@@ -1203,7 +1203,7 @@
 })();
 (function () {
     var liveFingerprint = null;
-    var pollInterval = 5000;
+    var pollInterval = 12000;
     var anyModalOpen = function () {
         return !!document.querySelector('.modal-overlay.open');
     };

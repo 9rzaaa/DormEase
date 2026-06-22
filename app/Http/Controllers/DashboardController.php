@@ -145,9 +145,12 @@ class DashboardController extends Controller
         $latestEmergency = EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first();
 
         $fingerprint = md5(
-            $maintenanceRequests->max('updated_at') .
-            $announcements->max('updated_at') .
+            MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->max('updated_at') .
+            MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count() .
+            Announcement::max('updated_at') .
+            Announcement::count() .
             $notifications->max('created_at') .
+            $notifications->count() .
             optional($latestEmergency)->updated_at .
             EmergencyReport::max('updated_at')
         );
