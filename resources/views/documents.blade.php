@@ -2450,6 +2450,7 @@ let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage
 let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
 let currentReq = null;
+let allRequestsCache = [];
 let approvedState   = { search: '', page: 1, perPage: 8,  data: [], filtered: [] };
 let adeniedState    = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -2570,41 +2571,63 @@ function renderPagination(containerId, currentPage, totalPages, onGo) {
     pg.appendChild(next);
 }
 
-async function fetchDocs() {
-    document.getElementById('doc-tbody').innerHTML =
-        `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
+async function fetchAllRequests(isInitial = false) {
+    if (isInitial) {
+        document.getElementById('doc-tbody').innerHTML =
+            `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
+        document.getElementById('req-tbody').innerHTML =
+            `<tr><td colspan="8"><div class="empty-state">Loading...</div></td></tr>`;
+    }
     try {
         const res  = await fetch('/admin/document-requests', {
             headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
         });
         const data = await res.json();
         const all  = data.data ?? data;
+        allRequestsCache = all;
+
+        const freshDocIds = new Set(all.filter(r => r.category === 'form').map(r => r.doc_request_id));
+        const freshReqIds = new Set(all.filter(r => r.category === 'certificate').map(r => r.doc_request_id));
+
+        if (currentDoc && freshDocIds.has(currentDoc.doc_request_id)) {
+            currentDoc = all.find(r => r.doc_request_id === currentDoc.doc_request_id) ?? currentDoc;
+        }
+        if (currentReq && freshReqIds.has(currentReq.doc_request_id)) {
+            currentReq = all.find(r => r.doc_request_id === currentReq.doc_request_id) ?? currentReq;
+        }
+
         docState.data = all.filter(r => r.category === 'form');
+        reqState.data = all.filter(r => r.category === 'certificate');
+
         document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
+        document.getElementById('tab-reqs-count').textContent = reqState.data.filter(r => r.status === 'pending').length;
+
         docApplyFilters();
-        approvedApplyFilters();
+        reqApplyFilters();
+
+        const approvedPanelOpen = document.getElementById('approved-panel-body').classList.contains('open');
+        if (!approvedPanelOpen) {
+            approvedApplyFilters();
+        } else {
+            document.getElementById('approved-count-badge').textContent =
+                docState.data.filter(r => r.status === 'approved').length;
+        }
     } catch {
-        document.getElementById('doc-tbody').innerHTML =
-            `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
+        if (isInitial) {
+            document.getElementById('doc-tbody').innerHTML =
+                `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
+            document.getElementById('req-tbody').innerHTML =
+                `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+        }
     }
 }
 
+async function fetchDocs() {
+    await fetchAllRequests(false);
+}
+
 async function fetchReqs() {
-    document.getElementById('req-tbody').innerHTML =
-        `<tr><td colspan="8"><div class="empty-state">Loading...</div></td></tr>`;
-    try {
-        const res  = await fetch('/admin/document-requests', {
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
-        });
-        const data = await res.json();
-        const all  = data.data ?? data;
-        reqState.data = all.filter(r => r.category === 'certificate');
-        document.getElementById('tab-reqs-count').textContent = reqState.data.filter(r => r.status === 'pending').length;
-        reqApplyFilters();
-    } catch {
-        document.getElementById('req-tbody').innerHTML =
-            `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
-    }
+    await fetchAllRequests(false);
 }
 
 function docApplyFilters() {
@@ -2631,6 +2654,7 @@ function docApplyFilters() {
 }
 
 function renderDocTable() {
+    const activeEl = document.activeElement;
     const start = (docState.page - 1) * docState.perPage;
     const page  = docState.filtered.slice(start, start + docState.perPage);
     const tbody = document.getElementById('doc-tbody');
@@ -2672,6 +2696,10 @@ function renderDocTable() {
     renderPagination('doc-pagination', docState.page,
         Math.ceil(total / docState.perPage),
         p => { docState.page = p; renderDocTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 function viewDoc(r) {
@@ -2909,6 +2937,7 @@ function reqApplyFilters() {
 }
 
 function renderReqTable() {
+    const activeEl = document.activeElement;
     const start = (reqState.page - 1) * reqState.perPage;
     const page  = reqState.filtered.slice(start, start + reqState.perPage);
     const tbody = document.getElementById('req-tbody');
@@ -2947,6 +2976,10 @@ function renderReqTable() {
     renderPagination('req-pagination', reqState.page,
         Math.ceil(total / reqState.perPage),
         p => { reqState.page = p; renderReqTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 function viewReq(r) {
@@ -3414,6 +3447,7 @@ function formApplyFilters() {
     formState.filtered = formState.data.filter(f =>
         !q || (f.label ?? '').toLowerCase().includes(q)
     );
+    formState.filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     formState.page = 1;
     renderFormTable();
 }
@@ -3423,6 +3457,7 @@ function openFormFile(filePath) {
 }
 
 function renderFormTable() {
+    const activeEl = document.activeElement;
     const start = (formState.page - 1) * formState.perPage;
     const page  = formState.filtered.slice(start, start + formState.perPage);
     const tbody = document.getElementById('form-tbody');
@@ -3457,6 +3492,10 @@ function renderFormTable() {
     renderPagination('form-pagination', formState.page,
         Math.ceil(total / formState.perPage),
         p => { formState.page = p; renderFormTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 async function submitUploadForm() {
@@ -3776,8 +3815,7 @@ function renderAcancelledTable() {
         p => { acancelledState.page = p; renderAcancelledTable(); });
 }
 
-fetchDocs();
-fetchReqs();
+fetchAllRequests(true);
 fetchForms();
 
 const POLL_INTERVAL = 30000;
@@ -3789,14 +3827,53 @@ function getActiveTab() {
     return 'docs';
 }
 
-function pollActiveTab() {
-    const tab = getActiveTab();
-    if (tab === 'docs') fetchDocs();
-    if (tab === 'reqs') fetchReqs();
-    if (tab === 'forms') fetchForms();
-    if (document.getElementById('archive-drawer-overlay').classList.contains('open')) fetchArchive();
+function isAnyModalOpen() {
+    return document.querySelector('.modal-overlay.open') !== null ||
+        document.getElementById('archive-drawer-overlay').classList.contains('open');
 }
 
-setInterval(pollActiveTab, POLL_INTERVAL);
+function showPollToast() {
+    const existing = document.getElementById('poll-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'poll-toast';
+    toast.style.cssText = `
+        position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+        background:var(--white);border:1.5px solid var(--baby-pink);
+        border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+        color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+        z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+        pointer-events:none;
+    `;
+    toast.textContent = 'Data refreshed';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => { toast.style.opacity = '1'; });
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+
+async function pollActiveTab() {
+    if (isAnyModalOpen()) return;
+    const prevDocCount = docState.data.length;
+    const prevReqCount = reqState.data.length;
+    const prevFormCount = formState.data.length;
+    const tab = getActiveTab();
+    if (tab === 'docs' || tab === 'reqs') await fetchAllRequests(false);
+    if (tab === 'forms') await fetchForms();
+    const changed =
+        docState.data.length !== prevDocCount ||
+        reqState.data.length !== prevReqCount ||
+        formState.data.length !== prevFormCount;
+    if (changed) showPollToast();
+}
+
+setInterval(async () => {
+    await pollActiveTab();
+    if (!isAnyModalOpen() && document.getElementById('archive-drawer-overlay').classList.contains('open')) {
+        fetchArchive();
+    }
+}, POLL_INTERVAL);
 </script>
 @endsection
