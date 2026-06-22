@@ -254,6 +254,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::post('/emergency/{id}/acknowledge', [EmergencyController::class, 'acknowledge'])->name('emergency.acknowledge');
         Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy'])->name('emergency.destroy');
         Route::get('/emergency/poll/panic', [EmergencyController::class, 'pollPanic'])->name('emergency.poll-panic');
+        Route::get('/emergency/poll/reports', [EmergencyController::class, 'pollReports']);
         Route::post('/emergency/terms/{id}/classify', [EmergencyController::class, 'classifyTerm'])->name('emergency.terms.classify');
         Route::post('/emergency/terms/{id}/ignore', [EmergencyController::class, 'ignoreTerm'])->name('emergency.terms.ignore');
         Route::post('/emergency/keywords', [EmergencyController::class, 'storeKeyword'])->name('emergency.keywords.store');

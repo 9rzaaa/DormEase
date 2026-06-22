@@ -319,6 +319,17 @@ class EmergencyController extends Controller
         return response()->json(['success' => true, 'notified' => false]);
     }
 
+    public function pollReports()
+    {
+        $reports = $this->mapReports(
+            EmergencyReport::where('status', 'active')
+                ->orderBy('reported_at', 'desc')
+                ->get()
+        );
+
+        return response()->json($reports);
+    }
+
     public function pollPanic()
     {
         $latest = EmergencyReport::where('is_panic_alert', true)

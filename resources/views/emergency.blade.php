@@ -2280,7 +2280,7 @@
             dateToEl.style.borderColor = '';
         }
 
-        filtered = reports.filter(r => {
+        filtered = reportsData.filter(r => {
             const matchSearch =
                 normalizeFilterValue(r.emergency_type).includes(q) ||
                 normalizeFilterValue(r.urgency_level).includes(q) ||
@@ -2829,6 +2829,101 @@
     applyFilters();
     renderDirList();
 
+    const EM_POLL_INTERVAL = 30000;
+    let reportsData = [...reports];
+
+    function isAnyEmModalOpen() {
+        return document.querySelector('.modal-overlay.open') !== null ||
+            document.getElementById('archive-drawer').classList.contains('open');
+    }
+
+    function showEmPollToast() {
+        const existing = document.getElementById('em-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'em-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:var(--white);border:1.5px solid var(--pink-200);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Data refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function pollEmReports() {
+        if (isAnyEmModalOpen()) return;
+
+        const activeEl = document.activeElement;
+
+        try {
+            const res = await fetch('/emergency/poll/reports', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const fresh = await res.json();
+
+            const prevIds = new Set(reportsData.map(r => r.report_id));
+            const freshIds = new Set(fresh.map(r => r.report_id));
+
+            const hasChanges =
+                fresh.length !== reportsData.length ||
+                fresh.some(r => {
+                    const old = reportsData.find(o => o.report_id === r.report_id);
+                    return !old || old.status !== r.status || old.urgency_level !== r.urgency_level;
+                }) ||
+                [...prevIds].some(id => !freshIds.has(id));
+
+            if (!hasChanges) return;
+
+            const newPanics = fresh.filter(r => r.is_panic_alert && !prevIds.has(r.report_id));
+
+            reportsData = fresh;
+
+            const typeSelect = document.getElementById('type-filter');
+            const typeFilterVal = typeSelect.value;
+            const currentTypes = new Set([...typeSelect.options].map(o => o.value).filter(Boolean));
+            const freshTypes = [...new Set(
+                fresh.map(r => String(r.emergency_type ?? '').trim()).filter(t => t && t !== '—')
+            )].sort((a, b) => a.localeCompare(b));
+
+            freshTypes.forEach(t => {
+                if (!currentTypes.has(t)) {
+                    const opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = t;
+                    typeSelect.appendChild(opt);
+                }
+            });
+
+            if (typeFilterVal) typeSelect.value = typeFilterVal;
+
+            applyFilters();
+
+            newPanics.forEach(r => {
+                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
+            });
+
+            showEmPollToast();
+
+            if (activeEl && activeEl.id) {
+                const refocus = document.getElementById(activeEl.id);
+                if (refocus && refocus !== document.activeElement) refocus.focus();
+            }
+        } catch {
+        }
+    }
+
+    setInterval(pollEmReports, EM_POLL_INTERVAL);
+
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
@@ -2841,7 +2936,6 @@
                 .then(function(data) {
                     if (data.has_panic && data.report_id !== lastPanicId) {
                         lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
                     }
                 })
                 .catch(function() {});
