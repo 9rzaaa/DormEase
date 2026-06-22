@@ -293,6 +293,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
         Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
         Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
+Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'poll'])->name('frontdesk.announcements.poll');
         Route::get('/frontdesk/tenants/live', [TenantController::class, 'live'])->name('frontdesk.tenants.live');
         Route::get('/frontdesk/emergency/poll/panic', [EmergencyController::class, 'pollPanic']);
 
