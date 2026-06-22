@@ -211,6 +211,7 @@ Route::middleware('auth:staff')->group(function () {
             Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
             Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
             Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
+            Route::get('/poll', [BillingController::class, 'poll'])->name('poll');
         });
 
         // documents

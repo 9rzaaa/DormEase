@@ -207,6 +207,25 @@ class BillingController extends Controller
         ));
     }
 
+    public function poll(Request $request)
+    {
+        $selectedMonth = $request->get('month', now()->format('Y-m-01'));
+        $selectedFloor = $request->get('floor', '');
+
+        $billings = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
+            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
+            ->when($selectedFloor !== '', fn($q) => $q->where('floor', $selectedFloor))
+            ->get(['billing_id', 'payment_status', 'updated_at']);
+
+        $signature = $billings->isEmpty()
+            ? '0'
+            : (string) $billings->count() . '-' . (string) $billings->max('updated_at');
+
+        return response()->json([
+            'signature' => $signature,
+        ]);
+    }
+
     public function log(Request $request)
     {
         try {
