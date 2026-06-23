@@ -1036,15 +1036,26 @@ function dismissAnnouncement(id) {
     saveHidden(hidden);
     const card = document.querySelector('.ann-row-card[data-ann-id="' + numId + '"]');
     if (card) {
+        card.style.pointerEvents = 'none';
         card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
         card.style.opacity = '0';
         card.style.transform = 'translateX(18px)';
         setTimeout(() => {
             card.style.display = 'none';
-            applyHidden();
+            card.style.pointerEvents = '';
+            updateEmptyState();
+            const hiddenNow = getHidden().map(h => parseInt(h, 10));
+            const bar = document.getElementById('ann-show-hidden-bar');
+            const label = document.getElementById('ann-hidden-count-label');
+            if (hiddenNow.length > 0) {
+                bar.classList.add('visible');
+                label.textContent = hiddenNow.length + ' hidden announcement' + (hiddenNow.length !== 1 ? 's' : '');
+            } else {
+                bar.classList.remove('visible');
+            }
         }, 290);
     } else {
-        applyHidden();
+        updateEmptyState();
     }
 }
 
@@ -1158,7 +1169,10 @@ function renderHiddenModal() {
 }
 
 function updateEmptyState() {
-    const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
+    let visible = 0;
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        if (card.style.display !== 'none' && card.style.visibility !== 'hidden') visible++;
+    });
     document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
 }
 
@@ -1284,11 +1298,6 @@ function openViewModal(id) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
-
-function updateEmptyState() {
-    const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
-    document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
-}
 
 document.querySelectorAll('.ann-row-card[data-status="closed"]').forEach(card => card.remove());
 purgeHiddenMissing();
