@@ -266,7 +266,7 @@
 
     .empty-state { text-align: center; padding: 1.8rem; color: var(--ink-muted); font-size: .88rem; }
 
-    .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
+    .right-col { display: flex; flex-direction: column; gap: 1.4rem; position: sticky; top: 90px; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
     .notif-item {
