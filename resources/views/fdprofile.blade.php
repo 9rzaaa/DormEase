@@ -685,22 +685,30 @@
                                 <label>Current Password</label>
                                 <div class="input-wrap">
                                     <input type="password" name="current_password" id="cur-pw"
-                                        placeholder="Enter current password" required autocomplete="current-password">
+                                        placeholder="Enter current password" required autocomplete="current-password"
+                                        style="{{ $errors->has('current_password') ? 'border-color:#e8175d;' : '' }}">
                                     <button type="button" class="toggle-pw" onclick="togglePw('cur-pw', this)">
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
+                                @error('current_password')
+                                    <div style="font-size:.69rem;color:#e8175d;margin-top:.2rem;">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="form-field">
                                 <label>New Password</label>
                                 <div class="input-wrap">
                                     <input type="password" name="password" id="new-pw"
                                         placeholder="Min. 8 characters" required autocomplete="new-password"
-                                        oninput="checkStrength(this.value)">
+                                        oninput="checkStrength(this.value)"
+                                        style="{{ $errors->has('password') ? 'border-color:#e8175d;' : '' }}">
                                     <button type="button" class="toggle-pw" onclick="togglePw('new-pw', this)">
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
+                                @error('password')
+                                    <div style="font-size:.69rem;color:#e8175d;margin-top:.2rem;">{{ $message }}</div>
+                                @enderror
                                 <div class="pw-strength-bar">
                                     <div class="pw-strength-fill" id="strength-fill"></div>
                                 </div>
@@ -965,6 +973,8 @@
         if (!npw.value) { showFieldError(npw, 'New password is required.'); ok = false; }
         else if (npw.value.length < 8) { showFieldError(npw, 'Password must be at least 8 characters.'); ok = false; }
         else clearFieldError(npw);
+
+        if (npw.value && cur.value && npw.value === cur.value) { showFieldError(npw, 'New password must differ from your current password.'); ok = false; }
 
         if (!conf.value) { showFieldError(conf, 'Please confirm your new password.'); ok = false; }
         else if (conf.value !== npw.value) { showFieldError(conf, 'Passwords do not match.'); ok = false; }
