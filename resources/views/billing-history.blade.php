@@ -731,7 +731,8 @@
             <option value="paid"    {{ $selectedStatus === 'paid'    ? 'selected' : '' }}>Paid</option>
             <option value="unpaid"  {{ $selectedStatus === 'unpaid'  ? 'selected' : '' }}>Unpaid</option>
             <option value="overdue" {{ $selectedStatus === 'overdue' ? 'selected' : '' }}>Overdue</option>
-            <option value="pending" {{ $selectedStatus === 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="pending"  {{ $selectedStatus === 'pending'  ? 'selected' : '' }}>Pending</option>
+                <option value="rejected" {{ $selectedStatus === 'rejected' ? 'selected' : '' }}>Rejected</option>
         </select>
         <select class="filter-select" id="filter-month">
             <option value="">All Months</option>
