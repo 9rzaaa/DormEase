@@ -169,7 +169,9 @@ class BillingHistoryController extends Controller
 
         $summaryByMonth = [];
         foreach ($distinctMonths as $mk) {
-            $mBillings = WaterBilling::whereRaw("DATE_FORMAT(billing_month, '%Y-%m-01') = ?", [$mk])->get();
+            $mBillings = WaterBilling::whereRaw("DATE_FORMAT(billing_month, '%Y-%m-01') = ?", [$mk])
+                ->whereHas('tenant', fn($q) => $q->whereIn('status', ['active', 'pending']))
+                ->get();
             $summaryByMonth[$mk] = [
                 'label'        => Carbon::parse($mk)->format('M Y'),
                 'total_bill'   => $mBillings->sum('room_share'),
