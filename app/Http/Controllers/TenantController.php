@@ -483,6 +483,15 @@ class TenantController extends Controller
 
         try {
             [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+                $alreadyRenewed = Tenant::where('email', $archived->email)
+                    ->whereIn('status', ['pending', 'active', 'reserved'])
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($alreadyRenewed) {
+                    throw new \RuntimeException('ALREADY_RENEWED');
+                }
+
                 $conflictingTenant = Tenant::where('email', $archived->email)->first();
 
                 if ($conflictingTenant) {
@@ -511,6 +520,11 @@ class TenantController extends Controller
 
                 return [$accountId, $tempPassword, $tenant->tenant_id];
             });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'ALREADY_RENEWED') {
+                return response()->json(['message' => 'This tenant has already been renewed. Refresh the page and check the active tenants list.'], 422);
+            }
+            return response()->json(['message' => 'Failed to create tenant account. Please try again.'], 500);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'This tenant email is already linked to another account. Please try renewing again.'], 422);
         } catch (\Exception $e) {
