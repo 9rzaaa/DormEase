@@ -977,8 +977,23 @@
         if (npw.value && cur.value && npw.value === cur.value) { showFieldError(npw, 'New password must differ from your current password.'); ok = false; }
 
         if (!conf.value) { showFieldError(conf, 'Please confirm your new password.'); ok = false; }
-        else if (conf.value !== npw.value) { showFieldError(conf, 'Passwords do not match.'); ok = false; }
-        else clearFieldError(conf);
+        else if (conf.value !== npw.value) {
+            conf.style.borderColor = '#e8175d';
+            var matchEl = document.getElementById('conf-pw-match');
+            matchEl.textContent = 'Passwords do not match.';
+            matchEl.style.color = '#e8175d';
+            matchEl.style.display = 'block';
+            var existing = document.getElementById('conf-pw-err');
+            if (existing) existing.textContent = '';
+            ok = false;
+        } else {
+            clearFieldError(conf);
+            var matchEl = document.getElementById('conf-pw-match');
+            matchEl.textContent = 'Passwords match.';
+            matchEl.style.color = '#16a34a';
+            matchEl.style.display = 'block';
+            conf.style.borderColor = '#16a34a';
+        }
 
         return ok;
     }
