@@ -811,7 +811,10 @@
                         <div id="conf-master-match" style="font-size:.69rem;margin-top:.2rem;display:none;"></div>
                     </div>
                 </div>
-                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.7rem 1rem;margin-top:.9rem;font-size:.75rem;color:var(--hot-pink);line-height:1.5;">
+                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.7rem 1rem;margin-top:.9rem;font-size:.75rem;color:#E8175D;line-height:1.5;">
+                    @if($isDefault)
+                        Your current master password is the system default: <code style="background:var(--pink-100);padding:.1rem .35rem;border-radius:4px;font-size:.75rem;font-family:monospace;">DormEase@2025</code>. Enter it above as your current master password and set a new one now.<br><br>
+                    @endif
                     A one-time <strong>recovery code</strong> will be generated when you save. Copy and store it securely. It is the only way to bypass a forgotten master password.
                 </div>
                 <div class="form-actions">
