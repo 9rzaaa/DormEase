@@ -1030,53 +1030,69 @@ function saveHidden(ids) {
 }
 
 function dismissAnnouncement(id) {
-    showFdLoading('Hiding announcement...');
-    setTimeout(() => {
-        const numId = parseInt(id, 10);
-        const hidden = getHidden().map(h => parseInt(h, 10));
-        if (!hidden.includes(numId)) hidden.push(numId);
-        saveHidden(hidden);
+    const numId = parseInt(id, 10);
+    const hidden = getHidden().map(h => parseInt(h, 10));
+    if (!hidden.includes(numId)) hidden.push(numId);
+    saveHidden(hidden);
+    const card = document.querySelector('.ann-row-card[data-ann-id="' + numId + '"]');
+    if (card) {
+        card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(18px)';
+        setTimeout(() => {
+            card.style.display = 'none';
+            applyHidden();
+        }, 290);
+    } else {
         applyHidden();
-        hideFdLoading();
-    }, 500);
+    }
 }
 
 function restoreHidden() {
-    showFdLoading('Restoring all announcements...');
-    setTimeout(() => {
-        saveHidden([]);
-        document.querySelectorAll('.ann-row-card').forEach(card => {
-            if (card.dataset.status !== 'closed') {
-                card.style.display = '';
-            }
-        });
-        applyHidden();
-        closeHiddenModal();
-        hideFdLoading();
-    }, 600);
+    saveHidden([]);
+    document.querySelectorAll('.ann-row-card').forEach(card => {
+        if (card.dataset.status !== 'closed') {
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(0)';
+            card.style.display = '';
+            requestAnimationFrame(() => {
+                card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'none';
+            });
+        }
+    });
+    applyHidden();
+    closeHiddenModal();
 }
 
 function showFdLoading(message) {
     const overlay = document.getElementById('action-loading');
+    if (!overlay) return;
     document.getElementById('action-loading-text').textContent = message;
     overlay.style.display = 'flex';
 }
 
 function hideFdLoading() {
-    document.getElementById('action-loading').style.display = 'none';
+    const overlay = document.getElementById('action-loading');
+    if (!overlay) return;
+    overlay.style.display = 'none';
 }
 
 function unhideOne(id) {
-    showFdLoading('Restoring announcement...');
-    setTimeout(() => {
-        const hidden = getHidden().filter(h => h !== id);
-        saveHidden(hidden);
-        const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
-        if (card) card.style.display = '';
-        applyHidden();
-        renderHiddenModal();
-        hideFdLoading();
-    }, 500);
+    const hidden = getHidden().filter(h => h !== id);
+    saveHidden(hidden);
+    const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
+    if (card) {
+        card.style.opacity = '0';
+        card.style.display = '';
+        requestAnimationFrame(() => {
+            card.style.transition = 'opacity 0.25s ease';
+            card.style.opacity = '1';
+        });
+    }
+    applyHidden();
+    renderHiddenModal();
 }
 
 function purgeHiddenMissing() {
@@ -1268,6 +1284,11 @@ function openViewModal(id) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+function updateEmptyState() {
+    const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
+    document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
+}
 
 document.querySelectorAll('.ann-row-card[data-status="closed"]').forEach(card => card.remove());
 purgeHiddenMissing();
