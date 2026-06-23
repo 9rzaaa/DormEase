@@ -338,15 +338,6 @@
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">How do I pay my monthly dues and view my billing statement?</span>
-            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
-          </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly billing statements, including rent and water charges, are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
-          </div>
-        </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
