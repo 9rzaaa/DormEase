@@ -238,7 +238,7 @@ class BillingController extends Controller
 
             $request->validate([
                 'billing_month'          => 'required|date',
-                'due_date'               => 'required|date',
+                'due_date'               => 'required|date|after_or_equal:billing_month',
                 'maynilad_total_m3'      => 'required|numeric|min:0.01',
                 'maynilad_total_amount'  => 'required|numeric|min:0.01',
                 'floor_readings'         => 'required|array|min:1',
