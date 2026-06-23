@@ -148,6 +148,7 @@ Route::post('/logout', function () {
 
 // forgot pass
 Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify')->middleware('throttle:5,1');
+Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 'verifyMaster'])->name('forgot-password.verify-master')->middleware('throttle:5,1');
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
@@ -266,6 +267,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
         Route::put('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+        Route::put('/profile/master-password', [ProfileController::class, 'updateMasterPassword'])->name('profile.master-password');
 
         // settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
