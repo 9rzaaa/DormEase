@@ -720,7 +720,6 @@ class TenantController extends Controller
         \Illuminate\Support\Facades\DB::transaction(function () use ($tenant) {
             $this->archiveTenant($tenant, 'deleted');
 
-            \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
             \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
                 ->whereIn('payment_status', ['unpaid', 'overdue'])
                 ->update([
