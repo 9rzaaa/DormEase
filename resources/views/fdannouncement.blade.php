@@ -794,7 +794,7 @@
                                 <img src="{{ asset('icons/eye.png') }}" alt=""> View
                             </button>
                             <button class="ann-dismiss-btn" onclick="event.stopPropagation(); dismissAnnouncement({{ $ann->announcement_id }})" title="Hide this announcement">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
                         </div>
                     </div>
@@ -1032,8 +1032,9 @@ function saveHidden(ids) {
 function dismissAnnouncement(id) {
     showFdLoading('Hiding announcement...');
     setTimeout(() => {
-        const hidden = getHidden();
-        if (!hidden.includes(id)) hidden.push(id);
+        const numId = parseInt(id, 10);
+        const hidden = getHidden().map(h => parseInt(h, 10));
+        if (!hidden.includes(numId)) hidden.push(numId);
         saveHidden(hidden);
         applyHidden();
         hideFdLoading();
@@ -1055,6 +1056,16 @@ function restoreHidden() {
     }, 600);
 }
 
+function showFdLoading(message) {
+    const overlay = document.getElementById('action-loading');
+    document.getElementById('action-loading-text').textContent = message;
+    overlay.style.display = 'flex';
+}
+
+function hideFdLoading() {
+    document.getElementById('action-loading').style.display = 'none';
+}
+
 function unhideOne(id) {
     showFdLoading('Restoring announcement...');
     setTimeout(() => {
@@ -1068,34 +1079,15 @@ function unhideOne(id) {
     }, 500);
 }
 
-function showFdLoading(message) {
-    const overlay = document.getElementById('action-loading');
-    document.getElementById('action-loading-text').textContent = message;
-    overlay.style.display = 'flex';
-}
-
-function hideFdLoading() {
-    document.getElementById('action-loading').style.display = 'none';
-}
-
-function unhideOne(id) {
-    const hidden = getHidden().filter(h => h !== id);
-    saveHidden(hidden);
-    const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
-    if (card) card.style.display = '';
-    applyHidden();
-    renderHiddenModal();
-}
-
 function purgeHiddenMissing() {
     const hidden = getHidden().filter(id => !!annData[id]);
     if (hidden.length !== getHidden().length) saveHidden(hidden);
 }
 
 function applyHidden() {
-    const hidden = getHidden();
+    const hidden = getHidden().map(h => parseInt(h, 10));
     document.querySelectorAll('.ann-row-card').forEach(card => {
-        const id = parseInt(card.dataset.annId);
+        const id = parseInt(card.dataset.annId, 10);
         if (hidden.includes(id)) {
             card.style.display = 'none';
         }
