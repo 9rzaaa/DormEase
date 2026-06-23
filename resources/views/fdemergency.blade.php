@@ -2479,7 +2479,6 @@
         }
 
         function updateStats(freshReports) {
-            var total    = freshReports.length;
             var critical = freshReports.filter(function (r) {
                 return r.urgency_level === 'critical' || r.urgency_level === 'urgent';
             }).length;
@@ -2488,7 +2487,6 @@
             }).length;
 
             var statNums = document.querySelectorAll('.stat-num');
-            if (statNums[0]) statNums[0].textContent = total;
             if (statNums[1]) statNums[1].textContent = critical;
             if (statNums[2]) statNums[2].textContent = panic;
         }
