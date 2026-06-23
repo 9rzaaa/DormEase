@@ -405,6 +405,7 @@ class BillingController extends Controller
         $count = WaterBilling::where('floor', $billing->floor)
             ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
             ->whereMonth('billing_month', Carbon::parse($billing->billing_month)->month)
+            ->whereHas('tenant', fn($q) => $q->whereIn('status', ['active', 'pending']))
             ->count();
 
         $share = $count > 0 ? round($total / $count, 2) : 0;
