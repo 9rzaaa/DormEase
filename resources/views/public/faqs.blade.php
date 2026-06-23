@@ -80,7 +80,7 @@
     .faq-item.open .faq-icon svg { stroke:white; }
     .faq-answer { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.4,0,.2,1), padding .3s; }
     .faq-answer-inner { padding:0 26px 22px; color:var(--brown-light); font-size:.95rem; line-height:1.78; border-top:1px solid rgba(232,23,93,.10); padding-top:18px; }
-    .faq-item.open .faq-answer { max-height:400px; }
+    .faq-item.open .faq-answer { max-height:600px; }
 
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
     .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
@@ -234,7 +234,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">The building gate is closed at 10:00 p.m. every night. Tenants are expected to be back inside the dormitory before curfew. In cases of special circumstances such as late exams or school events, tenants may coordinate with the management in advance to arrange late entry. Repeated violations of the curfew policy may result in a notice or penalty.</div>
+            <div class="faq-answer-inner">The building gate is closed at 10:00 p.m. every night. No tenants will be allowed entry or allowed to leave after 10:00 p.m. unless they have a written approval of request (Curfew Slip) from the Admin office. Doctors undergoing residency training may be exempt upon proper written notification with the Admin office. Repeated violations of the curfew policy may result in a notice or penalty.</div>
           </div>
         </div>
 
@@ -244,7 +244,47 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Yes, visitors are welcome within the designated visitor area on the ground floor. However, male visitors are strictly not allowed inside tenant rooms or upper floors at any time. All visitors must sign in at the guard station upon entry and sign out when leaving. Visitor hours are regulated and must follow the dormitory house rules.</div>
+            <div class="faq-answer-inner">Male visitors are strictly not allowed inside the units, including male relatives. Female guests are allowed provided they secure authorization from the Admin office. All visitors must log in and out with the guard at the main entrance for reasons of safety and security.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">Can someone stay overnight with me in the dormitory?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Sleepovers are permitted exclusively for female friends or family members. Male overnight guests are strictly not allowed under any circumstances. To request a sleepover, the tenant must submit a <strong>Non-Tenant Sleepover Request</strong> through the DormEase app prior to the intended date. Once the request is reviewed and approved by management, a sleepover fee of <strong>₱200.00</strong> must be paid before the guest is permitted to stay. Unapproved overnight guests are a violation of dormitory policy and may result in a notice or penalty.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">Is log in/log out required every time I enter or leave the building?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Yes. All tenants are required to log in and log out with the guard every time they enter or exit the building. This is a mandatory safety and security measure and applies at all times, regardless of the duration of your absence.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">What are the rules about keeping rooms clean and disposing of garbage?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Tenants are required to keep their rooms neat and clean at all times. Garbage disposal is the tenant's responsibility — trash must be regularly brought down to the ground floor under the stairs. Please keep lobbies and landings clear of personal belongings. Do not throw anything out of the window.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">Are laundry and flat ironing allowed inside the dormitory?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Laundry inside the units is not allowed. Flat ironing is also strictly prohibited throughout the building to prevent fire hazards. Tenants are encouraged to use laundry services available near the dormitory.</div>
           </div>
         </div>
 
@@ -254,7 +294,27 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Tenants can file a maintenance request directly through the DormEase app or web portal. Simply describe the issue, specify the location, and submit. Management will review your request and assign it to the appropriate personnel. You can track the status of your request in real time through your tenant dashboard.</div>
+            <div class="faq-answer-inner">Tenants must submit a written report of any damages in the unit to the Admin office for repair and maintenance. You can also file a maintenance request directly through the DormEase app or web portal — describe the issue, specify the location, and submit. Management will review and assign it to the appropriate personnel, and you can track the status in real time through your tenant dashboard.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">Is smoking or drinking alcohol allowed in the building?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">No. Smoking and drinking alcohol are strictly prohibited anywhere inside the building. This rule applies to tenants and any guests at all times to maintain a safe and respectful environment for all residents.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">Can I give tips or gifts to the dormitory staff or guards?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">No. Tipping or giving money or gifts to staff and guards is not allowed. Favoritism shall not be tolerated — equal and fair treatment is upheld for all tenants. Please report any concerns regarding staff conduct to the Admin office.</div>
           </div>
         </div>
 
@@ -290,11 +350,11 @@
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">How do I pay my monthly dues and view my billing statement?</span>
+            <span class="faq-question">How do I view and pay my water bill?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly billing statements, including rent and water charges, are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
+            <div class="faq-answer-inner">Water billing statements are accessible through the DormEase tenant portal, where you can view a full breakdown of your water consumption and charges each billing cycle. Payment can be made directly through the app via <strong>GCash</strong>, <strong>bank transfer</strong>, or <strong>over the counter</strong> at the management office. Tenants can also view their complete payment history anytime through the app. Official receipts are issued by DormEase upon request for any completed payment.</div>
           </div>
         </div>
 
@@ -319,9 +379,21 @@
       <a href="{{ route('features') }}#water-bill">Water Billing</a>
       <a href="{{ route('features') }}#visitor">Visitor Log</a>
       <a href="{{ route('features') }}#emergency">Emergency</a>
-      <a href="{{ route('safety.features') }}">Safety Features</a></div>
-    <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>
-    <div class="footer-col"><h4>Contact</h4><a href="tel:+639175359723">+63 917 535 9723</a><a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">1229 Navarra St.</a><a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">Sampaloc, Manila</a></div>
+      <a href="{{ route('safety.features') }}">Safety Features</a>
+    </div>
+    <div class="footer-col">
+      <h4>Dormitory</h4>
+      <a href="{{ route('home') }}#about">About</a>
+      <a href="{{ route('home') }}#gallery">Room Types</a>
+      <a href="{{ route('home') }}#about">Amenities</a>
+      <a href="{{ route('home') }}#contact">Location</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a href="tel:+639175359723">+63 917 535 9723</a>
+      <a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">1229 Navarra St.</a>
+      <a href="https://maps.google.com/?q=1229+Navarra+St,+Sampaloc,+Manila" target="_blank" rel="noopener noreferrer">Sampaloc, Manila</a>
+    </div>
   </div>
   <div class="footer-btm">
     <span>&copy; 2026 DormEase: Sanctissimo Rosario Ladies Dormitory</span>
@@ -337,7 +409,11 @@
           <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
         </a>
       </div>
-      <div class="footer-links"><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
+      <div class="footer-links">
+        <a href="{{ route('privacy') }}">Privacy Policy</a>
+        <a href="{{ route('faqs') }}">FAQs</a>
+        <a href="{{ route('login') }}">Admin Portal</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -349,6 +425,7 @@
 <script>
   const nav = document.getElementById('navbar');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20));
+
   const navToggle = document.getElementById('navToggle');
   const mobileNav = document.getElementById('mobileNav');
   if (navToggle && mobileNav) {
@@ -379,16 +456,6 @@
   const items = document.querySelectorAll('.faq-item');
   items.forEach(item => {
     const btn = item.querySelector('.faq-btn');
-
-    item.addEventListener('mouseenter', () => {
-      items.forEach(i => {
-        i.classList.remove('open');
-        i.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
-      });
-      item.classList.add('open');
-      btn.setAttribute('aria-expanded', 'true');
-    });
-
     btn.addEventListener('click', () => {
       const isOpen = item.classList.contains('open');
       items.forEach(i => {
