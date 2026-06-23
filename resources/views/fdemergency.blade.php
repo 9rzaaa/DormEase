@@ -1413,7 +1413,7 @@
             <div class="modal-title">Report Emergency</div>
             <button class="modal-close" onclick="closeModal('report-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('frontdesk.emergency.store') }}">
+        <form method="POST" action="{{ route('frontdesk.emergency.store') }}" id="report-form">
             @csrf
             <div class="modal-grid">
                 <div class="em-modal-field">
@@ -1450,7 +1450,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="report-submit-btn" onclick="handleReportSubmit(event, this)">Submit Report</button>
+                <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
             </div>
         </form>
     </div>
@@ -2368,22 +2368,26 @@
         showToast('{{ session("success") }}', 'success');
     @endif
 
-    function handleReportSubmit(event, btn) {
+    document.getElementById('report-form').addEventListener('submit', function(event) {
+        const btn  = document.getElementById('report-submit-btn');
         const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
         const loc  = document.querySelector('#report-modal input[name="location"]').value.trim();
+
         if (!type) {
             showToast('Please select an emergency type.', 'error');
             event.preventDefault();
             return;
         }
-        if (!loc) {
+            if (!loc) {
             showToast('Please enter a location.', 'error');
             event.preventDefault();
             return;
         }
+
         btn.disabled = true;
         btn.textContent = 'Submitting...';
-    }
+        showActionLoading('Submitting emergency report...');
+    });
 
     function populateTypeFilter() {
         const select = document.getElementById('type-filter');
