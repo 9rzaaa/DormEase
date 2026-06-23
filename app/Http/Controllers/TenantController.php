@@ -127,7 +127,7 @@ class TenantController extends Controller
                 'email',
                 Rule::unique('tenants', 'email')->where(fn ($q) => $q->where('status', '!=', 'inactive')),
             ],
-            'contact_number'         => 'nullable|string|max:20',
+            'contact_number' => ['required', 'string', 'regex:/^(\+63[\s]?9\d{2}[-]?\d{3}[-]?\d{4}|09\d{2}[-]?\d{3}[-]?\d{4}|\+639\d{9}|09\d{9})$/'],
             'guardian_number'        => 'nullable|string|max:20',
             'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:99',
@@ -137,6 +137,9 @@ class TenantController extends Controller
             'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
+        ], [
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.regex'    => 'Enter a valid PH mobile number (e.g. 0912-345-6789 or +63 912-345-6789).',
         ]);
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
@@ -263,7 +266,7 @@ class TenantController extends Controller
             'first_name'             => 'required|string|max:100',
             'last_name'              => 'required|string|max:100',
             'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
-            'contact_number'         => 'nullable|string|max:20',
+            'contact_number' => ['required', 'string', 'regex:/^(\+63[\s]?9\d{2}[-]?\d{3}[-]?\d{4}|09\d{2}[-]?\d{3}[-]?\d{4}|\+639\d{9}|09\d{9})$/'],
             'guardian_number'        => 'nullable|string|max:20',
             'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:99',
@@ -282,6 +285,8 @@ class TenantController extends Controller
             'stay_type'     => 'stay type',
             'move_in_date'  => 'move-in date',
             'move_out_date' => 'move-out date',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.regex'    => 'Enter a valid PH mobile number (e.g. 0912-345-6789 or +63 912-345-6789).',
         ]);
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
