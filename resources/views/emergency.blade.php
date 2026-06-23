@@ -528,6 +528,11 @@
         border-bottom: none;
         padding-bottom: .75rem;
     }
+    
+    .dir-modal {
+        max-height: 85vh;
+        height: 85vh;
+    }
 
     .dir-tabs {
         display: flex;
@@ -971,6 +976,721 @@
         font-weight: 500;
         line-height: 1.45;
     }
+
+    .kw-modal-header-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .8rem;
+    }
+
+    .kw-modal-icon-badge {
+        width: 38px; height: 38px;
+        border-radius: 11px;
+        background: var(--gradient-pink);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 16px rgba(232,23,93,.3);
+    }
+
+    .kw-modal-icon-badge img {
+        width: 19px; height: 19px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+    }
+
+    .kw-modal-title-block { display: flex; flex-direction: column; gap: .1rem; }
+
+    .kw-modal-sub {
+        font-size: .76rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .kw-help-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        background: var(--pink-100);
+        color: var(--hot-pink);
+        font-size: .68rem;
+        font-weight: 800;
+        cursor: pointer;
+        flex-shrink: 0;
+        user-select: none;
+        transition: background .2s, color .2s;
+    }
+
+    .kw-help-wrap:hover { background: var(--bright-pink); color: var(--white); }
+
+    .kw-help-popup {
+        display: none;
+        position: fixed;
+        background: #2a1320;
+        color: var(--white);
+        border-radius: 14px;
+        padding: .9rem 1rem;
+        font-size: .76rem;
+        font-weight: 500;
+        line-height: 1.5;
+        width: 280px;
+        z-index: 9999;
+        box-shadow: 0 16px 36px rgba(0,0,0,.3);
+        --kw-arrow-left: 50%;
+    }
+
+    .kw-help-popup::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: var(--kw-arrow-left);
+        width: 12px; height: 12px;
+        background: #2a1320;
+        transform: rotate(45deg);
+        border-radius: 2px;
+    }
+
+    .kw-help-popup-title {
+        font-size: .72rem;
+        font-weight: 800;
+        color: var(--bright-pink);
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-bottom: .7rem;
+        padding-bottom: .55rem;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .kw-help-step {
+        display: flex;
+        align-items: flex-start;
+        gap: .55rem;
+        margin-bottom: .6rem;
+    }
+
+    .kw-help-step:last-child { margin-bottom: 0; }
+
+    .kw-help-step-num {
+        flex-shrink: 0;
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .67rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .kw-help-step span:last-child {
+        color: rgba(255,255,255,.92);
+    }
+
+    .kw-help-step strong { color: var(--white); }
+
+    .kw-segmented {
+        display: flex;
+        gap: .25rem;
+        padding: .9rem 1.1rem .8rem;
+        flex-shrink: 0;
+        background: var(--white);
+    }
+
+    .kw-tab {
+        flex: 1;
+        position: relative;
+        padding: .55rem .7rem;
+        font-size: .78rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+        background: var(--blush);
+        border: 1.5px solid transparent;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        transition: .2s;
+    }
+
+    .kw-tab:hover { border-color: var(--pink-200); }
+
+    .kw-tab.active {
+        background: var(--gradient-pink);
+        color: var(--white);
+        box-shadow: 0 6px 16px rgba(232,23,93,.25);
+    }
+
+    .kw-tab-count {
+        font-size: .65rem; font-weight: 800; padding: .08rem .42rem;
+        border-radius: 99px; background: rgba(255,255,255,.85); color: var(--hot-pink);
+    }
+
+    .kw-tab.active .kw-tab-count { background: rgba(255,255,255,.3); color: var(--white); }
+
+    .kw-search-bar { padding: 0 1.1rem .8rem; flex-shrink: 0; }
+
+    .kw-summary-bar {
+        flex-shrink: 0;
+        padding: 0 1.1rem .6rem;
+    }
+
+    .kw-summary-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .6rem;
+        width: 100%;
+        background: var(--blush);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 10px;
+        padding: .5rem .75rem;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: border-color .2s, background .2s;
+    }
+
+    .kw-summary-toggle:hover {
+        border-color: var(--bright-pink);
+        background: var(--petal);
+    }
+
+    .kw-summary-toggle-text {
+        font-size: .73rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+    }
+
+    .kw-summary-toggle-text strong {
+        color: var(--hot-pink);
+        font-weight: 800;
+    }
+
+    .kw-summary-chevron {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        color: var(--hot-pink);
+        transition: transform .25s ease;
+    }
+
+    .kw-summary-bar.open .kw-summary-chevron {
+        transform: rotate(180deg);
+    }
+
+    .kw-summary-detail {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .28s ease, opacity .2s ease, margin-top .25s ease;
+        opacity: 0;
+    }
+
+    .kw-summary-bar.open .kw-summary-detail {
+        max-height: 110px;
+        opacity: 1;
+        margin-top: .5rem;
+    }
+
+    .kw-summary-split {
+        display: flex;
+        height: 8px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: var(--baby-pink);
+        margin-bottom: .55rem;
+    }
+
+    .kw-summary-split-builtin {
+        background: var(--pink-100);
+        transition: width .3s ease;
+    }
+
+    .kw-summary-split-trained {
+        background: var(--bright-pink);
+        transition: width .3s ease;
+    }
+
+    .kw-summary-rows {
+        display: flex;
+        flex-direction: column;
+        gap: .3rem;
+    }
+
+    .kw-summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .73rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+    }
+
+    .kw-summary-row-label {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+    }
+
+    .kw-summary-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .kw-summary-dot.builtin { background: var(--pink-100); border: 1px solid var(--baby-pink); }
+    .kw-summary-dot.trained { background: var(--bright-pink); }
+
+    .kw-summary-row-val {
+        color: var(--ink);
+        font-weight: 800;
+    }
+
+    .kw-search-inner { position: relative; display: flex; align-items: center; }
+
+    .kw-search-inner input {
+        width: 100%;
+        padding: .5rem .85rem .5rem 2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--pink-100);
+        background: #fffafd;
+        color: var(--ink);
+        font-size: .82rem;
+        font-family: var(--ff-body);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .kw-search-inner input:focus {
+        border-color: var(--bright-pink);
+        box-shadow: 0 0 0 3px rgba(232,23,93,.1);
+    }
+
+    .kw-search-icon { position: absolute; left: .65rem; width: 13px; height: 13px; opacity: .35; pointer-events: none; }
+
+    .kw-list {
+        flex: 1 1 auto; overflow-y: scroll;
+        padding: 0 1.1rem 1.1rem;
+        display: flex; flex-direction: column; gap: .75rem;
+        scrollbar-width: thin; scrollbar-color: var(--pink-200) transparent;
+        min-height: 0;
+        max-height: none;
+    }
+
+    .kw-list::-webkit-scrollbar { width: 4px; }
+    .kw-list::-webkit-scrollbar-track { background: transparent; }
+    .kw-list::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+    .kw-card {
+        position: relative;
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 16px;
+        padding: 1rem 1.1rem 1.1rem 1.3rem;
+        animation: kwCardIn .3s ease both;
+        transition: border-color .2s, box-shadow .2s;
+        flex-shrink: 0;
+    }
+
+    .kw-card:hover { border-color: var(--pink-200); box-shadow: 0 8px 22px rgba(232,23,93,.08); }
+
+    .kw-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; bottom: 0;
+        width: 4px;
+        background: var(--gradient-pink);
+    }
+
+    @keyframes kwCardIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .kw-card-label-row {
+        display: flex; align-items: center; gap: .4rem;
+        margin-bottom: .5rem;
+    }
+
+    .kw-card-label {
+        font-size: .65rem; font-weight: 800; color: var(--bright-pink);
+        text-transform: uppercase; letter-spacing: .07em;
+    }
+
+    .kw-card-snippet {
+        font-size: .85rem;
+        color: var(--ink);
+        line-height: 1.55;
+        background: var(--blush);
+        border-radius: 10px;
+        padding: .65rem .8rem;
+        margin-bottom: .8rem;
+        font-style: italic;
+    }
+
+    .kw-word-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+        margin-bottom: .7rem;
+    }
+
+    .kw-word {
+        display: inline-flex;
+        padding: .3rem .65rem;
+        border-radius: 999px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        transition: .15s;
+        user-select: none;
+    }
+
+    .kw-word:hover { border-color: var(--bright-pink); transform: translateY(-1px); }
+
+    .kw-word.selected {
+        background: var(--gradient-pink);
+        color: var(--white);
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(232,23,93,.3);
+    }
+
+    .kw-phrase-preview {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        background: #fff5f9;
+        border: 1.5px dashed var(--pink-200);
+        border-radius: 10px;
+        padding: .5rem .7rem;
+        margin-bottom: .8rem;
+    }
+
+    .kw-phrase-preview-label {
+        font-size: .67rem; font-weight: 800; color: var(--hot-pink);
+        text-transform: uppercase; letter-spacing: .05em;
+        flex-shrink: 0;
+    }
+
+    .kw-phrase-input {
+        flex: 1;
+        padding: .35rem .1rem;
+        border: none;
+        background: transparent;
+        font-size: .85rem;
+        font-weight: 700;
+        color: var(--ink);
+        outline: none;
+        font-family: var(--ff-body);
+        min-width: 0;
+    }
+
+    .kw-field-label {
+        font-size: .67rem; font-weight: 700; color: var(--ink-muted);
+        text-transform: uppercase; letter-spacing: .04em;
+        margin-bottom: .25rem;
+        display: block;
+    }
+
+    .kw-card-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: .6rem;
+        margin-bottom: .7rem;
+    }
+
+    .kw-card-row select {
+        width: 100%;
+        padding: .5rem .7rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--ink);
+        outline: none;
+        box-sizing: border-box;
+        font-family: var(--ff-body);
+        cursor: pointer;
+        transition: border-color .2s;
+    }
+
+    .kw-card-row select:focus { border-color: var(--bright-pink); }
+
+    .kw-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: .45rem;
+        font-size: .77rem;
+        color: var(--ink-muted);
+        margin-bottom: .8rem;
+        font-weight: 600;
+    }
+
+    .kw-checkbox-row input { accent-color: var(--bright-pink); cursor: pointer; }
+
+    .kw-card-actions {
+        display: flex;
+        gap: .5rem;
+        justify-content: flex-end;
+    }
+
+    .kw-btn-ignore {
+        padding: .45rem .9rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        transition: .2s;
+    }
+
+    .kw-btn-ignore:hover { border-color: #e04867; color: #e04867; background: #fff0f0; }
+
+    .kw-btn-save {
+        padding: .45rem 1rem;
+        border-radius: 9px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        box-shadow: 0 5px 14px rgba(232,23,93,.25);
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .kw-btn-save:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
+
+    .kw-trained-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .8rem;
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 14px;
+        padding: .75rem .95rem;
+        animation: kwCardIn .3s ease both;
+        transition: border-color .2s, transform .2s;
+    }
+
+    .kw-trained-card:hover { border-color: var(--pink-200); transform: translateX(2px); }
+
+    .kw-trained-left { display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+    .kw-trained-phrase {
+        font-size: .87rem; font-weight: 700; color: var(--ink);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .kw-trained-meta { display: flex; align-items: center; gap: .4rem; }
+
+    .kw-trained-audit {
+        font-size: .68rem;
+        color: var(--ink-muted);
+        font-weight: 600;
+        margin-top: .25rem;
+    }
+
+    .kw-validation-row {
+        display: flex;
+        flex-direction: column;
+        gap: .3rem;
+        margin: .3rem 0 .7rem;
+        min-height: 16px;
+    }
+
+    .kw-char-counter {
+        font-size: .68rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+        flex-shrink: 0;
+    }
+
+    .kw-validation-msg {
+        font-size: .72rem;
+        font-weight: 600;
+        color: #1a9d6e;
+        line-height: 1.45;
+    }
+
+    .kw-validation-msg.error {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        background: #fff0f0;
+        border: 1.5px solid #ffc8d0;
+        border-radius: 8px;
+        padding: .4rem .6rem;
+        color: #c0303a;
+    }
+
+    .kw-validation-msg.error::before {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin-top: .05rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .kw-validation-msg.warning {
+        display: flex;
+        align-items: flex-start;
+        gap: .4rem;
+        background: #fff9e6;
+        border: 1.5px solid #f0c040;
+        border-radius: 8px;
+        padding: .4rem .6rem;
+        color: #7a5400;
+    }
+
+    .kw-validation-msg.warning::before {
+        content: '';
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        margin-top: .05rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .kw-btn-save:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .kw-type-pill {
+        font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+        border-radius: 999px; background: var(--pink-100); color: var(--hot-pink);
+        text-transform: uppercase; letter-spacing: .03em;
+    }
+
+    .kw-urgency-pill {
+        font-size: .67rem; font-weight: 800; padding: .15rem .55rem;
+        border-radius: 999px; text-transform: uppercase; letter-spacing: .03em;
+    }
+
+    .kw-urgency-pill.critical { background: #fff0f0; color: #c0303a; }
+    .kw-urgency-pill.urgent { background: #fff8e1; color: #c07800; }
+    .kw-urgency-pill.moderate { background: #eef2ff; color: #4f6ef7; }
+
+    .kw-trained-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+
+    .kw-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--ink-muted);
+        font-size: .85rem;
+    }
+
+    .kw-empty-icon {
+        width: 40px; height: 40px;
+        margin: 0 auto .8rem;
+        opacity: .25;
+        display: block;
+    }
+
+    .kw-ref-note {
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+        background: #fff9e6;
+        border: 1.5px solid #f0c040;
+        border-radius: 10px;
+        padding: .6rem .8rem;
+        font-size: .77rem;
+        color: #7a5400;
+        line-height: 1.5;
+        margin-bottom: .4rem;
+    }
+
+    .kw-ref-group {
+        background: var(--white);
+        border: 1.5px solid var(--pink-100);
+        border-radius: 14px;
+        padding: .85rem 1rem;
+    }
+
+    .kw-ref-group-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: .6rem;
+    }
+
+    .kw-ref-group-title {
+        font-size: .85rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .kw-ref-chip-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem;
+    }
+
+    .kw-ref-chip {
+        display: inline-flex;
+        padding: .28rem .6rem;
+        border-radius: 999px;
+        background: var(--blush);
+        border: 1.5px solid var(--pink-100);
+        font-size: .78rem;
+        font-weight: 600;
+        color: var(--ink-muted);
+    }
+
+    .kw-ref-empty-type {
+        font-size: .76rem;
+        color: var(--ink-muted);
+        font-style: italic;
+    }
+
+    .kw-add-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        padding: .5rem .9rem;
+        border-radius: 10px;
+        border: none;
+        background: var(--gradient-pink);
+        color: var(--white);
+        font-size: .78rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--ff-body);
+        white-space: nowrap;
+        box-shadow: 0 5px 14px rgba(232,23,93,.25);
+        flex-shrink: 0;
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .kw-add-btn.visible { display: inline-flex; }
+    .kw-add-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(232,23,93,.35); }
 </style>
 @endsection
 
@@ -986,6 +1706,10 @@
             <button class="btn-directory" onclick="openModal('dir-modal')">
                 <img src="{{ asset('icons/emergdir.png') }}" alt="">
                 Emergency Directory
+            </button>
+            <button class="btn-archive-open" onclick="openKeywordModal()">
+                <img src="{{ asset('icons/keyword.png') }}" alt="">
+                Keyword Training
             </button>
             <button class="btn-archive-open" onclick="openArchive()">
                 <img src="{{ asset('icons/archive.png') }}" alt="">
@@ -1283,6 +2007,69 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="keyword-modal" onclick="handleOverlayClick(event, 'keyword-modal')">
+    <div class="modal dir-modal" style="max-width:620px;">
+        <div class="modal-header">
+            <div class="kw-modal-header-row">
+                <div class="kw-modal-icon-badge">
+                    <img src="{{ asset('icons/keyword.png') }}" alt="">
+                </div>
+                <div class="kw-modal-title-block">
+                    <div class="modal-title">Keyword Training</div>
+                    <div class="kw-modal-sub">Teach the system to recognize unmatched reports</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem;">
+                <div class="kw-help-wrap" id="kw-help-trigger">?</div>
+                <button class="modal-close" onclick="closeModal('keyword-modal')">&#x2715;</button>
+            </div>
+        </div>
+        <div class="kw-segmented">
+            <button class="kw-tab active" id="kwtab-pending" onclick="switchKwTab('pending')">
+                Pending <span class="kw-tab-count" id="kwcount-pending">0</span>
+            </button>
+            <button class="kw-tab" id="kwtab-trained" onclick="switchKwTab('trained')">
+                Trained <span class="kw-tab-count" id="kwcount-trained">0</span>
+            </button>
+            <button class="kw-tab" id="kwtab-reference" onclick="switchKwTab('reference')">
+                Built-in Rules <span class="kw-tab-count" id="kwcount-reference">0</span>
+            </button>
+        </div>
+        <div class="kw-summary-bar" id="kw-summary-bar">
+            <button class="kw-summary-toggle" id="kw-summary-toggle" onclick="toggleKwSummary()">
+                <span class="kw-summary-toggle-text" id="kw-summary-toggle-text"></span>
+                <svg class="kw-summary-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div class="kw-summary-detail">
+                <div class="kw-summary-split" id="kw-summary-split"></div>
+                <div class="kw-summary-rows" id="kw-summary-rows"></div>
+            </div>
+        </div>
+        <div class="kw-search-bar" style="display:flex;gap:.5rem;">
+            <div class="kw-search-inner" style="flex:1;">
+                <img src="{{ asset('icons/search.png') }}" class="kw-search-icon" alt="">
+                <input type="text" id="kw-search" placeholder="Search..." oninput="renderKwList()">
+            </div>
+            <button class="kw-add-btn" id="kw-add-btn" onclick="showAddKeywordForm()">+ Add Keyword</button>
+        </div>
+        <div id="kw-add-form-wrap" style="padding:0 1.1rem;flex-shrink:0;"></div>
+        <div class="kw-list" id="kw-list"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('keyword-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="kw-help-popup" id="kw-help-popup">
+    <div class="kw-help-popup-title">How Keyword Training Works</div>
+    <div class="kw-help-step"><span class="kw-help-step-num">1</span><span>Reports that miss every known keyword land in <strong>Pending</strong>.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">2</span><span>Tap words in the snippet to build the exact phrase, then assign a type.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">3</span><span>Saved phrases appear in <strong>Trained</strong>, editable or removable anytime.</span></div>
+    <div class="kw-help-step"><span class="kw-help-step-num">4</span><span><strong>Built-in Rules</strong> shows the system defaults for reference only.</span></div>
+</div>
+
 @endsection
 
 @section('scripts')
@@ -1291,6 +2078,9 @@
     const closedArchive    = @json($closedArchive);
     const resolvedArchive  = @json($resolvedArchive);
     const deletedArchive   = @json($deletedArchive);
+    let pendingTerms       = @json($pendingTerms);
+    let trainedKeywords    = @json($trainedKeywords);
+    const hardcodedRules   = @json($hardcodedRules);
     const PER_PAGE = 8;
     let currentPage = 1;
     let filtered    = [...reports];
@@ -1432,7 +2222,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type).replace(/"/g, '&quot;')})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
@@ -1490,7 +2280,7 @@
             dateToEl.style.borderColor = '';
         }
 
-        filtered = reports.filter(r => {
+        filtered = reportsData.filter(r => {
             const matchSearch =
                 normalizeFilterValue(r.emergency_type).includes(q) ||
                 normalizeFilterValue(r.urgency_level).includes(q) ||
@@ -2035,44 +2825,698 @@
         applyFilters();
     }
 
+    const EM_POLL_INTERVAL = 7000;
+    let reportsData = [...reports];
+
     populateTypeFilter();
     applyFilters();
     renderDirList();
+
+    function isAnyEmModalOpen() {
+        return document.querySelector('.modal-overlay.open') !== null ||
+            document.getElementById('archive-drawer').classList.contains('open');
+    }
+
+    function showEmPollToast() {
+        const existing = document.getElementById('em-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'em-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:var(--white);border:1.5px solid var(--pink-200);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Data refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function pollEmReports() {
+        const activeEl = document.activeElement;
+
+        try {
+            const res = await fetch('/emergency/poll/reports', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const fresh = await res.json();
+
+            const prevIds = new Set(reportsData.map(r => r.report_id));
+            const freshIds = new Set(fresh.map(r => r.report_id));
+
+            const hasChanges =
+                fresh.length !== reportsData.length ||
+                fresh.some(r => {
+                    const old = reportsData.find(o => o.report_id === r.report_id);
+                    return !old || old.status !== r.status || old.urgency_level !== r.urgency_level;
+                }) ||
+                [...prevIds].some(id => !freshIds.has(id));
+
+            if (!hasChanges) return;
+
+            const newPanics = fresh.filter(r => r.is_panic_alert && !prevIds.has(r.report_id));
+
+            newPanics.forEach(r => {
+                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
+            });
+
+            if (isAnyEmModalOpen()) return;
+
+            reportsData = fresh;
+
+            const typeSelect = document.getElementById('type-filter');
+            const typeFilterVal = typeSelect.value;
+            const currentTypes = new Set([...typeSelect.options].map(o => o.value).filter(Boolean));
+            const freshTypes = [...new Set(
+                fresh.map(r => String(r.emergency_type ?? '').trim()).filter(t => t && t !== '—')
+            )].sort((a, b) => a.localeCompare(b));
+
+            freshTypes.forEach(t => {
+                if (!currentTypes.has(t)) {
+                    const opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = t;
+                    typeSelect.appendChild(opt);
+                }
+            });
+
+            if (typeFilterVal) typeSelect.value = typeFilterVal;
+
+            applyFilters();
+            showEmPollToast();
+
+            if (activeEl && activeEl.id) {
+                const refocus = document.getElementById(activeEl.id);
+                if (refocus && refocus !== document.activeElement) refocus.focus();
+            }
+        } catch {
+        }
+    }
+
+    setInterval(pollEmReports, EM_POLL_INTERVAL);
 
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
 
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
-        }
-        setInterval(checkPanic, 30000);
-    })();
+    const kwEditIcon = "{{ asset('icons/edit.png') }}";
+    const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
+    const kwEmptyIcon = "{{ asset('icons/nav-emerg.png') }}";
+    const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Security', 'Flood/Water Leak', 'Other'];
+    let kwActiveTab = 'pending';
+    const kwPhraseState = {};
 
     (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
+        var popup = document.getElementById('kw-help-popup');
+        var trigger = document.getElementById('kw-help-trigger');
+        if (!popup || !trigger) return;
+        document.body.appendChild(popup);
+        popup.style.position = 'fixed';
+        popup.style.zIndex = '9999';
+        var hideTimer = null;
+        function show() {
+            clearTimeout(hideTimer);
+            var rect = trigger.getBoundingClientRect();
+            var width = 280;
+            var centerX = rect.left + rect.width / 2;
+            var left = centerX - width / 2;
+            if (left < 12) left = 12;
+            if (left + width > window.innerWidth - 12) left = window.innerWidth - width - 12;
+            var arrowLeft = centerX - left - 6;
+            popup.style.setProperty('--kw-arrow-left', arrowLeft + 'px');
+            popup.style.top = (rect.bottom + 12) + 'px';
+            popup.style.left = left + 'px';
+            popup.style.display = 'block';
         }
-        setInterval(checkPanic, 30000);
+        function hide() {
+            hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
+        }
+        trigger.addEventListener('mouseenter', show);
+        trigger.addEventListener('mouseleave', hide);
+        trigger.addEventListener('click', show);
+        popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+        popup.addEventListener('mouseleave', hide);
     })();
+
+    function typeOptionsHtml(selected) {
+        return EMERGENCY_TYPE_OPTIONS.map(function(t) {
+            return '<option value="' + escHtml(t) + '"' + (t === selected ? ' selected' : '') + '>' + escHtml(t) + '</option>';
+        }).join('');
+    }
+
+    function urgencyOptionsHtml(selected) {
+        const opts = [['', 'Use type default'], ['moderate', 'Moderate'], ['urgent', 'Urgent'], ['critical', 'Critical']];
+        return opts.map(function(o) {
+            return '<option value="' + o[0] + '"' + (o[0] === (selected || '') ? ' selected' : '') + '>' + o[1] + '</option>';
+        }).join('');
+    }
+
+    function openKeywordModal() {
+        kwActiveTab = 'pending';
+        document.getElementById('kwtab-pending').classList.add('active');
+        document.getElementById('kwtab-trained').classList.remove('active');
+        document.getElementById('kwtab-reference').classList.remove('active');
+        document.getElementById('kw-add-btn').classList.remove('visible');
+        document.getElementById('kw-search').value = '';
+        document.getElementById('kw-search').placeholder = 'Search pending snippets...';
+        renderKwList();
+        openModal('keyword-modal');
+    }
+
+    function switchKwTab(tab) {
+        kwActiveTab = tab;
+        document.getElementById('kwtab-pending').classList.toggle('active', tab === 'pending');
+        document.getElementById('kwtab-trained').classList.toggle('active', tab === 'trained');
+        document.getElementById('kwtab-reference').classList.toggle('active', tab === 'reference');
+        document.getElementById('kw-add-btn').classList.toggle('visible', tab === 'trained');
+        document.getElementById('kw-add-form-wrap').innerHTML = '';
+        document.getElementById('kw-search').value = '';
+        const placeholders = { pending: 'Search pending snippets...', trained: 'Search trained keywords...', reference: 'Search built-in rules...' };
+        document.getElementById('kw-search').placeholder = placeholders[tab];
+        renderKwList();
+    }
+
+    let kwSummaryOpen = false;
+
+    function toggleKwSummary() {
+        kwSummaryOpen = !kwSummaryOpen;
+        document.getElementById('kw-summary-bar').classList.toggle('open', kwSummaryOpen);
+    }
+
+    function renderKwSummary() {
+        const refCount = Object.values(hardcodedRules.emergency_rules || {}).reduce(function(sum, rule) {
+            return sum + (rule.keywords ? rule.keywords.length : 0);
+        }, 0);
+        const trainedCount = trainedKeywords.length;
+        const totalCount = refCount + trainedCount;
+        const builtinPct = totalCount === 0 ? 50 : (refCount / totalCount) * 100;
+        const trainedPct = totalCount === 0 ? 50 : 100 - builtinPct;
+
+        document.getElementById('kw-summary-toggle-text').innerHTML =
+            '<strong>' + refCount + '</strong> built-in + <strong>' + trainedCount + '</strong> trained = <strong>' + totalCount + '</strong> active keyword rules';
+
+        document.getElementById('kw-summary-split').innerHTML =
+            '<div class="kw-summary-split-builtin" style="width:' + builtinPct + '%;"></div>' +
+            '<div class="kw-summary-split-trained" style="width:' + trainedPct + '%;"></div>';
+
+        document.getElementById('kw-summary-rows').innerHTML =
+            '<div class="kw-summary-row"><span class="kw-summary-row-label"><span class="kw-summary-dot builtin"></span>Built-in rules</span><span class="kw-summary-row-val">' + refCount + '</span></div>' +
+            '<div class="kw-summary-row"><span class="kw-summary-row-label"><span class="kw-summary-dot trained"></span>Trained by your team</span><span class="kw-summary-row-val">' + trainedCount + '</span></div>';
+
+        return refCount;
+    }
+
+    function renderKwList() {
+        document.getElementById('kwcount-pending').textContent = pendingTerms.length;
+        document.getElementById('kwcount-trained').textContent = trainedKeywords.length;
+        const refCount = renderKwSummary();
+        document.getElementById('kwcount-reference').textContent = refCount;
+        if (kwActiveTab === 'pending') {
+            renderPendingTerms();
+        } else if (kwActiveTab === 'trained') {
+            renderTrainedKeywords();
+        } else {
+            renderHardcodedReference();
+        }
+    }
+
+    function renderHardcodedReference() {
+        const list = document.getElementById('kw-list');
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const rules = hardcodedRules.emergency_rules || {};
+        const types = Object.keys(rules).filter(function(t) { return t !== 'Other'; });
+
+        const groupsHtml = types.map(function(type) {
+            const rule = rules[type];
+            const keywords = (rule.keywords || []).filter(function(k) {
+                return !q || k.toLowerCase().includes(q) || type.toLowerCase().includes(q);
+            });
+            if (q && keywords.length === 0) return '';
+            const chips = keywords.length > 0
+                ? keywords.map(function(k) { return '<span class="kw-ref-chip">' + escHtml(k) + '</span>'; }).join('')
+                : '<span class="kw-ref-empty-type">No keywords defined</span>';
+            return '' +
+                '<div class="kw-ref-group">' +
+                '<div class="kw-ref-group-title-row">' +
+                '<span class="kw-ref-group-title">' + escHtml(type) + '</span>' +
+                '<span class="kw-urgency-pill ' + escHtml(rule.urgency || 'moderate') + '">' + escHtml(rule.urgency || 'moderate') + '</span>' +
+                '</div>' +
+                '<div class="kw-ref-chip-wrap">' + chips + '</div>' +
+                '</div>';
+        }).filter(Boolean).join('');
+
+        if (!groupsHtml) {
+            list.innerHTML = '<div class="kw-empty">No built-in keywords match your search.</div>';
+            return;
+        }
+
+        list.innerHTML = '' +
+            '<div class="kw-ref-note">These are hardcoded in the system and cannot be edited or removed here. They take priority when no trained keyword matches the same phrase. Use the Add Keyword button on the Trained tab to set a different rule for a specific phrase.</div>' +
+            groupsHtml;
+    }
+
+    function renderPendingTerms() {
+        const list = document.getElementById('kw-list');
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const visible = pendingTerms.filter(function(t) {
+            return !q || normalizeFilterValue(t.description_snapshot).includes(q);
+        });
+        if (visible.length === 0) {
+            list.innerHTML = pendingTerms.length === 0
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="' + kwEmptyIcon + '" alt="">No pending snippets to classify.</div>'
+                : '<div class="kw-empty">No pending snippets match your search.</div>';
+            return;
+        }
+        list.innerHTML = visible.map(function(term) {
+            const words = (term.description_snapshot || '').split(/\s+/).filter(Boolean);
+            if (!kwPhraseState[term.id]) {
+                kwPhraseState[term.id] = [];
+            }
+            const wordSpans = words.map(function(w, i) {
+                const selected = kwPhraseState[term.id].some(function(s) { return s.index === i; });
+                return '<span class="kw-word' + (selected ? ' selected' : '') + '" onclick="toggleKwWord(' + term.id + ', ' + i + ', \'' + escHtml(w).replace(/'/g, "\\'") + '\')">' + escHtml(w) + '</span>';
+            }).join('');
+            return '' +
+                '<div class="kw-card" id="kw-card-' + term.id + '">' +
+                '<div class="kw-card-label-row"><span class="kw-card-label">Unclassified snippet</span></div>' +
+                '<div class="kw-card-snippet">' + escHtml(term.description_snapshot || '') + '</div>' +
+                '<span class="kw-field-label">Tap words to build the phrase</span>' +
+                '<div class="kw-word-wrap">' + wordSpans + '</div>' +
+                '<div class="kw-phrase-preview">' +
+                '<span class="kw-phrase-preview-label">Phrase</span>' +
+                '<input type="text" class="kw-phrase-input" id="kw-phrase-' + term.id + '" placeholder="Selected phrase" value="' + escHtml(buildKwPhrase(term.id)) + '" oninput="validateKwPhraseInput(\'kw-phrase-' + term.id + '\', \'kw-counter-' + term.id + '\', \'kw-msg-' + term.id + '\', \'#kw-card-' + term.id + ' .kw-btn-save\', null)">' +
+                '</div>' +
+                '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-counter-' + term.id + '">' + buildKwPhrase(term.id).length + '/255</span><span class="kw-validation-msg" id="kw-msg-' + term.id + '"></span></div>' +
+                '<div class="kw-card-row">' +
+                '<div><span class="kw-field-label">Emergency type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select></div>' +
+                '<div><span class="kw-field-label">Urgency override</span><select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select></div>' +
+                '</div>' +
+                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past reports still marked Other</label>' +
+                '<div class="kw-card-actions">' +
+                '<button class="kw-btn-ignore" onclick="ignoreKwTerm(' + term.id + ')">Ignore</button>' +
+                '<button class="kw-btn-save" onclick="submitKwClassify(' + term.id + ')">Save Keyword</button>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+
+        visible.forEach(function(term) {
+            validateKwPhraseInput('kw-phrase-' + term.id, 'kw-counter-' + term.id, 'kw-msg-' + term.id, '#kw-card-' + term.id + ' .kw-btn-save', null);
+        });
+    }
+
+    function buildKwPhrase(termId) {
+        const sel = kwPhraseState[termId] || [];
+        return sel.sort(function(a, b) { return a.index - b.index; }).map(function(s) { return s.word; }).join(' ');
+    }
+
+    function toggleKwWord(termId, index, word) {
+        if (!kwPhraseState[termId]) kwPhraseState[termId] = [];
+        const existing = kwPhraseState[termId].findIndex(function(s) { return s.index === index; });
+        if (existing >= 0) {
+            kwPhraseState[termId].splice(existing, 1);
+        } else {
+            kwPhraseState[termId].push({ index: index, word: word });
+        }
+        renderPendingTerms();
+    }
+
+    function validateKwPhraseInput(inputId, counterId, msgId, saveBtnSelector, excludeId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const counter = counterId ? document.getElementById(counterId) : null;
+        const msg = msgId ? document.getElementById(msgId) : null;
+        const saveBtn = saveBtnSelector ? document.querySelector(saveBtnSelector) : null;
+        const value = input.value.trim();
+
+        if (counter) counter.textContent = input.value.length + '/255';
+
+        let error = '';
+        let warning = '';
+        let isHardBlock = false;
+
+        if (value.length === 0) {
+            error = '';
+        } else if (value.length < 2) {
+            error = 'Phrase must contain at least 2 characters';
+            isHardBlock = true;
+        } else if (!/[a-zA-Z0-9]/.test(value)) {
+            error = 'Phrase must contain at least one letter or number';
+            isHardBlock = true;
+        } else {
+            const dupTrained = trainedKeywords.find(function(k) {
+                return k.keyword.toLowerCase() === value.toLowerCase() && k.id !== excludeId;
+            });
+            if (dupTrained) {
+                const urgencyLabel = dupTrained.urgency_level
+                    ? dupTrained.urgency_level.charAt(0).toUpperCase() + dupTrained.urgency_level.slice(1)
+                    : 'default urgency';
+                error = 'Already trained as ' + dupTrained.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.';
+                isHardBlock = true;
+            } else {
+                const builtinMatch = findBuiltinMatch(value);
+                if (builtinMatch) {
+                    const urgencyLabel = builtinMatch.urgency.charAt(0).toUpperCase() + builtinMatch.urgency.slice(1);
+                    warning = 'Covered by built-in rule for ' + builtinMatch.type + ' at ' + urgencyLabel + '. Your keyword will take priority.';
+                }
+            }
+        }
+
+        if (msg) {
+            if (error) {
+                msg.textContent = error;
+                msg.className = 'kw-validation-msg error';
+            } else if (warning) {
+                msg.textContent = warning;
+                msg.className = 'kw-validation-msg warning';
+            } else {
+                msg.textContent = '';
+                msg.className = 'kw-validation-msg';
+            }
+        }
+
+        if (saveBtn) saveBtn.disabled = value.length === 0 || isHardBlock;
+    }
+
+    function findBuiltinMatch(value) {
+        const rules = hardcodedRules.emergency_rules || {};
+        const lower = value.toLowerCase();
+        for (const type in rules) {
+            if (type === 'Other') continue;
+            const rule = rules[type];
+            if ((rule.keywords || []).some(function(k) { return k.toLowerCase() === lower; })) {
+                return { type: type, urgency: rule.urgency };
+            }
+        }
+        return null;
+    }
+
+    function extractErrorMessage(data, fallback) {
+        if (data && data.errors) {
+            const firstKey = Object.keys(data.errors)[0];
+            if (firstKey && data.errors[firstKey] && data.errors[firstKey][0]) {
+                return data.errors[firstKey][0];
+            }
+        }
+        return (data && data.message) ? data.message : fallback;
+    }
+
+    async function submitKwClassify(termId) {
+        const phraseInput = document.getElementById('kw-phrase-' + termId);
+        const keyword = phraseInput.value.trim();
+        if (!keyword) {
+            showToast('Select or type a phrase first.', 'error');
+            return;
+        }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-card-' + termId + ' .kw-btn-save');
+        const type = document.getElementById('kw-type-' + termId).value;
+        const urgency = document.getElementById('kw-urgency-' + termId).value;
+        const reclassify = document.getElementById('kw-reclassify-' + termId).checked;
+
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+        showActionLoading('Saving keyword...');
+        try {
+            const res = await fetch('/emergency/terms/' + termId + '/classify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({
+                    keyword: keyword,
+                    emergency_type: type,
+                    urgency_level: urgency || null,
+                    reclassify_matching: reclassify,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showToast('Keyword saved' + (data.reclassified_count > 0 ? ' and ' + data.reclassified_count + ' report(s) reclassified' : ''), 'success');
+                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
+                delete kwPhraseState[termId];
+                trainedKeywords.unshift(data.keyword);
+                renderKwList();
+            } else {
+                const errMsg = extractErrorMessage(data, 'Failed to save keyword.');
+                    if (data.existing_keyword) {
+                        const ek = data.existing_keyword;
+                        const urgencyLabel = ek.urgency_level
+                            ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                            : 'default urgency';
+                        showToast('Already trained as ' + ek.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                        highlightTrainedKeyword(ek.id);
+                    } else {
+                        showToast(errMsg, 'error');
+                    }
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+            }
+        } catch (err) {
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    async function ignoreKwTerm(termId) {
+        showActionLoading('Ignoring snippet...');
+        try {
+            const res = await fetch('/emergency/terms/' + termId + '/ignore', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
+                delete kwPhraseState[termId];
+                renderKwList();
+            } else {
+                showToast('Failed to ignore snippet.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    function renderTrainedKeywords() {
+        const list = document.getElementById('kw-list');
+        const q = normalizeFilterValue(document.getElementById('kw-search').value);
+        const visible = trainedKeywords.filter(function(k) {
+            return !q || normalizeFilterValue(k.keyword).includes(q) || normalizeFilterValue(k.emergency_type).includes(q);
+        });
+        if (visible.length === 0) {
+            list.innerHTML = trainedKeywords.length === 0
+                ? '<div class="kw-empty"><img class="kw-empty-icon" src="' + kwEmptyIcon + '" alt="">No trained keywords yet.</div>'
+                : '<div class="kw-empty">No trained keywords match your search.</div>';
+            return;
+        }
+        list.innerHTML = visible.map(function(kw) {
+            const urgencyClass = kw.urgency_level ? kw.urgency_level : '';
+            const addedBy = kw.added_by_name || 'Unknown';
+            const addedAt = kw.added_at_formatted;
+            return '' +
+                '<div class="kw-trained-card" id="kw-trained-' + kw.id + '">' +
+                '<div class="kw-trained-left">' +
+                '<div class="kw-trained-phrase" title="' + escHtml(kw.keyword) + '">' + escHtml(kw.keyword) + '</div>' +
+                '<div class="kw-trained-meta">' +
+                '<span class="kw-type-pill">' + escHtml(kw.emergency_type) + '</span>' +
+                (kw.urgency_level ? '<span class="kw-urgency-pill ' + urgencyClass + '">' + escHtml(kw.urgency_level) + '</span>' : '') +
+                '</div>' +
+                '<div class="kw-trained-audit">Added by ' + escHtml(addedBy) + (addedAt ? ' on ' + escHtml(addedAt) : '') + '</div>' +
+                '</div>' +
+                '<div class="kw-trained-actions">' +
+                '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
+                '<button class="act-btn danger" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="' + kwDeleteIcon + '" alt="Delete"></button>' +
+                '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    function showAddKeywordForm() {
+        const wrap = document.getElementById('kw-add-form-wrap');
+        wrap.innerHTML = '' +
+            '<div class="kw-card" id="kw-add-new" style="margin-bottom:.75rem;">' +
+            '<div class="kw-card-label-row"><span class="kw-card-label">New keyword</span></div>' +
+            '<span class="kw-field-label">Phrase to match</span>' +
+            '<div class="kw-phrase-preview">' +
+            '<input type="text" class="kw-phrase-input" id="kw-add-phrase" placeholder="Type the phrase, e.g. amoy gas" oninput="validateKwPhraseInput(\'kw-add-phrase\', \'kw-add-counter\', \'kw-add-msg\', \'#kw-add-new .kw-btn-save\', null)">' +
+            '</div>' +
+            '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-add-counter">0/255</span><span class="kw-validation-msg" id="kw-add-msg"></span></div>' +
+            '<div class="kw-card-row">' +
+            '<div><span class="kw-field-label">Emergency type</span><select id="kw-add-type">' + typeOptionsHtml('Other') + '</select></div>' +
+            '<div><span class="kw-field-label">Urgency override</span><select id="kw-add-urgency">' + urgencyOptionsHtml('') + '</select></div>' +
+            '</div>' +
+            '<div class="kw-card-actions">' +
+            '<button class="kw-btn-ignore" onclick="cancelAddKeywordForm()">Cancel</button>' +
+            '<button class="kw-btn-save" id="kw-add-save-btn" onclick="submitAddKeyword()" disabled>Save Keyword</button>' +
+            '</div>' +
+            '</div>';
+        document.getElementById('kw-add-phrase').focus();
+    }
+
+    function cancelAddKeywordForm() {
+        document.getElementById('kw-add-form-wrap').innerHTML = '';
+    }
+
+    async function submitAddKeyword() {
+        const keyword = document.getElementById('kw-add-phrase').value.trim();
+        if (!keyword) {
+            showToast('Type a phrase first.', 'error');
+            return;
+        }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-add-new .kw-btn-save');
+        const type = document.getElementById('kw-add-type').value;
+        const urgency = document.getElementById('kw-add-urgency').value;
+
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+        showActionLoading('Saving keyword...');
+        try {
+            const res = await fetch('/emergency/keywords', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ keyword: keyword, emergency_type: type, urgency_level: urgency || null }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                trainedKeywords.unshift(data.keyword);
+                document.getElementById('kw-add-form-wrap').innerHTML = '';
+                showToast('Keyword added.', 'success');
+                renderKwList();
+            } else {
+                const errMsg = extractErrorMessage(data, 'Failed to add keyword.');
+                    if (data.existing_keyword) {
+                        const ek = data.existing_keyword;
+                        const urgencyLabel = ek.urgency_level
+                            ? ek.urgency_level.charAt(0).toUpperCase() + ek.urgency_level.slice(1)
+                            : 'default urgency';
+                        showToast('Already trained as ' + ek.emergency_type + ' / ' + urgencyLabel + '. Edit the existing entry instead.', 'error');
+                        highlightTrainedKeyword(ek.id);
+                    } else {
+                        showToast(errMsg, 'error');
+                    }
+                    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+                }
+        } catch (err) {
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save Keyword'; }
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    function editKwKeyword(id) {
+        const kw = trainedKeywords.find(function(k) { return k.id === id; });
+        if (!kw) return;
+        const card = document.getElementById('kw-trained-' + id);
+        card.outerHTML = '' +
+            '<div class="kw-card" id="kw-trained-' + id + '">' +
+            '<input type="text" class="kw-phrase-input" id="kw-edit-phrase-' + id + '" value="' + escHtml(kw.keyword) + '" oninput="validateKwPhraseInput(\'kw-edit-phrase-' + id + '\', \'kw-edit-counter-' + id + '\', \'kw-edit-msg-' + id + '\', \'#kw-trained-' + id + ' .kw-btn-save\', ' + id + ')">' +
+            '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-edit-counter-' + id + '">' + kw.keyword.length + '/255</span><span class="kw-validation-msg" id="kw-edit-msg-' + id + '"></span></div>' +
+            '<div class="kw-card-row">' +
+            '<select id="kw-edit-type-' + id + '">' + typeOptionsHtml(kw.emergency_type) + '</select>' +
+            '<select id="kw-edit-urgency-' + id + '">' + urgencyOptionsHtml(kw.urgency_level) + '</select>' +
+            '</div>' +
+            '<div class="kw-card-actions">' +
+            '<button class="kw-btn-ignore" onclick="renderTrainedKeywords()">Cancel</button>' +
+            '<button class="kw-btn-save" onclick="saveKwKeywordEdit(' + id + ')">Save</button>' +
+            '</div>' +
+            '</div>';
+    }
+
+    async function saveKwKeywordEdit(id) {
+        const keyword = document.getElementById('kw-edit-phrase-' + id).value.trim();
+        const type = document.getElementById('kw-edit-type-' + id).value;
+        const urgency = document.getElementById('kw-edit-urgency-' + id).value;
+        if (!keyword) {
+            showToast('Keyword cannot be empty.', 'error');
+            return;
+        }
+        if (keyword.length < 2) {
+            showToast('The phrase is too short.', 'error');
+            return;
+        }
+        const saveBtn = document.querySelector('#kw-trained-' + id + ' .kw-btn-save');
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+        showActionLoading('Updating keyword...');
+        try {
+            const res = await fetch('/emergency/keywords/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ keyword: keyword, emergency_type: type, urgency_level: urgency || null }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const idx = trainedKeywords.findIndex(function(k) { return k.id === id; });
+                if (idx >= 0) trainedKeywords[idx] = data.keyword;
+                showToast('Keyword updated.', 'success');
+                renderTrainedKeywords();
+            } else {
+                showToast(extractErrorMessage(data, 'Failed to update keyword.'), 'error');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+            }
+        } catch (err) {
+            showToast('Network error: ' + err.message, 'error');
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+        } finally {
+            hideActionLoading();
+        }
+    }
+
+    function highlightTrainedKeyword(id) {
+        switchKwTab('trained');
+        setTimeout(function() {
+            const card = document.getElementById('kw-trained-' + id);
+            if (!card) return;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.style.transition = 'box-shadow .2s, border-color .2s';
+            card.style.borderColor = 'var(--bright-pink)';
+            card.style.boxShadow = '0 0 0 3px rgba(232,23,93,.25)';
+            setTimeout(function() {
+                card.style.borderColor = '';
+                card.style.boxShadow = '';
+            }, 2500);
+        }, 320);
+    }
+
+    async function deleteKwKeyword(id) {
+        const kw = trainedKeywords.find(function(k) { return k.id === id; });
+        const label = kw ? kw.keyword : 'this keyword';
+        if (!window.confirm('Delete trained keyword "' + label + '"? This cannot be undone.')) {
+            return;
+        }
+        showActionLoading('Deleting keyword...');
+        try {
+            const res = await fetch('/emergency/keywords/' + id, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                trainedKeywords = trainedKeywords.filter(function(k) { return k.id !== id; });
+                showToast('Keyword deleted.', 'success');
+                renderKwList();
+            } else {
+                showToast('Failed to delete keyword.', 'error');
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message, 'error');
+        } finally {
+            hideActionLoading();
+        }
+    }
 </script>
 @endsection

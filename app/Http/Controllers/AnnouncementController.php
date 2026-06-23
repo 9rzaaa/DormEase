@@ -13,18 +13,20 @@ class AnnouncementController extends Controller
     public function index()
     {
         $staff          = Auth::guard('staff')->user();
-        $announcements  = Announcement::latest('posted_at')->get();
+        $announcements  = Announcement::whereIn('status', ['active', 'scheduled'])->latest('posted_at')->get();
         $scheduled      = Announcement::whereNotNull('scheduled_at')
                             ->where('scheduled_at', '>', now())
                             ->where('status', 'scheduled')
                             ->latest('scheduled_at')
                             ->get();
+        $closedArchive  = Announcement::where('status', 'closed')->latest('posted_at')->get();
         $deletedArchive = Announcement::onlyTrashed()->latest('deleted_at')->get();
 
         return view('announcements', [
             'staff'          => $staff,
             'announcements'  => $announcements,
             'scheduled'      => $scheduled,
+            'closedArchive'  => $closedArchive,
             'deletedArchive' => $deletedArchive,
         ]);
     }
@@ -50,6 +52,19 @@ class AnnouncementController extends Controller
         ]);
     }
 
+    public function poll()
+    {
+        $active = Announcement::selectRaw('COUNT(*) as cnt, MAX(updated_at) as latest')
+            ->whereIn('status', ['active', 'scheduled', 'closed'])
+            ->first();
+
+        $deletedCount = Announcement::onlyTrashed()->count();
+
+        $signature = ($active->cnt ?? 0) . '-' . ($active->latest ?? '0') . '-' . $deletedCount;
+
+        return response()->json(['signature' => $signature]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -58,7 +73,12 @@ class AnnouncementController extends Controller
             'priority'     => 'nullable|in:low,moderate,high',
             'status'       => 'nullable|in:active,closed,scheduled',
             'scheduled_at' => 'nullable|date|after:now',
-            'files.*'      => 'nullable|file|max:5120',
+            'files'        => 'nullable|array|max:10',
+            'files.*'      => 'nullable|file|mimes:png,jpg,jpeg,pdf,docx|max:5120',
+        ], [
+            'files.max'      => 'You can attach up to 10 files at a time.',
+            'files.*.mimes'  => 'Each file must be a PNG, JPG, PDF, or DOCX.',
+            'files.*.max'    => 'Each file must not exceed 5 MB.',
         ]);
 
         $attachment = null;
@@ -131,7 +151,12 @@ class AnnouncementController extends Controller
             'priority'     => 'nullable|in:low,moderate,high',
             'status'       => 'nullable|in:active,closed,scheduled',
             'scheduled_at' => 'nullable|date',
-            'files.*'      => 'nullable|file|max:5120',
+            'files'        => 'nullable|array|max:10',
+            'files.*'      => 'nullable|file|mimes:png,jpg,jpeg,pdf,docx|max:5120',
+        ], [
+            'files.max'      => 'You can attach up to 10 files at a time.',
+            'files.*.mimes'  => 'Each file must be a PNG, JPG, PDF, or DOCX.',
+            'files.*.max'    => 'Each file must not exceed 5 MB.',
         ]);
 
         $attachment = $announcement->attachment;
@@ -178,11 +203,15 @@ class AnnouncementController extends Controller
 
     public function archive(Request $request, $id)
     {
-        Announcement::findOrFail($id)->update(['status' => 'closed']);
+        $announcement = Announcement::findOrFail($id);
+        $announcement->update([
+            'status'    => 'closed',
+            'posted_at' => $announcement->posted_at ?? now(),
+        ]);
         $route = $request->input('_from') === 'frontdesk'
             ? 'frontdesk.announcements'
             : 'announcements.index';
-        return redirect()->route($route)->with('success', 'Announcement closed.');
+        return redirect()->route($route)->with('success', 'Announcement closed and moved to archive.');
     }
 
     public function restore(Request $request, $id)
@@ -192,6 +221,15 @@ class AnnouncementController extends Controller
             ? 'frontdesk.announcements'
             : 'announcements.index';
         return redirect()->route($route)->with('success', 'Announcement restored.');
+    }
+
+    public function reopen(Request $request, $id)
+    {
+        Announcement::findOrFail($id)->update(['status' => 'active']);
+        $route = $request->input('_from') === 'frontdesk'
+            ? 'frontdesk.announcements'
+            : 'announcements.index';
+        return redirect()->route($route)->with('success', 'Announcement reopened and set to active.');
     }
 
     public function destroy(Request $request, $id)

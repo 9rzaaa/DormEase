@@ -3,6 +3,7 @@
         var latestSeenNotificationId = null;
         var firstLiveNotificationLoad = true;
         var pollTimer = null;
+        var emergencyPollTimer = null;
         var notificationAudioContext = null;
         var notificationSoundUnlocked = false;
         var queuedNotificationSound = false;
@@ -269,6 +270,73 @@
                 .catch(function() {});
         }
 
+        function escapeBannerHtml(value) {
+            return (value == null ? '' : String(value))
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function updateDashboardEmergencyBanner() {
+            var banner = document.querySelector('.emergency-banner');
+            if (!banner) return;
+
+            fetch('{{ route("dashboard.live") }}', {
+                headers: { 'Accept': 'application/json' },
+                cache: 'no-store',
+            })
+            .then(function(response) { return response.ok ? response.json() : null; })
+            .then(function(data) {
+                if (!data) return;
+                var emergency = data.latestEmergency;
+
+                if (emergency) {
+                    banner.classList.remove('clear');
+                    banner.innerHTML =
+                        '<div class="emerg-ico-wrap pulse"><img src="{{ asset('icons/panic.png') }}" alt=""></div>' +
+                        '<div class="emerg-body">' +
+                            '<div class="emerg-label">Emergency Report</div>' +
+                            '<div class="emerg-detail">' + escapeBannerHtml(emergency.location) + ' &mdash; ' + escapeBannerHtml(emergency.emergency_type) + '</div>' +
+                            '<div class="emerg-status">' + escapeBannerHtml(emergency.status) + '</div>' +
+                        '</div>' +
+                        '<button class="emerg-btn" onclick="openModal(\'emergency-modal\')">View All</button>';
+                } else {
+                    banner.classList.add('clear');
+                    banner.innerHTML =
+                        '<div class="emerg-ico-wrap"><img src="{{ asset('icons/check.png') }}" alt="" class="check-icon"></div>' +
+                        '<div class="emerg-body">' +
+                            '<div class="emerg-label">Emergency Status</div>' +
+                            '<div class="emerg-detail">All Clear</div>' +
+                            '<div class="emerg-status ok">No active emergencies</div>' +
+                        '</div>' +
+                        '<button class="emerg-btn ok" onclick="openModal(\'emergency-modal\')">View History</button>';
+                }
+            })
+            .catch(function() {});
+        }
+
+        function pollEmergencyAlerts() {
+            fetch('/live-alerts', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') || {}).content || '',
+                },
+                cache: 'no-store',
+            })
+            .then(function(response) { return response.ok ? response.json() : null; })
+            .then(function(payload) {
+                if (!payload) return;
+                if (typeof window.__processLiveEmergencyAlerts === 'function') {
+                    window.__processLiveEmergencyAlerts(
+                        payload.panic    || null,
+                        payload.critical || { reports: [] }
+                    );
+                }
+                updateDashboardEmergencyBanner();
+            })
+            .catch(function() {});
+        }
+
         window.markAllRead = function() {
             fetch('/notifications/read-all', {
                 method: 'POST',
@@ -290,10 +358,14 @@
             pollTimer = setInterval(function() {
                 renderLiveNotifications(true);
             }, 5000);
+
+            pollEmergencyAlerts();
+            emergencyPollTimer = setInterval(pollEmergencyAlerts, 5000);
         });
 
         window.addEventListener('beforeunload', function() {
             if (pollTimer) clearInterval(pollTimer);
+            if (emergencyPollTimer) clearInterval(emergencyPollTimer);
         });
     })();
 </script>

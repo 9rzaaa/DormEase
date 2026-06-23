@@ -715,9 +715,9 @@
                 <img src="{{ asset('icons/pending.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Scheduled Announcements</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','scheduled')->count() }}</div>
-                <div class="ann-stat-sub">Waiting to publish</div>
+                <div class="ann-stat-label">Posted This Week</div>
+                <div class="ann-stat-num">{{ $visibleAnnouncements->filter(fn ($a) => \Carbon\Carbon::parse($a->posted_at ?? $a->created_at)->isCurrentWeek())->count() }}</div>
+                <div class="ann-stat-sub">New since Sunday</div>
             </div>
         </div>
     </div>
@@ -1283,5 +1283,85 @@ applyHidden();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
-</script>
+
+(function () {
+    var POLL_URL      = '{{ route("frontdesk.announcements.poll") }}';
+    var POLL_INTERVAL = 8000;
+    var lastSignature = null;
+    var pendingReload = false;
+
+    function isUserBusy() {
+        if (document.querySelector('.modal-overlay.open, .hidden-modal-overlay.open')) return true;
+        var focused = document.activeElement;
+        if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA' || focused.tagName === 'SELECT')) return true;
+        return false;
+    }
+
+    function doReload() {
+        location.reload();
+    }
+
+    function poll() {
+        fetch(POLL_URL, { cache: 'no-store' })
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (data) {
+                if (!data) return;
+                var sig = data.signature;
+                if (lastSignature === null) {
+                    lastSignature = sig;
+                    return;
+                }
+                if (sig !== lastSignature) {
+                    lastSignature = sig;
+                    if (!isUserBusy()) {
+                        doReload();
+                    } else {
+                        pendingReload = true;
+                    }
+                }
+            })
+            .catch(function () {});
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden && pendingReload) {
+            if (!isUserBusy()) {
+                doReload();
+            }
+        }
+    });
+
+    document.querySelectorAll('.modal-overlay, .hidden-modal-overlay').forEach(function (el) {
+        el.addEventListener('click', function () {
+            setTimeout(function () {
+                if (pendingReload && !isUserBusy()) {
+                    doReload();
+                }
+            }, 300);
+        });
+    });
+
+    document.querySelectorAll('.vm-close, .vm-close-btn, .hidden-modal-close').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            setTimeout(function () {
+                if (pendingReload && !isUserBusy()) {
+                    doReload();
+                }
+            }, 300);
+        });
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            setTimeout(function () {
+                if (pendingReload && !isUserBusy()) {
+                    doReload();
+                }
+            }, 300);
+        }
+    });
+
+    setInterval(poll, POLL_INTERVAL);
+    poll();
+})();
 @endsection

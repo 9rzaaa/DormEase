@@ -131,7 +131,7 @@ class BillingHistoryController extends Controller
                 }
 
                 $paidCount    = $floorBillings->where('payment_status', 'paid')->count();
-                $unpaidCount  = $floorBillings->whereIn('payment_status', ['unpaid', 'overdue', 'pending'])->count();
+                $unpaidCount  = $floorBillings->whereIn('payment_status', ['unpaid', 'overdue'])->count();
                 $totalCount   = $floorBillings->count();
 
                 $floorGroups[] = [

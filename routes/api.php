@@ -96,9 +96,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/update', function (Request $request) {
         $user = $request->user();
 
+        if ($request->filled('contact_number')) {
+            $request->merge([
+                'contact_number' => preg_replace('/\D/', '', $request->contact_number),
+            ]);
+        }
+
         $request->validate([
             'email'          => 'required|email|unique:tenants,email,' . $user->tenant_id . ',tenant_id',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ['nullable', 'regex:/^09\d{9}$/'],
+        ], [
+            'contact_number.regex' => 'The contact number must be exactly 11 digits and start with 09 (e.g. 0912-345-6789).',
         ]);
 
         $user->update([

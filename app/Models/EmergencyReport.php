@@ -26,3 +26,4 @@ class EmergencyReport extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
     }
 }
+

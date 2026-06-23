@@ -26,6 +26,9 @@ class ArchivedStaff extends Model
 
     protected $casts = [
         'is_active'   => 'boolean',
+        'is_on_leave' => 'boolean',
+        'leave_start' => 'date',
+        'leave_end'   => 'date',
         'archived_at' => 'datetime',
     ];
 }

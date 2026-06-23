@@ -64,20 +64,21 @@ class TenantController extends Controller
     private function formatArchive(ArchivedTenant $r): array
     {
         return [
-            'id'             => $r->original_id,
-            'archive_id'     => $r->id,
-            'account_id'     => $r->account_id,
-            'first_name'     => $r->first_name,
-            'last_name'      => $r->last_name,
-            'email'          => $r->email,
+            'id'           => $r->original_id,
+            'archive_id'   => $r->id,
+            'account_id'   => $r->account_id,
+            'first_name'   => $r->first_name,
+            'last_name'    => $r->last_name,
+            'email'        => $r->email,
             'contact_number' => $r->contact_number,
-            'room_number'    => $r->room_number,
-            'floor'          => $r->floor,
-            'stay_type'      => $r->stay_type,
-            'move_in_date'   => $r->move_in_date?->format('Y-m-d'),
-            'move_out_date'  => $r->move_out_date?->format('Y-m-d'),
-            'status'         => $r->status,
-            'archived_at'    => $r->archived_at?->format('Y-m-d H:i:s'),
+            'room_number'  => $r->room_number,
+            'floor'        => $r->floor,
+            'stay_type'    => $r->stay_type,
+            'move_in_date' => $r->move_in_date?->format('Y-m-d'),
+            'move_out_date'=> $r->move_out_date?->format('Y-m-d'),
+            'status'       => $r->status,
+            'tenant_photo' => $r->tenant_photo,
+            'archived_at'  => $r->archived_at?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -97,8 +98,23 @@ class TenantController extends Controller
             'move_in_date'   => $t->move_in_date,
             'move_out_date'  => $t->move_out_date,
             'status'         => $t->status,
+            'tenant_photo'   => $t->tenant_photo,
             'archived_at'    => now(),
         ]);
+    }
+
+    private function releaseEmailForReuse(Tenant $tenant): void
+    {
+        $email = $tenant->email;
+
+        if (str_contains($email, '@')) {
+            [$local, $domain] = explode('@', $email, 2);
+            $newEmail = $local . '+old' . $tenant->tenant_id . '@' . $domain;
+        } else {
+            $newEmail = $email . '.old' . $tenant->tenant_id;
+        }
+
+        $tenant->update(['email' => $newEmail]);
     }
 
     public function store(Request $request)
@@ -112,8 +128,9 @@ class TenantController extends Controller
                 Rule::unique('tenants', 'email')->where(fn ($q) => $q->where('status', '!=', 'inactive')),
             ],
             'contact_number'         => 'nullable|string|max:20',
-            'room_number'            => 'nullable|string|max:20',
-            'floor'                  => 'nullable|integer|min:1|max:5',
+            'guardian_number'        => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|min:3|max:20',
+            'floor'                  => 'nullable|integer|min:1|max:99',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
             'move_out_date'          => 'nullable|date',
@@ -164,8 +181,21 @@ class TenantController extends Controller
                     }
                 }
 
+                $blockingInactiveTenant = Tenant::where('email', $request->email)
+                    ->where('status', 'inactive')
+                    ->first();
+
+                if ($blockingInactiveTenant) {
+                    $this->releaseEmailForReuse($blockingInactiveTenant);
+                }
+
                 $accountId    = Tenant::generateAccountId();
                 $tempPassword = Tenant::generateTempPassword();
+
+                $moveOutDate = $request->move_out_date;
+                if (!$moveOutDate && $request->filled('move_in_date')) {
+                    $moveOutDate = \Carbon\Carbon::parse($request->move_in_date)->addYear()->format('Y-m-d');
+                }
 
                 $tenant = Tenant::create([
                     'account_id'             => $accountId,
@@ -175,10 +205,12 @@ class TenantController extends Controller
                     'last_name'              => $request->last_name,
                     'email'                  => $request->email,
                     'contact_number'         => $request->contact_number,
+                    'guardian_number'        => $request->guardian_number,
                     'room_number'            => $request->room_number,
                     'floor'                  => $request->floor,
                     'stay_type'              => $request->stay_type,
                     'move_in_date'           => $request->move_in_date,
+                    'move_out_date'          => $moveOutDate,
                     'estimated_move_in_date' => $request->estimated_move_in_date,
                     'reservation_notes'      => $request->reservation_notes,
                     'referred_by'            => $request->referred_by,
@@ -197,6 +229,8 @@ class TenantController extends Controller
                 return back()->withErrors(['room_number' => "Room {$request->room_number} is already at full capacity ({$cap} pax)."])->withInput();
             }
             throw $e;
+        } catch (\Illuminate\Database\QueryException $e) {
+            return back()->withErrors(['email' => 'This email address is already in use by another account.'])->withInput();
         }
 
         $notifMessage = $isReserved
@@ -230,8 +264,9 @@ class TenantController extends Controller
             'last_name'              => 'required|string|max:100',
             'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
             'contact_number'         => 'nullable|string|max:20',
-            'room_number'            => 'nullable|string|max:20',
-            'floor'                  => 'nullable|integer|min:1|max:5',
+            'guardian_number'        => 'nullable|string|max:20',
+            'room_number'            => 'nullable|string|min:3|max:20',
+            'floor'                  => 'nullable|integer|min:1|max:99',
             'stay_type'              => 'nullable|string|max:50',
             'move_in_date'           => 'nullable|date',
             'move_out_date'          => 'nullable|date',
@@ -295,6 +330,7 @@ class TenantController extends Controller
             'last_name'              => $request->last_name,
             'email'                  => $request->email,
             'contact_number'         => $request->contact_number,
+            'guardian_number'        => $request->guardian_number,
             'room_number'            => $request->room_number,
             'floor'                  => $request->floor,
             'stay_type'              => $request->stay_type,
@@ -305,6 +341,8 @@ class TenantController extends Controller
             'referred_by'            => $request->referred_by,
             'status'                 => $request->status,
             'is_active'              => $request->status !== 'inactive',
+            'is_on_vacation'         => $request->boolean('is_on_vacation'),
+            'vacation_note'          => $request->boolean('is_on_vacation') ? $request->vacation_note : null,
         ]);
 
         $fresh = $tenant->fresh();
@@ -315,6 +353,7 @@ class TenantController extends Controller
 
         if ($previousStatus !== 'move_out' && $request->status === 'move_out') {
             $this->archiveTenant($fresh, 'move_out');
+            $tenant->tokens()->delete();
         }
 
         NotificationHelper::sendToAll(
@@ -387,6 +426,107 @@ class TenantController extends Controller
             ->with('new_tenant_name',   $tenant->first_name . ' ' . $tenant->last_name);
     }
 
+    public function renew(Request $request, $id)
+    {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        $archived = ArchivedTenant::where('original_id', $id)
+            ->where('archive_type', 'move_out')
+            ->latest('archived_at')
+            ->first();
+
+        if (!$archived) {
+            return response()->json(['message' => 'No move-out archive record found for this tenant.'], 404);
+        }
+
+        $request->validate([
+            'move_in_date'  => 'required|date',
+            'move_out_date' => 'nullable|date|after_or_equal:move_in_date',
+            'room_number'   => 'nullable|string|min:3|max:20',
+        ]);
+
+        if (!$request->filled('move_out_date') && $request->filled('move_in_date')) {
+            $request->merge([
+                'move_out_date' => \Carbon\Carbon::parse($request->move_in_date)->addYear()->format('Y-m-d'),
+            ]);
+        }
+
+        $roomNumber = $request->room_number ?: $archived->room_number;
+        $floor      = $archived->floor;
+
+        if ($roomNumber) {
+            $room = \App\Models\Room::where('room_number', $roomNumber)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$room) {
+                return response()->json(['message' => 'Room ' . $roomNumber . ' does not exist or is inactive.'], 422);
+            }
+
+            $occupancy = Tenant::whereNotIn('status', ['inactive', 'move_out'])
+                ->where('room_number', $roomNumber)
+                ->count();
+
+            if ($occupancy >= $room->capacity) {
+                return response()->json(['message' => 'Room ' . $roomNumber . ' is at full capacity.'], 422);
+            }
+
+            $floor = $room->floor;
+        }
+
+        try {
+            [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+                $conflictingTenant = Tenant::where('email', $archived->email)->first();
+
+                if ($conflictingTenant) {
+                    $this->releaseEmailForReuse($conflictingTenant);
+                }
+
+                $accountId    = Tenant::generateAccountId();
+                $tempPassword = Tenant::generateTempPassword();
+
+                $tenant = Tenant::create([
+                    'account_id'       => $accountId,
+                    'password_hash'    => \Illuminate\Support\Facades\Hash::make($tempPassword),
+                    'is_temp_password' => true,
+                    'first_name'       => $archived->first_name,
+                    'last_name'        => $archived->last_name,
+                    'email'            => $archived->email,
+                    'contact_number'   => $archived->contact_number,
+                    'room_number'      => $roomNumber,
+                    'floor'            => $floor,
+                    'stay_type'        => $archived->stay_type,
+                    'move_in_date'     => $request->move_in_date,
+                    'move_out_date'    => $request->move_out_date,
+                    'status'           => 'pending',
+                    'is_active'        => true,
+                ]);
+
+                return [$accountId, $tempPassword, $tenant->tenant_id];
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'This tenant email is already linked to another account. Please try renewing again.'], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create tenant account. Please try again.'], 500);
+        }
+
+        NotificationHelper::sendToAll(
+            type: 'tenant_renewed',
+            message: "{$archived->first_name} {$archived->last_name} has been renewed and a new account has been created.",
+            ref_id: $id,
+        );
+
+        return response()->json([
+            'message'       => 'Tenant renewed successfully.',
+            'account_id'    => $accountId,
+            'temp_password' => $tempPassword,
+            'suggest_photo' => true,
+            'new_tenant_id' => $newTenantId,
+        ]);
+    }
+
     public function reschedule(Request $request, $id)
     {
         $tenant = Tenant::findOrFail($id);
@@ -397,7 +537,7 @@ class TenantController extends Controller
         }
 
         $request->validate([
-            'estimated_move_in_date' => 'required|date',
+            'estimated_move_in_date' => 'required|date|after_or_equal:today',
         ]);
 
         $tenant->update([
@@ -497,6 +637,43 @@ class TenantController extends Controller
         return response()->json([
             'message'       => 'Profile photo updated successfully.',
             'profile_photo' => $path,
+        ]);
+    }
+
+    public function uploadTenantPhoto(Request $request, $id)
+    {
+        if (!Auth::guard('staff')->check()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        $request->validate([
+            'tenant_photo' => 'required|image|mimes:jpg,jpeg,png|max:4096',
+        ], [
+            'tenant_photo.required' => 'Please select a photo to upload.',
+            'tenant_photo.image'    => 'The file must be an image.',
+            'tenant_photo.mimes'    => 'Only JPG and PNG files are accepted.',
+            'tenant_photo.max'      => 'The photo must not exceed 4MB.',
+        ]);
+
+        $tenant   = Tenant::findOrFail($id);
+        $oldPhoto = $tenant->tenant_photo;
+        $path     = $request->file('tenant_photo')->store('tenant_photos', 'public');
+
+        try {
+            $tenant->update(['tenant_photo' => $path]);
+        } catch (\Exception $e) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['message' => 'Failed to upload photo.'], 500);
+        }
+
+        if ($oldPhoto) {
+            Storage::disk('public')->delete($oldPhoto);
+        }
+
+        return response()->json([
+            'message'      => 'Photo uploaded successfully.',
+            'tenant_photo' => $path,
+            'url'          => asset('storage/' . $path),
         ]);
     }
 
@@ -653,6 +830,25 @@ class TenantController extends Controller
                 'estimated_move_in_date' => $tenant->estimated_move_in_date,
                 'reservation_notes'      => $tenant->reservation_notes,
             ],
+        ]);
+   }
+
+    public function live()
+    {
+        $tenants = Tenant::orderBy('created_at', 'desc')->get();
+
+        $fingerprint = md5(
+            $tenants->max('updated_at') .
+            $tenants->count() .
+            \App\Models\Room::max('updated_at')
+        );
+
+        return response()->json([
+            'fingerprint' => $fingerprint,
+            'tenants'     => $tenants,
+            'totalTenants'  => $tenants->count(),
+            'activeCount'   => $tenants->where('status', 'active')->count(),
+            'reservedCount' => $tenants->where('status', 'reserved')->count(),
         ]);
     }
 }

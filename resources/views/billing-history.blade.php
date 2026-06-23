@@ -908,6 +908,18 @@
 <script>
 const historyData = @json($historyGroups);
 
+(function() {
+    var url = new URL(window.location.href);
+    var hasParams = url.searchParams.has('floor') || url.searchParams.has('status') || url.searchParams.has('search') || url.searchParams.has('month');
+    if (!hasParams) {
+        document.querySelectorAll('.filter-select').forEach(function(s) { s.selectedIndex = 0; });
+        var searchInput = document.getElementById('filter-search');
+        if (searchInput) searchInput.value = '';
+    }
+    document.querySelectorAll('input').forEach(function(inp) {
+        inp.setAttribute('autocomplete', 'off');
+    });
+})();
 function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, function(char) {
         return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[char];

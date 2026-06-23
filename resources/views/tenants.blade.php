@@ -216,6 +216,8 @@ td {
 }
 th:nth-child(2), td:nth-child(2) { text-align: center; }
 th:nth-child(3), td:nth-child(3) { text-align: center; }
+th:nth-child(6), td:nth-child(6) { text-align: center; }
+th:nth-child(6), td:nth-child(6) { text-align: center; }
 th:nth-child(7), td:nth-child(7) { text-align: center; }
 th:nth-child(8), td:nth-child(8) { text-align: center; }
 .td-center { text-align: center; }
@@ -613,6 +615,11 @@ tbody tr:hover { background: var(--soft-bg); }
 .slp-row:last-child { border-bottom: none; }
 .slp-row .badge { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 .slp-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .15rem; }
+.inside-indicator { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; }
+.inside-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.dot-inside { background: #1f9d69; box-shadow: 0 0 0 3px rgba(31,157,105,.2); animation: pulseGreen 2s infinite; }
+.dot-outside { background: #c8c8d4; }
+.slp-row .inside-indicator { flex-shrink: 0; width: 88px; justify-content: center; text-align: center; white-space: nowrap; }
 @media (max-width: 680px) { .status-legend-popup { left: auto; right: 0; transform: none; } }
 .addf-item { display: block; width: 100%; padding: .6rem 1rem; background: none; border: none; text-align: left; font-size: .82rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); border-bottom: 1px solid var(--pink-100); }
 .addf-item:last-child { border-bottom: none; }
@@ -622,6 +629,323 @@ tbody tr:hover { background: var(--soft-bg); }
     width: 25px;
     height: 25px;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+.vacation-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .6rem .85rem;
+    border-radius: 12px;
+    background: #fffafd;
+    border: 1.5px solid var(--pink-100);
+    transition: border-color .2s, background .2s;
+}
+.vacation-toggle-row:has(#edit-is-on-vacation:checked) {
+    background: #fff0f6;
+    border-color: var(--bright-pink);
+}
+.vacation-toggle-row:has(#edit-change-room-toggle:checked) {
+    background: #fff0f6;
+    border-color: var(--bright-pink);
+}
+.vacation-toggle-label {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+.vacation-toggle-title {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+.vacation-toggle-sub {
+    font-size: .72rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+.vacation-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.vacation-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.vacation-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #e0d0d8;
+    border-radius: 999px;
+    transition: background .22s;
+}
+.vacation-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .22s;
+    box-shadow: 0 2px 6px rgba(0,0,0,.18);
+}
+.vacation-switch input:checked + .vacation-slider {
+    background: var(--gradient-pink);
+}
+.vacation-switch input:checked + .vacation-slider::before {
+    transform: translateX(20px);
+}
+.tenant-photo-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+}
+.tenant-photo-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--pink-100);
+    box-shadow: 0 4px 14px rgba(232,23,93,.18);
+    display: block;
+}
+.tenant-photo-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 2px dashed var(--pink-200);
+    background: #fffafd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    gap: .2rem;
+}
+.tenant-photo-placeholder:hover {
+    border-color: var(--bright-pink);
+    background: #fff0f6;
+}
+.tenant-photo-placeholder span {
+    font-size: .58rem;
+    font-weight: 700;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    text-align: center;
+    line-height: 1.3;
+}
+.tenant-photo-edit-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--gradient-pink);
+    border: 2px solid var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(232,23,93,.3);
+    transition: transform .15s;
+}
+.tenant-photo-edit-btn:hover {
+    transform: scale(1.12);
+}
+.tenant-photo-edit-btn svg {
+    width: 10px;
+    height: 10px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.tenant-photo-img {
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+}
+.tenant-photo-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 22px rgba(232,23,93,.3);
+}
+.photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20,0,10,.82);
+    backdrop-filter: blur(6px);
+    padding: 2rem;
+}
+.photo-lightbox.open {
+    display: flex;
+}
+.photo-lightbox-img {
+    max-width: min(80vw, 480px);
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.4);
+    animation: photoLightboxIn .25s cubic-bezier(.22,1,.36,1);
+}
+@keyframes photoLightboxIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.photo-lightbox-close {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
+    color: var(--white);
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+.photo-lightbox-close:hover {
+    background: rgba(255,255,255,.25);
+}
+.moveout-warning-bar {
+    display: none;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .65rem .85rem;
+    border-radius: 10px;
+    background: #fff0f4;
+    border: 1.5px solid #ffc2d1;
+    margin-bottom: .5rem;
+}
+.moveout-warning-bar.visible {
+    display: flex;
+}
+.moveout-warning-bar p {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #b0163a;
+    margin: 0 0 .35rem;
+    line-height: 1.45;
+    transition: color .2s;
+}
+.moveout-warning-bar small {
+    font-size: .72rem;
+    color: #c0163a;
+    font-weight: 500;
+    transition: color .2s;
+}
+.extend-stay-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-top: .5rem;
+}
+.extend-stay-btn {
+    padding: .38rem .9rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--pink-100);
+    background: var(--white);
+    color: var(--hot-pink);
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .2s, border-color .2s, color .2s;
+    white-space: nowrap;
+}
+.extend-stay-btn:hover {
+    background: var(--gradient-pink);
+    color: var(--white);
+    border-color: transparent;
+}
+.req-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    vertical-align: middle;
+    margin-left: .18rem;
+    opacity: .7;
+}
+.field-req-star {
+    color: var(--bright-pink);
+    font-size: .75rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-left: .18rem;
+    opacity: .75;
+    vertical-align: middle;
+    pointer-events: none;
+    user-select: none;
+}
+.form-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--pink-100);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: .55rem;
+    flex-shrink: 0;
+}
+.form-progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+}
+.form-progress-wrap {
+    padding: .5rem .9rem .1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--pink-100);
+    background: #fffafd;
+}
+.form-progress-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+}
+.form-progress-label span.ready {
+    color: #1f9d69;
+    font-weight: 800;
+}
+.form-progress-label span.partial {
+    color: var(--bright-pink);
+}
+.modal-field label .field-req-star {
+    color: var(--bright-pink);
+    font-size: .75rem;
+    font-weight: 900;
+    margin-left: .15rem;
+    opacity: .8;
+    vertical-align: middle;
 }
 </style>
 @endsection
@@ -710,9 +1034,6 @@ tbody tr:hover { background: var(--soft-bg); }
                 </select>
                 <select class="sort-select" id="floor-filter" onchange="applyFilters()">
                     <option value="">All Floors</option>
-                    @for($i = 2; $i <= 5; $i++)
-                    <option value="{{ $i }}">Floor {{ $i }}</option>
-                    @endfor
                 </select>
                 <select class="sort-select" id="status-filter" onchange="setStatusFilter(this.value)">
                     <option value="">All Statuses</option>
@@ -723,13 +1044,16 @@ tbody tr:hover { background: var(--soft-bg); }
                 <div class="status-legend-wrap" id="status-legend-trigger">
                     <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;opacity:.75;transition:opacity .2s;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
                     <div class="status-legend-popup" id="status-legend-popup">
-                        <div class="slp-title">Status Guide</div>
-                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
-                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
-                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
-                        <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
-                        <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
-                    </div>
+                    <div class="slp-title">Status Guide</div>
+                    <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Currently occupying a room and account is fully active.</span></div>
+                    <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has login credentials, but hasn't logged into the app yet.</span></div>
+                    <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. Move-in is upcoming.</span></div>
+                    <div class="slp-row"><span class="badge badge-moveout">Move Out</span><span class="slp-desc">Tenant has vacated. Record is archived in History.</span></div>
+                    <div class="slp-row"><span class="badge badge-inactive">Inactive</span><span class="slp-desc">Account is disabled. Tenant cannot log in to the portal.</span></div>
+                    <div class="slp-title" style="margin-top:.6rem;">Location Guide</div>
+                    <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span><span class="slp-desc">Tenant has timed in and is currently inside the dormitory.</span></div>
+                    <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span><span class="slp-desc">Tenant has timed out, or hasn't timed in yet today.</span></div>
+                </div>
                 </div>
             </div>
             <div id="table-date" style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:999px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.75rem;font-weight:700;color:var(--hot-pink);flex-shrink:0;white-space:nowrap;"></div>
@@ -812,6 +1136,23 @@ tbody tr:hover { background: var(--soft-bg); }
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
+    <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
+        <div class="modal-header" style="margin-bottom:.85rem;">
+            <div class="modal-title">Document Preview</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="btn-submit" style="padding:.45rem 1rem;font-size:.82rem;" onclick="downloadPdfFromPreview()">Download</button>
+                <button class="modal-close" onclick="closePdfPreview()">&#x2715;</button>
+            </div>
+        </div>
+        <div style="width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--pink-100);background:var(--soft-bg);">
+            <iframe id="pdf-preview-iframe" src="" style="width:100%;height:520px;border:none;display:block;"></iframe>
+        </div>
+        <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
+            Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -864,12 +1205,16 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
     </div>
-    <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;" id="rooms-floor-filters">
+    <div style="padding:.5rem 1.8rem .35rem;flex-shrink:0;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;" id="rooms-floor-filters">
         <button class="page-btn active" id="rfloor-all" onclick="setRoomFloor('')">All</button>
-        <button class="page-btn" id="rfloor-2" onclick="setRoomFloor(2)">Floor 2</button>
-        <button class="page-btn" id="rfloor-3" onclick="setRoomFloor(3)">Floor 3</button>
-        <button class="page-btn" id="rfloor-4" onclick="setRoomFloor(4)">Floor 4</button>
-        <button class="page-btn" id="rfloor-5" onclick="setRoomFloor(5)">Floor 5</button>
+        <div id="rfloor-btn-group" style="display:contents;"></div>
+        <div id="rfloor-more-wrap" style="position:relative;display:none;">
+            <button class="page-btn" id="rfloor-more-btn" onclick="toggleFloorMoreDropdown()" style="display:flex;align-items:center;gap:.3rem;">
+                More
+                <svg id="rfloor-more-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--hot-pink)" stroke-width="2.8" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="rfloor-more-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--white);border:1.5px solid var(--pink-100);border-radius:12px;box-shadow:0 8px 24px rgba(232,23,93,.13);min-width:110px;overflow:hidden;z-index:600;"></div>
+        </div>
     </div>
     <div class="tad-list" id="rooms-list"></div>
     <div class="tad-footer">
@@ -900,23 +1245,28 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('add-room-modal')">&#x2715;</button>
         </div>
         <div class="modal-body">
+            <div class="form-progress-wrap" id="ar-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="ar-progress-text">Fill in required fields</span>
+                    <span id="ar-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="ar-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="modal-grid">
                 <div class="modal-field">
-                    <label>Room Number</label>
-                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <label>Room Number <span class="field-req-star">*</span></label>
+                    <input type="text" id="ar-number" placeholder="e.g. 308" inputmode="numeric" maxlength="5" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
                     <select id="ar-floor" style="pointer-events:none;opacity:.65;cursor:default;background:#f5f0f3;">
-                        <option value="">Select</option>
-                        <option value="2">Floor 2</option>
-                        <option value="3">Floor 3</option>
-                        <option value="4">Floor 4</option>
-                        <option value="5">Floor 5</option>
+                        <option value="">Auto-detected</option>
                     </select>
                 </div>
                 <div class="modal-field">
-                    <label>Capacity (pax)</label>
+                    <label>Capacity (pax) <span class="field-req-star">*</span></label>
                     <input type="number" id="ar-capacity" min="1" max="10" placeholder="e.g. 3">
                 </div>
                 <div class="modal-field">
@@ -949,7 +1299,7 @@ tbody tr:hover { background: var(--soft-bg); }
             <div class="modal-grid">
                 <div class="modal-field">
                     <label>Room Number</label>
-                    <input type="text" id="er-number" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <input type="text" id="er-number" inputmode="numeric" maxlength="5" class="room-number-input">
                 </div>
                 <div class="modal-field">
                     <label>Floor</label>
@@ -1239,6 +1589,15 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
             <div class="modal-body">
+                <div class="form-progress-wrap" id="add-progress-wrap">
+                    <div class="form-progress-label">
+                        <span id="add-progress-text">Fill in required fields</span>
+                        <span id="add-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="add-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div id="add-step-panel-1">
                     <div class="modal-info-banner" style="margin-bottom:.75rem;">
                         <span>Account ID and temporary password will be <strong>auto-generated</strong> and shown to you after saving.</span>
@@ -1263,22 +1622,27 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-section-title">Personal Information</div>
                         <div class="modal-grid">
                             <div class="modal-field">
-                                <label>First Name</label>
-                                <input type="text" name="first_name" placeholder="e.g. Maria" required value="{{ old('first_name') }}" autocomplete="given-name">
+                                <label>First Name <span class="field-req-star">*</span></label>
+                                <input type="text" name="first_name" placeholder="e.g. Maria" required maxlength="100" value="{{ old('first_name') }}" autocomplete="given-name">
                             </div>
                             <div class="modal-field">
-                                <label>Last Name</label>
-                                <input type="text" name="last_name" placeholder="e.g. Ramos" required value="{{ old('last_name') }}" autocomplete="family-name">
+                                <label>Last Name <span class="field-req-star">*</span></label>
+                                <input type="text" name="last_name" placeholder="e.g. Ramos" required maxlength="100" value="{{ old('last_name') }}" autocomplete="family-name">
                             </div>
                             <div class="modal-field full">
-                                <label>Email Address</label>
+                                <label>Email Address <span class="field-req-star">*</span></label>
                                 <input type="email" name="email" id="add-email" placeholder="e.g. maria@email.com" required value="{{ old('email') }}" autocomplete="email">
                                 <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
-                                <label>Contact No.</label>
-                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('contact_number') }}">
+                                <label>Contact No. <span class="field-req-star">*</span></label>
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required value="{{ old('contact_number') }}">
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            </div>
+                            <div class="modal-field full">
+                                <label>Parent / Guardian Contact No.</label>
+                                <input type="text" name="guardian_number" id="add-guardian" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('guardian_number') }}">
+                                <span class="field-error" id="add-guardian-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
                                 <label>Referred By</label>
@@ -1295,7 +1659,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select id="add-referred-former-select" style="display:none;" onchange="syncReferredSelect('add-referred-former-select','add-referred-by-value')">
                                     <option value="">Select former tenant...</option>
                                 </select>
-                                <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('add-referred-by-value').value=this.value">
+                                <input type="text" id="add-referred-other-input" style="display:none;" placeholder="Enter name..." maxlength="150" oninput="document.getElementById('add-referred-by-value').value=this.value">
                             </div>
                         </div>
                     </div>
@@ -1305,7 +1669,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <div class="modal-section-title">Room &amp; Stay Details</div>
                         <div class="modal-grid">
                             <div class="modal-field full">
-                                <label>Stay Type</label>
+                                <label>Stay Type <span class="field-req-star">*</span></label>
                                 <select name="stay_type" id="add-stay-type-select" onchange="onAddStayTypeChange()">
                                     <option value="" disabled selected>Select type</option>
                                     <option value="Solo Room"   {{ old('stay_type') === 'Solo Room'   ? 'selected' : '' }}>Solo Room</option>
@@ -1337,17 +1701,20 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full" id="add-movein-wrap">
-                                <label>Move-In Date</label>
+                                <label>Move-In Date <span class="field-req-star">*</span></label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
                             </div>
                             <div class="modal-field full" id="add-moveout-wrap">
-                                <label>Move-Out Date (Optional)</label>
+                                <label>Move-Out Date</label>
                                 <input type="date" name="move_out_date" id="add-move-out-date" value="{{ old('move_out_date') }}">
                                 <span id="add-moveout-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
+                            <div class="modal-field full" id="add-stay-duration-wrap" style="display:none;">
+                                <div id="add-stay-duration-display"></div>
+                            </div>
                             <div class="modal-field full" id="add-reservation-notes-wrap" style="display:none;">
                                 <label>Reservation Notes</label>
-                                <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" value="{{ old('reservation_notes') }}">
+                                <input type="text" name="reservation_notes" id="add-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" maxlength="500" value="{{ old('reservation_notes') }}">
                             </div>
                         </div>
                     </div>
@@ -1391,30 +1758,44 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return validateEditTenantForm(event)">
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:contents;" onsubmit="return interceptMoveOut(event)">
             @csrf
             @method('PUT')
             <div class="modal-body">
+                <div class="form-progress-wrap" id="edit-progress-wrap">
+                    <div class="form-progress-label">
+                        <span id="edit-progress-text">Fill in required fields</span>
+                        <span id="edit-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
+                </div>
                 <div class="modal-section">
                     <div class="modal-section-title">Personal Information</div>
                     <div class="modal-grid">
                         <div class="modal-field">
-                            <label>First Name</label>
+                            <label>First Name <span class="field-req-star">*</span></label>
                             <input type="text" name="first_name" id="edit-first-name" placeholder="First name" required>
                         </div>
                         <div class="modal-field">
-                            <label>Last Name</label>
+                            <label>Last Name <span class="field-req-star">*</span></label>
                             <input type="text" name="last_name" id="edit-last-name" placeholder="Last name" required>
                         </div>
                         <div class="modal-field full">
-                            <label>Email Address</label>
+                            <label>Email Address <span class="field-req-star">*</span></label>
                             <input type="email" name="email" id="edit-email" placeholder="Email address" required>
                             <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
-                            <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <label>Contact No. <span class="field-req-star">*</span></label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required>
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Parent / Guardian Contact No.</label>
+                            <input type="text" name="guardian_number" id="edit-guardian" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <span class="field-error" id="edit-guardian-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
                             <label>Referred By</label>
@@ -1431,13 +1812,25 @@ tbody tr:hover { background: var(--soft-bg); }
                             <select id="edit-referred-former-select" style="display:none;" onchange="syncReferredSelect('edit-referred-former-select','edit-referred-by-value')">
                                 <option value="">Select former tenant...</option>
                             </select>
-                            <input type="text" id="edit-referred-other-input" style="display:none;" placeholder="Enter name..." oninput="document.getElementById('edit-referred-by-value').value=this.value">
+                            <input type="text" id="edit-referred-other-input" style="display:none;" placeholder="Enter name..." maxlength="150" oninput="document.getElementById('edit-referred-by-value').value=this.value">
                         </div>
                     </div>
                 </div>
                 <div class="modal-section">
                     <div class="modal-section-title">Room &amp; Stay Details</div>
                     <div class="modal-grid">
+                        <div class="modal-field full">
+                            <div class="vacation-toggle-row" id="edit-room-toggle-row">
+                                <div class="vacation-toggle-label">
+                                    <span class="vacation-toggle-title">Change Room</span>
+                                    <span class="vacation-toggle-sub" id="edit-room-toggle-sub">No room currently assigned</span>
+                                </div>
+                                <label class="vacation-switch">
+                                    <input type="checkbox" id="edit-change-room-toggle" onchange="toggleEditRoomChange(this)">
+                                    <span class="vacation-slider"></span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="modal-field full">
                             <label>Stay Type</label>
                             <select name="stay_type" id="edit-stay-type" onchange="onEditStayTypeChange()">
@@ -1473,6 +1866,23 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Move-In Date</label>
                             <input type="date" name="move_in_date" id="edit-date">
                         </div>
+                        <div class="modal-field full">
+                            <div class="moveout-warning-bar" id="edit-moveout-warning">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <div>
+                                    <p id="edit-moveout-warning-text">This tenant's move-out date has passed.</p>
+                                    <small>The account will be automatically archived at midnight if no action is taken.</small>
+                                    <div class="extend-stay-row">
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(30)">+30 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(60)">+60 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(90)">+90 days</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(180)">+6 months</button>
+                                        <button type="button" class="extend-stay-btn" onclick="extendStay(365)">+1 year</button>
+                                    </div>
+                                    <div style="font-size:.72rem;color:var(--ink-muted);margin-top:.3rem;font-weight:500;">To change rooms, update the Room No. field above.</div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="modal-field">
                             <label>Move-Out Date</label>
                             <input type="date" name="move_out_date" id="edit-moveout" @error('move_out_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
@@ -1481,6 +1891,9 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div class="modal-field full" id="edit-stay-duration-wrap" style="display:none;">
+                            <div id="edit-stay-duration-display"></div>
+                        </div>
                         <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
                             <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in">
@@ -1488,7 +1901,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
-                            <input type="text" name="reservation_notes" id="edit-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation">
+                            <input type="text" name="reservation_notes" id="edit-reservation-notes" placeholder="e.g. Confirmed via call, move-in after graduation" maxlength="500">
                         </div>
                     </div>
                 </div>
@@ -1502,7 +1915,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
-                                    <option value="reserved">Reserved</option>
+                                    <option value="reserved" id="edit-status-reserved-option">Reserved</option>
                                     <option value="move_out">Move Out</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
@@ -1515,6 +1928,23 @@ tbody tr:hover { background: var(--soft-bg); }
                     </div>
                     <div id="edit-pending-reserved-warn" style="display:none;margin-top:.6rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.55rem .8rem;font-size:.8rem;color:#7a5400;line-height:1.5;">
                         This tenant has no login credentials yet. Setting status to <strong>Pending</strong> has no effect until you use <strong>Tag as Moved In</strong> to generate their account.
+                    </div>
+                </div>
+                <div class="modal-section" id="edit-vacation-section">
+                    <div class="modal-section-title">Vacation</div>
+                    <div class="vacation-toggle-row">
+                        <div class="vacation-toggle-label">
+                            <span class="vacation-toggle-title">On Vacation</span>
+                            <span class="vacation-toggle-sub">Tenant is temporarily away from the dormitory</span>
+                        </div>
+                        <label class="vacation-switch">
+                            <input type="checkbox" name="is_on_vacation" id="edit-is-on-vacation" value="1" onchange="toggleVacationNote()">
+                            <span class="vacation-slider"></span>
+                        </label>
+                    </div>
+                    <div class="modal-field full" id="edit-vacation-note-wrap" style="display:none;margin-top:.6rem;">
+                        <label>Vacation Note <span style="font-weight:500;color:var(--ink-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <input type="text" name="vacation_note" id="edit-vacation-note" placeholder="e.g. Home for semestral break, back Nov 5" maxlength="200">
                     </div>
                 </div>
             </div>
@@ -1636,10 +2066,268 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
-@endsection
+<div class="modal-overlay" id="moveout-verify-modal">
+    <div class="modal" style="max-width:520px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </span>
+                Confirm Move Out
+            </div>
+            <button class="modal-close" onclick="closeMoveOutVerify()">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div id="moveout-verify-tenant-bar" style="display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:#fffafd;border:1.5px solid var(--pink-100);margin-bottom:1rem;">
+                <div id="moveout-verify-avatar" style="width:42px;height:42px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.95rem;flex-shrink:0;box-shadow:0 4px 12px rgba(232,23,93,.2);"></div>
+                <div style="flex:1;min-width:0;">
+                    <div id="moveout-verify-name" style="font-size:.95rem;font-weight:800;color:var(--ink);line-height:1.2;"></div>
+                    <div id="moveout-verify-meta" style="font-size:.75rem;color:var(--ink-muted);margin-top:.2rem;font-weight:500;"></div>
+                </div>
+                <div id="moveout-verify-date-pill" style="display:none;flex-shrink:0;padding:.3rem .75rem;border-radius:99px;background:var(--petal);border:1.5px solid var(--pink-100);font-size:.72rem;font-weight:700;color:var(--hot-pink);"></div>
+            </div>
 
+            <div id="moveout-bills-section" style="display:none;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem;padding-bottom:.45rem;border-bottom:1.5px solid #fff0f4;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span style="font-size:.72rem;font-weight:800;color:#e04867;text-transform:uppercase;letter-spacing:.07em;">Unpaid Bills Detected</span>
+                    <span id="moveout-bills-count-pill" style="font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid var(--pink-200);"></span>
+                </div>
+                <div style="background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:12px;padding:.7rem .85rem;margin-bottom:.75rem;">
+                    <p style="font-size:.82rem;font-weight:700;color:#b0163a;margin:0 0 .2rem;line-height:1.4;">This tenant has outstanding balance.</p>
+                    <p style="font-size:.76rem;color:#c0163a;margin:0;font-weight:500;line-height:1.45;">Moving out without settling the balance will leave bills unresolved. You may still proceed or print the bill slip for reference.</p>
+                </div>
+                <div id="moveout-bills-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem;max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--pink-200) transparent;"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .9rem;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;">
+                    <span style="font-size:.8rem;font-weight:700;color:#b0163a;">Total Outstanding</span>
+                    <span id="moveout-bills-total" style="font-size:1.1rem;font-weight:800;color:#e04867;"></span>
+                </div>
+            </div>
+
+            <div id="moveout-clear-section" style="display:none;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:.55rem;padding:.75rem 1rem;border-radius:12px;background:#e8faf5;border:1.5px solid #8ce0bb;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <div>
+                        <p style="font-size:.82rem;font-weight:700;color:#1a7a52;margin:0 0 .1rem;">No outstanding balance.</p>
+                        <p style="font-size:.74rem;color:#2e9e68;margin:0;font-weight:500;">All bills have been settled. Safe to proceed with move-out.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .85rem;font-size:.78rem;color:#7a5400;line-height:1.5;">
+                Setting status to <strong>Move Out</strong> will archive this tenant record. This action takes effect immediately on save.
+            </div>
+        </div>
+        <div class="modal-footer" style="justify-content:space-between;">
+            <button type="button" id="moveout-print-btn" style="display:none;padding:.55rem 1.1rem;border-radius:10px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s;" onmouseover="this.style.background='var(--petal)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';" onclick="printMoveOutBillSlip()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px;margin-right:.35rem;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print Bill Slip
+            </button>
+            <div style="display:flex;align-items:center;gap:.55rem;margin-left:auto;">
+                <button type="button" class="btn-cancel" onclick="closeMoveOutVerify()">Cancel</button>
+                <button type="button" id="moveout-confirm-btn" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:#e04867;color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(224,72,103,.25);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 12px 28px rgba(224,72,103,.35)';" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 20px rgba(224,72,103,.25)';" onclick="confirmMoveOut()">Confirm Move Out</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="renew-modal">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <span style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:var(--petal);flex-shrink:0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </span>
+                Renew Tenant Stay
+            </div>
+            <button class="modal-close" onclick="closeModal('renew-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-progress-wrap" id="renew-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="renew-progress-text">Fill in required fields</span>
+                    <span id="renew-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="renew-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
+            <p style="font-size:.92rem;color:var(--ink);font-weight:600;margin:0 0 .75rem;">
+                Renewing stay for <strong id="renew-tenant-name" style="color:var(--bright-pink);"></strong>
+            </p>
+            <div class="modal-info-banner" style="margin-bottom:.85rem;">
+                <span>A new <strong>Account ID</strong> and <strong>temporary password</strong> will be generated. The tenant's status will be set to <strong>Pending</strong> until their first login. Their previous record will remain in the archive for reference.</span>
+            </div>
+            <div class="modal-grid">
+                <div class="modal-field full">
+                    <label>Stay Type</label>
+                    <select id="renew-stay-type" onchange="onRenewStayTypeChange()" style="width:100%;padding:.5rem .8rem;border-radius:10px;border:1.5px solid var(--pink-100);background:#fffafd;font-size:.875rem;color:#5a1e38;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;font-family:inherit;">
+                        <option value="" disabled selected>Select type</option>
+                        <option value="Solo Room">Solo Room</option>
+                        <option value="Shared Room">Shared Room</option>
+                    </select>
+                </div>
+                <div class="modal-field full" id="renew-room-suggest-wrap" style="display:none;">
+                    <div id="renew-room-suggest"></div>
+                </div>
+                <div class="modal-field full">
+                    <label>Room No.</label>
+                    <input type="text" id="renew-room" placeholder="e.g. 304" inputmode="numeric" maxlength="10" class="room-number-input">
+                    <span id="renew-room-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+                <div class="modal-field full" id="renew-stay-duration-wrap" style="display:none;">
+                    <div id="renew-stay-duration-display"></div>
+                </div>
+                <div class="modal-field full" id="renew-room-hint-wrap" style="display:none;">
+                    <div id="renew-room-hint"></div>
+                </div>
+                <div class="modal-field">
+                    <label>New Move-In Date <span class="field-req-star">*</span></label>
+                    <input type="date" id="renew-move-in" required>
+                    <span id="renew-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+                <div class="modal-field">
+                    <label>New Move-Out Date <span class="field-req-star">*</span></label>
+                    <input type="date" id="renew-move-out" required>
+                    <span id="renew-move-out-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeModal('renew-modal')">Cancel</button>
+            <button type="button" class="btn-submit" onclick="submitRenewTenant()">Renew &amp; Generate Credentials</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="renew-credentials-modal">
+    <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+            <div class="modal-title">
+                <img src="{{ asset('icons/nav-tenants.png') }}" class="icon-sm" alt="">
+                Tenant Renewed Successfully
+            </div>
+            <button class="modal-close" onclick="closeModal('renew-credentials-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:.88rem;color:var(--ink-muted);margin-bottom:1rem;">
+                The account for <strong id="renew-cred-name" style="color:var(--ink);"></strong> has been renewed. Provide these credentials to the tenant:
+            </p>
+            <div class="credentials-box">
+                <h4>New Login Credentials</h4>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Account ID</div>
+                        <div class="credential-value" id="renew-cred-account-id"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-account-id', this)">Copy</button>
+                </div>
+                <div class="credential-row">
+                    <div>
+                        <div class="credential-label">Temporary Password</div>
+                        <div class="credential-value" id="renew-cred-password"></div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('renew-cred-password', this)">Copy</button>
+                </div>
+            </div>
+            <div class="credentials-warning">
+                This temporary password will <strong>not be shown again</strong>. Inform the tenant immediately.
+            </div>
+            <div id="renew-cred-photo-suggest" style="display:none;margin-top:.75rem;background:linear-gradient(135deg,#fff5f9 0%,#ffe8f2 100%);border:1.5px solid var(--pink-100);border-radius:12px;padding:.8rem .9rem;">
+                <div style="display:flex;align-items:flex-start;gap:.6rem;">
+                    <div style="width:30px;height:30px;border-radius:8px;background:var(--petal);border:1.5px solid var(--pink-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:.8rem;font-weight:800;color:var(--ink);margin-bottom:.2rem;letter-spacing:-.01em;">Tenant photo</div>
+                        <div style="font-size:.75rem;color:#7a3050;line-height:1.5;margin-bottom:.65rem;">Upload or update the tenant photo for this renewed account. JPG or PNG, max 4MB.</div>
+                        <div id="renew-cred-photo-preview-wrap" style="display:none;margin-bottom:.65rem;">
+                            <div style="font-size:.7rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;">Current photo</div>
+                            <div style="position:relative;display:inline-block;">
+                                <img id="renew-cred-photo-preview-img" src="" alt="Tenant photo" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--pink-100);box-shadow:0 4px 12px rgba(232,23,93,.15);display:block;">
+                                <div id="renew-cred-photo-preview-check" style="position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:#1f9d69;border:2px solid #fff;display:flex;align-items:center;justify-content:center;">
+                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+                            <button type="button" id="renew-cred-upload-btn" onclick="triggerRenewPhotoUpload()" style="display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .2s;box-shadow:0 4px 12px rgba(232,23,93,.2);">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                <span id="renew-cred-upload-btn-label">Upload Photo</span>
+                            </button>
+                            <span style="font-size:.72rem;color:#b06080;font-weight:500;">JPG or PNG, max 4MB</span>
+                        </div>
+                        <div id="renew-cred-upload-status" style="display:none;margin-top:.45rem;font-size:.75rem;font-weight:600;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('renew-credentials-modal')">Close</button>
+            <button class="btn-submit" onclick="closeModal('renew-credentials-modal')">Got it</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
+<input type="file" id="renew-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitRenewPhoto(this)">
+
+<div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
+    <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
+    <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
+</div>
+
+@endsection
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
+function showToast(message, type) {
+    var existing = document.getElementById('dormease-toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.id = 'dormease-toast';
+    var bg = type === 'success' ? '#1f9d69' : type === 'error' ? '#e04867' : '#5a1e38';
+    toast.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:.65rem;padding:.75rem 1.2rem;border-radius:14px;background:' + bg + ';color:#fff;font-size:.875rem;font-weight:700;box-shadow:0 8px 28px rgba(0,0,0,.18);opacity:0;transform:translateY(12px);transition:opacity .25s,transform .25s;max-width:360px;line-height:1.4;font-family:inherit;';
+    var icon = type === 'success'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    toast.innerHTML = icon + '<span>' + message + '</span>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        });
+    });
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+        setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+    }, 4000);
+}
+var _pdfBlobUrl = null;
+var _pdfDownloadName = 'document.pdf';
+
+function openPdfPreview(blobUrl, downloadName) {
+    _pdfBlobUrl = blobUrl;
+    _pdfDownloadName = downloadName || 'document.pdf';
+    document.getElementById('pdf-preview-iframe').src = blobUrl;
+    openModal('pdf-preview-modal');
+}
+
+function closePdfPreview() {
+    closeModal('pdf-preview-modal');
+    document.getElementById('pdf-preview-iframe').src = '';
+    if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+}
+
+function downloadPdfFromPreview() {
+    if (!_pdfBlobUrl) return;
+    var a = document.createElement('a');
+    a.href = _pdfBlobUrl;
+    a.download = _pdfDownloadName;
+    a.click();
+}
 function printCredentialSlip(type) {
     var accountId, tempPassword, tenantName;
     if (type === 'new') {
@@ -1651,59 +2339,116 @@ function printCredentialSlip(type) {
         tempPassword = document.getElementById('reset-temp-password').textContent.trim();
         tenantName   = '{{ session("reset_tenant_name") }}';
     }
+
     var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    var win = window.open('', '_blank', 'width=400,height=520');
-    win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>DormEase Login Credentials</title>
-<style>
-  @page { size: 80mm 120mm; margin: 0; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 120mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .slip { width: 80mm; min-height: 120mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
-  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
-  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
-  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
-  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
-  .tenant-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
-  .field { margin-bottom: 3mm; }
-  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
-  .field-value { font-size: 13pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .08em; text-align: center; word-break: break-all; }
-  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 4px; padding: 2mm 2.5mm; font-size: 6.5pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
-  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
-  .footer-date { font-size: 6pt; color: #b06080; }
-  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
-  @media print { body { margin: 0; } .slip { border: none; } }
-</style>
-</head>
-<body>
-<div class="slip">
-  <div class="header">
-    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
-    <div class="title">Login Credentials</div>
-    <div class="subtitle">DormEase Tenant Portal</div>
-  </div>
-  <div class="tenant-name">${tenantName}</div>
-  <div class="field">
-    <div class="field-label">Account ID</div>
-    <div class="field-value">${accountId}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Temporary Password</div>
-    <div class="field-value">${tempPassword}</div>
-  </div>
-  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
-  <div class="footer">
-    <div class="footer-date">Issued: ${today}</div>
-    <div class="footer-brand">DormEase</div>
-  </div>
-</div>
-<script>window.onload = function() { window.print(); };<\/script>
-</body>
-</html>`);
-    win.document.close();
+    var { jsPDF } = window.jspdf;
+
+    var W = 80, H = 148;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [W, H], compress: true });
+    doc.setProperties({ title: 'Credentials - ' + tenantName, author: 'DormEase', creator: 'DormEase' });
+
+    var pink   = [232, 23, 93];
+    var ink    = [26, 26, 46];
+    var muted  = [140, 100, 120];
+    var white  = [255, 255, 255];
+    var petal  = [255, 243, 248];
+    var border = [244, 184, 208];
+    var warn   = [255, 249, 230];
+    var warnTx = [122, 84, 0];
+    var warnBd = [240, 192, 64];
+
+    doc.setFillColor(pink[0], pink[1], pink[2]);
+    doc.rect(0, 0, W, 28, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(white[0], white[1], white[2]);
+    doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', W / 2, 8, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.text('Login Credentials', W / 2, 15, { align: 'center' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 210, 230);
+    doc.text('DormEase Tenant Portal', W / 2, 21.5, { align: 'center' });
+
+    var y = 33;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(tenantName, W / 2, y, { align: 'center' });
+
+    y += 3.5;
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 5.5;
+
+    function drawField(label, value) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text(label.toUpperCase(), 6, y);
+
+        y += 1.8;
+
+        doc.setFillColor(petal[0], petal[1], petal[2]);
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(6, y, W - 12, 10.5, 1.8, 1.8, 'FD');
+
+        doc.setFont('courier', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(ink[0], ink[1], ink[2]);
+        doc.text(value, W / 2, y + 7, { align: 'center' });
+
+        y += 14.5;
+    }
+
+    drawField('Account ID', accountId);
+    drawField('Temporary Password', tempPassword);
+
+    doc.setFillColor(warn[0], warn[1], warn[2]);
+    doc.setDrawColor(warnBd[0], warnBd[1], warnBd[2]);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(6, y, W - 12, 18, 1.8, 1.8, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6);
+    doc.setTextColor(warnTx[0], warnTx[1], warnTx[2]);
+    doc.text('Important', 11, y + 5.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.8);
+    var warnLines = doc.splitTextToSize(
+        'This is a temporary password. You will be prompted to change it on your first login. Keep this slip private and do not share it with anyone.',
+        W - 16
+    );
+    doc.text(warnLines, 9, y + 10, { lineHeightFactor: 1.6 });
+
+    y += 22;
+
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 4.5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    doc.setTextColor(muted[0], muted[1], muted[2]);
+    doc.text('Issued: ' + today, 6, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('DormEase', W - 6, y, { align: 'right' });
+
+    var safeName = (tenantName || 'tenant').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'credentials-' + safeName + '.pdf');
 }
 
 var tenants = {!! json_encode($tenants, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
@@ -1715,10 +2460,12 @@ var sectionPages = { active: 1, reserved: 1 };
 var sectionData  = { active: [], reserved: [] };
 var addCurrentStep = 1;
 var selectedRoomNumber = null;
+var editOriginalRoomNumber = null;
+var editOriginalStayType = null;
 
 var EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
-function validateEmailField(inputId, errorId) {
+function validateEmailField(inputId, errorId, excludeTenantId) {
     var input = document.getElementById(inputId);
     var error = document.getElementById(errorId);
     if (!input || !error) return true;
@@ -1734,6 +2481,16 @@ function validateEmailField(inputId, errorId) {
         msg = 'Email cannot contain more than one "@".';
     } else if (!EMAIL_REGEX.test(val)) {
         msg = 'Please enter a valid email address (e.g. name@example.com).';
+    }
+    if (!msg && val) {
+        var duplicate = tenants.find(function(t) {
+            if (excludeTenantId && t.tenant_id == excludeTenantId) return false;
+            if (t.status === 'inactive') return false;
+            return (t.email || '').toLowerCase() === val.toLowerCase();
+        });
+        if (duplicate) {
+            msg = 'This email is already in use by ' + duplicate.first_name + ' ' + duplicate.last_name + '.';
+        }
     }
     if (msg) {
         input.classList.add('field-invalid');
@@ -1829,6 +2586,8 @@ function validatePhoneField(inputId, errorId, required) {
 function attachPhoneFormatter(inputId, errorId, required) {
     var input = document.getElementById(inputId);
     if (!input) return;
+    if (input._phoneFormatterAttached) return;
+    input._phoneFormatterAttached = true;
     input.addEventListener('input', function() {
         var cursorAtEnd = this.selectionStart === this.value.length;
         var formatted = formatPhoneNumber(this.value);
@@ -1851,14 +2610,16 @@ function attachPhoneFormatter(inputId, errorId, required) {
     });
 }
 
-function attachEmailValidator(inputId, errorId) {
+function attachEmailValidator(inputId, errorId, excludeTenantIdFn) {
     var input = document.getElementById(inputId);
     if (!input) return;
     input.addEventListener('input', function() {
-        validateEmailField(inputId, errorId);
+        var exId = excludeTenantIdFn ? excludeTenantIdFn() : null;
+        validateEmailField(inputId, errorId, exId);
     });
     input.addEventListener('blur', function() {
-        validateEmailField(inputId, errorId);
+        var exId = excludeTenantIdFn ? excludeTenantIdFn() : null;
+        validateEmailField(inputId, errorId, exId);
     });
 }
 
@@ -1927,17 +2688,351 @@ function attachEstimatedMoveInValidator(inputId, errorId) {
     input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
 }
 
+function triggerTenantPhotoUpload(tenantId) {
+    var input = document.getElementById('tenant-photo-upload-input');
+    input.dataset.tenantId = tenantId;
+    input.value = '';
+    input.click();
+}
+
+async function submitTenantPhoto(input) {
+    var tenantId = input.dataset.tenantId;
+    var file     = input.files[0];
+    if (!file) return;
+
+    var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedTypes.indexOf(file.type) === -1) {
+        showPhotoValidationModal('Invalid file type. Only JPG and PNG photos are accepted.');
+        input.value = '';
+        return;
+    }
+
+    var maxBytes = 4 * 1024 * 1024;
+    if (file.size > maxBytes) {
+        showPhotoValidationModal('File is too large. Maximum allowed size is 4MB.');
+        input.value = '';
+        return;
+    }
+
+    showActionLoading('Uploading photo...');
+
+    var formData = new FormData();
+    formData.append('tenant_photo', file);
+
+    try {
+        var res = await fetch('/tenants/' + tenantId + '/upload-photo', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: formData,
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Upload failed.');
+
+        var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
+        if (idx !== -1) {
+            tenants[idx].tenant_photo = data.tenant_photo;
+            currentTenant = tenants[idx];
+        }
+
+        var img = document.getElementById('view-tenant-photo-img');
+        if (img) {
+            img.src = data.url + '?t=' + Date.now();
+        } else {
+            viewTenant(currentTenant);
+        }
+
+        applyFilters();
+        showToast('Photo uploaded successfully.', 'success');
+    } catch (e) {
+        showToast(e.message, 'error');
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
+
+function renderMoveOutDateView(dateStr) {
+    if (!dateStr) return '\u2014';
+    var today   = new Date();
+    today.setHours(0, 0, 0, 0);
+    var moveout = new Date(dateStr + 'T00:00:00');
+    var diff    = Math.floor((moveout - today) / 86400000);
+    var formatted = fmtDate(dateStr);
+    if (diff < 0) {
+        var overdueDays = Math.abs(diff);
+        var overdueLabel = overdueDays === 1 ? '1 day overdue' : overdueDays + ' days overdue';
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#e04867;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff0f2;border:1px solid #ffc2ce;font-size:.68rem;font-weight:800;color:#c0163a;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c0163a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                + overdueLabel
+            + '</span>'
+        + '</span>';
+    }
+    if (diff === 0) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                + 'Today'
+            + '</span>'
+        + '</span>';
+    }
+    if (diff <= 7) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#c8960c;font-weight:700;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff9e6;border:1px solid #f0c040;font-size:.68rem;font-weight:800;color:#9a6200;">'
+                + '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#9a6200" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+                + 'In ' + diff + ' day' + (diff === 1 ? '' : 's')
+            + '</span>'
+        + '</span>';
+    }
+    if (diff <= 14) {
+        return '<span style="display:inline-flex;align-items:center;gap:.45rem;flex-wrap:wrap;">'
+            + '<span style="color:#9a6200;font-weight:600;">' + formatted + '</span>'
+            + '<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:99px;background:#fff8e0;border:1px solid #f0c840;font-size:.68rem;font-weight:700;color:#9a6200;">'
+                + 'In ' + diff + ' days'
+            + '</span>'
+        + '</span>';
+    }
+    return '<span style="color:#5a1e38;font-weight:500;">' + formatted + '</span>';
+}
+
+function checkMoveoutWarning() {
+    var moveoutInput = document.getElementById('edit-moveout');
+    var warningBar   = document.getElementById('edit-moveout-warning');
+    var warningText  = document.getElementById('edit-moveout-warning-text');
+    var warnSmall    = warningBar ? warningBar.querySelector('small') : null;
+    if (!moveoutInput || !warningBar) return;
+    var val = moveoutInput.value;
+    if (!val) {
+        warningBar.classList.remove('visible');
+        warningBar.style.background = '#fff0f4';
+        warningBar.style.borderColor = '#ffc2d1';
+        if (warningText) warningText.style.color = '#b0163a';
+        if (warnSmall) warnSmall.style.color = '#c0163a';
+        return;
+    }
+    var today   = new Date();
+    today.setHours(0, 0, 0, 0);
+    var moveout = new Date(val + 'T00:00:00');
+    var diff    = Math.floor((moveout - today) / 86400000);
+    if (diff < 0) {
+        var dayLabel = Math.abs(diff) === 1 ? '1 day ago' : Math.abs(diff) + ' days ago';
+        if (warningText) warningText.textContent = 'This tenant\'s move-out date has passed (' + dayLabel + ').';
+        if (warnSmall) warnSmall.textContent = 'The account will be automatically archived at midnight if no action is taken.';
+        warningBar.style.background = '#fff0f4';
+        warningBar.style.borderColor = '#ffc2d1';
+        if (warningText) warningText.style.color = '#b0163a';
+        if (warnSmall) warnSmall.style.color = '#c0163a';
+        warningBar.classList.add('visible');
+    } else if (diff === 0) {
+        if (warningText) warningText.textContent = 'This tenant\'s move-out date is today.';
+        if (warnSmall) warnSmall.textContent = 'Extend their stay now to keep their account active past tonight.';
+        warningBar.style.background = '#fff9e6';
+        warningBar.style.borderColor = '#f0c040';
+        if (warningText) warningText.style.color = '#9a6200';
+        if (warnSmall) warnSmall.style.color = '#c8960c';
+        warningBar.classList.add('visible');
+    } else if (diff <= 7) {
+        if (warningText) warningText.textContent = 'Move-out date is in ' + diff + ' day' + (diff === 1 ? '' : 's') + '.';
+        if (warnSmall) warnSmall.textContent = 'Use the extend buttons below if the tenant is renewing their stay.';
+        warningBar.style.background = '#fff9e6';
+        warningBar.style.borderColor = '#f0c040';
+        if (warningText) warningText.style.color = '#9a6200';
+        if (warnSmall) warnSmall.style.color = '#c8960c';
+        warningBar.classList.add('visible');
+    } else {
+        warningBar.classList.remove('visible');
+    }
+}
+
+function calcStayDuration(moveInVal, moveOutVal) {
+    if (!moveInVal || !moveOutVal) return null;
+    var start = new Date(moveInVal + 'T00:00:00');
+    var end   = new Date(moveOutVal + 'T00:00:00');
+    if (isNaN(start) || isNaN(end) || end <= start) return null;
+    var years  = 0, months = 0, days = 0;
+    var y = end.getFullYear() - start.getFullYear();
+    var m = end.getMonth()    - start.getMonth();
+    var d = end.getDate()     - start.getDate();
+    if (d < 0) {
+        m--;
+        var prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+        d += prevMonth.getDate();
+    }
+    if (m < 0) { y--; m += 12; }
+    years  = y;
+    months = m;
+    days   = d;
+    var parts = [];
+    if (years  > 0) parts.push(years  + ' yr'    + (years  !== 1 ? 's' : ''));
+    if (months > 0) parts.push(months + ' mo'    + (months !== 1 ? 's' : ''));
+    if (days   > 0) parts.push(days   + ' day'   + (days   !== 1 ? 's' : ''));
+    if (parts.length === 0) return '0 days';
+    return parts.join(', ');
+}
+
+function renderStayDuration(wrapId, displayId, moveInVal, moveOutVal) {
+    var wrap    = document.getElementById(wrapId);
+    var display = document.getElementById(displayId);
+    if (!wrap || !display) return;
+    var dur = calcStayDuration(moveInVal, moveOutVal);
+    if (!dur) { wrap.style.display = 'none'; display.innerHTML = ''; return; }
+    var start = new Date(moveInVal + 'T00:00:00');
+    var end   = new Date(moveOutVal + 'T00:00:00');
+    var totalDays = Math.round((end - start) / 86400000);
+    display.innerHTML =
+        '<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .8rem;border-radius:10px;background:#f0faf6;border:1.5px solid #8ce0bb;">'
+            + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+            + '<div style="flex:1;min-width:0;">'
+                + '<span style="font-size:.75rem;font-weight:800;color:#1a7a52;">Stay duration: ' + dur + '</span>'
+                + '<span style="font-size:.72rem;color:#2e9e68;margin-left:.5rem;font-weight:500;">(' + totalDays + ' total day' + (totalDays !== 1 ? 's' : '') + ')</span>'
+            + '</div>'
+        + '</div>';
+    wrap.style.display = '';
+}
+
+function attachStayDuration(moveInId, moveOutId, displayId) {
+    var wrapId  = displayId.replace('-display', '-wrap');
+    var moveIn  = document.getElementById(moveInId);
+    var moveOut = document.getElementById(moveOutId);
+    if (!moveIn || !moveOut) return;
+    function update() {
+        renderStayDuration(wrapId, displayId, moveIn.value, moveOut.value);
+    }
+    moveIn.addEventListener('change', update);
+    moveOut.addEventListener('change', update);
+    moveIn.addEventListener('input', update);
+    moveOut.addEventListener('input', update);
+}
+
+function extendStay(days) {
+    var moveoutInput = document.getElementById('edit-moveout');
+    if (!moveoutInput) return;
+    var base = moveoutInput.value
+        ? new Date(moveoutInput.value + 'T00:00:00')
+        : new Date();
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (base < today) base = new Date(today);
+    base.setDate(base.getDate() + days);
+    var yyyy = base.getFullYear();
+    var mm   = String(base.getMonth() + 1).padStart(2, '0');
+    var dd   = String(base.getDate()).padStart(2, '0');
+    moveoutInput.value = yyyy + '-' + mm + '-' + dd;
+    moveoutInput.dispatchEvent(new Event('change'));
+    checkMoveoutWarning();
+    validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    renderStayDuration('edit-stay-duration-wrap', 'edit-stay-duration-display', document.getElementById('edit-date').value, moveoutInput.value);
+}
+
+function showPhotoValidationModal(message) {
+    var existing = document.getElementById('photo-validation-modal');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'photo-validation-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(90,30,56,.38);backdrop-filter:blur(4px);padding:1rem;';
+
+    overlay.innerHTML =
+        '<div style="background:var(--white);border-radius:20px;width:100%;max-width:400px;box-shadow:0 24px 60px rgba(232,23,93,.18),0 4px 16px rgba(0,0,0,.08);overflow:hidden;animation:modalIn .28s cubic-bezier(.34,1.3,.64,1) both;">'
+            + '<div style="padding:.9rem 1.1rem .6rem;display:flex;align-items:center;justify-content:space-between;">'
+                + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                    + '<div style="width:34px;height:34px;border-radius:10px;background:#fff0f4;border:1.5px solid #ffc2d1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+                        + '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e04867" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+                    + '</div>'
+                    + '<span style="font-size:1rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;">Photo Upload Error</span>'
+                + '</div>'
+                + '<button onclick="document.getElementById(\'photo-validation-modal\').remove()" style="width:30px;height:30px;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--petal);color:var(--bright-pink);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;">&#x2715;</button>'
+            + '</div>'
+            + '<div style="padding:.5rem 1.1rem 1rem;">'
+                + '<div style="background:#fff0f4;border:1.5px solid #ffc2d1;border-radius:12px;padding:.85rem 1rem;margin-bottom:1rem;">'
+                    + '<p style="font-size:.88rem;color:#b0163a;font-weight:600;margin:0 0 .35rem;">' + message + '</p>'
+                + '</div>'
+                + '<div style="background:#fffafd;border:1.5px solid var(--pink-100);border-radius:12px;padding:.8rem 1rem;">'
+                    + '<p style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin:0 0 .6rem;">Photo requirements</p>'
+                    + '<div style="display:flex;flex-direction:column;gap:.4rem;">'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Accepted formats: JPG, JPEG, PNG</span>'
+                        + '</div>'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Maximum file size: 4MB</span>'
+                        + '</div>'
+                        + '<div style="display:flex;align-items:center;gap:.55rem;">'
+                            + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+                            + '<span style="font-size:.8rem;color:var(--ink);">Clear, well-lit front-facing photo recommended</span>'
+                        + '</div>'
+                    + '</div>'
+                + '</div>'
+            + '</div>'
+            + '<div style="padding:.6rem 1.1rem .8rem;border-top:1.5px solid var(--pink-100);display:flex;justify-content:flex-end;background:#fffafd;">'
+                + '<button onclick="document.getElementById(\'photo-validation-modal\').remove()" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(232,23,93,.25);">Got it</button>'
+            + '</div>'
+        + '</div>';
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+    });
+
+    document.body.appendChild(overlay);
+}
+
+function toggleVacationNote() {
+    var cb   = document.getElementById('edit-is-on-vacation');
+    var wrap = document.getElementById('edit-vacation-note-wrap');
+    wrap.style.display = cb.checked ? '' : 'none';
+    if (!cb.checked) {
+        document.getElementById('edit-vacation-note').value = '';
+    }
+    enableSubmit('#edit-modal .btn-submit');
+}
+
 function validateAddTenantForm(e) {
-    var emailOk    = validateEmailField('add-email', 'add-email-error');
-    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var emailOk    = validateEmailField('add-email', 'add-email-error', null);
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', true);
+    var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
-    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+    var mode       = document.getElementById('add-mode-input').value;
+    var stayType   = document.getElementById('add-stay-type-select').value;
+    var moveInDate = document.getElementById('add-move-in-date').value;
+
+    if (!stayType) {
+        e.preventDefault();
+        var staySelect = document.getElementById('add-stay-type-select');
+        staySelect.classList.add('field-invalid');
+        staySelect.focus();
+        showToast('Please select a stay type.', 'error');
+        return false;
+    }
+
+    if (mode === 'moved_in' && !moveInDate) {
+        e.preventDefault();
+        var miInput = document.getElementById('add-move-in-date');
+        miInput.classList.add('field-invalid');
+        miInput.focus();
+        showToast('Please enter a move-in date.', 'error');
+        return false;
+    }
+
+    var moveOutVal = document.getElementById('add-move-out-date').value;
+    if (!moveOutVal && moveInDate) {
+        var d = new Date(moveInDate + 'T00:00:00');
+        d.setFullYear(d.getFullYear() + 1);
+        var autoMoveOut = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        document.getElementById('add-move-out-date').value = autoMoveOut;
+    }
+
+    if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('add-email').focus();
         } else if (!contactOk) {
             document.getElementById('add-contact').focus();
+        } else if (!guardianOk) {
+            document.getElementById('add-guardian').focus();
         } else if (!moveOutOk) {
             document.getElementById('add-move-out-date').focus();
         } else if (!estOk) {
@@ -1949,16 +3044,19 @@ function validateAddTenantForm(e) {
 }
 
 function validateEditTenantForm(e) {
-    var emailOk   = validateEmailField('edit-email', 'edit-email-error');
-    var contactOk = validatePhoneField('edit-contact', 'edit-contact-error', false);
-    var moveOutOk = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
-    var estOk     = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
-    if (!emailOk || !contactOk || !moveOutOk || !estOk) {
+    var emailOk    = validateEmailField('edit-email', 'edit-email-error', currentTenant ? currentTenant.tenant_id : null);
+    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', true);
+    var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
+    var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
+    var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
+    if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
             document.getElementById('edit-email').focus();
         } else if (!contactOk) {
             document.getElementById('edit-contact').focus();
+        } else if (!guardianOk) {
+            document.getElementById('edit-guardian').focus();
         } else if (!moveOutOk) {
             document.getElementById('edit-moveout').focus();
         } else if (!estOk) {
@@ -1970,12 +3068,25 @@ function validateEditTenantForm(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    attachEmailValidator('add-email', 'add-email-error');
-    attachEmailValidator('edit-email', 'edit-email-error');
-    attachPhoneFormatter('add-contact', 'add-contact-error', false);
-    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+   attachEmailValidator('add-email', 'add-email-error', null);
+    attachEmailValidator('edit-email', 'edit-email-error', function() { return currentTenant ? currentTenant.tenant_id : null; });
+    attachPhoneFormatter('add-contact', 'add-contact-error', true);
+    attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
+    attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
+    var addMoveInEl = document.getElementById('add-move-in-date');
+    if (addMoveInEl) {
+        addMoveInEl.addEventListener('change', function() {
+            var moveOutEl = document.getElementById('add-move-out-date');
+            if (moveOutEl && !moveOutEl.value && this.value) {
+                var d = new Date(this.value + 'T00:00:00');
+                d.setFullYear(d.getFullYear() + 1);
+                moveOutEl.value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            }
+        });
+    }
     attachMoveOutValidator('edit-date', 'edit-moveout', 'edit-moveout-error');
+    attachStayDuration('edit-date', 'edit-moveout', 'edit-stay-duration-display');
     attachEstimatedMoveInValidator('add-estimated-move-in', 'add-estimated-move-in-error');
     attachEstimatedMoveInValidator('edit-estimated-move-in', 'edit-estimated-move-in-error');
 });
@@ -2003,6 +3114,12 @@ function setFormLoading(form, message) {
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
         form.addEventListener('submit', function() {
+            if (this.id === 'edit-form' && !_moveOutPendingSubmit) {
+                var statusSel = document.getElementById('edit-status');
+                if (statusSel && statusSel.value === 'move_out') {
+                    return;
+                }
+            }
             setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
         });
     });
@@ -2012,6 +3129,17 @@ document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
+
+function openPhotoLightbox(url) {
+    document.getElementById('photo-lightbox-img').src = url;
+    document.getElementById('photo-lightbox').classList.add('open');
+}
+
+function closePhotoLightbox() {
+    document.getElementById('photo-lightbox').classList.remove('open');
+    document.getElementById('photo-lightbox-img').src = '';
+}
+
 function closeModal(id) {
     document.getElementById(id).classList.remove('open');
     if (id === 'add-modal') {
@@ -2041,6 +3169,16 @@ function closeModal(id) {
         var acErr = document.getElementById('add-contact-error');
         if (ac) ac.classList.remove('field-invalid');
         if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
+        var ag = document.getElementById('add-guardian');
+        var agErr = document.getElementById('add-guardian-error');
+        if (ag) { ag.value = ''; ag.classList.remove('field-invalid'); }
+        if (agErr) { agErr.style.display = 'none'; agErr.textContent = ''; }
+        var ast = document.getElementById('add-stay-type-select');
+        if (ast) ast.classList.remove('field-invalid');
+        var ami = document.getElementById('add-move-in-date');
+        if (ami) ami.classList.remove('field-invalid');
+        if (ac) ac.classList.remove('field-invalid');
+        if (acErr) { acErr.style.display = 'none'; acErr.textContent = ''; }
         var modeInput = document.getElementById('add-mode-input');
         if (modeInput) modeInput.value = 'moved_in';
         setAddMode('moved_in');
@@ -2062,6 +3200,18 @@ function closeModal(id) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
     }
+    if (id === 'renew-modal') {
+        var rSuggestWrap = document.getElementById('renew-room-suggest-wrap');
+        var rSuggestBox  = document.getElementById('renew-room-suggest');
+        var rHintWrap    = document.getElementById('renew-room-hint-wrap');
+        var rHint        = document.getElementById('renew-room-hint');
+        if (rSuggestWrap) rSuggestWrap.style.display = 'none';
+        if (rSuggestBox)  rSuggestBox.innerHTML = '';
+        if (rHintWrap)    rHintWrap.style.display = 'none';
+        if (rHint)        rHint.innerHTML = '';
+        var rSt = document.getElementById('renew-stay-type');
+        if (rSt) rSt.value = '';
+    }
     if (id === 'edit-modal') {
         var w2 = document.getElementById('edit-room-hint-wrap');
         var h2 = document.getElementById('edit-room-hint');
@@ -2074,6 +3224,11 @@ function closeModal(id) {
         document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
             b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
         });
+        selectedRoomNumber = null;
+        editOriginalRoomNumber = null;
+        editOriginalStayType = null;
+        var roomToggleReset = document.getElementById('edit-change-room-toggle');
+        if (roomToggleReset) roomToggleReset.checked = false;
     }
 }
 
@@ -2082,20 +3237,41 @@ function goAddStep(step) {
         var firstName = document.querySelector('#add-modal input[name="first_name"]');
         var lastName  = document.querySelector('#add-modal input[name="last_name"]');
         var email     = document.querySelector('#add-modal input[name="email"]');
-        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+        var contact   = document.getElementById('add-contact');
+        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim() || !contact.value.trim()) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            contact.reportValidity();
             return;
         }
         if (!validateEmailField('add-email', 'add-email-error')) {
             document.getElementById('add-email').focus();
             return;
         }
-        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+        if (!validatePhoneField('add-contact', 'add-contact-error', true)) {
             document.getElementById('add-contact').focus();
             return;
         }
+        var fnVal = firstName.value.trim();
+        var lnVal = lastName.value.trim();
+        var namePattern = /^[a-zA-Z\s\-'.]+$/;
+        if (!namePattern.test(fnVal)) {
+            firstName.classList.add('field-invalid');
+            firstName.setCustomValidity('First name can only contain letters, spaces, hyphens, apostrophes, and periods.');
+            firstName.reportValidity();
+            firstName.setCustomValidity('');
+            return;
+        }
+        if (!namePattern.test(lnVal)) {
+            lastName.classList.add('field-invalid');
+            lastName.setCustomValidity('Last name can only contain letters, spaces, hyphens, apostrophes, and periods.');
+            lastName.reportValidity();
+            lastName.setCustomValidity('');
+            return;
+        }
+        firstName.classList.remove('field-invalid');
+        lastName.classList.remove('field-invalid');
     }
     if (step === 1) {
         if (!validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error')) {
@@ -2162,7 +3338,11 @@ function toggleReservationFields(context) {
 }
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
-    m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+    m.addEventListener('click', function(e) {
+        if (e.target !== m) return;
+        if (m.id === 'pdf-preview-modal') { closePdfPreview(); return; }
+        m.classList.remove('open');
+    });
 });
 
 function updateStatusDot(select) {
@@ -2203,6 +3383,18 @@ function escapeHtml(str) {
 function fmtDate(d) {
     if (!d) return '\u2014';
     return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function normalizeContactDisplay(raw) {
+    if (!raw) return '\u2014';
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 12 && digits.substring(0, 2) === '63') {
+        digits = '0' + digits.substring(2);
+    }
+    if (digits.length === 11 && digits.substring(0, 2) === '09') {
+        return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+    }
+    return raw;
 }
 
 function escapeJs(str) {
@@ -2268,7 +3460,7 @@ function buildRows(list) {
             + '<td>' + floorRoom + '</td>'
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
-            + '<td>' + (t.contact_number || '\u2014') + '</td>'
+            + '<td>' + normalizeContactDisplay(t.contact_number) + '</td>'
             + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
@@ -2374,6 +3566,13 @@ document.addEventListener('DOMContentLoaded', function() {
         inp.addEventListener('blur', function() { validateRoomNumberField(this); });
         inp.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
     });
+    var renewRoomInput = document.getElementById('renew-room');
+    if (renewRoomInput && !renewRoomInput._enforced) {
+        renewRoomInput._enforced = true;
+        enforceRoomNumberInput(renewRoomInput);
+        renewRoomInput.addEventListener('blur', function() { validateRoomNumberField(this); });
+        renewRoomInput.addEventListener('input', function() { if (this.value.length >= 4) this.classList.remove('field-invalid'); });
+    }
 });
     function setStatusFilter(val) {
     statusFilter = val;
@@ -2384,6 +3583,24 @@ function applyFilters() {
     var q     = document.getElementById('search-input').value.toLowerCase();
     var sort  = document.getElementById('sort-select').value;
     var floor = document.getElementById('floor-filter').value;
+    (function() {
+        var sel = document.getElementById('floor-filter');
+        var existingVals = Array.from(sel.options).map(function(o) { return o.value; });
+        var allFloors = tenants
+            .filter(function(t) { return t.floor; })
+            .map(function(t) { return parseInt(t.floor, 10); })
+            .filter(function(f) { return !isNaN(f); });
+        var uniqueFloors = allFloors.filter(function(f, i, a) { return a.indexOf(f) === i; }).sort(function(a,b){return a-b;});
+        uniqueFloors.forEach(function(f) {
+            if (existingVals.indexOf(String(f)) === -1) {
+                var opt = document.createElement('option');
+                opt.value = f;
+                opt.textContent = 'Floor ' + f;
+                sel.appendChild(opt);
+                existingVals.push(String(f));
+            }
+        });
+    })();
     var base = tenants.filter(function(t) {
         if (t.status === 'inactive' || t.status === 'move_out') return false;
         var matchesSearch =
@@ -2442,9 +3659,25 @@ function viewTenant(t) {
             reservationItems += '<div class="tv-item full"><div class="tv-item-label">Reservation Notes</div><div class="tv-item-value">' + t.reservation_notes + '</div></div>';
         }
     }
+
+    var photoHtml;
+    if (t.tenant_photo) {
+        photoHtml = '<div class="tenant-photo-wrap">'
+            + '<img src="/storage/' + t.tenant_photo + '" class="tenant-photo-img" id="view-tenant-photo-img" alt="Tenant Photo">'
+            + '<div class="tenant-photo-edit-btn" title="Change photo. Accepted: JPG, PNG. Max 4MB." onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')">'
+                + '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+            + '</div>'
+            + '</div>';
+    } else {
+        photoHtml = '<div class="tenant-photo-placeholder" onclick="triggerTenantPhotoUpload(' + t.tenant_id + ')" title="Upload photo. Accepted: JPG, PNG. Max 4MB.">'
+            + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bright-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+            + '<span>JPG or PNG<br>Max 4MB</span>'
+            + '</div>';
+    }
+
     document.getElementById('view-content').innerHTML =
         '<div class="tv-header">'
-            + '<div class="tv-avatar">' + initials(t) + '</div>'
+            + photoHtml
             + '<div class="tv-header-info">'
                 + '<div class="tv-name">' + escapeHtml(t.first_name) + ' ' + escapeHtml(t.last_name) + '</div>'
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
@@ -2454,22 +3687,27 @@ function viewTenant(t) {
         + '<div class="modal-section-title">Personal Information</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item full"><div class="tv-item-label">Email</div><div class="tv-item-value">' + t.email + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + (t.contact_number || '\u2014') + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.contact_number) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Guardian Contact No.</div><div class="tv-item-value">' + normalizeContactDisplay(t.guardian_number) + '</div></div>'
+            + '<div class="tv-item full"><div class="tv-item-label">Referred By</div><div class="tv-item-value">' + escapeHtml(t.referred_by) + '</div></div>'
         + '</div>'
         + '<div class="modal-section-title">Room &amp; Stay Details</div>'
         + '<div class="tv-grid">'
             + '<div class="tv-item"><div class="tv-item-label">Floor &amp; Room</div><div class="tv-item-value">' + floorRoom + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Stay Type</div><div class="tv-item-value">' + (t.stay_type || '\u2014') + '</div></div>'
             + '<div class="tv-item"><div class="tv-item-label">Move-In Date</div><div class="tv-item-value">' + fmtDate(t.move_in_date) + '</div></div>'
-            + '<div class="tv-item"><div class="tv-item-label">Move-Out Date</div><div class="tv-item-value">' + fmtDate(t.move_out_date) + '</div></div>'
+            + '<div class="tv-item"><div class="tv-item-label">Move-Out Date</div><div class="tv-item-value">' + renderMoveOutDateView(t.move_out_date) + '</div></div>'
             + reservationItems
         + '</div>'
         + '<div class="modal-section-title">Account Status</div>'
         + '<div class="tv-grid">'
             + (t.status !== 'reserved' ? '<div class="tv-item full"><div class="tv-item-label">Password Status</div><div class="tv-item-value">' + (t.is_temp_password ? 'Temporary - not yet changed by tenant' : 'Changed by tenant') + '</div></div>' : '')
-            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">🏖 On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
+            + (t.is_on_vacation ? '<div class="tv-item full"><div class="tv-item-label">Vacation Details</div><div class="tv-item-value">On Vacation' + (t.vacation_note ? ' (' + escapeHtml(t.vacation_note) + ')' : '') + '</div></div>' : '')
         + '</div>';
+    var viewPhotoImg = document.getElementById('view-tenant-photo-img');
+    if (viewPhotoImg) {
+        viewPhotoImg.onclick = function() { openPhotoLightbox(viewPhotoImg.src); };
+    }
     openModal('view-modal');
 }
 
@@ -2477,6 +3715,67 @@ function switchToEdit() {
     if (currentTenant) {
         closeModal('view-modal');
         setTimeout(function() { openEditModal(currentTenant); }, 200);
+    }
+}
+
+function lockEditRoomFields(locked) {
+    var roomInput = document.getElementById('edit-room');
+    var stayType  = document.getElementById('edit-stay-type');
+    [roomInput, stayType].forEach(function(el) {
+        if (!el) return;
+        if (locked) {
+            el.style.pointerEvents = 'none';
+            el.style.opacity = '.65';
+            el.style.cursor = 'default';
+            el.style.background = '#f5f0f3';
+        } else {
+            el.style.pointerEvents = '';
+            el.style.opacity = '';
+            el.style.cursor = '';
+            el.style.background = '';
+        }
+    });
+}
+
+function toggleEditRoomChange(checkboxEl) {
+    var enabled     = checkboxEl.checked;
+    var roomInput   = document.getElementById('edit-room');
+    var stayTypeEl  = document.getElementById('edit-stay-type');
+    var suggestWrap = document.getElementById('edit-room-suggest-wrap');
+    var suggestBox  = document.getElementById('edit-room-suggest');
+    var hintWrap    = document.getElementById('edit-room-hint-wrap');
+    var hintBox     = document.getElementById('edit-room-hint');
+    var roomError   = document.getElementById('edit-room-error');
+    var roomSub     = document.getElementById('edit-room-toggle-sub');
+
+    lockEditRoomFields(!enabled);
+
+    if (enabled) {
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Reassigning from Rm. ' + editOriginalRoomNumber
+                : 'Pick a room for this tenant';
+        }
+        if (stayTypeEl.value) onEditStayTypeChange();
+        if (roomInput.value.trim()) roomInput.dispatchEvent(new Event('input'));
+    } else {
+        roomInput.value  = editOriginalRoomNumber || '';
+        stayTypeEl.value = editOriginalStayType   || '';
+        if (suggestWrap) suggestWrap.style.display = 'none';
+        if (suggestBox)  suggestBox.innerHTML = '';
+        if (hintWrap)    hintWrap.style.display = 'none';
+        if (hintBox)     hintBox.innerHTML = '';
+        if (roomError)   { roomError.style.display = 'none'; roomError.textContent = ''; }
+        roomInput.classList.remove('field-invalid');
+        selectedRoomNumber = null;
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Tenant stays in Rm. ' + editOriginalRoomNumber
+                : 'No room currently assigned';
+        }
+        document.querySelectorAll('#edit-modal .btn-submit').forEach(function(b) {
+            b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; b.title = '';
+        });
     }
 }
 
@@ -2495,6 +3794,7 @@ function openEditModal(t) {
         last_name:              '{{ old("last_name") }}',
         email:                  '{{ old("email") }}',
         contact_number:         '{{ old("contact_number") }}',
+        guardian_number:        '{{ old("guardian_number") }}',
         room_number:            '{{ old("room_number") }}',
         floor:                  '{{ old("floor") }}',
         stay_type:              '{{ old("stay_type") }}',
@@ -2506,6 +3806,7 @@ function openEditModal(t) {
         status:                 '{{ old("status") }}',
     };
     var hasOld = {{ session('edit_tenant_id') ? 'true' : 'false' }} && String(t.tenant_id) === '{{ session("edit_tenant_id", "") }}';
+    var hasRoomServerError = hasOld && {{ $errors->has('room_number') ? 'true' : 'false' }};
 
     document.getElementById('edit-form').action             = '/tenants/' + t.tenant_id;
     document.getElementById('edit-first-name').value        = hasOld && old.first_name             ? old.first_name             : (t.first_name || '');
@@ -2517,9 +3818,17 @@ function openEditModal(t) {
     document.getElementById('edit-date').value              = hasOld && old.move_in_date           ? old.move_in_date           : (t.move_in_date  || '');
     document.getElementById('edit-moveout').value           = hasOld && old.move_out_date          ? old.move_out_date          : (t.move_out_date || '');
     document.getElementById('edit-contact').value           = hasOld && old.contact_number         ? old.contact_number         : (t.contact_number || '');
+    document.getElementById('edit-guardian').value          = hasOld && old.guardian_number        ? old.guardian_number        : (t.guardian_number || '');
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var reservedOption = document.getElementById('edit-status-reserved-option');
+    if (reservedOption) {
+        var hasCredentials = !!(t.account_id);
+        reservedOption.disabled = hasCredentials;
+        reservedOption.title = hasCredentials ? 'Cannot revert to Reserved: this tenant already has login credentials.' : '';
+        reservedOption.textContent = hasCredentials ? 'Reserved (unavailable)' : 'Reserved';
+    }
     var editStatusSel = document.getElementById('edit-status');
     editStatusSel.onchange = function() {
         updateStatusDot(this);
@@ -2529,21 +3838,71 @@ function openEditModal(t) {
         if (warn) warn.style.display = (this.value === 'pending' && noAccount) ? '' : 'none';
     };
     restoreReferredBy('edit', hasOld && old.referred_by ? old.referred_by : (t.referred_by || ''));
+
+    var vacationCb   = document.getElementById('edit-is-on-vacation');
+    var vacationNote = document.getElementById('edit-vacation-note');
+    var vacationWrap = document.getElementById('edit-vacation-note-wrap');
+    if (vacationCb) {
+        vacationCb.checked = !!t.is_on_vacation;
+        vacationNote.value = t.vacation_note || '';
+        vacationWrap.style.display = t.is_on_vacation ? '' : 'none';
+    }
+
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', true);
+    attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
+    checkMoveoutWarning();
+    var editMoveoutEl = document.getElementById('edit-moveout');
+    if (editMoveoutEl && !editMoveoutEl._moveoutWarningAttached) {
+        editMoveoutEl._moveoutWarningAttached = true;
+        editMoveoutEl.addEventListener('change', checkMoveoutWarning);
+        editMoveoutEl.addEventListener('input',  checkMoveoutWarning);
+    }
     openModal('edit-modal');
+
     var editSuggestWrap = document.getElementById('edit-room-suggest-wrap');
     var editSuggestBox  = document.getElementById('edit-room-suggest');
     if (editSuggestWrap) editSuggestWrap.style.display = 'none';
     if (editSuggestBox) editSuggestBox.innerHTML = '';
 
-    var editRoomInput = document.getElementById('edit-room');
-    if (editRoomInput && editRoomInput.value.trim()) {
-        setTimeout(function() { editRoomInput.dispatchEvent(new Event('input')); }, 50);
+    selectedRoomNumber     = null;
+    editOriginalRoomNumber = document.getElementById('edit-room').value || null;
+    editOriginalStayType   = document.getElementById('edit-stay-type').value || null;
+
+    var roomToggle  = document.getElementById('edit-change-room-toggle');
+    var roomSub     = document.getElementById('edit-room-toggle-sub');
+    var roomInputEl = document.getElementById('edit-room');
+    var stayTypeEl  = document.getElementById('edit-stay-type');
+
+    if (roomToggle) roomToggle.checked = false;
+    lockEditRoomFields(true);
+    if (roomSub) {
+        roomSub.textContent = editOriginalRoomNumber
+            ? 'Tenant stays in Rm. ' + editOriginalRoomNumber
+            : 'No room currently assigned';
     }
 
-    if (document.getElementById('edit-stay-type').value) {
-        onEditStayTypeChange();
+    if (editOriginalRoomNumber && window.getRoomsCache) {
+        window.getRoomsCache(function(rooms) {
+            var actualRoom = rooms.find(function(r) { return r.room_number.toLowerCase() === editOriginalRoomNumber.toLowerCase(); });
+            if (actualRoom && actualRoom.stay_type && roomToggle && !roomToggle.checked) {
+                stayTypeEl.value     = actualRoom.stay_type;
+                editOriginalStayType = actualRoom.stay_type;
+            }
+        });
+    }
+
+    if (hasRoomServerError && roomToggle) {
+        roomToggle.checked = true;
+        lockEditRoomFields(false);
+        if (roomSub) {
+            roomSub.textContent = editOriginalRoomNumber
+                ? 'Reassigning from Rm. ' + editOriginalRoomNumber
+                : 'Pick a room for this tenant';
+        }
+        if (stayTypeEl.value) onEditStayTypeChange();
+        if (roomInputEl.value.trim()) roomInputEl.dispatchEvent(new Event('input'));
     }
 
     var editEmail = document.getElementById('edit-email');
@@ -2554,6 +3913,10 @@ function openEditModal(t) {
     var editContactError = document.getElementById('edit-contact-error');
     if (editContact) editContact.classList.remove('field-invalid');
     if (editContactError) { editContactError.style.display = 'none'; editContactError.textContent = ''; }
+    var editGuardian = document.getElementById('edit-guardian');
+    var editGuardianError = document.getElementById('edit-guardian-error');
+    if (editGuardian) editGuardian.classList.remove('field-invalid');
+    if (editGuardianError) { editGuardianError.style.display = 'none'; editGuardianError.textContent = ''; }
     var editMoveout = document.getElementById('edit-moveout');
     var editMoveoutError = document.getElementById('edit-moveout-error');
     if (editMoveout) editMoveout.classList.remove('field-invalid');
@@ -2758,17 +4121,101 @@ function closeRoomsDrawer() {
     document.getElementById('rooms-backdrop').classList.remove('open');
 }
 
+var RFLOOR_MAX_BTNS = 5;
+var _floorMoreOpen = false;
+
+function toggleFloorMoreDropdown() {
+    _floorMoreOpen = !_floorMoreOpen;
+    var menu    = document.getElementById('rfloor-more-menu');
+    var chevron = document.getElementById('rfloor-more-chevron');
+    menu.style.display = _floorMoreOpen ? 'block' : 'none';
+    chevron.style.transform = _floorMoreOpen ? 'rotate(180deg)' : '';
+}
+
+function closeFloorMoreDropdown() {
+    _floorMoreOpen = false;
+    var menu    = document.getElementById('rfloor-more-menu');
+    var chevron = document.getElementById('rfloor-more-chevron');
+    if (menu)    menu.style.display = 'none';
+    if (chevron) chevron.style.transform = '';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#rfloor-more-wrap')) closeFloorMoreDropdown();
+});
+
+function rebuildFloorFilters(floors) {
+    var btnGroup  = document.getElementById('rfloor-btn-group');
+    var moreWrap  = document.getElementById('rfloor-more-wrap');
+    var moreMenu  = document.getElementById('rfloor-more-menu');
+    if (!btnGroup || !moreWrap || !moreMenu) return;
+
+    btnGroup.innerHTML = '';
+    moreMenu.innerHTML = '';
+    closeFloorMoreDropdown();
+
+    var visible = floors.slice(0, RFLOOR_MAX_BTNS);
+    var overflow = floors.slice(RFLOOR_MAX_BTNS);
+
+    visible.forEach(function(f) {
+        var btn = document.createElement('button');
+        btn.className = 'page-btn';
+        btn.id = 'rfloor-' + f;
+        btn.textContent = 'Floor ' + f;
+        btn.onclick = function() { setRoomFloor(f); };
+        btnGroup.appendChild(btn);
+    });
+
+    if (overflow.length > 0) {
+        moreWrap.style.display = '';
+        overflow.forEach(function(f) {
+            var item = document.createElement('button');
+            item.className = 'addf-item';
+            item.id = 'rfloor-' + f;
+            item.textContent = 'Floor ' + f;
+            item.onclick = function() { setRoomFloor(f); closeFloorMoreDropdown(); };
+            moreMenu.appendChild(item);
+        });
+    } else {
+        moreWrap.style.display = 'none';
+    }
+
+    syncFloorActiveState();
+}
+
+function syncFloorActiveState() {
+    document.querySelectorAll('[id^="rfloor-"]').forEach(function(el) {
+        if (el.id === 'rfloor-all') return;
+        if (el.id === 'rfloor-more-btn') return;
+        if (el.tagName === 'DIV') return;
+        var f = el.id.replace('rfloor-', '');
+        var isActive = (roomsFloorFilter !== '' && String(roomsFloorFilter) === String(f));
+        el.classList.toggle('active', isActive);
+    });
+    var allBtn = document.getElementById('rfloor-all');
+    if (allBtn) allBtn.classList.toggle('active', roomsFloorFilter === '');
+
+    var moreBtn = document.getElementById('rfloor-more-btn');
+    if (moreBtn) {
+        var moreMenu = document.getElementById('rfloor-more-menu');
+        var overflowActive = moreMenu && moreMenu.querySelector('.active') !== null;
+        moreBtn.classList.toggle('active', overflowActive);
+    }
+}
+
 function setRoomFloor(floor) {
     roomsFloorFilter = floor;
-    document.querySelectorAll('[id^="rfloor-"]').forEach(b => b.classList.remove('active'));
-    document.getElementById('rfloor-' + (floor === '' ? 'all' : floor)).classList.add('active');
+    syncFloorActiveState();
+    closeFloorMoreDropdown();
     renderRooms();
 }
 
 async function fetchRooms() {
     try {
-        const res  = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
-        roomsData  = await res.json();
+        const res = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        roomsData = await res.json();
+        var floors = [...new Set(roomsData.map(r => r.floor))].sort(function(a,b){return a-b;});
+        rebuildFloorFilters(floors);
         renderRooms();
     } catch {
         document.getElementById('rooms-list').innerHTML = '<div class="tad-empty">Failed to load rooms.</div>';
@@ -2962,11 +4409,13 @@ function syncRoomType(capacityId, stayTypeId) {
 document.addEventListener('DOMContentLoaded', function() {
     var arCap = document.getElementById('ar-capacity');
     if (arCap) {
+        enforceRoomNumberInput(arCap);
         arCap.addEventListener('input',  function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
         arCap.addEventListener('change', function() { syncRoomType('ar-capacity', 'ar-stay-type'); });
     }
     var erCap = document.getElementById('er-capacity');
     if (erCap) {
+        enforceRoomNumberInput(erCap);
         erCap.addEventListener('input',  function() { syncRoomType('er-capacity', 'er-stay-type'); });
         erCap.addEventListener('change', function() { syncRoomType('er-capacity', 'er-stay-type'); });
     }
@@ -2983,10 +4432,21 @@ function openAddRoomModal() {
         if (arNum && !arNum._floorAutoSet) {
             arNum._floorAutoSet = true;
             arNum.addEventListener('input', function() {
-                var firstChar = this.value.trim().charAt(0);
-                var floorSel  = document.getElementById('ar-floor');
-                if (floorSel && firstChar >= '2' && firstChar <= '5') {
-                    floorSel.value = firstChar;
+                var val = this.value.trim();
+                var floorSel = document.getElementById('ar-floor');
+                if (!floorSel || val.length < 3) return;
+                var derivedFloor = val.length > 2 ? parseInt(val.slice(0, val.length - 2), 10) : null;
+                if (derivedFloor && derivedFloor >= 1 && derivedFloor <= 99) {
+                    var opt = Array.from(floorSel.options).find(function(o) { return parseInt(o.value, 10) === derivedFloor; });
+                    if (opt) {
+                        floorSel.value = String(derivedFloor);
+                    } else {
+                        var newOpt = document.createElement('option');
+                        newOpt.value = derivedFloor;
+                        newOpt.textContent = 'Floor ' + derivedFloor;
+                        floorSel.appendChild(newOpt);
+                        floorSel.value = String(derivedFloor);
+                    }
                 }
             });
         }
@@ -2999,6 +4459,7 @@ async function submitAddRoom() {
     const capacity = document.getElementById('ar-capacity').value;
     const stayType = document.getElementById('ar-stay-type').value;
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
+    if (parseInt(floor, 10) > 99) { showToast('Floor cannot exceed 99.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     const duplicate = roomsData.find(function(r) { return r.room_number.toLowerCase() === number.toLowerCase(); });
     if (duplicate) { showToast('Room ' + number + ' already exists on Floor ' + duplicate.floor + '.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
@@ -3123,6 +4584,7 @@ async function submitEditRoom() {
     const isActive = document.getElementById('er-active').value === '1';
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('er-number').classList.add('field-invalid'); return; }
+    if (parseInt(floor, 10) > 99) { showToast('Floor cannot exceed 99.', 'error'); return; }
     showActionLoading('Saving room...');
     try {
         const res = await fetch('/rooms/' + id, {
@@ -3179,6 +4641,8 @@ async function submitDeleteRoom() {
             .catch(function() { cb([]); });
     }
 
+    window.getRoomsCache = getRoomsCache;
+
     function invalidateRoomsCache() { roomsCache = null; }
 
     var origFetchRooms = window.fetchRooms;
@@ -3233,8 +4697,23 @@ async function submitDeleteRoom() {
                     + '<div style="font-size:.74rem;color:#b0163a;margin-top:.15rem;">Reopen it in <strong>Manage Rooms</strong> before assigning tenants.</div></div></div>'
             };
         }
-        var effectiveOccupancy = room.occupancy;
+        var isOwnRoom = !!(excludeTenantId && currentTenant && currentTenant.tenant_id == excludeTenantId
+            && currentTenant.room_number && currentTenant.room_number.toLowerCase() === room.room_number.toLowerCase()
+            && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out');
+        var effectiveOccupancy = isOwnRoom ? Math.max(0, room.occupancy - 1) : room.occupancy;
         var remaining = room.capacity - effectiveOccupancy;
+        if (isOwnRoom) {
+            var otherCount = effectiveOccupancy;
+            return {
+                state: 'current',
+                html: '<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .8rem;border-radius:10px;background:#eef4ff;border:1.5px solid #a8c4f5;">'
+                    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b6fd4" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:.8rem;font-weight:700;color:#2952a3;">Room <span style="font-family:monospace;">' + room.room_number + '</span> is currently assigned to this tenant.</div>'
+                    + '<div style="font-size:.74rem;color:#3b6fd4;margin-top:.2rem;">' + otherCount + ' other slot' + (otherCount !== 1 ? 's' : '') + ' occupied besides this one, out of ' + room.capacity + ' total. Leave it as is to keep them here, or choose a different room above.</div>'
+                    + '</div></div>'
+            };
+        }
         if (remaining <= 0) {
             return {
                 state: 'full',
@@ -3285,9 +4764,20 @@ async function submitDeleteRoom() {
             var val = this.value.trim();
             if (floorSelectId) {
                 var floorSelect = document.getElementById(floorSelectId);
-                if (floorSelect) {
-                    var firstChar = val.charAt(0);
-                    if (firstChar >= '2' && firstChar <= '5') floorSelect.value = firstChar;
+                if (floorSelect && val.length >= 3) {
+                    var derivedFloor = parseInt(val.slice(0, val.length - 2), 10);
+                    if (derivedFloor >= 1) {
+                        var existingOpt = Array.from(floorSelect.options).find(function(o) { return parseInt(o.value, 10) === derivedFloor; });
+                        if (existingOpt) {
+                            floorSelect.value = String(derivedFloor);
+                        } else {
+                            var dynOpt = document.createElement('option');
+                            dynOpt.value = derivedFloor;
+                            dynOpt.textContent = 'Floor ' + derivedFloor;
+                            floorSelect.appendChild(dynOpt);
+                            floorSelect.value = String(derivedFloor);
+                        }
+                    }
                 }
             }
             if (val === lastVal) return;
@@ -3348,12 +4838,16 @@ async function submitDeleteRoom() {
             var matched = rooms.filter(function(r) {
                 return r.stay_type === stayType;
             }).map(function(r) {
+                var isCurrent = !!(excludeId && currentTenant && currentTenant.room_number
+                    && currentTenant.room_number.toLowerCase() === r.room_number.toLowerCase()
+                    && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out');
                 var effOccupancy = r.occupancy;
-                if (excludeId && currentTenant && currentTenant.room_number === r.room_number && currentTenant.status !== 'inactive' && currentTenant.status !== 'move_out') {
+                if (isCurrent) {
                     effOccupancy = Math.max(0, effOccupancy - 1);
                 }
-                return Object.assign({}, r, { occupancy: effOccupancy });
+                return Object.assign({}, r, { occupancy: effOccupancy, isCurrent: isCurrent });
             }).sort(function(a, b) {
+                if (a.isCurrent !== b.isCurrent) return a.isCurrent ? -1 : 1;
                 var aUnavail = (!a.is_active || (a.capacity - a.occupancy) <= 0) ? 1 : 0;
                 var bUnavail = (!b.is_active || (b.capacity - b.occupancy) <= 0) ? 1 : 0;
                 if (aUnavail !== bUnavail) return aUnavail - bUnavail;
@@ -3366,21 +4860,35 @@ async function submitDeleteRoom() {
                 return r.is_active && (r.capacity - r.occupancy) > 0;
             }).length;
 
+            var currentRoom = matched.find(function(r) { return r.isCurrent; });
+            var currentBanner = currentRoom
+                ? '<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:9px;background:#eef4ff;border:1.5px solid #a8c4f5;margin-bottom:.6rem;">'
+                    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b6fd4" stroke-width="2.2" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                    + '<span style="font-size:.74rem;font-weight:700;color:#2952a3;">This tenant is currently in Rm.' + currentRoom.room_number + '.</span>'
+                    + '</div>'
+                : '';
+
             var html = '<div style="background:#f9f4fb;border:1.5px solid var(--pink-100);border-radius:12px;padding:.7rem .85rem;">'
                 + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
                 + '<div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;">All rooms \u00b7 ' + stayType + '</div>'
                 + '<div style="font-size:.68rem;font-weight:700;color:#1f9d69;">' + availCount + ' available</div>'
                 + '</div>'
+                + currentBanner
                 + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;">';
 
             matched.forEach(function(r) {
                 var remaining  = r.capacity - r.occupancy;
                 var isFull     = remaining <= 0;
                 var isInactive = !r.is_active;
-                var unavail    = isFull || isInactive;
+                var unavail    = (isFull || isInactive) && !r.isCurrent;
                 var pct        = r.capacity > 0 ? Math.round((r.occupancy / r.capacity) * 100) : 0;
                 var chipBg, chipBorder, chipColor, badgeBg, badgeColor, badgeText, cursor, clickAttr;
-                if (isInactive) {
+                var stayTypeSelectId = boxId === 'edit-room-suggest' ? 'edit-stay-type' : (boxId === 'renew-room-suggest' ? 'renew-stay-type' : 'add-stay-type-select');
+                if (r.isCurrent) {
+                    chipBg = '#eef4ff'; chipBorder = '#a8c4f5'; chipColor = '#2952a3';
+                    badgeBg = '#dce8fb'; badgeColor = '#2952a3'; badgeText = 'Current';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
+                } else if (isInactive) {
                     chipBg = '#f5f5f5'; chipBorder = '#d0d0d0'; chipColor = '#999';
                     badgeBg = '#efefef'; badgeColor = '#999'; badgeText = 'Closed';
                     cursor = 'not-allowed'; clickAttr = '';
@@ -3391,22 +4899,29 @@ async function submitDeleteRoom() {
                 } else if (pct >= 75) {
                     chipBg = '#fffbf0'; chipBorder = '#f0c040'; chipColor = '#7a5000';
                     badgeBg = '#fff3cc'; badgeColor = '#8a5c00'; badgeText = remaining + ' left';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 } else {
                     chipBg = '#f0faf6'; chipBorder = '#8ce0bb'; chipColor = '#1a5a38';
                     badgeBg = '#d4f2e4'; badgeColor = '#1a5a38'; badgeText = remaining + ' free';
-                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + (boxId === 'edit-room-suggest' ? 'edit-stay-type' : 'add-stay-type-select') + '\', ' + (excludeId || 'null') + ')"';
+                    cursor = 'pointer'; clickAttr = 'onclick="selectSuggestedRoom(\'' + r.room_number + '\', \'' + inputId + '\', \'' + boxId + '\', \'' + stayTypeSelectId + '\', ' + (excludeId || 'null') + ')"';
                 }
-                var isSelected = (selectedRoomNumber === r.room_number) && !unavail;
-                var displayBg     = isSelected ? '#fffbf0' : chipBg;
-                var displayBorder = isSelected ? '#f0c040' : chipBorder;
+                var isSelected    = (selectedRoomNumber === r.room_number) && !unavail;
+                var displayBorder = isSelected ? 'var(--bright-pink)' : chipBorder;
+                var displayBg     = isSelected ? '#fff0f6' : chipBg;
+                var ringStyle     = isSelected ? 'box-shadow:0 0 0 3px rgba(232,23,93,.16);' : '';
                 var hoverIn  = unavail ? '' : 'onmouseover="this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';"';
-                var hoverOut = unavail ? '' : 'onmouseout="if(\'' + r.room_number + '\'===selectedRoomNumber){this.style.borderColor=\'#f0c040\';this.style.background=\'#fffbf0\';}else{this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';}";';
+                var hoverOut = unavail ? '' : 'onmouseout="if(\'' + r.room_number + '\'===selectedRoomNumber){this.style.borderColor=\'var(--bright-pink)\';this.style.background=\'#fff0f6\';}else{this.style.borderColor=\'' + chipBorder + '\';this.style.background=\'' + chipBg + '\';}";';
                 var chipClass = unavail ? '' : 'room-chip-selectable';
                 var chipData  = unavail ? '' : 'data-room="' + r.room_number + '" data-default-border="' + chipBorder + '" data-default-bg="' + chipBg + '"';
+                var checkMark = isSelected
+                    ? '<div style="position:absolute;top:5px;right:5px;width:15px;height:15px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(232,23,93,.4);">'
+                        + '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                        + '</div>'
+                    : '';
                 html += '<div ' + clickAttr + ' ' + chipClass + ' ' + chipData + ' ' + hoverIn + ' ' + hoverOut
-                    + ' style="display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
-                    + displayBorder + ';background:' + displayBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s;user-select:none;">'
+                    + ' style="position:relative;display:flex;flex-direction:column;gap:.3rem;padding:.5rem .6rem;border-radius:10px;border:1.5px solid '
+                    + displayBorder + ';background:' + displayBg + ';cursor:' + cursor + ';transition:border-color .15s,background .15s,box-shadow .15s;user-select:none;' + ringStyle + '">'
+                    + checkMark
                     + '<div style="display:flex;align-items:center;justify-content:space-between;gap:.25rem;">'
                         + '<span style="font-size:.82rem;font-weight:800;color:' + chipColor + ';">Rm.' + r.room_number + '</span>'
                         + (r.floor ? '<span style="font-size:.62rem;font-weight:600;color:' + chipColor + ';opacity:.7;">Fl.' + r.floor + '</span>' : '')
@@ -3415,7 +4930,7 @@ async function submitDeleteRoom() {
                         + '<span style="font-size:.66rem;font-weight:800;color:' + badgeColor + ';letter-spacing:.02em;">' + badgeText + '</span>'
                     + '</div>'
                     + '<div style="height:3px;background:#e0e0e0;border-radius:99px;overflow:hidden;">'
-                        + '<div style="height:100%;width:' + pct + '%;background:' + (isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
+                        + '<div style="height:100%;width:' + pct + '%;background:' + (r.isCurrent ? '#3b6fd4' : isFull ? '#e04867' : pct >= 75 ? '#f0a500' : '#1f9d69') + ';border-radius:99px;"></div>'
                     + '</div>'
                     + '</div>';
             });
@@ -3431,6 +4946,13 @@ async function submitDeleteRoom() {
         var suggestWrap = document.getElementById('add-room-suggest-wrap');
         if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
         renderRoomSuggestions(stayType, 'add-room-suggest', 'add-room-number-input', null);
+    };
+
+    window.onRenewStayTypeChange = function() {
+        var stayType    = document.getElementById('renew-stay-type').value;
+        var suggestWrap = document.getElementById('renew-room-suggest-wrap');
+        if (!stayType) { if (suggestWrap) suggestWrap.style.display = 'none'; return; }
+        renderRoomSuggestions(stayType, 'renew-room-suggest', 'renew-room', null);
     };
 
     window.onEditStayTypeChange = function() {
@@ -3543,7 +5065,400 @@ function setAddMode(mode) {
     }
 })();
 
-applyFilters();
+var _renewCredNewTenantId = null;
+
+function triggerRenewPhotoUpload() {
+    var input = document.getElementById('renew-photo-upload-input');
+    input.value = '';
+    input.click();
+}
+
+async function submitRenewPhoto(input) {
+    var tenantId = _renewCredNewTenantId;
+    if (!tenantId) {
+        showRenewPhotoStatus('error', 'No tenant ID found. Please close and try again.');
+        input.value = '';
+        return;
+    }
+    var file = input.files[0];
+    if (!file) return;
+
+    var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedTypes.indexOf(file.type) === -1) {
+        showRenewPhotoStatus('error', 'Invalid file type. Only JPG and PNG are accepted.');
+        input.value = '';
+        return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+        showRenewPhotoStatus('error', 'File is too large. Maximum size is 4MB.');
+        input.value = '';
+        return;
+    }
+
+    var btn = document.getElementById('renew-cred-upload-btn');
+    var btnLabel = document.getElementById('renew-cred-upload-btn-label');
+    if (btn) { btn.disabled = true; btn.style.opacity = '.65'; }
+    if (btnLabel) btnLabel.textContent = 'Uploading...';
+    showRenewPhotoStatus('loading', 'Uploading photo...');
+
+    var formData = new FormData();
+    formData.append('tenant_photo', file);
+
+    try {
+        var res = await fetch('/tenants/' + tenantId + '/upload-photo', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: formData,
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Upload failed.');
+
+        var previewWrap = document.getElementById('renew-cred-photo-preview-wrap');
+        var previewImg  = document.getElementById('renew-cred-photo-preview-img');
+        if (previewWrap && previewImg) {
+            previewImg.src = data.url + '?t=' + Date.now();
+            previewWrap.style.display = '';
+        }
+
+        if (btnLabel) btnLabel.textContent = 'Change Photo';
+        showRenewPhotoStatus('success', 'Photo uploaded successfully.');
+
+        var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
+        if (idx !== -1) tenants[idx].tenant_photo = data.tenant_photo;
+        applyFilters();
+    } catch (e) {
+        showRenewPhotoStatus('error', e.message || 'Upload failed. Please try again.');
+        if (btnLabel) btnLabel.textContent = 'Try Again';
+    } finally {
+        if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    }
+}
+
+function showRenewPhotoStatus(type, message) {
+    var el = document.getElementById('renew-cred-upload-status');
+    if (!el) return;
+    var colorMap = { success: '#1f9d69', error: '#e04867', loading: '#7a3050' };
+    el.style.color = colorMap[type] || '#7a3050';
+    el.textContent = message;
+    el.style.display = '';
+    if (type === 'success') {
+        setTimeout(function() { el.style.display = 'none'; }, 5000);
+    }
+}
+
+function openRenewModal(id, name, roomNumber, stayType) {
+    renewTenantId = id;
+    document.getElementById('renew-tenant-name').textContent = name;
+    var today = new Date();
+    var yyyy  = today.getFullYear();
+    var mm    = String(today.getMonth() + 1).padStart(2, '0');
+    var dd    = String(today.getDate()).padStart(2, '0');
+    var todayStr = yyyy + '-' + mm + '-' + dd;
+    document.getElementById('renew-move-in').value  = todayStr;
+    var oneYearOut = new Date(today);
+    oneYearOut.setFullYear(oneYearOut.getFullYear() + 1);
+    var oneYearStr = oneYearOut.getFullYear() + '-' + String(oneYearOut.getMonth()+1).padStart(2,'0') + '-' + String(oneYearOut.getDate()).padStart(2,'0');
+    document.getElementById('renew-move-out').value = oneYearStr;
+    document.getElementById('renew-room').value     = roomNumber || '';
+    document.getElementById('renew-move-in').classList.remove('field-invalid');
+    document.getElementById('renew-move-out').classList.remove('field-invalid');
+    document.getElementById('renew-room').classList.remove('field-invalid');
+    document.getElementById('renew-move-in-error').style.display  = 'none';
+    document.getElementById('renew-move-out-error').style.display = 'none';
+    document.getElementById('renew-room-error').style.display     = 'none';
+
+    var stayTypeSel = document.getElementById('renew-stay-type');
+    if (stayTypeSel) {
+        stayTypeSel.value = stayType || '';
+        var suggestWrap = document.getElementById('renew-room-suggest-wrap');
+        var suggestBox  = document.getElementById('renew-room-suggest');
+        if (suggestWrap) suggestWrap.style.display = 'none';
+        if (suggestBox)  suggestBox.innerHTML = '';
+        if (stayType) {
+            setTimeout(function() { onRenewStayTypeChange(); }, 80);
+        }
+    }
+
+    var hintWrap = document.getElementById('renew-room-hint-wrap');
+    var hint     = document.getElementById('renew-room-hint');
+    if (hintWrap) hintWrap.style.display = 'none';
+    if (hint)     hint.innerHTML = '';
+
+    openModal('renew-modal');
+    renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', document.getElementById('renew-move-in').value, document.getElementById('renew-move-out').value);
+    setTimeout(function() {
+        var moveInEl  = document.getElementById('renew-move-in');
+        var moveOutEl = document.getElementById('renew-move-out');
+        if (moveInEl && !moveInEl._renewValidatorAttached) {
+            moveInEl._renewValidatorAttached = true;
+            moveInEl.addEventListener('change', function() {
+                validateRenewDates();
+                if (this.value && !moveOutEl.value) {
+                    var d = new Date(this.value + 'T00:00:00');
+                    d.setFullYear(d.getFullYear() + 1);
+                    moveOutEl.value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                }
+                renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', moveInEl.value, moveOutEl.value);
+            });
+            moveOutEl.addEventListener('change', function() {
+                validateRenewDates();
+                renderStayDuration('renew-stay-duration-wrap', 'renew-stay-duration-display', moveInEl.value, moveOutEl.value);
+            });
+        }
+        var renewRoomInput = document.getElementById('renew-room');
+        if (renewRoomInput && !renewRoomInput._renewHintAttached) {
+            renewRoomInput._renewHintAttached = true;
+            var debounce = null;
+            renewRoomInput.addEventListener('input', function() {
+                var val = this.value.trim();
+                clearTimeout(debounce);
+                var hintWrap2 = document.getElementById('renew-room-hint-wrap');
+                var hint2     = document.getElementById('renew-room-hint');
+                if (!val) {
+                    if (hintWrap2) hintWrap2.style.display = 'none';
+                    if (hint2)     hint2.innerHTML = '';
+                    return;
+                }
+                debounce = setTimeout(function() {
+                    (function(roomsCache) {
+                        var fn = typeof getRoomsCache === 'function' ? getRoomsCache : function(cb) { cb(roomsCache || []); };
+                        fn(function(rooms) {
+                            var result = buildHint(rooms, val, null);
+                            if (!result || !result.html) {
+                                if (hintWrap2) hintWrap2.style.display = 'none';
+                                if (hint2)     hint2.innerHTML = '';
+                            } else {
+                                if (hint2)     hint2.innerHTML = result.html;
+                                if (hintWrap2) hintWrap2.style.display = 'block';
+                                if (hintWrap2) hintWrap2.querySelectorAll('.room-hint-suggest-btn').forEach(function(btn) {
+                                    btn.addEventListener('click', function() {
+                                        renewRoomInput.value = this.dataset.room;
+                                        renewRoomInput.dispatchEvent(new Event('input'));
+                                    });
+                                });
+                            }
+                        });
+                    })();
+                }, 320);
+            });
+        }
+    }, 0);
+}
+
+function validateRenewDates() {
+    var moveIn  = document.getElementById('renew-move-in').value;
+    var moveOut = document.getElementById('renew-move-out').value;
+    var errEl   = document.getElementById('renew-move-out-error');
+    var outEl   = document.getElementById('renew-move-out');
+    if (moveOut && moveIn && moveOut < moveIn) {
+        outEl.classList.add('field-invalid');
+        errEl.textContent = 'Move-out date cannot be earlier than move-in date.';
+        errEl.style.display = 'block';
+        return false;
+    }
+    outEl.classList.remove('field-invalid');
+    errEl.style.display = 'none';
+    errEl.textContent = '';
+    return true;
+}
+
+async function submitRenewTenant() {
+    var moveIn  = document.getElementById('renew-move-in').value;
+    var moveOut = document.getElementById('renew-move-out').value;
+    var room    = document.getElementById('renew-room').value.trim();
+    var valid   = true;
+
+    document.getElementById('renew-move-in-error').style.display  = 'none';
+    document.getElementById('renew-move-out-error').style.display = 'none';
+    document.getElementById('renew-room-error').style.display     = 'none';
+    document.getElementById('renew-move-in').classList.remove('field-invalid');
+    document.getElementById('renew-move-out').classList.remove('field-invalid');
+    document.getElementById('renew-room').classList.remove('field-invalid');
+
+    if (!moveIn) {
+        document.getElementById('renew-move-in-error').textContent = 'Move-in date is required.';
+        document.getElementById('renew-move-in-error').style.display = 'block';
+        document.getElementById('renew-move-in').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (!moveOut) {
+        document.getElementById('renew-move-out-error').textContent = 'Move-out date is required.';
+        document.getElementById('renew-move-out-error').style.display = 'block';
+        document.getElementById('renew-move-out').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (moveOut && moveIn && moveOut < moveIn) {
+        document.getElementById('renew-move-out-error').textContent = 'Move-out date cannot be earlier than move-in date.';
+        document.getElementById('renew-move-out-error').style.display = 'block';
+        document.getElementById('renew-move-out').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (room && room.length < 3) {
+        document.getElementById('renew-room-error').textContent = 'Room number must be at least 3 digits.';
+        document.getElementById('renew-room-error').style.display = 'block';
+        document.getElementById('renew-room').classList.add('field-invalid');
+        valid = false;
+    }
+
+    if (!valid) {
+        if (!moveIn) document.getElementById('renew-move-in').focus();
+        return;
+    }
+
+    var submitBtn = document.querySelector('#renew-modal .btn-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; }
+
+    showActionLoading('Renewing tenant stay...');
+
+    try {
+        var res;
+        try {
+            res = await fetch('/tenants/' + renewTenantId + '/renew', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ move_in_date: moveIn, move_out_date: moveOut || null, room_number: room || null }),
+            });
+        } catch (networkErr) {
+            throw new Error('Network error. Check your connection and try again.');
+        }
+        var data;
+        try {
+            data = await res.json();
+        } catch (parseErr) {
+            throw new Error('Unexpected server response. The server may have returned an error page instead of JSON.');
+        }
+        if (!res.ok) {
+            var errMsg = data.message || 'Failed to renew tenant.';
+            if (res.status === 404) {
+                throw new Error('No move-out record found for this tenant. Make sure the tenant has been marked as moved out first.');
+            }
+            if (res.status === 422) {
+                if (errMsg.toLowerCase().indexOf('full') !== -1 || errMsg.toLowerCase().indexOf('room') !== -1) {
+                    document.getElementById('renew-room-error').textContent = errMsg;
+                    document.getElementById('renew-room-error').style.display = 'block';
+                    document.getElementById('renew-room').classList.add('field-invalid');
+                    document.getElementById('renew-room').focus();
+                }
+                throw new Error(errMsg);
+            }
+            if (res.status === 401) {
+                throw new Error('Session expired. Please refresh the page and log in again.');
+            }
+            throw new Error(errMsg);
+        }
+
+        var tenantName = document.getElementById('renew-tenant-name').textContent;
+
+        closeModal('renew-modal');
+
+        document.getElementById('renew-cred-name').textContent       = tenantName;
+        document.getElementById('renew-cred-account-id').textContent = data.account_id;
+        document.getElementById('renew-cred-password').textContent   = data.temp_password;
+
+        var photoSuggestWrap = document.getElementById('renew-cred-photo-suggest');
+        if (photoSuggestWrap) {
+            if (data.new_tenant_id) {
+                _renewCredNewTenantId = data.new_tenant_id;
+                photoSuggestWrap.style.display = '';
+                var previewWrap = document.getElementById('renew-cred-photo-preview-wrap');
+                if (previewWrap) previewWrap.style.display = 'none';
+                var statusEl = document.getElementById('renew-cred-upload-status');
+                if (statusEl) statusEl.style.display = 'none';
+                var btnLabel = document.getElementById('renew-cred-upload-btn-label');
+                if (btnLabel) btnLabel.textContent = 'Upload Photo';
+                var btn = document.getElementById('renew-cred-upload-btn');
+                if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+            } else {
+                _renewCredNewTenantId = null;
+                photoSuggestWrap.style.display = 'none';
+            }
+        }
+
+        openModal('renew-credentials-modal');
+
+        moveoutTenantArchive = moveoutTenantArchive.filter(function(r) { return r.id !== renewTenantId; });
+        document.getElementById('tcount-moveout').textContent = moveoutTenantArchive.length;
+        renderTenantArchive();
+
+        showToast(tenantName + ' has been renewed successfully.', 'success');
+    } catch (e) {
+        var msg = e.message || 'An unexpected error occurred. Please try again.';
+        showToast(msg, 'error');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+    } finally {
+        document.getElementById('action-loading').classList.remove('open');
+    }
+}
+
+(function () {
+    var liveFingerprint = null;
+    var pollInterval = 5000;
+
+    function anyOverlayOpen() {
+        return !!document.querySelector('.modal-overlay.open')
+            || document.getElementById('tad-drawer').classList.contains('open')
+            || document.getElementById('rooms-drawer').classList.contains('open')
+            || document.getElementById('admin-log-drawer').classList.contains('open');
+    }
+
+    function checkForTenantUpdates() {
+        if (anyOverlayOpen()) return;
+
+        fetch('{{ route("tenants.live") }}', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (liveFingerprint === null) {
+                    liveFingerprint = data.fingerprint;
+                    return;
+                }
+                if (data.fingerprint === liveFingerprint) return;
+
+                liveFingerprint = data.fingerprint;
+                tenants = data.tenants;
+
+                var totalEl = document.getElementById('count-total');
+                var activeEl = document.getElementById('count-active');
+                if (totalEl) totalEl.textContent = data.totalTenants;
+                if (activeEl) activeEl.textContent = data.activeCount;
+
+                var keepActivePage   = sectionPages.active;
+                var keepReservedPage = sectionPages.reserved;
+                applyFilters();
+                sectionPages.active   = Math.min(keepActivePage,   Math.max(1, Math.ceil(sectionData.active.length   / PER_PAGE)));
+                sectionPages.reserved = Math.min(keepReservedPage, Math.max(1, Math.ceil(sectionData.reserved.length / PER_PAGE)));
+                renderSection('active');
+                renderSection('reserved');
+            })
+            .catch(function () {});
+    }
+
+    checkForTenantUpdates();
+    setInterval(checkForTenantUpdates, 15000);
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('floor-filter').value = '';
+    document.getElementById('sort-select').value = 'newest';
+    document.getElementById('status-filter').value = '';
+    applyFilters();
+
+    document.querySelectorAll('#add-modal input[required], #edit-modal input[required]').forEach(function(inp) {
+        inp.addEventListener('blur', function() {
+            if (!this.value.trim()) {
+                this.classList.add('field-invalid');
+            } else {
+                this.classList.remove('field-invalid');
+            }
+        });
+        inp.addEventListener('input', function() {
+            if (this.value.trim()) this.classList.remove('field-invalid');
+        });
+    });
+});
 
 var deletedTenantArchive  = {!! json_encode($deletedArchive,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
 var inactiveTenantArchive = {!! json_encode($inactiveArchive, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
@@ -3616,11 +5531,25 @@ function renderTenantArchive() {
                 + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
                 + '</form>'
+            : tenantArchiveTab === 'move_out' && r.id && isAdmin
+            ? '<button type="button" onclick="openRenewModal(' + r.id + ', \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\', \'' + escapeJs(r.room_number || '') + '\', \'' + escapeJs(r.stay_type || '') + '\')" style="width:100%;margin-top:.75rem;padding:.45rem 0;border-radius:8px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;transition:background .2s,color .2s,border-color .2s;" onmouseover="this.style.background=\'var(--gradient-pink)\';this.style.color=\'var(--white)\';this.style.borderColor=\'transparent\';" onmouseout="this.style.background=\'var(--white)\';this.style.color=\'var(--hot-pink)\';this.style.borderColor=\'var(--pink-100)\';">Renew Stay</button>'
             : '';
+        var archivePhotoHtml = r.tenant_photo
+            ? '<img src="/storage/' + r.tenant_photo + '" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid var(--pink-100);flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);" alt="">'
+            : '<div style="width:38px;height:38px;border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.78rem;flex-shrink:0;box-shadow:0 2px 8px rgba(232,23,93,.12);">' + (r.first_name.charAt(0) + r.last_name.charAt(0)).toUpperCase() + '</div>';
+
         return '<div class="tad-card" style="animation-delay:' + (i*0.04) + 's;">'
-            + '<div class="tad-card-top"><div class="tad-card-id">' + (r.account_id||'\u2014') + '</div><div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div></div>'
-            + '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
-            + '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>'
+            + '<div class="tad-card-top" style="align-items:center;">'
+                + archivePhotoHtml
+                + '<div style="flex:1;min-width:0;">'
+                    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.2rem;">'
+                        + '<div class="tad-card-id">' + (r.account_id||'\u2014') + '</div>'
+                        + '<div class="tad-card-time">' + (r.move_in_date ? fmtDate(r.move_in_date) : '\u2014') + '</div>'
+                    + '</div>'
+                    + '<div class="tad-card-name">' + r.first_name + ' ' + r.last_name + '</div>'
+                    + '<div class="tad-card-email">' + (r.email||'\u2014') + '</div>'
+                + '</div>'
+            + '</div>'
             + '<div class="tad-card-meta">' + roomPill + stayPill + '<span class="tad-pill ' + statusPillClass(r.status) + '">' + (r.status||'\u2014') + '</span></div>'
             + '<div class="tad-card-archived">' + archiveLabel + ': <span>' + fmtDatePlain(r.archived_at) + '</span></div>'
             + reactivateForm
@@ -3730,6 +5659,13 @@ function closeAllExportDropdowns() {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.export-dropdown') && !e.target.closest('#export-menu-portal')) {
         closeAllExportDropdowns();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var lb = document.getElementById('photo-lightbox');
+        if (lb && lb.classList.contains('open')) closePhotoLightbox();
     }
 });
 
@@ -3868,6 +5804,251 @@ function renderAdminLogDrawer() {
     });
     list.innerHTML = html;
 }
+
+function updateFormProgress(formId, fields) {
+    var filled = fields.filter(function(f) {
+        var el = document.getElementById(f);
+        return el && el.value && el.value.trim() !== '';
+    }).length;
+    var total  = fields.length;
+    var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+    var fill   = document.getElementById(formId + '-fill');
+    var text   = document.getElementById(formId + '-text');
+    var count  = document.getElementById(formId + '-count');
+    if (!fill || !text || !count) return;
+    fill.style.width = pct + '%';
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        text.textContent = 'All required fields filled';
+        text.className = 'ready';
+        count.textContent = filled + '/' + total;
+        count.className = 'ready';
+    } else if (pct >= 50) {
+        fill.style.background = 'var(--gradient-pink)';
+        text.textContent = 'Almost there';
+        text.className = 'partial';
+        count.textContent = filled + '/' + total;
+        count.className = 'partial';
+    } else {
+        fill.style.background = 'var(--gradient-pink)';
+        text.textContent = 'Fill in required fields';
+        text.className = '';
+        count.textContent = filled + '/' + total;
+        count.className = '';
+    }
+}
+
+function attachAddModalProgress() {
+    var step1Fields = ['add-modal input[name="first_name"]', 'add-modal input[name="last_name"]', 'add-email'];
+    var step2Fields = ['add-stay-type-select', 'add-move-in-date'];
+
+    function getStep1Vals() {
+        var fn = document.querySelector('#add-modal input[name="first_name"]');
+        var ln = document.querySelector('#add-modal input[name="last_name"]');
+        var em = document.getElementById('add-email');
+        var co = document.getElementById('add-contact');
+        return [fn, ln, em, co].filter(Boolean);
+    }
+
+    function getStep2Vals() {
+        return [
+            document.getElementById('add-stay-type-select'),
+            document.getElementById('add-move-in-date')
+        ].filter(Boolean);
+    }
+
+    function refreshProgress() {
+        if (addCurrentStep === 1) {
+            var els    = getStep1Vals();
+            var filled = els.filter(function(e) { return e.value && e.value.trim() !== ''; }).length;
+            var total  = els.length;
+            var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+            var fill   = document.getElementById('add-progress-fill');
+            var text   = document.getElementById('add-progress-text');
+            var count  = document.getElementById('add-progress-count');
+            if (!fill) return;
+            fill.style.width = pct + '%';
+            if (pct === 100) {
+                fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+                if (text) { text.textContent = 'Step 1 complete'; text.className = 'ready'; }
+                if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+            } else {
+                fill.style.background = 'var(--gradient-pink)';
+                if (text) { text.textContent = 'Fill in required fields'; text.className = ''; }
+                if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+            }
+        } else {
+            var mode   = document.getElementById('add-mode-input') ? document.getElementById('add-mode-input').value : 'moved_in';
+            var st     = document.getElementById('add-stay-type-select');
+            var mi     = document.getElementById('add-move-in-date');
+            var est    = document.getElementById('add-estimated-move-in');
+            var checkEls = [st];
+            if (mode === 'moved_in') {
+                checkEls.push(mi);
+            } else {
+                checkEls.push(est);
+            }
+            var filled2 = checkEls.filter(function(e) { return e && e.value && e.value.trim() !== ''; }).length;
+            var total2  = checkEls.length;
+            var pct2    = total2 > 0 ? Math.round((filled2 / total2) * 100) : 0;
+            var fill2   = document.getElementById('add-progress-fill');
+            var text2   = document.getElementById('add-progress-text');
+            var count2  = document.getElementById('add-progress-count');
+            if (!fill2) return;
+            fill2.style.width = pct2 + '%';
+            if (pct2 === 100) {
+                fill2.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+                if (text2) { text2.textContent = 'Step 2 complete'; text2.className = 'ready'; }
+                if (count2) { count2.textContent = filled2 + '/' + total2; count2.className = 'ready'; }
+            } else {
+                fill2.style.background = 'var(--gradient-pink)';
+                if (text2) { text2.textContent = 'Fill in required fields'; text2.className = ''; }
+                if (count2) { count2.textContent = filled2 + '/' + total2; count2.className = 'partial'; }
+            }
+        }
+    }
+
+    var addModal = document.getElementById('add-modal');
+    if (!addModal) return;
+    addModal.addEventListener('input', refreshProgress);
+    addModal.addEventListener('change', refreshProgress);
+
+    var origGoAddStep = window.goAddStep;
+    window.goAddStep = function(step) {
+        origGoAddStep(step);
+        setTimeout(refreshProgress, 50);
+    };
+
+    var origSetAddMode = window.setAddMode;
+    window.setAddMode = function(mode) {
+        origSetAddMode(mode);
+        setTimeout(refreshProgress, 50);
+    };
+
+    refreshProgress();
+}
+
+function attachEditModalProgress() {
+    var fields = ['edit-first-name', 'edit-last-name', 'edit-email', 'edit-contact'];
+
+    function refreshEditProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('edit-progress-fill');
+        var text  = document.getElementById('edit-progress-text');
+        var count = document.getElementById('edit-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var editModal = document.getElementById('edit-modal');
+    if (!editModal) return;
+    editModal.addEventListener('input', refreshEditProgress);
+    editModal.addEventListener('change', refreshEditProgress);
+    refreshEditProgress();
+
+    var origOpenEditModal = window.openEditModal;
+    window.openEditModal = function(t) {
+        origOpenEditModal(t);
+        setTimeout(refreshEditProgress, 80);
+    };
+}
+
+function attachAddRoomProgress() {
+    var fields = ['ar-number', 'ar-capacity'];
+
+    function refreshArProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('ar-progress-fill');
+        var text  = document.getElementById('ar-progress-text');
+        var count = document.getElementById('ar-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var arModal = document.getElementById('add-room-modal');
+    if (!arModal) return;
+    arModal.addEventListener('input', refreshArProgress);
+    arModal.addEventListener('change', refreshArProgress);
+
+    var origOpenAddRoomModal = window.openAddRoomModal;
+    window.openAddRoomModal = function() {
+        origOpenAddRoomModal();
+        setTimeout(refreshArProgress, 50);
+    };
+}
+
+function attachRenewProgress() {
+    var fields = ['renew-move-in', 'renew-move-out'];
+
+    function refreshRenewProgress() {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById('renew-progress-fill');
+        var text  = document.getElementById('renew-progress-text');
+        var count = document.getElementById('renew-progress-count');
+        if (!fill) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            if (text)  { text.textContent = 'Required fields complete'; text.className = 'ready'; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+            if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+        }
+    }
+
+    var renewModal = document.getElementById('renew-modal');
+    if (!renewModal) return;
+    renewModal.addEventListener('input', refreshRenewProgress);
+    renewModal.addEventListener('change', refreshRenewProgress);
+
+    var origOpenRenewModal = window.openRenewModal;
+    window.openRenewModal = function(id, name, roomNumber, stayType) {
+        origOpenRenewModal(id, name, roomNumber, stayType);
+        setTimeout(refreshRenewProgress, 80);
+    };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachAddModalProgress();
+    attachEditModalProgress();
+    attachAddRoomProgress();
+    attachRenewProgress();
+});
 
 function exportAdminLog(format) {
     var q    = document.getElementById('admin-log-search').value.toLowerCase();
@@ -4077,105 +6258,384 @@ function fmtDateTime(d) {
         + ' ' + dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
+var _moveOutPendingSubmit = false;
+var _moveOutBillsCache    = null;
+var _moveOutTenantCache   = null;
+
+function interceptMoveOut(e) {
+    var statusSel = document.getElementById('edit-status');
+    if (!statusSel || statusSel.value !== 'move_out') {
+        return validateEditTenantForm(e);
+    }
+    if (_moveOutPendingSubmit) {
+        _moveOutPendingSubmit = false;
+        return validateEditTenantForm(e);
+    }
+    e.preventDefault();
+    if (!validateEditTenantForm({ preventDefault: function() {} })) {
+        return false;
+    }
+    openMoveOutVerify();
+    return false;
+}
+
+function openMoveOutVerify() {
+    if (!currentTenant) return;
+    var t         = currentTenant;
+    var bills     = billingData[String(t.tenant_id)] || [];
+    var unpaid    = Array.isArray(bills) ? bills.filter(function(b) { return b.payment_status === 'unpaid' || b.payment_status === 'overdue'; }) : [];
+    _moveOutBillsCache  = unpaid;
+    _moveOutTenantCache = t;
+
+    var initials = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+    document.getElementById('moveout-verify-avatar').textContent = initials;
+    document.getElementById('moveout-verify-name').textContent   = t.first_name + ' ' + t.last_name;
+
+    var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ', Rm. ' + t.room_number : (t.room_number ? 'Rm. ' + t.room_number : 'No room assigned');
+    document.getElementById('moveout-verify-meta').textContent = roomLabel + (t.stay_type ? ' \u00b7 ' + t.stay_type : '');
+
+    var moveoutVal = document.getElementById('edit-moveout').value;
+    var datePill   = document.getElementById('moveout-verify-date-pill');
+    if (moveoutVal) {
+        datePill.textContent  = 'Move out: ' + fmtDate(moveoutVal);
+        datePill.style.display = '';
+    } else {
+        datePill.style.display = 'none';
+    }
+
+    var billsSection = document.getElementById('moveout-bills-section');
+    var clearSection = document.getElementById('moveout-clear-section');
+    var printBtn     = document.getElementById('moveout-print-btn');
+
+    if (unpaid.length > 0) {
+        billsSection.style.display = '';
+        clearSection.style.display = 'none';
+        printBtn.style.display     = '';
+
+        document.getElementById('moveout-bills-count-pill').textContent = unpaid.length + ' bill' + (unpaid.length !== 1 ? 's' : '');
+
+        var total = unpaid.reduce(function(s, b) { return s + parseFloat(b.room_share || 0); }, 0);
+        document.getElementById('moveout-bills-total').textContent = '\u20b1' + total.toFixed(2);
+
+        var listEl = document.getElementById('moveout-bills-list');
+        listEl.innerHTML = unpaid.map(function(b) {
+            var isOverdue  = b.payment_status === 'overdue';
+            var badgeBg    = isOverdue ? '#fff0f0' : '#fff9e6';
+            var badgeColor = isOverdue ? '#e04867' : '#c8960c';
+            var badgeBorder= isOverdue ? 'var(--pink-200)' : '#f0c040';
+            var badgeText  = isOverdue ? 'Overdue' : 'Unpaid';
+            var monthStr   = b.billing_month ? (function() {
+                var s = String(b.billing_month).trim();
+                if (s.length === 7) s = s + '-01';
+                var dt = new Date(s + 'T00:00:00');
+                return isNaN(dt.getTime()) ? b.billing_month : dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            })() : '\u2014';
+            var dueStr     = b.due_date ? fmtDate(b.due_date) : '\u2014';
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .85rem;border-radius:10px;background:var(--white);border:1.5px solid var(--pink-100);gap:.75rem;">'
+                + '<div style="flex:1;min-width:0;">'
+                    + '<div style="font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.3;">' + monthStr + '</div>'
+                    + '<div style="font-size:.71rem;color:var(--ink-muted);margin-top:.15rem;">Due: ' + dueStr + '</div>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0;">'
+                    + '<span style="font-size:.65rem;font-weight:800;padding:.2rem .55rem;border-radius:99px;background:' + badgeBg + ';color:' + badgeColor + ';border:1px solid ' + badgeBorder + ';">' + badgeText + '</span>'
+                    + '<span style="font-size:.88rem;font-weight:800;color:#e04867;">\u20b1' + parseFloat(b.room_share || 0).toFixed(2) + '</span>'
+                + '</div>'
+                + '</div>';
+        }).join('');
+    } else {
+        billsSection.style.display = 'none';
+        clearSection.style.display = '';
+        printBtn.style.display     = 'none';
+    }
+
+    openModal('moveout-verify-modal');
+}
+
+function closeMoveOutVerify() {
+    closeModal('moveout-verify-modal');
+    _moveOutPendingSubmit = false;
+}
+
+function confirmMoveOut() {
+    closeModal('moveout-verify-modal');
+    _moveOutPendingSubmit = true;
+    var form = document.getElementById('edit-form');
+    if (form) {
+        showActionLoading('Saving changes...');
+        form.querySelectorAll('button[type="submit"]').forEach(function(b) { b.disabled = true; });
+        form.submit();
+    }
+}
+
+function printMoveOutBillSlip() {
+    var t     = _moveOutTenantCache;
+    var bills = _moveOutBillsCache;
+    if (!t || !bills) return;
+    printBillSlip(t);
+}
+
 function printBillSlip(t) {
     var tenantBills = billingData[String(t.tenant_id)] || [];
-    if (!Array.isArray(tenantBills)) { tenantBills = []; }
+    if (!Array.isArray(tenantBills)) tenantBills = [];
     tenantBills.sort(function(a, b) { return new Date(a.billing_month) - new Date(b.billing_month); });
-    var total     = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
+
+    var total     = tenantBills.reduce(function(s, b) { return s + parseFloat(b.room_share || 0); }, 0);
     var today     = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
+
     function fmtMonth(d) {
-        if (!d) return '\u2014';
+        if (!d) return '-';
         var s = String(d).trim();
         if (s.length === 7) s = s + '-01';
         var dt = new Date(s + 'T00:00:00');
-        if (isNaN(dt.getTime())) return '\u2014';
+        if (isNaN(dt.getTime())) return '-';
         return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
+
     function fmtDateSlip(d) {
-        if (!d) return '\u2014';
+        if (!d) return '-';
         var s = String(d).trim();
         if (s.length === 7) s = s + '-01';
         var dt = new Date(s + 'T00:00:00');
-        if (isNaN(dt.getTime())) return '\u2014';
+        if (isNaN(dt.getTime())) return '-';
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
-    var billRows = '';
+
+    var { jsPDF } = window.jspdf;
+
+    var rowH    = 14;
+    var baseH   = 175;
+    var extraH  = tenantBills.length > 0 ? tenantBills.length * rowH : 0;
+    var sigH    = tenantBills.length > 0 ? 44 : 0;
+    var totalH  = Math.max(148, baseH + extraH + sigH);
+
+    var W = 80;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [W, totalH], compress: true });
+    doc.setProperties({ title: 'Bill Slip - ' + t.first_name + ' ' + t.last_name, author: 'DormEase', creator: 'DormEase' });
+
+    var pink    = [232, 23, 93];
+    var ink     = [26, 26, 46];
+    var muted   = [140, 100, 120];
+    var white   = [255, 255, 255];
+    var petal   = [255, 243, 248];
+    var border  = [244, 184, 208];
+    var green   = [31, 157, 105];
+    var greenBg = [232, 250, 245];
+    var greenBd = [140, 224, 187];
+    var warn    = [255, 249, 230];
+    var warnTx  = [122, 84, 0];
+    var warnBd  = [240, 192, 64];
+    var red     = [224, 72, 103];
+    var redBg   = [255, 240, 244];
+    var redBd   = [255, 194, 209];
+    var amber   = [240, 165, 0];
+    var amberBg = [255, 251, 240];
+    var amberBd = [240, 192, 64];
+
+    doc.setFillColor(pink[0], pink[1], pink[2]);
+    doc.rect(0, 0, W, 28, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(white[0], white[1], white[2]);
+    doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', W / 2, 8, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.text('Outstanding Bill Slip', W / 2, 15, { align: 'center' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 210, 230);
+    doc.text('DormEase Billing System', W / 2, 21.5, { align: 'center' });
+
+    var y = 33;
+
+    doc.setFillColor(petal[0], petal[1], petal[2]);
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(6, y, W - 12, 22, 2, 2, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.first_name + ' ' + t.last_name, 10, y + 6.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Account ID: ', 10, y + 11.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.account_id || '-', 10 + doc.getTextWidth('Account ID: '), y + 11.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Room: ', 10, y + 15.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(floorRoom + (t.stay_type ? '  \u00b7  ' + t.stay_type : ''), 10 + doc.getTextWidth('Room: '), y + 15.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Status: ', 10, y + 19.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-', 10 + doc.getTextWidth('Status: '), y + 19.5);
+
+    y += 27;
+
     if (tenantBills.length === 0) {
-        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:4mm 0;">No outstanding balance.</td></tr>';
+        doc.setFillColor(greenBg[0], greenBg[1], greenBg[2]);
+        doc.setDrawColor(greenBd[0], greenBd[1], greenBd[2]);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(6, y, W - 12, 18, 2, 2, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(green[0], green[1], green[2]);
+        doc.text('No Outstanding Balance', W / 2, y + 8, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(green[0], green[1], green[2]);
+        doc.text('All bills have been settled.', W / 2, y + 13, { align: 'center' });
+
+        y += 23;
     } else {
-        tenantBills.forEach(function(b) {
-            var badgeColor = b.payment_status === 'overdue'
-                ? 'background:#ffe9ee;color:#e04867;border:1px solid #ff9db0;'
-                : 'background:#fff6dc;color:#c58a00;border:1px solid #f2cd63;';
-            billRows += '<tr>'
-                + '<td>' + fmtMonth(b.billing_month)
-                + '<br><span style="display:inline-block;font-size:5pt;font-weight:700;padding:.4mm 1.2mm;border-radius:3px;margin-top:.6mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
-                + '<td style="white-space:nowrap;">' + fmtDateSlip(b.due_date) + '</td>'
-                + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
-                + '</tr>';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text('UNPAID / OVERDUE BILLS', 6, y);
+
+        y += 2.5;
+
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, W - 6, y);
+
+        y += 3;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text('Billing Period', 6, y);
+        doc.text('Due Date', 43, y);
+        doc.text('Amount', W - 6, y, { align: 'right' });
+
+        y += 1.5;
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, W - 6, y);
+
+        tenantBills.forEach(function(b, i) {
+            var isOD       = b.payment_status === 'overdue';
+            var rowBg      = i % 2 === 0 ? petal : white;
+            var badgeBg    = isOD ? redBg : amberBg;
+            var badgeBd    = isOD ? redBd : amberBd;
+            var badgeTx    = isOD ? red : [200, 150, 12];
+
+            y += 1;
+            doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
+            doc.rect(6, y, W - 12, rowH - 2, 'F');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            doc.setTextColor(ink[0], ink[1], ink[2]);
+            doc.text(fmtMonth(b.billing_month), 7, y + 5);
+
+            doc.setFillColor(badgeBg[0], badgeBg[1], badgeBg[2]);
+            doc.setDrawColor(badgeBd[0], badgeBd[1], badgeBd[2]);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(7, y + 6.5, 15, 4, 0.8, 0.8, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(4.5);
+            doc.setTextColor(badgeTx[0], badgeTx[1], badgeTx[2]);
+            doc.text(isOD ? 'Overdue' : 'Unpaid', 14.5, y + 9.5, { align: 'center' });
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(muted[0], muted[1], muted[2]);
+            doc.text(fmtDateSlip(b.due_date), 43, y + 5);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7.5);
+            doc.setTextColor(red[0], red[1], red[2]);
+            doc.text('\u20b1' + parseFloat(b.room_share || 0).toFixed(2), W - 6, y + 5, { align: 'right' });
+
+            y += rowH;
+
+            doc.setDrawColor(border[0], border[1], border[2]);
+            doc.setLineWidth(0.2);
+            doc.line(6, y - 1, W - 6, y - 1);
         });
+
+        y += 2;
+
+        doc.setFillColor(pink[0], pink[1], pink[2]);
+        doc.roundedRect(6, y, W - 12, 12, 2, 2, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(255, 220, 235);
+        doc.text('Total Outstanding', 10, y + 7.5);
+
+        doc.setFontSize(11);
+        doc.setTextColor(white[0], white[1], white[2]);
+        doc.text('\u20b1' + total.toFixed(2), W - 8, y + 8, { align: 'right' });
+
+        y += 17;
+
+        doc.setFillColor(warn[0], warn[1], warn[2]);
+        doc.setDrawColor(warnBd[0], warnBd[1], warnBd[2]);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(6, y, W - 12, 14, 1.8, 1.8, 'FD');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.8);
+        doc.setTextColor(warnTx[0], warnTx[1], warnTx[2]);
+        var warnLines = doc.splitTextToSize('Please settle your outstanding balance at the admin office. Bring this slip as reference.', W - 16);
+        doc.text(warnLines, 9, y + 5, { lineHeightFactor: 1.6 });
+
+        y += 19;
+
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.setLineDash([1.5, 1.5]);
+        doc.line(6, y, W - 6, y);
+        y += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.5);
+        doc.setTextColor(muted[0], muted[1], muted[2]);
+        doc.text('Tenant Signature over Printed Name', W / 2, y, { align: 'center' });
+        y += 14;
+        doc.line(6, y, W - 6, y);
+        y += 8;
+        doc.text('Admin / Staff Signature & Date', W / 2, y, { align: 'center' });
+        doc.setLineDash([]);
+
+        y += 8;
     }
-    var totalBlock = tenantBills.length > 0
-        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3mm;background:#E8175D;border-radius:4px;margin-bottom:2.5mm;">'
-            + '<span style="font-size:7.5pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
-            + '<span style="font-size:12pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
-            + '</div>'
-            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:3px;padding:1.8mm 2mm;font-size:6pt;color:#7a5400;line-height:1.4;margin-bottom:2.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference.</div>'
-        : '<div style="text-align:center;padding:3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:4px;margin-bottom:2.5mm;">'
-            + '<div style="font-size:9.5pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
-            + '<div style="font-size:6.5pt;color:#2e9e68;margin-top:.8mm;">All bills have been settled.</div>'
-            + '</div>';
-    var signatureBlock = tenantBills.length > 0
-        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:0;">'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:7mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:3mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
-            + '</div>'
-        : '';
-    var win = window.open('', '_blank', 'width=302,height=520');
-    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
-        + '<style>'
-        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (150 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
-        + '* { box-sizing: border-box; margin: 0; padding: 0; }'
-        + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
-        + '.slip { width: 80mm; }'
-        + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
-        + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
-        + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
-        + 'thead th:last-child { text-align: right; }'
-        + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
-        + 'tbody tr:last-child td { border-bottom: none; }'
-        + '@media print { html, body { height: auto; } }'
-        + '</style>'
-        + '</head><body>'
-        + '<div class="slip">'
-        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
-            + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
-            + '<div style="font-size:10.5pt;font-weight:800;margin-top:.8mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
-            + '<div style="font-size:6.5pt;opacity:.82;margin-top:.4mm;">DormEase Billing System</div>'
-        + '</div>'
-        + '<div class="slip-inner">'
-        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:4px;padding:2.5mm 3mm;margin-bottom:2.5mm;">'
-            + '<div style="font-size:10pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
-            + '<div style="font-size:6.5pt;color:#a0405e;margin-top:.8mm;display:flex;flex-direction:column;gap:.5mm;">'
-                + '<span>Account ID: <strong>' + (t.account_id || '\u2014') + '</strong></span>'
-                + '<span>Room: <strong>' + floorRoom + '</strong> &nbsp;&middot;&nbsp; ' + (t.stay_type || 'N/A') + '</span>'
-                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '\u2014') + '</strong></span>'
-            + '</div>'
-        + '</div>'
-        + (tenantBills.length > 0 ? '<div style="font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.8mm;padding-bottom:1.2mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
-        + (tenantBills.length > 0 ? '<table><thead><tr><th>Billing Period</th><th>Due Date</th><th>Amount</th></tr></thead><tbody>' + billRows + '</tbody></table>' : billRows)
-        + totalBlock
-        + signatureBlock
-        + '<div style="padding-top:2.5mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
-            + '<div style="font-size:5.5pt;color:#b06080;">Issued: ' + today + '</div>'
-            + '<div style="font-size:5.5pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
-        + '</div>'
-        + '</div>'
-        + '</div>'
-        + '<script>window.onload = function() { window.print(); };<\/script>'
-        + '</body></html>');
-    win.document.close();
+
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 4.5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    doc.setTextColor(muted[0], muted[1], muted[2]);
+    doc.text('Issued: ' + today, 6, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('DormEase', W - 6, y, { align: 'right' });
+
+    var safeName = (t.first_name + '-' + t.last_name).replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'bill-slip-' + safeName + '.pdf');
 }
 </script>
 @endsection

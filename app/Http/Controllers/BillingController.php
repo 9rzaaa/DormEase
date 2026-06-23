@@ -75,9 +75,9 @@ class BillingController extends Controller
             ->keyBy('tenant_id');
 
         $activeTenantIds = $allTenants->whereIn('status', ['active', 'pending'])->pluck('tenant_id');
-        $totalBill    = $billings->values()->unique('floor')->sum('total_floor_bill');
+        $totalBill    = number_format($billings->values()->unique('floor')->sum('total_floor_bill'), 2, '.', '');
         $totalTenants = $activeTenantIds->count();
-        $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count();
+        $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->whereIn('payment_status', ['unpaid', 'overdue'])->count();
         $overdueCount = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'overdue')->count();
         $billingGroups = [];
 
@@ -124,7 +124,7 @@ class BillingController extends Controller
                         'tenant_id'              => $tenant->tenant_id,
                         'name'                   => trim($tenant->first_name . ' ' . $tenant->last_name),
                         'is_temp_password'       => (bool) $tenant->is_temp_password,
-                        'room_share'             => $billing?->room_share ?? 0,
+                        'room_share'             => number_format($billing?->room_share ?? 0, 2, '.', ''),
                         'payment_status'         => $paymentStatus,
                         'proof_of_payment'       => $billing?->proof_of_payment,
                         'proof_of_payment_url'   => $billing?->proof_of_payment
@@ -153,10 +153,10 @@ class BillingController extends Controller
                     'floor'                => $floor,
                     'prev_reading'         => $floorBilling?->prev_reading ?? 0,
                     'curr_reading'         => $floorBilling?->curr_reading ?? 0,
-                    'floor_consumption_m3' => $floorBilling?->floor_consumption_m3 ?? 0,
+                    'floor_consumption_m3' => number_format($floorBilling?->floor_consumption_m3 ?? 0, 2, '.', ''),
                     'rooms_sharing'        => $floorBilling?->rooms_sharing ?? 0,
                     'occupants_in_room'    => collect($tenantRows)->where('payment_status', '!=', 'pending-tenant')->where('payment_status', '!=', 'inactive-tenant')->count(),
-                    'total_floor_bill'     => $floorBilling?->total_floor_bill ?? 0,
+                    'total_floor_bill'     => number_format($floorBilling?->total_floor_bill ?? 0, 2, '.', ''),
                     'due_date'             => $floorBilling?->due_date
                         ? Carbon::parse($floorBilling->due_date)->format('M d, Y')
                         : '—',
@@ -170,9 +170,9 @@ class BillingController extends Controller
                 'floor_consumption_m3' => $floorBilling
                     ? number_format($floorBilling->floor_consumption_m3 ?? 0, 2)
                     : '0.00',
-                'total_floor_bill'     => collect($rooms)->sum(
+                'total_floor_bill'     => number_format(collect($rooms)->sum(
                     fn($r) => collect($r['tenants'])->sum('room_share')
-                ),
+                ), 2, '.', ''),
                 'room_count'     => count($rooms),
                 'past_due_count' => $pastDue,
                 'due_date'       => $floorBilling?->due_date
@@ -181,6 +181,14 @@ class BillingController extends Controller
                 'rooms' => $rooms,
             ];
         }
+
+        $prevMonth = Carbon::parse($selectedMonth)->subMonth();
+        $lastMonthReadings = WaterBilling::whereYear('billing_month', $prevMonth->year)
+            ->whereMonth('billing_month', $prevMonth->month)
+            ->whereIn('floor', $activeFloors->all())
+            ->get()
+            ->groupBy('floor')
+            ->map(fn($rows) => (float) ($rows->first()->curr_reading ?? 0));
 
         return view('billing', compact(
             'billingGroups',
@@ -194,8 +202,28 @@ class BillingController extends Controller
             'selectedMonth',
             'selectedFloor',
             'activeFloors',
-            'unloggedFloors'
+            'unloggedFloors',
+            'lastMonthReadings'
         ));
+    }
+
+    public function poll(Request $request)
+    {
+        $selectedMonth = $request->get('month', now()->format('Y-m-01'));
+        $selectedFloor = $request->get('floor', '');
+
+        $billings = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
+            ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
+            ->when($selectedFloor !== '', fn($q) => $q->where('floor', $selectedFloor))
+            ->get(['billing_id', 'payment_status', 'updated_at']);
+
+        $signature = $billings->isEmpty()
+            ? '0'
+            : (string) $billings->count() . '-' . (string) $billings->max('updated_at');
+
+        return response()->json([
+            'signature' => $signature,
+        ]);
     }
 
     public function log(Request $request)
@@ -216,7 +244,7 @@ class BillingController extends Controller
                 'floor_readings'         => 'required|array|min:1',
                 'floor_readings.*.floor' => 'required|integer|min:1|distinct',
                 'floor_readings.*.prev'  => 'required|numeric|min:0',
-                'floor_readings.*.curr'  => 'required|numeric|min:0',
+                'floor_readings.*.curr'  => 'required|numeric|min:0|gte:floor_readings.*.prev',
             ]);
 
             $billingMonthDate = Carbon::parse($request->billing_month)->startOfMonth();
@@ -235,7 +263,7 @@ class BillingController extends Controller
 
                 $rate = WaterRate::updateOrCreate(
                     ['effective_month' => $billingMonthDate->format('Y-m-01')],
-                    ['rate_per_m3'     => round($ratePerM3, 4)]
+                    ['rate_per_m3'     => round($ratePerM3, 2)]
                 );
 
                 $tenantsByFloor = Tenant::whereIn('status', ['active', 'pending'])
@@ -261,7 +289,7 @@ class BillingController extends Controller
                     }
 
                     $consumption    = max(0, $curr - $prev);
-                    $totalFloorBill = round($consumption * $ratePerM3, 2);
+                    $totalFloorBill = round($consumption * round($ratePerM3, 2), 2);
                     $tenants        = $tenantsByFloor->get($floor, collect());
 
                     if ($tenants->isEmpty()) {
@@ -372,7 +400,7 @@ class BillingController extends Controller
         $ratePerM3 = $rate?->rate_per_m3 ?? 0;
 
         $consumption = max(0, $request->curr_reading - $request->prev_reading);
-        $total       = round($consumption * $ratePerM3, 2);
+        $total       = round($consumption * round($ratePerM3, 2), 2);
 
         $count = WaterBilling::where('floor', $billing->floor)
             ->whereYear('billing_month', Carbon::parse($billing->billing_month)->year)
@@ -397,10 +425,11 @@ class BillingController extends Controller
             foreach ($request->status_updates as $statusUpdate) {
                 $billingToUpdate = WaterBilling::findOrFail($statusUpdate['billing_id']);
 
-                if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment)) {
+                if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment) && !$request->boolean('force_paid_without_proof')) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Proof of payment is required before marking a tenant as paid.'
+                        'message' => 'Proof of payment is required before marking a tenant as paid.',
+                        'requires_proof_confirmation' => true,
                     ], 422);
                 }
 
@@ -456,10 +485,11 @@ class BillingController extends Controller
                 }
             }
         } else {
-            if ($request->payment_status === 'paid' && empty($billing->proof_of_payment)) {
+            if ($request->payment_status === 'paid' && empty($billing->proof_of_payment) && !$request->boolean('force_paid_without_proof')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Proof of payment is required before marking a tenant as paid.'
+                    'message' => 'Proof of payment is required before marking a tenant as paid.',
+                    'requires_proof_confirmation' => true,
                 ], 422);
             }
 

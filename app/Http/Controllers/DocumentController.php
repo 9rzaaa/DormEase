@@ -66,16 +66,9 @@ class DocumentController extends Controller
             'file'          => [
                 'nullable',
                 'file',
+                'mimes:pdf,doc,docx,xls,xlsx',
                 'min:1',
                 'max:20480',
-                function ($attribute, $value, $fail) {
-                    if ($value) {
-                        $ext = strtolower($value->getClientOriginalExtension());
-                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
-                        }
-                    }
-                },
             ],
         ]);
 
@@ -273,16 +266,9 @@ class DocumentController extends Controller
                 'fulfilled_file'      => [
                     'nullable',
                     'file',
+                    'mimes:pdf,doc,docx,xls,xlsx',
                     'min:1',
                     'max:20480',
-                    function ($attribute, $value, $fail) {
-                        if ($value) {
-                            $ext = strtolower($value->getClientOriginalExtension());
-                            if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                                $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
-                            }
-                        }
-                    },
                 ],
             ]);
 
@@ -367,14 +353,9 @@ class DocumentController extends Controller
                 'file'  => [
                     'required',
                     'file',
+                    'mimes:pdf,doc,docx,xls,xlsx',
                     'min:1',
                     'max:20480',
-                    function ($attribute, $value, $fail) {
-                        $ext = strtolower($value->getClientOriginalExtension());
-                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
-                        }
-                    },
                 ],
             ]);
 

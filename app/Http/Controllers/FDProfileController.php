@@ -17,17 +17,24 @@ class FDProfileController extends Controller
     public function updateInfo(Request $request)
     {
         $staff = auth('staff')->user();
+        if ($request->filled('contact_number')) {
+            $request->merge([
+                'contact_number' => preg_replace('/\D/', '', $request->contact_number),
+            ]);
+        }
         $request->validate([
             'first_name'     => 'required|string|max:255',
             'last_name'      => 'required|string|max:255',
             'email'          => 'required|email|max:255|unique:staff,email,' . $staff->staff_id . ',staff_id',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ['nullable', 'regex:/^09\d{9}$/'],
+        ], [
+            'contact_number.regex' => 'Contact number must be 11 digits and start with 09.',
         ]);
         $staff->update([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
             'email'          => $request->email,
-            'contact_number' => $request->contact_number,
+            'contact_number' => $request->contact_number ? preg_replace('/\D/', '', $request->contact_number) : null,
         ]);
         return back()->with('success', 'Profile updated successfully.');
     }
@@ -56,7 +63,7 @@ class FDProfileController extends Controller
     {
         $staff = auth('staff')->user();
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
         $file     = $request->file('avatar');
         $mime     = $file->getMimeType();

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'dormhead'               => \App\Http\Middleware\DormHeadOnly::class,
+            'staffrole'              => \App\Http\Middleware\EnsureStaffRole::class,
             'tenant.active'          => \App\Http\Middleware\CheckTenantActive::class,
             'tenant.not_on_vacation' => \App\Http\Middleware\CheckNotOnVacation::class,
         ]);

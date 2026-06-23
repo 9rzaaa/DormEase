@@ -723,7 +723,7 @@
     .amf-input-wrap .amf-select-display.invalid { border-color: var(--red) !important; background: #fff5f5 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.07) !important; }
 
     .amf-hint { font-size: .72rem; color: var(--ink-muted); line-height: 1.4; }
-    .amf-error { font-size: .72rem; color: var(--red); font-weight: 600; line-height: 1.4; display: none; }
+    .amf-error { font-size: .72rem; color: var(--red); font-weight: 600; line-height: 1.4; display: none; margin-top: .2rem; }
     .amf-error.show { display: block; }
 
     .amf-status-icon {
@@ -1119,16 +1119,16 @@
                                 type="text"
                                 id="av_contact_no"
                                 name="contact_no"
-                                placeholder="e.g. 09123456789"
-                                maxlength="15"
+                                placeholder="e.g. 0912-345-6789"
+                                maxlength="13"
                                 autocomplete="off"
                                 value="{{ old('contact_no') }}"
-                                oninput="avValidateContact(this)"
+                                oninput="avFormatContact(this)"
                                 onblur="avValidateContact(this, true)"
                             >
                         </div>
-                        <div class="amf-error" id="av_contact_err">Enter a valid PH number (e.g. 09XXXXXXXXX or +639XXXXXXXXX).</div>
-                        <div class="amf-hint">Optional — for emergency contact</div>
+                        <div class="amf-error" id="av_contact_err">Enter a valid PH mobile number (e.g. 0912-345-6789).</div>
+                        <div class="amf-hint">Optional, for emergency contact</div>
                     </div>
 
                     <div class="amf">
@@ -1228,7 +1228,7 @@
                                 onblur="avValidateArrival(this, true)"
                             >
                         </div>
-                        <div class="amf-error" id="av_arrival_err">Time in cannot be set in the future.</div>
+                        <div class="amf-error" id="av_arrival_err">Time in cannot be set in the future or more than 12 hours in the past.</div>
                         <div class="amf-hint">Status will automatically be set to "Inside" upon logging.</div>
                     </div>
 
@@ -1261,12 +1261,13 @@
             @method('PUT')
             <div class="modal-field">
                 <label>Time In</label>
-                <input type="datetime-local" name="arrival_time" id="timein-input" required>
+                <input type="datetime-local" name="arrival_time" id="timein-input" required oninput="validateTimeinInput(this)" onblur="validateTimeinInput(this)">
                 <div class="hint">Status will automatically change to "Inside"</div>
+                <div id="timein-input-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.2rem;display:none;">Time in cannot be set in the future or more than 12 hours in the past.</div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('timein-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Confirm Time In</button>
+                <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
             </div>
         </form>
     </div>
@@ -2057,15 +2058,28 @@
         return valid && trimmed.length > 0;
     }
 
+    function avFormatContact(input) {
+        var raw = input.value.replace(/\D/g, '');
+        if (raw.length > 11) raw = raw.slice(0, 11);
+        var formatted = raw;
+        if (raw.length > 7) {
+            formatted = raw.slice(0, 4) + '-' + raw.slice(4, 7) + '-' + raw.slice(7);
+        } else if (raw.length > 4) {
+            formatted = raw.slice(0, 4) + '-' + raw.slice(4);
+        }
+        input.value = formatted;
+        avValidateContact(input, false);
+    }
+
     function avValidateContact(input, strict) {
-        var v = input.value.trim();
-        if (!v) {
+        var raw = input.value.replace(/\D/g, '');
+        if (!raw) {
             avSetFieldState(input, '');
             avShowErr('av_contact_err', false);
             return true;
         }
-        var valid = /^(09|\+?639)\d{9}$/.test(v.replace(/[\s\-]/g, ''));
-        if (strict || v.length > 3) {
+        var valid = /^09\d{9}$/.test(raw);
+        if (strict || raw.length > 3) {
             avSetFieldState(input, valid ? 'valid' : 'invalid');
             avShowErr('av_contact_err', !valid);
         }
@@ -2113,7 +2127,8 @@
             if (strict) { avSetFieldState(input, 'invalid'); avShowErr('av_arrival_err', true); }
             return false;
         }
-        var valid = sel <= now;
+        var twelveHrsAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+        var valid = sel <= now && sel >= twelveHrsAgo;
         avSetFieldState(input, valid ? 'valid' : 'invalid');
         avShowErr('av_arrival_err', !valid);
         return valid;
@@ -2311,6 +2326,69 @@
 
     filtered = visitors.slice();
     renderTable();
+    (function () {
+        var _pollSignature = null;
+        var _pollInterval  = null;
+        var _pollPaused    = false;
+        var _pollUrl       = '{{ route("visitors.poll") }}';
+
+        function isUserBusy() {
+            var activeTag = document.activeElement ? document.activeElement.tagName : '';
+            var isTyping  = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT';
+
+            var modals = [
+                document.getElementById('add-modal'),
+                document.getElementById('timein-modal'),
+                document.getElementById('timeout-modal'),
+                document.getElementById('status-modal'),
+                document.getElementById('visitorDetailModal'),
+                document.getElementById('photoLightbox'),
+            ];
+            var isModalOpen = modals.some(function (m) {
+                if (!m) return false;
+                var display = window.getComputedStyle(m).display;
+                return display !== 'none';
+            });
+
+            var isDrawerOpen = document.getElementById('archive-drawer') &&
+                document.getElementById('archive-drawer').classList.contains('open');
+
+            return isTyping || isModalOpen || isDrawerOpen;
+        }
+
+        function doPoll() {
+            if (_pollPaused) return;
+            fetch(_pollUrl, { credentials: 'same-origin' })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (_pollSignature === null) {
+                        _pollSignature = data.signature;
+                        return;
+                    }
+                    if (data.signature !== _pollSignature) {
+                        _pollSignature = data.signature;
+                        if (!isUserBusy()) {
+                            window.location.reload();
+                        } else {
+                            var _retryTimer = setInterval(function () {
+                                if (!isUserBusy()) {
+                                    clearInterval(_retryTimer);
+                                    window.location.reload();
+                                }
+                            }, 2000);
+                        }
+                    }
+                })
+                .catch(function () {});
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            _pollPaused = document.hidden;
+        });
+
+        _pollInterval = setInterval(doPoll, 15000);
+        doPoll();
+    })();
 
     (function() {
         var popup = document.getElementById('fd-visitor-legend-popup');
@@ -2348,5 +2426,45 @@
             hideTimer = setTimeout(function() { popup.style.display = 'none'; }, 150);
         });
     })();
+
+    function validateTimeinInput(input) {
+        var v   = input.value;
+        var now = new Date();
+        var sel = v ? new Date(v) : null;
+        var errEl = document.getElementById('timein-input-err');
+        var btn   = document.getElementById('timein-submit-btn');
+        if (!v || !sel) {
+            if (errEl) errEl.style.display = 'none';
+            if (btn)   btn.disabled = false;
+            return;
+        }
+        var twelveHrsAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+        var valid = sel <= now && sel >= twelveHrsAgo;
+        if (errEl) errEl.style.display = valid ? 'none' : 'block';
+        if (btn)   btn.disabled = !valid;
+        if (!valid) {
+            input.style.borderColor = 'var(--red)';
+        } else {
+            input.style.borderColor = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var timeinForm = document.getElementById('timein-form');
+        if (timeinForm) {
+            timeinForm.addEventListener('submit', function(e) {
+                var input = document.getElementById('timein-input');
+                var v     = input ? input.value : '';
+                var now   = new Date();
+                var sel   = v ? new Date(v) : null;
+                if (!sel) { e.preventDefault(); return; }
+                var twelveHrsAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+                if (sel > now || sel < twelveHrsAgo) {
+                    e.preventDefault();
+                    validateTimeinInput(input);
+                }
+            });
+        }
+    });
 </script>
 @endsection

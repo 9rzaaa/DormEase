@@ -538,8 +538,8 @@
             <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" id="avatar-form">
                 @csrf
                 @method('PUT')
-                <input type="file" name="avatar" id="avatar-input" accept="image/*" style="display:none;">
-                <div class="hero-avatar-wrap" onclick="document.getElementById('avatar-input').click()">
+                <input type="file" name="avatar" id="avatar-input" accept="image/jpeg,image/png" style="display:none;">
+                <div class="hero-avatar-wrap" onclick="openAvatarModal()">
                     <div class="hero-avatar">
                         @if($staff->profile_picture)
                             <img src="{{ $staff->profile_picture }}" class="avatar-photo" id="avatar-preview">
@@ -589,27 +589,29 @@
                         <div class="field-grid">
                             <div class="form-field">
                                 <label>First Name</label>
-                                <input type="text" name="first_name"
+                                <input type="text" name="first_name" id="info-fn"
                                     value="{{ old('first_name', $staff->first_name) }}"
-                                    required oninput="updateDisplayName()">
+                                    required oninput="updateDisplayName(); clearFieldError(this)">
                             </div>
                             <div class="form-field">
                                 <label>Last Name</label>
-                                <input type="text" name="last_name"
+                                <input type="text" name="last_name" id="info-ln"
                                     value="{{ old('last_name', $staff->last_name) }}"
-                                    required oninput="updateDisplayName()">
+                                    required oninput="updateDisplayName(); clearFieldError(this)">
                             </div>
                             <div class="form-field full">
                                 <label>Email Address</label>
-                                <input type="email" name="email"
-                                    value="{{ old('email', $staff->email) }}" required>
+                                <input type="email" name="email" id="info-em"
+                                    value="{{ old('email', $staff->email) }}" required
+                                    oninput="clearFieldError(this)">
                             </div>
                             <div class="form-field full">
                                 <label>Contact Number</label>
-                                <input type="text" name="contact_number"
+                                <input type="text" name="contact_number" id="info-ct"
                                     value="{{ old('contact_number', $staff->contact_number) }}"
-                                    placeholder="09XXXXXXXXX"
-                                    maxlength="11">
+                                    placeholder="e.g. 0912-345-6789"
+                                    maxlength="13"
+                                    oninput="formatContactNumber(this); clearFieldError(this)">
                                 @error('contact_number')
                                     <span style="font-size:.7rem; color:#e8175d; margin-top:.2rem; display:block;">{{ $message }}</span>
                                 @enderror
@@ -626,8 +628,8 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-ghost" onclick="document.getElementById('info-form').reset(); updateDisplayName();">Reset</button>
-                        <button type="submit" class="btn-save">
+                        <button type="button" class="btn-ghost" onclick="document.getElementById('info-form').reset(); setTimeout(updateDisplayName, 0);">Reset</button>
+                        <button type="submit" class="btn-save" onclick="if(!validateInfoForm()){event.preventDefault();}">
                             <img src="{{ asset('icons/export.png') }}" alt="">
                             Save Changes
                         </button>
@@ -687,18 +689,20 @@
                                 <label>Confirm New Password</label>
                                 <div class="input-wrap">
                                     <input type="password" name="password_confirmation" id="conf-pw"
-                                        placeholder="Repeat new password" required autocomplete="new-password">
+                                        placeholder="Repeat new password" required autocomplete="new-password"
+                                        oninput="checkConfirm()">
                                     <button type="button" class="toggle-pw" onclick="togglePw('conf-pw', this)">
                                         <img src="{{ asset('icons/eye.png') }}" alt="Show">
                                     </button>
                                 </div>
+                                <div id="conf-pw-match" style="font-size:.69rem;margin-top:.2rem;display:none;"></div>
                             </div>
                         </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-ghost"
-                            onclick="document.getElementById('pw-form').reset(); resetStrength();">Reset</button>
-                        <button type="submit" class="btn-save">
+                            onclick="document.getElementById('pw-form').reset(); resetStrength(); document.getElementById('conf-pw-match').style.display='none'; document.getElementById('conf-pw').style.borderColor=''; document.getElementById('new-pw').style.borderColor='';">Reset</button>
+                        <button type="submit" class="btn-save" onclick="if(!validatePasswordForm()){event.preventDefault();}">
                             <img src="{{ asset('icons/nav-settings.png') }}" alt="">
                             Update Password
                         </button>
@@ -713,6 +717,57 @@
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="avatar-modal" style="position:fixed;inset:0;background:rgba(26,26,46,.45);backdrop-filter:blur(4px);z-index:400;display:none;align-items:center;justify-content:center;">
+    <div style="background:var(--white);border-radius:20px;padding:2rem;width:90%;max-width:420px;box-shadow:0 24px 64px rgba(232,23,93,.18);animation:fdFadeUp .3s ease;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.3rem;">
+            <div>
+                <div style="font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.01em;">Update Profile Photo</div>
+                <div style="font-size:.73rem;color:var(--ink-muted);margin-top:.18rem;">Choose a photo to represent you</div>
+            </div>
+            <button onclick="closeAvatarModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-muted);line-height:1;transition:color .2s;" onmouseenter="this.style.color='#e8175d'" onmouseleave="this.style.color=''">&#x2715;</button>
+        </div>
+
+        <div id="avatar-drop-zone" style="border:2px dashed var(--pink-200);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--pink-50);margin-bottom:1rem;" onclick="document.getElementById('avatar-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--bright-pink)';this.style.background='#fff0f6';" ondragleave="this.style.borderColor='';this.style.background='var(--pink-50)';" ondrop="handleAvatarDrop(event)">
+            <div id="avatar-modal-preview-wrap" style="display:none;margin-bottom:.85rem;">
+                <img id="avatar-modal-preview" src="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--bright-pink);box-shadow:0 4px 14px rgba(232,23,93,.22);">
+            </div>
+            <div id="avatar-drop-icon" style="margin-bottom:.65rem;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ffb3d0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div id="avatar-drop-label" style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;">Click to upload or drag and drop</div>
+            <div style="font-size:.7rem;color:var(--ink-muted);">JPG, PNG</div>
+        </div>
+
+        <div style="background:var(--pink-50);border:1.5px solid var(--pink-200);border-radius:11px;padding:.8rem 1rem;margin-bottom:1.2rem;">
+            <div style="font-size:.7rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.45rem;">Requirements</div>
+            <div style="display:flex;flex-direction:column;gap:.28rem;">
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--ink-muted);font-weight:500;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:var(--bright-pink);flex-shrink:0;display:inline-block;"></span>
+                        Accepted formats: JPG, PNG
+                    </div>
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--ink-muted);font-weight:500;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:var(--bright-pink);flex-shrink:0;display:inline-block;"></span>
+                    Maximum file size: <strong style="color:var(--ink);">2 MB</strong>
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--ink-muted);font-weight:500;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:var(--bright-pink);flex-shrink:0;display:inline-block;"></span>
+                    Recommended size: <strong style="color:var(--ink);">at least 200 x 200 px</strong>
+                </div>
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.73rem;color:var(--ink-muted);font-weight:500;">
+                    <span style="width:5px;height:5px;border-radius:50%;background:var(--bright-pink);flex-shrink:0;display:inline-block;"></span>
+                    Square photos look best
+                </div>
+            </div>
+        </div>
+
+        <div id="avatar-file-error" style="display:none;font-size:.75rem;color:#e8175d;background:#fff0f3;border:1px solid #fbbdd1;border-radius:8px;padding:.5rem .75rem;margin-bottom:.9rem;"></div>
+
+        <div style="display:flex;gap:.6rem;justify-content:flex-end;">
+            <button type="button" onclick="closeAvatarModal()" style="padding:.48rem 1rem;border-radius:9px;border:1.5px solid var(--pink-200);background:none;font-family:var(--ff-body);font-size:.82rem;font-weight:600;color:var(--ink-muted);cursor:pointer;transition:border-color .2s,color .2s;" onmouseenter="this.style.borderColor='var(--bright-pink)';this.style.color='var(--bright-pink)'" onmouseleave="this.style.borderColor='';this.style.color=''">Cancel</button>
+            <button type="button" id="avatar-upload-btn" onclick="submitAvatar()" disabled style="padding:.48rem 1.2rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--bright-pink),var(--hot-pink));color:var(--white);font-family:var(--ff-body);font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(255,45,120,.25);transition:opacity .2s;opacity:.45;">Upload Photo</button>
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -747,35 +802,186 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('form[data-loading-message]').forEach(form => {
-            form.addEventListener('submit', function () {
+            form.addEventListener('submit', function (e) {
+                if (e.defaultPrevented) return;
                 setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
             });
         });
     });
 
-    document.getElementById('avatar-input').addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) return;
+    function openAvatarModal() {
+        document.getElementById('avatar-modal').style.display = 'flex';
+        document.getElementById('avatar-file-error').style.display = 'none';
+        document.getElementById('avatar-upload-btn').disabled = true;
+        document.getElementById('avatar-upload-btn').style.opacity = '.45';
+        document.getElementById('avatar-modal-preview-wrap').style.display = 'none';
+        document.getElementById('avatar-drop-icon').style.display = 'block';
+        document.getElementById('avatar-drop-label').textContent = 'Click to upload or drag and drop';
+        document.getElementById('avatar-input').value = '';
+    }
 
-        const preview  = document.getElementById('avatar-preview');
-        const initials = document.getElementById('avatar-initials');
+    function closeAvatarModal() {
+        document.getElementById('avatar-modal').style.display = 'none';
+        document.getElementById('avatar-input').value = '';
+    }
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            if (initials) initials.style.display = 'none';
+    document.getElementById('avatar-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeAvatarModal();
+    });
+
+    function handleAvatarFile(file) {
+        var errEl = document.getElementById('avatar-file-error');
+        var btn   = document.getElementById('avatar-upload-btn');
+        errEl.style.display = 'none';
+
+        var allowed = ['image/jpeg','image/png','image/jpg'];
+        if (!allowed.includes(file.type)) {
+            errEl.textContent = 'Only JPG and PNG files are allowed.';
+            errEl.style.display = 'block';
+            btn.disabled = true;
+            btn.style.opacity = '.45';
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            errEl.textContent = 'File size must not exceed 2MB.';
+            errEl.style.display = 'block';
+            btn.disabled = true;
+            btn.style.opacity = '.45';
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var prev = document.getElementById('avatar-modal-preview');
+            prev.src = e.target.result;
+            document.getElementById('avatar-modal-preview-wrap').style.display = 'block';
+            document.getElementById('avatar-drop-icon').style.display = 'none';
+            document.getElementById('avatar-drop-label').textContent = file.name;
         };
         reader.readAsDataURL(file);
 
-        showActionLoading('Uploading photo...');
-        document.getElementById('avatar-form').submit();
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+
+    function handleAvatarDrop(event) {
+        event.preventDefault();
+        var zone = document.getElementById('avatar-drop-zone');
+        zone.style.borderColor = '';
+        zone.style.background  = 'var(--pink-50)';
+        var file = event.dataTransfer.files[0];
+        if (!file) return;
+        var dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('avatar-input').files = dt.files;
+        handleAvatarFile(file);
+    }
+
+    document.getElementById('avatar-input').addEventListener('change', function() {
+        if (!this.files[0]) return;
+        handleAvatarFile(this.files[0]);
     });
 
+    function submitAvatar() {
+        var preview  = document.getElementById('avatar-preview');
+        var initials = document.getElementById('avatar-initials');
+        var modalPrev = document.getElementById('avatar-modal-preview');
+        preview.src = modalPrev.src;
+        preview.style.display = 'block';
+        if (initials) initials.style.display = 'none';
+        closeAvatarModal();
+        showActionLoading('Uploading photo...');
+        document.getElementById('avatar-form').submit();
+    }
+
     function updateDisplayName() {
-        const fn = document.querySelector('[name="first_name"]').value;
-        const ln = document.querySelector('[name="last_name"]').value;
-        document.getElementById('hero-display-name').textContent = fn + ' ' + ln;
+        const form = document.getElementById('info-form');
+        const fn = form.querySelector('[name="first_name"]').value;
+        const ln = form.querySelector('[name="last_name"]').value;
+        document.getElementById('hero-display-name').textContent = (fn + ' ' + ln).trim() || 'Your Name';
+    }
+
+    function formatContactNumber(input) {
+        var digits = input.value.replace(/\D/g, '').slice(0, 11);
+        var formatted = digits;
+        if (digits.length > 4 && digits.length <= 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        } else if (digits.length > 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+        }
+        input.value = formatted;
+    }
+
+    function showFieldError(input, msg) {
+        input.style.borderColor = '#e8175d';
+        var errId = input.id + '-err';
+        var existing = document.getElementById(errId);
+        if (!existing) {
+            var el = document.createElement('div');
+            el.id = errId;
+            el.style.cssText = 'font-size:.69rem;color:#e8175d;margin-top:.2rem;';
+            input.parentNode.insertBefore(el, input.nextSibling);
+        }
+        document.getElementById(errId).textContent = msg;
+    }
+
+    function clearFieldError(input) {
+        input.style.borderColor = '';
+        var el = document.getElementById(input.id + '-err');
+        if (el) el.textContent = '';
+    }
+
+    function validateInfoForm() {
+        var ok = true;
+        var form = document.getElementById('info-form');
+        var fn = form.querySelector('[name="first_name"]');
+        var ln = form.querySelector('[name="last_name"]');
+        var em = form.querySelector('[name="email"]');
+        var ct = form.querySelector('[name="contact_number"]');
+
+        if (!fn.value.trim()) { showFieldError(fn, 'First name is required.'); ok = false; } else clearFieldError(fn);
+        if (!ln.value.trim()) { showFieldError(ln, 'Last name is required.');  ok = false; } else clearFieldError(ln);
+
+        var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim());
+        if (!em.value.trim()) { showFieldError(em, 'Email is required.'); ok = false; }
+        else if (!emailOk)    { showFieldError(em, 'Enter a valid email address.'); ok = false; }
+        else clearFieldError(em);
+
+        var digits = ct.value.replace(/\D/g, '');
+        if (digits.length > 0 && digits.length < 11) {
+            showFieldError(ct, 'Enter a valid 11-digit phone number.');
+            ok = false;
+        } else if (digits.length > 0 && !digits.startsWith('09')) {
+            showFieldError(ct, 'Contact number must start with 09.');
+            ok = false;
+        } else {
+            clearFieldError(ct);
+        }
+        return ok;
+    }
+
+    function validatePasswordForm() {
+        var ok = true;
+        var cur  = document.getElementById('cur-pw');
+        var npw  = document.getElementById('new-pw');
+        var conf = document.getElementById('conf-pw');
+
+        if (!cur.value) { showFieldError(cur, 'Current password is required.'); ok = false; } else clearFieldError(cur);
+        if (!npw.value) { showFieldError(npw, 'New password is required.'); ok = false; }
+        else if (npw.value.length < 8) { showFieldError(npw, 'Password must be at least 8 characters.'); ok = false; }
+        else clearFieldError(npw);
+
+        if (conf.value && npw.value && conf.value !== npw.value) {
+            showFieldError(conf, 'Passwords do not match.');
+            ok = false;
+        } else if (!conf.value) {
+            showFieldError(conf, 'Please confirm your new password.');
+            ok = false;
+        } else {
+            clearFieldError(conf);
+        }
+        return ok;
     }
 
     function togglePw(inputId, btn) {
@@ -817,10 +1023,32 @@
         toggle('preq-special', /[^A-Za-z0-9]/.test(val));
     }
 
+    function checkConfirm() {
+        var npw  = document.getElementById('new-pw').value;
+        var conf = document.getElementById('conf-pw').value;
+        var el   = document.getElementById('conf-pw-match');
+        if (!conf) { el.style.display = 'none'; return; }
+        el.style.display = 'block';
+        if (conf === npw) {
+            el.textContent  = 'Passwords match.';
+            el.style.color  = '#16a34a';
+            document.getElementById('conf-pw').style.borderColor = '#16a34a';
+        } else {
+            el.textContent  = 'Passwords do not match.';
+            el.style.color  = '#e8175d';
+            document.getElementById('conf-pw').style.borderColor = '#e8175d';
+        }
+    }
+
     function resetStrength() {
         document.getElementById('strength-fill').style.width = '0%';
         document.getElementById('strength-label').textContent = '';
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var ct = document.getElementById('info-ct');
+        if (ct && ct.value) formatContactNumber(ct);
+    });
 
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => showToast('{{ session("success") }}', 'success'));

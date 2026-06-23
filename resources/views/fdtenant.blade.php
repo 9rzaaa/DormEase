@@ -243,6 +243,127 @@ tbody tr:hover { background: var(--soft-bg); }
     50%       { box-shadow: 0 0 0 5px rgba(31,157,105,.3); }
 }
 
+.name-cell {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+}
+
+.name-cell-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.row-avatar-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--hot-pink) 0%, var(--bright-pink) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(232,23,93,.2);
+}
+
+.row-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.row-avatar-initials {
+    font-size: .7rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: .02em;
+}
+
+.status-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.status-legend-wrap img {
+    display: block;
+    opacity: .75;
+    transition: opacity .2s;
+}
+
+.status-legend-wrap:hover img {
+    opacity: 1;
+}
+
+.status-legend-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--pink-100);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+    padding: .75rem .9rem;
+    min-width: 280px;
+    z-index: 600;
+    pointer-events: none;
+}
+
+.status-legend-wrap:hover .status-legend-popup,
+.status-legend-popup.open {
+    display: block;
+}
+
+.slp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal);
+}
+
+.slp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100);
+}
+
+.slp-row:last-child {
+    border-bottom: none;
+}
+
+.slp-row .badge,
+.slp-row .inside-indicator {
+    flex-shrink: 0;
+    width: 88px;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.slp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .15rem;
+}
+
+@media (max-width: 680px) {
+    .status-legend-popup { right: 0; }
+}
+
 .btn-timein {
     display: inline-flex; align-items: center; gap: .3rem;
     padding: .3rem .7rem; border-radius: 8px;
@@ -849,6 +970,126 @@ tbody tr:hover { background: var(--soft-bg); }
 
 .td-modal-close:hover { background: rgba(255,255,255,.28); }
 
+.td-modal-hero-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.td-modal-avatar-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+    background: rgba(255,255,255,.18);
+    border: 2.5px solid rgba(255,255,255,.55);
+    box-shadow: 0 6px 18px rgba(0,0,0,.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .18s, box-shadow .18s;
+}
+
+.td-modal-avatar-wrap.is-clickable {
+    cursor: pointer;
+}
+
+.td-modal-avatar-wrap.is-clickable:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+}
+
+.td-modal-avatar-zoom-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0);
+    opacity: 0;
+    transition: opacity .18s, background .18s;
+    pointer-events: none;
+}
+
+.td-modal-avatar-wrap.is-clickable:hover .td-modal-avatar-zoom-hint {
+    opacity: 1;
+    background: rgba(20,0,10,.34);
+}
+
+.photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20,0,10,.82);
+    backdrop-filter: blur(6px);
+    padding: 2rem;
+}
+
+.photo-lightbox.open {
+    display: flex;
+}
+
+.photo-lightbox-img {
+    max-width: min(80vw, 480px);
+    max-height: 80vh;
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.4);
+    animation: photoLightboxIn .25s cubic-bezier(.22,1,.36,1);
+}
+
+@keyframes photoLightboxIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.photo-lightbox-close {
+    position: fixed;
+    top: 1.6rem;
+    right: 1.8rem;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
+    color: var(--white);
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s;
+}
+
+.photo-lightbox-close:hover {
+    background: rgba(255,255,255,.25);
+}
+
+.td-modal-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.td-modal-avatar-initials {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: .02em;
+}
+
+.td-modal-hero-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .td-modal-name {
     font-size: 1.2rem;
     font-weight: 800;
@@ -1125,6 +1366,7 @@ tbody tr:hover { background: var(--soft-bg); }
     font-size: .8rem; font-weight: 800; color: var(--white);
     flex-shrink: 0;
     letter-spacing: -.01em;
+    overflow: hidden;
 }
 
 .quick-result-avatar.avatar-inside {
@@ -1480,6 +1722,19 @@ tbody tr:hover { background: var(--soft-bg); }
                     <option value="inside">Inside</option>
                     <option value="outside">Outside</option>
                 </select>
+                <div class="status-legend-wrap" id="status-legend-trigger">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);">
+                    <div class="status-legend-popup" id="status-legend-popup">
+                        <div class="slp-title">Status Guide</div>
+                        <div class="slp-row"><span class="badge badge-active">Active</span><span class="slp-desc">Tenant is fully active and can log in to the portal.</span></div>
+                        <div class="slp-row"><span class="badge badge-pending">Pending</span><span class="slp-desc">Tenant has moved in and has credentials, but hasn't logged in yet.</span></div>
+                        <div class="slp-row"><span class="badge badge-reserved">Reserved</span><span class="slp-desc">Room is held for this tenant. They appear in the Reserved Tenants table below.</span></div>
+                        <div class="slp-row"><span class="badge" style="background:#FFF3CD;color:#856404;border:1px solid #FFEBAA;">On Vacation</span><span class="slp-desc">Tenant is temporarily away from the dorm but their account stays active.</span></div>
+                        <div class="slp-title" style="margin-top:.6rem;">Location Guide</div>
+                        <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-inside"></span><span style="color:#1f9d69;">Inside</span></span><span class="slp-desc">Tenant has timed in and is currently inside the dormitory.</span></div>
+                        <div class="slp-row"><span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span><span class="slp-desc">Tenant has timed out, or hasn't timed in yet today.</span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1490,7 +1745,7 @@ tbody tr:hover { background: var(--soft-bg); }
                         <th>Tenant Name</th>
                         <th>Floor No.</th>
                         <th>Room No.</th>
-                        <th>Contact No.</th>
+                        <th class="th-center">Contact No.</th>
                         <th class="th-center">Status</th>
                         <th class="th-center">Location</th>
                         <th>Notes</th>
@@ -1551,7 +1806,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <th>Tenant Name</th>
                             <th>Floor No.</th>
                             <th>Room No.</th>
-                            <th>Contact No.</th>
+                            <th class="th-center">Contact No.</th>
                             <th class="th-center">Status</th>
                             <th>Notes</th>
                             <th class="th-center">Action</th>
@@ -1685,14 +1940,24 @@ tbody tr:hover { background: var(--soft-bg); }
     <div class="td-modal-card">
         <div class="td-modal-hero">
             <button class="td-modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
-            <div class="td-modal-name" id="td-modal-name">—</div>
-            <div class="td-modal-meta" id="td-modal-meta"></div>
+            <div class="td-modal-hero-inner">
+                <div class="td-modal-avatar-wrap" id="td-modal-avatar-wrap"></div>
+                <div class="td-modal-hero-text">
+                    <div class="td-modal-name" id="td-modal-name"></div>
+                    <div class="td-modal-meta" id="td-modal-meta"></div>
+                </div>
+            </div>
         </div>
         <div class="td-modal-body" id="td-modal-body"></div>
         <div class="td-modal-footer">
             <button class="td-modal-close-btn" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
+</div>
+
+<div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
+    <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
+    <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
 </div>
 
 <div class="modal-overlay" id="notes-modal">
@@ -1707,7 +1972,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </p>
             <div class="modal-field">
                 <label>Note</label>
-                <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..."></textarea>
+                <textarea id="notes-input" placeholder="e.g. Expecting visitor this weekend..." maxlength="1000"></textarea>
             </div>
         </div>
         <div class="modal-actions">
@@ -1755,6 +2020,18 @@ function hideActionLoading() {
     var overlay = document.getElementById('action-loading');
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
+}
+
+function normalizeContactDisplay(raw) {
+    if (!raw) return '\u2014';
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 12 && digits.substring(0, 2) === '63') {
+        digits = '0' + digits.substring(2);
+    }
+    if (digits.length === 11 && digits.substring(0, 2) === '09') {
+        return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+    }
+    return raw;
 }
 
 function escapeHtml(str) {
@@ -1809,6 +2086,33 @@ function insideIndicator(isInside) {
     return '<span class="inside-indicator"><span class="inside-dot dot-outside"></span><span style="color:var(--ink-muted);">Outside</span></span>';
 }
 
+function tenantInitials(t) {
+    return (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+}
+
+function rowAvatarHtml(t) {
+    if (t.tenant_photo) {
+        return '<img src="/storage/' + t.tenant_photo + '" alt="">';
+    }
+    return '<span class="row-avatar-initials">' + tenantInitials(t) + '</span>';
+}
+
+function buildNameCell(t) {
+    var overdueHtml = '';
+    if (t.estimated_move_in_date) {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
+        if (est < today) {
+            var days = Math.floor((today - est) / 86400000);
+            overdueHtml = ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
+        }
+    }
+    return '<div class="name-cell">'
+        + '<span class="row-avatar-wrap">' + rowAvatarHtml(t) + '</span>'
+        + '<span class="name-cell-text">' + escapeHtml(t.first_name + ' ' + t.last_name) + overdueHtml + '</span>'
+        + '</div>';
+}
+
 function statusPillClass(status) {
     var map = {
         active:   'tad-pill-active',
@@ -1854,21 +2158,10 @@ function renderTable() {
                 : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
-                (function() {
-                    var nameCell = t.first_name + ' ' + t.last_name;
-                    if (t.estimated_move_in_date) {
-                        var today = new Date(); today.setHours(0,0,0,0);
-                        var est   = new Date(t.estimated_move_in_date + 'T00:00:00');
-                        if (est < today) {
-                            var days = Math.floor((today - est) / 86400000);
-                            nameCell += ' <span style="font-size:.65rem;font-weight:800;padding:.15rem .45rem;border-radius:99px;background:#fff0f0;color:#e04867;border:1px solid #ffc2d1;vertical-align:middle;">' + days + 'd overdue</span>';
-                        }
-                    }
-                    return '<td style="font-weight:600;">' + nameCell + '</td>';
-                })() +
+                '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
-                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
                 '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
@@ -1919,14 +2212,14 @@ function renderReservedTable() {
     } else {
         tbody.innerHTML = pageData.map(function(t) {
             return '<tr id="reserved-tenant-row-' + t.tenant_id + '">' +
-                '<td style="font-weight:600;">' + t.first_name + ' ' + t.last_name + '</td>' +
+                '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
-                '<td>' + (t.contact_number || '\u2014') + '</td>' +
+                '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
                 '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset("icons/eye.png") }}" alt="View"></button>' +
                     '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
                 '</div></td>' +
             '</tr>';
@@ -2319,6 +2612,19 @@ function statusPillModalClass(status) {
 function viewTenant(t) {
     document.getElementById('td-modal-name').textContent = t.first_name + ' ' + t.last_name;
 
+    var avatarWrap = document.getElementById('td-modal-avatar-wrap');
+    if (t.tenant_photo) {
+        var photoUrl = '/storage/' + t.tenant_photo;
+        avatarWrap.innerHTML = '<img src="' + photoUrl + '" alt="">'
+            + '<span class="td-modal-avatar-zoom-hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>';
+        avatarWrap.classList.add('is-clickable');
+        avatarWrap.onclick = function() { openPhotoLightbox(photoUrl); };
+    } else {
+        avatarWrap.innerHTML = '<span class="td-modal-avatar-initials">' + tenantInitials(t) + '</span>';
+        avatarWrap.classList.remove('is-clickable');
+        avatarWrap.onclick = null;
+    }
+
     var statusLabel = { active: 'Active', pending: 'Pending', inactive: 'Inactive', move_out: 'Move Out' };
     var metaHtml = '';
 
@@ -2347,14 +2653,15 @@ function viewTenant(t) {
 
     bodyHtml += '<div class="td-section-label">Contact</div>';
     bodyHtml += '<div class="td-info-grid">';
-    bodyHtml += infoItem('Contact No.', t.contact_number);
-    bodyHtml += infoItem('Stay Type', t.stay_type);
+    bodyHtml += infoItem('Contact No.', normalizeContactDisplay(t.contact_number));
+    bodyHtml += infoItem('Parent / Guardian Contact No.', normalizeContactDisplay(t.guardian_number));
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="td-section-label">Room Assignment</div>';
     bodyHtml += '<div class="td-info-grid">';
     bodyHtml += infoItem('Floor', t.floor ? 'Floor ' + t.floor : '');
     bodyHtml += infoItem('Room No.', t.room_number);
+    bodyHtml += infoItem('Stay Type', t.stay_type, true);
     bodyHtml += '</div>';
 
     bodyHtml += '<div class="td-section-label">Stay Period</div>';
@@ -2662,6 +2969,16 @@ function closeModal(id) {
     }
 }
 
+function openPhotoLightbox(url) {
+    document.getElementById('photo-lightbox-img').src = url;
+    document.getElementById('photo-lightbox').classList.add('open');
+}
+
+function closePhotoLightbox() {
+    document.getElementById('photo-lightbox').classList.remove('open');
+    document.getElementById('photo-lightbox-img').src = '';
+}
+
 window.addEventListener('click', function(e) {
     var vm = document.getElementById('view-modal');
     if (e.target === vm) vm.style.display = 'none';
@@ -2701,7 +3018,10 @@ function runQuickSearch() {
     }
 
     results.innerHTML = matches.map(function(t, i) {
-        var initials  = (t.first_name.charAt(0) + t.last_name.charAt(0)).toUpperCase();
+        var initials    = tenantInitials(t);
+        var avatarInner = t.tenant_photo
+            ? '<img src="/storage/' + t.tenant_photo + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
+            : initials;
         var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ' \u00b7 Rm ' + t.room_number : (t.room_number ? 'Rm ' + t.room_number : 'No room assigned');
         var isInside  = !!t.is_inside;
         var actionBtn = isInside
@@ -2710,7 +3030,7 @@ function runQuickSearch() {
 
         return '<div class="quick-result-item ' + (isInside ? 'is-inside' : '') + '" style="animation-delay:' + (i * 0.04) + 's;">'
             + '<div class="quick-result-left">'
-                + '<div class="quick-result-avatar ' + (isInside ? 'avatar-inside' : '') + '">' + initials + '</div>'
+                + '<div class="quick-result-avatar ' + (isInside ? 'avatar-inside' : '') + '">' + avatarInner + '</div>'
                 + '<div class="quick-result-info">'
                     + '<div class="quick-result-name">' + t.first_name + ' ' + t.last_name + '</div>'
                     + '<div class="quick-result-meta">' + roomLabel + '</div>'
@@ -2782,7 +3102,115 @@ document.addEventListener('click', function(e) {
     panel.classList.remove('open');
 });
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var lb = document.getElementById('photo-lightbox');
+        if (lb && lb.classList.contains('open')) closePhotoLightbox();
+    }
+});
+
 applyFilters();
 applyReservedFilters();
+(function () {
+    var POLL_INTERVAL  = 30000;
+    var pollTimer      = null;
+    var lastFingerprint = null;
+
+    function isAnyDrawerOpen() {
+        var logDrawer = document.getElementById('log-drawer');
+        var tadDrawer = document.getElementById('tad-drawer');
+        if (logDrawer && logDrawer.classList.contains('open')) return true;
+        if (tadDrawer && tadDrawer.classList.contains('open')) return true;
+        return false;
+    }
+
+    function isAnyModalOpen() {
+        var viewModal = document.getElementById('view-modal');
+        if (viewModal && viewModal.style.display === 'flex') return true;
+        var overlays = document.querySelectorAll('.modal-overlay');
+        for (var i = 0; i < overlays.length; i++) {
+            if (overlays[i].classList.contains('open')) return true;
+        }
+        return false;
+    }
+
+    function isUserTyping() {
+        var active = document.activeElement;
+        if (!active) return false;
+        var tag = active.tagName.toLowerCase();
+        return tag === 'input' || tag === 'textarea' || tag === 'select' || active.isContentEditable;
+    }
+
+    function shouldSkipPoll() {
+        return isAnyDrawerOpen() || isAnyModalOpen() || isUserTyping();
+    }
+
+    function applyLiveInsideStates(freshTenants) {
+        var changed = false;
+
+        freshTenants.forEach(function (fresh) {
+            var local = tenants.find(function (t) { return t.tenant_id === fresh.tenant_id; });
+            if (!local) return;
+            if (local.is_inside !== fresh.is_inside) {
+                local.is_inside = fresh.is_inside;
+                changed = true;
+
+                var cell = document.getElementById('inside-cell-' + fresh.tenant_id);
+                if (cell) cell.innerHTML = insideIndicator(fresh.is_inside);
+
+                var btnWrap = document.getElementById('timebtn-' + fresh.tenant_id);
+                if (btnWrap) {
+                    btnWrap.innerHTML = fresh.is_inside
+                        ? '<button class="btn-timeout" onclick="doTimeOut(' + fresh.tenant_id + ', this)">Time Out</button>'
+                        : '<button class="btn-timein"  onclick="doTimeIn('  + fresh.tenant_id + ', this)">Time In</button>';
+                }
+            }
+        });
+
+        if (changed) {
+            var insideCount = tenants.filter(function (t) { return t.is_inside; }).length;
+            var statEl = document.getElementById('stat-inside-count');
+            if (statEl) statEl.textContent = insideCount;
+            var liveEl = document.getElementById('quick-live-num');
+            if (liveEl) liveEl.textContent = insideCount;
+        }
+    }
+
+    function poll() {
+        if (shouldSkipPoll()) {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+            return;
+        }
+
+        fetch('/frontdesk/tenants/live', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.fingerprint && data.fingerprint === lastFingerprint) {
+                return;
+            }
+            lastFingerprint = data.fingerprint || null;
+            if (data.tenants && Array.isArray(data.tenants)) {
+                applyLiveInsideStates(data.tenants);
+            }
+        })
+        .catch(function () {})
+        .finally(function () {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+        });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            clearTimeout(pollTimer);
+            poll();
+        } else {
+            clearTimeout(pollTimer);
+        }
+    });
+
+    pollTimer = setTimeout(poll, POLL_INTERVAL);
+})();
 </script>
 @endsection

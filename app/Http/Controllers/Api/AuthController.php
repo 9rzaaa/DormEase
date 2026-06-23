@@ -15,11 +15,12 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'account_id' => 'required|string',
+            'identifier' => 'required|string',
             'password'   => 'required|string',
         ]);
 
-        $throttleKey = 'login-attempts:' . Str::lower($request->account_id);
+        $identifier  = trim($request->identifier);
+        $throttleKey = 'login-attempts:' . Str::lower($identifier);
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
@@ -29,12 +30,11 @@ class AuthController extends Controller
             ], 429);
         }
 
-        $tenant = Tenant::where('account_id', $request->account_id)->first();
+        $tenant = Tenant::where('account_id', $identifier)->first();
 
         if (!$tenant) {
-            $isStaff = Staff::where('account_id', $request->account_id)
-                ->orWhere('email', $request->account_id)
-                ->orWhere('staff_code', $request->account_id)
+            $isStaff = Staff::where('account_id', $identifier)
+                ->orWhere('staff_code', $identifier)
                 ->exists();
 
             if ($isStaff) {
@@ -43,9 +43,7 @@ class AuthController extends Controller
                 ], 403);
             }
 
-            return response()->json([
-                'message' => 'The Account ID you entered is not registered.'
-            ], 404);
+            return response()->json(['message' => 'The Account ID you entered is not registered.'], 404);
         }
 
         if ($tenant->status === 'inactive' || !$tenant->is_active) {
@@ -88,13 +86,9 @@ class AuthController extends Controller
         if ($tenant->status === 'pending') {
             $tenant->markAccessed();
         } else {
-            $tenant->update([
-                'status' => 'active',
-            ]);
+            $tenant->update(['status' => 'active']);
         }
-        $tenant->update([
-            'last_login_at' => now(),
-        ]);
+        $tenant->update(['last_login_at' => now()]);
 
         $token = $tenant->createToken('mobile-app')->plainTextToken;
 

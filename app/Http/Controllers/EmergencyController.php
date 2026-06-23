@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
+use App\Http\Controllers\Api\EmergencyController as ApiEmergencyController;
 use App\Models\ArchivedEmergencyReport;
+use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
 use App\Models\Tenant;
+use App\Models\UnclassifiedEmergencyTerm;
 use App\Services\TenantPushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +24,9 @@ class EmergencyController extends Controller
         $closedArchive   = $this->archiveCollection('closed');
         $resolvedArchive = $this->archiveCollection('resolved');
         $deletedArchive  = $this->archiveCollection('deleted');
+        $pendingTerms    = UnclassifiedEmergencyTerm::where('status', 'pending')->orderByDesc('created_at')->get();
+        $trainedKeywords = CustomEmergencyKeyword::with('staff')->orderByDesc('created_at')->get();
+        $hardcodedRules  = ApiEmergencyController::getHardcodedRules();
 
         return view('emergency', compact(
             'reports',
@@ -30,7 +36,10 @@ class EmergencyController extends Controller
             'panicCount',
             'closedArchive',
             'resolvedArchive',
-            'deletedArchive'
+            'deletedArchive',
+            'pendingTerms',
+            'trainedKeywords',
+            'hardcodedRules'
         ));
     }
 
@@ -38,6 +47,7 @@ class EmergencyController extends Controller
     {
         $staff = Auth::guard('staff')->user();
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
+        $totalCount    = EmergencyReport::count();
         $activeCount    = EmergencyReport::where('status', 'active')->count();
         $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $panicCount = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
@@ -48,6 +58,7 @@ class EmergencyController extends Controller
         return view('fdemergency', compact(
             'staff',
             'reports',
+            'totalCount',
             'activeCount',
             'criticalCount',
             'panicCount',
@@ -204,7 +215,7 @@ class EmergencyController extends Controller
             'archived_by_role' => $staff?->role ?? 'admin',
             'tenant_id' => $report->tenant_id,
             'tenant_name' => $tenantName,
-            'room_number' => $tenant->room_number ?? '-',
+            'room_number' => $tenant?->room_number ?? '-',
             'is_panic_alert' => $report->is_panic_alert,
             'emergency_type' => $report->emergency_type,
             'urgency_level' => $report->urgency_level,
@@ -308,6 +319,17 @@ class EmergencyController extends Controller
         return response()->json(['success' => true, 'notified' => false]);
     }
 
+    public function pollReports()
+    {
+        $reports = $this->mapReports(
+            EmergencyReport::where('status', 'active')
+                ->orderBy('reported_at', 'desc')
+                ->get()
+        );
+
+        return response()->json($reports);
+    }
+
     public function pollPanic()
     {
         $latest = EmergencyReport::where('is_panic_alert', true)
@@ -340,5 +362,203 @@ class EmergencyController extends Controller
             ]);
 
         return response()->json(['reports' => $reports]);
+    }
+
+    public function storeKeyword(Request $request)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+        ]);
+
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            $existing = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'             => $existing->id,
+                    'keyword'        => $existing->keyword,
+                    'emergency_type' => $existing->emergency_type,
+                    'urgency_level'  => $existing->urgency_level,
+                ],
+            ], 422);
+        }
+
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
+
+        $keyword = CustomEmergencyKeyword::create([
+            'keyword' => $normalizedKeyword,
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        $keyword->load('staff');
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
+    public function classifyTerm(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+            'reclassify_matching' => 'nullable|boolean',
+        ]);
+
+        $term = UnclassifiedEmergencyTerm::findOrFail($id);
+
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->exists();
+
+        if ($duplicate) {
+            $existing = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])->first();
+            return response()->json([
+                'message' => 'This phrase is already trained.',
+                'errors' => ['keyword' => ['This phrase is already trained. Edit the existing entry instead.']],
+                'existing_keyword' => [
+                    'id'             => $existing->id,
+                    'keyword'        => $existing->keyword,
+                    'emergency_type' => $existing->emergency_type,
+                    'urgency_level'  => $existing->urgency_level,
+                ],
+            ], 422);
+        }
+
+        $staff = Auth::guard('staff')->user() ?? Auth::guard('admin')->user();
+
+        $keyword = CustomEmergencyKeyword::create([
+            'keyword' => $normalizedKeyword,
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+            'added_by_staff_id' => $staff?->staff_id,
+        ]);
+
+        $keyword->load('staff');
+
+        $term->update(['status' => 'classified']);
+
+        $reclassifiedCount = 0;
+
+        $originatingReport = EmergencyReport::find($term->report_id);
+        if ($originatingReport && $originatingReport->emergency_type === 'Other') {
+            $originatingReport->update([
+                'emergency_type' => $validated['emergency_type'],
+                'urgency_level'  => $validated['urgency_level'] ?? $originatingReport->urgency_level,
+            ]);
+            $reclassifiedCount++;
+        }
+
+        if ($request->boolean('reclassify_matching')) {
+            $needle = strtolower(trim($validated['keyword']));
+            $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
+
+            $matchingReports = EmergencyReport::where('emergency_type', 'Other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingReports as $report) {
+                $report->update([
+                    'emergency_type' => $validated['emergency_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $report->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+
+            $matchingArchives = ArchivedEmergencyReport::where('emergency_type', 'Other')
+                ->where('description', 'like', '%' . $needle . '%')
+                ->get();
+
+            foreach ($matchingArchives as $archive) {
+                $archive->update([
+                    'emergency_type' => $validated['emergency_type'],
+                    'urgency_level' => $validated['urgency_level'] ?? $archive->urgency_level,
+                ]);
+                $reclassifiedCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'keyword' => $keyword,
+            'reclassified_count' => $reclassifiedCount,
+        ]);
+    }
+
+    public function ignoreTerm($id)
+    {
+        $term = UnclassifiedEmergencyTerm::findOrFail($id);
+        $term->update(['status' => 'ignored']);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function updateKeyword(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'keyword' => 'required|string|min:2|max:255',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Security,Flood/Water Leak,Other',
+            'urgency_level' => 'nullable|in:moderate,urgent,critical',
+        ]);
+
+        $keyword = CustomEmergencyKeyword::findOrFail($id);
+        $normalizedKeyword = strtolower(trim($validated['keyword']));
+
+        if ($normalizedKeyword === '' || !preg_match('/[a-zA-Z0-9]/', $normalizedKeyword)) {
+            return response()->json([
+                'message' => 'The keyword must contain at least one letter or number.',
+                'errors' => ['keyword' => ['The keyword must contain at least one letter or number.']],
+            ], 422);
+        }
+
+        $duplicate = CustomEmergencyKeyword::whereRaw('LOWER(keyword) = ?', [$normalizedKeyword])
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($duplicate) {
+            return response()->json([
+                'message' => 'Another trained keyword already uses this exact phrase.',
+                'errors' => ['keyword' => ['Another trained keyword already uses this exact phrase.']],
+            ], 422);
+        }
+
+        $keyword->update([
+            'keyword' => $normalizedKeyword,
+            'emergency_type' => $validated['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? null,
+        ]);
+
+        $keyword->load('staff');
+
+        return response()->json(['success' => true, 'keyword' => $keyword]);
+    }
+
+    public function destroyKeyword($id)
+    {
+        CustomEmergencyKeyword::findOrFail($id)->delete();
+
+        return response()->json(['success' => true]);
     }
 }

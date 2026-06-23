@@ -43,7 +43,7 @@
     body {
         font-family: var(--ff-body);
         display: flex;
-        min-height: 100vh;
+        height: 100vh;
         overflow: hidden;
         background: #fff;
     }
@@ -353,12 +353,44 @@
             linear-gradient(to right, rgba(232,23,93,.08) 0%, transparent 38%),
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem 3.5rem 3rem;
         position: relative;
         overflow: hidden;
+    }
+
+    .right-inner {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 3.5rem;
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
+    }
+
+    .right-inner::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .right-inner::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .right-inner::-webkit-scrollbar-thumb {
+        background: rgba(232, 23, 93, 0.15);
+        border-radius: 10px;
+    }
+
+    .right-inner::-webkit-scrollbar-thumb:hover {
+        background: rgba(232, 23, 93, 0.3);
+    }
+
+    .form-wrap {
+        margin: 0;
     }
 
     .right::before {
@@ -1001,12 +1033,15 @@
         to   { opacity: 1; transform: translateX(0); }
     }
 
+
+
     @media (max-width: 820px) {
-        body { flex-direction: column; overflow: auto; }
+        body { flex-direction: column; overflow: auto; height: auto; min-height: 100vh; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 2rem 1.5rem 3rem; align-items: flex-start; overflow-y: visible; }
+        .right { width: 100%; padding: 0; overflow: visible; height: auto; }
+        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; overflow: visible; height: auto; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
@@ -1016,7 +1051,7 @@
         .left-body h1 { font-size: 1.5rem; }
         .left-body p { display: none; }
         .feature-strip { display: none; }
-        .right { padding: 1.5rem 1rem 2.5rem; }
+        .right-inner { padding: 1.5rem 1rem 2.5rem; }
         .form-wrap { padding: 1.6rem 1.2rem; border-radius: 16px; }
         .form-header h2 { font-size: 1.7rem; }
         .role-row { gap: .4rem; }
@@ -1529,7 +1564,8 @@
 
 
 <div class="right">
-    <div class="form-wrap">
+    <div class="right-inner">
+        <div class="form-wrap">
 
         <div class="form-header">
             <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
@@ -1650,6 +1686,7 @@
             </button>
         </form>
 
+    </div>
     </div>
 </div>
 

@@ -447,7 +447,7 @@
 
     <div class="carousel-slide" id="slide-3">
       <img src="{{ asset('images/main.png') }}" alt="Building" class="carousel-slide-img"
-           onerror="this.parentElement.innerHTML='<div class=carousel-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg><span>Add main.jpg</span></div>'">
+           onerror="this.parentElement.innerHTML='<div class=carousel-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><path d=\'M21 15l-5-5L5 21\'/></svg><span>Add main.png</span></div>'">
       <div class="carousel-overlay">
         <div class="carousel-label"><div class="carousel-label-dot"></div><span>Sanctissimo Rosario · Sampaloc, Manila</span></div>
         <h1 class="carousel-title">Five storeys of <em>safety</em><br>near UST</h1>
@@ -486,7 +486,7 @@
       <img src="{{ asset('images/roomfor2.jpg') }}" alt="Triple" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
     </div>
     <div class="carousel-thumb" data-index="3">
-      <img src="{{ asset('images/main.jpg') }}" alt="Building" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
+      <img src="{{ asset('images/main.png') }}" alt="Building" onerror="this.parentElement.innerHTML='<div class=carousel-thumb-ph><svg viewBox=\'0 0 24 24\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/></svg></div>'">
     </div>
   </div>
 </div>

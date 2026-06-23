@@ -13,6 +13,31 @@ class StaffController extends Controller
 {
     public function index()
     {
+        $today = now()->toDateString();
+
+        Staff::where('is_on_leave', true)
+            ->whereNotNull('leave_end')
+            ->whereDate('leave_end', '<', $today)
+            ->update([
+                'is_on_leave' => false,
+                'leave_start' => null,
+                'leave_end'   => null,
+                'leave_note'  => null,
+                'duty_status' => 'on_duty',
+            ]);
+
+        Staff::where('is_on_leave', true)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('leave_start')
+                  ->orWhereDate('leave_start', '<=', $today);
+            })
+            ->where(function ($q) use ($today) {
+                $q->whereNull('leave_end')
+                  ->orWhereDate('leave_end', '>=', $today);
+            })
+            ->where('duty_status', '!=', 'off_duty')
+            ->update(['duty_status' => 'off_duty']);
+
         $staff = Staff::orderByDesc('staff_id')->get();
 
         $staffList = $staff->where('is_active', true)->map(function ($s) {
@@ -26,6 +51,10 @@ class StaffController extends Controller
                 'contact_number' => $s->contact_number,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
                 'is_active'      => $s->is_active,
                 'created_at'     => $s->created_at,
             ];
@@ -42,6 +71,10 @@ class StaffController extends Controller
                 'contact_number' => $s->contact_number,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
                 'is_active'      => $s->is_active,
                 'inactivated_at' => $s->inactivated_at,
             ];
@@ -59,6 +92,10 @@ class StaffController extends Controller
                 'contact_number'    => $r->contact_number,
                 'shift_schedule'    => $r->shift_schedule,
                 'duty_status'       => $r->duty_status,
+                'is_on_leave'       => $r->is_on_leave,
+                'leave_start'       => $r->leave_start?->toDateString(),
+                'leave_end'         => $r->leave_end?->toDateString(),
+                'leave_note'        => $r->leave_note,
                 'is_active'         => $r->is_active,
                 'archived_at'       => $r->archived_at,
             ];
@@ -92,9 +129,57 @@ class StaffController extends Controller
             'totalStaff'      => $activeStaff->count(),
             'onDutyCount'     => $activeStaff->where('duty_status', 'on_duty')->count(),
             'offDutyCount'    => $activeStaff->where('duty_status', 'off_duty')->count(),
+            'onLeaveCount'    => $activeStaff->where('is_on_leave', true)->count(),
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'attendanceLogs'  => $attendanceLogs,
+        ]);
+    }
+
+    public function poll()
+    {
+        $today = now()->toDateString();
+
+        Staff::where('is_on_leave', true)
+            ->whereNotNull('leave_end')
+            ->whereDate('leave_end', '<', $today)
+            ->update([
+                'is_on_leave' => false,
+                'leave_start' => null,
+                'leave_end'   => null,
+                'leave_note'  => null,
+                'duty_status' => 'on_duty',
+            ]);
+
+        $staff = Staff::orderByDesc('staff_id')->get();
+
+        $staffList = $staff->where('is_active', true)->map(function ($s) {
+            return [
+                'staff_id'       => $s->staff_id,
+                'account_id'     => $s->account_id,
+                'first_name'     => $s->first_name,
+                'last_name'      => $s->last_name,
+                'email'          => $s->email,
+                'role'           => $s->role,
+                'contact_number' => $s->contact_number,
+                'shift_schedule' => $s->shift_schedule,
+                'duty_status'    => $s->duty_status,
+                'is_on_leave'    => $s->is_on_leave,
+                'leave_start'    => $s->leave_start?->toDateString(),
+                'leave_end'      => $s->leave_end?->toDateString(),
+                'leave_note'     => $s->leave_note,
+                'is_active'      => $s->is_active,
+                'created_at'     => $s->created_at,
+            ];
+        })->values();
+
+        $activeStaff = $staff->where('is_active', true);
+
+        return response()->json([
+            'staffList'      => $staffList,
+            'totalStaff'     => $activeStaff->count(),
+            'onDutyCount'    => $activeStaff->where('duty_status', 'on_duty')->count(),
+            'offDutyCount'   => $activeStaff->where('duty_status', 'off_duty')->count(),
         ]);
     }
 
@@ -116,11 +201,16 @@ class StaffController extends Controller
             'last_name'      => 'required|string|max:100',
             'email'          => 'required|email|unique:staff,email',
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
             'shift_schedule' => 'nullable|string|max:50',
         ]);
 
-        $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $suffix = '';
+        for ($i = 0; $i < 6; $i++) {
+            $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        $tempPassword = 'Staff@' . $suffix;
 
         $shiftTimes = $this->shiftTimes($request->shift_schedule);
 
@@ -144,6 +234,7 @@ class StaffController extends Controller
 
         return redirect()->route('staff.index')
             ->with('success', 'Staff account created successfully.')
+            ->with('new_staff_name', $staff->first_name . ' ' . $staff->last_name)
             ->with('new_email', $staff->email)
             ->with('new_staff_id', 'ST-' . str_pad($staff->staff_id, 3, '0', STR_PAD_LEFT))
             ->with('new_temp_password', $tempPassword);
@@ -152,6 +243,7 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $staff = Staff::findOrFail($id);
+        $today = now()->toDateString();
 
         $request->validate([
             'first_name'     => 'required|string|max:100',
@@ -162,16 +254,22 @@ class StaffController extends Controller
                 Rule::unique('staff', 'email')->ignore($staff->staff_id, 'staff_id'),
             ],
             'role'           => 'required|string|max:50',
-            'contact_number' => 'nullable|string|max:20',
+            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
+            'is_on_leave'    => 'nullable|boolean',
+            'leave_start'    => 'nullable|date',
+            'leave_end'      => 'nullable|date|after_or_equal:leave_start',
+            'leave_note'     => 'nullable|string|max:255',
         ]);
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
         $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
 
         $shiftTimes = $this->shiftTimes($request->shift_schedule);
+
+        $isOnLeave = $request->boolean('is_on_leave');
 
         $staff->update([
             'first_name'     => $request->first_name,
@@ -182,7 +280,11 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'shift_start'    => $shiftTimes['shift_start'],
             'shift_end'      => $shiftTimes['shift_end'],
-            'duty_status'    => $request->duty_status,
+            'duty_status'    => ($isOnLeave && (!$request->leave_start || $request->leave_start <= $today)) ? 'off_duty' : $request->duty_status,
+            'is_on_leave'    => $isOnLeave,
+            'leave_start'    => $isOnLeave ? $request->leave_start : null,
+            'leave_end'      => $isOnLeave ? $request->leave_end   : null,
+            'leave_note'     => $isOnLeave ? $request->leave_note  : null,
             'is_active'      => $request->is_active,
             'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),
         ]);
@@ -198,7 +300,12 @@ class StaffController extends Controller
     {
         $staff = Staff::findOrFail($id);
 
-        $tempPassword = 'Staff@' . strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 6));
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $suffix = '';
+        for ($i = 0; $i < 6; $i++) {
+            $suffix .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        $tempPassword = 'Staff@' . $suffix;
 
         $staff->update([
             'password_hash'    => Hash::make($tempPassword),
@@ -258,6 +365,10 @@ class StaffController extends Controller
             'contact_number'    => $staff->contact_number,
             'shift_schedule'    => $staff->shift_schedule,
             'duty_status'       => $staff->duty_status,
+            'is_on_leave'       => $staff->is_on_leave,
+            'leave_start'       => $staff->leave_start,
+            'leave_end'         => $staff->leave_end,
+            'leave_note'        => $staff->leave_note,
             'is_active'         => $staff->is_active,
             'archived_at'       => now(),
         ]);

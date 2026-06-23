@@ -293,22 +293,6 @@
 }
 .ann-row-card:hover::before { background: var(--gradient-pink); }
 .ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
-.ann-row-card.status-closed {
-    opacity: .58;
-    background: #f7f7f9;
-    border-color: #e0e0e8;
-}
-.ann-row-card.status-closed .ann-row-title,
-.ann-row-card.status-closed .ann-row-excerpt { color: #999; }
-.ann-row-card.status-closed .ann-row-time { color: #bbb; }
-.ann-row-card.status-closed::before { background: #c8c8d4; }
-.ann-row-card.status-closed:hover {
-    border-color: #c0c0cc;
-    box-shadow: 0 4px 14px rgba(0,0,0,.06);
-    opacity: .72;
-    transform: translateY(-1px);
-}
-.ann-row-card.status-closed:hover::before { background: #a0a0b8; }
 .ann-row-card.status-scheduled::before { background: var(--gradient-pink); }
 .ann-row-left {
     display: flex;
@@ -651,6 +635,48 @@
     flex-shrink: 0;
 }
 .aad-close:hover { background: var(--pink-100); }
+.aad-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1.6rem;
+    border-bottom: 1px solid var(--pink-100);
+    flex-shrink: 0;
+    background: #fff;
+}
+.aad-tab {
+    padding: .75rem 1rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .18s, border-color .18s;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+.aad-tab:hover { color: var(--hot-pink); }
+.aad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+.aad-tab-count {
+    font-size: .66rem;
+    font-weight: 800;
+    padding: .1rem .42rem;
+    border-radius: 99px;
+    background: var(--petal);
+    color: var(--ink-muted);
+    min-width: 16px;
+    text-align: center;
+}
+.aad-tab.active .aad-tab-count {
+    background: var(--bright-pink);
+    color: #fff;
+}
+.aad-pill-status-closed { background: #f3f4f6; color: #888; border: 1px solid #d0d0d8; }
 .aad-search-bar { padding: .85rem 1.6rem .65rem; flex-shrink: 0; }
 .aad-search-inner { position: relative; display: flex; align-items: center; }
 .aad-search-inner input {
@@ -779,6 +805,13 @@
 .schedule-fields .modal-field { margin-bottom: 0; }
 .schedule-fields input[type="datetime-local"] { width: 100%; box-sizing: border-box; border: 1.5px solid var(--pink-100); border-radius: 9px; padding: .55rem .85rem; font-size: .88rem; color: var(--ink); background: #fff; font-family: var(--ff-body); }
 .schedule-note { font-size: .75rem; color: var(--bright-pink); margin-top: .3rem; line-height: 1.5; }
+.form-progress-wrap { padding: .7rem 1.5rem .1rem; display: flex; flex-direction: column; gap: .35rem; flex-shrink: 0; }
+.form-progress-bar { width: 100%; height: 3px; background: var(--pink-100); border-radius: 99px; overflow: hidden; }
+.form-progress-fill { height: 100%; border-radius: 99px; transition: width .35s cubic-bezier(.4,0,.2,1), background .35s; }
+.form-progress-label { display: flex; align-items: center; justify-content: space-between; font-size: .68rem; font-weight: 700; color: var(--ink-muted); }
+.form-progress-label span.ready { color: #1f9d69; font-weight: 800; }
+.form-progress-label span.partial { color: var(--hot-pink); }
+.field-req-star { color: var(--bright-pink); font-size: .75rem; font-weight: 900; margin-left: .18rem; opacity: .8; vertical-align: middle; }
 #edit-modal .modal, #post-modal .modal, #view-modal .modal {
     max-width: 560px; width: 100%; padding: 0;
     overflow: hidden; max-height: 92vh;
@@ -818,6 +851,9 @@
 .em-pill-opt.sel-closed   { border-color: var(--ink-muted); color: var(--ink-muted); background: #f3f4f6; }
 .em-file-zone { border: 1.5px dashed var(--pink-200); border-radius: 12px; padding: 1rem 1.1rem; background: var(--blush); display: flex; flex-direction: column; gap: .45rem; }
 .em-file-note { font-size: .72rem; color: var(--ink-muted); line-height: 1.5; }
+.em-file-error { font-size: .76rem; font-weight: 700; color: #e04867; line-height: 1.5; display: none; }
+.em-file-error.show { display: block; }
+.em-file-zone.has-error { border-color: #e04867; background: #fff5f5; }
 .em-replace-row { display: flex; align-items: center; gap: .5rem; padding: .5rem .75rem; border-radius: 9px; border: 1px solid var(--pink-100); background: var(--petal); cursor: pointer; }
 .em-replace-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--hot-pink); cursor: pointer; }
 .em-replace-row span { font-size: .77rem; font-weight: 600; color: var(--hot-pink); }
@@ -932,6 +968,83 @@
 @media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(3, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
 @media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-compose-chip { display: none; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
+.ann-legend-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.ann-legend-wrap img {
+    display: block;
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+    opacity: .65;
+    transition: opacity .2s;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+.ann-legend-wrap:hover img { opacity: 1; }
+.ann-legend-popup {
+    display: none;
+    position: fixed;
+    background: #fff;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(232,23,93,.16), 0 2px 8px rgba(0,0,0,.08);
+    padding: .85rem 1rem;
+    min-width: 300px;
+    max-width: 340px;
+    z-index: 999999;
+    pointer-events: none;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+.ann-legend-popup.open {
+    display: block;
+    pointer-events: auto;
+}
+.alp-title {
+    font-size: .67rem;
+    font-weight: 800;
+    color: var(--bright-pink, #E8175D);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .55rem;
+    padding-bottom: .4rem;
+    border-bottom: 1.5px solid var(--petal, #ffeef4);
+}
+.alp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .35rem 0;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+}
+.alp-row:last-child { border-bottom: none; }
+.alp-badge-cell {
+    flex-shrink: 0;
+    width: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.alp-dot-cell {
+    flex-shrink: 0;
+    width: 82px;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+.alp-dot-label { font-size: .75rem; font-weight: 700; }
+.alp-desc {
+    font-size: .75rem;
+    color: var(--ink-muted, #888);
+    font-weight: 500;
+    line-height: 1.45;
+    padding-top: .1rem;
+    flex: 1;
+}
 .fade-up { animation: fadeUp .42s ease both; }
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
@@ -960,7 +1073,7 @@
     </div>
 
     <div class="ann-stats-row fade-up d2">
-        @php $allForStats = $announcements->merge($scheduled); @endphp
+        @php $allForStats = $announcements->merge($scheduled)->merge($closedArchive); @endphp
 
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
@@ -996,7 +1109,7 @@
             </div>
             <div>
                 <div class="ann-stat-label">Closed</div>
-                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
+                <div class="ann-stat-num">{{ $closedArchive->count() }}</div>
                 <div class="ann-stat-sub">Archived Announcements</div>
             </div>
         </div>
@@ -1023,7 +1136,7 @@
             <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
-                <option value="closed">Closed</option>
+                <option value="scheduled">Scheduled</option>
             </select>
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
@@ -1039,9 +1152,55 @@
                 <option value="this_month">This Month</option>
             </select>
         </div>
-        <div class="ann-search-wrap">
-            <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
-            <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+            <div class="ann-legend-wrap" id="ann-legend-trigger">
+                <img src="{{ asset('icons/info.png') }}" alt="Guide">
+                <div class="ann-legend-popup" id="ann-legend-popup">
+                    <div class="alp-title">Status Guide</div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-active">Active</span></div>
+                        <div class="alp-desc">Announcement is live and visible to all tenants.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-scheduled">Scheduled</span></div>
+                        <div class="alp-desc">Set to go live automatically at a future date and time.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell"><span class="ann-badge badge-closed">Closed</span></div>
+                        <div class="alp-desc">No longer active. Moved to the archive and hidden from tenants.</div>
+                    </div>
+                    <div class="alp-title" style="margin-top:.65rem;">Priority Guide</div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-high"></span><span class="alp-dot-label" style="color:#e04867;">High</span></div>
+                        <div class="alp-desc">Urgent or time-sensitive. Shown with a red indicator.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-moderate"></span><span class="alp-dot-label" style="color:#f59e0b;">Moderate</span></div>
+                        <div class="alp-desc">Important but not urgent. Shown with an orange indicator.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-dot-cell"><span class="ann-row-priority-dot prio-low"></span><span class="alp-dot-label" style="color:#1f9d69;">Low</span></div>
+                        <div class="alp-desc">General information. Shown with a green indicator.</div>
+                    </div>
+                    <div class="alp-title" style="margin-top:.65rem;">Quick Actions</div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Close</div>
+                        <div class="alp-desc">Archives the announcement. It can be reopened from the archive drawer.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Publish Now</div>
+                        <div class="alp-desc">Immediately publishes a scheduled announcement ahead of its set time.</div>
+                    </div>
+                    <div class="alp-row">
+                        <div class="alp-badge-cell" style="font-size:.7rem;font-weight:700;color:var(--ink-muted);">Reopen</div>
+                        <div class="alp-desc">Sets a closed announcement back to active from the archive drawer.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ann-search-wrap">
+                <img src="{{ asset('icons/search.png') }}" class="ann-search-icon" alt="">
+                <input type="text" id="ann-search-input" placeholder="Search announcements..." oninput="applyDropdownFilters()">
+            </div>
         </div>
     </div>
 
@@ -1193,9 +1352,17 @@
     <div class="aad-header">
         <div>
             <div class="aad-title">Archive / History</div>
-            <div class="aad-sub">Record of deleted announcements</div>
+            <div class="aad-sub">Closed and deleted announcements</div>
         </div>
         <button class="aad-close" onclick="closeAnnArchive()">&#x2715;</button>
+    </div>
+    <div class="aad-tabs">
+        <button class="aad-tab active" id="aad-tab-closed" onclick="switchAnnArchiveTab('closed')">
+            Closed <span class="aad-tab-count" id="aad-count-closed">0</span>
+        </button>
+        <button class="aad-tab" id="aad-tab-deleted" onclick="switchAnnArchiveTab('deleted')">
+            Deleted <span class="aad-tab-count" id="aad-count-deleted">0</span>
+        </button>
     </div>
     <div class="aad-search-bar">
         <div class="aad-search-inner">
@@ -1242,14 +1409,23 @@
         </div>
         <form method="POST" action="{{ route('announcements.store') }}" id="post-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf
+            <div class="form-progress-wrap" id="post-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="post-progress-text">Fill in required fields</span>
+                    <span id="post-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="post-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels">
                 <div class="em-panel active" id="pm-panel-0">
                     <div class="modal-field">
-                        <label>Title *</label>
+                        <label>Title <span class="field-req-star">*</span></label>
                         <input type="text" name="title" id="post-title" placeholder="e.g. Water Interruption Notice" required>
                     </div>
                     <div class="modal-field">
-                        <label>Content *</label>
+                        <label>Content <span class="field-req-star">*</span></label>
                         <textarea name="content" id="post-content" placeholder="Write your announcement here..." required></textarea>
                     </div>
                 </div>
@@ -1288,8 +1464,9 @@
                 </div>
                 <div class="em-panel" id="pm-panel-2">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
-                        <div class="em-file-note">Attach images, PDFs, or documents (optional).</div>
+                        <input type="file" name="files[]" id="post-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'post-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Optional, up to 10 files.</div>
+                        <div class="em-file-error" id="post-file-error"></div>
                     </div>
                 </div>
             </div>
@@ -1328,10 +1505,19 @@
         </div>
         <form method="POST" id="edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf @method('PUT')
+            <div class="form-progress-wrap" id="edit-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="edit-progress-text">Fill in required fields</span>
+                    <span id="edit-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels">
                 <div class="em-panel active" id="em-panel-0">
-                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="edit-title" required placeholder="Announcement title"></div>
-                    <div class="modal-field"><label>Content *</label><textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea></div>
+                    <div class="modal-field"><label>Title <span class="field-req-star">*</span></label><input type="text" name="title" id="edit-title" required placeholder="Announcement title"></div>
+                    <div class="modal-field"><label>Content <span class="field-req-star">*</span></label><textarea name="content" id="edit-content" required placeholder="Write the full announcement here..."></textarea></div>
                 </div>
                 <div class="em-panel" id="em-panel-1">
                     <div class="modal-field">
@@ -1368,8 +1554,10 @@
                 </div>
                 <div class="em-panel" id="em-panel-2">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <input type="file" name="files[]" id="edit-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'edit-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Up to 10 files.</div>
                         <div class="em-file-note" id="edit-current-files">No existing files.</div>
+                        <div class="em-file-error" id="edit-file-error"></div>
                     </div>
                     <label class="em-replace-row">
                         <input type="checkbox" name="replace_attachments" value="1">
@@ -1421,10 +1609,19 @@
         </div>
         <form method="POST" id="view-edit-form" enctype="multipart/form-data" data-loading-message="Please wait...">
             @csrf @method('PUT')
+            <div class="form-progress-wrap" id="view-edit-progress-wrap" style="display:none;">
+                <div class="form-progress-label">
+                    <span id="view-edit-progress-text">Fill in required fields</span>
+                    <span id="view-edit-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="view-edit-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
             <div class="em-panels" id="vm-edit-panels" style="display:none;">
                 <div class="em-panel" id="vm-panel-1">
-                    <div class="modal-field"><label>Title *</label><input type="text" name="title" id="view-edit-title" required></div>
-                    <div class="modal-field"><label>Content *</label><textarea name="content" id="view-edit-content" required></textarea></div>
+                    <div class="modal-field"><label>Title <span class="field-req-star">*</span></label><input type="text" name="title" id="view-edit-title" required></div>
+                    <div class="modal-field"><label>Content <span class="field-req-star">*</span></label><textarea name="content" id="view-edit-content" required></textarea></div>
                 </div>
                 <div class="em-panel" id="vm-panel-2">
                     <div class="modal-field">
@@ -1461,8 +1658,10 @@
                 </div>
                 <div class="em-panel" id="vm-panel-3">
                     <div class="em-file-zone">
-                        <input type="file" name="files[]" multiple accept="image/*,.pdf,.doc,.docx">
+                        <input type="file" name="files[]" id="view-edit-files-input" multiple accept=".png,.jpg,.jpeg,.pdf,.docx" onchange="validateFileInput(this,'view-edit-file-error')">
+                        <div class="em-file-note">Accepted types: PNG, JPG, PDF, DOCX. Max 5 MB per file. Up to 10 files.</div>
                         <div class="em-file-note" id="view-current-files">No existing files.</div>
+                        <div class="em-file-error" id="view-edit-file-error"></div>
                     </div>
                     <label class="em-replace-row">
                         <input type="checkbox" name="replace_attachments" value="1">
@@ -1513,8 +1712,49 @@
 
 @section('scripts')
 <script>
+(function() {
+    var trigger = document.getElementById('ann-legend-trigger');
+    var popup   = document.getElementById('ann-legend-popup');
+    if (!trigger || !popup) return;
+
+    document.body.appendChild(popup);
+
+    var hideTimer = null;
+
+    function positionPopup() {
+        var rect       = trigger.getBoundingClientRect();
+        var popupWidth = 340;
+        var left       = rect.left;
+        var top        = rect.bottom + 8;
+        if (left + popupWidth > window.innerWidth - 12) left = window.innerWidth - popupWidth - 12;
+        if (left < 12) left = 12;
+        popup.style.left   = left + 'px';
+        popup.style.top    = top + 'px';
+        popup.style.right  = 'auto';
+        popup.style.bottom = 'auto';
+    }
+
+    function showPopup() {
+        clearTimeout(hideTimer);
+        positionPopup();
+        popup.classList.add('open');
+    }
+
+    function hidePopup() {
+        hideTimer = setTimeout(function() { popup.classList.remove('open'); }, 180);
+    }
+
+    trigger.addEventListener('mouseenter', showPopup);
+    trigger.addEventListener('mouseleave', hidePopup);
+    popup.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+    popup.addEventListener('mouseleave', hidePopup);
+
+    window.addEventListener('resize', function() { if (popup.classList.contains('open')) positionPopup(); });
+    window.addEventListener('scroll', function() { if (popup.classList.contains('open')) positionPopup(); }, true);
+})();
 const annData           = @json($announcements->merge($scheduled)->keyBy('announcement_id'));
 const deletedAnnArchive = @json($deletedArchive);
+const closedAnnArchive  = @json($closedArchive);
 const storageBaseUrl    = "{{ asset('storage') }}";
 const editIcon          = "{{ asset('icons/edit.png') }}";
 const announceIcon      = "{{ asset('icons/announce.png') }}";
@@ -1546,7 +1786,8 @@ const archiveIconAsset  = "{{ asset('icons/archive.png') }}";
             </div>
         </div>
         <div class="aadd-body" id="aadd-body"></div>
-        <div class="aadd-footer">
+        <div class="aadd-footer" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+            <div id="aadd-reopen-wrap"></div>
             <button class="btn-cancel" onclick="closeAnnArchiveDetail()">Close</button>
         </div>
     `;
@@ -1574,6 +1815,151 @@ function checkScheduledAnnouncements() {
 checkScheduledAnnouncements();
 setInterval(checkScheduledAnnouncements, 30000);
 
+(function() {
+    const pollUrl = "{{ route('announcements.poll') }}";
+    const fetchUrl = "{{ route('announcements.index') }}";
+    let lastSignature = null;
+    let pollTimer = null;
+    let inFlight = false;
+
+    function isAnnBusy() {
+        if (document.querySelector('.modal-overlay.open')) return true;
+        if (document.getElementById('aad-drawer').classList.contains('open')) return true;
+        if (document.getElementById('aadd-modal').classList.contains('open')) return true;
+        if (globalDropdown.classList.contains('open')) return true;
+
+        const active = document.activeElement;
+        if (active && active !== document.body) {
+            const tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
+    function showAnnPollToast() {
+        const existing = document.getElementById('ann-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'ann-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:#fff;border:1.5px solid var(--pink-100);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Announcements refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function softReloadAnnouncements() {
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!res.ok) return;
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            const freshListPanel = doc.getElementById('ann-list-panel');
+            const currentListPanel = document.getElementById('ann-list-panel');
+            if (freshListPanel && currentListPanel) {
+                currentListPanel.innerHTML = freshListPanel.innerHTML;
+            }
+
+            const freshSidebar = doc.querySelector('.ann-sidebar');
+            const currentSidebar = document.querySelector('.ann-sidebar');
+            if (freshSidebar && currentSidebar) {
+                currentSidebar.innerHTML = freshSidebar.innerHTML;
+            }
+
+            const freshStats = doc.querySelector('.ann-stats-row');
+            const currentStats = document.querySelector('.ann-stats-row');
+            if (freshStats && currentStats) {
+                currentStats.innerHTML = freshStats.innerHTML;
+            }
+
+            const freshScript = Array.from(doc.querySelectorAll('script')).find(s =>
+                s.textContent.includes('const annData ')
+            );
+            if (freshScript) {
+                const annMatch = freshScript.textContent.match(/const annData\s*=\s*(\{[\s\S]*?\});/);
+                const closedMatch = freshScript.textContent.match(/const closedAnnArchive\s*=\s*(\[[\s\S]*?\]);/);
+                const deletedMatch = freshScript.textContent.match(/const deletedAnnArchive\s*=\s*(\[[\s\S]*?\]);/);
+
+                if (annMatch) {
+                    const fresh = JSON.parse(annMatch[1]);
+                    Object.keys(annData).forEach(k => delete annData[k]);
+                    Object.assign(annData, fresh);
+                }
+                if (closedMatch) {
+                    closedAnnArchive.length = 0;
+                    closedAnnArchive.push(...JSON.parse(closedMatch[1]));
+                }
+                if (deletedMatch) {
+                    deletedAnnArchive.length = 0;
+                    deletedAnnArchive.push(...JSON.parse(deletedMatch[1]));
+                }
+            }
+
+            applyDropdownFilters();
+            showAnnPollToast();
+        } catch {
+        }
+    }
+
+    async function pollAnnouncements() {
+        if (inFlight || isAnnBusy()) return;
+        inFlight = true;
+        try {
+            const res = await fetch(pollUrl, { headers: { 'Accept': 'application/json' } });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (lastSignature === null) {
+                lastSignature = data.signature;
+                return;
+            }
+            if (data.signature !== lastSignature) {
+                lastSignature = data.signature;
+                if (!isAnnBusy()) await softReloadAnnouncements();
+            }
+        } catch {
+        } finally {
+            inFlight = false;
+        }
+    }
+
+    function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(pollAnnouncements, 15000);
+    }
+
+    function stopPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            startPolling();
+            pollAnnouncements();
+        }
+    });
+
+    startPolling();
+})();
+
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -1589,19 +1975,17 @@ const globalDropdown = document.getElementById('ann-global-dropdown');
 let activeMenuId = null;
 
 function buildDropdownHTML(id, ann) {
-    const isScheduled = ann.status === 'scheduled';
-    let middle = '';
+    var isScheduled = ann.status === 'scheduled';
+    var middle = '';
     if (isScheduled) {
-        middle = `<button class="ann-dropdown-item" onclick="submitForm('publish-now-${id}',event)"><img class="dd-icon" src="${announceIcon}" alt=""> Publish Now</button>`;
-    } else if (ann.status !== 'closed') {
-        middle = `<button class="ann-dropdown-item" onclick="submitForm('close-${id}',event)"><img class="dd-icon" src="${archiveIcon}" alt=""> Close</button>`;
+        middle = '<button class="ann-dropdown-item" onclick="submitForm(\'publish-now-' + id + '\',event)"><img class="dd-icon" src="' + announceIcon + '" alt=""> Publish Now</button>';
+    } else {
+        middle = '<button class="ann-dropdown-item" onclick="submitForm(\'close-' + id + '\',event)"><img class="dd-icon" src="' + archiveIcon + '" alt=""> Close</button>';
     }
-    return `
-        <button class="ann-dropdown-item" onclick="openEditModal(${id},event)"><img class="dd-icon" src="${editIcon}" alt=""> Edit</button>
-        ${middle}
-        <div class="ann-dropdown-divider"></div>
-        <button class="ann-dropdown-item danger" onclick="openDeleteModal(${id},'${escapeHtml(ann.title || '')}',event)"><img class="dd-icon" src="${deleteIcon}" alt=""> Delete</button>
-    `;
+    return '<button class="ann-dropdown-item" onclick="openEditModal(' + id + ',event)"><img class="dd-icon" src="' + editIcon + '" alt=""> Edit</button>'
+        + middle
+        + '<div class="ann-dropdown-divider"></div>'
+        + '<button class="ann-dropdown-item danger" onclick="openDeleteModal(' + id + ',\'' + escapeHtml(ann.title || '').replace(/'/g, "\\'") + '\',event)"><img class="dd-icon" src="' + deleteIcon + '" alt=""> Delete</button>';
 }
 
 function toggleMenu(e, id) {
@@ -1731,9 +2115,50 @@ function selectPostPill(type, val) {
     row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
     document.getElementById('post-' + type).value = val;
 }
+const ALLOWED_FILE_TYPES = ['image/png','image/jpeg','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+const ALLOWED_EXTENSIONS = ['png','jpg','jpeg','pdf','docx'];
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_FILE_COUNT = 10;
+
+function validateFileInput(input, errorId) {
+    const errorBox = document.getElementById(errorId);
+    const zone      = input.closest('.em-file-zone');
+    const files     = Array.from(input.files || []);
+    let message     = '';
+
+    if (files.length > MAX_FILE_COUNT) {
+        message = 'You can attach up to ' + MAX_FILE_COUNT + ' files at a time.';
+    } else {
+        for (const file of files) {
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            if (!ALLOWED_EXTENSIONS.includes(ext)) {
+                message = '"' + file.name + '" is not a supported file type. Use PNG, JPG, PDF, or DOCX.';
+                break;
+            }
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                message = '"' + file.name + '" is too large. Maximum size is 5 MB per file.';
+                break;
+            }
+        }
+    }
+
+    if (message) {
+        errorBox.textContent = message;
+        errorBox.classList.add('show');
+        zone.classList.add('has-error');
+        input.value = '';
+        return false;
+    }
+
+    errorBox.textContent = '';
+    errorBox.classList.remove('show');
+    zone.classList.remove('has-error');
+    return true;
+}
 function submitPostModal() {
     const form = document.getElementById('post-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('post-files-input'), 'post-file-error')) return;
     setFormLoading(form, 'Posting...'); form.submit();
 }
 function openPostModal() {
@@ -1743,6 +2168,7 @@ function openPostModal() {
     toggleSchedule('post', false);
     switchPostTab(0);
     openModal('post-modal');
+    setTimeout(function() { updateAnnFormProgress('post', ['post-title', 'post-content']); }, 50);
 }
 
 window._emTab = 0;
@@ -1768,6 +2194,7 @@ function openEditModal(id, e) {
     const ann = annData[id];
     if (!ann) return;
     document.getElementById('edit-form').reset();
+    setTimeout(function() { updateAnnFormProgress('edit', ['edit-title', 'edit-content']); }, 50);
     document.getElementById('edit-form').action = '{{ url("announcements") }}/' + id;
     document.getElementById('edit-title').value   = ann.title   || '';
     document.getElementById('edit-content').value = ann.content || '';
@@ -1789,6 +2216,7 @@ function openEditModal(id, e) {
 function submitEditModal() {
     const form = document.getElementById('edit-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('edit-files-input'), 'edit-file-error')) return;
     setFormLoading(form, 'Saving changes...'); form.submit();
 }
 
@@ -1815,7 +2243,14 @@ function switchViewTab(idx) {
         document.getElementById('vm-next-btn').disabled = (idx === VM_TABS - 1);
     }
 }
-function enableViewEdit() { _vmEditOn = true; document.getElementById('vm-tab-0').classList.remove('active'); switchViewTab(1); }
+function enableViewEdit() {
+    _vmEditOn = true;
+    document.getElementById('vm-tab-0').classList.remove('active');
+    switchViewTab(1);
+    var bar = document.getElementById('view-edit-progress-wrap');
+    if (bar) bar.style.display = '';
+    updateAnnFormProgress('view-edit', ['view-edit-title', 'view-edit-content']);
+}
 function selectViewPill(type, val) {
     const row = document.getElementById('view-edit-' + type + '-pills');
     row.querySelectorAll('.em-pill-opt').forEach(p => { p.className = 'em-pill-opt'; if (p.dataset.val === val) p.classList.add('sel-' + val); });
@@ -1825,6 +2260,8 @@ function openViewModal(id) {
     const ann = annData[id];
     if (!ann) return;
     _vmEditOn = false; window._vmTab = 0;
+    var bar = document.getElementById('view-edit-progress-wrap');
+    if (bar) bar.style.display = 'none';
     for (let i = 0; i < VM_TABS; i++) document.getElementById('vm-tab-' + i).classList.toggle('active', i === 0);
     for (let i = 1; i < VM_TABS; i++) document.getElementById('vm-panel-' + i).classList.remove('active');
     document.getElementById('vm-panel-0').classList.add('active');
@@ -1862,6 +2299,7 @@ function openViewModal(id) {
 function submitViewEditModal() {
     const form = document.getElementById('view-edit-form');
     if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validateFileInput(document.getElementById('view-edit-files-input'), 'view-edit-file-error')) return;
     setFormLoading(form, 'Saving changes...'); form.submit();
 }
 function openDeleteModal(id, name, e) {
@@ -1873,6 +2311,51 @@ function openDeleteModal(id, name, e) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+function updateAnnFormProgress(prefix, fieldIds) {
+    var filled = fieldIds.filter(function(id) {
+        var el = document.getElementById(id);
+        return el && el.value && el.value.trim() !== '';
+    }).length;
+    var total = fieldIds.length;
+    var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+    var fill  = document.getElementById(prefix + '-progress-fill');
+    var text  = document.getElementById(prefix + '-progress-text');
+    var count = document.getElementById(prefix + '-progress-count');
+    if (!fill) return;
+    fill.style.width = pct + '%';
+    if (pct === 100) {
+        fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+        if (text)  { text.textContent = 'All required fields filled'; text.className = 'ready'; }
+        if (count) { count.textContent = filled + '/' + total; count.className = 'ready'; }
+    } else {
+        fill.style.background = 'var(--gradient-pink)';
+        if (text)  { text.textContent = 'Fill in required fields'; text.className = ''; }
+        if (count) { count.textContent = filled + '/' + total; count.className = 'partial'; }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var postFields = ['post-title', 'post-content'];
+    var postModalEl = document.getElementById('post-modal');
+    if (postModalEl) {
+        postModalEl.addEventListener('input', function() { updateAnnFormProgress('post', postFields); });
+        updateAnnFormProgress('post', postFields);
+    }
+
+    var editFields = ['edit-title', 'edit-content'];
+    var editModalEl = document.getElementById('edit-modal');
+    if (editModalEl) {
+        editModalEl.addEventListener('input', function() { updateAnnFormProgress('edit', editFields); });
+    }
+
+    var viewEditFields = ['view-edit-title', 'view-edit-content'];
+    var viewModalEl = document.getElementById('view-modal');
+    if (viewModalEl) {
+        viewModalEl.addEventListener('input', function() { updateAnnFormProgress('view-edit', viewEditFields); });
+    }
+});
+
 function getAttachments(att) {
     if (!att) return [];
     return String(att).split(',').map(p => p.trim()).filter(Boolean);
@@ -1958,46 +2441,65 @@ function fmtDatePlain(d) {
            dt.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
 }
 
+var _annArchiveTab = 'closed';
+
 function openAnnArchive() {
     document.getElementById('aad-drawer').classList.add('open');
     document.getElementById('aad-backdrop').classList.add('open');
     document.getElementById('aad-search').value = '';
+    document.getElementById('aad-count-closed').textContent  = closedAnnArchive.length;
+    document.getElementById('aad-count-deleted').textContent = deletedAnnArchive.length;
     renderAnnArchive();
 }
+
 function closeAnnArchive() {
     document.getElementById('aad-drawer').classList.remove('open');
     document.getElementById('aad-backdrop').classList.remove('open');
 }
 
+function switchAnnArchiveTab(tab) {
+    _annArchiveTab = tab;
+    document.getElementById('aad-tab-closed').classList.toggle('active',  tab === 'closed');
+    document.getElementById('aad-tab-deleted').classList.toggle('active', tab === 'deleted');
+    document.getElementById('aad-search').value = '';
+    renderAnnArchive();
+}
+
 function renderAnnArchive() {
-    const q    = document.getElementById('aad-search').value.toLowerCase();
-    const data = deletedAnnArchive.filter(r =>
-        (r.title   || '').toLowerCase().includes(q) ||
-        (r.content || '').toLowerCase().includes(q) ||
-        (r.priority|| '').toLowerCase().includes(q)
-    );
-    const list = document.getElementById('aad-list');
-    document.getElementById('aad-count-label').textContent = `${data.length} record${data.length !== 1 ? 's' : ''}`;
+    var q      = document.getElementById('aad-search').value.toLowerCase();
+    var source = _annArchiveTab === 'closed' ? closedAnnArchive : deletedAnnArchive;
+    var data   = source.filter(function(r) {
+        return (r.title    || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.content  || '').toLowerCase().indexOf(q) !== -1 ||
+               (r.priority || '').toLowerCase().indexOf(q) !== -1;
+    });
+    var list = document.getElementById('aad-list');
+    document.getElementById('aad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
     if (!data.length) {
-        list.innerHTML = `<div class="aad-empty"><img src="${announceIcon}" alt="">No archived announcements found.</div>`;
+        list.innerHTML = '<div class="aad-empty"><img src="' + announceIcon + '" alt="">No ' + _annArchiveTab + ' announcements found.</div>';
         return;
     }
-    list.innerHTML = data.map((r, i) => {
-        return `
-        <div class="aad-card" style="animation-delay:${i * 0.04}s;" onclick='openAnnArchiveDetail(${JSON.stringify(r).replace(/</g,'\\u003c')})'>
-            <div class="aad-card-top">
-                <div class="aad-card-id">#${r.announcement_id}</div>
-                <div class="aad-card-time">${r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')}</div>
-            </div>
-            <div class="aad-card-title">${escapeHtml(r.title || '')}</div>
-            <div class="aad-card-desc">${escapeHtml(r.content || '')}</div>
-            <div class="aad-card-meta">
-                <span class="aad-pill aad-pill-${(r.priority || 'low').toLowerCase()}">${ucFirst(r.priority || 'low')}</span>
-                <span class="aad-pill aad-pill-${(r.status || 'active').toLowerCase()}">${ucFirst(r.status || 'active')}</span>
-                ${r.attachment ? `<span class="aad-pill aad-pill-closed">${r.attachment.split(',').length} file(s)</span>` : ''}
-            </div>
-            <div class="aad-card-deleted">Deleted on: <span>${fmtDatePlain(r.deleted_at)}</span></div>
-        </div>`;
+    list.innerHTML = data.map(function(r, i) {
+        var dateLabel    = _annArchiveTab === 'closed' ? 'Posted' : 'Deleted on';
+        var dateValue    = _annArchiveTab === 'closed'
+            ? (r.posted_at ? fmtDatePlain(r.posted_at) : '—')
+            : fmtDatePlain(r.deleted_at);
+        var dateColor    = _annArchiveTab === 'deleted' ? 'color:#e04867;' : '';
+        var attachCount  = r.attachment ? r.attachment.split(',').length : 0;
+        return '<div class="aad-card" style="animation-delay:' + (i * 0.04) + 's;" onclick=\'openAnnArchiveDetail(' + JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'\\u0027') + ')\'>'
+            + '<div class="aad-card-top">'
+                + '<div class="aad-card-id">#' + r.announcement_id + '</div>'
+                + '<div class="aad-card-time">' + (r.posted_at ? fmtDate(r.posted_at.split('T')[0]) : (r.scheduled_at ? fmtDate(r.scheduled_at.split('T')[0]) : '—')) + '</div>'
+            + '</div>'
+            + '<div class="aad-card-title">' + escapeHtml(r.title || '') + '</div>'
+            + '<div class="aad-card-desc">'  + escapeHtml(r.content || '') + '</div>'
+            + '<div class="aad-card-meta">'
+                + '<span class="aad-pill aad-pill-' + (r.priority || 'low').toLowerCase() + '">' + ucFirst(r.priority || 'low') + '</span>'
+                + '<span class="aad-pill aad-pill-' + (r.status || 'active').toLowerCase() + '">' + ucFirst(r.status || 'active') + '</span>'
+                + (attachCount ? '<span class="aad-pill aad-pill-closed">' + attachCount + ' file(s)</span>' : '')
+            + '</div>'
+            + '<div class="aad-card-deleted" style="' + dateColor + '">' + dateLabel + ': <span>' + dateValue + '</span></div>'
+        + '</div>';
     }).join('');
 }
 
@@ -2047,6 +2549,17 @@ function openAnnArchiveDetail(record) {
         </div>` : ''}
     `;
 
+    var reopenWrap = document.getElementById('aadd-reopen-wrap');
+    if (reopenWrap) {
+        if (record.status === 'closed' && record.announcement_id) {
+            reopenWrap.innerHTML = '<form method="POST" action="/announcements/' + record.announcement_id + '/reopen" style="display:inline;" onsubmit="showActionLoading(\'Reopening announcement...\');">'
+                + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                + '<button type="submit" class="btn-submit" style="font-size:.82rem;padding:.5rem 1rem;">Reopen as Active</button>'
+                + '</form>';
+        } else {
+            reopenWrap.innerHTML = '';
+        }
+    }
     document.getElementById('aadd-backdrop').classList.add('open');
     document.getElementById('aadd-modal').classList.add('open');
 }
@@ -2057,13 +2570,26 @@ function closeAnnArchiveDetail() {
 }
 
 function exportAnnArchive() {
-    if (!deletedAnnArchive.length) { showToast('No archived announcements to export.', 'error'); return; }
-    const rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Deleted On']];
-    deletedAnnArchive.forEach(r => rows.push([r.announcement_id, r.title||'', r.content||'', r.priority||'', r.status||'', r.posted_at||'', r.scheduled_at||'', r.deleted_at||'']));
-    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-    const a = document.createElement('a');
+    var source   = _annArchiveTab === 'closed' ? closedAnnArchive : deletedAnnArchive;
+    var filename = _annArchiveTab === 'closed' ? 'announcements_closed.csv' : 'announcements_deleted.csv';
+    if (!source.length) { showToast('No records to export.', 'error'); return; }
+    var rows = [['ID','Title','Content','Priority','Status','Posted At','Scheduled At','Closed/Deleted On']];
+    source.forEach(function(r) {
+        rows.push([
+            r.announcement_id,
+            r.title        || '',
+            r.content      || '',
+            r.priority     || '',
+            r.status       || '',
+            r.posted_at    || '',
+            r.scheduled_at || '',
+            _annArchiveTab === 'closed' ? (r.posted_at || '') : (r.deleted_at || ''),
+        ]);
+    });
+    var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g,'""') + '"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'announcements_deleted_archive.csv';
+    a.download = filename;
     a.click();
 }
 
@@ -2071,5 +2597,8 @@ updateEmptyState();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif
+@if($errors->any())
+    showToast("{{ $errors->first() }}", 'error');
+@endif
 </script>
 @endsection

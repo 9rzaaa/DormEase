@@ -210,27 +210,27 @@
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">What are the available room types and how much do they cost?</span>
+            <span class="faq-question">What are the available room types and what is included?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">We offer single, double, and quad-sharing room configurations to accommodate different budgets. Room rates vary depending on the type and floor. All rooms are furnished with a bed, cabinet, study desk, and chair. For the latest pricing, please get in touch with our management office directly through the Contact page.</div>
+            <div class="faq-answer-inner">We offer single, double, and quad-sharing room configurations. Rooms are semi-furnished and come with a study table and bookshelves. Air conditioning units and other electrical appliances are not provided and must be brought and set up by the tenant. For the latest pricing per room type, please reach out to the management office through the Contact page.</div>
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">What utilities and amenities are included in the monthly rate?</span>
+            <span class="faq-question">How does water billing work and is laundry available on-site?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly rates typically cover water (up to a set consumption limit billed separately), electricity, Wi-Fi access, use of common areas, and building maintenance services. Water billing beyond the standard allowance is computed separately and reflected in your monthly statement through DormEase. Laundry areas and comfort rooms are shared per floor.</div>
+            <div class="faq-answer-inner">Water consumption is measured per unit using individual sub-meters. Your monthly water bill is computed based on your actual usage and reflected in your billing statement through DormEase. In-unit laundry is not allowed inside the dormitory. Tenants may use nearby laundry shops for pickup and delivery service, several of which are accessible within the immediate area.</div>
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">What is the curfew policy and can it be extended?</span>
+            <span class="faq-question">Is Wi-Fi available and how do I connect?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
@@ -320,21 +320,31 @@
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">How are announcements and notices delivered to tenants?</span>
+            <span class="faq-question">What coffee shops and convenience stores are nearby?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">All official announcements, including billing notices, scheduled maintenance, dormitory events, and policy updates, are posted through the DormEase platform. Tenants receive notifications on their registered devices. Physical notices may also be posted on bulletin boards per floor for important reminders.</div>
+            <div class="faq-answer-inner">Cotti Coffee is located just downstairs, making it a convenient study spot or quick break option. CoffeePages and Uncle John's Convenience Store are also among the nearby establishments within easy walking distance from the dormitory.</div>
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">What happens if I need to move out before my contract ends?</span>
+            <span class="faq-question">How much is the reservation fee and when does the contract start?</span>
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Tenants who wish to end their stay early must submit a formal notice to the management at least 30 days in advance. Early move-out may be subject to terms specified in your lease agreement, including forfeiture of the security deposit or a prorated fee. We encourage tenants to review their contract carefully and coordinate with management as early as possible.</div>
+            <div class="faq-answer-inner">A reservation fee equivalent to one month advance payment is required to secure a slot. Contracts typically start in August in line with the school year, but tenants may move in at any time of the year if a room is available. Please coordinate with the management office to check current availability.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">How do I pay my monthly dues and view my billing statement?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Monthly billing statements, including rent and water charges, are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
           </div>
         </div>
 

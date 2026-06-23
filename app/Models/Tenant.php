@@ -12,6 +12,15 @@ class Tenant extends Authenticatable
     use HasApiTokens;
     protected $primaryKey = 'tenant_id';
 
+    protected $appends = [
+        'role',
+    ];
+
+    public function getRoleAttribute(): string
+    {
+        return 'tenant';
+    }
+
     protected $fillable = [
         'account_id',
         'password_hash',
@@ -20,8 +29,10 @@ class Tenant extends Authenticatable
         'last_name',
         'email',
         'contact_number',
+        'guardian_number',
         'referred_by',
         'profile_photo',
+        'tenant_photo',
         'room_number',
         'floor',
         'stay_type',
@@ -45,6 +56,29 @@ class Tenant extends Authenticatable
     protected $casts = [
         'is_on_vacation' => 'boolean',
     ];
+
+    public function setContactNumberAttribute($value)
+    {
+        $this->attributes['contact_number'] = $this->normalizePhone($value);
+    }
+
+    public function setGuardianNumberAttribute($value)
+    {
+        $this->attributes['guardian_number'] = $this->normalizePhone($value);
+    }
+
+    private function normalizePhone($value): ?string
+    {
+        if (!$value) return null;
+        $digits = preg_replace('/\D/', '', $value);
+        if (strlen($digits) === 12 && str_starts_with($digits, '63')) {
+            $digits = '0' . substr($digits, 2);
+        }
+        if (strlen($digits) === 11 && str_starts_with($digits, '09')) {
+            return substr($digits, 0, 4) . '-' . substr($digits, 4, 3) . '-' . substr($digits, 7, 4);
+        }
+        return $value;
+    }
 
     public function getAuthPassword()
     {
@@ -120,4 +154,3 @@ class Tenant extends Authenticatable
             ->exists();
     }
 }
-

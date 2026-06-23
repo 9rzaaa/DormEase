@@ -113,6 +113,28 @@
 
     .filter-divider { width: 1px; height: 20px; background: var(--baby-pink); flex-shrink: 0; }
     .filter-label { font-size: .82rem; font-weight: 700; color: var(--ink-muted); white-space: nowrap; }
+    .status-legend-wrap { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; }
+    .status-legend-wrap img { display: block; opacity: .75; transition: opacity .2s; }
+    .status-legend-wrap:hover img { opacity: 1; }
+    .status-legend-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.15), 0 2px 8px rgba(0,0,0,.08);
+        padding: .8rem .9rem;
+        width: 320px;
+        max-width: calc(100vw - 24px);
+        z-index: 99999;
+    }
+    .status-legend-popup.open { display: block; }
+    .slg-title { font-size: .67rem; font-weight: 800; color: var(--bright-pink); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .5rem; padding-bottom: .35rem; border-bottom: 1.5px solid var(--petal); }
+    .slg-title.second { margin-top: .65rem; }
+    .slg-row { display: flex; align-items: flex-start; gap: .6rem; padding: .32rem 0; border-bottom: 1px solid var(--baby-pink); }
+    .slg-row:last-child { border-bottom: none; }
+    .slg-row .badge { flex-shrink: 0; width: 92px; justify-content: center; text-align: center; white-space: nowrap; }
+    .slg-desc { font-size: .75rem; color: var(--ink-muted); font-weight: 500; line-height: 1.45; padding-top: .12rem; }
 
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 980px; }
@@ -148,6 +170,7 @@
     .badge-admin     { background: var(--petal); color: var(--hot-pink); border: 1.5px solid var(--baby-pink); }
     .badge-frontdesk { background: var(--gray-light); color: var(--badge-frontdesk-text); border: 1.5px solid var(--badge-frontdesk-border); }
     .badge-staff     { background: var(--mint); color: var(--green); border: 1.5px solid var(--green); }
+    .input-valid     { border-color: var(--green, #1f9d69) !important; }
 
     .action-group { display: flex; align-items: center; justify-content: center; gap: .4rem; }
     .act-btn {
@@ -540,8 +563,30 @@
     .fade-up { animation: fadeIn .45s ease both; }
     .d1{animation-delay:.05s;} .d2{animation-delay:.12s;} .d3{animation-delay:.2s;}
 
+    @media(max-width:1400px) {
+        .stat-box { padding: 1.2rem 1.2rem; gap: 1rem; }
+        .stat-num { font-size: 1.8rem; }
+        .stat-icon-circle { width: 58px; height: 58px; }
+        .stat-icon-circle img { width: 28px; height: 28px; }
+        .search-wrap input { width: 160px; }
+        .sort-select { max-width: 130px; }
+    }
+
+    @media(max-width:1200px) {
+        .page-body { padding: 1.2rem 1.2rem; }
+        .stat-box { padding: 1rem 1rem; gap: .85rem; }
+        .stat-num { font-size: 1.6rem; }
+        .stat-label { font-size: .78rem; }
+        .stat-sub { font-size: .7rem; }
+        .header-actions { gap: .5rem; }
+        .btn-primary, .btn-outline { padding: .5rem .9rem; font-size: .82rem; }
+        .search-wrap input { width: 140px; }
+        .filter-label { display: none; }
+        .filter-divider { display: none; }
+    }
+
     @media(max-width:900px) {
-        .stats-row  { grid-template-columns: 1fr 1fr; }
+        .stats-row  { grid-template-columns: 1fr 1fr 1fr; }
         .modal-grid { grid-template-columns: 1fr; }
         .page-header { flex-direction: column; gap: 1rem; }
         .table-header { flex-direction: column; align-items: flex-start; }
@@ -554,6 +599,7 @@
         .sad-tabs { padding: 0 1rem; }
         .sad-tab { padding: .75rem .75rem; font-size: .76rem; }
     }
+
     @media(max-width:600px) {
         .stats-row { grid-template-columns: 1fr; }
         .header-actions { width: 100%; }
@@ -563,6 +609,47 @@
         .search-wrap { width: 100%; }
         .search-wrap input { width: 100%; }
         .sort-select { width: 100%; }
+    }
+
+    .form-progress-wrap {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        padding: .5rem 0 .15rem;
+        margin-bottom: -.3rem;
+    }
+    .form-progress-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--gray-light);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .form-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+    }
+    .form-progress-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+    }
+    .form-progress-label span.ready   { color: #1f9d69; font-weight: 800; }
+    .form-progress-label span.partial { color: var(--hot-pink); }
+    .field-req-star {
+        color: var(--hot-pink);
+        font-size: .75rem;
+        font-weight: 900;
+        margin-left: .15rem;
+        opacity: .8;
+        vertical-align: middle;
+        pointer-events: none;
+        user-select: none;
     }
 
     .action-loading-overlay {
@@ -1040,6 +1127,7 @@
                 Please inform the staff member immediately.
             </div>
             <div class="modal-actions">
+                <button class="btn-cancel" onclick="printStaffCredentialSlip('new')">Print / Save as PDF</button>
                 <button class="btn-submit" onclick="closeModal('staff-credentials-modal')">Got it</button>
             </div>
         </div>
@@ -1141,6 +1229,10 @@
                     <option value="name">Name</option>
                     <option value="role">Role</option>
                 </select>
+                <div class="filter-divider"></div>
+                <div class="status-legend-wrap" id="status-legend-trigger" onmouseenter="showStatusLegend()" onmouseleave="scheduleHideStatusLegend()" onclick="toggleStatusLegendClick(event)">
+                    <img src="{{ asset('icons/info.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) saturate(100%) invert(11%) sepia(93%) saturate(6000%) hue-rotate(327deg) brightness(95%);">
+                </div>
             </div>
         </div>
 
@@ -1171,6 +1263,23 @@
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
+    <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
+        <div class="modal-header" style="margin-bottom:.85rem;">
+            <div class="modal-title">Credential Slip Preview</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="btn-submit" style="padding:.45rem 1rem;font-size:.82rem;" onclick="downloadPdfFromPreview()">Download</button>
+                <button class="modal-close" onclick="closePdfPreview()">&#x2715;</button>
+            </div>
+        </div>
+        <div style="width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--soft-bg);">
+            <iframe id="pdf-preview-iframe" src="" style="width:100%;height:520px;border:none;display:block;"></iframe>
+        </div>
+        <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
+            Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1178,6 +1287,16 @@
         </span>
         <span id="action-loading-text">Please wait...</span>
     </div>
+</div>
+<div class="status-legend-popup" id="status-legend-popup" onmouseenter="clearTimeout(statusLegendHideTimer)" onmouseleave="scheduleHideStatusLegend()">
+    <div class="slg-title">Duty Status</div>
+    <div class="slg-row"><span class="badge badge-onduty">On Duty</span><span class="slg-desc">Staff member is currently active and on shift.</span></div>
+    <div class="slg-row"><span class="badge badge-offduty">Off Duty</span><span class="slg-desc">Staff member is not currently on shift.</span></div>
+    <div class="slg-row"><span class="badge badge-leave">On Leave</span><span class="slg-desc">Staff member is on approved leave for a scheduled period. Duty status is set to Off Duty while on leave.</span></div>
+    <div class="slg-title second">Role</div>
+    <div class="slg-row"><span class="badge badge-admin">Admin</span><span class="slg-desc">Full administrative access to manage staff, tenants, and dorm settings.</span></div>
+    <div class="slg-row"><span class="badge badge-admin">Secretary</span><span class="slg-desc">Handles records, documentation, and clerical support tasks.</span></div>
+    <div class="slg-row"><span class="badge badge-frontdesk">Front Desk</span><span class="slg-desc">Manages guest check-ins, inquiries, and daily front desk duties.</span></div>
 </div>
 
 <div class="staff-archive-backdrop" id="sad-backdrop" onclick="closeStaffArchive()"></div>
@@ -1288,33 +1407,46 @@
             <div class="modal-title">Add New Staff</div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff...">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
             @csrf
             <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" placeholder="e.g. Juan" required value="{{ old('first_name') }}">
+                <div class="form-progress-wrap full">
+                    <div class="form-progress-label">
+                        <span id="add-staff-progress-text">Fill in required fields</span>
+                        <span id="add-staff-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
                 </div>
                 <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" placeholder="e.g. Dela Cruz" required value="{{ old('last_name') }}">
+                    <label>First Name <span class="field-req-star">*</span></label>
+                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
+                    <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
+                </div>
+                <div class="modal-field">
+                    <label>Last Name <span class="field-req-star">*</span></label>
+                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
+                    <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}">
+                    <label>Email <span class="field-req-star">*</span></label>
+                    <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
+                    <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
-                    <label>Role</label>
-                    <select name="role" required>
+                    <label>Role <span class="field-req-star">*</span></label>
+                    <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':' var(--red)'">
                         <option value="">Select role</option>
                         <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
                         <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
                         <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
                     </select>
+                    <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
                 </div>
                 <div class="modal-field">
                     <label>Shift Schedule</label>
-                    <select name="shift_schedule">
+                    <select name="shift_schedule" id="add-shift">
                         <option value="">Select shift</option>
                         <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
                         <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
@@ -1322,12 +1454,13 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" placeholder="e.g. 0912-345-6789" value="{{ old('contact_number') }}">
+                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Add Staff</button>
+                <button type="submit" class="btn-submit" onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
             </div>
         </form>
     </div>
@@ -1360,17 +1493,29 @@
             @csrf
             @method('PUT')
             <div class="modal-grid">
-                <div class="modal-field">
-                    <label>First Name</label>
-                    <input type="text" name="first_name" id="edit-first-name" required>
+                <div class="form-progress-wrap full">
+                    <div class="form-progress-label">
+                        <span id="edit-staff-progress-text">Fill in required fields</span>
+                        <span id="edit-staff-progress-count" class="partial"></span>
+                    </div>
+                    <div class="form-progress-bar">
+                        <div class="form-progress-fill" id="edit-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                    </div>
                 </div>
                 <div class="modal-field">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" id="edit-last-name" required>
+                    <label>First Name <span class="field-req-star">*</span></label>
+                    <input type="text" name="first_name" id="edit-first-name" required maxlength="100" oninput="validateName(this)">
+                    <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
+                </div>
+                <div class="modal-field">
+                    <label>Last Name <span class="field-req-star">*</span></label>
+                    <input type="text" name="last_name" id="edit-last-name" required maxlength="100" oninput="validateName(this)">
+                    <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
                 <div class="modal-field full">
-                    <label>Email</label>
-                    <input type="email" name="email" id="edit-email" required>
+                    <label>Email <span class="field-req-star">*</span></label>
+                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this)">
+                    <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
                     <label>Role</label>
@@ -1389,15 +1534,38 @@
                 </div>
                 <div class="modal-field full">
                     <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact">
+                    <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                 </div>
                 <div class="modal-field full">
                     <label>Duty Status</label>
                     <select name="duty_status" id="edit-duty-status">
                         <option value="on_duty">On Duty</option>
                         <option value="off_duty">Off Duty</option>
-                        <option value="on_leave">On Leave</option>
                     </select>
+                </div>
+                <div class="modal-field full" style="border:1.5px solid var(--baby-pink);border-radius:10px;padding:.75rem .9rem;background:var(--soft-bg);">
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-bottom:0;">
+                        <input type="checkbox" name="is_on_leave" id="edit-is-on-leave" value="1" onchange="toggleLeaveFields()" style="width:auto;margin:0;">
+                        Mark as On Leave
+                    </label>
+                    <div id="edit-leave-fields" style="display:none;margin-top:.75rem;">
+                        <div class="modal-grid" style="margin-bottom:.75rem;">
+                            <div class="modal-field">
+                                <label>Leave Start</label>
+                                <input type="date" name="leave_start" id="edit-leave-start" onchange="validateLeaveDates()">
+                            </div>
+                            <div class="modal-field">
+                                <label>Leave End</label>
+                                <input type="date" name="leave_end" id="edit-leave-end" onchange="validateLeaveDates()">
+                                <div id="leave-date-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Leave end must be after start date.</div>
+                            </div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Reason / Note</label>
+                            <input type="text" name="leave_note" id="edit-leave-note" placeholder="e.g. Sick leave, vacation, family emergency" maxlength="255">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-field full">
                     <label>Active</label>
@@ -1412,7 +1580,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
+                <button type="submit" class="btn-submit" onclick="if(!validateEditForm()){event.preventDefault();}">Save Changes</button>
             </div>
         </form>
     </div>
@@ -1448,6 +1616,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
     function showActionLoading(message) {
         var overlay = document.getElementById('action-loading');
@@ -1477,7 +1646,8 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(e) {
+                if (e.defaultPrevented) return;
                 setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
             });
         });
@@ -1488,6 +1658,7 @@
     var currentPage  = 1;
     var filtered     = staffList.slice();
     var currentStaff = null;
+    var resetStaffName = '';
 
     document.getElementById('table-date').textContent =
         'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -1496,9 +1667,24 @@
         var map = {
             on_duty:  '<span class="badge badge-onduty">On Duty</span>',
             off_duty: '<span class="badge badge-offduty">Off Duty</span>',
-            on_leave: '<span class="badge badge-leave">On Leave</span>',
         };
         return map[status] || ('<span class="badge badge-offduty">' + (status || '\u2014') + '</span>');
+    }
+
+    function fmtLeaveDate(d) {
+        if (!d) return null;
+        return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function leaveBadge(s) {
+        if (!s.is_on_leave) return '';
+        var start = fmtLeaveDate(s.leave_start);
+        var end   = fmtLeaveDate(s.leave_end);
+        var title = '';
+        if (start || end || s.leave_note) {
+            title = ' title="' + (start || '\u2014') + ' to ' + (end || 'Ongoing') + (s.leave_note ? ' \u2014 ' + String(s.leave_note).replace(/"/g, '&quot;') : '') + '"';
+        }
+        return '<span class="badge badge-leave"' + title + '>On Leave</span>';
     }
 
     function roleBadge(role) {
@@ -1515,6 +1701,18 @@
         if (!shift) return '\u2014';
         var cls = shift.toLowerCase() === 'night' ? 'night' : 'day';
         return '<span class="shift-dot ' + cls + '">' + shift + '</span>';
+    }
+
+    function normalizeContactDisplay(raw) {
+        if (!raw) return '\u2014';
+        var digits = raw.replace(/\D/g, '');
+        if (digits.length === 12 && digits.substring(0, 2) === '63') {
+            digits = '0' + digits.substring(2);
+        }
+        if (digits.length === 11 && digits.substring(0, 2) === '09') {
+            return digits.substring(0, 4) + '-' + digits.substring(4, 7) + '-' + digits.substring(7, 11);
+        }
+        return raw;
     }
 
     function fmtStaffId(id) {
@@ -1535,8 +1733,8 @@
                     + '<td class="td-name">' + s.first_name + ' ' + s.last_name + '</td>'
                     + '<td>' + roleBadge(s.role) + '</td>'
                     + '<td>' + shiftLabel(s.shift_schedule) + '</td>'
-                    + '<td>' + (s.contact_number || '\u2014') + '</td>'
-                    + '<td>' + dutyBadge(s.duty_status) + '</td>'
+                    + '<td>' + normalizeContactDisplay(s.contact_number) + '</td>'
+                    + '<td><div style="display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;">' + dutyBadge(s.duty_status) + leaveBadge(s) + '</div></td>'
                     + '<td>'
                         + '<div class="action-group">'
                             + '<button class="act-btn" title="View" onclick=\'viewStaff(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
@@ -1599,11 +1797,10 @@
                 (s.contact_number || '').toLowerCase().includes(q) ||
                 (s.email          || '').toLowerCase().includes(q);
             var matchRole = role === '' || s.role === role;
-            var matchDuty = duty === '' || s.duty_status === duty;
+            var matchDuty = duty === '' || (duty === 'on_leave' ? !!s.is_on_leave : s.duty_status === duty);
             return matchSearch && matchRole && matchDuty;
         });
-        currentPage = 1;
-        renderTable();
+        sortTable();
     }
 
     function sortTable() {
@@ -1622,10 +1819,15 @@
             '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
             + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + (s.contact_number || '\u2014') + '</span></div>'
+            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
             + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
+            + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
+                ? leaveBadge(s)
+                    + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '\u2014') + ' \u2192 ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
+                    + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
+                : 'Not on leave') + '</span></div>'
             + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">' + (s.is_active ? 'Active' : 'Inactive') + '</span></div>';
         openModal('view-modal');
     }
@@ -1645,10 +1847,183 @@
         document.getElementById('edit-email').value           = s.email          || '';
         document.getElementById('edit-role').value            = s.role           || '';
         document.getElementById('edit-shift').value           = s.shift_schedule || '';
-        document.getElementById('edit-contact').value         = s.contact_number || '';
-        document.getElementById('edit-duty-status').value     = s.duty_status    || 'off_duty';
+        var editContactEl = document.getElementById('edit-contact');
+        editContactEl.value = s.contact_number || '';
+        formatContactNumber(editContactEl);
+        validateContactNumber(editContactEl);
+        document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
+        document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
+        document.getElementById('edit-leave-start').value     = s.leave_start || '';
+        document.getElementById('edit-leave-end').value       = s.leave_end   || '';
+        document.getElementById('edit-leave-note').value      = s.leave_note  || '';
+        toggleLeaveFields();
         openModal('edit-modal');
+    }
+
+    function formatContactNumber(input) {
+        var raw    = input.value;
+        var digits = raw.replace(/\D/g, '');
+
+        if (digits.length >= 2 && digits.substring(0, 2) === '63') {
+            digits = '0' + digits.substring(2);
+        }
+
+        if (digits.length > 0 && digits.charAt(0) !== '0') {
+            digits = '0' + digits;
+        }
+
+        digits = digits.slice(0, 11);
+
+        var formatted = digits;
+        if (digits.length > 4 && digits.length <= 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        } else if (digits.length > 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+        }
+        input.value = formatted;
+    }
+
+    function validateContactNumber(input) {
+        var raw   = input.value.trim();
+        var val   = raw.replace(/\D/g, '');
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+
+        if (raw === '') {
+            input.style.borderColor = '';
+            if (errEl) errEl.style.display = 'none';
+            return true;
+        }
+
+        var validFormat = /^09\d{2}-\d{3}-\d{4}$/.test(raw);
+
+        if (!validFormat) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) {
+                errEl.textContent = 'Enter a valid number in 09XX-XXX-XXXX format.';
+                errEl.style.display = 'block';
+            }
+            return false;
+        }
+
+        input.style.borderColor = 'var(--green, #1f9d69)';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateEmail(input) {
+        var val   = input.value.trim();
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        if (val.length > 0 && !valid) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateName(input) {
+        var val     = input.value.trim();
+        var errId   = input.id + '-error';
+        var errEl   = document.getElementById(errId);
+        var pattern = /^[a-zA-Z\s\-'.]+$/;
+        if (!val) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'This field is required.'; errEl.style.display = 'block'; }
+            return false;
+        }
+        if (!pattern.test(val)) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Only letters, spaces, hyphens, apostrophes, and periods allowed.'; errEl.style.display = 'block'; }
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) { errEl.style.display = 'none'; errEl.textContent = 'This field is required.'; }
+        return true;
+    }
+
+    function validateRequired(input, label) {
+        var val   = input.value.trim();
+        var errId = input.id + '-error';
+        var errEl = document.getElementById(errId);
+        if (!val) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) errEl.style.display = 'block';
+            return false;
+        }
+        input.style.borderColor = '';
+        if (errEl) errEl.style.display = 'none';
+        return true;
+    }
+
+    function validateAddForm() {
+        var ok = true;
+        if (!validateName(document.getElementById('add-first-name')))       ok = false;
+        if (!validateName(document.getElementById('add-last-name')))        ok = false;
+        if (!validateEmail(document.getElementById('add-email')))           ok = false;
+        if (!validateContactNumber(document.getElementById('add-contact'))) ok = false;
+        var roleEl  = document.getElementById('add-role');
+        var roleErr = document.getElementById('add-role-error');
+        if (!roleEl.value) {
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErr) { roleErr.textContent = 'Please select a role.'; roleErr.style.display = 'block'; }
+            ok = false;
+        } else {
+            roleEl.style.borderColor = '';
+            if (roleErr) roleErr.style.display = 'none';
+        }
+        return ok;
+    }
+
+    function validateEditForm() {
+        var ok = true;
+        if (!validateName(document.getElementById('edit-first-name')))       ok = false;
+        if (!validateName(document.getElementById('edit-last-name')))        ok = false;
+        if (!validateEmail(document.getElementById('edit-email')))           ok = false;
+        if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
+        if (document.getElementById('edit-is-on-leave').checked) {
+            if (!validateLeaveDates()) ok = false;
+        }
+        return ok;
+    }
+
+    function toggleLeaveFields() {
+        var checked = document.getElementById('edit-is-on-leave').checked;
+        var fields  = document.getElementById('edit-leave-fields');
+        var duty    = document.getElementById('edit-duty-status');
+        fields.style.display = checked ? 'block' : 'none';
+        if (checked) {
+            duty.value    = 'off_duty';
+            duty.disabled = true;
+        } else {
+            duty.disabled = false;
+        }
+    }
+
+    function validateLeaveDates() {
+        var start      = document.getElementById('edit-leave-start').value;
+        var end        = document.getElementById('edit-leave-end').value;
+        var startInput = document.getElementById('edit-leave-start');
+        var endInput   = document.getElementById('edit-leave-end');
+        var errEl      = document.getElementById('leave-date-error');
+        var ok         = true;
+
+        startInput.style.borderColor = '';
+        endInput.style.borderColor   = '';
+        if (errEl) errEl.style.display = 'none';
+
+        if (start && end && end < start) {
+            endInput.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Leave end must be after start date.'; errEl.style.display = 'block'; }
+            ok = false;
+        }
+
+        return ok;
     }
 
     function openDeleteModal(id, name) {
@@ -1703,6 +2078,7 @@
             + '</body></html>');
         win.document.close();
         win.print();
+        showToast('Staff list opened for printing.', 'success');
     }
 
     function openModal(id)  { document.getElementById(id).classList.add('open'); }
@@ -1713,7 +2089,11 @@
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(m) {
-        m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+        m.addEventListener('click', function(e) {
+            if (e.target !== m) return;
+            if (m.id === 'pdf-preview-modal') { closePdfPreview(); return; }
+            m.classList.remove('open');
+        });
     });
 
     function copyText(id, btn) {
@@ -1741,6 +2121,7 @@
     function resetTempPassword(s) {
         var existing = document.getElementById('reset-confirm-modal');
         if (existing) existing.remove();
+        resetStaffName = s.first_name + ' ' + s.last_name;
         var initials = (s.first_name[0] || '') + (s.last_name[0] || '');
         document.body.insertAdjacentHTML('beforeend',
             '<div class="modal-overlay open" id="reset-confirm-modal">'
@@ -1819,7 +2200,7 @@
                         + '</div>'
                     + '</div>'
                     + '<div class="credentials-warning">This password will <strong>not be shown again</strong>.</div>'
-                    + '<div class="modal-actions"><button class="btn-submit" onclick="closeModal(\'reset-credentials-modal\')">Got it</button></div>'
+                    + '<div class="modal-actions"><button class="btn-cancel" onclick="printStaffCredentialSlip(\'reset\')">Print / Save as PDF</button><button class="btn-submit" onclick="closeModal(\'reset-credentials-modal\')">Got it</button></div>'
                 + '</div>'
                 + '</div>'
             );
@@ -1832,6 +2213,152 @@
             hideActionLoading();
             showToast('Failed to reset password.', 'error');
         });
+    }
+    var _pdfBlobUrl = null;
+
+    function openPdfPreview(blobUrl) {
+        _pdfBlobUrl = blobUrl;
+        document.getElementById('pdf-preview-iframe').src = blobUrl;
+        openModal('pdf-preview-modal');
+    }
+
+    function closePdfPreview() {
+        closeModal('pdf-preview-modal');
+        document.getElementById('pdf-preview-iframe').src = '';
+        if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+    }
+
+    function downloadPdfFromPreview() {
+        if (!_pdfBlobUrl) return;
+        var a = document.createElement('a');
+        a.href = _pdfBlobUrl;
+        a.download = 'credentials-slip.pdf';
+        a.click();
+    }
+
+    function printStaffCredentialSlip(type) {
+        var staffName, email, staffId, tempPassword;
+        if (type === 'new') {
+            staffName    = @json(session('new_staff_name'));
+            email        = document.getElementById('new-email').innerText.trim();
+            staffId      = document.getElementById('new-staff-id').innerText.trim();
+            tempPassword = document.getElementById('new-temp-password').innerText.trim();
+        } else {
+            staffName    = resetStaffName;
+            email        = document.getElementById('reset-email').innerText.trim();
+            staffId      = document.getElementById('reset-staff-id').innerText.trim();
+            tempPassword = document.getElementById('reset-temp-password').innerText.trim();
+        }
+
+        var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        var { jsPDF } = window.jspdf;
+        var doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [80, 148],
+        });
+
+        var slipW  = 80;
+        var pink   = [232, 23, 93];
+        var ink    = [26, 26, 46];
+        var muted  = [120, 80, 100];
+        var white  = [255, 255, 255];
+        var petal  = [255, 245, 249];
+        var border = [244, 184, 208];
+        var warn   = [255, 249, 230];
+        var warnTx = [122, 84, 0];
+        var warnBd = [240, 192, 64];
+
+        doc.setFillColor(...pink);
+        doc.rect(0, 0, slipW, 28, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(...white);
+        doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', slipW / 2, 8, { align: 'center' });
+
+        doc.setFontSize(11);
+        doc.text('Staff Login Credentials', slipW / 2, 15, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(255, 220, 235);
+        doc.text('DormEase Staff Portal', slipW / 2, 21, { align: 'center' });
+
+        var y = 34;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...ink);
+        doc.text(staffName, slipW / 2, y, { align: 'center' });
+
+        y += 3;
+        doc.setDrawColor(...border);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 6;
+
+        function drawField(label, value, isSmall) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6);
+            doc.setTextColor(...pink);
+            doc.text(label.toUpperCase(), 6, y);
+
+            y += 2;
+
+            doc.setFillColor(...petal);
+            doc.setDrawColor(...border);
+            doc.setLineWidth(0.4);
+            doc.roundedRect(6, y, slipW - 12, 9, 1.5, 1.5, 'FD');
+
+            doc.setFont('courier', 'bold');
+            doc.setFontSize(isSmall ? 8 : 10);
+            doc.setTextColor(...ink);
+            doc.text(value, slipW / 2, y + 6, { align: 'center' });
+
+            y += 13;
+        }
+
+        drawField('Email', email, true);
+        drawField('Staff ID', staffId, false);
+        drawField('Temporary Password', tempPassword, false);
+
+        doc.setFillColor(...warn);
+        doc.setDrawColor(...warnBd);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(6, y, slipW - 12, 14, 1.5, 1.5, 'FD');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(...warnTx);
+        var warnLines = doc.splitTextToSize(
+            'This is a temporary password. You will be asked to change it on first login. Keep this slip private.',
+            slipW - 16
+        );
+        doc.text(warnLines, slipW / 2, y + 4.5, { align: 'center', lineHeightFactor: 1.5 });
+
+        y += 18;
+
+        doc.setDrawColor(...border);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 4;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(...muted);
+        doc.text('Issued: ' + today, 6, y);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...pink);
+        doc.text('DormEase', slipW - 6, y, { align: 'right' });
+
+        var safeName = staffName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+        var blobUrl = doc.output('bloburl');
+        openPdfPreview(blobUrl);
     }
 
     var deletedStaffArchive   = @json($deletedArchive);
@@ -1929,7 +2456,8 @@
 
     function fmtDatePlain(d) {
         if (!d) return '\u2014';
-        var dt   = new Date(d);
+        var dt = new Date(d);
+        if (isNaN(dt.getTime())) return '\u2014';
         var date = dt.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
         var time = dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         return date + ' ' + time;
@@ -1988,7 +2516,6 @@
             var labelMap = { deleted: 'deleted', inactive: 'inactive' };
             list.innerHTML = '<div class="sad-empty">'
                 + '<img class="sad-empty-icon" src="{{ asset("icons/staff-2.png") }}" alt="">No ' + labelMap[staffArchiveTab] + ' staff found.'
-                + 'No ' + labelMap[staffArchiveTab] + ' staff found.'
                 + '</div>';
             return;
         }
@@ -2319,6 +2846,61 @@
         }
     });
 
+    var statusLegendHideTimer = null;
+
+    function positionStatusLegend() {
+        var popup   = document.getElementById('status-legend-popup');
+        var trigger = document.getElementById('status-legend-trigger');
+        var rect = trigger.getBoundingClientRect();
+        popup.style.left = '8px';
+        popup.style.top  = (rect.bottom + 8) + 'px';
+        popup.classList.add('open');
+        requestAnimationFrame(function() {
+            var pw = popup.offsetWidth;
+            var ph = popup.offsetHeight;
+            var left = rect.left + (rect.width / 2) - (pw / 2);
+            left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+            popup.style.left = left + 'px';
+            if (rect.bottom + ph + 8 > window.innerHeight) {
+                popup.style.top = Math.max(8, rect.top - ph - 8) + 'px';
+            } else {
+                popup.style.top = (rect.bottom + 8) + 'px';
+            }
+        });
+    }
+
+    function showStatusLegend() {
+        clearTimeout(statusLegendHideTimer);
+        positionStatusLegend();
+    }
+
+    function hideStatusLegend() {
+        document.getElementById('status-legend-popup').classList.remove('open');
+    }
+
+    function scheduleHideStatusLegend() {
+        statusLegendHideTimer = setTimeout(hideStatusLegend, 200);
+    }
+
+    function toggleStatusLegendClick(e) {
+        e.stopPropagation();
+        var popup = document.getElementById('status-legend-popup');
+        if (popup.classList.contains('open')) {
+            hideStatusLegend();
+        } else {
+            positionStatusLegend();
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        var popup = document.getElementById('status-legend-popup');
+        if (popup && popup.classList.contains('open') &&
+            !e.target.closest('#status-legend-popup') &&
+            !e.target.closest('#status-legend-trigger')) {
+            hideStatusLegend();
+        }
+    });
+
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
     @endif
@@ -2329,7 +2911,148 @@
         });
     @endif
 
+    function refreshStaffProgress(prefix, fields) {
+        var filled = fields.filter(function(id) {
+            var el = document.getElementById(id);
+            return el && el.value && el.value.trim() !== '';
+        }).length;
+        var total = fields.length;
+        var pct   = total > 0 ? Math.round((filled / total) * 100) : 0;
+        var fill  = document.getElementById(prefix + '-progress-fill');
+        var text  = document.getElementById(prefix + '-progress-text');
+        var count = document.getElementById(prefix + '-progress-count');
+        if (!fill || !text || !count) return;
+        fill.style.width = pct + '%';
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            text.textContent = 'All required fields filled';
+            text.className = 'ready';
+            count.textContent = filled + '/' + total;
+            count.className = 'ready';
+        } else if (pct >= 50) {
+            fill.style.background = 'var(--gradient-pink)';
+            text.textContent = 'Almost there';
+            text.className = 'partial';
+            count.textContent = filled + '/' + total;
+            count.className = 'partial';
+        } else {
+            fill.style.background = 'var(--gradient-pink)';
+            text.textContent = 'Fill in required fields';
+            text.className = '';
+            count.textContent = filled + '/' + total;
+            count.className = '';
+        }
+    }
+
+    var ADD_STAFF_FIELDS  = ['add-first-name', 'add-last-name', 'add-email', 'add-role'];
+    var EDIT_STAFF_FIELDS = ['edit-first-name', 'edit-last-name', 'edit-email'];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var addModal = document.getElementById('add-modal');
+        if (addModal) {
+            addModal.addEventListener('input',  function() { refreshStaffProgress('add-staff', ADD_STAFF_FIELDS); });
+            addModal.addEventListener('change', function() { refreshStaffProgress('add-staff', ADD_STAFF_FIELDS); });
+        }
+
+        var editModal = document.getElementById('edit-modal');
+        if (editModal) {
+            editModal.addEventListener('input',  function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); });
+            editModal.addEventListener('change', function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); });
+        }
+
+        var origOpenEditModal = window.openEditModal;
+        window.openEditModal = function(s) {
+            origOpenEditModal(s);
+            setTimeout(function() { refreshStaffProgress('edit-staff', EDIT_STAFF_FIELDS); }, 120);
+        };
+    });
+
     filtered = staffList.slice();
     renderTable();
+
+    var pollHash = '';
+
+    function simpleHash(str) {
+        var h = 0;
+        for (var i = 0; i < str.length; i++) {
+            h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+        }
+        return h;
+    }
+
+    function isAnyModalOpen() {
+        var modals = document.querySelectorAll('.modal-overlay.open');
+        return modals.length > 0;
+    }
+
+    function isAnyDrawerOpen() {
+        var drawers = [
+            document.getElementById('sad-drawer'),
+            document.getElementById('atdlog-drawer'),
+        ];
+        return drawers.some(function(d) { return d && d.classList.contains('open'); });
+    }
+
+    function isStaffUserBusy() {
+        if (isAnyModalOpen() || isAnyDrawerOpen()) return true;
+        var active = document.activeElement;
+        if (active && active !== document.body) {
+            var tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
+    function updateStatsRow(data) {
+        var statNums = document.querySelectorAll('.stat-num');
+        if (statNums[0]) statNums[0].textContent = data.totalStaff;
+        if (statNums[1]) statNums[1].textContent = data.onDutyCount;
+        if (statNums[2]) statNums[2].textContent = data.offDutyCount;
+    }
+
+    function pollStaffData() {
+        if (isStaffUserBusy()) return;
+
+        fetch('{{ route("staff.poll") }}', {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var newHash = String(simpleHash(JSON.stringify(data.staffList)));
+            if (newHash === pollHash) return;
+            pollHash = newHash;
+
+            if (isStaffUserBusy()) return;
+
+            staffList = data.staffList;
+
+            var keepPage   = currentPage;
+            var searchVal  = document.getElementById('search-input').value;
+            var roleVal    = document.getElementById('filter-role').value;
+            var dutyVal    = document.getElementById('filter-duty').value;
+
+            if (searchVal || roleVal || dutyVal) {
+                filterTable();
+            } else {
+                filtered = staffList.slice();
+                var sortVal = document.getElementById('sort-select').value;
+                if (sortVal === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+                if (sortVal === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+                if (sortVal === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+                if (sortVal === 'role')   filtered.sort(function(a, b) { return (a.role || '').localeCompare(b.role || ''); });
+            }
+
+            var totalPages = Math.ceil(filtered.length / PER_PAGE);
+            currentPage = Math.min(keepPage, Math.max(1, totalPages));
+            renderTable();
+
+            updateStatsRow(data);
+        })
+        .catch(function() {});
+    }
+
+    pollHash = String(simpleHash(JSON.stringify(staffList)));
+
+    setInterval(pollStaffData, 15000);
 </script>
 @endsection
