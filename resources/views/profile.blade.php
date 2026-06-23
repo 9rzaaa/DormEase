@@ -716,7 +716,7 @@
     @if(in_array(strtolower($staff->role ?? ''), ['admin', 'secretary']))
     <div class="section-card fade-up" style="animation-delay:.30s;">
         <div class="section-head">
-            <div class="section-icon" style="background:linear-gradient(135deg,#7c3aed,#a855f7);">
+            <div class="section-icon" style="background:linear-gradient(135deg,var(--hot-pink),var(--bright-pink));">
                 <img src="{{ asset('icons/nav-settings.png') }}" alt="">
             </div>
             <div>
@@ -811,7 +811,7 @@
                         <div id="conf-master-match" style="font-size:.69rem;margin-top:.2rem;display:none;"></div>
                     </div>
                 </div>
-                <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:.7rem 1rem;margin-top:.9rem;font-size:.75rem;color:#5b21b6;line-height:1.5;">
+                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.7rem 1rem;margin-top:.9rem;font-size:.75rem;color:var(--hot-pink);line-height:1.5;">
                     A one-time <strong>recovery code</strong> will be generated when you save. Copy and store it securely. It is the only way to bypass a forgotten master password.
                 </div>
                 <div class="form-actions">
@@ -840,12 +840,12 @@
             <button onclick="closeAvatarModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-muted);line-height:1;transition:color .2s;" onmouseenter="this.style.color='#e8175d'" onmouseleave="this.style.color=''">&#x2715;</button>
         </div>
 
-        <div id="avatar-drop-zone" style="border:2px dashed var(--pink-200);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--pink-50);margin-bottom:1rem;" onclick="document.getElementById('avatar-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--bright-pink)';this.style.background='#fff0f6';" ondragleave="this.style.borderColor='';this.style.background='var(--pink-50)';" ondrop="handleAvatarDrop(event)">
+        <div id="avatar-drop-zone" style="border:2px dashed var(--pink-200);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--pink-50);margin-bottom:1rem;" onclick="document.getElementById('avatar-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--bright-pink)';this.style.background=var(--pink-tint);" ondragleave="this.style.borderColor='';this.style.background='var(--pink-50)';" ondrop="handleAvatarDrop(event)">
             <div id="avatar-modal-preview-wrap" style="display:none;margin-bottom:.85rem;">
                 <img id="avatar-modal-preview" src="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--bright-pink);box-shadow:0 4px 14px rgba(232,23,93,.22);">
             </div>
             <div id="avatar-drop-icon" style="margin-bottom:.65rem;">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ffb3d0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--pink-100)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </div>
             <div id="avatar-drop-label" style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;">Click to upload or drag and drop</div>
             <div style="font-size:.7rem;color:var(--ink-muted);">JPG, PNG</div>
