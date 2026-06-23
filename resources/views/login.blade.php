@@ -1764,7 +1764,7 @@
                 <div id="fp-master-err" class="fp-alert" style="display:none;">
                     <img src="{{ asset('icons/warning.png') }}" alt="Error"><span></span>
                 </div>
-                <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:.65rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#5b21b6;line-height:1.55;">
+                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.65rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#E8175D;line-height:1.55;">
                     This is the master password you set in your profile settings. If you forgot it, enter your recovery code instead.
                 </div>
                 <div class="fp-field">
