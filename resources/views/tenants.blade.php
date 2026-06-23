@@ -5262,7 +5262,10 @@ function validateRenewDates() {
     return true;
 }
 
+var _renewInFlight = false;
 async function submitRenewTenant() {
+    if (_renewInFlight) return;
+    _renewInFlight = true;
     var moveIn  = document.getElementById('renew-move-in').value;
     var moveOut = document.getElementById('renew-move-out').value;
     var room    = document.getElementById('renew-room').value.trim();
@@ -5309,7 +5312,7 @@ async function submitRenewTenant() {
     }
 
     var submitBtn = document.querySelector('#renew-modal .btn-submit');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; submitBtn.textContent = 'Processing...'; }
 
     showActionLoading('Renewing tenant stay...');
 
@@ -5387,8 +5390,9 @@ async function submitRenewTenant() {
     } catch (e) {
         var msg = e.message || 'An unexpected error occurred. Please try again.';
         showToast(msg, 'error');
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.textContent = 'Renew & Generate Credentials'; }
     } finally {
+        _renewInFlight = false;
         document.getElementById('action-loading').classList.remove('open');
     }
 }
