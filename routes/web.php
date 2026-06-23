@@ -44,7 +44,7 @@ Route::get('/login', function () {
             : redirect()->route('dashboard');
     }
     return view('login');
-})->name('login')->middleware('throttle:20,1');
+})->name('login')->middleware(['throttle:20,1', 'no.back']);
 
 Route::post('/login', function () {
     request()->validate([
@@ -152,7 +152,7 @@ Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
-Route::middleware('auth:staff')->group(function () {
+Route::middleware(['auth:staff', 'no.back'])->group(function () {
 
     Route::middleware('staffrole:admin,secretary')->group(function () {
 
