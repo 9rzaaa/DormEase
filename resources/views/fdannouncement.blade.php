@@ -537,17 +537,21 @@
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
 
 .ann-dismiss-btn {
-    width: 24px; height: 24px;
-    border-radius: 6px;
+    width: 26px; height: 26px;
+    border-radius: 7px;
     border: 1.5px solid var(--pink-100, #f9c5d6);
     background: #fff;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: .2s;
+    transition: transform .15s, opacity .2s, border-color .2s, background .2s;
     flex-shrink: 0;
-    opacity: .55;
+    opacity: .6;
+}
+
+.ann-dismiss-btn:active {
+    transform: scale(.92);
 }
 
 .ann-dismiss-btn:hover {
@@ -762,8 +766,7 @@
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
                      data-title="{{ strtolower($ann->title) }}"
-                     data-content="{{ strtolower($ann->content) }}"
-                     onclick="openViewModal({{ $ann->announcement_id }})">
+                     data-content="{{ strtolower($ann->content) }}">
 
                     <div class="ann-row-left">
                         <span class="ann-row-priority-dot prio-{{ strtolower($ann->priority ?? 'low') }}"
@@ -790,10 +793,10 @@
                             {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
                         <div style="display:flex;align-items:center;gap:.4rem;">
-                            <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
+                            <button class="ann-view-btn" data-action="view" data-id="{{ $ann->announcement_id }}">
                                 <img src="{{ asset('icons/eye.png') }}" alt=""> View
                             </button>
-                            <button class="ann-dismiss-btn" onclick="event.stopPropagation(); dismissAnnouncement({{ $ann->announcement_id }})" title="Hide this announcement">
+                            <button class="ann-dismiss-btn" data-action="dismiss" data-id="{{ $ann->announcement_id }}" title="Hide this announcement">
                                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             </button>
                         </div>
@@ -806,7 +809,7 @@
                 </div>
             @endforelse
 
-            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="openHiddenModal()">
+            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" data-action="open-hidden">
                 <div style="display:flex;align-items:center;gap:.5rem;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                     <span id="ann-hidden-count-label">1 hidden announcement</span>
@@ -862,7 +865,7 @@
                 </div>
                 <div class="ann-sidebar-body">
                     @forelse($visibleAnnouncements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
-                        <div class="ann-recent-item" onclick="openViewModal({{ $r->announcement_id }})">
+                        <div class="ann-recent-item" data-action="view" data-id="{{ $r->announcement_id }}">
                             <div class="ann-recent-title">{{ $r->title }}</div>
                             <div class="ann-recent-time">{{ \Carbon\Carbon::parse($r->posted_at ?? $r->created_at)->format('M j, Y') }}</div>
                         </div>
@@ -961,6 +964,12 @@
 
 @section('scripts')
 <script>
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+        location.reload();
+    }
+});
+
 const annData = @json($visibleAnnouncements->keyBy('announcement_id'));
 const storageBase = "{{ asset('storage') }}";
 
@@ -1298,6 +1307,24 @@ function openViewModal(id) {
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
+
+document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-action]');
+    if (!el) return;
+
+    var action = el.dataset.action;
+    var id = el.dataset.id ? parseInt(el.dataset.id, 10) : null;
+
+    if (action === 'dismiss') {
+        e.stopPropagation();
+        dismissAnnouncement(id);
+    } else if (action === 'view') {
+        if (e.target.closest('button')) e.stopPropagation();
+        openViewModal(id);
+    } else if (action === 'open-hidden') {
+        openHiddenModal();
+    }
+});
 
 document.querySelectorAll('.ann-row-card[data-status="closed"]').forEach(card => card.remove());
 purgeHiddenMissing();
