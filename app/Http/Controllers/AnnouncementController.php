@@ -150,7 +150,7 @@ class AnnouncementController extends Controller
             'content'      => 'required|string',
             'priority'     => 'nullable|in:low,moderate,high',
             'status'       => 'nullable|in:active,closed,scheduled',
-            'scheduled_at' => 'nullable|date',
+            'scheduled_at' => 'nullable|date|after:now',
             'files'        => 'nullable|array|max:10',
             'files.*'      => 'nullable|file|mimes:png,jpg,jpeg,pdf,docx|max:5120',
         ], [
