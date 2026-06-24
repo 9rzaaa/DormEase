@@ -26,11 +26,13 @@ class ArchiveSettingsController extends Controller
         }
 
         $request->validate([
-            'modules'                    => 'required|array',
             'modules.*.module'           => 'required|string',
             'modules.*.is_enabled'       => 'required|boolean',
             'modules.*.retention_days'   => 'required|integer|min:30|max:3650',
             'modules.*.warn_days_before' => 'required|integer|min:1|max:30',
+        ], [], [
+            'modules.*.retention_days'   => 'Retention Days',
+            'modules.*.warn_days_before' => 'Warn Before Days',
         ]);
 
         $staffId = Auth::guard('staff')->id();
