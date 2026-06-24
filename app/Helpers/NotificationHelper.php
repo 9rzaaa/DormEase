@@ -13,6 +13,7 @@ class NotificationHelper
         'visitor_checkin',
         'visitor_checkout',
         'visitor_cancelled',
+        'visitor_rejected',
         'emergency_new',
         'emergency_updated',
         'tenant_vacation_on',

@@ -15,9 +15,6 @@ use Carbon\Carbon;
 
 class BillingController extends Controller
 {
-    // ── GET /api/water-bill ───────────────────────────────────────────────────
-    // Returns current billing, breakdown, and payment history
-    // for the authenticated tenant.
     public function tenantBill()
     {
         /** @var Tenant $tenant */
@@ -27,7 +24,6 @@ class BillingController extends Controller
             return response()->json(['message' => 'Tenant not found.'], 404);
         }
 
-        // ── Current billing (most recent record) ──────────────────────────────
         $currentBilling = WaterBilling::where('tenant_id', $tenant->tenant_id)
             ->orderByDesc('billing_month')
             ->first();
@@ -40,7 +36,6 @@ class BillingController extends Controller
             ]);
         }
 
-        // ── Water rate for breakdown ──────────────────────────────────────────
         $rate = WaterRate::find($currentBilling->rate_id);
 
         $floorTenants = Tenant::where('is_active', true)
@@ -57,7 +52,6 @@ class BillingController extends Controller
             ->where('room_number', $tenant->room_number)
             ->count();
 
-        // ── Payment history (up to 6 records after the current one) ──────────
         $historyBillings = WaterBilling::where('tenant_id', $tenant->tenant_id)
             ->orderByDesc('billing_month')
             ->skip(1)
@@ -70,7 +64,6 @@ class BillingController extends Controller
             ->get()
             ->keyBy('billing_id');
 
-        // ── Past due billing (older unpaid/overdue/rejected records) ──────────
         $pastDueBillings = WaterBilling::where('tenant_id', $tenant->tenant_id)
             ->where('billing_month', '<', $currentBilling->billing_month)
             ->whereIn('payment_status', ['unpaid', 'overdue', 'rejected'])
@@ -91,7 +84,6 @@ class BillingController extends Controller
             ];
         })->values()->toArray();
 
-        // ── Build response ────────────────────────────────────────────────────
         $currentBillingData = [
             'id'             => $currentBilling->billing_id,
             'room_number'    => $tenant->room_number,
@@ -148,8 +140,6 @@ class BillingController extends Controller
         ]);
     }
 
-    // ── POST /api/water-bill/pay ──────────────────────────────────────────────
-    // Submits payment proof for admin verification.
     public function tenantPay(Request $request)
     {
         $request->validate([

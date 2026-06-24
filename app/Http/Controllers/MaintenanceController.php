@@ -434,6 +434,33 @@ class MaintenanceController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function pollRequests()
+    {
+        $requests = MaintenanceRequest::with('tenant')
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->latest('submitted_at')
+            ->get()
+            ->map(function ($r) {
+                return [
+                    'id'                        => $r->request_id,
+                    'tenant_name'               => trim(optional($r->tenant)->first_name . ' ' . optional($r->tenant)->last_name),
+                    'room_number'               => $r->room_number,
+                    'issue_type'                => $r->issue_type,
+                    'description'               => $r->description,
+                    'urgency'                   => $r->urgency_level,
+                    'status'                    => $r->status,
+                    'admin_remarks'             => $r->admin_notes,
+                    'photo_url'                 => $r->photo_path ? asset('storage/' . $r->photo_path) : null,
+                    'resubmission_requested_at' => $r->resubmission_requested_at
+                        ? $r->resubmission_requested_at->format('Y-m-d H:i:s')
+                        : null,
+                    'created_at'                => $r->submitted_at ? $r->submitted_at->format('Y-m-d H:i:s') : null,
+                ];
+            });
+
+        return response()->json($requests);
+    }
+
     private function archiveRequest(MaintenanceRequest $r, string $type): void
     {
         ArchivedMaintReq::create([

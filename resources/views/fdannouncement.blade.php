@@ -41,53 +41,42 @@
 
 .ann-stats-row {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.2rem;
-    box-sizing: border-box;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
 }
 
 .ann-stat-card {
-    background: var(--gradient-pink);
-    border-radius: 18px;
+    background: linear-gradient(135deg, var(--hot-pink, #d6175a) 0%, var(--bright-pink, #E8175D) 100%);
+    border-radius: 16px;
     border: none;
-    box-shadow: 0 8px 18px rgba(0,0,0,.05), 0 18px 40px rgba(232,23,93,.25);
-    padding: 1.4rem 1.5rem;
+    padding: 1.1rem 1.3rem;
     display: flex;
     align-items: center;
-    gap: 1.2rem;
-    box-sizing: border-box;
-    min-width: 0;
-    overflow: hidden;
+    gap: .9rem;
+    box-shadow: 0 8px 24px rgba(232,23,93,.18);
     transition: transform .2s, box-shadow .2s;
 }
 
 .ann-stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(232,23,93,.35);
+    box-shadow: 0 8px 24px rgba(232,23,93,.25);
 }
 
 .ann-stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    background: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 16px rgba(0,0,0,.15);
 }
 
 .ann-stat-icon img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
+    width: 22px; height: 22px; object-fit: contain;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
-.ann-stat-num { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
-.ann-stat-label { font-size: .8rem; color: rgba(247,245,245,.967); margin-bottom: .15rem; font-weight: 700; }
-.ann-stat-sub { font-size: .73rem; color: rgba(248,246,246,.955); font-weight: 600; margin-top: .15rem; }
+.ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
+.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
 
 .ann-toolbar {
     display: flex;
@@ -200,7 +189,7 @@
     position: absolute;
     left: 0; top: 0; bottom: 0;
     width: 4px;
-    background: var(--pink-200, #f4b8d0);
+    background: var(--pink-100, #f9c5d6);
     transition: background .2s;
 }
 
@@ -211,7 +200,7 @@
 }
 
 .ann-row-card:hover::before { background: var(--gradient-pink, linear-gradient(135deg,#E8175D,#c0103e)); }
-.ann-row-card.status-active::before { background: var(--gradient-pink); }
+.ann-row-card.status-active::before { background: linear-gradient(180deg, #1f9d69, #4ecb8d); }
 
 .ann-row-card.status-closed {
     opacity: .58;
@@ -324,6 +313,12 @@
     font-weight: 500;
 }
 
+.ann-row-actions {
+    display: flex;
+    align-items: center;
+    gap: .38rem;
+}
+
 .ann-view-btn {
     display: inline-flex;
     align-items: center;
@@ -344,6 +339,26 @@
 .ann-view-btn:hover { background: var(--bright-pink, #E8175D); color: #fff; border-color: transparent; }
 .ann-view-btn img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
 .ann-view-btn:hover img { filter: brightness(0) invert(1); }
+
+.ann-hide-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e8;
+    background: #f7f7f9;
+    color: #888;
+    cursor: pointer;
+    transition: .2s;
+    font-family: var(--ff-body);
+    flex-shrink: 0;
+}
+
+.ann-hide-btn img { width: 13px; height: 13px; object-fit: contain; opacity: .45; transition: opacity .2s; }
+.ann-hide-btn:hover { background: #fff0f0; border-color: #e04867; }
+.ann-hide-btn:hover img { opacity: 1; filter: brightness(0) saturate(100%) invert(38%) sepia(79%) saturate(2000%) hue-rotate(325deg) brightness(95%) contrast(96%); }
 
 .ann-list-empty {
     text-align: center;
@@ -469,10 +484,128 @@
     text-align: center;
 }
 
+.ann-hidden-card {
+    background: #fff;
+    border: 1px solid var(--pink-100, #f9c5d6);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(232,23,93,.05);
+}
+
+.ann-hidden-header {
+    padding: .85rem 1.1rem;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--petal, #ffeef4);
+}
+
+.ann-hidden-title {
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--hot-pink, #d6175a);
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.ann-hidden-title img {
+    width: 14px; height: 14px; object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+}
+
+.ann-hidden-body { padding: .75rem 1.1rem; }
+
+.ann-hidden-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
+}
+
+.ann-hidden-item:last-child { border-bottom: none; }
+
+.ann-hidden-item-title {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink-muted, #888);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ann-restore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    padding: .22rem .6rem;
+    border-radius: 7px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    color: var(--hot-pink, #d6175a);
+    font-size: .68rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    flex-shrink: 0;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+
+.ann-restore-btn img { width: 11px; height: 11px; object-fit: contain; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); transition: filter .2s; }
+.ann-restore-btn:hover { background: var(--bright-pink, #E8175D); border-color: transparent; color: #fff; }
+.ann-restore-btn:hover img { filter: brightness(0) invert(1); }
+
+.ann-hidden-empty {
+    font-size: .78rem;
+    color: var(--ink-muted, #888);
+    text-align: center;
+    padding: .75rem 0;
+}
+
+.ann-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(90,30,56,.38);
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+}
+
+.ann-modal-overlay.open {
+    display: flex;
+}
+
+.ann-modal-box {
+    background: #fff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+    overflow: hidden;
+    animation: annModalIn .28s cubic-bezier(.34,1.3,.64,1) both;
+}
+
+@keyframes annModalIn {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .vm-header { padding: 1.3rem 1.5rem 0; border-bottom: 1px solid var(--pink-100, #f9c5d6); flex-shrink: 0; }
 .vm-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
 .vm-title-group { display: flex; align-items: center; gap: .65rem; }
-.vm-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--gradient-pink, linear-gradient(135deg,#E8175D,#c0103e)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vm-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg,#E8175D,#c0103e); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .vm-icon img { width: 16px; height: 16px; object-fit: contain; filter: brightness(0) invert(1); }
 .vm-title { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
 .vm-sub { font-size: .7rem; color: var(--ink-muted, #888); font-weight: 500; margin-top: .1rem; }
@@ -481,19 +614,16 @@
 
 .vm-tabs { display: flex; }
 .vm-tab { padding: .62rem 1.1rem; font-size: .8rem; font-weight: 700; color: var(--ink-muted, #888); cursor: pointer; border: none; background: none; border-bottom: 2.5px solid transparent; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: .38rem; font-family: var(--ff-body); margin-bottom: -1px; }
-.vm-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; }
-.vm-tab svg { width: 13px; height: 13px; flex-shrink: 0; opacity: .6; transition: opacity .18s; }
+.vm-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
 .vm-tab:hover { color: var(--hot-pink, #d6175a); }
 .vm-tab.active { color: var(--hot-pink, #d6175a); border-bottom-color: var(--hot-pink, #d6175a); }
 .vm-tab.active img { opacity: 1; }
-.vm-tab.active svg { opacity: 1; }
 .vm-tab-badge { background: var(--petal, #ffeef4); color: var(--hot-pink, #d6175a); border: 1px solid var(--pink-100, #f9c5d6); font-size: .65rem; font-weight: 800; padding: .1rem .4rem; border-radius: 999px; }
 
 .vm-panels { padding: 1.3rem 1.5rem 1.5rem; overflow-y: auto; flex: 1; }
 .vm-panel { display: none; flex-direction: column; gap: .9rem; animation: vmFadeIn .18s ease both; }
 .vm-panel.active { display: flex; }
 @keyframes vmFadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
-@keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
 .vm-ann-title { font-size: 1.25rem; font-weight: 800; color: var(--ink); line-height: 1.3; }
 .vm-detail-row { display: flex; justify-content: space-between; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--pink-100, #f9c5d6); font-size: .86rem; }
@@ -504,16 +634,29 @@
 
 .vm-file-grid { display: flex; flex-direction: column; gap: .75rem; }
 .vm-file-item { border: 1.5px solid var(--pink-100, #f9c5d6); border-radius: 14px; overflow: hidden; background: #fff; }
-.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .55rem .85rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); gap: .75rem; }
-.vm-file-name { font-size: .76rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .38rem; min-width: 0; flex: 1; }
-.vm-file-name img { width: 13px; height: 13px; opacity: .45; flex-shrink: 0; }
-.vm-file-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vm-file-actions { display: flex; align-items: center; gap: .3rem; flex-shrink: 0; }
-.vm-file-dl { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; color: var(--bright-pink, #E8175D); text-decoration: none; transition: .2s; font-size: .85rem; cursor: pointer; }
-.vm-file-dl:hover { background: var(--bright-pink, #E8175D); border-color: var(--bright-pink, #E8175D); color: #fff; }
-.vm-file-dl svg { width: 14px; height: 14px; flex-shrink: 0; }
-.vm-file-body { padding: .75rem; }
-.vm-file-body img { width: 100%; max-height: 280px; object-fit: contain; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; background: var(--soft-bg, #fdf6f9); }
+.vm-file-bar { display: flex; align-items: center; justify-content: space-between; padding: .6rem .9rem; background: var(--petal, #ffeef4); border-bottom: 1px solid var(--pink-100, #f9c5d6); }
+.vm-file-name { font-size: .78rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
+.vm-file-name img { width: 13px; height: 13px; opacity: .5; }
+.vm-file-actions { display: flex; align-items: center; gap: .4rem; }
+.vm-file-dl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    transition: .2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--hot-pink, #d6175a);
+}
+.vm-file-dl svg { width: 13px; height: 13px; stroke: var(--hot-pink, #d6175a); transition: stroke .2s; }
+.vm-file-dl:hover { background: var(--bright-pink, #E8175D); border-color: transparent; }
+.vm-file-dl:hover svg { stroke: #fff; }
+.vm-file-body { padding: .8rem; }
+.vm-file-body img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; }
 .vm-file-body img:hover { opacity: .88; }
 .vm-file-body iframe { width: 100%; height: 300px; border: none; border-radius: 8px; display: block; }
 .vm-file-unsupported { display: flex; flex-direction: column; align-items: center; padding: 1.5rem; color: var(--ink-muted, #888); font-size: .8rem; text-align: center; gap: .4rem; }
@@ -536,160 +679,13 @@
 .d1 { animation-delay: .05s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .2s; } .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
 
-.ann-dismiss-btn {
-    width: 24px; height: 24px;
-    border-radius: 6px;
-    border: 1.5px solid var(--pink-100, #f9c5d6);
-    background: #fff;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: .2s;
-    flex-shrink: 0;
-    opacity: .55;
-}
-
-.ann-dismiss-btn:hover {
-    border-color: #e04867;
-    background: #fff0f0;
-    opacity: 1;
-}
-
-.ann-dismiss-btn svg { width: 12px; height: 12px; color: #e04867; }
-
-.ann-show-hidden-bar {
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    padding: .6rem 1rem;
-    border-radius: 12px;
-    border: 1.5px dashed var(--pink-100, #f9c5d6);
-    background: var(--petal, #ffeef4);
-    font-size: .78rem;
-    font-weight: 600;
-    color: var(--hot-pink, #d6175a);
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-}
-
-.ann-show-hidden-bar.visible { display: flex; }
-.ann-show-hidden-bar:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush); }
-.ann-show-hidden-bar svg { width: 14px; height: 14px; flex-shrink: 0; }
-
-.hidden-modal-overlay {
-    position: fixed; inset: 0; z-index: 800;
-    display: none; align-items: center; justify-content: center;
-    background: rgba(90,30,56,.38);
-    backdrop-filter: blur(4px);
-    padding: 1rem;
-}
-.hidden-modal-overlay.open { display: flex; }
-.hidden-modal-box {
-    background: #fff;
-    border-radius: 18px;
-    width: 100%; max-width: 480px;
-    max-height: 82vh;
-    display: flex; flex-direction: column;
-    box-shadow: 0 24px 60px rgba(232,23,93,.18), 0 4px 16px rgba(0,0,0,.08);
-    animation: modalIn .25s cubic-bezier(.34,1.3,.64,1) both;
-    overflow: hidden;
-}
-@keyframes modalIn { from { opacity:0; transform: translateY(16px) scale(.97); } to { opacity:1; transform: none; } }
-.hidden-modal-header {
-    padding: .9rem 1.2rem;
-    border-bottom: 1px solid var(--pink-100, #f9c5d6);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
-}
-.hidden-modal-title {
-    font-size: .95rem; font-weight: 800; color: var(--ink);
-    display: flex; align-items: center; gap: .5rem;
-}
-.hidden-modal-title svg { width: 16px; height: 16px; color: var(--hot-pink, #d6175a); }
-.hidden-modal-close {
-    width: 30px; height: 30px; border-radius: 7px;
-    border: 1px solid var(--pink-100, #f9c5d6);
-    background: var(--petal, #ffeef4);
-    color: var(--bright-pink, #E8175D);
-    font-size: .8rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .2s;
-}
-.hidden-modal-close:hover { background: var(--pink-100, #f9c5d6); }
-.hidden-modal-body {
-    flex: 1; overflow-y: auto;
-    padding: .75rem 1.2rem;
-    display: flex; flex-direction: column; gap: .55rem;
-}
-.hidden-modal-body::-webkit-scrollbar { width: 4px; }
-.hidden-modal-body::-webkit-scrollbar-thumb { background: var(--pink-200, #f4b8d0); border-radius: 99px; }
-.hidden-item {
-    display: flex; align-items: center; gap: .75rem;
-    padding: .65rem .85rem;
-    border: 1px solid var(--pink-100, #f9c5d6);
-    border-radius: 11px;
-    background: #fff;
-    transition: border-color .2s, background .2s;
-}
-.hidden-item:hover { border-color: var(--bright-pink, #E8175D); background: var(--blush, #fff5f9); }
-.hidden-item-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    flex-shrink: 0;
-}
-.hidden-item-info { flex: 1; min-width: 0; }
-.hidden-item-title {
-    font-size: .85rem; font-weight: 700; color: var(--ink);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: .15rem;
-}
-.hidden-item-meta { font-size: .7rem; color: var(--ink-muted, #888); font-weight: 500; }
-.hidden-unhide-btn {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .28rem .75rem; border-radius: 7px;
-    border: 1.5px solid var(--pink-100, #f9c5d6);
-    background: var(--petal, #ffeef4);
-    color: var(--hot-pink, #d6175a);
-    font-size: .72rem; font-weight: 700;
-    cursor: pointer; transition: .2s;
-    white-space: nowrap; flex-shrink: 0;
-    font-family: var(--ff-body);
-}
-.hidden-unhide-btn:hover { background: var(--bright-pink, #E8175D); color: #fff; border-color: transparent; }
-.hidden-modal-footer {
-    padding: .75rem 1.2rem;
-    border-top: 1px solid var(--pink-100, #f9c5d6);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0; background: #fffafd;
-}
-.hidden-modal-count { font-size: .75rem; color: var(--ink-muted, #888); font-weight: 600; }
-.hidden-restore-all-btn {
-    display: inline-flex; align-items: center; gap: .38rem;
-    padding: .38rem .9rem; border-radius: 8px;
-    border: none; background: var(--gradient-pink);
-    color: #fff; font-size: .78rem; font-weight: 700;
-    cursor: pointer; transition: .2s; font-family: var(--ff-body);
-    box-shadow: 0 4px 12px rgba(232,23,93,.22);
-}
-.hidden-restore-all-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,23,93,.32); }
-.hidden-empty {
-    text-align: center; padding: 2rem 1rem;
-    color: var(--ink-muted, #888); font-size: .84rem;
-}
-
 @media (max-width: 1100px) { .ann-main-layout { grid-template-columns: 1fr; } .ann-sidebar { position: static; } }
-@media (max-width: 1100px) { .ann-stats-row { grid-template-columns: repeat(2, 1fr); } .ann-stat-num { font-size: 1.6rem; } }
-@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } .ann-stat-card { padding: 1rem 1.1rem; gap: .9rem; } .ann-stat-icon { width: 44px; height: 44px; } .ann-stat-icon img { width: 22px; height: 22px; } .ann-stat-num { font-size: 1.5rem; } }
-@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr; } .ann-page { padding: 1rem; } .ann-stat-card { padding: 1rem 1.2rem; } .ann-stat-num { font-size: 1.75rem; } }
+@media (max-width: 900px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1.2rem 1rem; } }
+@media (max-width: 600px) { .ann-stats-row { grid-template-columns: 1fr 1fr; } .ann-page { padding: 1rem; } }
 </style>
 @endsection
 
 @section('content')
-@php
-    $visibleAnnouncements = $announcements
-        ->filter(fn ($a) => strtolower($a->status ?? 'active') !== 'closed')
-        ->values();
-@endphp
 <div class="ann-page">
 
     <div class="ann-page-header fade-up d1">
@@ -702,22 +698,38 @@
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/active.png') }}" alt="">
+                <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Active Announcements</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->where('status','active')->count() }}</div>
-                <div class="ann-stat-sub">Currently posted</div>
+                <div class="ann-stat-num">{{ $announcements->count() }}</div>
+                <div class="ann-stat-label">Total</div>
             </div>
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/pending.png') }}" alt="">
+                <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-label">Posted This Week</div>
-                <div class="ann-stat-num">{{ $visibleAnnouncements->filter(fn ($a) => \Carbon\Carbon::parse($a->posted_at ?? $a->created_at)->isCurrentWeek())->count() }}</div>
-                <div class="ann-stat-sub">New since Sunday</div>
+                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
+                <div class="ann-stat-label">Active</div>
+            </div>
+        </div>
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon">
+                <img src="{{ asset('icons/archive.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
+                <div class="ann-stat-label">Closed</div>
+            </div>
+        </div>
+        <div class="ann-stat-card">
+            <div class="ann-stat-icon">
+                <img src="{{ asset('icons/warning.png') }}" alt="">
+            </div>
+            <div>
+                <div class="ann-stat-num">{{ $announcements->where('priority','high')->count() }}</div>
+                <div class="ann-stat-label">High Priority</div>
             </div>
         </div>
     </div>
@@ -727,12 +739,11 @@
             <select class="ann-filter-select" id="filter-status" onchange="applyDropdownFilters(this)">
                 <option value="">All Statuses</option>
                 <option value="active">Active</option>
-                <option value="scheduled">Scheduled</option>
+                <option value="closed">Closed</option>
             </select>
             <select class="ann-filter-select" id="filter-priority" onchange="applyDropdownFilters(this)">
                 <option value="">All Priorities</option>
                 <option value="high">High Priority</option>
-                <option value="moderate">Moderate Priority</option>
                 <option value="low">Low Priority</option>
             </select>
             <select class="ann-filter-select" id="filter-date" onchange="applyDropdownFilters(this)">
@@ -753,11 +764,11 @@
 
         <div class="ann-list-panel" id="ann-list-panel">
             @php
-                $sorted = $visibleAnnouncements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at)->values();
+                $sorted = $announcements->sortByDesc(fn($a) => $a->posted_at ?? $a->created_at)->values();
             @endphp
             @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
-                     data-ann-id="{{ $ann->announcement_id }}"
+                     id="ann-card-{{ $ann->announcement_id }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
@@ -789,12 +800,12 @@
                         <span class="ann-row-time">
                             {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
-                        <div style="display:flex;align-items:center;gap:.4rem;">
+                        <div class="ann-row-actions">
                             <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
                                 <img src="{{ asset('icons/eye.png') }}" alt=""> View
                             </button>
-                            <button class="ann-dismiss-btn" onclick="event.stopPropagation(); dismissAnnouncement({{ $ann->announcement_id }})" title="Hide this announcement">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <button class="ann-hide-btn" title="Hide announcement" onclick="event.stopPropagation(); hideAnnouncement({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}')">
+                                <img src="{{ asset('icons/eye-off.png') }}" alt="Hide">
                             </button>
                         </div>
                     </div>
@@ -805,14 +816,6 @@
                     No announcements yet.
                 </div>
             @endforelse
-
-            <div class="ann-show-hidden-bar" id="ann-show-hidden-bar" onclick="openHiddenModal()">
-                <div style="display:flex;align-items:center;gap:.5rem;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                    <span id="ann-hidden-count-label">1 hidden announcement</span>
-                </div>
-                <span style="font-size:.72rem;font-weight:700;text-decoration:underline;">Manage</span>
-            </div>
 
             <div class="ann-list-empty" id="ann-no-results" style="display:none;">
                 <img src="{{ asset('icons/search.png') }}" alt="">
@@ -831,9 +834,9 @@
                 </div>
                 <div class="ann-sidebar-body">
                     @php
-                        $highCount = $visibleAnnouncements->where('priority','high')->count();
-                        $modCount  = $visibleAnnouncements->where('priority','moderate')->count();
-                        $lowCount  = $visibleAnnouncements->where('priority','low')->count();
+                        $highCount = $announcements->where('priority','high')->count();
+                        $modCount  = $announcements->where('priority','moderate')->count();
+                        $lowCount  = $announcements->where('priority','low')->count();
                     @endphp
                     <div class="ann-prio-row">
                         <div class="ann-prio-label"><span class="dot" style="background:#e04867"></span> High</div>
@@ -857,11 +860,11 @@
                         Recent
                     </div>
                     <span style="font-size:.72rem;font-weight:700;background:var(--petal,#ffeef4);color:var(--hot-pink,#d6175a);padding:.12rem .5rem;border-radius:99px;border:1px solid var(--pink-100,#f9c5d6);">
-                        {{ $visibleAnnouncements->count() }} total
+                        {{ $announcements->count() }} total
                     </span>
                 </div>
                 <div class="ann-sidebar-body">
-                    @forelse($visibleAnnouncements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
+                    @forelse($announcements->sortByDesc(fn($r) => $r->posted_at ?? $r->created_at)->take(5) as $r)
                         <div class="ann-recent-item" onclick="openViewModal({{ $r->announcement_id }})">
                             <div class="ann-recent-title">{{ $r->title }}</div>
                             <div class="ann-recent-time">{{ \Carbon\Carbon::parse($r->posted_at ?? $r->created_at)->format('M j, Y') }}</div>
@@ -869,6 +872,19 @@
                     @empty
                         <div class="ann-recent-empty">No announcements yet.</div>
                     @endforelse
+                </div>
+            </div>
+
+            <div class="ann-hidden-card">
+                <div class="ann-hidden-header">
+                    <div class="ann-hidden-title">
+                        <img src="{{ asset('icons/eye-off.png') }}" alt="">
+                        Hidden
+                    </div>
+                    <span id="ann-hidden-count-badge" style="font-size:.72rem;font-weight:700;background:#f0f0f5;color:#888;padding:.12rem .5rem;border-radius:99px;border:1px solid #e0e0e8;">0</span>
+                </div>
+                <div class="ann-hidden-body" id="ann-hidden-body">
+                    <div class="ann-hidden-empty" id="ann-hidden-empty">No hidden announcements.</div>
                 </div>
             </div>
 
@@ -887,8 +903,8 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="view-modal">
-    <div class="modal" style="max-width:560px;width:100%;padding:0;overflow:hidden;max-height:92vh;display:flex;flex-direction:column;">
+<div class="ann-modal-overlay" id="view-modal" onclick="if(event.target===this)closeViewModal()">
+    <div class="ann-modal-box">
 
         <div class="vm-header">
             <div class="vm-header-top">
@@ -899,12 +915,11 @@
                         <div class="vm-sub" id="vm-sub-label">View details</div>
                     </div>
                 </div>
-                <button class="vm-close" onclick="closeModal('view-modal')">&#x2715;</button>
+                <button class="vm-close" onclick="closeViewModal()">&#x2715;</button>
             </div>
             <div class="vm-tabs">
                 <button class="vm-tab active" onclick="switchVmTab(this,'details')" id="vm-tab-details">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    Details
+                    <img src="{{ asset('icons/announce.png') }}" alt=""> Details
                 </button>
                 <button class="vm-tab" onclick="switchVmTab(this,'files')" id="vm-tab-files">
                     <img src="{{ asset('icons/attach.png') }}" alt=""> Attachments
@@ -925,35 +940,9 @@
         </div>
 
         <div class="vm-footer">
-            <button class="vm-close-btn" onclick="closeModal('view-modal')">Close</button>
+            <button class="vm-close-btn" onclick="closeViewModal()">Close</button>
         </div>
 
-    </div>
-</div>
-
-<div class="action-loading-overlay" id="action-loading" style="position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.72);backdrop-filter:blur(2px);">
-    <div style="display:flex;align-items:center;flex-direction:column;gap:.75rem;padding:1.25rem 1.6rem;border:1px solid var(--pink-100,#f9c5d6);border-radius:12px;background:#fff;box-shadow:0 12px 32px rgba(26,26,46,.14);color:var(--ink,#1a1a2e);font-size:.9rem;font-weight:700;">
-        <div style="width:86px;height:86px;border:3px solid var(--pink-100,#f9c5d6);border-radius:50%;background:var(--gradient-pink);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(232,23,93,.25);animation:pulseLogo 1s ease-in-out infinite;">
-            <img src="{{ asset('images/logo.png') }}" style="width:62px;height:62px;object-fit:contain;" alt="DormEase">
-        </div>
-        <span id="action-loading-text">Please wait...</span>
-    </div>
-</div>
-
-<div class="hidden-modal-overlay" id="hidden-modal" onclick="if(event.target===this)closeHiddenModal()">
-    <div class="hidden-modal-box">
-        <div class="hidden-modal-header">
-            <div class="hidden-modal-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                Hidden Announcements
-            </div>
-            <button class="hidden-modal-close" onclick="closeHiddenModal()">&#x2715;</button>
-        </div>
-        <div class="hidden-modal-body" id="hidden-modal-body"></div>
-        <div class="hidden-modal-footer">
-            <span class="hidden-modal-count" id="hidden-modal-count"></span>
-            <button class="hidden-restore-all-btn" onclick="restoreHidden()">Restore All</button>
-        </div>
     </div>
 </div>
 
@@ -961,28 +950,115 @@
 
 @section('scripts')
 <script>
-const annData = @json($visibleAnnouncements->keyBy('announcement_id'));
+const annData = @json($announcements->keyBy('announcement_id'));
 const storageBase = "{{ asset('storage') }}";
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+var hiddenAnnouncements = {};
 
-document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
+function hideAnnouncement(id, title) {
+    var card = document.getElementById('ann-card-' + id);
+    if (!card) return;
+    card.style.display = 'none';
+    hiddenAnnouncements[id] = title;
+    renderHiddenList();
+    updateEmptyState();
+}
+
+function restoreAnnouncement(id) {
+    var card = document.getElementById('ann-card-' + id);
+    if (card) card.style.display = '';
+    delete hiddenAnnouncements[id];
+    renderHiddenList();
+    updateEmptyState();
+}
+
+function renderHiddenList() {
+    var body = document.getElementById('ann-hidden-body');
+    var empty = document.getElementById('ann-hidden-empty');
+    var badge = document.getElementById('ann-hidden-count-badge');
+    var ids = Object.keys(hiddenAnnouncements);
+
+    badge.textContent = ids.length;
+
+    var existing = body.querySelectorAll('.ann-hidden-item');
+    existing.forEach(function(el) { el.remove(); });
+
+    if (ids.length === 0) {
+        empty.style.display = '';
+        return;
+    }
+
+    empty.style.display = 'none';
+
+    ids.forEach(function(id) {
+        var item = document.createElement('div');
+        item.className = 'ann-hidden-item';
+        item.innerHTML =
+            '<span class="ann-hidden-item-title" title="' + escHtml(hiddenAnnouncements[id]) + '">' + escHtml(hiddenAnnouncements[id]) + '</span>' +
+            '<button class="ann-restore-btn" title="Restore" onclick="restoreAnnouncement(' + id + ')">' +
+                '<img src="{{ asset("icons/eye.png") }}" alt="Restore"> Show' +
+            '</button>';
+        body.appendChild(item);
+    });
+}
+
+function openViewModal(id) {
+    var ann = annData[id];
+    if (!ann) return;
+
+    var files = getFiles(ann.attachment);
+
+    document.getElementById('vm-sub-label').textContent = '#' + id + ' · ' + ucFirst(ann.priority || 'low') + ' priority';
+    document.getElementById('vm-ann-title').textContent = ann.title || '';
+    document.getElementById('vm-content-body').textContent = ann.content || '';
+    document.getElementById('vm-file-count').textContent = files.length;
+
+    document.getElementById('vm-detail-rows').innerHTML =
+        '<div class="vm-detail-row">' +
+            '<span class="vm-detail-label">Status</span>' +
+            '<span class="vm-detail-val"><span class="ann-badge badge-' + (ann.status || 'active') + '">' + ucFirst(ann.status || 'active') + '</span></span>' +
+        '</div>' +
+        '<div class="vm-detail-row">' +
+            '<span class="vm-detail-label">Priority</span>' +
+            '<span class="vm-detail-val"><span class="ann-badge badge-' + (ann.priority || 'low').toLowerCase() + '">' + ucFirst(ann.priority || 'Low') + '</span></span>' +
+        '</div>' +
+        '<div class="vm-detail-row">' +
+            '<span class="vm-detail-label">Posted</span>' +
+            '<span class="vm-detail-val">' + formatDate(ann.posted_at || ann.created_at) + '</span>' +
+        '</div>' +
+        '<div class="vm-detail-row">' +
+            '<span class="vm-detail-label">Attachments</span>' +
+            '<span class="vm-detail-val">' + files.length + ' file' + (files.length !== 1 ? 's' : '') + '</span>' +
+        '</div>';
+
+    document.getElementById('vm-file-grid').innerHTML = files.length
+        ? files.map(buildFilePreview).join('')
+        : '<div class="vm-no-files"><img src="{{ asset("icons/attach.png") }}" alt=""><span>No attachments on this announcement.</span></div>';
+
+    document.querySelectorAll('.vm-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.vm-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('vm-tab-details').classList.add('active');
+    document.getElementById('vm-panel-details').classList.add('active');
+
+    document.getElementById('view-modal').classList.add('open');
+}
+
+function closeViewModal() {
+    document.getElementById('view-modal').classList.remove('open');
+}
 
 function applyDropdownFilters(changedEl) {
     if (changedEl) {
         changedEl.classList.toggle('has-value', changedEl.value !== '');
     }
 
-    const status   = document.getElementById('filter-status').value;
-    const priority = document.getElementById('filter-priority').value;
-    const date     = document.getElementById('filter-date').value;
-    const q        = document.getElementById('ann-search-input').value.toLowerCase();
-    const now      = new Date();
+    var status   = document.getElementById('filter-status').value;
+    var priority = document.getElementById('filter-priority').value;
+    var date     = document.getElementById('filter-date').value;
+    var q        = document.getElementById('ann-search-input').value.toLowerCase();
+    var now      = new Date();
 
-    let weekStart, weekEnd;
+    var weekStart, weekEnd;
 
     if (date === 'this_week') {
         weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay()); weekStart.setHours(0,0,0,0);
@@ -998,182 +1074,54 @@ function applyDropdownFilters(changedEl) {
         weekEnd   = now;
     }
 
-    document.querySelectorAll('.ann-row-card').forEach(card => {
-        const cardStatus   = card.dataset.status;
-        const cardPriority = card.dataset.priority;
-        const cardPosted   = new Date(card.dataset.posted);
-        const cardTitle    = card.dataset.title   || '';
-        const cardContent  = card.dataset.content || '';
+    document.querySelectorAll('.ann-row-card').forEach(function(card) {
+        var cardId = card.id ? card.id.replace('ann-card-', '') : null;
+        if (cardId && hiddenAnnouncements[cardId]) return;
 
-        let show = true;
+        var cardStatus   = card.dataset.status;
+        var cardPriority = card.dataset.priority;
+        var cardPosted   = new Date(card.dataset.posted);
+        var cardTitle    = card.dataset.title   || '';
+        var cardContent  = card.dataset.content || '';
 
-        if (cardStatus === 'closed') show = false;
+        var show = true;
+
         if (status && cardStatus !== status) show = false;
         if (priority && cardPriority !== priority) show = false;
         if (date && weekStart && weekEnd && (cardPosted < weekStart || cardPosted > weekEnd)) show = false;
-        if (q && !cardTitle.includes(q) && !cardContent.includes(q)) show = false;
+        if (q && cardTitle.indexOf(q) === -1 && cardContent.indexOf(q) === -1) show = false;
 
         card.style.display = show ? '' : 'none';
     });
 
-    applyHidden();
-}
-
-const HIDDEN_KEY = 'fd_hidden_announcements';
-
-function getHidden() {
-    try { return JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]'); } catch { return []; }
-}
-
-function saveHidden(ids) {
-    localStorage.setItem(HIDDEN_KEY, JSON.stringify(ids));
-}
-
-function dismissAnnouncement(id) {
-    showFdLoading('Hiding announcement...');
-    setTimeout(() => {
-        const hidden = getHidden();
-        if (!hidden.includes(id)) hidden.push(id);
-        saveHidden(hidden);
-        applyHidden();
-        hideFdLoading();
-    }, 500);
-}
-
-function restoreHidden() {
-    showFdLoading('Restoring all announcements...');
-    setTimeout(() => {
-        saveHidden([]);
-        document.querySelectorAll('.ann-row-card').forEach(card => {
-            if (card.dataset.status !== 'closed') {
-                card.style.display = '';
-            }
-        });
-        applyHidden();
-        closeHiddenModal();
-        hideFdLoading();
-    }, 600);
-}
-
-function unhideOne(id) {
-    showFdLoading('Restoring announcement...');
-    setTimeout(() => {
-        const hidden = getHidden().filter(h => h !== id);
-        saveHidden(hidden);
-        const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
-        if (card) card.style.display = '';
-        applyHidden();
-        renderHiddenModal();
-        hideFdLoading();
-    }, 500);
-}
-
-function showFdLoading(message) {
-    const overlay = document.getElementById('action-loading');
-    document.getElementById('action-loading-text').textContent = message;
-    overlay.style.display = 'flex';
-}
-
-function hideFdLoading() {
-    document.getElementById('action-loading').style.display = 'none';
-}
-
-function unhideOne(id) {
-    const hidden = getHidden().filter(h => h !== id);
-    saveHidden(hidden);
-    const card = document.querySelector('.ann-row-card[data-ann-id="' + id + '"]');
-    if (card) card.style.display = '';
-    applyHidden();
-    renderHiddenModal();
-}
-
-function purgeHiddenMissing() {
-    const hidden = getHidden().filter(id => !!annData[id]);
-    if (hidden.length !== getHidden().length) saveHidden(hidden);
-}
-
-function applyHidden() {
-    const hidden = getHidden();
-    document.querySelectorAll('.ann-row-card').forEach(card => {
-        const id = parseInt(card.dataset.annId);
-        if (hidden.includes(id)) {
-            card.style.display = 'none';
-        }
-    });
-    const bar   = document.getElementById('ann-show-hidden-bar');
-    const label = document.getElementById('ann-hidden-count-label');
-    if (hidden.length > 0) {
-        bar.classList.add('visible');
-        label.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
-    } else {
-        bar.classList.remove('visible');
-    }
     updateEmptyState();
 }
 
-function openHiddenModal() {
-    renderHiddenModal();
-    document.getElementById('hidden-modal').classList.add('open');
-}
-
-function closeHiddenModal() {
-    document.getElementById('hidden-modal').classList.remove('open');
-}
-
-function renderHiddenModal() {
-    const hidden = getHidden();
-    const body   = document.getElementById('hidden-modal-body');
-    const count  = document.getElementById('hidden-modal-count');
-    count.textContent = hidden.length + ' hidden announcement' + (hidden.length !== 1 ? 's' : '');
-    if (!hidden.length) {
-        body.innerHTML = '<div class="hidden-empty">No hidden announcements.</div>';
-        return;
-    }
-    const prioColors = { high: '#e04867', moderate: '#f59e0b', low: '#1f9d69' };
-    body.innerHTML = hidden.map(id => {
-        const ann = annData[id];
-        if (!ann) return '';
-        const prio  = (ann.priority || 'low').toLowerCase();
-        const color = prioColors[prio] || '#1f9d69';
-        const date  = ann.posted_at || ann.created_at
-            ? new Date(ann.posted_at || ann.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-            : '';
-        return `<div class="hidden-item">
-            <span class="hidden-item-dot" style="background:${color};"></span>
-            <div class="hidden-item-info">
-                <div class="hidden-item-title">${escHtml(ann.title || '')}</div>
-                <div class="hidden-item-meta">${ucFirst(prio)} priority &nbsp;&middot;&nbsp; ${date}</div>
-            </div>
-            <button class="hidden-unhide-btn" onclick="unhideOne(${id})">Unhide</button>
-        </div>`;
-    }).filter(Boolean).join('');
-}
-
 function updateEmptyState() {
-    const visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
+    var visible = document.querySelectorAll('.ann-row-card:not([style*="display: none"])').length;
     document.getElementById('ann-no-results').style.display = visible === 0 ? '' : 'none';
 }
 
 function switchVmTab(btn, tabId) {
-    document.querySelectorAll('.vm-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.vm-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.vm-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.vm-panel').forEach(function(p) { p.classList.remove('active'); });
     btn.classList.add('active');
     document.getElementById('vm-panel-' + tabId).classList.add('active');
 }
 
 function escHtml(v) {
-    return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    return String(v || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 function formatDate(v) {
     if (!v) return '—';
-    const d = new Date(v);
+    var d = new Date(v);
     return isNaN(d) ? v : d.toLocaleString([], { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit' });
 }
 
 function getFiles(att) {
     if (!att) return [];
-    return String(att).split(',').map(p => p.trim()).filter(Boolean);
+    return String(att).split(',').map(function(p) { return p.trim(); }).filter(Boolean);
 }
 
 function openLightbox(url) {
@@ -1188,98 +1136,49 @@ function closeLightbox() {
     document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeLightbox();
+        closeViewModal();
+    }
+});
 
 function buildFilePreview(path) {
-    const name    = path.split('/').pop();
-    const ext     = (path.split('.').pop() || '').toLowerCase();
-    const url     = path.startsWith('http') ? path : `${storageBase}/${encodeURI(path)}`;
-    const isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].includes(ext);
-    const isPdf   = ext === 'pdf';
+    var name = path.split('/').pop();
+    var ext  = (path.split('.').pop() || '').toLowerCase();
+    var url  = path.indexOf('http') === 0 ? path : storageBase + '/' + encodeURI(path);
+    var isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].indexOf(ext) !== -1;
+    var isPdf   = ext === 'pdf';
 
-    const expandSvg   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
-    const openSvg     = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-    const downloadSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+    var svgExpand   = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+    var svgOpen     = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    var svgDownload = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
-    let body = '';
+    var body = '';
     if (isImage) {
-        body = `<div class="vm-file-body"><img src="${url}" alt="${escHtml(name)}" loading="lazy" onclick="openLightbox('${url}')" title="Click to view full size" onerror="this.parentElement.innerHTML='<div class=&quot;vm-file-unsupported&quot;>Image could not be loaded.</div>'"></div>`;
+        body = '<div class="vm-file-body"><img src="' + url + '" alt="' + escHtml(name) + '" loading="lazy" onclick="openLightbox(\'' + url + '\')" title="Click to view full size"></div>';
     } else if (isPdf) {
-        body = `<div class="vm-file-body"><iframe src="${url}" title="${escHtml(name)}"></iframe></div>`;
+        body = '<div class="vm-file-body"><iframe src="' + url + '" title="' + escHtml(name) + '"></iframe></div>';
     } else {
-        body = `<div class="vm-file-unsupported"><img src="{{ asset('icons/attach.png') }}" alt=""><span>No preview for <strong>.${ext}</strong> files.</span></div>`;
+        body = '<div class="vm-file-unsupported"><img src="{{ asset("icons/attach.png") }}" alt=""><span>No preview for <strong>.' + ext + '</strong> files.</span></div>';
     }
 
-    const actionBtn = isImage
-        ? `<button class="vm-file-dl" onclick="openLightbox('${url}')" title="Expand">${expandSvg}</button>`
-        : `<a href="${url}" target="_blank" class="vm-file-dl" title="Open">${openSvg}</a>`;
+    var expandBtn = isImage
+        ? '<button class="vm-file-dl" onclick="openLightbox(\'' + url + '\')" title="Expand">' + svgExpand + '</button>'
+        : '<a href="' + url + '" target="_blank" class="vm-file-dl" title="Open in new tab">' + svgOpen + '</a>';
 
-    return `
-        <div class="vm-file-item">
-            <div class="vm-file-bar">
-                <div class="vm-file-name">
-                    <img src="{{ asset('icons/attach.png') }}" alt="">
-                    <span title="${escHtml(name)}">${escHtml(name)}</span>
-                </div>
-                <div class="vm-file-actions">
-                    ${actionBtn}
-                    <a href="${url}" download="${escHtml(name)}" class="vm-file-dl" title="Download">${downloadSvg}</a>
-                </div>
-            </div>
-            ${body}
-        </div>`;
-}
+    var dlBtn = '<a href="' + url + '" download class="vm-file-dl" title="Download">' + svgDownload + '</a>';
 
-function openViewModal(id) {
-    const ann = annData[id];
-    if (!ann) { showToast('Could not load announcement. Please refresh the page.', 'error'); return; }
-
-    const files = getFiles(ann.attachment);
-
-    document.getElementById('vm-sub-label').textContent = `#${id} · ${ucFirst(ann.priority || 'low')} priority`;
-    document.getElementById('vm-ann-title').textContent  = ann.title || '';
-    document.getElementById('vm-content-body').textContent = ann.content || '';
-    document.getElementById('vm-file-count').textContent   = files.length;
-
-    document.getElementById('vm-detail-rows').innerHTML = `
-        <div class="vm-detail-row">
-            <span class="vm-detail-label">Status</span>
-            <span class="vm-detail-val">
-                <span class="ann-badge badge-${ann.status || 'active'}">${ucFirst(ann.status || 'active')}</span>
-            </span>
-        </div>
-        <div class="vm-detail-row">
-            <span class="vm-detail-label">Priority</span>
-            <span class="vm-detail-val">
-                <span class="ann-badge badge-${(ann.priority || 'low').toLowerCase()}">${ucFirst(ann.priority || 'Low')}</span>
-            </span>
-        </div>
-        <div class="vm-detail-row">
-            <span class="vm-detail-label">Posted</span>
-            <span class="vm-detail-val">${formatDate(ann.posted_at || ann.created_at)}</span>
-        </div>
-        <div class="vm-detail-row">
-            <span class="vm-detail-label">Attachments</span>
-            <span class="vm-detail-val">${files.length} file${files.length !== 1 ? 's' : ''}</span>
-        </div>`;
-
-    document.getElementById('vm-file-grid').innerHTML = files.length
-        ? files.map(buildFilePreview).join('')
-        : `<div class="vm-no-files"><img src="{{ asset('icons/attach.png') }}" alt=""><span>No attachments on this announcement.</span></div>`;
-
-    document.querySelectorAll('.vm-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.vm-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('vm-tab-details').classList.add('active');
-    document.getElementById('vm-panel-details').classList.add('active');
-
-    openModal('view-modal');
+    return '<div class="vm-file-item">' +
+        '<div class="vm-file-bar">' +
+            '<div class="vm-file-name"><img src="{{ asset("icons/attach.png") }}" alt="">' + escHtml(name) + '</div>' +
+            '<div class="vm-file-actions">' + expandBtn + dlBtn + '</div>' +
+        '</div>' +
+        body +
+    '</div>';
 }
 
 function ucFirst(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''; }
-
-document.querySelectorAll('.ann-row-card[data-status="closed"]').forEach(card => card.remove());
-purgeHiddenMissing();
-applyHidden();
 
 @if(session('success')) showToast("{{ session('success') }}", 'success'); @endif
 @if(session('error'))   showToast("{{ session('error') }}", 'error'); @endif

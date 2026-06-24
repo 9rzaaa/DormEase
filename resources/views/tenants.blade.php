@@ -1136,6 +1136,23 @@ tbody tr:hover { background: var(--soft-bg); }
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
+    <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
+        <div class="modal-header" style="margin-bottom:.85rem;">
+            <div class="modal-title">Document Preview</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="btn-submit" style="padding:.45rem 1rem;font-size:.82rem;" onclick="downloadPdfFromPreview()">Download</button>
+                <button class="modal-close" onclick="closePdfPreview()">&#x2715;</button>
+            </div>
+        </div>
+        <div style="width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--pink-100);background:var(--soft-bg);">
+            <iframe id="pdf-preview-iframe" src="" style="width:100%;height:520px;border:none;display:block;"></iframe>
+        </div>
+        <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
+            Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1618,8 +1635,8 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
-                                <label>Contact No.</label>
-                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('contact_number') }}">
+                                <label>Contact No. <span class="field-req-star">*</span></label>
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required value="{{ old('contact_number') }}">
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
@@ -1771,8 +1788,8 @@ tbody tr:hover { background: var(--soft-bg); }
                             <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
-                            <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <label>Contact No. <span class="field-req-star">*</span></label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required>
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
@@ -1898,7 +1915,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
-                                    <option value="reserved">Reserved</option>
+                                    <option value="reserved" id="edit-status-reserved-option">Reserved</option>
                                     <option value="move_out">Move Out</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
@@ -2262,6 +2279,7 @@ tbody tr:hover { background: var(--soft-bg); }
 
 @endsection
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 function showToast(message, type) {
     var existing = document.getElementById('dormease-toast');
@@ -2287,7 +2305,29 @@ function showToast(message, type) {
         setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
     }, 4000);
 }
+var _pdfBlobUrl = null;
+var _pdfDownloadName = 'document.pdf';
 
+function openPdfPreview(blobUrl, downloadName) {
+    _pdfBlobUrl = blobUrl;
+    _pdfDownloadName = downloadName || 'document.pdf';
+    document.getElementById('pdf-preview-iframe').src = blobUrl;
+    openModal('pdf-preview-modal');
+}
+
+function closePdfPreview() {
+    closeModal('pdf-preview-modal');
+    document.getElementById('pdf-preview-iframe').src = '';
+    if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+}
+
+function downloadPdfFromPreview() {
+    if (!_pdfBlobUrl) return;
+    var a = document.createElement('a');
+    a.href = _pdfBlobUrl;
+    a.download = _pdfDownloadName;
+    a.click();
+}
 function printCredentialSlip(type) {
     var accountId, tempPassword, tenantName;
     if (type === 'new') {
@@ -2299,59 +2339,116 @@ function printCredentialSlip(type) {
         tempPassword = document.getElementById('reset-temp-password').textContent.trim();
         tenantName   = '{{ session("reset_tenant_name") }}';
     }
+
     var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    var win = window.open('', '_blank', 'width=400,height=520');
-    win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>DormEase Login Credentials</title>
-<style>
-  @page { size: 80mm 120mm; margin: 0; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 120mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .slip { width: 80mm; min-height: 120mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
-  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
-  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
-  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
-  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
-  .tenant-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
-  .field { margin-bottom: 3mm; }
-  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
-  .field-value { font-size: 13pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .08em; text-align: center; word-break: break-all; }
-  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 4px; padding: 2mm 2.5mm; font-size: 6.5pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
-  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
-  .footer-date { font-size: 6pt; color: #b06080; }
-  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
-  @media print { body { margin: 0; } .slip { border: none; } }
-</style>
-</head>
-<body>
-<div class="slip">
-  <div class="header">
-    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
-    <div class="title">Login Credentials</div>
-    <div class="subtitle">DormEase Tenant Portal</div>
-  </div>
-  <div class="tenant-name">${tenantName}</div>
-  <div class="field">
-    <div class="field-label">Account ID</div>
-    <div class="field-value">${accountId}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Temporary Password</div>
-    <div class="field-value">${tempPassword}</div>
-  </div>
-  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
-  <div class="footer">
-    <div class="footer-date">Issued: ${today}</div>
-    <div class="footer-brand">DormEase</div>
-  </div>
-</div>
-<script>window.onload = function() { window.print(); };<\/script>
-</body>
-</html>`);
-    win.document.close();
+    var { jsPDF } = window.jspdf;
+
+    var W = 80, H = 148;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [W, H], compress: true });
+    doc.setProperties({ title: 'Credentials - ' + tenantName, author: 'DormEase', creator: 'DormEase' });
+
+    var pink   = [232, 23, 93];
+    var ink    = [26, 26, 46];
+    var muted  = [140, 100, 120];
+    var white  = [255, 255, 255];
+    var petal  = [255, 243, 248];
+    var border = [244, 184, 208];
+    var warn   = [255, 249, 230];
+    var warnTx = [122, 84, 0];
+    var warnBd = [240, 192, 64];
+
+    doc.setFillColor(pink[0], pink[1], pink[2]);
+    doc.rect(0, 0, W, 28, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(white[0], white[1], white[2]);
+    doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', W / 2, 8, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.text('Login Credentials', W / 2, 15, { align: 'center' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 210, 230);
+    doc.text('DormEase Tenant Portal', W / 2, 21.5, { align: 'center' });
+
+    var y = 33;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(tenantName, W / 2, y, { align: 'center' });
+
+    y += 3.5;
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 5.5;
+
+    function drawField(label, value) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text(label.toUpperCase(), 6, y);
+
+        y += 1.8;
+
+        doc.setFillColor(petal[0], petal[1], petal[2]);
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(6, y, W - 12, 10.5, 1.8, 1.8, 'FD');
+
+        doc.setFont('courier', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(ink[0], ink[1], ink[2]);
+        doc.text(value, W / 2, y + 7, { align: 'center' });
+
+        y += 14.5;
+    }
+
+    drawField('Account ID', accountId);
+    drawField('Temporary Password', tempPassword);
+
+    doc.setFillColor(warn[0], warn[1], warn[2]);
+    doc.setDrawColor(warnBd[0], warnBd[1], warnBd[2]);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(6, y, W - 12, 18, 1.8, 1.8, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6);
+    doc.setTextColor(warnTx[0], warnTx[1], warnTx[2]);
+    doc.text('Important', 11, y + 5.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.8);
+    var warnLines = doc.splitTextToSize(
+        'This is a temporary password. You will be prompted to change it on your first login. Keep this slip private and do not share it with anyone.',
+        W - 16
+    );
+    doc.text(warnLines, 9, y + 10, { lineHeightFactor: 1.6 });
+
+    y += 22;
+
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 4.5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    doc.setTextColor(muted[0], muted[1], muted[2]);
+    doc.text('Issued: ' + today, 6, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('DormEase', W - 6, y, { align: 'right' });
+
+    var safeName = (tenantName || 'tenant').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'credentials-' + safeName + '.pdf');
 }
 
 var tenants = {!! json_encode($tenants, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!};
@@ -2894,7 +2991,7 @@ function toggleVacationNote() {
 
 function validateAddTenantForm(e) {
     var emailOk    = validateEmailField('add-email', 'add-email-error', null);
-    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', true);
     var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
@@ -2948,7 +3045,7 @@ function validateAddTenantForm(e) {
 
 function validateEditTenantForm(e) {
     var emailOk    = validateEmailField('edit-email', 'edit-email-error', currentTenant ? currentTenant.tenant_id : null);
-    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', true);
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
     var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
@@ -2973,7 +3070,7 @@ function validateEditTenantForm(e) {
 document.addEventListener('DOMContentLoaded', function() {
    attachEmailValidator('add-email', 'add-email-error', null);
     attachEmailValidator('edit-email', 'edit-email-error', function() { return currentTenant ? currentTenant.tenant_id : null; });
-    attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('add-contact', 'add-contact-error', true);
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
@@ -3140,17 +3237,19 @@ function goAddStep(step) {
         var firstName = document.querySelector('#add-modal input[name="first_name"]');
         var lastName  = document.querySelector('#add-modal input[name="last_name"]');
         var email     = document.querySelector('#add-modal input[name="email"]');
-        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+        var contact   = document.getElementById('add-contact');
+        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim() || !contact.value.trim()) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            contact.reportValidity();
             return;
         }
         if (!validateEmailField('add-email', 'add-email-error')) {
             document.getElementById('add-email').focus();
             return;
         }
-        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+        if (!validatePhoneField('add-contact', 'add-contact-error', true)) {
             document.getElementById('add-contact').focus();
             return;
         }
@@ -3239,7 +3338,11 @@ function toggleReservationFields(context) {
 }
 
 document.querySelectorAll('.modal-overlay').forEach(function(m) {
-    m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+    m.addEventListener('click', function(e) {
+        if (e.target !== m) return;
+        if (m.id === 'pdf-preview-modal') { closePdfPreview(); return; }
+        m.classList.remove('open');
+    });
 });
 
 function updateStatusDot(select) {
@@ -3265,7 +3368,7 @@ function tempBadge(isTemp) {
 }
 
 function vacationBadge(isOnVacation) {
-    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA;">Vacation</span>' : '';
 }
 
 function escapeHtml(str) {
@@ -3358,7 +3461,7 @@ function buildRows(list) {
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + normalizeContactDisplay(t.contact_number) + '</td>'
-            + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
+            + '<td>' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
@@ -3719,6 +3822,13 @@ function openEditModal(t) {
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var reservedOption = document.getElementById('edit-status-reserved-option');
+    if (reservedOption) {
+        var hasCredentials = !!(t.account_id);
+        reservedOption.disabled = hasCredentials;
+        reservedOption.title = hasCredentials ? 'Cannot revert to Reserved: this tenant already has login credentials.' : '';
+        reservedOption.textContent = hasCredentials ? 'Reserved (unavailable)' : 'Reserved';
+    }
     var editStatusSel = document.getElementById('edit-status');
     editStatusSel.onchange = function() {
         updateStatusDot(this);
@@ -3740,7 +3850,7 @@ function openEditModal(t) {
 
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
-    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', true);
     attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
     checkMoveoutWarning();
     var editMoveoutEl = document.getElementById('edit-moveout');
@@ -5152,7 +5262,10 @@ function validateRenewDates() {
     return true;
 }
 
+var _renewInFlight = false;
 async function submitRenewTenant() {
+    if (_renewInFlight) return;
+    _renewInFlight = true;
     var moveIn  = document.getElementById('renew-move-in').value;
     var moveOut = document.getElementById('renew-move-out').value;
     var room    = document.getElementById('renew-room').value.trim();
@@ -5199,7 +5312,7 @@ async function submitRenewTenant() {
     }
 
     var submitBtn = document.querySelector('#renew-modal .btn-submit');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; submitBtn.textContent = 'Processing...'; }
 
     showActionLoading('Renewing tenant stay...');
 
@@ -5277,11 +5390,58 @@ async function submitRenewTenant() {
     } catch (e) {
         var msg = e.message || 'An unexpected error occurred. Please try again.';
         showToast(msg, 'error');
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.textContent = 'Renew & Generate Credentials'; }
     } finally {
+        _renewInFlight = false;
         document.getElementById('action-loading').classList.remove('open');
     }
 }
+
+(function () {
+    var liveFingerprint = null;
+    var pollInterval = 5000;
+
+    function anyOverlayOpen() {
+        return !!document.querySelector('.modal-overlay.open')
+            || document.getElementById('tad-drawer').classList.contains('open')
+            || document.getElementById('rooms-drawer').classList.contains('open')
+            || document.getElementById('admin-log-drawer').classList.contains('open');
+    }
+
+    function checkForTenantUpdates() {
+        if (anyOverlayOpen()) return;
+
+        fetch('{{ route("tenants.live") }}', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (liveFingerprint === null) {
+                    liveFingerprint = data.fingerprint;
+                    return;
+                }
+                if (data.fingerprint === liveFingerprint) return;
+
+                liveFingerprint = data.fingerprint;
+                tenants = data.tenants;
+
+                var totalEl = document.getElementById('count-total');
+                var activeEl = document.getElementById('count-active');
+                if (totalEl) totalEl.textContent = data.totalTenants;
+                if (activeEl) activeEl.textContent = data.activeCount;
+
+                var keepActivePage   = sectionPages.active;
+                var keepReservedPage = sectionPages.reserved;
+                applyFilters();
+                sectionPages.active   = Math.min(keepActivePage,   Math.max(1, Math.ceil(sectionData.active.length   / PER_PAGE)));
+                sectionPages.reserved = Math.min(keepReservedPage, Math.max(1, Math.ceil(sectionData.reserved.length / PER_PAGE)));
+                renderSection('active');
+                renderSection('reserved');
+            })
+            .catch(function () {});
+    }
+
+    checkForTenantUpdates();
+    setInterval(checkForTenantUpdates, 15000);
+})();
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('search-input').value = '';
@@ -5690,7 +5850,8 @@ function attachAddModalProgress() {
         var fn = document.querySelector('#add-modal input[name="first_name"]');
         var ln = document.querySelector('#add-modal input[name="last_name"]');
         var em = document.getElementById('add-email');
-        return [fn, ln, em].filter(Boolean);
+        var co = document.getElementById('add-contact');
+        return [fn, ln, em, co].filter(Boolean);
     }
 
     function getStep2Vals() {
@@ -5772,7 +5933,7 @@ function attachAddModalProgress() {
 }
 
 function attachEditModalProgress() {
-    var fields = ['edit-first-name', 'edit-last-name', 'edit-email'];
+    var fields = ['edit-first-name', 'edit-last-name', 'edit-email', 'edit-contact'];
 
     function refreshEditProgress() {
         var filled = fields.filter(function(id) {
@@ -6219,103 +6380,266 @@ function printMoveOutBillSlip() {
 
 function printBillSlip(t) {
     var tenantBills = billingData[String(t.tenant_id)] || [];
-    if (!Array.isArray(tenantBills)) { tenantBills = []; }
+    if (!Array.isArray(tenantBills)) tenantBills = [];
     tenantBills.sort(function(a, b) { return new Date(a.billing_month) - new Date(b.billing_month); });
-    var total     = tenantBills.reduce(function(sum, b) { return sum + parseFloat(b.room_share || 0); }, 0);
+
+    var total     = tenantBills.reduce(function(s, b) { return s + parseFloat(b.room_share || 0); }, 0);
     var today     = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || 'N/A');
+
     function fmtMonth(d) {
-        if (!d) return '\u2014';
+        if (!d) return '-';
         var s = String(d).trim();
         if (s.length === 7) s = s + '-01';
         var dt = new Date(s + 'T00:00:00');
-        if (isNaN(dt.getTime())) return '\u2014';
+        if (isNaN(dt.getTime())) return '-';
         return dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
+
     function fmtDateSlip(d) {
-        if (!d) return '\u2014';
+        if (!d) return '-';
         var s = String(d).trim();
         if (s.length === 7) s = s + '-01';
         var dt = new Date(s + 'T00:00:00');
-        if (isNaN(dt.getTime())) return '\u2014';
+        if (isNaN(dt.getTime())) return '-';
         return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
-    var billRows = '';
+
+    var { jsPDF } = window.jspdf;
+
+    var rowH    = 14;
+    var baseH   = 175;
+    var extraH  = tenantBills.length > 0 ? tenantBills.length * rowH : 0;
+    var sigH    = tenantBills.length > 0 ? 44 : 0;
+    var totalH  = Math.max(148, baseH + extraH + sigH);
+
+    var W = 80;
+    var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [W, totalH], compress: true });
+    doc.setProperties({ title: 'Bill Slip - ' + t.first_name + ' ' + t.last_name, author: 'DormEase', creator: 'DormEase' });
+
+    var pink    = [232, 23, 93];
+    var ink     = [26, 26, 46];
+    var muted   = [140, 100, 120];
+    var white   = [255, 255, 255];
+    var petal   = [255, 243, 248];
+    var border  = [244, 184, 208];
+    var green   = [31, 157, 105];
+    var greenBg = [232, 250, 245];
+    var greenBd = [140, 224, 187];
+    var warn    = [255, 249, 230];
+    var warnTx  = [122, 84, 0];
+    var warnBd  = [240, 192, 64];
+    var red     = [224, 72, 103];
+    var redBg   = [255, 240, 244];
+    var redBd   = [255, 194, 209];
+    var amber   = [240, 165, 0];
+    var amberBg = [255, 251, 240];
+    var amberBd = [240, 192, 64];
+
+    doc.setFillColor(pink[0], pink[1], pink[2]);
+    doc.rect(0, 0, W, 28, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(white[0], white[1], white[2]);
+    doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', W / 2, 8, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.text('Outstanding Bill Slip', W / 2, 15, { align: 'center' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 210, 230);
+    doc.text('DormEase Billing System', W / 2, 21.5, { align: 'center' });
+
+    var y = 33;
+
+    doc.setFillColor(petal[0], petal[1], petal[2]);
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(6, y, W - 12, 22, 2, 2, 'FD');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.first_name + ' ' + t.last_name, 10, y + 6.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Account ID: ', 10, y + 11.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.account_id || '-', 10 + doc.getTextWidth('Account ID: '), y + 11.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Room: ', 10, y + 15.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(floorRoom + (t.stay_type ? '  \u00b7  ' + t.stay_type : ''), 10 + doc.getTextWidth('Room: '), y + 15.5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('Status: ', 10, y + 19.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(ink[0], ink[1], ink[2]);
+    doc.text(t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '-', 10 + doc.getTextWidth('Status: '), y + 19.5);
+
+    y += 27;
+
     if (tenantBills.length === 0) {
-        billRows = '<tr><td colspan="3" style="text-align:center;color:#1f9d69;font-weight:700;padding:4mm 0;">No outstanding balance.</td></tr>';
+        doc.setFillColor(greenBg[0], greenBg[1], greenBg[2]);
+        doc.setDrawColor(greenBd[0], greenBd[1], greenBd[2]);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(6, y, W - 12, 18, 2, 2, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(green[0], green[1], green[2]);
+        doc.text('No Outstanding Balance', W / 2, y + 8, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(green[0], green[1], green[2]);
+        doc.text('All bills have been settled.', W / 2, y + 13, { align: 'center' });
+
+        y += 23;
     } else {
-        tenantBills.forEach(function(b) {
-            var badgeColor = b.payment_status === 'overdue'
-                ? 'background:#ffe9ee;color:#e04867;border:1px solid #ff9db0;'
-                : 'background:#fff6dc;color:#c58a00;border:1px solid #f2cd63;';
-            billRows += '<tr>'
-                + '<td>' + fmtMonth(b.billing_month)
-                + '<br><span style="display:inline-block;font-size:5pt;font-weight:700;padding:.4mm 1.2mm;border-radius:3px;margin-top:.6mm;' + badgeColor + '">' + (b.payment_status.charAt(0).toUpperCase() + b.payment_status.slice(1)) + '</span></td>'
-                + '<td style="white-space:nowrap;">' + fmtDateSlip(b.due_date) + '</td>'
-                + '<td style="text-align:right;font-weight:700;">&#8369;' + parseFloat(b.room_share).toFixed(2) + '</td>'
-                + '</tr>';
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text('UNPAID / OVERDUE BILLS', 6, y);
+
+        y += 2.5;
+
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, W - 6, y);
+
+        y += 3;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(5.5);
+        doc.setTextColor(pink[0], pink[1], pink[2]);
+        doc.text('Billing Period', 6, y);
+        doc.text('Due Date', 43, y);
+        doc.text('Amount', W - 6, y, { align: 'right' });
+
+        y += 1.5;
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, W - 6, y);
+
+        tenantBills.forEach(function(b, i) {
+            var isOD       = b.payment_status === 'overdue';
+            var rowBg      = i % 2 === 0 ? petal : white;
+            var badgeBg    = isOD ? redBg : amberBg;
+            var badgeBd    = isOD ? redBd : amberBd;
+            var badgeTx    = isOD ? red : [200, 150, 12];
+
+            y += 1;
+            doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
+            doc.rect(6, y, W - 12, rowH - 2, 'F');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            doc.setTextColor(ink[0], ink[1], ink[2]);
+            doc.text(fmtMonth(b.billing_month), 7, y + 5);
+
+            doc.setFillColor(badgeBg[0], badgeBg[1], badgeBg[2]);
+            doc.setDrawColor(badgeBd[0], badgeBd[1], badgeBd[2]);
+            doc.setLineWidth(0.3);
+            doc.roundedRect(7, y + 6.5, 15, 4, 0.8, 0.8, 'FD');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(4.5);
+            doc.setTextColor(badgeTx[0], badgeTx[1], badgeTx[2]);
+            doc.text(isOD ? 'Overdue' : 'Unpaid', 14.5, y + 9.5, { align: 'center' });
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+            doc.setTextColor(muted[0], muted[1], muted[2]);
+            doc.text(fmtDateSlip(b.due_date), 43, y + 5);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7.5);
+            doc.setTextColor(red[0], red[1], red[2]);
+            doc.text('\u20b1' + parseFloat(b.room_share || 0).toFixed(2), W - 6, y + 5, { align: 'right' });
+
+            y += rowH;
+
+            doc.setDrawColor(border[0], border[1], border[2]);
+            doc.setLineWidth(0.2);
+            doc.line(6, y - 1, W - 6, y - 1);
         });
+
+        y += 2;
+
+        doc.setFillColor(pink[0], pink[1], pink[2]);
+        doc.roundedRect(6, y, W - 12, 12, 2, 2, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(255, 220, 235);
+        doc.text('Total Outstanding', 10, y + 7.5);
+
+        doc.setFontSize(11);
+        doc.setTextColor(white[0], white[1], white[2]);
+        doc.text('\u20b1' + total.toFixed(2), W - 8, y + 8, { align: 'right' });
+
+        y += 17;
+
+        doc.setFillColor(warn[0], warn[1], warn[2]);
+        doc.setDrawColor(warnBd[0], warnBd[1], warnBd[2]);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(6, y, W - 12, 14, 1.8, 1.8, 'FD');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.8);
+        doc.setTextColor(warnTx[0], warnTx[1], warnTx[2]);
+        var warnLines = doc.splitTextToSize('Please settle your outstanding balance at the admin office. Bring this slip as reference.', W - 16);
+        doc.text(warnLines, 9, y + 5, { lineHeightFactor: 1.6 });
+
+        y += 19;
+
+        doc.setDrawColor(border[0], border[1], border[2]);
+        doc.setLineWidth(0.3);
+        doc.setLineDash([1.5, 1.5]);
+        doc.line(6, y, W - 6, y);
+        y += 8;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5.5);
+        doc.setTextColor(muted[0], muted[1], muted[2]);
+        doc.text('Tenant Signature over Printed Name', W / 2, y, { align: 'center' });
+        y += 14;
+        doc.line(6, y, W - 6, y);
+        y += 8;
+        doc.text('Admin / Staff Signature & Date', W / 2, y, { align: 'center' });
+        doc.setLineDash([]);
+
+        y += 8;
     }
-    var totalBlock = tenantBills.length > 0
-        ? '<div style="display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3mm;background:#E8175D;border-radius:4px;margin-bottom:2.5mm;">'
-            + '<span style="font-size:7.5pt;font-weight:700;color:rgba(255,255,255,.88);">Total Outstanding</span>'
-            + '<span style="font-size:12pt;font-weight:800;color:#fff;letter-spacing:-.02em;">&#8369;' + total.toFixed(2) + '</span>'
-            + '</div>'
-            + '<div style="background:#fff9e6;border:1px solid #f0c040;border-radius:3px;padding:1.8mm 2mm;font-size:6pt;color:#7a5400;line-height:1.4;margin-bottom:2.5mm;">Please settle your outstanding balance at the admin office. Bring this slip as reference.</div>'
-        : '<div style="text-align:center;padding:3mm;background:#f0faf6;border:1.5px solid #8ce0bb;border-radius:4px;margin-bottom:2.5mm;">'
-            + '<div style="font-size:9.5pt;font-weight:800;color:#1f9d69;">No Outstanding Balance</div>'
-            + '<div style="font-size:6.5pt;color:#2e9e68;margin-top:.8mm;">All bills have been settled.</div>'
-            + '</div>';
-    var signatureBlock = tenantBills.length > 0
-        ? '<div style="margin-bottom:2.5mm;display:flex;flex-direction:column;gap:0;">'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:7mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Tenant Signature over Printed Name</div></div>'
-            + '<div style="display:flex;flex-direction:column;gap:.8mm;margin-bottom:3mm;"><div style="height:12mm;"></div><div style="width:100%;height:1px;background:#d0a0b8;"></div><div style="font-size:5.5pt;color:#b06080;text-align:center;letter-spacing:.03em;">Admin / Staff Signature &amp; Date</div></div>'
-            + '</div>'
-        : '';
-    var win = window.open('', '_blank', 'width=302,height=520');
-    win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bill Slip - ' + t.first_name + ' ' + t.last_name + '</title>'
-        + '<style>'
-        + '@page { size: 80mm ' + (tenantBills.length === 0 ? '120mm' : (150 + tenantBills.length * 22) + 'mm') + '; margin: 0; }'
-        + '* { box-sizing: border-box; margin: 0; padding: 0; }'
-        + 'html, body { font-family: "Segoe UI", Arial, sans-serif; background: #fff; width: 80mm; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
-        + '.slip { width: 80mm; }'
-        + '.slip-inner { padding: 5mm 5.5mm 5mm; display: flex; flex-direction: column; gap: 0; }'
-        + 'table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; }'
-        + 'thead th { font-size: 5.5pt; font-weight: 800; color: #E8175D; text-transform: uppercase; letter-spacing: .05em; padding: 1.2mm .8mm; border-bottom: 1.5px solid #f4b8d0; text-align: left; }'
-        + 'thead th:last-child { text-align: right; }'
-        + 'tbody td { font-size: 7pt; color: #3a0e22; padding: 1.6mm .8mm; border-bottom: 1px dashed #fce8f1; vertical-align: top; }'
-        + 'tbody tr:last-child td { border-bottom: none; }'
-        + '@media print { html, body { height: auto; } }'
-        + '</style>'
-        + '</head><body>'
-        + '<div class="slip">'
-        + '<div style="background:#E8175D;color:#fff;text-align:center;padding:4mm 4mm 3.5mm;margin:0;">'
-            + '<div style="font-size:6pt;font-weight:700;opacity:.88;letter-spacing:.04em;text-transform:uppercase;">Sanctissimo Rosario Ladies Dormitory</div>'
-            + '<div style="font-size:10.5pt;font-weight:800;margin-top:.8mm;letter-spacing:-.01em;">Outstanding Bill Slip</div>'
-            + '<div style="font-size:6.5pt;opacity:.82;margin-top:.4mm;">DormEase Billing System</div>'
-        + '</div>'
-        + '<div class="slip-inner">'
-        + '<div style="background:#fff5f9;border:1.5px solid #f4b8d0;border-radius:4px;padding:2.5mm 3mm;margin-bottom:2.5mm;">'
-            + '<div style="font-size:10pt;font-weight:800;color:#3a0e22;line-height:1.2;">' + t.first_name + ' ' + t.last_name + '</div>'
-            + '<div style="font-size:6.5pt;color:#a0405e;margin-top:.8mm;display:flex;flex-direction:column;gap:.5mm;">'
-                + '<span>Account ID: <strong>' + (t.account_id || '\u2014') + '</strong></span>'
-                + '<span>Room: <strong>' + floorRoom + '</strong> &nbsp;&middot;&nbsp; ' + (t.stay_type || 'N/A') + '</span>'
-                + '<span>Status: <strong>' + (t.status ? t.status.charAt(0).toUpperCase() + t.status.slice(1) : '\u2014') + '</strong></span>'
-            + '</div>'
-        + '</div>'
-        + (tenantBills.length > 0 ? '<div style="font-size:6pt;font-weight:800;color:#E8175D;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.8mm;padding-bottom:1.2mm;border-bottom:1px dashed #f4b8d0;">Unpaid / Overdue Bills</div>' : '')
-        + (tenantBills.length > 0 ? '<table><thead><tr><th>Billing Period</th><th>Due Date</th><th>Amount</th></tr></thead><tbody>' + billRows + '</tbody></table>' : billRows)
-        + totalBlock
-        + signatureBlock
-        + '<div style="padding-top:2.5mm;border-top:1px dashed #f4b8d0;display:flex;justify-content:space-between;align-items:center;">'
-            + '<div style="font-size:5.5pt;color:#b06080;">Issued: ' + today + '</div>'
-            + '<div style="font-size:5.5pt;color:#E8175D;font-weight:700;letter-spacing:.04em;">DormEase</div>'
-        + '</div>'
-        + '</div>'
-        + '</div>'
-        + '<script>window.onload = function() { window.print(); };<\/script>'
-        + '</body></html>');
-    win.document.close();
+
+    doc.setDrawColor(border[0], border[1], border[2]);
+    doc.setLineWidth(0.3);
+    doc.line(6, y, W - 6, y);
+
+    y += 4.5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    doc.setTextColor(muted[0], muted[1], muted[2]);
+    doc.text('Issued: ' + today, 6, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(pink[0], pink[1], pink[2]);
+    doc.text('DormEase', W - 6, y, { align: 'right' });
+
+    var safeName = (t.first_name + '-' + t.last_name).replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
+    var blobUrl = doc.output('bloburl');
+    openPdfPreview(blobUrl, 'bill-slip-' + safeName + '.pdf');
 }
 </script>
 @endsection

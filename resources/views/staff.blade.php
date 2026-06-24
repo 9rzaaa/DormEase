@@ -204,6 +204,12 @@
     .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: var(--hot-pink); }
     .page-btn:disabled { opacity: .4; cursor: default; }
 
+    .modal { background: var(--white); border-radius: 20px; padding: 2rem; width: 90%; max-width: 480px; box-shadow: var(--shadow-pink-modal); animation: fadeUp .3s ease; max-height: 90vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent; }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-track { background: transparent; }
+    .modal::-webkit-scrollbar-thumb { background: var(--baby-pink); border-radius: 99px; }
+    .modal::-webkit-scrollbar-thumb:hover { background: var(--bright-pink); }
+
     .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,46,.45); backdrop-filter: blur(4px); z-index: 300; display: none; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--white); border-radius: 20px; padding: 2rem; width: 90%; max-width: 480px; box-shadow: var(--shadow-pink-modal); animation: fadeUp .3s ease; max-height: 90vh; overflow-y: auto; }
@@ -1263,6 +1269,23 @@
 @endsection
 
 @section('modals')
+<div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
+    <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
+        <div class="modal-header" style="margin-bottom:.85rem;">
+            <div class="modal-title">Credential Slip Preview</div>
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <button class="btn-submit" style="padding:.45rem 1rem;font-size:.82rem;" onclick="downloadPdfFromPreview()">Download</button>
+                <button class="modal-close" onclick="closePdfPreview()">&#x2715;</button>
+            </div>
+        </div>
+        <div style="width:100%;border-radius:10px;overflow:hidden;border:1.5px solid var(--baby-pink);background:var(--soft-bg);">
+            <iframe id="pdf-preview-iframe" src="" style="width:100%;height:520px;border:none;display:block;"></iframe>
+        </div>
+        <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
+            Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
+        </div>
+    </div>
+</div>
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">
@@ -1387,9 +1410,18 @@
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Add New Staff</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/staff-2.png') }}" class="icon-sm" alt="Add Staff">
+                Add New Staff
+            </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
+
+        <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);margin-bottom:1.1rem;line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
+            <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
+            <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
+        </div>
+
         <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
             @csrf
             <div class="modal-grid">
@@ -1402,9 +1434,14 @@
                         <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
                     </div>
                 </div>
+
+                <div class="modal-field full" style="margin-bottom:-.2rem;">
+                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Personal Information</div>
+                </div>
+
                 <div class="modal-field">
                     <label>First Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
+                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
                     <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
@@ -1412,6 +1449,16 @@
                     <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
                     <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
+                <div class="modal-field full">
+                    <label>Contact No.</label>
+                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                </div>
+
+                <div class="modal-field full" style="margin-bottom:-.2rem;margin-top:.3rem;padding-top:.8rem;border-top:1px solid var(--petal);">
+                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Account Details</div>
+                </div>
+
                 <div class="modal-field full">
                     <label>Email <span class="field-req-star">*</span></label>
                     <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
@@ -1435,15 +1482,10 @@
                         <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
                     </select>
                 </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
-                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
-                </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
+                <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
             </div>
         </form>
     </div>
@@ -1497,7 +1539,7 @@
                 </div>
                 <div class="modal-field full">
                     <label>Email <span class="field-req-star">*</span></label>
-                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this)">
+                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this, currentStaff ? currentStaff.staff_id : null)">
                     <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
@@ -1599,6 +1641,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
     function showActionLoading(message) {
         var overlay = document.getElementById('action-loading');
@@ -1894,19 +1937,46 @@
         return true;
     }
 
-    function validateEmail(input) {
+    function validateEmail(input, excludeId) {
         var val   = input.value.trim();
         var errId = input.id + '-error';
         var errEl = document.getElementById(errId);
         var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
         if (val.length > 0 && !valid) {
             input.style.borderColor = 'var(--red)';
-            if (errEl) errEl.style.display = 'block';
+            if (errEl) {
+                errEl.textContent = 'Enter a valid email address.';
+                errEl.style.display = 'block';
+                }
             return false;
         }
+
+        if (val.length > 0 && valid && isEmailTaken(val, excludeId)) {
+        input.style.borderColor = 'var(--red)';
+        if (errEl) {
+            errEl.textContent = 'This email is already registered to another staff member.';
+            errEl.style.display = 'block';
+        }
+        return false;
+        }
+
         input.style.borderColor = '';
-        if (errEl) errEl.style.display = 'none';
+        if (errEl) {
+            errEl.style.display = 'none';
+            errEl.textContent = 'Enter a valid email address.';
+        }
         return true;
+    }
+
+    function isEmailTaken(email, excludeId) {
+        var normalized = email.trim().toLowerCase();
+        var allRecords = staffList.concat(inactiveStaffArchive, deletedStaffArchive);
+            return allRecords.some(function(r) {
+            return r.email
+                && r.email.toLowerCase() === normalized
+                && String(r.staff_id) !== String(excludeId);
+        });
     }
 
     function validateName(input) {
@@ -1966,7 +2036,7 @@
         var ok = true;
         if (!validateName(document.getElementById('edit-first-name')))       ok = false;
         if (!validateName(document.getElementById('edit-last-name')))        ok = false;
-        if (!validateEmail(document.getElementById('edit-email')))           ok = false;
+        if (!validateEmail(document.getElementById('edit-email'), currentStaff ? currentStaff.staff_id : null)) ok = false;
         if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
         if (document.getElementById('edit-is-on-leave').checked) {
             if (!validateLeaveDates()) ok = false;
@@ -2068,10 +2138,18 @@
         var el = document.getElementById(id);
         if (el) el.classList.remove('open');
         if ((id === 'reset-credentials-modal' || id === 'reset-confirm-modal') && el) el.remove();
+        if (id === 'add-modal') {
+            var submitBtn = document.getElementById('add-staff-submit-btn');
+            if (submitBtn) submitBtn.disabled = true;
+        }
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(m) {
-        m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('open'); });
+        m.addEventListener('click', function(e) {
+            if (e.target !== m) return;
+            if (m.id === 'pdf-preview-modal') { closePdfPreview(); return; }
+            m.classList.remove('open');
+        });
     });
 
     function copyText(id, btn) {
@@ -2192,6 +2270,27 @@
             showToast('Failed to reset password.', 'error');
         });
     }
+    var _pdfBlobUrl = null;
+
+    function openPdfPreview(blobUrl) {
+        _pdfBlobUrl = blobUrl;
+        document.getElementById('pdf-preview-iframe').src = blobUrl;
+        openModal('pdf-preview-modal');
+    }
+
+    function closePdfPreview() {
+        closeModal('pdf-preview-modal');
+        document.getElementById('pdf-preview-iframe').src = '';
+        if (_pdfBlobUrl) { URL.revokeObjectURL(_pdfBlobUrl); _pdfBlobUrl = null; }
+    }
+
+    function downloadPdfFromPreview() {
+        if (!_pdfBlobUrl) return;
+        var a = document.createElement('a');
+        a.href = _pdfBlobUrl;
+        a.download = 'credentials-slip.pdf';
+        a.click();
+    }
 
     function printStaffCredentialSlip(type) {
         var staffName, email, staffId, tempPassword;
@@ -2206,64 +2305,116 @@
             staffId      = document.getElementById('reset-staff-id').innerText.trim();
             tempPassword = document.getElementById('reset-temp-password').innerText.trim();
         }
+
         var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        var win = window.open('', '_blank', 'width=400,height=560');
-        win.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>DormEase Staff Login Credentials</title>
-<style>
-  @page { size: 80mm 150mm; margin: 0; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; width: 80mm; min-height: 150mm; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .slip { width: 80mm; min-height: 150mm; padding: 7mm 7mm 6mm; display: flex; flex-direction: column; gap: 0; border: 1px dashed #f4b8d0; }
-  .header { background: #E8175D; color: #fff; text-align: center; padding: 5mm 4mm 4mm; border-radius: 5px 5px 0 0; margin: -7mm -7mm 4mm; }
-  .header .dorm { font-size: 7pt; font-weight: 700; opacity: .88; letter-spacing: .04em; text-transform: uppercase; }
-  .header .title { font-size: 11pt; font-weight: 800; margin-top: 1mm; letter-spacing: -.01em; }
-  .header .subtitle { font-size: 7.5pt; opacity: .82; margin-top: .5mm; }
-  .staff-name { text-align: center; font-size: 10pt; font-weight: 700; color: #3a0e22; margin-bottom: 3.5mm; padding-bottom: 3mm; border-bottom: 1px dashed #f4b8d0; }
-  .field { margin-bottom: 3mm; }
-  .field-label { font-size: 6.5pt; font-weight: 700; color: #E8175D; text-transform: uppercase; letter-spacing: .07em; margin-bottom: .8mm; }
-  .field-value { font-size: 12pt; font-weight: 800; color: #1a1a2e; font-family: 'Courier New', monospace; background: #fff5f9; border: 1.5px solid #f4b8d0; border-radius: 4px; padding: 2mm 3mm; letter-spacing: .05em; text-align: center; word-break: break-all; }
-  .field-value.small { font-size: 9pt; letter-spacing: 0; }
-  .warning { background: #fff9e6; border: 1px solid #f0c040; border-radius: 3px; padding: 1.8mm 2mm; font-size: 6pt; color: #7a5400; line-height: 1.45; margin-top: 1.5mm; }
-  .footer { margin-top: auto; padding-top: 3mm; border-top: 1px dashed #f4b8d0; display: flex; justify-content: space-between; align-items: center; }
-  .footer-date { font-size: 6pt; color: #b06080; }
-  .footer-brand { font-size: 6pt; color: #E8175D; font-weight: 700; letter-spacing: .04em; }
-  @media print { body { margin: 0; } .slip { border: none; } }
-</style>
-</head>
-<body>
-<div class="slip">
-  <div class="header">
-    <div class="dorm">Sanctissimo Rosario Ladies Dormitory</div>
-    <div class="title">Staff Login Credentials</div>
-    <div class="subtitle">DormEase Staff Portal</div>
-  </div>
-  <div class="staff-name">${staffName}</div>
-  <div class="field">
-    <div class="field-label">Email</div>
-    <div class="field-value small">${email}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Staff ID</div>
-    <div class="field-value">${staffId}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Temporary Password</div>
-    <div class="field-value">${tempPassword}</div>
-  </div>
-  <div class="warning">This is a temporary password. You will be asked to change it on your first login. Keep this slip private and do not share it with anyone.</div>
-  <div class="footer">
-    <div class="footer-date">Issued: ${today}</div>
-    <div class="footer-brand">DormEase</div>
-  </div>
-</div>
-<script>window.onload = function() { window.print(); };<\/script>
-</body>
-</html>`);
-        win.document.close();
+
+        var { jsPDF } = window.jspdf;
+        var doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [80, 148],
+        });
+
+        var slipW  = 80;
+        var pink   = [232, 23, 93];
+        var ink    = [26, 26, 46];
+        var muted  = [120, 80, 100];
+        var white  = [255, 255, 255];
+        var petal  = [255, 245, 249];
+        var border = [244, 184, 208];
+        var warn   = [255, 249, 230];
+        var warnTx = [122, 84, 0];
+        var warnBd = [240, 192, 64];
+
+        doc.setFillColor(...pink);
+        doc.rect(0, 0, slipW, 28, 'F');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6);
+        doc.setTextColor(...white);
+        doc.text('SANCTISSIMO ROSARIO LADIES DORMITORY', slipW / 2, 8, { align: 'center' });
+
+        doc.setFontSize(11);
+        doc.text('Staff Login Credentials', slipW / 2, 15, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(255, 220, 235);
+        doc.text('DormEase Staff Portal', slipW / 2, 21, { align: 'center' });
+
+        var y = 34;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(...ink);
+        doc.text(staffName, slipW / 2, y, { align: 'center' });
+
+        y += 3;
+        doc.setDrawColor(...border);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 6;
+
+        function drawField(label, value, isSmall) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(6);
+            doc.setTextColor(...pink);
+            doc.text(label.toUpperCase(), 6, y);
+
+            y += 2;
+
+            doc.setFillColor(...petal);
+            doc.setDrawColor(...border);
+            doc.setLineWidth(0.4);
+            doc.roundedRect(6, y, slipW - 12, 9, 1.5, 1.5, 'FD');
+
+            doc.setFont('courier', 'bold');
+            doc.setFontSize(isSmall ? 8 : 10);
+            doc.setTextColor(...ink);
+            doc.text(value, slipW / 2, y + 6, { align: 'center' });
+
+            y += 13;
+        }
+
+        drawField('Email', email, true);
+        drawField('Staff ID', staffId, false);
+        drawField('Temporary Password', tempPassword, false);
+
+        doc.setFillColor(...warn);
+        doc.setDrawColor(...warnBd);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(6, y, slipW - 12, 14, 1.5, 1.5, 'FD');
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(...warnTx);
+        var warnLines = doc.splitTextToSize(
+            'This is a temporary password. You will be asked to change it on first login. Keep this slip private.',
+            slipW - 16
+        );
+        doc.text(warnLines, slipW / 2, y + 4.5, { align: 'center', lineHeightFactor: 1.5 });
+
+        y += 18;
+
+        doc.setDrawColor(...border);
+        doc.setLineWidth(0.3);
+        doc.line(6, y, slipW - 6, y);
+
+        y += 4;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(...muted);
+        doc.text('Issued: ' + today, 6, y);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...pink);
+        doc.text('DormEase', slipW - 6, y, { align: 'right' });
+
+        var safeName = staffName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-').toLowerCase();
+        var blobUrl = doc.output('bloburl');
+        openPdfPreview(blobUrl);
     }
 
     var deletedStaffArchive   = @json($deletedArchive);
@@ -2807,7 +2958,12 @@
     });
 
     @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+        document.addEventListener('DOMContentLoaded', function() {
+            @foreach($errors->all() as $error)
+                showToast('{{ $error }}', 'error');
+            @endforeach
+            openModal('add-modal');
+        });
     @endif
 
     @if(session('success'))
@@ -2827,7 +2983,14 @@
         var text  = document.getElementById(prefix + '-progress-text');
         var count = document.getElementById(prefix + '-progress-count');
         if (!fill || !text || !count) return;
+
+        if (prefix === 'add-staff') {
+            var submitBtn = document.getElementById('add-staff-submit-btn');
+            if (submitBtn) submitBtn.disabled = pct < 100;
+        }
+
         fill.style.width = pct + '%';
+
         if (pct === 100) {
             fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
             text.textContent = 'All required fields filled';
@@ -2898,6 +3061,16 @@
         return drawers.some(function(d) { return d && d.classList.contains('open'); });
     }
 
+    function isStaffUserBusy() {
+        if (isAnyModalOpen() || isAnyDrawerOpen()) return true;
+        var active = document.activeElement;
+        if (active && active !== document.body) {
+            var tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
     function updateStatsRow(data) {
         var statNums = document.querySelectorAll('.stat-num');
         if (statNums[0]) statNums[0].textContent = data.totalStaff;
@@ -2906,7 +3079,7 @@
     }
 
     function pollStaffData() {
-        if (isAnyModalOpen() || isAnyDrawerOpen()) return;
+        if (isStaffUserBusy()) return;
 
         fetch('{{ route("staff.poll") }}', {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -2917,18 +3090,29 @@
             if (newHash === pollHash) return;
             pollHash = newHash;
 
-            staffList = data.staffList;
-            filtered  = staffList.slice();
+            if (isStaffUserBusy()) return;
 
-            var searchVal = document.getElementById('search-input').value;
-            var roleVal   = document.getElementById('filter-role').value;
-            var dutyVal   = document.getElementById('filter-duty').value;
+            staffList = data.staffList;
+
+            var keepPage   = currentPage;
+            var searchVal  = document.getElementById('search-input').value;
+            var roleVal    = document.getElementById('filter-role').value;
+            var dutyVal    = document.getElementById('filter-duty').value;
 
             if (searchVal || roleVal || dutyVal) {
                 filterTable();
             } else {
-                sortTable();
+                filtered = staffList.slice();
+                var sortVal = document.getElementById('sort-select').value;
+                if (sortVal === 'newest') filtered.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+                if (sortVal === 'oldest') filtered.sort(function(a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+                if (sortVal === 'name')   filtered.sort(function(a, b) { return a.first_name.localeCompare(b.first_name); });
+                if (sortVal === 'role')   filtered.sort(function(a, b) { return (a.role || '').localeCompare(b.role || ''); });
             }
+
+            var totalPages = Math.ceil(filtered.length / PER_PAGE);
+            currentPage = Math.min(keepPage, Math.max(1, totalPages));
+            renderTable();
 
             updateStatsRow(data);
         })

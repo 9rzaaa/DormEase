@@ -121,4 +121,82 @@ class DashboardController extends Controller
             'expectedAbsent'       => $expectedAbsent,
         ]);
     }
+
+    public function live()
+    {
+        $staff = Auth::guard('staff')->user();
+
+        $activeTenantIds = Tenant::whereIn('status', ['active', 'pending'])->pluck('tenant_id');
+
+        $maintenanceRequests = MaintenanceRequest::with('tenant')
+            ->whereIn('status', ['pending', 'in-progress'])
+            ->latest('submitted_at')
+            ->take(3)
+            ->get();
+
+        $announcements = Announcement::latest('posted_at')->take(3)->get();
+
+        $notifications = Notification::where('staff_id', $staff->staff_id)
+            ->where('is_read', false)
+            ->latest('created_at')
+            ->take(4)
+            ->get();
+
+        $latestEmergency = EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first();
+
+        $fingerprint = md5(
+            MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->max('updated_at') .
+            MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count() .
+            Announcement::max('updated_at') .
+            Announcement::count() .
+            $notifications->max('created_at') .
+            $notifications->count() .
+            optional($latestEmergency)->updated_at .
+            EmergencyReport::max('updated_at')
+        );
+
+        return response()->json([
+            'fingerprint' => $fingerprint,
+            'totalTenants' => Tenant::whereIn('status', ['active', 'pending'])->count(),
+            'pendingPayments' => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count(),
+            'pendingMaintenance' => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
+            'unresolvedReports' => EmergencyReport::where('status', '!=', 'resolved')->count(),
+            'announcementsCount' => Announcement::count(),
+            'maintenanceRequests' => $maintenanceRequests->map(function ($req) {
+                return [
+                    'request_id' => $req->request_id,
+                    'issue_type' => $req->issue_type,
+                    'description' => $req->description,
+                    'urgency_level' => $req->urgency_level,
+                    'status' => $req->status,
+                    'assigned_to' => $req->assigned_to,
+                    'room_number' => $req->tenant->room_number ?? 'N/A',
+                    'photo_url' => $req->photo_url,
+                ];
+            }),
+            'announcements' => $announcements->map(function ($ann) {
+                return [
+                    'announcement_id' => $ann->announcement_id,
+                    'title' => $ann->title,
+                    'content' => $ann->content,
+                    'priority' => $ann->priority,
+                    'status' => $ann->status,
+                    'posted_at' => Carbon::parse($ann->posted_at)->format('F d, Y · g:i A'),
+                ];
+            }),
+            'notifications' => $notifications->map(function ($n) {
+                return [
+                    'id' => $n->id,
+                    'message' => $n->message,
+                    'type' => $n->type ?? 'bell',
+                    'time' => Carbon::parse($n->created_at)->diffForHumans(),
+                ];
+            }),
+            'latestEmergency' => $latestEmergency ? [
+                'location' => $latestEmergency->location ?? 'Unknown Location',
+                'emergency_type' => $latestEmergency->emergency_type,
+                'status' => $latestEmergency->status,
+            ] : null,
+        ]);
+    }
 }

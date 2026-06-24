@@ -1940,6 +1940,115 @@
     });
 })();
 (function() {
+    var pollUrl = "{{ route('billing.poll') }}";
+    var lastSignature = null;
+    var pollIntervalMs = 12000;
+    var pollTimer = null;
+    var inFlight = false;
+
+    function isUserBusy() {
+        if (document.querySelector('.modal-overlay.open')) return true;
+        if (document.querySelector('.confirm-overlay.open')) return true;
+        if (document.querySelector('.proof-lightbox-overlay.open')) return true;
+        if (document.querySelector('.export-menu.open')) return true;
+        if (document.querySelector('.export-month-menu.open')) return true;
+        if (document.querySelector('.action-loading-overlay.open')) return true;
+        if (document.querySelector('.billing-legend-popup.open')) return true;
+
+        var active = document.activeElement;
+        if (active && active !== document.body) {
+            var tag = active.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        }
+        return false;
+    }
+
+    function currentParams() {
+        var url = new URL(window.location.href);
+        return {
+            month: url.searchParams.get('month') || @json($selectedMonth),
+            floor: url.searchParams.get('floor') || ''
+        };
+    }
+
+    function softReload() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('_silent', '1');
+        fetch(url.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function(res) {
+            return res.text();
+        }).then(function(html) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(html, 'text/html');
+            var freshGroups = doc.getElementById('billing-groups');
+            var currentGroups = document.getElementById('billing-groups');
+            var freshStats = doc.querySelector('.stats-card');
+            var currentStats = document.querySelector('.stats-card');
+
+            if (freshGroups && currentGroups) {
+                currentGroups.innerHTML = freshGroups.innerHTML;
+            }
+            if (freshStats && currentStats) {
+                currentStats.innerHTML = freshStats.innerHTML;
+            }
+        }).catch(function() {
+        });
+    }
+
+    function poll() {
+        if (inFlight || isUserBusy()) return;
+        inFlight = true;
+
+        var params = currentParams();
+        var pollFetchUrl = pollUrl + '?month=' + encodeURIComponent(params.month) + '&floor=' + encodeURIComponent(params.floor);
+
+        fetch(pollFetchUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then(function(res) {
+            if (!res.ok) throw new Error('poll failed');
+            return res.json();
+        }).then(function(data) {
+            if (lastSignature === null) {
+                lastSignature = data.signature;
+                return;
+            }
+            if (data.signature !== lastSignature) {
+                lastSignature = data.signature;
+                if (!isUserBusy()) softReload();
+            }
+        }).catch(function() {
+        }).finally(function() {
+            inFlight = false;
+        });
+    }
+
+    function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(poll, pollIntervalMs);
+    }
+
+    function stopPolling() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            startPolling();
+            poll();
+        }
+    });
+
+    window.addEventListener('focus', poll);
+
+    startPolling();
+})();
+(function() {
     var trigger = document.getElementById('billing-legend-trigger');
     var popup   = document.getElementById('billing-legend-popup');
     if (!trigger || !popup) return;
@@ -2293,9 +2402,10 @@ function openLogModal() {
 
 function applyFloorFilter() {
     const floor = document.getElementById('filter-floor').value;
-    document.querySelectorAll('.floor-group').forEach(g => {
-        g.style.display = (!floor || g.dataset.floor == floor) ? '' : 'none';
-    });
+    const month = document.getElementById('filter-month').value;
+    let url = "{{ route('billing.index') }}?month=" + month;
+    if (floor) url += '&floor=' + floor;
+    window.location.href = url;
 }
 
 function applyMonthFilter() {

@@ -48,7 +48,13 @@ class FDProfileController extends Controller
         ]);
         if (!Hash::check($request->current_password, $staff->password_hash)) {
             return back()
-                ->with('error', 'Current password is incorrect.')
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->with('prompt_temp_password', true);
+        }
+
+        if (Hash::check($request->password, $staff->password_hash)) {
+            return back()
+                ->withErrors(['password' => 'New password must differ from your current password.'])
                 ->with('prompt_temp_password', true);
         }
         $staff->update([

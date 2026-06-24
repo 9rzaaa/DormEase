@@ -1413,7 +1413,7 @@
             <div class="modal-title">Report Emergency</div>
             <button class="modal-close" onclick="closeModal('report-modal')">&#x2715;</button>
         </div>
-        <form method="POST" action="{{ route('frontdesk.emergency.store') }}">
+        <form method="POST" action="{{ route('frontdesk.emergency.store') }}" id="report-form">
             @csrf
             <div class="modal-grid">
                 <div class="em-modal-field">
@@ -1450,7 +1450,7 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="report-submit-btn" onclick="handleReportSubmit(event, this)">Submit Report</button>
+                <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
             </div>
         </form>
     </div>
@@ -1505,7 +1505,7 @@
             </div>
             <div class="modal-warn-banner">
                 <span style="font-size:.95rem;flex-shrink:0;"></span>
-                <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
+                <span>Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this report to the archive permanently.</span>
             </div>
         </div>
         <div class="modal-footer">
@@ -1923,7 +1923,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type).replace(/"/g, '&quot;')})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>
@@ -2368,22 +2368,26 @@
         showToast('{{ session("success") }}', 'success');
     @endif
 
-    function handleReportSubmit(event, btn) {
+    document.getElementById('report-form').addEventListener('submit', function(event) {
+        const btn  = document.getElementById('report-submit-btn');
         const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
         const loc  = document.querySelector('#report-modal input[name="location"]').value.trim();
+
         if (!type) {
             showToast('Please select an emergency type.', 'error');
             event.preventDefault();
             return;
         }
-        if (!loc) {
+            if (!loc) {
             showToast('Please enter a location.', 'error');
             event.preventDefault();
             return;
         }
+
         btn.disabled = true;
         btn.textContent = 'Submitting...';
-    }
+        showActionLoading('Submitting emergency report...');
+    });
 
     function populateTypeFilter() {
         const select = document.getElementById('type-filter');
@@ -2444,20 +2448,125 @@
     populateTypeFilter();
     applyFilters();
     renderDirList();
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
+    (function () {
+        var POLL_INTERVAL     = 30000;
+        var pollTimer         = null;
+        var lastPanicId       = null;
+        var lastReportFingerprint = null;
+
+        function isAnyModalOpen() {
+            var overlays = document.querySelectorAll('.modal-overlay');
+            for (var i = 0; i < overlays.length; i++) {
+                if (overlays[i].classList.contains('open')) return true;
+            }
+            return false;
         }
-        setInterval(checkPanic, 30000);
+
+        function isArchiveDrawerOpen() {
+            var drawer = document.getElementById('archive-drawer');
+            return drawer && drawer.classList.contains('open');
+        }
+
+        function isUserTyping() {
+            var active = document.activeElement;
+            if (!active) return false;
+            var tag = active.tagName.toLowerCase();
+            return tag === 'input' || tag === 'textarea' || tag === 'select' || active.isContentEditable;
+        }
+
+        function shouldSkipDataPoll() {
+            return isAnyModalOpen() || isArchiveDrawerOpen() || isUserTyping();
+        }
+
+        function updateStats(freshReports) {
+            var critical = freshReports.filter(function (r) {
+                return r.urgency_level === 'critical' || r.urgency_level === 'urgent';
+            }).length;
+            var panic = freshReports.filter(function (r) {
+                return r.is_panic_alert && r.status === 'active';
+            }).length;
+
+            var statNums = document.querySelectorAll('.stat-num');
+            if (statNums[1]) statNums[1].textContent = critical;
+            if (statNums[2]) statNums[2].textContent = panic;
+        }
+
+        function applyFreshReports(freshReports) {
+            var fingerprint = JSON.stringify(freshReports.map(function (r) {
+                return r.report_id + '|' + r.status + '|' + r.urgency_level + '|' + r.is_panic_alert;
+            }));
+
+            if (fingerprint === lastReportFingerprint) return;
+            lastReportFingerprint = fingerprint;
+
+            reports.length = 0;
+            freshReports.forEach(function (r) { reports.push(r); });
+
+            populateTypeFilter();
+            applyFilters();
+            updateStats(freshReports);
+        }
+
+        function checkPanic(freshReports) {
+            var panicReport = null;
+            for (var i = 0; i < freshReports.length; i++) {
+                if (freshReports[i].is_panic_alert && freshReports[i].status === 'active') {
+                    panicReport = freshReports[i];
+                    break;
+                }
+            }
+            if (panicReport && panicReport.report_id !== lastPanicId) {
+                lastPanicId = panicReport.report_id;
+                showToast('PANIC ALERT: ' + (panicReport.emergency_type || 'Emergency') + ' at ' + (panicReport.location || 'unknown'), 'error');
+            }
+        }
+
+        function poll() {
+            var skipData = shouldSkipDataPoll();
+
+            fetch('{{ url("/frontdesk/emergency/poll/panic") }}', {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.has_panic && data.report_id !== lastPanicId) {
+                    lastPanicId = data.report_id;
+                    showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
+                }
+            })
+            .catch(function () {});
+
+            if (skipData) {
+                pollTimer = setTimeout(poll, POLL_INTERVAL);
+                return;
+            }
+
+            fetch('{{ url("/frontdesk/emergency/poll/reports") }}', {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (freshReports) {
+                if (Array.isArray(freshReports)) {
+                    applyFreshReports(freshReports);
+                    checkPanic(freshReports);
+                }
+            })
+            .catch(function () {})
+            .finally(function () {
+                pollTimer = setTimeout(poll, POLL_INTERVAL);
+            });
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                clearTimeout(pollTimer);
+                poll();
+            } else {
+                clearTimeout(pollTimer);
+            }
+        });
+
+        pollTimer = setTimeout(poll, POLL_INTERVAL);
     })();
 </script>
 @endsection
