@@ -1514,7 +1514,7 @@
                 </div>
                 <div class="modal-field full">
                     <label>Email <span class="field-req-star">*</span></label>
-                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this)">
+                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this, currentStaff ? currentStaff.staff_id : null)">
                     <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
                 </div>
                 <div class="modal-field">
@@ -1912,19 +1912,46 @@
         return true;
     }
 
-    function validateEmail(input) {
+    function validateEmail(input, excludeId) {
         var val   = input.value.trim();
         var errId = input.id + '-error';
         var errEl = document.getElementById(errId);
         var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
         if (val.length > 0 && !valid) {
             input.style.borderColor = 'var(--red)';
-            if (errEl) errEl.style.display = 'block';
+            if (errEl) {
+                errEl.textContent = 'Enter a valid email address.';
+                errEl.style.display = 'block';
+                }
             return false;
         }
+
+        if (val.length > 0 && valid && isEmailTaken(val, excludeId)) {
+        input.style.borderColor = 'var(--red)';
+        if (errEl) {
+            errEl.textContent = 'This email is already registered to another staff member.';
+            errEl.style.display = 'block';
+        }
+        return false;
+        }
+
         input.style.borderColor = '';
-        if (errEl) errEl.style.display = 'none';
+        if (errEl) {
+            errEl.style.display = 'none';
+            errEl.textContent = 'Enter a valid email address.';
+        }
         return true;
+    }
+
+    function isEmailTaken(email, excludeId) {
+        var normalized = email.trim().toLowerCase();
+        var allRecords = staffList.concat(inactiveStaffArchive, deletedStaffArchive);
+            return allRecords.some(function(r) {
+            return r.email
+                && r.email.toLowerCase() === normalized
+                && String(r.staff_id) !== String(excludeId);
+        });
     }
 
     function validateName(input) {
@@ -1984,7 +2011,7 @@
         var ok = true;
         if (!validateName(document.getElementById('edit-first-name')))       ok = false;
         if (!validateName(document.getElementById('edit-last-name')))        ok = false;
-        if (!validateEmail(document.getElementById('edit-email')))           ok = false;
+        if (!validateEmail(document.getElementById('edit-email'), currentStaff ? currentStaff.staff_id : null)) ok = false;
         if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
         if (document.getElementById('edit-is-on-leave').checked) {
             if (!validateLeaveDates()) ok = false;
