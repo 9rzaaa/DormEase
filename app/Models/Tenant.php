@@ -143,7 +143,8 @@ class Tenant extends Authenticatable
     public function hasOngoingDocuments(): bool
     {
         return DocumentRequest::where('tenant_id', $this->tenant_id)
-            ->whereIn('status', ['pending', 'processing', 'approved', 'resubmission'])
+            ->where('hidden_from_tenant', false)
+            ->whereIn('status', ['pending', 'processing', 'resubmission'])
             ->exists();
     }
 
