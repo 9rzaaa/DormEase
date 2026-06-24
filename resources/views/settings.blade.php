@@ -393,7 +393,7 @@
         position: relative;
         display: inline-flex;
         align-items: center;
-        cursor: pointer;
+        cursor: default;
         flex-shrink: 0;
         vertical-align: middle;
     }
@@ -401,15 +401,18 @@
         width: 15px;
         height: 15px;
         object-fit: contain;
-        opacity: .75;
+        opacity: .6;
         transition: opacity .2s;
         display: block;
+        cursor: pointer;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
     .archive-guide-wrap:hover img { opacity: 1; }
     .archive-guide-popup {
         display: none;
-        position: fixed;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
         background: var(--white);
         border: 1.5px solid var(--baby-pink);
         border-radius: 14px;
@@ -417,10 +420,10 @@
         padding: .75rem .9rem;
         min-width: 310px;
         max-width: 340px;
-        z-index: 1100;
+        z-index: 9999;
         pointer-events: none;
     }
-    .archive-guide-popup.open { display: block; }
+    .archive-guide-wrap:hover .archive-guide-popup { display: block; }
     .agp-title {
         font-size: .67rem;
         font-weight: 800;
@@ -626,9 +629,9 @@
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;align-items:center;gap:.5rem;">
                         <div class="settings-card-title">Archive Auto-Clear Settings</div>
-                        <div class="archive-guide-wrap" id="archive-guide-trigger">
+                        <div class="archive-guide-wrap">
                             <img src="{{ asset('icons/info.png') }}" alt="Guide">
-                            <div class="archive-guide-popup" id="archive-guide-popup">
+                            <div class="archive-guide-popup">
                                 <div class="agp-title">Archive Clearing Guide</div>
                                 <div class="agp-row">
                                     <div class="agp-col-label"><span class="agp-term">Enable Toggle</span></div>
@@ -778,54 +781,6 @@
 @section('scripts')
 <script>
     
-    (function() {
-        var trigger = document.getElementById('archive-guide-trigger');
-        var popup   = document.getElementById('archive-guide-popup');
-        if (!trigger || !popup) return;
-
-        function positionPopup() {
-            var rect     = trigger.getBoundingClientRect();
-            var popWidth = 340;
-            var left     = rect.right + 10;
-            var top      = rect.top;
-
-            if (left + popWidth > window.innerWidth - 8) {
-                left = rect.left - popWidth - 10;
-            }
-            if (left < 8) {
-                left = 8;
-            }
-
-            var popHeight = popup.offsetHeight || 260;
-            if (top + popHeight > window.innerHeight - 8) {
-                top = window.innerHeight - popHeight - 8;
-            }
-            if (top < 8) {
-                top = 8;
-            }
-
-            popup.style.left = left + 'px';
-            popup.style.top  = top  + 'px';
-        }
-
-        trigger.addEventListener('mouseenter', function() {
-            popup.classList.add('open');
-            positionPopup();
-        });
-
-        trigger.addEventListener('mouseleave', function() {
-            popup.classList.remove('open');
-        });
-
-        window.addEventListener('scroll', function() {
-            if (popup.classList.contains('open')) positionPopup();
-        }, true);
-
-        window.addEventListener('resize', function() {
-            if (popup.classList.contains('open')) positionPopup();
-        });
-    })();
-
     function showActionLoading(message) {
         const overlay = document.getElementById('action-loading');
         document.getElementById('action-loading-text').textContent = message || 'Please wait...';
