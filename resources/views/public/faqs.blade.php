@@ -467,6 +467,18 @@
   const items = document.querySelectorAll('.faq-item');
   items.forEach(item => {
     const btn = item.querySelector('.faq-btn');
+    
+    // Open FAQ on hover
+    item.addEventListener('mouseenter', () => {
+      items.forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-btn').setAttribute('aria-expanded', 'false');
+      });
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    });
+
+    // Toggle FAQ on click (for mobile support)
     btn.addEventListener('click', () => {
       const isOpen = item.classList.contains('open');
       items.forEach(i => {
