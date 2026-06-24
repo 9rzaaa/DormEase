@@ -887,6 +887,101 @@
     }
     .amf-btn-submit:hover { opacity: .9; transform: translateY(-1px); }
     .amf-btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .overdue-banner {
+    margin: 0 0 0 0;
+    border-radius: 0;
+    border-left: 4px solid #c8960c;
+    background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
+    border-bottom: 1.5px solid #f0c040;
+    padding: .85rem 1.2rem .85rem 1.2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: overdueSlidein .35s cubic-bezier(.22,1,.36,1) both;
+    flex-shrink: 0;
+}
+
+@keyframes overdueSlidein {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.overdue-banner-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: #fff3cd;
+    border: 1.5px solid #f0c040;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.overdue-banner-body { flex: 1; min-width: 0; }
+
+.overdue-banner-title {
+    font-size: .82rem;
+    font-weight: 800;
+    color: #92680a;
+    letter-spacing: .01em;
+    margin-bottom: .22rem;
+}
+
+.overdue-banner-list {
+    font-size: .8rem;
+    color: #7a5510;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.overdue-banner-list span {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    background: #fff3cd;
+    border: 1px solid #f0c040;
+    border-radius: 99px;
+    padding: .12rem .55rem;
+    margin: .1rem .2rem .1rem 0;
+    font-size: .74rem;
+    font-weight: 700;
+    color: #92680a;
+    white-space: nowrap;
+}
+
+.overdue-banner-sub {
+    font-size: .73rem;
+    color: #a07820;
+    margin-top: .28rem;
+    font-weight: 500;
+}
+
+.overdue-banner-dismiss {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1.5px solid #f0c040;
+    background: #fff3cd;
+    color: #92680a;
+    font-size: .9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .2s, border-color .2s;
+    font-family: var(--ff-body);
+    line-height: 1;
+    margin-top: .05rem;
+}
+.overdue-banner-dismiss:hover {
+    background: #f0c040;
+    border-color: #c8960c;
+    color: #5a3d00;
+}
 </style>
 @endsection
 
@@ -943,6 +1038,7 @@
     </div>
 
     <div class="table-card fade-up d3">
+        <div id="overdue-banner-slot"></div>
         <div class="table-header">
             <div class="table-controls">
                 <div class="sort-wrap">
@@ -2503,6 +2599,102 @@
             openModal('add-modal');
         });
     @endif
+
+    (function () {
+    var OVERDUE_HOURS   = 6;
+    var CHECK_INTERVAL  = 5 * 60 * 1000;
+    var DISMISSED_KEY   = 'fd_overdue_dismissed';
+    var _overdueTimer   = null;
+
+    function getDismissed() {
+        try {
+            return JSON.parse(sessionStorage.getItem(DISMISSED_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function addDismissed(ids) {
+        var current = getDismissed();
+        ids.forEach(function (id) {
+            if (current.indexOf(id) === -1) current.push(id);
+        });
+        try { sessionStorage.setItem(DISMISSED_KEY, JSON.stringify(current)); } catch (e) {}
+    }
+
+    function getOverdueVisitors() {
+        var now        = new Date();
+        var dismissed  = getDismissed();
+        var threshold  = OVERDUE_HOURS * 60 * 60 * 1000;
+        return visitors.filter(function (v) {
+            if (!v.arrival_time || v.departure_time) return false;
+            if (v.status !== 'inside') return false;
+            if (dismissed.indexOf(v.visitor_id) !== -1) return false;
+            var elapsed = now - new Date(v.arrival_time);
+            return elapsed >= threshold;
+        });
+    }
+
+    function fmtElapsed(arrivalTime) {
+        var elapsed = new Date() - new Date(arrivalTime);
+        var hrs     = Math.floor(elapsed / 3600000);
+        var mins    = Math.floor((elapsed % 3600000) / 60000);
+        if (hrs >= 1) return hrs + 'h ' + mins + 'm';
+        return mins + 'm';
+    }
+
+    function renderOverdueBanner() {
+        var slot    = document.getElementById('overdue-banner-slot');
+        var overdue = getOverdueVisitors();
+
+        if (!slot) return;
+
+        if (!overdue.length) {
+            slot.innerHTML = '';
+            return;
+        }
+
+        var ids  = overdue.map(function (v) { return v.visitor_id; });
+        var tags = overdue.map(function (v) {
+            return '<span>' + (v.visitor_name || 'Unknown') + ' &mdash; ' + fmtElapsed(v.arrival_time) + '</span>';
+        }).join('');
+
+        var count = overdue.length;
+        var title = count === 1
+            ? '1 visitor has been inside for over ' + OVERDUE_HOURS + ' hours'
+            : count + ' visitors have been inside for over ' + OVERDUE_HOURS + ' hours';
+
+        slot.innerHTML =
+            '<div class="overdue-banner" id="overdue-banner">'
+                + '<div class="overdue-banner-icon">&#9888;</div>'
+                + '<div class="overdue-banner-body">'
+                    + '<div class="overdue-banner-title">' + title + '</div>'
+                    + '<div class="overdue-banner-list">' + tags + '</div>'
+                    + '<div class="overdue-banner-sub">These visitors may need to be checked out. Please verify their status.</div>'
+                + '</div>'
+                + '<button class="overdue-banner-dismiss" onclick="dismissOverdueBanner(' + JSON.stringify(ids) + ')" title="Dismiss">&#x2715;</button>'
+            + '</div>';
+    }
+
+    window.dismissOverdueBanner = function (ids) {
+        addDismissed(ids);
+        var banner = document.getElementById('overdue-banner');
+        if (banner) {
+            banner.style.transition = 'opacity .25s, transform .25s';
+            banner.style.opacity    = '0';
+            banner.style.transform  = 'translateY(-8px)';
+            setTimeout(function () {
+                var slot = document.getElementById('overdue-banner-slot');
+                if (slot) slot.innerHTML = '';
+            }, 260);
+        }
+    };
+
+    renderOverdueBanner();
+    _overdueTimer = setInterval(function () {
+        renderOverdueBanner();
+    }, CHECK_INTERVAL);
+})();
 
     filtered = visitors.slice();
     renderTable();
