@@ -3368,7 +3368,7 @@ function tempBadge(isTemp) {
 }
 
 function vacationBadge(isOnVacation) {
-    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA;">Vacation</span>' : '';
 }
 
 function escapeHtml(str) {
