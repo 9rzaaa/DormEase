@@ -41,7 +41,7 @@
 
 .ann-stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
 }
 
@@ -695,16 +695,15 @@
         </div>
     </div>
 
+    @php
+        $weekStart = \Carbon\Carbon::now()->startOfWeek();
+        $weekEnd   = \Carbon\Carbon::now()->endOfWeek();
+        $postedThisWeekCount = $announcements->filter(function($a) use ($weekStart, $weekEnd) {
+            $posted = \Carbon\Carbon::parse($a->posted_at ?? $a->created_at);
+            return $posted->between($weekStart, $weekEnd);
+        })->count();
+    @endphp
     <div class="ann-stats-row fade-up d2">
-        <div class="ann-stat-card">
-            <div class="ann-stat-icon">
-                <img src="{{ asset('icons/announce.png') }}" alt="">
-            </div>
-            <div>
-                <div class="ann-stat-num">{{ $announcements->count() }}</div>
-                <div class="ann-stat-label">Total</div>
-            </div>
-        </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
                 <img src="{{ asset('icons/check.png') }}" alt="">
@@ -716,20 +715,11 @@
         </div>
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/archive.png') }}" alt="">
+                <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','closed')->count() }}</div>
-                <div class="ann-stat-label">Closed</div>
-            </div>
-        </div>
-        <div class="ann-stat-card">
-            <div class="ann-stat-icon">
-                <img src="{{ asset('icons/warning.png') }}" alt="">
-            </div>
-            <div>
-                <div class="ann-stat-num">{{ $announcements->where('priority','high')->count() }}</div>
-                <div class="ann-stat-label">High Priority</div>
+                <div class="ann-stat-num">{{ $postedThisWeekCount }}</div>
+                <div class="ann-stat-label">Posted This Week</div>
             </div>
         </div>
     </div>
