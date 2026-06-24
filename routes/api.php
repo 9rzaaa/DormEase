@@ -42,6 +42,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // change passoword
     Route::post('/change-password', [PasswordController::class, 'change']);
 
+    // GET requests for water bills and maintenance requests (needed by the dashboard, permitted during vacation)
+    Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
+    Route::get('/maintenance', [MaintenanceController::class, 'index']);
+
     Route::middleware('tenant.not_on_vacation')->group(function () {
         // visitors
         Route::get('/visitors',                 [VisitorController::class, 'index']);
@@ -51,7 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/visitors/{id}',         [VisitorController::class, 'destroy']);
 
         // billing
-        Route::get('/water-bill',      [BillingController::class, 'tenantBill']);
         Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
 
         // document request
@@ -66,7 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/tenant/forms', [DocumentRequestController::class, 'tenantForms']);
 
         // maintenance
-        Route::get('/maintenance', [MaintenanceController::class, 'index']);
         Route::post('/maintenance', [MaintenanceController::class, 'store']);
         Route::post('/maintenance/{id}/resubmit-photo', [MaintenanceController::class, 'resubmitPhoto']);
         Route::delete('/maintenance/{id}', [MaintenanceController::class, 'destroy']);
