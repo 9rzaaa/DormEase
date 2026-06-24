@@ -16,3 +16,4 @@ Schedule::command('bills:notify-due-reminder')->dailyAt('09:00');
 Schedule::command('reservations:notify-overdue')->dailyAt('08:00');
 Schedule::command('tenants:notify-upcoming-moveouts')->dailyAt('08:05');
 Schedule::command('announcements:publish-scheduled')->everyMinute();
+Schedule::command('visitors:expire')->everyFiveMinutes();
