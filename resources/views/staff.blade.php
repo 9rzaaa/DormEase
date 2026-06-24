@@ -204,6 +204,12 @@
     .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: var(--hot-pink); }
     .page-btn:disabled { opacity: .4; cursor: default; }
 
+    .modal { background: var(--white); border-radius: 20px; padding: 2rem; width: 90%; max-width: 480px; box-shadow: var(--shadow-pink-modal); animation: fadeUp .3s ease; max-height: 90vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--baby-pink) transparent; }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-track { background: transparent; }
+    .modal::-webkit-scrollbar-thumb { background: var(--baby-pink); border-radius: 99px; }
+    .modal::-webkit-scrollbar-thumb:hover { background: var(--bright-pink); }
+
     .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,46,.45); backdrop-filter: blur(4px); z-index: 300; display: none; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
     .modal { background: var(--white); border-radius: 20px; padding: 2rem; width: 90%; max-width: 480px; box-shadow: var(--shadow-pink-modal); animation: fadeUp .3s ease; max-height: 90vh; overflow-y: auto; }
