@@ -115,6 +115,7 @@ class VisitorController extends Controller
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,
+            'overnightExtend'   => AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY),
         ]);
     }
 
