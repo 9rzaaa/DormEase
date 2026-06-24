@@ -1626,10 +1626,15 @@
 
         var expiryInfo = (!v.arrival_time && v.expires_at) ? fmtExpiry(v.expires_at) : '—';
 
+        var rejectionLine = (v.status === 'rejected' && v.rejection_reason)
+            ? infoItem('Rejection Reason', v.rejection_reason, true)
+            : '';
+
         document.getElementById('minfo-log').innerHTML =
             infoItem('Status',    getStatusBadge(v.status))
             + infoItem('Logged By', v.staff?.name ?? '—')
-            + infoItem('Expires',   expiryInfo);
+            + infoItem('Expires',   expiryInfo)
+            + rejectionLine;
 
         document.getElementById('minfo-idtype').innerHTML =
             infoItem('ID Type', v.id_type ?? '—', true);
