@@ -1033,6 +1033,17 @@
         overflow: hidden;
     }
 
+    #view-modal .modal {
+        display: flex;
+        flex-direction: column;
+        max-height: 92vh;
+        overflow: hidden;
+    }
+
+    #view-modal .modal-header { flex-shrink: 0; }
+    #view-modal .modal-body { flex: 1; overflow-y: auto; min-height: 0; }
+    #view-modal .modal-footer { flex-shrink: 0; }
+
     #dir-modal .modal-header { flex-shrink: 0; }
     #dir-modal .dir-tabs { flex-shrink: 0; }
     #dir-modal .dir-search-bar { flex-shrink: 0; }
