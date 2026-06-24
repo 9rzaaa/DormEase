@@ -787,25 +787,40 @@
                 warn_days_before: parseInt(row.querySelector('.module-warn').value),
             });
         });
-    
+
         showActionLoading('Saving archive settings...');
-    
+
         fetch('{{ route("settings.archive.update") }}', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
             body: JSON.stringify({ modules: modules }),
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(r) {
+            return r.json().then(function(data) {
+                return { ok: r.ok, status: r.status, data: data };
+            });
+        })
+        .then(function(result) {
             document.getElementById('action-loading').classList.remove('open');
-            if (data.success) {
+
+            if (result.ok && result.data.success) {
                 showToast('Archive settings saved.', 'success');
-            } else {
-                showToast(data.message || 'Failed to save.', 'error');
+                return;
             }
+
+            if (result.status === 422 && result.data.errors) {
+                var firstError = Object.values(result.data.errors)[0][0];
+                showToast(firstError, 'error');
+                return;
+            }
+        }
+
+            showToast(result.data.message || 'Failed to save.', 'error');
         })
         .catch(function() {
             document.getElementById('action-loading').classList.remove('open');
@@ -829,24 +844,38 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
             body: JSON.stringify({ module: module, retention_days: retentionDays }),
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(r) {
+            return r.json().then(function(data) {
+                return { ok: r.ok, status: r.status, data: data };
+            });
+        })
+        .then(function(result) {
             document.getElementById('action-loading').classList.remove('open');
             btn.disabled = false;
             btn.textContent = 'Clear Now';
-            if (data.success) {
-                showToast(data.message, 'success');
+
+            if (result.ok && result.data.success) {
+                showToast(result.data.message, 'success');
                 var row = btn.closest('tr');
                 row.querySelectorAll('.last-cleared-val, .last-cleared-display').forEach(function(el) {
-                    el.textContent = data.last_cleared_at;
+                    el.textContent = result.data.last_cleared_at;
                 });
-            } else {
-                showToast(data.message || 'Failed to clear.', 'error');
+                return;
             }
+
+            if (result.status === 422 && result.data.errors) {
+                var firstError = Object.values(result.data.errors)[0][0];
+                showToast(firstError, 'error');
+                return;
+            }
+
+            showToast(result.data.message || 'Failed to clear.', 'error');
         })
         .catch(function() {
             document.getElementById('action-loading').classList.remove('open');
@@ -854,6 +883,5 @@
             btn.textContent = 'Clear Now';
             showToast('Network error.', 'error');
         });
-    }
 </script>
 @endsection
