@@ -389,6 +389,110 @@
     .btn-clear-now:hover { background: var(--gradient-pink); color: var(--white); border-color: var(--bright-pink); }
     .btn-clear-now:disabled { opacity: .4; cursor: not-allowed; }
 
+    .archive-guide-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        vertical-align: middle;
+    }
+    .archive-guide-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .75;
+        transition: opacity .2s;
+        display: block;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .archive-guide-wrap:hover img { opacity: 1; }
+    .archive-guide-popup {
+        display: none;
+        position: fixed;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 310px;
+        max-width: 340px;
+        z-index: 1100;
+        pointer-events: none;
+    }
+    .archive-guide-popup.open { display: block; }
+    .agp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .agp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .35rem 0;
+        border-bottom: 1px solid var(--petal);
+    }
+    .agp-row:last-child { border-bottom: none; }
+    .agp-col-label {
+        flex-shrink: 0;
+        width: 100px;
+        display: flex;
+        align-items: flex-start;
+        padding-top: .1rem;
+    }
+    .agp-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .22rem .6rem;
+        border-radius: 7px;
+        font-size: .7rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: .02em;
+    }
+    .agp-chip-enable {
+        background: var(--petal);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--baby-pink);
+    }
+    .agp-chip-retention {
+        background: #eef4ff;
+        color: #3b6fd4;
+        border: 1.5px solid #a8c4f5;
+    }
+    .agp-chip-warn {
+        background: #fff9e6;
+        color: #c8960c;
+        border: 1.5px solid #f0c040;
+    }
+    .agp-chip-clear {
+        background: #fff0f0;
+        color: #e04867;
+        border: 1.5px solid var(--baby-pink);
+    }
+    .agp-chip-apply {
+        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
+        color: #fff;
+        border: none;
+        box-shadow: 0 2px 6px rgba(232,23,93,.2);
+    }
+    .agp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .15rem;
+    }
+
+    .apply-all-row {
+
     .apply-all-row {
         display: flex;
         align-items: center;
@@ -558,6 +662,35 @@
                 </div>
             </div>
 
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.6rem;">
+                <div class="archive-guide-wrap" id="archive-guide-trigger">
+                    <img src="{{ asset('icons/info.png') }}" alt="Guide">
+                    <div class="archive-guide-popup" id="archive-guide-popup">
+                        <div class="agp-title">Archive Clearing Guide</div>
+                        <div class="agp-row">
+                            <div class="agp-col-label"><span class="agp-chip agp-chip-enable">Enable Toggle</span></div>
+                            <div class="agp-desc">Turns auto-clearing on or off for a module. When off, no automatic deletion will run for that module.</div>
+                        </div>
+                        <div class="agp-row">
+                            <div class="agp-col-label"><span class="agp-chip agp-chip-retention">Retention Days</span></div>
+                            <div class="agp-desc">Records older than this number of days will be deleted when the auto-clear runs. Minimum 30, maximum 3650 days.</div>
+                        </div>
+                        <div class="agp-row">
+                            <div class="agp-col-label"><span class="agp-chip agp-chip-warn">Warn Before</span></div>
+                            <div class="agp-desc">How many days before the scheduled clear you will receive a notification as a reminder. Disable the toggle before that date to cancel.</div>
+                        </div>
+                        <div class="agp-row">
+                            <div class="agp-col-label"><span class="agp-chip agp-chip-clear">Clear Now</span></div>
+                            <div class="agp-desc">Immediately and permanently deletes all records older than the set retention period for that module. Save settings first before using this.</div>
+                        </div>
+                        <div class="agp-row">
+                            <div class="agp-col-label"><span class="agp-chip agp-chip-apply">Apply to All</span></div>
+                            <div class="agp-desc">Sets the retention period field above to all modules at once. You still need to save settings to confirm the change.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
@@ -678,6 +811,55 @@
 
 @section('scripts')
 <script>
+    
+    (function() {
+        var trigger = document.getElementById('archive-guide-trigger');
+        var popup   = document.getElementById('archive-guide-popup');
+        if (!trigger || !popup) return;
+
+        function positionPopup() {
+            var rect     = trigger.getBoundingClientRect();
+            var popWidth = 340;
+            var left     = rect.right + 10;
+            var top      = rect.top;
+
+            if (left + popWidth > window.innerWidth - 8) {
+                left = rect.left - popWidth - 10;
+            }
+            if (left < 8) {
+                left = 8;
+            }
+
+            var popHeight = popup.offsetHeight || 260;
+            if (top + popHeight > window.innerHeight - 8) {
+                top = window.innerHeight - popHeight - 8;
+            }
+            if (top < 8) {
+                top = 8;
+            }
+
+            popup.style.left = left + 'px';
+            popup.style.top  = top  + 'px';
+        }
+
+        trigger.addEventListener('mouseenter', function() {
+            popup.classList.add('open');
+            positionPopup();
+        });
+
+        trigger.addEventListener('mouseleave', function() {
+            popup.classList.remove('open');
+        });
+
+        window.addEventListener('scroll', function() {
+            if (popup.classList.contains('open')) positionPopup();
+        }, true);
+
+        window.addEventListener('resize', function() {
+            if (popup.classList.contains('open')) positionPopup();
+        });
+    })();
+
     function showActionLoading(message) {
         const overlay = document.getElementById('action-loading');
         document.getElementById('action-loading-text').textContent = message || 'Please wait...';
