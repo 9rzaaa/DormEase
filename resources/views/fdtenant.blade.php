@@ -2153,9 +2153,14 @@ function renderTable() {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     } else {
         tbody.innerHTML = pageData.map(function(t) {
-            var timeBtnHtml = t.is_inside
-                ? '<button class="btn-timeout" onclick="doTimeOut(' + t.tenant_id + ', this)">Time Out</button>'
-                : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
+            var timeBtnHtml;
+            if (t.is_inside) {
+                timeBtnHtml = '<button class="btn-timeout" onclick="doTimeOut(' + t.tenant_id + ', this)">Time Out</button>';
+            } else if (t.is_on_vacation) {
+                timeBtnHtml = '<button class="btn-timein" onclick="doTimeIn(' + t.tenant_id + ', this)" title="Tenant is on vacation" style="opacity:.45;cursor:not-allowed;">Time In</button>';
+            } else {
+                timeBtnHtml = '<button class="btn-timein" onclick="doTimeIn(' + t.tenant_id + ', this)">Time In</button>';
+            }
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
                 '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
@@ -2166,13 +2171,21 @@ function renderTable() {
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/eye.png\') }}" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset(\'icons/edit.png\') }}" alt="Note"></button>' +
                     '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
         }).join('');
     }
+
+    var total = filtered.length;
+    var from  = total === 0 ? 0 : start + 1;
+    var to    = Math.min(start + PER_PAGE, total);
+    document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
+
+    renderPagination();
+}
 
     var total = filtered.length;
     var from  = total === 0 ? 0 : start + 1;
@@ -2322,6 +2335,11 @@ function applyFilters() {
 }
 
 async function doTimeIn(id, btn) {
+    var t = tenants.find(function(x) { return x.tenant_id === id; });
+    if (t && t.is_on_vacation) {
+        showToast('Tenant is on vacation. Update their status first to time them in.', 'error');
+        return;
+    }
     btn.disabled = true;
     showActionLoading('Recording time in...');
     try {
@@ -3024,9 +3042,15 @@ function runQuickSearch() {
             : initials;
         var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ' \u00b7 Rm ' + t.room_number : (t.room_number ? 'Rm ' + t.room_number : 'No room assigned');
         var isInside  = !!t.is_inside;
-        var actionBtn = isInside
-            ? '<button class="quick-action-btn qab-out" onclick="quickTimeOut(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time Out</button>'
-            : '<button class="quick-action-btn qab-in"  onclick="quickTimeIn('  + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time In</button>';
+
+        var actionBtn;
+        if (isInside) {
+            actionBtn = '<button class="quick-action-btn qab-out" onclick="quickTimeOut(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time Out</button>';
+        } else if (t.is_on_vacation) {
+            actionBtn = '<button class="quick-action-btn qab-in" onclick="quickTimeIn(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;opacity:.45;cursor:not-allowed;" title="Tenant is on vacation">Time In</button>';
+        } else {
+            actionBtn = '<button class="quick-action-btn qab-in" onclick="quickTimeIn(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time In</button>';
+        }
 
         return '<div class="quick-result-item ' + (isInside ? 'is-inside' : '') + '" style="animation-delay:' + (i * 0.04) + 's;">'
             + '<div class="quick-result-left">'
@@ -3047,6 +3071,11 @@ function runQuickSearch() {
 }
 
 async function quickTimeIn(id, btn) {
+    var t = tenants.find(function(x) { return x.tenant_id === id; });
+    if (t && t.is_on_vacation) {
+        showToast('Tenant is on vacation. Update their status first to time them in.', 'error');
+        return;
+    }
     btn.disabled = true;
     showActionLoading('Recording time in...');
     try {
