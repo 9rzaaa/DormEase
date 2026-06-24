@@ -2187,14 +2187,6 @@ function renderTable() {
     renderPagination();
 }
 
-    var total = filtered.length;
-    var from  = total === 0 ? 0 : start + 1;
-    var to    = Math.min(start + PER_PAGE, total);
-    document.getElementById('showing-label').textContent = 'Showing data ' + from + ' to ' + to + ' of ' + total + ' entries';
-
-    renderPagination();
-}
-
 function renderPagination() {
     var totalPages = Math.ceil(filtered.length / PER_PAGE);
     var pg   = document.getElementById('pagination');
