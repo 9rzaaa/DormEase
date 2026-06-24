@@ -986,6 +986,7 @@
     .archive-pill-purpose   { background: #fff0f7; color: var(--hot-pink); border: 1px solid var(--baby-pink); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
     .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-rejected  { background: #fff4e8; color: #c8631c; border: 1px solid #f5c192; }
 
     .archive-card-footer {
         display: flex;
@@ -1159,6 +1160,10 @@
         <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
             Cancelled
             <span class="archive-tab-count" id="acount-cancelled">0</span>
+        </button>
+        <button class="archive-tab" id="atab-rejected" onclick="switchArchiveTab('rejected')">
+            Rejected
+            <span class="archive-tab-count" id="acount-rejected">0</span>
         </button>
     </div>
 
@@ -1397,6 +1402,7 @@
     const completedVisitors = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const deletedVisitors   = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const cancelledVisitors = @json($cancelledVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const rejectedVisitors  = @json($rejectedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
     let filtered   = Array.isArray(logs) ? [...logs] : [];
     let archiveTab = 'completed';
@@ -1726,6 +1732,7 @@
         document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
         document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
         document.getElementById('acount-cancelled').textContent = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
+        document.getElementById('acount-rejected').textContent  = Array.isArray(rejectedVisitors)   ? rejectedVisitors.length   : 0;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
         switchArchiveTab('completed');
@@ -1741,6 +1748,7 @@
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
         document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
+        document.getElementById('atab-rejected').classList.toggle('active',  tab === 'rejected');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
@@ -1758,8 +1766,10 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         const result = data.filter(function(v) {
@@ -1779,9 +1789,17 @@
             return;
         }
 
-        const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        const pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
+        const pillClass = archiveTab === 'completed' ? 'archive-pill-completed'
+            : archiveTab === 'rejected'  ? 'archive-pill-rejected'
+            : 'archive-pill-deleted';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on'
+            : archiveTab === 'deleted'   ? 'Deleted on'
+            : archiveTab === 'cancelled' ? 'Cancelled on'
+            : 'Rejected on';
 
         list.innerHTML = result.map(function(v, i) {
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? null;
@@ -1790,7 +1808,7 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
@@ -1879,13 +1897,18 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const label = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
+        const label = archiveTab === 'completed' ? 'Checked Out On'
+            : archiveTab === 'deleted'   ? 'Deleted On'
+            : archiveTab === 'cancelled' ? 'Cancelled On'
+            : 'Rejected On';
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
 
         data.forEach(function(v) {
@@ -1894,7 +1917,7 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
@@ -1925,14 +1948,22 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const tabLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
+        const tabLabel   = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On'
+            : archiveTab === 'deleted'   ? 'Deleted On'
+            : archiveTab === 'cancelled' ? 'Cancelled On'
+            : 'Rejected On';
 
         var win = window.open('', '_blank');
         if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
@@ -1942,7 +1973,7 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
