@@ -148,8 +148,6 @@ class EmergencyController extends Controller
             );
             $report->resolved_at = now();
             $report->save();
-            $report->resolved_at = now();
-            $report->save();
             $this->archiveReport($report, 'resolved');
             $report->delete();
             return response()->json(['success' => true, 'archived' => true]);
