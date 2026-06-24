@@ -1193,7 +1193,7 @@
                             >
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div class="amf-error" id="av_visitor_name_err">Please enter the visitor's full name (letters and spaces only).</div>
+                            <div class="amf-error" id="av_visitor_name_err">Please enter the visitor's full name, first and last name, letters and spaces only.</div>
                             <div class="amf-char-count" id="av_name_count">0 / 100</div>
                         </div>
                     </div>
@@ -2183,7 +2183,9 @@
         if (count) count.textContent = v.length + ' / 100';
 
         var trimmed = v.trim();
-        var valid   = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(trimmed) && trimmed.length >= 2;
+        var charsetOk = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(trimmed) && trimmed.length >= 2;
+        var parts     = trimmed.split(/\s+/).filter(Boolean);
+        var valid     = charsetOk && parts.length >= 2;
 
         if (strict || trimmed.length > 0) {
             avSetFieldState(input, valid ? 'valid' : 'invalid');

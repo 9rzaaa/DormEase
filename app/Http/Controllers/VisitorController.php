@@ -130,6 +130,12 @@ class VisitorController extends Controller
                 'string',
                 'max:100',
                 'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s\'\-\.]+$/u',
+                function ($attribute, $value, $fail) {
+                    $parts = array_filter(explode(' ', trim($value)));
+                    if (count($parts) < 2) {
+                        $fail('The visitor full name must contain at least a first name and a last name.');
+                    }
+                }
             ],
             'tenant_id'    => 'required|exists:tenants,tenant_id',
             'purpose'      => 'required|string|max:100',
