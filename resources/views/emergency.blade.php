@@ -1539,18 +1539,6 @@
         color: #c0303a;
     }
 
-    .kw-validation-msg.error::before {
-        content: '';
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        margin-top: .05rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
-
     .kw-validation-msg.warning {
         display: flex;
         align-items: flex-start;
@@ -1560,18 +1548,6 @@
         border-radius: 8px;
         padding: .4rem .6rem;
         color: #7a5400;
-    }
-
-    .kw-validation-msg.warning::before {
-        content: '';
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        margin-top: .05rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
     }
 
     .kw-btn-save:disabled {
@@ -3191,13 +3167,13 @@
 
         if (msg) {
             if (error) {
-                msg.textContent = error;
+                msg.innerHTML = '<img src="{{ asset("icons/error.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(23%) sepia(50%) saturate(1000%) hue-rotate(314deg) brightness(80%) contrast(90%);"> ' + escHtml(error);
                 msg.className = 'kw-validation-msg error';
             } else if (warning) {
-                msg.textContent = warning;
+                msg.innerHTML = '<img src="{{ asset("icons/warn.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(500%) hue-rotate(5deg) brightness(85%) contrast(95%);"> ' + escHtml(warning);
                 msg.className = 'kw-validation-msg warning';
             } else {
-                msg.textContent = '';
+                msg.innerHTML = '';
                 msg.className = 'kw-validation-msg';
             }
         }
