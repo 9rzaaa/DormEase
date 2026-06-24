@@ -486,25 +486,25 @@
 
 .ann-hidden-card {
     background: #fff;
-    border: 1px solid #e0e0e8;
+    border: 1px solid var(--pink-100, #f9c5d6);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    box-shadow: 0 2px 10px rgba(232,23,93,.05);
 }
 
 .ann-hidden-header {
     padding: .85rem 1.1rem;
-    border-bottom: 1px solid #e8e8f0;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #f7f7f9;
+    background: var(--petal, #ffeef4);
 }
 
 .ann-hidden-title {
     font-size: .82rem;
     font-weight: 800;
-    color: #666;
+    color: var(--hot-pink, #d6175a);
     display: flex;
     align-items: center;
     gap: .45rem;
@@ -512,7 +512,7 @@
 
 .ann-hidden-title img {
     width: 14px; height: 14px; object-fit: contain;
-    opacity: .4;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
 .ann-hidden-body { padding: .75rem 1.1rem; }
@@ -522,8 +522,8 @@
     align-items: center;
     justify-content: space-between;
     gap: .5rem;
-    padding: .6rem 0;
-    border-bottom: 1px solid #eee;
+    padding: .55rem 0;
+    border-bottom: 1px solid var(--pink-100, #f9c5d6);
 }
 
 .ann-hidden-item:last-child { border-bottom: none; }
@@ -531,7 +531,7 @@
 .ann-hidden-item-title {
     font-size: .8rem;
     font-weight: 600;
-    color: #999;
+    color: var(--ink-muted, #888);
     flex: 1;
     min-width: 0;
     white-space: nowrap;
@@ -542,26 +542,30 @@
 .ann-restore-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
+    gap: .28rem;
+    padding: .22rem .6rem;
     border-radius: 7px;
-    border: 1.5px solid #c8e6d4;
-    background: #e8faf5;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    color: var(--hot-pink, #d6175a);
+    font-size: .68rem;
+    font-weight: 700;
     cursor: pointer;
     transition: .2s;
     flex-shrink: 0;
+    font-family: var(--ff-body);
+    white-space: nowrap;
 }
 
-.ann-restore-btn img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) saturate(100%) invert(45%) sepia(50%) saturate(600%) hue-rotate(100deg) brightness(90%) contrast(90%); }
-.ann-restore-btn:hover { background: #1f9d69; border-color: #1f9d69; }
+.ann-restore-btn img { width: 11px; height: 11px; object-fit: contain; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); transition: filter .2s; }
+.ann-restore-btn:hover { background: var(--bright-pink, #E8175D); border-color: transparent; color: #fff; }
 .ann-restore-btn:hover img { filter: brightness(0) invert(1); }
 
 .ann-hidden-empty {
     font-size: .78rem;
-    color: #bbb;
+    color: var(--ink-muted, #888);
     text-align: center;
-    padding: .6rem 0;
+    padding: .75rem 0;
 }
 
 .ann-modal-overlay {
@@ -991,7 +995,7 @@ function renderHiddenList() {
         item.innerHTML =
             '<span class="ann-hidden-item-title" title="' + escHtml(hiddenAnnouncements[id]) + '">' + escHtml(hiddenAnnouncements[id]) + '</span>' +
             '<button class="ann-restore-btn" title="Restore" onclick="restoreAnnouncement(' + id + ')">' +
-                '<img src="{{ asset("icons/check.png") }}" alt="Restore">' +
+                '<img src="{{ asset("icons/eye.png") }}" alt="Restore"> Show' +
             '</button>';
         body.appendChild(item);
     });
