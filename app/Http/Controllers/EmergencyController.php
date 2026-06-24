@@ -18,7 +18,8 @@ class EmergencyController extends Controller
     public function adminIndex()
     {
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
-        $activeCount = EmergencyReport::where('status', 'active')->count();        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
+        $activeCount = EmergencyReport::where('status', 'active')->count();
+        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
         $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
@@ -118,6 +119,7 @@ class EmergencyController extends Controller
         ]);
 
         $report->update([
+            'status'      => $validated['status'],
             'admin_notes' => $validated['admin_notes'] ?? null,
             'location'    => (!empty($validated['location'])) ? $validated['location'] : $report->location,
         ]);

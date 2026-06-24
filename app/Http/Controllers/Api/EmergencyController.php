@@ -674,7 +674,7 @@ class EmergencyController extends Controller
             'input_type' => 'text',
             'description' => $report->description,
             'location' => $report->location,
-            'status' => $report->status,
+            'status' => $report->archive_type,
             'admin_notes' => $report->admin_notes,
             'reported_at' => $this->formatApiDate($report->reported_at),
             'resolved_at' => $this->formatApiDate($report->resolved_at),
