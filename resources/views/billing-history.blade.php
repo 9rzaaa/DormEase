@@ -908,6 +908,7 @@
 @section('scripts')
 <script>
 const historyData = @json($historyGroups);
+const exportAllUrl = "{{ route('billing.history.exportAll') }}";
 
 (function() {
     var url = new URL(window.location.href);
@@ -1086,7 +1087,29 @@ function exportMonth(monthKey, format) {
     showToast('Exported ' + group.month_label + ' billing data.', 'success');
 }
 
-function exportAllHistoryCsv() {
+async function exportAllHistoryCsv() {
+    const params = new URLSearchParams();
+    const floor  = document.getElementById('filter-floor').value;
+    const status = document.getElementById('filter-status').value;
+    const search = document.getElementById('filter-search').value.trim();
+    const month  = document.getElementById('filter-month').value;
+    if (floor)  params.set('floor', floor);
+    if (status) params.set('status', status);
+    if (search) params.set('search', search);
+    if (month)  params.set('month', month);
+
+    let groups;
+    try {
+        const res = await fetch(exportAllUrl + '?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await res.json();
+        groups = data.history_groups || [];
+    } catch (err) {
+        showToast('Failed to load full history for export.', 'error');
+        return;
+    }
+
     var rows = [[
         'Billing Month', 'Floor', 'Due Date',
         'Floor Consumption (m3)', 'Total Floor Bill',
@@ -1094,7 +1117,7 @@ function exportAllHistoryCsv() {
         'Tenant', 'Tenant Share', 'Payment Status',
         'Reference Code', 'Payment Submitted At'
     ]];
-    historyData.forEach(function(group) {
+    groups.forEach(function(group) {
         group.floor_groups.forEach(function(fg) {
             fg.rooms.forEach(function(room) {
                 room.tenants.forEach(function(t) {
@@ -1117,11 +1140,34 @@ function exportAllHistoryCsv() {
     showToast('Full history exported as CSV.', 'success');
 }
 
-function exportAllHistoryPdf() {
-    if (!historyData || historyData.length === 0) { showToast('No billing data to export.', 'error'); return; }
+async function exportAllHistoryPdf() {
+    const params = new URLSearchParams();
+    const floor  = document.getElementById('filter-floor').value;
+    const status = document.getElementById('filter-status').value;
+    const search = document.getElementById('filter-search').value.trim();
+    const month  = document.getElementById('filter-month').value;
+    if (floor)  params.set('floor', floor);
+    if (status) params.set('status', status);
+    if (search) params.set('search', search);
+    if (month)  params.set('month', month);
+
+    let groups;
+    try {
+        const res = await fetch(exportAllUrl + '?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await res.json();
+        groups = data.history_groups || [];
+    } catch (err) {
+        showToast('Failed to load full history for export.', 'error');
+        return;
+    }
+
+    if (!groups || groups.length === 0) { showToast('No billing data to export.', 'error'); return; }
+
     var win  = window.open('', '_blank');
     var rows = '';
-    historyData.forEach(function(group) {
+    groups.forEach(function(group) {
         group.floor_groups.forEach(function(fg) {
             fg.rooms.forEach(function(room) {
                 room.tenants.forEach(function(t) {

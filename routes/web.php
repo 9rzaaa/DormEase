@@ -208,6 +208,7 @@ Route::middleware(['auth:staff', 'no.back'])->group(function () {
             Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
             Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+            Route::get('/history/export-all', [BillingHistoryController::class, 'exportAll'])->name('history.exportAll');
             Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
             Route::get('/poll', [BillingController::class, 'poll'])->name('poll');
         });
