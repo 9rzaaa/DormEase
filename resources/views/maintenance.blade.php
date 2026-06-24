@@ -391,6 +391,14 @@
     #keyword-modal .modal {
         max-height: 85vh;
         height: 85vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #keyword-modal .modal-header,
+    #keyword-modal .modal-actions {
+        flex-shrink: 0;
     }
 
     .maint-modal-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .9rem; }
