@@ -83,12 +83,21 @@ class AuthController extends Controller
 
         RateLimiter::clear($throttleKey);
 
+        $isFirstLogin = ($tenant->last_login_at === null);
+
         if ($tenant->status === 'pending') {
-            $tenant->markAccessed();
-        } else {
             $tenant->update(['status' => 'active']);
         }
+
         $tenant->update(['last_login_at' => now()]);
+
+        if ($isFirstLogin) {
+            \App\Helpers\NotificationHelper::sendToAll(
+                type: 'tenant_activated',
+                message: "{$tenant->first_name} {$tenant->last_name} has logged in for the first time and is now active.",
+                ref_id: $tenant->tenant_id,
+            );
+        }
 
         $token = $tenant->createToken('mobile-app')->plainTextToken;
 
