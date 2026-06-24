@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // emergency
         Route::get('/emergency', [EmergencyController::class, 'index']);
         Route::post('/emergency', [EmergencyController::class, 'store']);
+        Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy']);
     });
 
     // profile

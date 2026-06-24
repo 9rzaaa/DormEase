@@ -12,13 +12,14 @@ class EmergencyReport extends Model
     protected $fillable = [
         'tenant_id', 'is_panic_alert', 'emergency_type', 'input_type',
         'description', 'location', 'status', 'urgency_level',
-        'admin_notes', 'reported_at', 'resolved_at',
+        'admin_notes', 'reported_at', 'resolved_at', 'hidden_from_tenant',
     ];
 
     protected $casts = [
-        'is_panic_alert' => 'boolean',
-        'reported_at'    => 'datetime',
-        'resolved_at'    => 'datetime',
+        'is_panic_alert'     => 'boolean',
+        'reported_at'        => 'datetime',
+        'resolved_at'        => 'datetime',
+        'hidden_from_tenant' => 'boolean',
     ];
 
     public function tenant()
