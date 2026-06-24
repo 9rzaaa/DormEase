@@ -13,6 +13,8 @@
         gap: 1.5rem;
         background: var(--blush);
         box-sizing: border-box;
+        overflow-y: auto;
+        min-height: 0;
     }
 
     .page-header {
@@ -263,6 +265,10 @@
         border: 1px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .table-card-header {
@@ -287,7 +293,12 @@
         margin-top: .1rem;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap {
+        overflow-x: auto;
+        overflow-y: visible;
+        flex: 1;
+        min-height: 0;
+    }
 
     table {
         width: 100%;
@@ -1544,6 +1555,45 @@
         line-height: 1.45;
         padding-top: .15rem;
     }
+
+    .purpose-cell {
+    position: relative;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .8rem;
+    color: var(--ink-muted);
+    cursor: default;
+}
+
+.purpose-cell .purpose-tooltip {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    background: var(--ink);
+    color: var(--white);
+    font-size: .76rem;
+    font-weight: 500;
+    line-height: 1.5;
+    padding: .45rem .65rem;
+    border-radius: 8px;
+    white-space: normal;
+    width: max-content;
+    max-width: 240px;
+    z-index: 900;
+    box-shadow: 0 6px 18px rgba(26,26,46,.18);
+    pointer-events: none;
+}
+
+.purpose-cell:hover .purpose-tooltip {
+    display: block;
+}
+
+.purpose-cell:hover .purpose-tooltip {
+    display: block;
+}
 </style>
 @endsection
 
