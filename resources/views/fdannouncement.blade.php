@@ -63,20 +63,20 @@
 }
 
 .ann-stat-icon {
-    width: 44px; height: 44px;
-    border-radius: 12px;
+    width: 58px; height: 58px;
+    border-radius: 50%;
     background: #fff;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 }
 
 .ann-stat-icon img {
-    width: 22px; height: 22px; object-fit: contain;
+    width: 30px; height: 30px; object-fit: contain;
     filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
 }
 
 .ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .95rem; font-weight: 700; color: #fff; margin-top: .15rem; }
+.ann-stat-label { font-size: .85rem; font-weight: 700; color: #fff; margin-top: .15rem; }
 .ann-stat-desc { font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.85); margin-top: .1rem; }
 
 .ann-toolbar {
@@ -708,7 +708,7 @@
     <div class="ann-stats-row fade-up d2">
         <div class="ann-stat-card">
             <div class="ann-stat-icon">
-                <img src="{{ asset('icons/check.png') }}" alt="">
+                <img src="{{ asset('icons/active.png') }}" alt="">
             </div>
             <div>
                 <div class="ann-stat-label">Active Announcements</div>
