@@ -716,8 +716,8 @@
         border-radius: 22px;
         padding: 0;
         overflow: hidden;
-        max-height: 90vh;    
-        display: flex;        
+        max-height: 90vh;
+        display: flex;
         flex-direction: column;
         box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
     }
@@ -889,104 +889,104 @@
     .amf-btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 
     .overdue-banner {
-    margin: 0 0 0 0;
-    border-radius: 0;
-    border-left: 4px solid #c8960c;
-    background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
-    border-bottom: 1.5px solid #f0c040;
-    padding: .85rem 1.2rem .85rem 1.2rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    animation: overdueSlidein .35s cubic-bezier(.22,1,.36,1) both;
-    flex-shrink: 0;
-}
+        margin: 0 0 0 0;
+        border-radius: 0;
+        border-left: 4px solid #c8960c;
+        background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
+        border-bottom: 1.5px solid #f0c040;
+        padding: .85rem 1.2rem .85rem 1.2rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        animation: overdueSlidein .35s cubic-bezier(.22,1,.36,1) both;
+        flex-shrink: 0;
+    }
 
-@keyframes overdueSlidein {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
+    @keyframes overdueSlidein {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
 
-.overdue-banner-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    background: #fff3cd;
-    border: 1.5px solid #f0c040;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1rem;
-}
+    .overdue-banner-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: #fff3cd;
+        border: 1.5px solid #f0c040;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
 
-.overdue-banner-body { flex: 1; min-width: 0; }
+    .overdue-banner-body { flex: 1; min-width: 0; }
 
-.overdue-banner-title {
-    font-size: .82rem;
-    font-weight: 800;
-    color: #92680a;
-    letter-spacing: .01em;
-    margin-bottom: .22rem;
-}
+    .overdue-banner-title {
+        font-size: .82rem;
+        font-weight: 800;
+        color: #92680a;
+        letter-spacing: .01em;
+        margin-bottom: .22rem;
+    }
 
-.overdue-banner-list {
-    font-size: .8rem;
-    color: #7a5510;
-    font-weight: 600;
-    line-height: 1.6;
-}
+    .overdue-banner-list {
+        font-size: .8rem;
+        color: #7a5510;
+        font-weight: 600;
+        line-height: 1.6;
+    }
 
-.overdue-banner-list span {
-    display: inline-flex;
-    align-items: center;
-    gap: .3rem;
-    background: #fff3cd;
-    border: 1px solid #f0c040;
-    border-radius: 99px;
-    padding: .12rem .55rem;
-    margin: .1rem .2rem .1rem 0;
-    font-size: .74rem;
-    font-weight: 700;
-    color: #92680a;
-    white-space: nowrap;
-}
+    .overdue-banner-list span {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        background: #fff3cd;
+        border: 1px solid #f0c040;
+        border-radius: 99px;
+        padding: .12rem .55rem;
+        margin: .1rem .2rem .1rem 0;
+        font-size: .74rem;
+        font-weight: 700;
+        color: #92680a;
+        white-space: nowrap;
+    }
 
-.overdue-banner-sub {
-    font-size: .73rem;
-    color: #a07820;
-    margin-top: .28rem;
-    font-weight: 500;
-}
+    .overdue-banner-sub {
+        font-size: .73rem;
+        color: #a07820;
+        margin-top: .28rem;
+        font-weight: 500;
+    }
 
-.overdue-banner-dismiss {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
-    border: 1.5px solid #f0c040;
-    background: #fff3cd;
-    color: #92680a;
-    font-size: .9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background .2s, border-color .2s;
-    font-family: var(--ff-body);
-    line-height: 1;
-    margin-top: .05rem;
-}
-.overdue-banner-dismiss:hover {
-    background: #f0c040;
-    border-color: #c8960c;
-    color: #5a3d00;
-}
+    .overdue-banner-dismiss {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1.5px solid #f0c040;
+        background: #fff3cd;
+        color: #92680a;
+        font-size: .9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .2s, border-color .2s;
+        font-family: var(--ff-body);
+        line-height: 1;
+        margin-top: .05rem;
+    }
+    .overdue-banner-dismiss:hover {
+        background: #f0c040;
+        border-color: #c8960c;
+        color: #5a3d00;
+    }
 
-#fd-rejection-other:focus {
-    border-color: var(--bright-pink);
-    background: var(--white);
-}
+    #fd-rejection-other:focus {
+        border-color: var(--bright-pink);
+        background: var(--white);
+    }
 </style>
 @endsection
 
@@ -1415,7 +1415,7 @@
                                 type="datetime-local"
                                 id="av_arrival_time"
                                 name="arrival_time"
-                                value="{{ old('arrival_time', now()->format('Y-m-d\TH:i')) }}"
+                                value="{{ old('arrival_time') }}"
                                 onchange="avValidateArrival(this)"
                                 onblur="avValidateArrival(this, true)"
                             >
@@ -1443,7 +1443,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Time In</div>
-            <button class="modal-close" onclick="closeModal('timein-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="stopLiveClock(); closeModal('timein-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time in for <strong id="timein-name" style="color:var(--ink);"></strong>
@@ -1458,7 +1458,7 @@
                 <div id="timein-input-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.2rem;display:none;">Time in cannot be set in the future or more than 12 hours in the past.</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('timein-modal')">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timein-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
             </div>
         </form>
@@ -1469,7 +1469,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Time Out</div>
-            <button class="modal-close" onclick="closeModal('timeout-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="stopLiveClock(); closeModal('timeout-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time out for <strong id="timeout-name" style="color:var(--ink);"></strong>
@@ -1482,7 +1482,7 @@
                 <div class="hint">Status will automatically change to "Completed"</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('timeout-modal')">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" style="background:var(--green);">Confirm Time Out</button>
             </div>
         </form>
@@ -1919,9 +1919,9 @@
     function openTimein(id, name) {
         document.getElementById('timein-name').textContent = name;
         document.getElementById('timein-form').action      = '/visitors/timein/' + id;
-        document.getElementById('timein-input').value      = new Date().toISOString().slice(0, 16);
         closeVisitorDetailModal();
         openModal('timein-modal');
+        startLiveClock('timein-input');
     }
 
     function openStatusModal(id, name, currentStatus) {
@@ -2009,9 +2009,9 @@
     function openTimeout(id, name) {
         document.getElementById('timeout-name').textContent = name;
         document.getElementById('timeout-form').action      = '/visitors/checkout/' + id;
-        document.getElementById('timeout-input').value      = new Date().toISOString().slice(0, 16);
         closeVisitorDetailModal();
         openModal('timeout-modal');
+        startLiveClock('timeout-input');
     }
 
     function notifyTenant(id, btn) {
@@ -2664,6 +2664,7 @@
     }
 
     function resetAddForm() {
+        stopLiveClock();
         var form = document.getElementById('add-visitor-form');
         if (form) form.reset();
         _avSelectedTenantId = null;
@@ -2683,7 +2684,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         var ni = document.getElementById('av_arrival_time');
-        if (ni && !ni.value) ni.value = new Date().toISOString().slice(0, 16);
+        if (ni) startLiveClock('av_arrival_time');
 
         var oldTenant = '{{ old('tenant_id') }}';
         if (oldTenant) {
@@ -2803,6 +2804,34 @@
         renderOverdueBanner();
     }, CHECK_INTERVAL);
 })();
+
+    var _liveClockTimer  = null;
+    var _liveClockTarget = null;
+
+    function _localISOString() {
+        var now = new Date();
+        var pad = function(n) { return String(n).padStart(2, '0'); };
+        return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+            + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+    }
+
+    function startLiveClock(inputId) {
+        stopLiveClock();
+        _liveClockTarget = inputId;
+        function tick() {
+            var el = document.getElementById(_liveClockTarget);
+            if (el && document.activeElement !== el) {
+                el.value = _localISOString();
+            }
+        }
+        tick();
+        _liveClockTimer = setInterval(tick, 1000);
+    }
+
+    function stopLiveClock() {
+        if (_liveClockTimer) { clearInterval(_liveClockTimer); _liveClockTimer = null; }
+        _liveClockTarget = null;
+    }
 
     filtered = visitors.slice();
     renderTable();
