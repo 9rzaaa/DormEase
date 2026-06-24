@@ -90,6 +90,14 @@ class EmergencyController extends Controller
             'reported_at' => now(),
         ]);
 
+        if ($report->emergency_type === 'Other' && !empty($report->description)) {
+            UnclassifiedEmergencyTerm::create([
+                'report_id'            => $report->report_id,
+                'description_snapshot' => $report->description,
+                'status'               => 'pending',
+            ]);
+        }
+
         NotificationHelper::sendToAll(
             type: 'emergency_new',
             message: "Emergency reported: {$report->emergency_type} at {$report->location}.",
