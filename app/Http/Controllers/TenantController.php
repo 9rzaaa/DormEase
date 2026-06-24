@@ -851,6 +851,103 @@ class TenantController extends Controller
         ]);
    }
 
+   public function frontdeskLive()
+{
+    $tenants = Tenant::where('is_active', true)
+        ->select('tenant_id', 'is_inside', 'updated_at')
+        ->get();
+
+    $fingerprint = md5($tenants->max('updated_at') . $tenants->count());
+
+    return response()->json([
+        'fingerprint' => $fingerprint,
+        'tenants'     => $tenants,
+    ]);
+}
+
+public function timeIn($id)
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $tenant = Tenant::findOrFail($id);
+
+    if (!in_array($tenant->status, ['active', 'pending'])) {
+        return response()->json(['error' => 'Only active tenants can time in.'], 422);
+    }
+
+    if ($tenant->is_on_vacation) {
+        return response()->json(['error' => 'Tenant is on vacation. Update their status first to time them in.'], 422);
+    }
+
+    if ($tenant->is_inside) {
+        return response()->json(['error' => 'Tenant is already inside.'], 422);
+    }
+
+    $tenant->update(['is_inside' => true]);
+
+    \App\Models\TenantLog::create([
+        'tenant_id'  => $tenant->tenant_id,
+        'action'     => 'time_in',
+        'logged_at'  => now(),
+        'logged_by'  => Auth::guard('staff')->user()->name ?? 'Front Desk',
+    ]);
+
+    return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed in successfully.']);
+}
+
+public function timeOut($id)
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $tenant = Tenant::findOrFail($id);
+
+    if (!$tenant->is_inside) {
+        return response()->json(['error' => 'Tenant is already outside.'], 422);
+    }
+
+    $tenant->update(['is_inside' => false]);
+
+    \App\Models\TenantLog::create([
+        'tenant_id'  => $tenant->tenant_id,
+        'action'     => 'time_out',
+        'logged_at'  => now(),
+        'logged_by'  => Auth::guard('staff')->user()->name ?? 'Front Desk',
+    ]);
+
+    return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed out successfully.']);
+}
+
+public function tenantLogs()
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $logs = \App\Models\TenantLog::with('tenant')
+        ->orderByDesc('logged_at')
+        ->limit(200)
+        ->get()
+        ->map(function ($log) {
+            return [
+                'tenant_id'   => $log->tenant_id,
+                'account_id'  => $log->tenant?->account_id,
+                'first_name'  => $log->tenant?->first_name,
+                'last_name'   => $log->tenant?->last_name,
+                'room_number' => $log->tenant?->room_number,
+                'floor'       => $log->tenant?->floor,
+                'action'      => $log->action,
+                'logged_at'   => $log->logged_at,
+                'logged_by'   => $log->logged_by,
+            ];
+        });
+
+    return response()->json($logs);
+}
+
     public function live()
     {
         $tenants = Tenant::orderBy('created_at', 'desc')->get();

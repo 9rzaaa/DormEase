@@ -331,4 +331,7 @@ Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'pol
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
+
+    // Frontdesk tenant routes
+    Route::patch('/tenants/{id}/notes',   [TenantController::class, 'updateNotes']);
 });
