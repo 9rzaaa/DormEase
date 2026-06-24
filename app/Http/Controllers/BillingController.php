@@ -74,11 +74,20 @@ class BillingController extends Controller
             ->get()
             ->keyBy('tenant_id');
 
-        $activeTenantIds = $allTenants->whereIn('status', ['active', 'pending'])->pluck('tenant_id');
-        $totalBill    = number_format($billings->values()->unique('floor')->sum('total_floor_bill'), 2, '.', '');
+        $tenantsForStats = $selectedFloor !== ''
+            ? $allTenants->where('floor', $selectedFloor)
+            : $allTenants;
+
+        $activeTenantIds = $tenantsForStats->whereIn('status', ['active', 'pending'])->pluck('tenant_id');
+
+        $billingsForStats = $selectedFloor !== ''
+            ? $billings->where('floor', $selectedFloor)
+            : $billings;
+
+        $totalBill    = number_format($billingsForStats->values()->unique('floor')->sum('total_floor_bill'), 2, '.', '');
         $totalTenants = $activeTenantIds->count();
-        $unpaidCount  = $billings->whereIn('tenant_id', $activeTenantIds)->whereIn('payment_status', ['unpaid', 'overdue'])->count();
-        $overdueCount = $billings->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'overdue')->count();
+        $unpaidCount  = $billingsForStats->whereIn('tenant_id', $activeTenantIds)->whereIn('payment_status', ['unpaid', 'overdue'])->count();
+        $overdueCount = $billingsForStats->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'overdue')->count();
         $billingGroups = [];
 
         foreach ($allTenants->groupBy('floor') as $floor => $floorTenants) {
