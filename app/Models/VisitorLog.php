@@ -39,6 +39,7 @@ class VisitorLog extends Model
         'hidden_from_tenant',
         'cancelled_at',
         'cancel_reason',
+        'rejection_reason',
         'expires_at',
     ];
 

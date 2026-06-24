@@ -982,6 +982,11 @@
     border-color: #c8960c;
     color: #5a3d00;
 }
+
+#fd-rejection-other:focus {
+    border-color: var(--bright-pink);
+    background: var(--white);
+}
 </style>
 @endsection
 
@@ -1498,15 +1503,38 @@
             @method('PUT')
             <div class="modal-field">
                 <label>Status</label>
-                <select name="status" id="status-select" class="status-select">
+                <select name="status" id="status-select" class="status-select" onchange="onFdStatusChange(this)">
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
                 </select>
             </div>
+            <div id="fd-rejection-wrap" style="display:none;margin-top:.75rem;">
+                <div class="modal-field">
+                    <label>Rejection Reason <span style="color:var(--red);">*</span></label>
+                   <select id="fd-rejection-reason" class="status-select" onchange="onFdRejectionReasonChange(this)">
+                        <option value="">Select a reason</option>
+                        <option value="No valid ID presented">No valid ID presented</option>
+                        <option value="Tenant unavailable">Tenant unavailable</option>
+                        <option value="Tenant denied the visit">Tenant denied the visit</option>
+                        <option value="Visitor behavior issue">Visitor behavior issue</option>
+                        <option value="Unverified identity">Unverified identity</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div id="fd-rejection-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.3rem;display:none;">Please select a rejection reason.</div>
+                </div>
+                <div id="fd-rejection-other-wrap" style="display:none;margin-top:.6rem;">
+                    <div class="modal-field">
+                        <label>Specify reason <span style="color:var(--red);">*</span></label>
+                        <input type="text" id="fd-rejection-other" placeholder="Enter reason..." maxlength="255" style="width:100%;padding:.65rem .9rem;border-radius:10px;border:1.5px solid var(--pink-light);font-family:var(--ff-body);font-size:.88rem;color:var(--ink);background:var(--pink-bg);outline:none;transition:border-color .2s;box-sizing:border-box;">
+                        <div id="fd-rejection-other-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.3rem;display:none;">Please specify the reason.</div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="fd-rejection-reason-final" name="rejection_reason">
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Status</button>
+                <button type="submit" class="btn-submit" onclick="return fdStatusSubmit(event)">Save Status</button>
             </div>
         </form>
     </div>
@@ -1816,10 +1844,15 @@
         var staffName = v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '—';
         var expiryInfo = (!v.arrival_time && v.expires_at) ? fmtExpiry(v.expires_at) : '—';
 
+        var rejectionLine = (v.status === 'rejected' && v.rejection_reason)
+            ? vmInfoItem('Rejection Reason', v.rejection_reason, true)
+            : '';
+
         document.getElementById('vminfo-log').innerHTML =
             vmInfoItem('Status',    badge(v.status))
             + vmInfoItem('Logged By', staffName)
-            + vmInfoItem('Expires',   expiryInfo);
+            + vmInfoItem('Expires',   expiryInfo)
+            + rejectionLine;
 
         document.getElementById('vminfo-idtype').innerHTML =
             vmInfoItem('ID Type', v.id_type || '—', true);
@@ -1892,11 +1925,85 @@
     }
 
     function openStatusModal(id, name, currentStatus) {
-        document.getElementById('status-name').textContent = name;
-        document.getElementById('status-form').action       = '/visitors/' + id + '/status';
+        document.getElementById('status-name').textContent  = name;
+        document.getElementById('status-form').action        = '/visitors/' + id + '/status';
         document.getElementById('status-select').value       = currentStatus;
+        document.getElementById('fd-rejection-wrap').style.display        = 'none';
+        document.getElementById('fd-rejection-reason').value              = '';
+        document.getElementById('fd-rejection-other-wrap').style.display  = 'none';
+        document.getElementById('fd-rejection-other').value               = '';
+        document.getElementById('fd-rejection-err').style.display         = 'none';
+        document.getElementById('fd-rejection-other-err').style.display   = 'none';
+        document.getElementById('fd-rejection-reason-final').value        = '';
         closeVisitorDetailModal();
         openModal('status-modal');
+    }
+
+    function onFdStatusChange(select) {
+        var wrap = document.getElementById('fd-rejection-wrap');
+        if (select.value === 'rejected') {
+            wrap.style.display = 'block';
+        } else {
+            wrap.style.display = 'none';
+            document.getElementById('fd-rejection-reason').value             = '';
+            document.getElementById('fd-rejection-other-wrap').style.display = 'none';
+            document.getElementById('fd-rejection-other').value              = '';
+            document.getElementById('fd-rejection-err').style.display        = 'none';
+            document.getElementById('fd-rejection-other-err').style.display  = 'none';
+            document.getElementById('fd-rejection-reason-final').value       = '';
+        }
+    }
+
+    function onFdRejectionReasonChange(select) {
+        var otherWrap = document.getElementById('fd-rejection-other-wrap');
+        document.getElementById('fd-rejection-err').style.display = 'none';
+        if (select.value === 'Other') {
+            otherWrap.style.display = 'block';
+        } else {
+            otherWrap.style.display = 'none';
+            document.getElementById('fd-rejection-other').value            = '';
+            document.getElementById('fd-rejection-other-err').style.display = 'none';
+        }
+    }
+
+    function fdStatusSubmit(e) {
+        var status = document.getElementById('status-select').value;
+        if (status !== 'rejected') return true;
+
+        var reasonSelect = document.getElementById('fd-rejection-reason');
+        var otherInput   = document.getElementById('fd-rejection-other');
+        var reasonErr    = document.getElementById('fd-rejection-err');
+        var otherErr     = document.getElementById('fd-rejection-other-err');
+        var finalInput   = document.getElementById('fd-rejection-reason-final');
+
+        var valid = true;
+
+        if (!reasonSelect.value) {
+            reasonErr.style.display = 'block';
+            valid = false;
+        } else {
+            reasonErr.style.display = 'none';
+        }
+
+        if (reasonSelect.value === 'Other') {
+            if (!otherInput.value.trim()) {
+                otherErr.style.display = 'block';
+                valid = false;
+            } else {
+                otherErr.style.display = 'none';
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            return false;
+        }
+
+        finalInput.value = reasonSelect.value === 'Other'
+            ? otherInput.value.trim()
+            : reasonSelect.value;
+
+        return true;
     }
 
     function openTimeout(id, name) {

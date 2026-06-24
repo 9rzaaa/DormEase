@@ -280,7 +280,8 @@ class VisitorController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
+            'status'           => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
+            'rejection_reason' => 'required_if:status,rejected|nullable|string|max:255',
         ]);
 
         $visitor = VisitorLog::findOrFail($id);
@@ -288,6 +289,12 @@ class VisitorController extends Controller
 
         if ($request->status === 'approved') {
             $updates['expires_at'] = now()->addHours(24);
+        }
+
+        if ($request->status === 'rejected') {
+            $updates['rejection_reason'] = $request->rejection_reason;
+        } else {
+            $updates['rejection_reason'] = null;
         }
 
         $visitor->update($updates);
