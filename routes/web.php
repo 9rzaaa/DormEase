@@ -278,10 +278,6 @@ Route::middleware('auth:staff')->group(function () {
         });
     });
 
-    // shared staff 
-    Route::post('/tenants/{id}/time-in',  [\App\Http\Controllers\TenantLogController::class, 'timeIn']);
-    Route::post('/tenants/{id}/time-out', [\App\Http\Controllers\TenantLogController::class, 'timeOut']);
-    Route::get('/tenant-logs',            [\App\Http\Controllers\TenantLogController::class, 'logs']);
 
     // frontdesk
     Route::middleware('staffrole:frontdesk')->group(function () {
@@ -295,8 +291,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::put('/frontdesk/emergency/{id}', [EmergencyController::class, 'update'])->name('frontdesk.emergency.update');
         Route::delete('/frontdesk/emergency/{id}', [EmergencyController::class, 'destroy'])->name('frontdesk.emergency.destroy');
         Route::get('/frontdesk/announcements', [AnnouncementController::class, 'frontdeskIndex'])->name('frontdesk.announcements');
-Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'poll'])->name('frontdesk.announcements.poll');
-        Route::get('/frontdesk/tenants/live', [TenantController::class, 'live'])->name('frontdesk.tenants.live');
+        Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'poll'])->name('frontdesk.announcements.poll');
         Route::get('/frontdesk/emergency/poll/panic', [EmergencyController::class, 'pollPanic']);
 
         // front desk profile
@@ -329,5 +324,9 @@ Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'pol
     Route::get('/emergency/poll-critical', [EmergencyController::class, 'pollCritical']);
 
     // Frontdesk tenant routes
+    Route::get('/frontdesk/tenants/live', [TenantController::class, 'frontdeskLive'])->name('frontdesk.tenants.live');
+    Route::post('/tenants/{id}/time-in',  [TenantController::class, 'timeIn']);
+    Route::post('/tenants/{id}/time-out', [TenantController::class, 'timeOut']);
     Route::patch('/tenants/{id}/notes',   [TenantController::class, 'updateNotes']);
+    Route::get('/tenant-logs',            [TenantController::class, 'tenantLogs']); 
 });
