@@ -18,6 +18,7 @@ class NotificationHelper
         'emergency_updated',
         'tenant_vacation_on',
         'tenant_vacation_off',
+        'tenant_activated',
     ];
 
     public static function send(int $staff_id, string $type, string $message, ?int $ref_id = null): void
