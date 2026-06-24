@@ -2210,7 +2210,8 @@
 
             var reasonLine = (archiveTab === 'cancelled' && v.cancel_reason === 'expired')
                 ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Expired automatically (no time in)</span></div>'
-                : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>' : '');
+                : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>'
+                : (archiveTab === 'rejected' && v.rejection_reason ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Rejection reason: <span>' + v.rejection_reason + '</span></div>' : ''));
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
