@@ -143,14 +143,16 @@ class VisitorController extends Controller
             ],
             'tenant_id'    => 'required|exists:tenants,tenant_id',
             'purpose'      => 'required|string|max:100',
+            'relationship' => 'required|string|max:100',
             'contact_no'   => ['nullable', 'regex:/^09\d{9}$/'],
             'id_type'      => 'required|string|max:50',
             'arrival_time' => 'required|date',
             'status'       => 'nullable|string|max:20',
         ], [
-            'visitor_name.regex' => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
-            'id_type.required'   => 'Please select an ID type.',
-            'contact_no.regex'   => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
+            'visitor_name.regex'    => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
+            'id_type.required'      => 'Please select an ID type.',
+            'relationship.required' => 'Please select the visitor\'s relationship to the tenant.',
+            'contact_no.regex'      => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
         ]);
 
         $arrivalTime = $request->filled('arrival_time')
