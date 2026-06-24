@@ -304,10 +304,11 @@
         width: 100%;
         border-collapse: collapse;
         font-size: .83rem;
+        table-layout: fixed;
     }
 
     thead th {
-        padding: .65rem 1rem;
+        padding: .65rem 7rem;
         text-align: left;
         font-size: .71rem;
         font-weight: 800;
@@ -316,7 +317,8 @@
         letter-spacing: .05em;
         background: linear-gradient(135deg, #fff0f7 0%, #fde8f0 100%);
         border-bottom: 1.5px solid rgba(232,23,93,.18);
-        white-space: nowrap;
+        white-space: normal;
+        word-break: break-word;
     }
 
     thead th.th-center {
@@ -341,6 +343,9 @@
         padding: .75rem 1rem;
         color: var(--ink);
         vertical-align: middle;
+        overflow: hidden;        
+        text-overflow: ellipsis; 
+        white-space: nowrap;
     }
 
     tbody td.td-center {
@@ -352,7 +357,16 @@
         align-items: center;
         gap: .5rem;
         font-weight: 600;
+        overflow: hidden;
     }
+
+    .doc-type-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
 
     .doc-dot {
         width: 8px;
@@ -1594,6 +1608,16 @@
 .purpose-cell:hover .purpose-tooltip {
     display: block;
 }
+
+#panel-reqs table th:nth-child(1), #panel-reqs table td:nth-child(1) { width: 11%; }
+#panel-reqs table th:nth-child(2), #panel-reqs table td:nth-child(2) { width: 14%; }
+#panel-reqs table th:nth-child(3), #panel-reqs table td:nth-child(3) { width: 16%; }
+#panel-reqs table th:nth-child(4), #panel-reqs table td:nth-child(4) { width: 20%; }
+#panel-reqs table th:nth-child(5), #panel-reqs table td:nth-child(5) { width: 11%; }
+#panel-reqs table th:nth-child(6), #panel-reqs table td:nth-child(6) { width: 12%; }
+#panel-reqs table th:nth-child(7), #panel-reqs table td:nth-child(7) { width: 8%; }
+#panel-reqs table th:nth-child(8), #panel-reqs table td:nth-child(8) { width: 8%; }
+
 </style>
 @endsection
 
@@ -2718,7 +2742,7 @@ function renderDocTable() {
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(r.doc_request_id).padStart(3,'0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${tenantName}</td>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(r.document_type)}</div></td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(r.attachment)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
                 <td class="td-center">${reqStatusBadge(r.status)}</td>
@@ -3284,7 +3308,7 @@ function renderAdocTable() {
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(d.attachment)}</td>
                 <td class="td-center">${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
@@ -3769,7 +3793,7 @@ function renderAdeniedTable() {
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
             <td>${fileTypeBadge(d.attachment)}</td>
             <td class="td-center">${reqStatusBadge(d.status)}</td>
             <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
@@ -3837,7 +3861,7 @@ function renderAcancelledTable() {
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(d.document_type)}</span></div></td>
             <td>${escHtml(d.purpose ?? '—')}</td>
             <td>${deliveryOrFile}</td>
             <td class="td-center"><span class="req-status-badge req-cancelled">Cancelled</span></td>
