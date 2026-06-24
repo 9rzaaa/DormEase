@@ -738,7 +738,7 @@ class TenantController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        $totalUnits    = \App\Models\Room::where('is_active', true)->sum('capacity');
+        $totalUnits    = (int) (\App\Models\Room::where('is_active', true)->sum('capacity') ?? 0);
         $occupiedUnits = Tenant::whereNotIn('status', ['inactive', 'move_out'])->whereNotNull('room_number')->distinct('room_number')->count('room_number');
 
         return view('fdtenant', [
@@ -869,11 +869,12 @@ public function timeIn($id)
 
     $tenant->update(['is_inside' => true]);
 
+    $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
         'tenant_id'  => $tenant->tenant_id,
         'action'     => 'time_in',
         'logged_at'  => now(),
-        'logged_by'  => Auth::guard('staff')->user()->name ?? 'Front Desk',
+        'logged_by'  => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed in successfully.']);
@@ -893,11 +894,12 @@ public function timeOut($id)
 
     $tenant->update(['is_inside' => false]);
 
+    $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
         'tenant_id'  => $tenant->tenant_id,
         'action'     => 'time_out',
         'logged_at'  => now(),
-        'logged_by'  => Auth::guard('staff')->user()->name ?? 'Front Desk',
+        'logged_by'  => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed out successfully.']);
