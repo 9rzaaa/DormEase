@@ -203,4 +203,102 @@ class BillingHistoryController extends Controller
             'selectedMonth',
         ));
     }
+    public function exportAll(Request $request)
+    {
+        $selectedFloor  = $request->get('floor', '');
+        $selectedStatus = $request->get('status', '');
+        $selectedMonth  = $request->get('month', '');
+        $search         = $request->get('search', '');
+
+        $detailQuery = WaterBilling::with('tenant')
+            ->orderByDesc('billing_month')
+            ->orderBy('floor')
+            ->orderBy('tenant_id');
+
+        if ($selectedFloor !== '') {
+            $detailQuery->where('floor', $selectedFloor);
+        }
+
+        if ($selectedStatus !== '') {
+            $detailQuery->where('payment_status', $selectedStatus);
+        }
+
+        if ($selectedMonth !== '') {
+            $detailQuery->whereRaw(
+                "DATE_FORMAT(billing_month, '%Y-%m-01') = ?",
+                [$selectedMonth]
+            );
+        }
+
+        if ($search !== '') {
+            $detailQuery->whereHas('tenant', function ($q) use ($search) {
+                $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ['%' . $search . '%']);
+            });
+        }
+
+        $allRecords = $detailQuery->get();
+
+        $grouped = $allRecords->groupBy(function ($b) {
+            return Carbon::parse($b->billing_month)->format('Y-m-01');
+        })->sortKeysDesc();
+
+        $historyGroups = [];
+
+        foreach ($grouped->keys() as $monthKey) {
+            $monthBillings = $grouped->get($monthKey, collect());
+            $carbonDate    = Carbon::parse($monthKey);
+
+            $floorGroups = [];
+
+            foreach ($monthBillings->groupBy('floor')->sortKeys() as $floor => $floorBillings) {
+                $firstBilling = $floorBillings->first();
+
+                $rooms = [];
+                foreach ($floorBillings->groupBy(function ($b) {
+                    return $b->tenant->room_number ?? '?';
+                })->sortKeys() as $roomNumber => $roomBillings) {
+
+                    $tenantRows = $roomBillings->map(function ($b) {
+                        $paymentStatus = $b->tenant->status === 'inactive'
+                            ? 'inactive-tenant'
+                            : strtolower($b->payment_status ?? 'unpaid');
+
+                        return [
+                            'name'                   => trim(($b->tenant->first_name ?? '') . ' ' . ($b->tenant->last_name ?? '')),
+                            'room_share'             => $b->room_share ?? 0,
+                            'payment_status'         => $paymentStatus,
+                            'payment_reference_code' => $b->payment_reference_code,
+                            'payment_submitted_at'   => $b->payment_submitted_at
+                                ? Carbon::parse($b->payment_submitted_at)->format('M d, Y h:i A')
+                                : null,
+                        ];
+                    })->values()->toArray();
+
+                    $rooms[] = [
+                        'room_number' => $roomNumber,
+                        'occupants_in_room' => count($tenantRows),
+                        'tenants'     => $tenantRows,
+                    ];
+                }
+
+                $floorGroups[] = [
+                    'floor'                => $floor,
+                    'floor_consumption_m3' => number_format($firstBilling->floor_consumption_m3 ?? 0, 2),
+                    'total_floor_bill'     => $floorBillings->sum('room_share'),
+                    'due_date'             => $firstBilling->due_date
+                        ? Carbon::parse($firstBilling->due_date)->format('M d, Y')
+                        : '—',
+                    'rooms' => $rooms,
+                ];
+            }
+
+            $historyGroups[] = [
+                'month_key'    => $monthKey,
+                'month_label'  => $carbonDate->format('F Y'),
+                'floor_groups' => $floorGroups,
+            ];
+        }
+
+        return response()->json(['history_groups' => $historyGroups]);
+    }
 }
