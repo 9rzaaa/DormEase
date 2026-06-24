@@ -1937,7 +1937,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;">
             <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.04em;">Reason for resubmission</label>
-            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
+            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
                 <option value="">Select a reason...</option>
                 <option value="Photo is blurry or out of focus">Photo is blurry or out of focus</option>
                 <option value="Photo is too dark or poorly lit">Photo is too dark or poorly lit</option>
@@ -2058,7 +2058,7 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
-                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
                             <option value="pending">Pending</option>
                             <option value="in-progress">In-Progress</option>
                             <option value="resolved">Resolve &amp; Archive</option>
@@ -2067,7 +2067,7 @@
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
-                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
                             <option value="low">Low</option>
                             <option value="moderate">Moderate</option>
                             <option value="urgent">Urgent</option>
@@ -2198,11 +2198,17 @@
 @section('scripts')
 <script>
     function showActionLoading(message) {
-    const overlay = document.getElementById('action-loading');
-    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-}
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        const overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
 
 function setFormLoading(form, message) {
     form.querySelectorAll('button[type="submit"]').forEach(btn => {
@@ -2219,7 +2225,8 @@ function setFormLoading(form, message) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('form[data-loading-message]').forEach(form => {
-        form.addEventListener('submit', function () {
+        form.addEventListener('submit', function (e) {
+            if (e.defaultPrevented) return;
             setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
         });
     });
@@ -2239,7 +2246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
     const perPage  = 10;
-    let filtered    = [...requests];
+    let filtered    = [];
     let currentPage = 1;
     let currentReq  = null;
     let archiveTab  = 'closed';
@@ -2915,6 +2922,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!hasChanges) return;
 
             requestsData = fresh;
+            _rowDataMap = {};
             fresh.forEach(r => { _rowDataMap[r.id] = r; });
 
             applyFilters();
@@ -2997,6 +3005,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var urgency = document.getElementById('edit-urgency').value;
         if (!status || !urgency) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             showToast('Please select a status and urgency before saving.', 'error');
             return false;
         }
