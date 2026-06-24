@@ -99,6 +99,69 @@ class DocumentRequestController extends Controller
             'message' => 'This request cannot be deleted.',
         ], 400);
     }
+    public function resubmit(Request $request, $id)
+{
+    $tenantId = $request->user()->tenant_id;
+
+    $documentRequest = DocumentRequest::where('tenant_id', $tenantId)
+        ->where('doc_request_id', $id)
+        ->first();
+
+    if (!$documentRequest) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Document request not found.',
+        ], 404);
+    }
+
+    if ($documentRequest->status !== 'resubmission') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Only requests marked for resubmission can be resubmitted.',
+        ], 422);
+    }
+
+    $request->validate([
+        'file' => [
+            'required',
+            'file',
+            'max:10240',
+            function ($attribute, $value, $fail) {
+                $ext = strtolower($value->getClientOriginalExtension());
+                if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
+                    $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                }
+            },
+        ],
+    ]);
+
+    if ($documentRequest->attachment) {
+        Storage::disk('public')->delete($documentRequest->attachment);
+    }
+
+    $newPath = $request->file('file')->store('document-requests/attachments', 'public');
+
+    $documentRequest->update([
+        'attachment'    => $newPath,
+        'status'        => 'pending',
+        'admin_remarks' => null,
+        'submitted_at'  => now(),
+        'processed_at'  => null,
+    ]);
+
+    $tenant = $request->user();
+    NotificationHelper::sendToAll(
+        type: 'document_request',
+        message: "{$tenant->first_name} {$tenant->last_name} resubmitted a {$documentRequest->document_type} request.",
+        ref_id: $documentRequest->doc_request_id,
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'File resubmitted successfully.',
+        'data'    => $documentRequest,
+    ]);
+}
 
     public function store(Request $request)
     {
