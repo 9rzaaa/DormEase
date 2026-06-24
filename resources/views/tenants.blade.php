@@ -3461,7 +3461,7 @@ function buildRows(list) {
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + normalizeContactDisplay(t.contact_number) + '</td>'
-            + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
+            + '<td>' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
