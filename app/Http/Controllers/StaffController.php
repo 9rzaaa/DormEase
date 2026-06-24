@@ -262,6 +262,8 @@ class StaffController extends Controller
             'leave_start'    => 'nullable|date',
             'leave_end'      => 'nullable|date|after_or_equal:leave_start',
             'leave_note'     => 'nullable|string|max:255',
+        ], [
+            'email.unique' => 'This email is already registered to another staff member.',
         ]);
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
@@ -293,7 +295,9 @@ class StaffController extends Controller
             ? $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.'
             : 'Staff details updated successfully.';
 
-        return redirect()->route('staff.index')->with('success', $message);
+        return redirect()->route('staff.index')
+            ->with('success', $message)
+            ->with('edit_staff_id', $staff->staff_id);
     }
 
     public function resetPassword($id)
