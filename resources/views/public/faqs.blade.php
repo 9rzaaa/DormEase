@@ -234,6 +234,16 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
+            <div class="faq-answer-inner">We offer Globe Wi-Fi for <strong>₱300.00</strong> per device per month to connect to the building's internet connection. Alternatively, tenants are welcome to provide and set up their own Wi-Fi inside their rooms—just be sure to inform the Admin office.</div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false">
+            <span class="faq-question">What is the curfew policy?</span>
+            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
+          </button>
+          <div class="faq-answer">
             <div class="faq-answer-inner">The building gate is closed at 10:00 p.m. every night. No tenants will be allowed entry or allowed to leave after 10:00 p.m. unless they have a written approval of request (Curfew Slip) from the Admin office. Doctors undergoing residency training may be exempt upon proper written notification with the Admin office. Repeated violations of the curfew policy may result in a notice or penalty.</div>
           </div>
         </div>
