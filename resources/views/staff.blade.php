@@ -2972,13 +2972,14 @@
         var text  = document.getElementById(prefix + '-progress-text');
         var count = document.getElementById(prefix + '-progress-count');
         if (!fill || !text || !count) return;
-        if (prefix === 'add-staff') {
-        var submitBtn = document.getElementById('add-staff-submit-btn');
-        if (submitBtn) submitBtn.disabled = pct < 100;
-    }
 
-    if (pct === 100) {
+        if (prefix === 'add-staff') {
+            var submitBtn = document.getElementById('add-staff-submit-btn');
+            if (submitBtn) submitBtn.disabled = pct < 100;
+        }
+
         fill.style.width = pct + '%';
+
         if (pct === 100) {
             fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
             text.textContent = 'All required fields filled';
