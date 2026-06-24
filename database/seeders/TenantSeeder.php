@@ -18,30 +18,46 @@ class TenantSeeder extends Seeder
      */
     public function run(): void
     {
+        // Fetch all active rooms grouped by floor
+        $roomsByFloor = \App\Models\Room::where('is_active', true)
+            ->get()
+            ->groupBy('floor');
+
+        // Prepare room assignment track
+        $roomAssignments = [];
+        foreach ($roomsByFloor as $floor => $rooms) {
+            $roomAssignments[$floor] = [];
+            foreach ($rooms as $room) {
+                $roomAssignments[$floor][] = [
+                    'room_number' => $room->room_number,
+                    'floor'       => $room->floor,
+                    'stay_type'   => $room->stay_type,
+                    'capacity'    => $room->capacity,
+                    'occupancy'   => 0
+                ];
+            }
+        }
+
         $tenants = [
 
             // ----------------------------------------------------------------
-            // FLOOR 2 — 5 tenants (rooms 201–205)
+            // FLOOR 2 — 5 tenants
             // ----------------------------------------------------------------
             [
                 'first_name'     => 'Maria',
                 'last_name'      => 'Santos',
                 'email'          => 'maria.santos@example.com',
                 'contact_number' => '09171234501',
-                'room_number'    => '201',
                 'floor'          => 2,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-01-15',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Jose',
+                'first_name'     => 'Sofia',
                 'last_name'      => 'Reyes',
-                'email'          => 'jose.reyes@example.com',
+                'email'          => 'sofia.reyes@example.com',
                 'contact_number' => '09171234502',
-                'room_number'    => '201',
                 'floor'          => 2,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-01',
                 'status'         => 'pending',
             ],
@@ -50,20 +66,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Cruz',
                 'email'          => 'ana.cruz@example.com',
                 'contact_number' => '09171234503',
-                'room_number'    => '201',
                 'floor'          => 2,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-10',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Carlo',
+                'first_name'     => 'Elena',
                 'last_name'      => 'Bautista',
-                'email'          => 'carlo.bautista@example.com',
+                'email'          => 'elena.bautista@example.com',
                 'contact_number' => '09171234504',
-                'room_number'    => '202',
                 'floor'          => 2,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-01',
                 'status'         => 'pending',
             ],
@@ -72,24 +84,20 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Garcia',
                 'email'          => 'liza.garcia@example.com',
                 'contact_number' => '09171234505',
-                'room_number'    => '202',
                 'floor'          => 2,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-15',
                 'status'         => 'pending',
             ],
 
             // ----------------------------------------------------------------
-            // FLOOR 3 — 11 tenants (rooms 301–311)
+            // FLOOR 3 — 11 tenants
             // ----------------------------------------------------------------
             [
-                'first_name'     => 'Mark',
+                'first_name'     => 'Grace',
                 'last_name'      => 'Dela Cruz',
-                'email'          => 'mark.delacruz@example.com',
+                'email'          => 'grace.delacruz@example.com',
                 'contact_number' => '09181234501',
-                'room_number'    => '301',
                 'floor'          => 3,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-01-10',
                 'status'         => 'pending',
             ],
@@ -98,20 +106,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Villanueva',
                 'email'          => 'jenny.villanueva@example.com',
                 'contact_number' => '09181234502',
-                'room_number'    => '302',
                 'floor'          => 3,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-01-20',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Ryan',
+                'first_name'     => 'Chloe',
                 'last_name'      => 'Mendoza',
-                'email'          => 'ryan.mendoza@example.com',
+                'email'          => 'chloe.mendoza@example.com',
                 'contact_number' => '09181234503',
-                'room_number'    => '303',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-05',
                 'status'         => 'pending',
             ],
@@ -120,20 +124,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Aquino',
                 'email'          => 'claire.aquino@example.com',
                 'contact_number' => '09181234504',
-                'room_number'    => '303',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-15',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Miguel',
+                'first_name'     => 'Mia',
                 'last_name'      => 'Torres',
-                'email'          => 'miguel.torres@example.com',
+                'email'          => 'mia.torres@example.com',
                 'contact_number' => '09181234505',
-                'room_number'    => '304',
                 'floor'          => 3,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-02-20',
                 'status'         => 'pending',
             ],
@@ -142,20 +142,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Ramos',
                 'email'          => 'patricia.ramos@example.com',
                 'contact_number' => '09181234506',
-                'room_number'    => '304',
                 'floor'          => 3,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-03-01',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Kevin',
+                'first_name'     => 'Camila',
                 'last_name'      => 'Soriano',
-                'email'          => 'kevin.soriano@example.com',
+                'email'          => 'camila.soriano@example.com',
                 'contact_number' => '09181234507',
-                'room_number'    => '304',
                 'floor'          => 3,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-03-10',
                 'status'         => 'pending',
             ],
@@ -164,20 +160,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Castillo',
                 'email'          => 'diana.castillo@example.com',
                 'contact_number' => '09181234508',
-                'room_number'    => '305',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-20',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Aaron',
+                'first_name'     => 'Isabella',
                 'last_name'      => 'Navarro',
-                'email'          => 'aaron.navarro@example.com',
+                'email'          => 'isabella.navarro@example.com',
                 'contact_number' => '09181234509',
-                'room_number'    => '305',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-04-01',
                 'status'         => 'pending',
             ],
@@ -186,46 +178,38 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Flores',
                 'email'          => 'sophia.flores@example.com',
                 'contact_number' => '09181234510',
-                'room_number'    => '305',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-04-10',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Nathan',
+                'first_name'     => 'Gabriela',
                 'last_name'      => 'Pascual',
-                'email'          => 'nathan.pascual@example.com',
+                'email'          => 'gabriela.pascual@example.com',
                 'contact_number' => '09181234511',
-                'room_number'    => '305',
                 'floor'          => 3,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-04-15',
                 'status'         => 'pending',
             ],
 
             // ----------------------------------------------------------------
-            // FLOOR 4 — 12 tenants (rooms 401–412)
+            // FLOOR 4 — 12 tenants
             // ----------------------------------------------------------------
             [
                 'first_name'     => 'Isabel',
                 'last_name'      => 'Gonzales',
                 'email'          => 'isabel.gonzales@example.com',
                 'contact_number' => '09191234501',
-                'room_number'    => '401',
                 'floor'          => 4,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-01-05',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Rafael',
+                'first_name'     => 'Olivia',
                 'last_name'      => 'Hernandez',
-                'email'          => 'rafael.hernandez@example.com',
+                'email'          => 'olivia.hernandez@example.com',
                 'contact_number' => '09191234502',
-                'room_number'    => '402',
                 'floor'          => 4,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-01-15',
                 'status'         => 'pending',
             ],
@@ -234,20 +218,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Magno',
                 'email'          => 'nicole.magno@example.com',
                 'contact_number' => '09191234503',
-                'room_number'    => '402',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-01-25',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Erick',
+                'first_name'     => 'Emily',
                 'last_name'      => 'Salazar',
-                'email'          => 'erick.salazar@example.com',
+                'email'          => 'emily.salazar@example.com',
                 'contact_number' => '09191234504',
-                'room_number'    => '403',
                 'floor'          => 4,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-02-01',
                 'status'         => 'pending',
             ],
@@ -256,20 +236,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Dizon',
                 'email'          => 'camille.dizon@example.com',
                 'contact_number' => '09191234505',
-                'room_number'    => '403',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-10',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Jerome',
+                'first_name'     => 'Jessica',
                 'last_name'      => 'Reyes',
-                'email'          => 'jerome.reyes@example.com',
+                'email'          => 'jessica.reyes@example.com',
                 'contact_number' => '09191234506',
-                'room_number'    => '403',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-20',
                 'status'         => 'pending',
             ],
@@ -278,20 +254,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Luna',
                 'email'          => 'angelica.luna@example.com',
                 'contact_number' => '09191234507',
-                'room_number'    => '404',
                 'floor'          => 4,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-03-01',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Dennis',
+                'first_name'     => 'Samantha',
                 'last_name'      => 'Buenaventura',
-                'email'          => 'dennis.buenaventura@example.com',
+                'email'          => 'samantha.buenaventura@example.com',
                 'contact_number' => '09191234508',
-                'room_number'    => '404',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-10',
                 'status'         => 'pending',
             ],
@@ -300,20 +272,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Enriquez',
                 'email'          => 'trisha.enriquez@example.com',
                 'contact_number' => '09191234509',
-                'room_number'    => '404',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-20',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Alvin',
+                'first_name'     => 'Alyssa',
                 'last_name'      => 'Santiago',
-                'email'          => 'alvin.santiago@example.com',
+                'email'          => 'alyssa.santiago@example.com',
                 'contact_number' => '09191234510',
-                'room_number'    => '405',
                 'floor'          => 4,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-04-01',
                 'status'         => 'pending',
             ],
@@ -322,46 +290,38 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Domingo',
                 'email'          => 'kristine.domingo@example.com',
                 'contact_number' => '09191234511',
-                'room_number'    => '405',
                 'floor'          => 4,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-04-05',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Ronald',
+                'first_name'     => 'Rachel',
                 'last_name'      => 'Aguilar',
-                'email'          => 'ronald.aguilar@example.com',
+                'email'          => 'rachel.aguilar@example.com',
                 'contact_number' => '09191234512',
-                'room_number'    => '406',
                 'floor'          => 4,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-04-15',
                 'status'         => 'pending',
             ],
 
             // ----------------------------------------------------------------
-            // FLOOR 5 — 10 tenants (rooms 501–510)
+            // FLOOR 5 — 10 tenants
             // ----------------------------------------------------------------
             [
                 'first_name'     => 'Vanessa',
                 'last_name'      => 'Manaloto',
                 'email'          => 'vanessa.manaloto@example.com',
                 'contact_number' => '09201234501',
-                'room_number'    => '501',
                 'floor'          => 5,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-01-08',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Bernard',
+                'first_name'     => 'Hazel',
                 'last_name'      => 'Ocampo',
-                'email'          => 'bernard.ocampo@example.com',
+                'email'          => 'hazel.ocampo@example.com',
                 'contact_number' => '09201234502',
-                'room_number'    => '502',
                 'floor'          => 5,
-                'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2024-01-18',
                 'status'         => 'pending',
             ],
@@ -370,20 +330,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Padilla',
                 'email'          => 'maricel.padilla@example.com',
                 'contact_number' => '09201234503',
-                'room_number'    => '503',
                 'floor'          => 5,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-03',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Gilbert',
+                'first_name'     => 'Angela',
                 'last_name'      => 'Tolentino',
-                'email'          => 'gilbert.tolentino@example.com',
+                'email'          => 'angela.tolentino@example.com',
                 'contact_number' => '09201234504',
-                'room_number'    => '503',
                 'floor'          => 5,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-02-12',
                 'status'         => 'pending',
             ],
@@ -392,20 +348,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Medina',
                 'email'          => 'roxanne.medina@example.com',
                 'contact_number' => '09201234505',
-                'room_number'    => '504',
                 'floor'          => 5,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-02-22',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Harold',
+                'first_name'     => 'Evelyn',
                 'last_name'      => 'Valdez',
-                'email'          => 'harold.valdez@example.com',
+                'email'          => 'evelyn.valdez@example.com',
                 'contact_number' => '09201234506',
-                'room_number'    => '504',
                 'floor'          => 5,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-05',
                 'status'         => 'pending',
             ],
@@ -414,20 +366,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Mercado',
                 'email'          => 'sheila.mercado@example.com',
                 'contact_number' => '09201234507',
-                'room_number'    => '504',
                 'floor'          => 5,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-03-15',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Joselito',
+                'first_name'     => 'Clarissa',
                 'last_name'      => 'Macaraeg',
-                'email'          => 'joselito.macaraeg@example.com',
+                'email'          => 'clarissa.macaraeg@example.com',
                 'contact_number' => '09201234508',
-                'room_number'    => '505',
                 'floor'          => 5,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-03-25',
                 'status'         => 'pending',
             ],
@@ -436,20 +384,16 @@ class TenantSeeder extends Seeder
                 'last_name'      => 'Espiritu',
                 'email'          => 'elaine.espiritu@example.com',
                 'contact_number' => '09201234509',
-                'room_number'    => '505',
                 'floor'          => 5,
-                'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2024-04-02',
                 'status'         => 'pending',
             ],
             [
-                'first_name'     => 'Aldrin',
+                'first_name'     => 'Joy',
                 'last_name'      => 'Ybañez',
-                'email'          => 'aldrin.ybanez@example.com',
+                'email'          => 'joy.ybanez@example.com',
                 'contact_number' => '09201234510',
-                'room_number'    => '505',
                 'floor'          => 5,
-                'stay_type'      => 'Bed Spacer',
                 'move_in_date'   => '2024-04-12',
                 'status'         => 'pending',
             ],
@@ -457,6 +401,26 @@ class TenantSeeder extends Seeder
 
         foreach ($tenants as $data) {
             $tempPassword = Tenant::generateTempPassword();
+            $floor = $data['floor'];
+            $roomNumber = null;
+            $stayType = null;
+
+            if (isset($roomAssignments[$floor])) {
+                foreach ($roomAssignments[$floor] as &$r) {
+                    if ($r['occupancy'] < $r['capacity']) {
+                        $r['occupancy']++;
+                        $roomNumber = $r['room_number'];
+                        $stayType = $r['stay_type'];
+                        break;
+                    }
+                }
+            }
+
+            // Fallback just in case
+            if (!$roomNumber) {
+                $roomNumber = $floor . '01';
+                $stayType = 'Solo Room';
+            }
 
             Tenant::create([
                 'account_id'       => Tenant::generateAccountId(),
@@ -467,9 +431,9 @@ class TenantSeeder extends Seeder
                 'email'            => $data['email'],
                 'contact_number'   => $data['contact_number'],
                 'profile_photo'    => null,
-                'room_number'      => $data['room_number'],
-                'floor'            => $data['floor'],
-                'stay_type'        => $data['stay_type'],
+                'room_number'      => $roomNumber,
+                'floor'            => $floor,
+                'stay_type'        => $stayType,
                 'move_in_date'     => $data['move_in_date'],
                 'move_out_date'    => null,
                 'status'           => $data['status'],
