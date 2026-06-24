@@ -76,7 +76,8 @@
 }
 
 .ann-stat-num { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
-.ann-stat-label { font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.92); margin-top: .15rem; text-transform: uppercase; letter-spacing: .04em; }
+.ann-stat-label { font-size: .95rem; font-weight: 700; color: #fff; margin-top: .15rem; }
+.ann-stat-desc { font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.85); margin-top: .1rem; }
 
 .ann-toolbar {
     display: flex;
@@ -698,6 +699,7 @@
     @php
         $weekStart = \Carbon\Carbon::now()->startOfWeek();
         $weekEnd   = \Carbon\Carbon::now()->endOfWeek();
+        $activeCount = $announcements->where('status','active')->count();
         $postedThisWeekCount = $announcements->filter(function($a) use ($weekStart, $weekEnd) {
             $posted = \Carbon\Carbon::parse($a->posted_at ?? $a->created_at);
             return $posted->between($weekStart, $weekEnd);
@@ -709,8 +711,9 @@
                 <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $announcements->where('status','active')->count() }}</div>
-                <div class="ann-stat-label">Active</div>
+                <div class="ann-stat-num">{{ $activeCount }}</div>
+                <div class="ann-stat-label">Active Announcements</div>
+                <div class="ann-stat-desc">Currently posted</div>
             </div>
         </div>
         <div class="ann-stat-card">
@@ -720,6 +723,7 @@
             <div>
                 <div class="ann-stat-num">{{ $postedThisWeekCount }}</div>
                 <div class="ann-stat-label">Posted This Week</div>
+                <div class="ann-stat-desc">New since Sunday</div>
             </div>
         </div>
     </div>
