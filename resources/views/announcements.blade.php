@@ -1696,7 +1696,8 @@
             <div class="modal-title">Delete Announcement</div>
             <button class="modal-close" onclick="closeModal('delete-modal')">&#x2715;</button>
         </div>
-        <div class="delete-warning">This action cannot be undone. The announcement will be permanently removed.</div>
+        <div class="delete-warning" id="delete-warning-live" style="display:none;">This announcement is still live and visible to tenants. Deleting it now will remove it immediately from their view, with no way to undo this. If you only want to take it down, close it instead and delete later from the archive.</div>
+        <div class="delete-warning" id="delete-warning-default">This action cannot be undone. The announcement will be permanently removed.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
@@ -2305,8 +2306,12 @@ function submitViewEditModal() {
 function openDeleteModal(id, name, e) {
     if (e) e.stopPropagation();
     closeGlobalDropdown();
+    const ann = annData[id];
+    const isLive = ann && (ann.status === 'active' || ann.status === 'scheduled');
     document.getElementById('delete-ann-name').textContent = name;
     document.getElementById('delete-form').action = '{{ url("announcements") }}/' + id;
+    document.getElementById('delete-warning-live').style.display = isLive ? '' : 'none';
+    document.getElementById('delete-warning-default').style.display = isLive ? 'none' : '';
     openModal('delete-modal');
 }
 

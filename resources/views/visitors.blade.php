@@ -734,6 +734,81 @@
         font-weight: 500;
     }
 
+    .overnight-toggle-row {
+        padding: .9rem 1.8rem;
+        background: #fff9fb;
+        border-bottom: 1.5px solid var(--gray-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-text { flex: 1; min-width: 0; }
+
+    .overnight-toggle-title {
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--black);
+    }
+
+    .overnight-toggle-sub {
+        font-size: .72rem;
+        color: var(--ink-muted);
+        margin-top: .2rem;
+        line-height: 1.4;
+    }
+
+    .overnight-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .overnight-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: var(--gray-light);
+        border-radius: 99px;
+        transition: background .2s;
+    }
+
+    .overnight-toggle-slider::before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        bottom: 3px;
+        background: var(--white);
+        border-radius: 50%;
+        transition: transform .2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider {
+        background: var(--hot-pink);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider::before {
+        transform: translateX(18px);
+    }
+
+    .overnight-toggle-switch input:disabled + .overnight-toggle-slider {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
     .archive-close-btn {
         width: 34px;
         height: 34px;
@@ -911,6 +986,7 @@
     .archive-pill-purpose   { background: #fff0f7; color: var(--hot-pink); border: 1px solid var(--baby-pink); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
     .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-rejected  { background: #fff4e8; color: #c8631c; border: 1px solid #f5c192; }
 
     .archive-card-footer {
         display: flex;
@@ -1061,6 +1137,17 @@
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
 
+    <div class="overnight-toggle-row">
+        <div class="overnight-toggle-text">
+            <div class="overnight-toggle-title">Extend overnight expiry</div>
+            <div class="overnight-toggle-sub">Push pending or approved visit deadlines to the next staff shift if they would expire while no one is on duty</div>
+        </div>
+        <label class="overnight-toggle-switch">
+            <input type="checkbox" id="overnight-extend-toggle" onchange="toggleOvernightExtend(this)" {{ $overnightExtend ? 'checked' : '' }}>
+            <span class="overnight-toggle-slider"></span>
+        </label>
+    </div>
+
     <div class="archive-tabs">
         <button class="archive-tab active" id="atab-completed" onclick="switchArchiveTab('completed')">
             Completed
@@ -1073,6 +1160,10 @@
         <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
             Cancelled
             <span class="archive-tab-count" id="acount-cancelled">0</span>
+        </button>
+        <button class="archive-tab" id="atab-rejected" onclick="switchArchiveTab('rejected')">
+            Rejected
+            <span class="archive-tab-count" id="acount-rejected">0</span>
         </button>
     </div>
 
@@ -1311,6 +1402,7 @@
     const completedVisitors = @json($completedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const deletedVisitors   = @json($deletedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     const cancelledVisitors = @json($cancelledVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    const rejectedVisitors  = @json($rejectedVisitors, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
     let filtered   = Array.isArray(logs) ? [...logs] : [];
     let archiveTab = 'completed';
@@ -1446,7 +1538,10 @@
                 + '<td>' + (v.purpose ?? '—') + '</td>'
                 + '<td>' + (v.tenant?.full_name ?? '—') + '</td>'
                 + '<td>' + (v.staff?.name ?? '—') + '</td>'
-                + '<td>' + getStatusBadge(v.status) + '</td>'
+                + '<td>'
+                    + getStatusBadge(v.status)
+                    + (!v.arrival_time && v.expires_at ? fmtExpiry(v.expires_at) : '')
+                + '</td>'
                 + '<td>'
                     + '<button class="act-btn" title="View details" onclick="viewVisitor(_logRowMap[' + v.id + '])">'
                         + '<img src="' + eyeIcon + '" alt="View">'
@@ -1454,6 +1549,17 @@
                 + '</td>'
                 + '</tr>';
         }).join('');
+    }
+
+    function fmtExpiry(expiresAt) {
+        if (!expiresAt) return '';
+        const d = new Date(expiresAt);
+        const now = new Date();
+        const diffMs = d - now;
+        if (diffMs <= 0) return '<div class="time-pending">Expiring soon</div>';
+        const hrs = Math.round(diffMs / 3600000);
+        if (hrs < 1) return '<div class="time-pending">Expires in less than 1 hr</div>';
+        return '<div class="time-pending">Expires in ' + hrs + ' hr' + (hrs === 1 ? '' : 's') + '</div>';
     }
 
     function getStatusBadge(status) {
@@ -1518,9 +1624,17 @@
             + infoItem('Time In',  timeInVal)
             + infoItem('Time Out', timeOutVal);
 
+        var expiryInfo = (!v.arrival_time && v.expires_at) ? fmtExpiry(v.expires_at) : '—';
+
+        var rejectionLine = (v.status === 'rejected' && v.rejection_reason)
+            ? infoItem('Rejection Reason', v.rejection_reason, true)
+            : '';
+
         document.getElementById('minfo-log').innerHTML =
             infoItem('Status',    getStatusBadge(v.status))
-            + infoItem('Logged By', v.staff?.name ?? '—');
+            + infoItem('Logged By', v.staff?.name ?? '—')
+            + infoItem('Expires',   expiryInfo)
+            + rejectionLine;
 
         document.getElementById('minfo-idtype').innerHTML =
             infoItem('ID Type', v.id_type ?? '—', true);
@@ -1590,10 +1704,40 @@
         }
     });
 
+    function toggleOvernightExtend(checkbox) {
+        var newValue = checkbox.checked ? '1' : '0';
+        checkbox.disabled = true;
+
+        fetch('{{ route("visitors.overnightExtend") }}', {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ enabled: newValue })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Failed');
+            return res.json();
+        })
+        .then(function() {
+            showToast(checkbox.checked ? 'Overnight extension enabled.' : 'Overnight extension disabled.', 'success');
+        })
+        .catch(function() {
+            checkbox.checked = !checkbox.checked;
+            showToast('Could not update the setting. Please try again.', 'error');
+        })
+        .finally(function() {
+            checkbox.disabled = false;
+        });
+    }
+
     function openArchive() {
         document.getElementById('acount-completed').textContent = Array.isArray(completedVisitors)  ? completedVisitors.length  : 0;
         document.getElementById('acount-deleted').textContent   = Array.isArray(deletedVisitors)    ? deletedVisitors.length    : 0;
         document.getElementById('acount-cancelled').textContent = Array.isArray(cancelledVisitors)  ? cancelledVisitors.length  : 0;
+        document.getElementById('acount-rejected').textContent  = Array.isArray(rejectedVisitors)   ? rejectedVisitors.length   : 0;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
         switchArchiveTab('completed');
@@ -1609,6 +1753,7 @@
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
         document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
+        document.getElementById('atab-rejected').classList.toggle('active',  tab === 'rejected');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
@@ -1626,8 +1771,10 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         const result = data.filter(function(v) {
@@ -1647,9 +1794,17 @@
             return;
         }
 
-        const pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        const pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        const footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
+        const pillClass = archiveTab === 'completed' ? 'archive-pill-completed'
+            : archiveTab === 'rejected'  ? 'archive-pill-rejected'
+            : 'archive-pill-deleted';
+        const pillLabel   = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        const footerLabel = archiveTab === 'completed' ? 'Checked out on'
+            : archiveTab === 'deleted'   ? 'Deleted on'
+            : archiveTab === 'cancelled' ? 'Cancelled on'
+            : 'Rejected on';
 
         list.innerHTML = result.map(function(v, i) {
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? null;
@@ -1658,9 +1813,14 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
+
+            var reasonLine = (archiveTab === 'cancelled' && v.cancel_reason === 'expired')
+                ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Expired automatically (no time in)</span></div>'
+                : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>'
+                : (archiveTab === 'rejected' && v.rejection_reason ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Rejection reason: <span>' + v.rejection_reason + '</span></div>' : ''));
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
@@ -1676,6 +1836,7 @@
                 + '<div class="archive-card-footer">'
                     + footerLabel + ': <span>' + footerDate + '</span>'
                 + '</div>'
+                + reasonLine
                 + '</div>';
         }).join('');
     }
@@ -1742,13 +1903,18 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const label = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
+        const label = archiveTab === 'completed' ? 'Checked Out On'
+            : archiveTab === 'deleted'   ? 'Deleted On'
+            : archiveTab === 'cancelled' ? 'Cancelled On'
+            : 'Rejected On';
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant Visited', 'Time In', 'Time Out', 'Status', label]];
 
         data.forEach(function(v) {
@@ -1757,7 +1923,7 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
@@ -1788,14 +1954,22 @@
             data = Array.isArray(completedVisitors) ? completedVisitors : [];
         } else if (archiveTab === 'deleted') {
             data = Array.isArray(deletedVisitors) ? deletedVisitors : [];
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = Array.isArray(cancelledVisitors) ? cancelledVisitors : [];
+        } else {
+            data = Array.isArray(rejectedVisitors) ? rejectedVisitors : [];
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
 
-        const tabLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        const footerHead = archiveTab === 'completed' ? 'Checked Out On' : (archiveTab === 'deleted' ? 'Deleted On' : 'Cancelled On');
+        const tabLabel   = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        const footerHead = archiveTab === 'completed' ? 'Checked Out On'
+            : archiveTab === 'deleted'   ? 'Deleted On'
+            : archiveTab === 'cancelled' ? 'Cancelled On'
+            : 'Rejected On';
 
         var win = window.open('', '_blank');
         if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
@@ -1805,7 +1979,7 @@
             const logTime = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             const footerDate = archiveTab === 'completed'
                 ? fmtDatePlain(v.departure_time ?? v.arrival_time)
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
@@ -1963,6 +2137,12 @@
                 const currentStatsInside = document.querySelector('.stats-row .stat-box:nth-child(2) .stat-num');
                 if (freshStatsToday && currentStatsToday) currentStatsToday.textContent = freshStatsToday.textContent;
                 if (freshStatsInside && currentStatsInside) currentStatsInside.textContent = freshStatsInside.textContent;
+
+                var freshToggle = doc.querySelector('#overnight-extend-toggle');
+                var currentToggle = document.getElementById('overnight-extend-toggle');
+                if (freshToggle && currentToggle && document.activeElement !== currentToggle) {
+                    currentToggle.checked = freshToggle.checked;
+                }
 
                 applyFilters();
                 showVisitorPollToast();

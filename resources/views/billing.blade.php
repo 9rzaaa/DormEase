@@ -2402,9 +2402,10 @@ function openLogModal() {
 
 function applyFloorFilter() {
     const floor = document.getElementById('filter-floor').value;
-    document.querySelectorAll('.floor-group').forEach(g => {
-        g.style.display = (!floor || g.dataset.floor == floor) ? '' : 'none';
-    });
+    const month = document.getElementById('filter-month').value;
+    let url = "{{ route('billing.index') }}?month=" + month;
+    if (floor) url += '&floor=' + floor;
+    window.location.href = url;
 }
 
 function applyMonthFilter() {

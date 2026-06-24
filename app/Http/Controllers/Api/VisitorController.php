@@ -9,15 +9,12 @@ use Illuminate\Http\Request;
 
 class VisitorController extends Controller
 {
-    /**
-     * GET /api/visitors
-     */
+
     public function index(Request $request)
     {
         $user     = $request->user();
         $tenantId = $user?->tenant_id ?? $user?->id;
 
-        // ── Resolve tenant full name from separate first/last columns ─────────
         $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
             ?: $user?->name
             ?: 'Unknown';
@@ -61,9 +58,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * POST /api/visitors
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -92,7 +86,6 @@ class VisitorController extends Controller
         $user     = $request->user();
         $tenantId = $user?->tenant_id ?? $user?->id;
 
-        // ── Always derive tenant name from authenticated user ─────────────────
         $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
             ?: $user?->name
             ?: 'Unknown';
@@ -114,6 +107,7 @@ class VisitorController extends Controller
             'arrival_time'  => null,
             'status'        => 'pending',
             'tenant_id'     => $tenantId,
+            'expires_at'    => now()->addHours(24),
         ]);
 
         NotificationHelper::sendToAll(
@@ -142,9 +136,6 @@ class VisitorController extends Controller
         ], 201);
     }
 
-    /**
-     * PATCH /api/visitors/{id}/checkout
-     */
     public function checkout($id, Request $request)
     {
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
@@ -182,9 +173,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * PATCH /api/visitors/{id}/cancel
-     */
     public function cancel($id, Request $request)
     {
         $user = $request->user();
@@ -224,9 +212,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * DELETE /api/visitors/{id}
-     */
     public function destroy($id, Request $request)
     {
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;

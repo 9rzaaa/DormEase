@@ -1505,7 +1505,7 @@
             </div>
             <div class="modal-warn-banner">
                 <span style="font-size:.95rem;flex-shrink:0;"></span>
-                <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
+                <span>Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this report to the archive permanently.</span>
             </div>
         </div>
         <div class="modal-footer">
@@ -1923,7 +1923,7 @@
                             <button class="act-btn" title="Edit" onclick='openEditModal(${JSON.stringify(r)})'>
                                 <img src="{{ asset('icons/edit.png') }}" alt="Edit">
                             </button>
-                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type)})">
+                            <button class="act-btn danger" title="Delete" onclick="openDeleteModal(${r.report_id}, ${JSON.stringify(r.emergency_type).replace(/"/g, '&quot;')})">
                                 <img src="{{ asset('icons/delete.png') }}" alt="Delete">
                             </button>
                         </div>

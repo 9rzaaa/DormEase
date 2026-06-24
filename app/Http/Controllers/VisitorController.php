@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Helpers\NotificationHelper;
 use App\Services\TenantPushNotificationService;
 use Carbon\Carbon;
+use App\Services\VisitorExpiryService;
+use App\Models\AppSetting;
 
 class VisitorController extends Controller
 {
@@ -17,7 +19,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled', 'rejected'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -30,6 +32,10 @@ class VisitorController extends Controller
 
         $cancelledVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'cancelled')
+        );
+
+        $rejectedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'rejected')
         );
 
         $visitorsToday = VisitorLog::where(function ($q) {
@@ -45,14 +51,18 @@ class VisitorController extends Controller
             ->orderBy('first_name')
             ->get();
 
+        $overnightExtend = AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY);
+
         return view('fdvisitors', compact(
             'visitors',
             'completedVisitors',
             'deletedVisitors',
             'cancelledVisitors',
+            'rejectedVisitors',
             'visitorsToday',
             'currentlyInside',
-            'tenants'
+            'tenants',
+            'overnightExtend'
         ));
     }
 
@@ -63,7 +73,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled', 'rejected'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -76,6 +86,10 @@ class VisitorController extends Controller
 
         $cancelledVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'cancelled')
+        );
+
+        $rejectedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'rejected')
         );
 
         $visitorsToday = VisitorLog::where(function ($q) {
@@ -97,9 +111,11 @@ class VisitorController extends Controller
             'completedVisitors' => $completedVisitors,
             'deletedVisitors'   => $deletedVisitors,
             'cancelledVisitors' => $cancelledVisitors,
+            'rejectedVisitors'  => $rejectedVisitors,
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,
+            'overnightExtend'   => AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY),
         ]);
     }
 
@@ -108,35 +124,46 @@ class VisitorController extends Controller
         $signature = VisitorLog::selectRaw('COUNT(*) as cnt, MAX(arrival_time) as latest, MAX(departure_time) as latest_out, SUM(CASE WHEN status = \'inside\' THEN 1 ELSE 0 END) as inside_cnt')
             ->first();
 
+        $overnightExtend = AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY);
+
         return response()->json([
-            'signature' => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0') . '-' . ($signature->latest_out ?? '0') . '-' . ($signature->inside_cnt ?? 0),
+            'signature'       => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0') . '-' . ($signature->latest_out ?? '0') . '-' . ($signature->inside_cnt ?? 0) . '-' . ($overnightExtend ? '1' : '0'),
+            'overnightExtend' => $overnightExtend,
         ]);
     }
 
     public function store(Request $request)
     {
+        if ($request->filled('contact_no')) {
+            $request->merge(['contact_no' => preg_replace('/\D/', '', $request->contact_no)]);
+        }
+
         $request->validate([
             'visitor_name' => [
                 'required',
                 'string',
                 'max:100',
                 'regex:/^[A-Za-zÀ-ÖØ-öø-ÿ\s\'\-\.]+$/u',
+                function ($attribute, $value, $fail) {
+                    $parts = array_filter(explode(' ', trim($value)));
+                    if (count($parts) < 2) {
+                        $fail('The visitor full name must contain at least a first name and a last name.');
+                    }
+                }
             ],
             'tenant_id'    => 'required|exists:tenants,tenant_id',
             'purpose'      => 'required|string|max:100',
+            'relationship' => 'required|string|max:100',
             'contact_no'   => ['nullable', 'regex:/^09\d{9}$/'],
             'id_type'      => 'required|string|max:50',
             'arrival_time' => 'required|date',
             'status'       => 'nullable|string|max:20',
         ], [
-            'visitor_name.regex' => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
-            'id_type.required'   => 'Please select an ID type.',
-            'contact_no.regex'   => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
+            'visitor_name.regex'    => 'The visitor name must contain only letters, spaces, and basic punctuation (like hyphens, periods, or apostrophes).',
+            'id_type.required'      => 'Please select an ID type.',
+            'relationship.required' => 'Please select the visitor\'s relationship to the tenant.',
+            'contact_no.regex'      => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
         ]);
-
-        if ($request->filled('contact_no')) {
-            $request->merge(['contact_no' => preg_replace('/\D/', '', $request->contact_no)]);
-        }
 
         $arrivalTime = $request->filled('arrival_time')
             ? Carbon::parse($request->arrival_time)
@@ -154,6 +181,7 @@ class VisitorController extends Controller
             'time_of_visit' => $arrivalTime->format('H:i:s'),
             'arrival_time'  => $arrivalTime,
             'status'        => $request->status ?? 'inside',
+            'expires_at'    => null,
         ]);
 
         $tenant = Tenant::find($request->tenant_id);
@@ -253,14 +281,60 @@ class VisitorController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
+            'status'           => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
+            'rejection_reason' => 'required_if:status,rejected|nullable|string|max:255',
         ]);
 
-        VisitorLog::findOrFail($id)->update([
-            'status' => $request->status,
-        ]);
+        $visitor = VisitorLog::findOrFail($id);
+        $updates = ['status' => $request->status];
+
+        if ($request->status === 'approved') {
+            $updates['expires_at'] = now()->addHours(24);
+        }
+
+        if ($request->status === 'rejected') {
+            $updates['rejection_reason'] = $request->rejection_reason;
+        } else {
+            $updates['rejection_reason'] = null;
+        }
+
+        $visitor->update($updates);
+
+        if ($request->status === 'rejected' && $visitor->tenant_id) {
+            $reason = $request->rejection_reason
+                ? ' Reason: ' . $request->rejection_reason . '.'
+                : '';
+
+            NotificationHelper::sendToAll(
+                type: 'visitor_rejected',
+                message: "Visitor {$visitor->visitor_name} was rejected." . $reason,
+                ref_id: $visitor->visitor_id,
+            );
+
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $visitor->tenant_id,
+                type: 'visitor',
+                title: 'Visitor rejected',
+                body: "{$visitor->visitor_name}'s visit has been rejected." . $reason,
+                refId: $visitor->visitor_id,
+                route: '/tenant/visitors',
+            );
+        }
 
         return back()->with('success', 'Visitor status updated successfully.');
+    }
+
+    public function updateOvernightExtend(Request $request)
+    {
+        $request->validate([
+            'enabled' => 'required|in:0,1',
+        ]);
+
+        AppSetting::setValue(VisitorExpiryService::SETTING_KEY, $request->enabled);
+
+        return response()->json([
+            'enabled' => (bool) $request->enabled,
+        ]);
     }
 
     public function notifyTenant($id)

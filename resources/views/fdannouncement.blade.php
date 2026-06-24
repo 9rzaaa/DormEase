@@ -648,8 +648,7 @@
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
                      data-title="{{ strtolower($ann->title) }}"
-                     data-content="{{ strtolower($ann->content) }}"
-                     onclick="openViewModal({{ $ann->announcement_id }})">
+                     data-content="{{ strtolower($ann->content) }}">
 
                     <div class="ann-row-left">
                         <span class="ann-row-priority-dot prio-{{ strtolower($ann->priority ?? 'low') }}"

@@ -44,7 +44,7 @@ Route::get('/login', function () {
             : redirect()->route('dashboard');
     }
     return view('login');
-})->name('login')->middleware('throttle:20,1');
+})->name('login')->middleware(['throttle:20,1', 'no.back']);
 
 Route::post('/login', function () {
     request()->validate([
@@ -148,10 +148,11 @@ Route::post('/logout', function () {
 
 // forgot pass
 Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify'])->name('forgot-password.verify')->middleware('throttle:5,1');
+Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 'verifyMaster'])->name('forgot-password.verify-master')->middleware('throttle:5,1');
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
-Route::middleware('auth:staff')->group(function () {
+Route::middleware(['auth:staff', 'no.back'])->group(function () {
 
     Route::middleware('staffrole:admin,secretary')->group(function () {
 
@@ -207,6 +208,7 @@ Route::middleware('auth:staff')->group(function () {
             Route::post('/update-status', [BillingController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/update-full', [BillingController::class, 'updateFull'])->name('updateFull');
             Route::get('/history', [BillingHistoryController::class, 'index'])->name('history');
+            Route::get('/history/export-all', [BillingHistoryController::class, 'exportAll'])->name('history.exportAll');
             Route::get('/receipt/{billingId}', [ReceiptController::class, 'download'])->name('receipt');
             Route::get('/poll', [BillingController::class, 'poll'])->name('poll');
         });
@@ -266,6 +268,7 @@ Route::middleware('auth:staff')->group(function () {
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::put('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
         Route::put('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+        Route::put('/profile/master-password', [ProfileController::class, 'updateMasterPassword'])->name('profile.master-password');
 
         // settings
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
@@ -313,6 +316,7 @@ Route::middleware('auth:staff')->group(function () {
     Route::post('/visitors/{id}/notify-tenant', [VisitorController::class, 'notifyTenant'])->name('visitors.notify-tenant');
     Route::put('/visitors/timein/{id}', [VisitorController::class, 'timein'])->name('visitors.timein');
     Route::put('/visitors/{id}/status', [VisitorController::class, 'updateStatus'])->name('visitors.status');
+    Route::put('/visitors/settings/overnight-extend', [VisitorController::class, 'updateOvernightExtend'])->name('visitors.overnightExtend');
 
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');

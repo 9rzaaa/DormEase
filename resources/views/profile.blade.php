@@ -713,6 +713,122 @@
 
     </div>
 
+    @if(in_array(strtolower($staff->role ?? ''), ['admin', 'secretary']))
+    <div class="section-card fade-up" style="animation-delay:.30s;">
+        <div class="section-head">
+            <div class="section-icon" style="background:linear-gradient(135deg,var(--hot-pink),var(--bright-pink));">
+                <img src="{{ asset('icons/nav-settings.png') }}" alt="">
+            </div>
+            <div>
+                <div class="section-title">Master Password</div>
+                <div class="section-sub">Required to reset your login password from the login page</div>
+            </div>
+        </div>
+        <div class="section-body">
+
+            @if(session('recovery_code'))
+            <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1.2rem;">
+                <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span style="font-size:.82rem;font-weight:800;color:#15803d;">Master password updated. Save your recovery code now.</span>
+                </div>
+                <div style="font-size:.75rem;color:#166534;margin-bottom:.75rem;line-height:1.5;">
+                    This code will <strong>not be shown again</strong>. Store it somewhere safe. You will need it if you forget your master password.
+                </div>
+                <div style="background:#fff;border:2px dashed #16a34a;border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;">
+                    <code style="font-size:1rem;font-weight:800;color:#15803d;letter-spacing:.08em;font-family:monospace;" id="recovery-code-display">{{ session('recovery_code') }}</code>
+                    <button type="button" onclick="copyRecoveryCode()" style="padding:.3rem .8rem;border-radius:7px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,color .2s;" onmouseover="this.style.background='#16a34a';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='#16a34a'" id="copy-recovery-btn">Copy</button>
+                </div>
+                <div style="font-size:.69rem;color:#166534;margin-top:.55rem;">
+                    If you lose this code, a dormhead admin can reset your master password from the Staff management page.
+                </div>
+            </div>
+            @endif
+
+            @if(session('master_success') && !session('recovery_code'))
+            <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.82rem;color:#15803d;font-weight:600;">
+                Master password updated successfully.
+            </div>
+            @endif
+
+            @if(session('master_error'))
+            <div style="background:#fff0f3;border:1.5px solid #fbbdd1;border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.82rem;color:#e8175d;font-weight:600;">
+                {{ session('master_error') }}
+            </div>
+            @endif
+
+            @php $isDefault = Hash::check('DormEase@2025', $staff->master_password ?? ''); @endphp
+
+            @if($isDefault)
+            <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.6rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" style="flex-shrink:0;margin-top:.1rem;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div style="font-size:.79rem;color:#92400e;line-height:1.5;">
+                    <strong>You are using the default master password.</strong> Please change it to something only you know. The default is <code style="background:#fef3c7;padding:.1rem .35rem;border-radius:4px;font-size:.75rem;">DormEase@2025</code>.
+                </div>
+            </div>
+            @endif
+
+            <form method="POST" action="{{ route('profile.master-password') }}" id="master-pw-form" data-loading-message="Updating master password...">
+                @csrf
+                @method('PUT')
+                <div class="field-grid cols-1">
+                    <div class="form-field">
+                        <label>Current Master Password</label>
+                        <div class="input-wrap">
+                            <input type="password" name="current_master" id="cur-master"
+                                placeholder="{{ $isDefault ? 'Default: DormEase@2025' : 'Enter current master password' }}"
+                                required autocomplete="off">
+                            <button type="button" class="toggle-pw" onclick="togglePw('cur-master', this)">
+                                <img src="{{ asset('icons/eye.png') }}" alt="Show">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label>New Master Password</label>
+                        <div class="input-wrap">
+                            <input type="password" name="master_password" id="new-master"
+                                placeholder="Min. 8 characters" required autocomplete="new-password"
+                                oninput="checkMasterStrength(this.value)">
+                            <button type="button" class="toggle-pw" onclick="togglePw('new-master', this)">
+                                <img src="{{ asset('icons/eye.png') }}" alt="Show">
+                            </button>
+                        </div>
+                        <div class="pw-strength-bar">
+                            <div class="pw-strength-fill" id="master-strength-fill"></div>
+                        </div>
+                        <div class="pw-strength-label" id="master-strength-label"></div>
+                    </div>
+                    <div class="form-field">
+                        <label>Confirm New Master Password</label>
+                        <div class="input-wrap">
+                            <input type="password" name="master_password_confirmation" id="conf-master"
+                                placeholder="Repeat master password" required autocomplete="new-password"
+                                oninput="checkMasterConfirm()">
+                            <button type="button" class="toggle-pw" onclick="togglePw('conf-master', this)">
+                                <img src="{{ asset('icons/eye.png') }}" alt="Show">
+                            </button>
+                        </div>
+                        <div id="conf-master-match" style="font-size:.69rem;margin-top:.2rem;display:none;"></div>
+                    </div>
+                </div>
+                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.7rem 1rem;margin-top:.9rem;font-size:.75rem;color:#E8175D;line-height:1.5;">
+                    @if($isDefault)
+                        Your current master password is the system default: <code style="background:var(--pink-100);padding:.1rem .35rem;border-radius:4px;font-size:.75rem;font-family:monospace;">DormEase@2025</code>. Enter it above as your current master password and set a new one now.<br><br>
+                    @endif
+                    A one-time <strong>recovery code</strong> will be generated when you save. Copy and store it securely. It is the only way to bypass a forgotten master password.
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-ghost" onclick="document.getElementById('master-pw-form').reset(); document.getElementById('master-strength-fill').style.width='0%'; document.getElementById('master-strength-label').textContent=''; document.getElementById('conf-master-match').style.display='none';">Reset</button>
+                    <button type="submit" class="btn-save" onclick="if(!validateMasterForm()){event.preventDefault();}">
+                        <img src="{{ asset('icons/nav-settings.png') }}" alt="">
+                        Update Master Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection
 
@@ -727,12 +843,12 @@
             <button onclick="closeAvatarModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-muted);line-height:1;transition:color .2s;" onmouseenter="this.style.color='#e8175d'" onmouseleave="this.style.color=''">&#x2715;</button>
         </div>
 
-        <div id="avatar-drop-zone" style="border:2px dashed var(--pink-200);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--pink-50);margin-bottom:1rem;" onclick="document.getElementById('avatar-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--bright-pink)';this.style.background='#fff0f6';" ondragleave="this.style.borderColor='';this.style.background='var(--pink-50)';" ondrop="handleAvatarDrop(event)">
+        <div id="avatar-drop-zone" style="border:2px dashed var(--pink-200);border-radius:14px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--pink-50);margin-bottom:1rem;" onclick="document.getElementById('avatar-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--bright-pink)';this.style.background=var(--pink-tint);" ondragleave="this.style.borderColor='';this.style.background='var(--pink-50)';" ondrop="handleAvatarDrop(event)">
             <div id="avatar-modal-preview-wrap" style="display:none;margin-bottom:.85rem;">
                 <img id="avatar-modal-preview" src="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--bright-pink);box-shadow:0 4px 14px rgba(232,23,93,.22);">
             </div>
             <div id="avatar-drop-icon" style="margin-bottom:.65rem;">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ffb3d0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--pink-100)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </div>
             <div id="avatar-drop-label" style="font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;">Click to upload or drag and drop</div>
             <div style="font-size:.7rem;color:var(--ink-muted);">JPG, PNG</div>
@@ -1059,5 +1175,68 @@
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', () => showToast('{{ $errors->first() }}', 'error'));
     @endif
+
+    function checkMasterStrength(val) {
+    var fill  = document.getElementById('master-strength-fill');
+    var label = document.getElementById('master-strength-label');
+    if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+    var score = 0;
+    if (val.length >= 8)          score++;
+    if (/[A-Z]/.test(val))        score++;
+    if (/[0-9]/.test(val))        score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    var levels = [
+        { w: '20%',  color: '#DF0404', text: 'Weak' },
+        { w: '50%',  color: '#f59e0b', text: 'Fair' },
+        { w: '75%',  color: '#29BD9B', text: 'Good' },
+        { w: '100%', color: '#16a34a', text: 'Strong' },
+    ];
+    var lvl = levels[score - 1] || levels[0];
+    fill.style.width      = lvl.w;
+    fill.style.background = lvl.color;
+    label.textContent     = lvl.text;
+    label.style.color     = lvl.color;
+}
+
+function checkMasterConfirm() {
+    var npw  = document.getElementById('new-master').value;
+    var conf = document.getElementById('conf-master').value;
+    var el   = document.getElementById('conf-master-match');
+    if (!conf) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    if (conf === npw) {
+        el.textContent = 'Passwords match.';
+        el.style.color = '#16a34a';
+        document.getElementById('conf-master').style.borderColor = '#16a34a';
+    } else {
+        el.textContent = 'Passwords do not match.';
+        el.style.color = '#e8175d';
+        document.getElementById('conf-master').style.borderColor = '#e8175d';
+    }
+}
+
+function validateMasterForm() {
+    var cur  = document.getElementById('cur-master');
+    var npw  = document.getElementById('new-master');
+    var conf = document.getElementById('conf-master');
+    var ok   = true;
+    if (!cur.value)  { showFieldError(cur,  'Current master password is required.'); ok = false; } else clearFieldError(cur);
+    if (!npw.value)  { showFieldError(npw,  'New master password is required.');     ok = false; }
+    else if (npw.value.length < 8) { showFieldError(npw, 'Must be at least 8 characters.'); ok = false; }
+    else clearFieldError(npw);
+    if (!conf.value) { showFieldError(conf, 'Please confirm your master password.');  ok = false; }
+    else if (conf.value !== npw.value) { showFieldError(conf, 'Passwords do not match.'); ok = false; }
+    else clearFieldError(conf);
+    return ok;
+}
+
+function copyRecoveryCode() {
+    var code = document.getElementById('recovery-code-display').textContent.trim();
+    var btn  = document.getElementById('copy-recovery-btn');
+    navigator.clipboard.writeText(code).then(function() {
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy'; }, 2500);
+    });
+}
 </script>
 @endsection

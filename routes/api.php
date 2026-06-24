@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/document-requests', [DocumentRequestController::class, 'index']);
         Route::post('/document-requests', [DocumentRequestController::class, 'store']);
         Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+        Route::post('/document-requests/{id}/resubmit', [DocumentRequestController::class, 'resubmit']);
         Route::delete('/document-requests/{id}', [DocumentRequestController::class, 'destroy']);
 
         // document forms
@@ -73,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // emergency
         Route::get('/emergency', [EmergencyController::class, 'index']);
         Route::post('/emergency', [EmergencyController::class, 'store']);
+        Route::delete('/emergency/{id}', [EmergencyController::class, 'destroy']);
     });
 
     // profile
