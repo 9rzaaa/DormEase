@@ -1404,9 +1404,18 @@
 <div class="modal-overlay" id="add-modal">
     <div class="modal">
         <div class="modal-header">
-            <div class="modal-title">Add New Staff</div>
+            <div class="modal-title">
+                <img src="{{ asset('icons/staff-2.png') }}" class="icon-sm" alt="Add Staff">
+                Add New Staff
+            </div>
             <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
         </div>
+
+        <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);margin-bottom:1.1rem;line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
+            <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
+            <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
+        </div>
+
         <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
             @csrf
             <div class="modal-grid">
@@ -1419,9 +1428,14 @@
                         <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
                     </div>
                 </div>
+
+                <div class="modal-field full" style="margin-bottom:-.2rem;">
+                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Personal Information</div>
+                </div>
+
                 <div class="modal-field">
                     <label>First Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)">
+                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
                     <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
                 </div>
                 <div class="modal-field">
@@ -1429,6 +1443,16 @@
                     <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
                     <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
                 </div>
+                <div class="modal-field full">
+                    <label>Contact No.</label>
+                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                </div>
+
+                <div class="modal-field full" style="margin-bottom:-.2rem;margin-top:.3rem;padding-top:.8rem;border-top:1px solid var(--petal);">
+                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Account Details</div>
+                </div>
+
                 <div class="modal-field full">
                     <label>Email <span class="field-req-star">*</span></label>
                     <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
@@ -1452,15 +1476,10 @@
                         <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
                     </select>
                 </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
-                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
-                </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
+                <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
             </div>
         </form>
     </div>
@@ -2113,6 +2132,10 @@
         var el = document.getElementById(id);
         if (el) el.classList.remove('open');
         if ((id === 'reset-credentials-modal' || id === 'reset-confirm-modal') && el) el.remove();
+        if (id === 'add-modal') {
+            var submitBtn = document.getElementById('add-staff-submit-btn');
+            if (submitBtn) submitBtn.disabled = true;
+        }
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(m) {
@@ -2949,6 +2972,12 @@
         var text  = document.getElementById(prefix + '-progress-text');
         var count = document.getElementById(prefix + '-progress-count');
         if (!fill || !text || !count) return;
+        if (prefix === 'add-staff') {
+        var submitBtn = document.getElementById('add-staff-submit-btn');
+        if (submitBtn) submitBtn.disabled = pct < 100;
+    }
+
+    if (pct === 100) {
         fill.style.width = pct + '%';
         if (pct === 100) {
             fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
