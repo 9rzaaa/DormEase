@@ -74,36 +74,38 @@ class BillingController extends Controller
 
         $pastDueBillsData = $pastDueBillings->map(function ($b) {
             return [
-                'id'             => $b->billing_id,
-                'billing_period' => Carbon::parse($b->billing_month)->format('F Y'),
-                'due_date'       => $b->due_date
+                'id'               => $b->billing_id,
+                'billing_period'   => Carbon::parse($b->billing_month)->format('F Y'),
+                'due_date'         => $b->due_date
                     ? Carbon::parse($b->due_date)->format('F d, Y')
                     : '—',
-                'amount'         => number_format($b->room_share, 2),
-                'status'         => ucfirst($b->payment_status ?? 'unpaid'),
+                'amount'           => number_format($b->room_share, 2),
+                'status'           => ucfirst($b->payment_status ?? 'unpaid'),
+                'rejection_reason' => $b->rejection_reason,
             ];
         })->values()->toArray();
 
         $currentBillingData = [
-            'id'             => $currentBilling->billing_id,
-            'room_number'    => $tenant->room_number,
-            'billing_period' => Carbon::parse($currentBilling->billing_month)->format('F Y'),
-            'as_of'          => now()->format('F d, Y'),
-            'amount_due'     => number_format($currentBilling->room_share + $totalPastDue, 2),
-            'due_date'       => $currentBilling->due_date
+            'id'               => $currentBilling->billing_id,
+            'room_number'      => $tenant->room_number,
+            'billing_period'   => Carbon::parse($currentBilling->billing_month)->format('F Y'),
+            'as_of'            => now()->format('F d, Y'),
+            'amount_due'       => number_format($currentBilling->room_share + $totalPastDue, 2),
+            'due_date'         => $currentBilling->due_date
                 ? Carbon::parse($currentBilling->due_date)->format('F d, Y')
                 : '—',
-            'status'         => ucfirst($currentBilling->payment_status ?? 'unpaid'),
+            'status'           => ucfirst($currentBilling->payment_status ?? 'unpaid'),
+            'rejection_reason' => $currentBilling->rejection_reason,
             'proof_of_payment' => $currentBilling->proof_of_payment
                 ? Storage::disk('public')->url($currentBilling->proof_of_payment)
                 : null,
-            'reference_code' => $currentBilling->payment_reference_code,
+            'reference_code'   => $currentBilling->payment_reference_code,
             'payment_submitted_at' => $currentBilling->payment_submitted_at
                 ? Carbon::parse($currentBilling->payment_submitted_at)->format('F d, Y h:i A')
                 : null,
-            'current_charges' => number_format($currentBilling->room_share, 2),
-            'past_due_amount' => number_format($totalPastDue, 2),
-            'past_due_bills'  => $pastDueBillsData,
+            'current_charges'  => number_format($currentBilling->room_share, 2),
+            'past_due_amount'  => number_format($totalPastDue, 2),
+            'past_due_bills'   => $pastDueBillsData,
         ];
 
         $breakdownData = [
@@ -130,6 +132,7 @@ class BillingController extends Controller
                     ? Carbon::parse($paymentDate)->format('M d, Y h:i A')
                     : null,
                 'payment_method'   => $payment?->payment_method,
+                'rejection_reason' => $b->rejection_reason,
             ];
         })->values()->toArray();
 
@@ -185,6 +188,7 @@ class BillingController extends Controller
             'proof_of_payment' => $path,
             'payment_reference_code' => $request->reference_code,
             'payment_submitted_at' => now(),
+            'rejection_reason' => null,
         ]);
 
         Payment::updateOrCreate(
