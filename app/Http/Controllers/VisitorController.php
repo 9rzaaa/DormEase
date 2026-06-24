@@ -19,7 +19,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled', 'rejected'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -32,6 +32,10 @@ class VisitorController extends Controller
 
         $cancelledVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'cancelled')
+        );
+
+        $rejectedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'rejected')
         );
 
         $visitorsToday = VisitorLog::where(function ($q) {
@@ -54,6 +58,7 @@ class VisitorController extends Controller
             'completedVisitors',
             'deletedVisitors',
             'cancelledVisitors',
+            'rejectedVisitors',
             'visitorsToday',
             'currentlyInside',
             'tenants',
@@ -68,7 +73,7 @@ class VisitorController extends Controller
             ->get();
 
         $visitors = $this->formatVisitorLogs(
-            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled'])
+            $allVisitors->whereNotIn('status', ['completed', 'deleted', 'cancelled', 'rejected'])
         );
 
         $completedVisitors = $this->formatVisitorLogs(
@@ -81,6 +86,10 @@ class VisitorController extends Controller
 
         $cancelledVisitors = $this->formatVisitorLogs(
             $allVisitors->where('status', 'cancelled')
+        );
+
+        $rejectedVisitors = $this->formatVisitorLogs(
+            $allVisitors->where('status', 'rejected')
         );
 
         $visitorsToday = VisitorLog::where(function ($q) {
@@ -102,10 +111,10 @@ class VisitorController extends Controller
             'completedVisitors' => $completedVisitors,
             'deletedVisitors'   => $deletedVisitors,
             'cancelledVisitors' => $cancelledVisitors,
+            'rejectedVisitors'  => $rejectedVisitors,
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,
-            'overnightExtend'   => AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY),
         ]);
     }
 

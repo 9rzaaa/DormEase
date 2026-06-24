@@ -595,6 +595,7 @@
     .archive-pill-purpose   { background: var(--pink-bg); color: var(--hot-pink); border: 1px solid var(--pink-light); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
     .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-rejected  { background: #fff4e8; color: #c8631c; border: 1px solid #f5c192; }
 
     .archive-card-footer {
         display: flex; align-items: center; gap: .4rem;
@@ -1068,6 +1069,10 @@
             Cancelled
             <span class="archive-tab-count" id="acount-cancelled">0</span>
         </button>
+        <button class="archive-tab" id="atab-rejected" onclick="switchArchiveTab('rejected')">
+            Rejected
+            <span class="archive-tab-count" id="acount-rejected">0</span>
+        </button>
     </div>
 
     <div class="archive-search-bar">
@@ -1447,6 +1452,7 @@
     var completedVisitors = @json($completedVisitors);
     var deletedVisitors   = @json($deletedVisitors);
     var cancelledVisitors = @json($cancelledVisitors);
+    var rejectedVisitors  = @json($rejectedVisitors);
     var allTenants        = @json($tenants);
 
     var PER_PAGE    = 7;
@@ -1919,6 +1925,7 @@
         document.getElementById('acount-completed').textContent = completedVisitors.length;
         document.getElementById('acount-deleted').textContent   = deletedVisitors.length;
         document.getElementById('acount-cancelled').textContent = cancelledVisitors.length;
+        document.getElementById('acount-rejected').textContent  = rejectedVisitors.length;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
         switchArchiveTab('completed');
@@ -1934,6 +1941,7 @@
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
         document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
+        document.getElementById('atab-rejected').classList.toggle('active',  tab === 'rejected');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
@@ -1951,8 +1959,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         var result = data.filter(function(v) {
@@ -1973,9 +1983,17 @@
             return;
         }
 
-        var pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        var pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        var footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
+        var pillClass = archiveTab === 'completed' ? 'archive-pill-completed'
+            : archiveTab === 'rejected'  ? 'archive-pill-rejected'
+            : 'archive-pill-deleted';
+        var pillLabel = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        var footerLabel = archiveTab === 'completed' ? 'Checked out on'
+            : archiveTab === 'deleted'   ? 'Deleted on'
+            : archiveTab === 'cancelled' ? 'Cancelled on'
+            : 'Rejected on';
 
         list.innerHTML = result.map(function(v, i) {
             var tenantName = v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : null;
@@ -1983,7 +2001,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
@@ -2016,8 +2034,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
@@ -2027,8 +2047,10 @@
             label = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             label = 'Deleted On';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             label = 'Cancelled On';
+        } else {
+            label = 'Rejected On';
         }
 
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
@@ -2036,7 +2058,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             rows.push([
@@ -2067,8 +2089,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
@@ -2078,8 +2102,10 @@
             tabLabel = 'Completed';
         } else if (archiveTab === 'deleted') {
             tabLabel = 'Deleted';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             tabLabel = 'Cancelled';
+        } else {
+            tabLabel = 'Rejected';
         }
 
         var footerHead;
@@ -2087,8 +2113,10 @@
             footerHead = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             footerHead = 'Deleted On';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             footerHead = 'Cancelled On';
+        } else {
+            footerHead = 'Rejected On';
         }
 
         var win  = window.open('', '_blank');
@@ -2096,7 +2124,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             return '<tr>'
