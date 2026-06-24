@@ -299,6 +299,27 @@ class VisitorController extends Controller
 
         $visitor->update($updates);
 
+        if ($request->status === 'rejected' && $visitor->tenant_id) {
+            $reason = $request->rejection_reason
+                ? ' Reason: ' . $request->rejection_reason . '.'
+                : '';
+
+            NotificationHelper::sendToAll(
+                type: 'visitor_rejected',
+                message: "Visitor {$visitor->visitor_name} was rejected." . $reason,
+                ref_id: $visitor->visitor_id,
+            );
+
+            app(TenantPushNotificationService::class)->sendToTenant(
+                tenant: $visitor->tenant_id,
+                type: 'visitor',
+                title: 'Visitor rejected',
+                body: "{$visitor->visitor_name}'s visit has been rejected." . $reason,
+                refId: $visitor->visitor_id,
+                route: '/tenant/visitors',
+            );
+        }
+
         return back()->with('success', 'Visitor status updated successfully.');
     }
 
