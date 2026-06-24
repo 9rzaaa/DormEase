@@ -10,6 +10,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             StaffSeeder::class,
+            RoomSeeder::class,
+            DownloadableFormSeeder::class,
         ]);
 
         $this->call(TenantSeeder::class);
