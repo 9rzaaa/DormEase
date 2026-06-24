@@ -1974,6 +1974,10 @@
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
+            var reasonLine = (archiveTab === 'cancelled' && v.cancel_reason === 'expired')
+                ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Expired automatically (no time in)</span></div>'
+                : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>' : '');
+
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
                     + '<div class="archive-card-id">LOG-' + String(v.visitor_id).padStart(4, '0') + '</div>'
@@ -1988,6 +1992,7 @@
                 + '<div class="archive-card-footer">'
                     + footerLabel + ': <span>' + footerDate + '</span>'
                 + '</div>'
+                + reasonLine
                 + '</div>';
         }).join('');
     }
