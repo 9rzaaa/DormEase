@@ -18,7 +18,8 @@ class EmergencyController extends Controller
     public function adminIndex()
     {
         $reports = $this->mapReports(EmergencyReport::where('status', 'active')->orderBy('reported_at', 'desc')->get());
-        $activeCount = EmergencyReport::where('status', 'active')->count();        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
+        $activeCount = EmergencyReport::where('status', 'active')->count();
+        $criticalCount = EmergencyReport::where('status', 'active')->whereIn('urgency_level', ['critical', 'urgent'])->count();
         $resolvedCount = ArchivedEmergencyReport::where('archive_type', 'resolved')->count();
         $panicCount    = EmergencyReport::where('is_panic_alert', true)->where('status', 'active')->count();
         $closedArchive   = $this->archiveCollection('closed');
@@ -90,6 +91,14 @@ class EmergencyController extends Controller
             'reported_at' => now(),
         ]);
 
+        if ($report->emergency_type === 'Other' && !empty($report->description)) {
+            UnclassifiedEmergencyTerm::create([
+                'report_id'            => $report->report_id,
+                'description_snapshot' => $report->description,
+                'status'               => 'pending',
+            ]);
+        }
+
         NotificationHelper::sendToAll(
             type: 'emergency_new',
             message: "Emergency reported: {$report->emergency_type} at {$report->location}.",
@@ -110,6 +119,7 @@ class EmergencyController extends Controller
         ]);
 
         $report->update([
+            'status'      => $validated['status'],
             'admin_notes' => $validated['admin_notes'] ?? null,
             'location'    => (!empty($validated['location'])) ? $validated['location'] : $report->location,
         ]);
@@ -146,8 +156,6 @@ class EmergencyController extends Controller
                 message: "Emergency report #{$report->report_id} has been resolved.",
                 ref_id: $report->report_id,
             );
-            $report->resolved_at = now();
-            $report->save();
             $report->resolved_at = now();
             $report->save();
             $this->archiveReport($report, 'resolved');
@@ -317,6 +325,17 @@ class EmergencyController extends Controller
         }
 
         return response()->json(['success' => true, 'notified' => false]);
+    }
+
+    public function pollReports()
+    {
+        $reports = $this->mapReports(
+            EmergencyReport::where('status', 'active')
+                ->orderBy('reported_at', 'desc')
+                ->get()
+        );
+
+        return response()->json($reports);
     }
 
     public function pollPanic()
