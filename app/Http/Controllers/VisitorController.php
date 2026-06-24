@@ -124,6 +124,10 @@ class VisitorController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->filled('contact_no')) {
+            $request->merge(['contact_no' => preg_replace('/\D/', '', $request->contact_no)]);
+        }
+
         $request->validate([
             'visitor_name' => [
                 'required',
@@ -148,10 +152,6 @@ class VisitorController extends Controller
             'id_type.required'   => 'Please select an ID type.',
             'contact_no.regex'   => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
         ]);
-
-        if ($request->filled('contact_no')) {
-            $request->merge(['contact_no' => preg_replace('/\D/', '', $request->contact_no)]);
-        }
 
         $arrivalTime = $request->filled('arrival_time')
             ? Carbon::parse($request->arrival_time)
