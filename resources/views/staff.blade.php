@@ -2952,7 +2952,12 @@
     });
 
     @if($errors->any())
-        document.addEventListener('DOMContentLoaded', function() { openModal('add-modal'); });
+        document.addEventListener('DOMContentLoaded', function() {
+            @foreach($errors->all() as $error)
+                showToast('{{ $error }}', 'error');
+            @endforeach
+            openModal('add-modal');
+        });
     @endif
 
     @if(session('success'))
