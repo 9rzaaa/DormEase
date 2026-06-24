@@ -3340,10 +3340,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (res.ok && data.success) {
                 showToast('Keyword saved' + (data.reclassified_count > 0 ? ' and ' + data.reclassified_count + ' request(s) reclassified' : ''), 'success');
-                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
-                delete kwPhraseState[termId];
-                trainedKeywords.unshift(data.keyword);
-                renderKwList();
+                setTimeout(() => location.reload(), 800);
             } else {
                 const errMsg = extractErrorMessage(data, 'Failed to save keyword.');
                 if (data.existing_keyword) {
@@ -3375,9 +3372,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (res.ok && data.success) {
-                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
-                delete kwPhraseState[termId];
-                renderKwList();
+                showToast('Snippet ignored.', 'success');
+                setTimeout(() => location.reload(), 800);
             } else {
                 showToast('Failed to ignore snippet.', 'error');
             }
