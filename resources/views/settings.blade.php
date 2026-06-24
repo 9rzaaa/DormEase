@@ -434,64 +434,31 @@
     .agp-row {
         display: flex;
         align-items: flex-start;
-        gap: .6rem;
-        padding: .35rem 0;
+        gap: .75rem;
+        padding: .4rem 0;
         border-bottom: 1px solid var(--petal);
     }
     .agp-row:last-child { border-bottom: none; }
     .agp-col-label {
         flex-shrink: 0;
-        width: 100px;
+        width: 96px;
         display: flex;
         align-items: flex-start;
-        padding-top: .1rem;
+        padding-top: .05rem;
     }
-    .agp-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: .22rem .6rem;
-        border-radius: 7px;
-        font-size: .7rem;
+    .agp-term {
+        font-size: .75rem;
         font-weight: 700;
-        white-space: nowrap;
-        letter-spacing: .02em;
-    }
-    .agp-chip-enable {
-        background: var(--petal);
-        color: var(--hot-pink);
-        border: 1.5px solid var(--baby-pink);
-    }
-    .agp-chip-retention {
-        background: #eef4ff;
-        color: #3b6fd4;
-        border: 1.5px solid #a8c4f5;
-    }
-    .agp-chip-warn {
-        background: #fff9e6;
-        color: #c8960c;
-        border: 1.5px solid #f0c040;
-    }
-    .agp-chip-clear {
-        background: #fff0f0;
-        color: #e04867;
-        border: 1.5px solid var(--baby-pink);
-    }
-    .agp-chip-apply {
-        background: linear-gradient(135deg, var(--bright-pink), var(--hot-pink));
-        color: #fff;
-        border: none;
-        box-shadow: 0 2px 6px rgba(232,23,93,.2);
+        color: var(--ink);
+        line-height: 1.4;
     }
     .agp-desc {
         font-size: .75rem;
         color: var(--ink-muted);
         font-weight: 500;
         line-height: 1.45;
-        padding-top: .15rem;
+        padding-top: .05rem;
     }
-
-    .apply-all-row {
 
     .apply-all-row {
         display: flex;
@@ -656,38 +623,37 @@
                 <div class="settings-card-icon">
                     <img src="{{ asset('icons/archive.png') }}" alt="">
                 </div>
-                <div>
-                    <div class="settings-card-title">Archive Auto-Clear Settings</div>
-                    <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
-                </div>
-            </div>
-
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.6rem;">
-                <div class="archive-guide-wrap" id="archive-guide-trigger">
-                    <img src="{{ asset('icons/info.png') }}" alt="Guide">
-                    <div class="archive-guide-popup" id="archive-guide-popup">
-                        <div class="agp-title">Archive Clearing Guide</div>
-                        <div class="agp-row">
-                            <div class="agp-col-label"><span class="agp-chip agp-chip-enable">Enable Toggle</span></div>
-                            <div class="agp-desc">Turns auto-clearing on or off for a module. When off, no automatic deletion will run for that module.</div>
-                        </div>
-                        <div class="agp-row">
-                            <div class="agp-col-label"><span class="agp-chip agp-chip-retention">Retention Days</span></div>
-                            <div class="agp-desc">Records older than this number of days will be deleted when the auto-clear runs. Minimum 30, maximum 3650 days.</div>
-                        </div>
-                        <div class="agp-row">
-                            <div class="agp-col-label"><span class="agp-chip agp-chip-warn">Warn Before</span></div>
-                            <div class="agp-desc">How many days before the scheduled clear you will receive a notification as a reminder. Disable the toggle before that date to cancel.</div>
-                        </div>
-                        <div class="agp-row">
-                            <div class="agp-col-label"><span class="agp-chip agp-chip-clear">Clear Now</span></div>
-                            <div class="agp-desc">Immediately and permanently deletes all records older than the set retention period for that module. Save settings first before using this.</div>
-                        </div>
-                        <div class="agp-row">
-                            <div class="agp-col-label"><span class="agp-chip agp-chip-apply">Apply to All</span></div>
-                            <div class="agp-desc">Sets the retention period field above to all modules at once. You still need to save settings to confirm the change.</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <div class="settings-card-title">Archive Auto-Clear Settings</div>
+                        <div class="archive-guide-wrap" id="archive-guide-trigger">
+                            <img src="{{ asset('icons/info.png') }}" alt="Guide">
+                            <div class="archive-guide-popup" id="archive-guide-popup">
+                                <div class="agp-title">Archive Clearing Guide</div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Enable Toggle</span></div>
+                                    <div class="agp-desc">Turns auto-clearing on or off for a module. When off, no automatic deletion will run for that module.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Retention Days</span></div>
+                                    <div class="agp-desc">Records older than this number of days are deleted when the auto-clear runs. Min 30, max 3650.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Warn Before</span></div>
+                                    <div class="agp-desc">Days before the scheduled clear that you receive a reminder notification. Disable the toggle before that date to cancel.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Clear Now</span></div>
+                                    <div class="agp-desc">Immediately and permanently deletes all records older than the retention period. Save settings first before using this.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Apply to All</span></div>
+                                    <div class="agp-desc">Sets the retention days field to all modules at once. Save settings to confirm the change.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
                 </div>
             </div>
 
