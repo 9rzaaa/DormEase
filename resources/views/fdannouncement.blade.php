@@ -650,10 +650,11 @@
     transition: .2s;
     cursor: pointer;
     text-decoration: none;
+    color: var(--hot-pink, #d6175a);
 }
-.vm-file-dl img { width: 13px; height: 13px; object-fit: contain; opacity: .6; }
-.vm-file-dl:hover { background: var(--pink-100, #f9c5d6); border-color: var(--bright-pink, #E8175D); }
-.vm-file-dl:hover img { opacity: 1; }
+.vm-file-dl svg { width: 13px; height: 13px; stroke: var(--hot-pink, #d6175a); transition: stroke .2s; }
+.vm-file-dl:hover { background: var(--bright-pink, #E8175D); border-color: transparent; }
+.vm-file-dl:hover svg { stroke: #fff; }
 .vm-file-body { padding: .8rem; }
 .vm-file-body img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; }
 .vm-file-body img:hover { opacity: .88; }
@@ -1149,6 +1150,10 @@ function buildFilePreview(path) {
     var isImage = ['jpg','jpeg','png','gif','webp','svg','bmp'].indexOf(ext) !== -1;
     var isPdf   = ext === 'pdf';
 
+    var svgExpand   = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+    var svgOpen     = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    var svgDownload = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
     var body = '';
     if (isImage) {
         body = '<div class="vm-file-body"><img src="' + url + '" alt="' + escHtml(name) + '" loading="lazy" onclick="openLightbox(\'' + url + '\')" title="Click to view full size"></div>';
@@ -1159,10 +1164,10 @@ function buildFilePreview(path) {
     }
 
     var expandBtn = isImage
-        ? '<button class="vm-file-dl" onclick="openLightbox(\'' + url + '\')" title="Expand"><img src="{{ asset("icons/expand.png") }}" alt="Expand"></button>'
-        : '<a href="' + url + '" target="_blank" class="vm-file-dl" title="Open"><img src="{{ asset("icons/external.png") }}" alt="Open"></a>';
+        ? '<button class="vm-file-dl" onclick="openLightbox(\'' + url + '\')" title="Expand">' + svgExpand + '</button>'
+        : '<a href="' + url + '" target="_blank" class="vm-file-dl" title="Open in new tab">' + svgOpen + '</a>';
 
-    var dlBtn = '<a href="' + url + '" download class="vm-file-dl" title="Download"><img src="{{ asset("icons/download.png") }}" alt="Download"></a>';
+    var dlBtn = '<a href="' + url + '" download class="vm-file-dl" title="Download">' + svgDownload + '</a>';
 
     return '<div class="vm-file-item">' +
         '<div class="vm-file-bar">' +
