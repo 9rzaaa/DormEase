@@ -2171,8 +2171,8 @@ function renderTable() {
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset(\'icons/eye.png\') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset(\'icons/edit.png\') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="/icons/eye.png" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +
                     '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
@@ -2224,8 +2224,8 @@ function renderReservedTable() {
                 '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset("icons/eye.png") }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset(\'icons/edit.png\') }}" alt="Note"></button>' +                '</div></td>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="/icons/eye.png" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +                '</div></td>' +
             '</tr>';
         }).join('');
     }
