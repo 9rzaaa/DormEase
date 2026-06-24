@@ -313,6 +313,12 @@
     font-weight: 500;
 }
 
+.ann-row-actions {
+    display: flex;
+    align-items: center;
+    gap: .38rem;
+}
+
 .ann-view-btn {
     display: inline-flex;
     align-items: center;
@@ -333,6 +339,26 @@
 .ann-view-btn:hover { background: var(--bright-pink, #E8175D); color: #fff; border-color: transparent; }
 .ann-view-btn img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
 .ann-view-btn:hover img { filter: brightness(0) invert(1); }
+
+.ann-hide-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e8;
+    background: #f7f7f9;
+    color: #888;
+    cursor: pointer;
+    transition: .2s;
+    font-family: var(--ff-body);
+    flex-shrink: 0;
+}
+
+.ann-hide-btn img { width: 13px; height: 13px; object-fit: contain; opacity: .45; transition: opacity .2s; }
+.ann-hide-btn:hover { background: #fff0f0; border-color: #e04867; }
+.ann-hide-btn:hover img { opacity: 1; filter: brightness(0) saturate(100%) invert(38%) sepia(79%) saturate(2000%) hue-rotate(325deg) brightness(95%) contrast(96%); }
 
 .ann-list-empty {
     text-align: center;
@@ -458,7 +484,86 @@
     text-align: center;
 }
 
-/* Modal styles */
+.ann-hidden-card {
+    background: #fff;
+    border: 1px solid #e0e0e8;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+.ann-hidden-header {
+    padding: .85rem 1.1rem;
+    border-bottom: 1px solid #e8e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f7f7f9;
+}
+
+.ann-hidden-title {
+    font-size: .82rem;
+    font-weight: 800;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.ann-hidden-title img {
+    width: 14px; height: 14px; object-fit: contain;
+    opacity: .4;
+}
+
+.ann-hidden-body { padding: .75rem 1.1rem; }
+
+.ann-hidden-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .6rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.ann-hidden-item:last-child { border-bottom: none; }
+
+.ann-hidden-item-title {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #999;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ann-restore-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1.5px solid #c8e6d4;
+    background: #e8faf5;
+    cursor: pointer;
+    transition: .2s;
+    flex-shrink: 0;
+}
+
+.ann-restore-btn img { width: 12px; height: 12px; object-fit: contain; filter: brightness(0) saturate(100%) invert(45%) sepia(50%) saturate(600%) hue-rotate(100deg) brightness(90%) contrast(90%); }
+.ann-restore-btn:hover { background: #1f9d69; border-color: #1f9d69; }
+.ann-restore-btn:hover img { filter: brightness(0) invert(1); }
+
+.ann-hidden-empty {
+    font-size: .78rem;
+    color: #bbb;
+    text-align: center;
+    padding: .6rem 0;
+}
+
 .ann-modal-overlay {
     position: fixed;
     inset: 0;
@@ -505,7 +610,7 @@
 
 .vm-tabs { display: flex; }
 .vm-tab { padding: .62rem 1.1rem; font-size: .8rem; font-weight: 700; color: var(--ink-muted, #888); cursor: pointer; border: none; background: none; border-bottom: 2.5px solid transparent; transition: color .18s, border-color .18s; display: flex; align-items: center; gap: .38rem; font-family: var(--ff-body); margin-bottom: -1px; }
-.vm-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; }
+.vm-tab img { width: 13px; height: 13px; opacity: .5; transition: opacity .18s; filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%); }
 .vm-tab:hover { color: var(--hot-pink, #d6175a); }
 .vm-tab.active { color: var(--hot-pink, #d6175a); border-bottom-color: var(--hot-pink, #d6175a); }
 .vm-tab.active img { opacity: 1; }
@@ -529,8 +634,22 @@
 .vm-file-name { font-size: .78rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: .4rem; }
 .vm-file-name img { width: 13px; height: 13px; opacity: .5; }
 .vm-file-actions { display: flex; align-items: center; gap: .4rem; }
-.vm-file-dl { display: inline-flex; align-items: center; gap: .3rem; font-size: .72rem; font-weight: 700; color: var(--bright-pink, #E8175D); text-decoration: none; padding: .22rem .65rem; border-radius: 7px; border: 1.5px solid var(--pink-100, #f9c5d6); background: #fff; transition: .2s; }
+.vm-file-dl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1.5px solid var(--pink-100, #f9c5d6);
+    background: #fff;
+    transition: .2s;
+    cursor: pointer;
+    text-decoration: none;
+}
+.vm-file-dl img { width: 13px; height: 13px; object-fit: contain; opacity: .6; }
 .vm-file-dl:hover { background: var(--pink-100, #f9c5d6); border-color: var(--bright-pink, #E8175D); }
+.vm-file-dl:hover img { opacity: 1; }
 .vm-file-body { padding: .8rem; }
 .vm-file-body img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 8px; display: block; cursor: zoom-in; transition: opacity .2s; }
 .vm-file-body img:hover { opacity: .88; }
@@ -644,11 +763,13 @@
             @endphp
             @forelse($sorted as $ann)
                 <div class="ann-row-card status-{{ $ann->status }}"
+                     id="ann-card-{{ $ann->announcement_id }}"
                      data-status="{{ $ann->status }}"
                      data-priority="{{ strtolower($ann->priority ?? 'low') }}"
                      data-posted="{{ $ann->posted_at ?? $ann->created_at }}"
                      data-title="{{ strtolower($ann->title) }}"
-                     data-content="{{ strtolower($ann->content) }}">
+                     data-content="{{ strtolower($ann->content) }}"
+                     onclick="openViewModal({{ $ann->announcement_id }})">
 
                     <div class="ann-row-left">
                         <span class="ann-row-priority-dot prio-{{ strtolower($ann->priority ?? 'low') }}"
@@ -674,9 +795,14 @@
                         <span class="ann-row-time">
                             {{ \Carbon\Carbon::parse($ann->posted_at ?? $ann->created_at)->format('M j, Y') }}
                         </span>
-                        <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
-                            <img src="{{ asset('icons/eye.png') }}" alt=""> View
-                        </button>
+                        <div class="ann-row-actions">
+                            <button class="ann-view-btn" onclick="event.stopPropagation(); openViewModal({{ $ann->announcement_id }})">
+                                <img src="{{ asset('icons/eye.png') }}" alt=""> View
+                            </button>
+                            <button class="ann-hide-btn" title="Hide announcement" onclick="event.stopPropagation(); hideAnnouncement({{ $ann->announcement_id }}, '{{ addslashes($ann->title) }}')">
+                                <img src="{{ asset('icons/eye-off.png') }}" alt="Hide">
+                            </button>
+                        </div>
                     </div>
                 </div>
             @empty
@@ -741,6 +867,19 @@
                     @empty
                         <div class="ann-recent-empty">No announcements yet.</div>
                     @endforelse
+                </div>
+            </div>
+
+            <div class="ann-hidden-card">
+                <div class="ann-hidden-header">
+                    <div class="ann-hidden-title">
+                        <img src="{{ asset('icons/eye-off.png') }}" alt="">
+                        Hidden
+                    </div>
+                    <span id="ann-hidden-count-badge" style="font-size:.72rem;font-weight:700;background:#f0f0f5;color:#888;padding:.12rem .5rem;border-radius:99px;border:1px solid #e0e0e8;">0</span>
+                </div>
+                <div class="ann-hidden-body" id="ann-hidden-body">
+                    <div class="ann-hidden-empty" id="ann-hidden-empty">No hidden announcements.</div>
                 </div>
             </div>
 
@@ -809,11 +948,60 @@
 const annData = @json($announcements->keyBy('announcement_id'));
 const storageBase = "{{ asset('storage') }}";
 
+var hiddenAnnouncements = {};
+
+function hideAnnouncement(id, title) {
+    var card = document.getElementById('ann-card-' + id);
+    if (!card) return;
+    card.style.display = 'none';
+    hiddenAnnouncements[id] = title;
+    renderHiddenList();
+    updateEmptyState();
+}
+
+function restoreAnnouncement(id) {
+    var card = document.getElementById('ann-card-' + id);
+    if (card) card.style.display = '';
+    delete hiddenAnnouncements[id];
+    renderHiddenList();
+    updateEmptyState();
+}
+
+function renderHiddenList() {
+    var body = document.getElementById('ann-hidden-body');
+    var empty = document.getElementById('ann-hidden-empty');
+    var badge = document.getElementById('ann-hidden-count-badge');
+    var ids = Object.keys(hiddenAnnouncements);
+
+    badge.textContent = ids.length;
+
+    var existing = body.querySelectorAll('.ann-hidden-item');
+    existing.forEach(function(el) { el.remove(); });
+
+    if (ids.length === 0) {
+        empty.style.display = '';
+        return;
+    }
+
+    empty.style.display = 'none';
+
+    ids.forEach(function(id) {
+        var item = document.createElement('div');
+        item.className = 'ann-hidden-item';
+        item.innerHTML =
+            '<span class="ann-hidden-item-title" title="' + escHtml(hiddenAnnouncements[id]) + '">' + escHtml(hiddenAnnouncements[id]) + '</span>' +
+            '<button class="ann-restore-btn" title="Restore" onclick="restoreAnnouncement(' + id + ')">' +
+                '<img src="{{ asset("icons/check.png") }}" alt="Restore">' +
+            '</button>';
+        body.appendChild(item);
+    });
+}
+
 function openViewModal(id) {
-    const ann = annData[id];
+    var ann = annData[id];
     if (!ann) return;
 
-    const files = getFiles(ann.attachment);
+    var files = getFiles(ann.attachment);
 
     document.getElementById('vm-sub-label').textContent = '#' + id + ' · ' + ucFirst(ann.priority || 'low') + ' priority';
     document.getElementById('vm-ann-title').textContent = ann.title || '';
@@ -882,6 +1070,9 @@ function applyDropdownFilters(changedEl) {
     }
 
     document.querySelectorAll('.ann-row-card').forEach(function(card) {
+        var cardId = card.id ? card.id.replace('ann-card-', '') : null;
+        if (cardId && hiddenAnnouncements[cardId]) return;
+
         var cardStatus   = card.dataset.status;
         var cardPriority = card.dataset.priority;
         var cardPosted   = new Date(card.dataset.posted);
@@ -963,14 +1154,16 @@ function buildFilePreview(path) {
         body = '<div class="vm-file-unsupported"><img src="{{ asset("icons/attach.png") }}" alt=""><span>No preview for <strong>.' + ext + '</strong> files.</span></div>';
     }
 
-    var openBtn = isImage
-        ? '<button class="vm-file-dl" onclick="openLightbox(\'' + url + '\')">&#x26F6; Expand</button>'
-        : '<a href="' + url + '" target="_blank" class="vm-file-dl">&#x2197; Open</a>';
+    var expandBtn = isImage
+        ? '<button class="vm-file-dl" onclick="openLightbox(\'' + url + '\')" title="Expand"><img src="{{ asset("icons/expand.png") }}" alt="Expand"></button>'
+        : '<a href="' + url + '" target="_blank" class="vm-file-dl" title="Open"><img src="{{ asset("icons/external.png") }}" alt="Open"></a>';
+
+    var dlBtn = '<a href="' + url + '" download class="vm-file-dl" title="Download"><img src="{{ asset("icons/download.png") }}" alt="Download"></a>';
 
     return '<div class="vm-file-item">' +
         '<div class="vm-file-bar">' +
             '<div class="vm-file-name"><img src="{{ asset("icons/attach.png") }}" alt="">' + escHtml(name) + '</div>' +
-            '<div class="vm-file-actions">' + openBtn + '<a href="' + url + '" download class="vm-file-dl">&#x2193; Download</a></div>' +
+            '<div class="vm-file-actions">' + expandBtn + dlBtn + '</div>' +
         '</div>' +
         body +
     '</div>';
