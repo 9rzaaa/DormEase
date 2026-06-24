@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Helpers\NotificationHelper;
 use App\Services\TenantPushNotificationService;
 use Carbon\Carbon;
+use App\Services\VisitorExpiryService;
+use App\Models\AppSetting;
 
 class VisitorController extends Controller
 {
@@ -45,6 +47,8 @@ class VisitorController extends Controller
             ->orderBy('first_name')
             ->get();
 
+        $overnightExtend = AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY);
+
         return view('fdvisitors', compact(
             'visitors',
             'completedVisitors',
@@ -52,7 +56,8 @@ class VisitorController extends Controller
             'cancelledVisitors',
             'visitorsToday',
             'currentlyInside',
-            'tenants'
+            'tenants',
+            'overnightExtend'
         ));
     }
 
@@ -100,6 +105,7 @@ class VisitorController extends Controller
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,
             'tenants'           => $tenants,
+            'overnightExtend'   => AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY),
         ]);
     }
 
@@ -108,8 +114,11 @@ class VisitorController extends Controller
         $signature = VisitorLog::selectRaw('COUNT(*) as cnt, MAX(arrival_time) as latest, MAX(departure_time) as latest_out, SUM(CASE WHEN status = \'inside\' THEN 1 ELSE 0 END) as inside_cnt')
             ->first();
 
+        $overnightExtend = AppSetting::isEnabled(VisitorExpiryService::SETTING_KEY);
+
         return response()->json([
-            'signature' => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0') . '-' . ($signature->latest_out ?? '0') . '-' . ($signature->inside_cnt ?? 0),
+            'signature'       => ($signature->cnt ?? 0) . '-' . ($signature->latest ?? '0') . '-' . ($signature->latest_out ?? '0') . '-' . ($signature->inside_cnt ?? 0) . '-' . ($overnightExtend ? '1' : '0'),
+            'overnightExtend' => $overnightExtend,
         ]);
     }
 
@@ -154,6 +163,7 @@ class VisitorController extends Controller
             'time_of_visit' => $arrivalTime->format('H:i:s'),
             'arrival_time'  => $arrivalTime,
             'status'        => $request->status ?? 'inside',
+            'expires_at'    => null,
         ]);
 
         $tenant = Tenant::find($request->tenant_id);
@@ -256,11 +266,29 @@ class VisitorController extends Controller
             'status' => 'required|string|in:pending,approved,rejected,inside,completed,deleted',
         ]);
 
-        VisitorLog::findOrFail($id)->update([
-            'status' => $request->status,
-        ]);
+        $visitor = VisitorLog::findOrFail($id);
+        $updates = ['status' => $request->status];
+
+        if ($request->status === 'approved') {
+            $updates['expires_at'] = now()->addHours(24);
+        }
+
+        $visitor->update($updates);
 
         return back()->with('success', 'Visitor status updated successfully.');
+    }
+
+    public function updateOvernightExtend(Request $request)
+    {
+        $request->validate([
+            'enabled' => 'required|in:0,1',
+        ]);
+
+        AppSetting::setValue(VisitorExpiryService::SETTING_KEY, $request->enabled);
+
+        return response()->json([
+            'enabled' => (bool) $request->enabled,
+        ]);
     }
 
     public function notifyTenant($id)

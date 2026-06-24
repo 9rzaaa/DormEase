@@ -107,6 +107,7 @@ class VisitorController extends Controller
             'arrival_time'  => null,
             'status'        => 'pending',
             'tenant_id'     => $tenantId,
+            'expires_at'    => now()->addHours(24),
         ]);
 
         NotificationHelper::sendToAll(

@@ -436,6 +436,81 @@
     .archive-drawer-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; line-height: 1.2; }
     .archive-drawer-sub { font-size: .78rem; color: var(--ink-muted); margin-top: .25rem; font-weight: 500; }
 
+    .overnight-toggle-row {
+        padding: .9rem 1.8rem;
+        background: #fff9fb;
+        border-bottom: 1.5px solid var(--pink-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-text { flex: 1; min-width: 0; }
+
+    .overnight-toggle-title {
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .overnight-toggle-sub {
+        font-size: .72rem;
+        color: var(--ink-muted);
+        margin-top: .2rem;
+        line-height: 1.4;
+    }
+
+    .overnight-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .overnight-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: var(--pink-light);
+        border-radius: 99px;
+        transition: background .2s;
+    }
+
+    .overnight-toggle-slider::before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        bottom: 3px;
+        background: var(--white);
+        border-radius: 50%;
+        transition: transform .2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider {
+        background: var(--bright-pink);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider::before {
+        transform: translateX(18px);
+    }
+
+    .overnight-toggle-switch input:disabled + .overnight-toggle-slider {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
     .archive-close-btn {
         width: 34px; height: 34px; border-radius: 8px;
         background: var(--white); border: 1.5px solid var(--pink-light);
@@ -969,6 +1044,17 @@
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
 
+    <div class="overnight-toggle-row">
+        <div class="overnight-toggle-text">
+            <div class="overnight-toggle-title">Extend overnight expiry</div>
+            <div class="overnight-toggle-sub">Push pending or approved visit deadlines to the next staff shift if they would expire while no one is on duty</div>
+        </div>
+        <label class="overnight-toggle-switch">
+            <input type="checkbox" id="overnight-extend-toggle" onchange="toggleOvernightExtend(this)" {{ $overnightExtend ? 'checked' : '' }}>
+            <span class="overnight-toggle-slider"></span>
+        </label>
+    </div>
+
     <div class="archive-tabs">
         <button class="archive-tab active" id="atab-completed" onclick="switchArchiveTab('completed')">
             Completed
@@ -1403,6 +1489,17 @@
         return (hour % 12 || 12) + ':' + parts[1] + ' ' + (hour >= 12 ? 'PM' : 'AM');
     }
 
+    function fmtExpiry(expiresAt) {
+        if (!expiresAt) return '';
+        var d = new Date(expiresAt);
+        var now = new Date();
+        var diffMs = d - now;
+        if (diffMs <= 0) return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expiring soon</div>';
+        var hrs = Math.round(diffMs / 3600000);
+        if (hrs < 1) return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expires in less than 1 hr</div>';
+        return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expires in ' + hrs + ' hr' + (hrs === 1 ? '' : 's') + '</div>';
+    }
+
     function badge(status) {
         var map = {
             'inside':    '<span class="badge badge-inside">Inside</span>',
@@ -1441,7 +1538,10 @@
                     + '<td>'
                         + '<div class="td-name">' + (v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '&mdash;') + '</div>'
                     + '</td>'
-                    + '<td>' + badge(v.status) + '</td>'
+                    + '<td>'
+                        + badge(v.status)
+                        + (!v.arrival_time && v.expires_at ? fmtExpiry(v.expires_at) : '')
+                    + '</td>'
                     + '<td>'
                         + '<div class="action-group">'
                             + '<button class="act-btn" title="View Details" onclick="viewVisitorDetail(_rowMap[' + v.visitor_id + '])">'
@@ -1609,9 +1709,12 @@
             + vmInfoItem('Time Out', timeOutVal);
 
         var staffName = v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '—';
+        var expiryInfo = (!v.arrival_time && v.expires_at) ? fmtExpiry(v.expires_at) : '—';
+
         document.getElementById('vminfo-log').innerHTML =
             vmInfoItem('Status',    badge(v.status))
-            + vmInfoItem('Logged By', staffName);
+            + vmInfoItem('Logged By', staffName)
+            + vmInfoItem('Expires',   expiryInfo);
 
         document.getElementById('vminfo-idtype').innerHTML =
             vmInfoItem('ID Type', v.id_type || '—', true);
@@ -1768,6 +1871,35 @@
             + '</body></html>');
         win.document.close();
         win.print();
+    }
+
+    function toggleOvernightExtend(checkbox) {
+        var newValue = checkbox.checked ? '1' : '0';
+        checkbox.disabled = true;
+
+        fetch('{{ route("visitors.overnightExtend") }}', {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ enabled: newValue })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Failed');
+            return res.json();
+        })
+        .then(function() {
+            showToast(checkbox.checked ? 'Overnight extension enabled.' : 'Overnight extension disabled.', 'success');
+        })
+        .catch(function() {
+            checkbox.checked = !checkbox.checked;
+            showToast('Could not update the setting. Please try again.', 'error');
+        })
+        .finally(function() {
+            checkbox.disabled = false;
+        });
     }
 
     function openArchive() {

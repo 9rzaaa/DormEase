@@ -321,6 +321,7 @@ Route::get('/frontdesk/announcements/poll', [AnnouncementController::class, 'pol
     Route::post('/visitors/{id}/notify-tenant', [VisitorController::class, 'notifyTenant'])->name('visitors.notify-tenant');
     Route::put('/visitors/timein/{id}', [VisitorController::class, 'timein'])->name('visitors.timein');
     Route::put('/visitors/{id}/status', [VisitorController::class, 'updateStatus'])->name('visitors.status');
+    Route::put('/visitors/settings/overnight-extend', [VisitorController::class, 'updateOvernightExtend'])->name('visitors.overnightExtend');
 
     // notifications
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');

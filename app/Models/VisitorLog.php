@@ -38,6 +38,11 @@ class VisitorLog extends Model
         'status',
         'hidden_from_tenant',
         'cancelled_at',
+        'expires_at',
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 
     public function tenant()
