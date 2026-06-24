@@ -29,6 +29,7 @@ class VisitorController extends Controller
                 'visitor_name'   => $v->visitor_name,
                 'contact_no'     => $v->contact_no,
                 'purpose'        => $v->purpose,
+                'relationship'   => $v->relationship,
                 'id_type'        => $v->id_type,
                 'id_photo'       => $v->id_photo
                     ? asset('storage/' . $v->id_photo)
@@ -75,6 +76,7 @@ class VisitorController extends Controller
             ],
             'contact_no'    => ['required', 'digits:11', 'regex:/^09\d{9}$/'],
             'purpose'       => 'required|string|max:255',
+            'relationship'  => 'required|string|max:255',
             'id_type'       => 'required|string|max:255',
             'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
             'date_of_visit' => 'required|date',
@@ -100,6 +102,7 @@ class VisitorController extends Controller
             'visitor_name'  => $request->visitor_name,
             'contact_no'    => $request->contact_no,
             'purpose'       => $request->purpose,
+            'relationship'  => $request->relationship,
             'id_type'       => $request->id_type,
             'id_photo'      => $photoPath,
             'date_of_visit' => $request->date_of_visit ?? now()->toDateString(),
@@ -123,6 +126,7 @@ class VisitorController extends Controller
                 'visitor_name'  => $visitor->visitor_name,
                 'contact_no'    => $visitor->contact_no,
                 'purpose'       => $visitor->purpose,
+                'relationship'  => $visitor->relationship,
                 'id_type'       => $visitor->id_type,
                 'id_photo'      => $visitor->id_photo
                     ? asset('storage/' . $visitor->id_photo)
