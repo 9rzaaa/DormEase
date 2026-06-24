@@ -132,7 +132,7 @@ class EmergencyController extends Controller
                     title: 'Emergency Report Closed',
                     body: "Your emergency report ({$report->emergency_type}) has been closed.",
                     refId: $report->report_id,
-                    route: '/tenant/emergency',
+                    route: '/tenant/emergencyhistory',
                 );
             }
             $this->archiveReport($report, 'closed');
@@ -148,7 +148,7 @@ class EmergencyController extends Controller
                     title: 'Emergency Report Resolved',
                     body: "Your emergency report ({$report->emergency_type}) has been resolved.",
                     refId: $report->report_id,
-                    route: '/tenant/emergency',
+                    route: '/tenant/emergencyhistory',
                 );
             }
             NotificationHelper::sendToAll(
@@ -318,7 +318,7 @@ class EmergencyController extends Controller
                 title: 'Emergency Report Acknowledged',
                 body: "Staff has acknowledged your emergency report ({$report->emergency_type}) and is responding.",
                 refId: $report->report_id,
-                route: '/tenant/emergency',
+                route: '/tenant/emergencyhistory',
             );
 
             return response()->json(['success' => true, 'notified' => true]);

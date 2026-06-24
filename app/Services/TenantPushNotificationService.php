@@ -19,7 +19,7 @@ class TenantPushNotificationService
         'bill' => '/tenant/water-bill',
         'payment' => '/tenant/water-bill',
         'maintenance' => '/tenant/maintenancehistory',
-        'emergency' => '/tenant/emergency',
+        'emergency' => '/tenant/emergencyhistory',
         'visitor' => '/tenant/visitors',
     ];
 
