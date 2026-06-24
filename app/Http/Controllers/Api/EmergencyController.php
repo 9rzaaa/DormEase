@@ -6,6 +6,7 @@ use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
+use App\Models\ArchivedEmergencyReport;
 use App\Models\UnclassifiedEmergencyTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -525,14 +526,61 @@ class EmergencyController extends Controller
     {
         $tenantId = $request->user()?->tenant_id;
 
-        $reports = EmergencyReport::where('tenant_id', $tenantId)
+        $activeReports = EmergencyReport::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->latest('reported_at')
             ->get()
             ->map(fn($report) => $this->formatReport($report));
 
+        $archivedReports = ArchivedEmergencyReport::where('tenant_id', $tenantId)
+            ->whereIn('archive_type', ['resolved', 'closed'])
+            ->where('hidden_from_tenant', false)
+            ->latest('reported_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchivedReport($report));
+
+        $allReports = $activeReports->concat($archivedReports)
+            ->sortByDesc('reported_at')
+            ->values();
+
         return response()->json([
-            'reports' => $reports,
+            'reports' => $allReports,
         ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $tenantId = $request->user()?->tenant_id;
+
+        $report = EmergencyReport::where('tenant_id', $tenantId)
+            ->where('report_id', $id)
+            ->first();
+
+        if ($report) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Active emergency reports cannot be removed by the tenant.',
+            ], 403);
+        }
+
+        $archived = ArchivedEmergencyReport::where('tenant_id', $tenantId)
+            ->where('original_id', $id)
+            ->whereIn('archive_type', ['resolved', 'closed'])
+            ->first();
+
+        if ($archived) {
+            $archived->update(['hidden_from_tenant' => true]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Emergency report history cleared.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Emergency report not found.',
+        ], 404);
     }
 
     public function store(Request $request)
@@ -606,6 +654,24 @@ class EmergencyController extends Controller
             'emergency_type' => $report->emergency_type,
             'urgency_level' => $report->urgency_level,
             'input_type' => $report->input_type,
+            'description' => $report->description,
+            'location' => $report->location,
+            'status' => $report->status,
+            'admin_notes' => $report->admin_notes,
+            'reported_at' => $this->formatApiDate($report->reported_at),
+            'resolved_at' => $this->formatApiDate($report->resolved_at),
+        ];
+    }
+
+    private function formatArchivedReport(ArchivedEmergencyReport $report): array
+    {
+        return [
+            'id' => $report->original_id,
+            'tenant_id' => $report->tenant_id,
+            'is_panic_alert' => $report->is_panic_alert,
+            'emergency_type' => $report->emergency_type,
+            'urgency_level' => $report->urgency_level,
+            'input_type' => 'text',
             'description' => $report->description,
             'location' => $report->location,
             'status' => $report->status,
