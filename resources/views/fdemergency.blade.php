@@ -1505,7 +1505,7 @@
             </div>
             <div class="modal-warn-banner">
                 <span style="font-size:.95rem;flex-shrink:0;"></span>
-                <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
+                <span>Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this report to the archive permanently.</span>
             </div>
         </div>
         <div class="modal-footer">
