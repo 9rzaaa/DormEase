@@ -2930,14 +2930,10 @@
 
     @if($errors->any())
         document.addEventListener('DOMContentLoaded', function() {
-            @if(session('edit_staff_id'))
-                openModal('edit-modal');
-            @else
-                openModal('add-modal');
-            @endif
             @foreach($errors->all() as $error)
                 showToast('{{ $error }}', 'error');
             @endforeach
+            openModal('add-modal');
         });
     @endif
 
