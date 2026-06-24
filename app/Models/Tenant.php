@@ -144,7 +144,7 @@ class Tenant extends Authenticatable
     {
         return DocumentRequest::where('tenant_id', $this->tenant_id)
             ->where('hidden_from_tenant', false)
-            ->whereIn('status', ['pending', 'processing', 'approved', 'resubmission'])
+            ->whereIn('status', ['pending', 'processing', 'resubmission'])
             ->exists();
     }
 
