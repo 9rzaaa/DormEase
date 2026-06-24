@@ -711,8 +711,8 @@
                 <img src="{{ asset('icons/check.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $activeCount }}</div>
                 <div class="ann-stat-label">Active Announcements</div>
+                <div class="ann-stat-num">{{ $activeCount }}</div>
                 <div class="ann-stat-desc">Currently posted</div>
             </div>
         </div>
@@ -721,8 +721,8 @@
                 <img src="{{ asset('icons/announce.png') }}" alt="">
             </div>
             <div>
-                <div class="ann-stat-num">{{ $postedThisWeekCount }}</div>
                 <div class="ann-stat-label">Posted This Week</div>
+                <div class="ann-stat-num">{{ $postedThisWeekCount }}</div>
                 <div class="ann-stat-desc">New since Sunday</div>
             </div>
         </div>
