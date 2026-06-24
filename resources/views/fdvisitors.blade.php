@@ -1822,8 +1822,10 @@
     }
 
     function exportVisitorsCsv() {
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
+
         var rows = [['Visitor Name', 'Time In', 'Time Out', 'Purpose', 'Tenant', 'Room', 'Logged By', 'Status']];
-        visitors.forEach(function(v) {
+        filtered.forEach(function(v) {
             rows.push([
                 v.visitor_name   || '',
                 v.arrival_time   || '',
@@ -1846,10 +1848,10 @@
     }
 
     function exportVisitorsPdf() {
-        if (!visitors.length) { showToast('No data to export.', 'error'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
         var win = window.open('', '_blank');
         if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
-        var rows = visitors.map(function(v) {
+        var rows = filtered.map(function(v) {
             return '<tr>'
                 + '<td>' + (v.visitor_name || '') + '</td>'
                 + '<td>' + (v.arrival_time   ? fmtDatePlain(v.arrival_time)   : '') + '</td>'
