@@ -38,6 +38,7 @@ class VisitorLog extends Model
         'status',
         'hidden_from_tenant',
         'cancelled_at',
+        'cancel_reason',
         'expires_at',
     ];
 

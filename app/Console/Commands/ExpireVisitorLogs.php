@@ -27,8 +27,9 @@ class ExpireVisitorLogs extends Command
 
         foreach ($expired as $visitor) {
             $visitor->update([
-                'status'       => 'cancelled',
-                'cancelled_at' => now(),
+                'status'           => 'cancelled',
+                'cancelled_at'     => now(),
+                'cancel_reason'    => 'expired',
             ]);
 
             NotificationHelper::sendToAll(
