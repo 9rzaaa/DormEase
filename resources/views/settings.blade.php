@@ -315,7 +315,7 @@
         margin-bottom: 1.4rem;
     }
     .archive-warning-banner strong { color: var(--hot-pink); font-weight: 800; text-decoration: underline; }
-    
+
     .archive-table { width: 100%; border-collapse: collapse; }
     .archive-table th {
         font-size: .72rem;
@@ -337,10 +337,10 @@
     }
     .archive-table tr:last-child td { border-bottom: none; }
     .archive-table tr:hover td { background: var(--blush); }
-    
+
     .archive-module-name { font-weight: 700; font-size: .88rem; color: var(--ink); }
     .archive-last-cleared { font-size: .75rem; color: var(--ink-muted); margin-top: .18rem; }
-    
+
     .retention-input {
         width: 80px;
         padding: .42rem .6rem;
@@ -356,7 +356,7 @@
     }
     .retention-input:focus { border-color: var(--bright-pink); background: var(--white); }
     .retention-input:disabled { opacity: .45; cursor: not-allowed; }
-    
+
     .warn-input {
         width: 60px;
         padding: .42rem .6rem;
@@ -372,7 +372,7 @@
     }
     .warn-input:focus { border-color: var(--bright-pink); background: var(--white); }
     .warn-input:disabled { opacity: .45; cursor: not-allowed; }
-    
+
     .btn-clear-now {
         padding: .38rem .85rem;
         border-radius: 8px;
@@ -388,7 +388,7 @@
     }
     .btn-clear-now:hover { background: var(--gradient-pink); color: var(--white); border-color: var(--bright-pink); }
     .btn-clear-now:disabled { opacity: .4; cursor: not-allowed; }
-    
+
     .apply-all-row {
         display: flex;
         align-items: center;
@@ -546,7 +546,7 @@
     </div>
         @if(Auth::guard('staff')->user()?->role === 'admin')
         <div class="tab-panel fade-up d3" id="tab-archive">
- 
+
         <div class="settings-card">
             <div class="settings-card-header">
                 <div class="settings-card-icon">
@@ -557,7 +557,7 @@
                     <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
                 </div>
             </div>
- 
+
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
@@ -568,7 +568,7 @@
                     <strong>Save settings first</strong> before using Clear Now.
                 </span>
             </div>
- 
+
             <div class="apply-all-row">
                 <span class="apply-all-label">Apply retention period to all modules:</span>
                 <input type="number" id="apply-all-days" min="30" max="3650" value="365"
@@ -576,7 +576,7 @@
                 <span style="font-size:.82rem;color:var(--ink-muted);">days</span>
                 <button type="button" class="btn-apply-all" onclick="applyAllRetention()">Apply to All</button>
             </div>
- 
+
             <table class="archive-table" id="archive-table">
                 <thead>
                     <tr>
@@ -654,12 +654,12 @@
                     @endforeach
                 </tbody>
             </table>
- 
+
             <div class="form-actions">
                 <button type="button" class="btn-save" onclick="saveArchiveSettings()">Save Archive Settings</button>
             </div>
         </div>
- 
+
     </div>
     @endif
 </div>
@@ -674,11 +674,11 @@
             <span id="action-loading-text">Please wait...</span>
         </div>
     </div>
-    @endsection
+@endsection
 
-    @section('scripts')
-    <script>
-        function showActionLoading(message) {
+@section('scripts')
+<script>
+    function showActionLoading(message) {
         const overlay = document.getElementById('action-loading');
         document.getElementById('action-loading-text').textContent = message || 'Please wait...';
         overlay.classList.add('open');
@@ -705,6 +705,7 @@
             });
         });
     });
+
     function switchTab(name) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -712,6 +713,7 @@
         document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`).classList.add('active');
         document.getElementById('tab-' + name).classList.add('active');
     }
+
     function checkStrength(val) {
         const fill  = document.getElementById('pw-fill');
         const label = document.getElementById('pw-label');
@@ -733,6 +735,7 @@
         fill.style.background = lv.bg;
         label.textContent     = val.length ? lv.text : '';
     }
+
     const DEFAULTS = {
         maintenance_new:  true,
         maintenance_resubmission: true,
@@ -744,12 +747,14 @@
         document_request: true,
         announcement_new: false,
     };
+
     function resetToggles() {
         Object.entries(DEFAULTS).forEach(([key, val]) => {
             const el = document.querySelector(`input[name="${key}"]`);
             if (el) el.checked = val;
         });
     }
+
     @if(session('open_tab'))
         switchTab("{{ session('open_tab') }}");
     @endif
@@ -763,7 +768,7 @@
         var clearBtn = document.querySelector(`.btn-clear-now[data-module="${module}"]`);
         if (clearBtn) clearBtn.disabled = !enabled;
     }
-    
+
     function applyAllRetention() {
         var days = parseInt(document.getElementById('apply-all-days').value);
         if (!days || days < 30 || days > 3650) {
@@ -775,7 +780,7 @@
         });
         showToast('Retention period applied to all modules. Save to confirm.', 'success');
     }
-    
+
     function saveArchiveSettings() {
         var modules = [];
         document.querySelectorAll('#archive-table tbody tr').forEach(function(row) {
@@ -818,7 +823,6 @@
                 showToast(firstError, 'error');
                 return;
             }
-        }
 
             showToast(result.data.message || 'Failed to save.', 'error');
         })
@@ -827,7 +831,7 @@
             showToast('Network error.', 'error');
         });
     }
-    
+
     function confirmClearNow(module, label, btn) {
         var retentionInput = document.querySelector(`.module-retention[data-module="${module}"]`);
         var retentionDays  = retentionInput ? parseInt(retentionInput.value) : null;
@@ -835,11 +839,11 @@
         if (!confirm('This will permanently delete all ' + label + ' records older than ' + retentionDays + ' day(s). This action cannot be undone. Proceed?')) {
             return;
         }
-    
+
         btn.disabled = true;
         btn.textContent = 'Clearing...';
         showActionLoading('Clearing ' + label + '...');
-    
+
         fetch('{{ route("settings.archive.clearNow") }}', {
             method: 'POST',
             headers: {
@@ -883,5 +887,6 @@
             btn.textContent = 'Clear Now';
             showToast('Network error.', 'error');
         });
+    }
 </script>
 @endsection
