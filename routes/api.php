@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/document-requests', [DocumentRequestController::class, 'index']);
         Route::post('/document-requests', [DocumentRequestController::class, 'store']);
         Route::match(['put', 'post'], '/document-requests/{documentRequest}', [DocumentRequestController::class, 'update']);
+        Route::post('/document-requests/{id}/resubmit', [DocumentRequestController::class, 'resubmit']);
         Route::delete('/document-requests/{id}', [DocumentRequestController::class, 'destroy']);
 
         // document forms
