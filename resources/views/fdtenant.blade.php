@@ -2076,7 +2076,7 @@ function statusBadge(status) {
 }
 
 function vacationBadge(isOnVacation) {
-    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA;">Vacation</span>' : '';
 }
 
 function insideIndicator(isInside) {
@@ -2162,7 +2162,7 @@ function renderTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
+                '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
@@ -2216,7 +2216,7 @@ function renderReservedTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
+                '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset("icons/eye.png") }}" alt="View"></button>' +
