@@ -1556,6 +1556,9 @@
                             + '<button class="act-btn" title="Notify Tenant" ' + (!v.tenant_id ? 'disabled' : '') + ' onclick="notifyTenant(' + v.visitor_id + ', this)">'
                                 + '<img src="{{ asset('icons/bell.png') }}" alt="Notify">'
                             + '</button>'
+                            + '<button class="act-btn" title="Update Status" ' + (v.status !== 'pending' ? 'disabled' : '') + ' onclick="openStatusModal(' + v.visitor_id + ', \'' + (v.visitor_name || '').replace(/'/g, "\\'") + '\', \'' + v.status + '\')">'
+                                + '<img src="{{ asset('icons/edit.png') }}" alt="Status">'
+                            + '</button>'
                         + '</div>'
                     + '</td>'
                     + '</tr>';
@@ -1784,6 +1787,14 @@
         document.getElementById('timein-input').value      = new Date().toISOString().slice(0, 16);
         closeVisitorDetailModal();
         openModal('timein-modal');
+    }
+
+    function openStatusModal(id, name, currentStatus) {
+        document.getElementById('status-name').textContent = name;
+        document.getElementById('status-form').action       = '/visitors/' + id + '/status';
+        document.getElementById('status-select').value       = currentStatus;
+        closeVisitorDetailModal();
+        openModal('status-modal');
     }
 
     function openTimeout(id, name) {
