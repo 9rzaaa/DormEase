@@ -100,68 +100,68 @@ class DocumentRequestController extends Controller
         ], 400);
     }
     public function resubmit(Request $request, $id)
-{
-    $tenantId = $request->user()->tenant_id;
+    {
+        $tenantId = $request->user()->tenant_id;
 
-    $documentRequest = DocumentRequest::where('tenant_id', $tenantId)
-        ->where('doc_request_id', $id)
-        ->first();
+        $documentRequest = DocumentRequest::where('tenant_id', $tenantId)
+            ->where('doc_request_id', $id)
+            ->first();
 
-    if (!$documentRequest) {
+        if (!$documentRequest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Document request not found.',
+            ], 404);
+        }
+
+        if ($documentRequest->status !== 'resubmission') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only requests marked for resubmission can be resubmitted.',
+            ], 422);
+        }
+
+        $request->validate([
+            'file' => [
+                'required',
+                'file',
+                'max:10240',
+                function ($attribute, $value, $fail) {
+                    $ext = strtolower($value->getClientOriginalExtension());
+                    if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'])) {
+                        $fail('Only PDF, Image (.png, .jpg, .jpeg), Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                    }
+                },
+            ],
+        ]);
+
+        if ($documentRequest->attachment) {
+            Storage::disk('public')->delete($documentRequest->attachment);
+        }
+
+        $newPath = $request->file('file')->store('document-requests/attachments', 'public');
+
+        $documentRequest->update([
+            'attachment'    => $newPath,
+            'status'        => 'pending',
+            'admin_remarks' => null,
+            'submitted_at'  => now(),
+            'processed_at'  => null,
+        ]);
+
+        $tenant = $request->user();
+        NotificationHelper::sendToAll(
+            type: 'document_request',
+            message: "{$tenant->first_name} {$tenant->last_name} resubmitted a {$documentRequest->document_type} request.",
+            ref_id: $documentRequest->doc_request_id,
+        );
+
         return response()->json([
-            'success' => false,
-            'message' => 'Document request not found.',
-        ], 404);
+            'success' => true,
+            'message' => 'File resubmitted successfully.',
+            'data'    => $documentRequest,
+        ]);
     }
-
-    if ($documentRequest->status !== 'resubmission') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Only requests marked for resubmission can be resubmitted.',
-        ], 422);
-    }
-
-    $request->validate([
-        'file' => [
-            'required',
-            'file',
-            'max:10240',
-            function ($attribute, $value, $fail) {
-                $ext = strtolower($value->getClientOriginalExtension());
-                if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                    $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
-                }
-            },
-        ],
-    ]);
-
-    if ($documentRequest->attachment) {
-        Storage::disk('public')->delete($documentRequest->attachment);
-    }
-
-    $newPath = $request->file('file')->store('document-requests/attachments', 'public');
-
-    $documentRequest->update([
-        'attachment'    => $newPath,
-        'status'        => 'pending',
-        'admin_remarks' => null,
-        'submitted_at'  => now(),
-        'processed_at'  => null,
-    ]);
-
-    $tenant = $request->user();
-    NotificationHelper::sendToAll(
-        type: 'document_request',
-        message: "{$tenant->first_name} {$tenant->last_name} resubmitted a {$documentRequest->document_type} request.",
-        ref_id: $documentRequest->doc_request_id,
-    );
-
-    return response()->json([
-        'success' => true,
-        'message' => 'File resubmitted successfully.',
-        'data'    => $documentRequest,
-    ]);
-}
 
     public function store(Request $request)
     {
@@ -171,13 +171,13 @@ class DocumentRequestController extends Controller
             'purpose'       => 'nullable|string',
             'delivery_type' => 'nullable|in:digital,printed',
             'date_needed'   => 'nullable|date',
-            'attachment'    => 'nullable|file|mimes:pdf|max:10240',
+            'attachment'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')
-                                ->store('document-requests/attachments', 'public');
+                ->store('document-requests/attachments', 'public');
         }
 
         $deliveryType = $request->input('delivery_method') ?? $request->input('delivery_type');
@@ -208,38 +208,38 @@ class DocumentRequestController extends Controller
     }
 
     public function tenantDocuments(Request $request)
-{
-    $tenantId = $request->user()->tenant_id;
+    {
+        $tenantId = $request->user()->tenant_id;
 
-    $docs = Document::where(function ($q) use ($tenantId) {
+        $docs = Document::where(function ($q) use ($tenantId) {
             $q->where('visibility', 'all')
-              ->orWhere(function ($q2) use ($tenantId) {
-                  $q2->where('visibility', 'specific')
-                     ->where('tenant_id', $tenantId);
-              });
+                ->orWhere(function ($q2) use ($tenantId) {
+                    $q2->where('visibility', 'specific')
+                        ->where('tenant_id', $tenantId);
+                });
         })
-        ->orderByDesc('created_at')
-        ->get(['document_id', 'title', 'document_type', 'file_path', 'visibility', 'created_at']);
+            ->orderByDesc('created_at')
+            ->get(['document_id', 'title', 'document_type', 'file_path', 'visibility', 'created_at']);
 
-    return response()->json($docs);
-}
-public function tenantForms()
-{
-    $forms = DownloadableForm::orderBy('label')->get()->map(function ($f) {
-        // Files in public/forms/ are static — use asset()
-        // Files in downloadable-forms/ are in Laravel storage
-        $url = str_starts_with($f->file_path, 'forms/')
-            ? asset($f->file_path)
-            : Storage::disk('public')->url($f->file_path);
+        return response()->json($docs);
+    }
+    public function tenantForms()
+    {
+        $forms = DownloadableForm::orderBy('label')->get()->map(function ($f) {
+            // Files in public/forms/ are static — use asset()
+            // Files in downloadable-forms/ are in Laravel storage
+            $url = str_starts_with($f->file_path, 'forms/')
+                ? asset($f->file_path)
+                : Storage::disk('public')->url($f->file_path);
 
-        return [
-            'id'        => $f->id,
-            'label'     => $f->label,
-            'file_path' => $f->file_path,
-            'url'       => $url,
-        ];
-    });
+            return [
+                'id'        => $f->id,
+                'label'     => $f->label,
+                'file_path' => $f->file_path,
+                'url'       => $url,
+            ];
+        });
 
-    return response()->json($forms);
-}
+        return response()->json($forms);
+    }
 }
