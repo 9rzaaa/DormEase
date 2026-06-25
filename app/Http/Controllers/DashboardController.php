@@ -103,7 +103,7 @@ class DashboardController extends Controller
             'unresolvedReports'    => EmergencyReport::where('status', '!=', 'resolved')->count(),
             'maintenanceRequests'  => MaintenanceRequest::with('tenant')
                 ->whereIn('status', ['pending', 'in-progress'])
-                ->latest('submitted_at')
+                ->orderBy('submitted_at', 'desc')
                 ->take(3)
                 ->get(),
             'announcements'        => Announcement::latest('posted_at')->take(3)->get(),
