@@ -277,44 +277,6 @@
                 .replace(/>/g, '&gt;');
         }
 
-        function updateDashboardEmergencyBanner() {
-            var banner = document.querySelector('.emergency-banner');
-            if (!banner) return;
-
-            fetch('{{ route("dashboard.live") }}', {
-                headers: { 'Accept': 'application/json' },
-                cache: 'no-store',
-            })
-            .then(function(response) { return response.ok ? response.json() : null; })
-            .then(function(data) {
-                if (!data) return;
-                var emergency = data.latestEmergency;
-
-                if (emergency) {
-                    banner.classList.remove('clear');
-                    banner.innerHTML =
-                        '<div class="emerg-ico-wrap pulse"><img src="{{ asset('icons/panic.png') }}" alt=""></div>' +
-                        '<div class="emerg-body">' +
-                            '<div class="emerg-label">Emergency Report</div>' +
-                            '<div class="emerg-detail">' + escapeBannerHtml(emergency.location) + ' &mdash; ' + escapeBannerHtml(emergency.emergency_type) + '</div>' +
-                            '<div class="emerg-status">' + escapeBannerHtml(emergency.status) + '</div>' +
-                        '</div>' +
-                        '<button class="emerg-btn" onclick="openModal(\'emergency-modal\')">View All</button>';
-                } else {
-                    banner.classList.add('clear');
-                    banner.innerHTML =
-                        '<div class="emerg-ico-wrap"><img src="{{ asset('icons/check.png') }}" alt="" class="check-icon"></div>' +
-                        '<div class="emerg-body">' +
-                            '<div class="emerg-label">Emergency Status</div>' +
-                            '<div class="emerg-detail">All Clear</div>' +
-                            '<div class="emerg-status ok">No active emergencies</div>' +
-                        '</div>' +
-                        '<button class="emerg-btn ok" onclick="openModal(\'emergency-modal\')">View History</button>';
-                }
-            })
-            .catch(function() {});
-        }
-
         function pollEmergencyAlerts() {
             fetch('/live-alerts', {
                 headers: {
@@ -332,7 +294,6 @@
                         payload.critical || { reports: [] }
                     );
                 }
-                updateDashboardEmergencyBanner();
             })
             .catch(function() {});
         }
