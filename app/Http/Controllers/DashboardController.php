@@ -25,7 +25,7 @@ class DashboardController extends Controller
         ->select(
             DB::raw('DATE_FORMAT(billing_month, "%Y-%m") as period'),
             DB::raw('SUM(CASE WHEN payment_status = "paid" THEN room_share ELSE 0 END) as collected'),
-            DB::raw('SUM(CASE WHEN payment_status = "unpaid" THEN room_share ELSE 0 END) as unpaid')
+            DB::raw('SUM(CASE WHEN payment_status != "paid" THEN room_share ELSE 0 END) as unpaid')
         )
         ->whereIn('tenant_id', $activeTenantIds)
         ->where('billing_month', '>=', Carbon::now()->subMonths(6)->startOfMonth())
@@ -98,7 +98,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'staff'                => $staff,
             'totalTenants'         => Tenant::whereIn('status', ['active', 'pending'])->count(),
-            'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count(),
+            'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', '!=', 'paid')->count(),
             'pendingMaintenance'   => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
             'unresolvedReports'    => EmergencyReport::where('status', '!=', 'resolved')->count(),
             'maintenanceRequests'  => MaintenanceRequest::with('tenant')
