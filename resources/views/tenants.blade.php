@@ -6534,11 +6534,12 @@ function printBillSlip(t) {
         doc.line(6, y, W - 6, y);
 
         tenantBills.forEach(function(b, i) {
-            var isOD       = b.payment_status === 'overdue';
-            var rowBg      = i % 2 === 0 ? petal : white;
-            var badgeBg    = isOD ? redBg : amberBg;
-            var badgeBd    = isOD ? redBd : amberBd;
-            var badgeTx    = isOD ? red : [200, 150, 12];
+            var isOD     = b.payment_status === 'overdue';
+            var rowBg    = i % 2 === 0 ? petal : white;
+            var badgeBg  = isOD ? redBg : amberBg;
+            var badgeBd  = isOD ? redBd : amberBd;
+            var badgeTx  = isOD ? red : [200, 150, 12];
+            var badgeLbl = isOD ? 'Overdue' : 'Unpaid';
 
             y += 1;
             doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
@@ -6549,14 +6550,16 @@ function printBillSlip(t) {
             doc.setTextColor(ink[0], ink[1], ink[2]);
             doc.text(fmtMonth(b.billing_month), 7, y + 5);
 
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(4.8);
+            var badgeTextW = doc.getTextWidth(badgeLbl);
+            var badgeW     = badgeTextW + 3;
             doc.setFillColor(badgeBg[0], badgeBg[1], badgeBg[2]);
             doc.setDrawColor(badgeBd[0], badgeBd[1], badgeBd[2]);
             doc.setLineWidth(0.3);
-            doc.roundedRect(7, y + 6.5, 15, 4, 0.8, 0.8, 'FD');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(4.5);
+            doc.roundedRect(7, y + 6.3, badgeW, 3.8, 1, 1, 'FD');
             doc.setTextColor(badgeTx[0], badgeTx[1], badgeTx[2]);
-            doc.text(isOD ? 'Overdue' : 'Unpaid', 14.5, y + 9.5, { align: 'center' });
+            doc.text(badgeLbl, 7 + (badgeW / 2), y + 9, { align: 'center' });
 
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6.5);
@@ -6564,9 +6567,9 @@ function printBillSlip(t) {
             doc.text(fmtDateSlip(b.due_date), 43, y + 5);
 
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(7.5);
+            doc.setFontSize(7);
             doc.setTextColor(red[0], red[1], red[2]);
-            doc.text('\u20b1' + parseFloat(b.room_share || 0).toFixed(2), W - 6, y + 5, { align: 'right' });
+            doc.text('PHP ' + parseFloat(b.room_share || 0).toFixed(2), W - 7, y + 5.4, { align: 'right' });
 
             y += rowH;
 
@@ -6585,9 +6588,9 @@ function printBillSlip(t) {
         doc.setTextColor(255, 220, 235);
         doc.text('Total Outstanding', 10, y + 7.5);
 
-        doc.setFontSize(11);
+        doc.setFontSize(9.5);
         doc.setTextColor(white[0], white[1], white[2]);
-        doc.text('\u20b1' + total.toFixed(2), W - 8, y + 8, { align: 'right' });
+        doc.text('PHP ' + total.toFixed(2), W - 9, y + 7.8, { align: 'right' });
 
         y += 17;
 
