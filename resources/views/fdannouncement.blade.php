@@ -806,13 +806,17 @@
                 </div>
             @empty
                 <div class="ann-list-empty">
-                    <img src="{{ asset('icons/announce.png') }}" alt="">
-                    No announcements yet.
+                    <div class="ann-empty-icon" aria-hidden="true">
+                        <img src="{{ asset('icons/announce.png') }}" alt="">
+                    </div>
+                    <div>No announcements yet.</div>
                 </div>
             @endforelse
 
             <div class="ann-list-empty" id="ann-no-results" style="display:none;">
-                <img src="{{ asset('icons/search.png') }}" alt="">
+                <div class="ann-empty-icon" aria-hidden="true">
+                    <img src="{{ asset('icons/search.png') }}" alt="">
+                </div>
                 No announcements match your search.
             </div>
         </div>
