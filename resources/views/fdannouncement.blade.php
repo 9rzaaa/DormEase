@@ -603,6 +603,14 @@
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+.ann-empty-icon img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(24%) sepia(97%) saturate(3321%) hue-rotate(324deg) brightness(91%) contrast(97%);
+}
+
 .vm-header { padding: 1.3rem 1.5rem 0; border-bottom: 1px solid var(--pink-100, #f9c5d6); flex-shrink: 0; }
 .vm-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
 .vm-title-group { display: flex; align-items: center; gap: .65rem; }
