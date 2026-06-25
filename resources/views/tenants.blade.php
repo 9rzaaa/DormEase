@@ -1722,7 +1722,6 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <div class="modal-footer" style="justify-content:space-between;">
                 <button type="button" class="btn-outline" id="add-btn-back" style="display:none;" onclick="goAddStep(1)">&#8592; Back</button>
-                <button type="button" class="btn-cancel" id="add-footer-cancel" onclick="closeModal('add-modal')">Cancel</button>
                 <button type="button" class="btn-submit" id="add-btn-next" onclick="goAddStep(2)">Next &#8594;</button>
                 <button type="submit" class="btn-submit" id="add-btn-submit" style="display:none;">Add Tenant</button>
             </div>
