@@ -889,10 +889,15 @@ public function timeIn($id)
 
     $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
-        'tenant_id'  => $tenant->tenant_id,
-        'action'     => 'time_in',
-        'logged_at'  => now(),
-        'logged_by'  => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'tenant_id'   => $tenant->tenant_id,
+        'account_id'  => $tenant->account_id,
+        'first_name'  => $tenant->first_name,
+        'last_name'   => $tenant->last_name,
+        'room_number' => $tenant->room_number,
+        'floor'       => $tenant->floor,
+        'action'      => 'time_in',
+        'logged_at'   => now(),
+        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed in successfully.']);
@@ -914,10 +919,15 @@ public function timeOut($id)
 
     $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
-        'tenant_id'  => $tenant->tenant_id,
-        'action'     => 'time_out',
-        'logged_at'  => now(),
-        'logged_by'  => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'tenant_id'   => $tenant->tenant_id,
+        'account_id'  => $tenant->account_id,
+        'first_name'  => $tenant->first_name,
+        'last_name'   => $tenant->last_name,
+        'room_number' => $tenant->room_number,
+        'floor'       => $tenant->floor,
+        'action'      => 'time_out',
+        'logged_at'   => now(),
+        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed out successfully.']);
