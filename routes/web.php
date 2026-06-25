@@ -117,7 +117,7 @@ Route::post('/login', function () {
         'shift_schedule' => $user->shift_schedule,
         'login_at'       => $now,
         'logout_at'      => null,
-        'duty_status'    => $dutyStatus,
+        'duty_status'    => $dutyStatus ?? 'off_duty',
     ]);
 
     if ($user->is_temp_password) {
