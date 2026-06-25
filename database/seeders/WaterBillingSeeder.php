@@ -7,12 +7,17 @@ use App\Models\WaterRate;
 use App\Models\WaterBilling;
 use App\Models\Payment;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class WaterBillingSeeder extends Seeder
 {
     public function run(): void
     {
+        if (!extension_loaded('gd')) {
+            $this->command?->warn('GD extension not found. Proof of payment images will not be generated, proof_of_payment will stay null.');
+        }
+
         $records = [
             [
                 'tenant_email'         => 'maria.santos@example.com',
@@ -2894,7 +2899,23 @@ class WaterBillingSeeder extends Seeder
             if (in_array($r['payment_status'], ['paid', 'pending', 'rejected'])) {
                 $paymentSubmittedAt = Carbon::parse($r['due_date'])->subDays(3);
                 $referenceCode = 'REF-' . strtoupper(substr(md5($r['tenant_email'] . $monthKey), 0, 8));
-                $proofOfPayment = 'proofs/demo-' . strtolower(str_replace(' ', '-', $tenant->first_name)) . '-' . $monthKey . '.jpg';
+
+                $fileName = 'demo-' . strtolower(str_replace(' ', '-', $tenant->first_name . '-' . $tenant->last_name)) . '-' . $monthKey . '.png';
+                $relativePath = 'proofs/' . $fileName;
+
+                if (extension_loaded('gd')) {
+                    $imageBinary = $this->generateProofImage(
+                        tenantName: $tenant->first_name . ' ' . $tenant->last_name,
+                        amount: $r['room_share'],
+                        referenceCode: $referenceCode,
+                        paymentDate: $paymentSubmittedAt,
+                        billingMonthLabel: Carbon::parse($monthKey)->format('F Y')
+                    );
+                    Storage::disk('public')->put($relativePath, $imageBinary);
+                    $proofOfPayment = $relativePath;
+                } else {
+                    $proofOfPayment = null;
+                }
             }
 
             if ($r['payment_status'] === 'rejected') {
@@ -2936,5 +2957,76 @@ class WaterBillingSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    private function generateProofImage(
+        string $tenantName,
+        float $amount,
+        string $referenceCode,
+        ?Carbon $paymentDate,
+        string $billingMonthLabel
+    ): string {
+        $width  = 600;
+        $height = 800;
+
+        $image = imagecreatetruecolor($width, $height);
+
+        $white    = imagecolorallocate($image, 255, 255, 255);
+        $pink     = imagecolorallocate($image, 232, 23, 93);
+        $lightPink = imagecolorallocate($image, 255, 240, 246);
+        $dark     = imagecolorallocate($image, 40, 40, 40);
+        $gray     = imagecolorallocate($image, 120, 120, 120);
+        $green    = imagecolorallocate($image, 31, 157, 105);
+        $line     = imagecolorallocate($image, 230, 200, 215);
+
+        imagefilledrectangle($image, 0, 0, $width, $height, $white);
+        imagefilledrectangle($image, 0, 0, $width, 110, $pink);
+
+        $font = 5;
+
+        $title = 'GCASH PAYMENT RECEIPT';
+        $titleWidth = imagefontwidth($font) * strlen($title);
+        imagestring($image, $font, (int) (($width - $titleWidth) / 2), 35, $title, $white);
+
+        $subtitle = 'Sanctissimo Rosario Ladies Dormitory';
+        $subWidth = imagefontwidth(3) * strlen($subtitle);
+        imagestring($image, 3, (int) (($width - $subWidth) / 2), 70, $subtitle, $white);
+
+        $y = 150;
+        $rows = [
+            ['Reference No.', $referenceCode],
+            ['Sender Name', $tenantName],
+            ['Billing Period', $billingMonthLabel],
+            ['Date Paid', $paymentDate ? $paymentDate->format('M d, Y h:i A') : '-'],
+            ['Payment Method', 'GCash'],
+        ];
+
+        foreach ($rows as [$label, $value]) {
+            imagestring($image, 3, 40, $y, strtoupper($label), $gray);
+            imagestring($image, 4, 40, $y + 20, $value, $dark);
+            imageline($image, 40, $y + 45, $width - 40, $y + 45, $line);
+            $y += 65;
+        }
+
+        imagefilledrectangle($image, 40, $y + 10, $width - 40, $y + 100, $lightPink);
+        imagestring($image, 3, 60, $y + 25, 'AMOUNT PAID', $gray);
+
+        $amountText = 'PHP ' . number_format($amount, 2);
+        imagestring($image, 5, 60, $y + 50, $amountText, $green);
+
+        $stampText = 'PAID';
+        $stampWidth = imagefontwidth($font) * strlen($stampText);
+        imagestring($image, $font, $width - 60 - $stampWidth, $y + 55, $stampText, $green);
+
+        $footer = 'This is a system generated demo receipt for testing purposes only.';
+        $footerWidth = imagefontwidth(2) * strlen($footer);
+        imagestring($image, 2, (int) (($width - $footerWidth) / 2), $height - 40, $footer, $gray);
+
+        ob_start();
+        imagepng($image);
+        $binary = ob_get_clean();
+        imagedestroy($image);
+
+        return $binary;
     }
 }
