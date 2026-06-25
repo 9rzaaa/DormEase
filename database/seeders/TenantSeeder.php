@@ -20,7 +20,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 2,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-10',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-10',
                 'status'         => 'active',
             ],
             [
@@ -32,7 +32,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 2,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-15',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-15',
                 'status'         => 'active',
             ],
             [
@@ -44,7 +44,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 2,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-01',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-01',
                 'status'         => 'active',
             ],
             [
@@ -68,7 +68,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 2,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-05',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-05',
                 'status'         => 'active',
             ],
             [
@@ -80,7 +80,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-02',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-02',
                 'status'         => 'active',
             ],
             [
@@ -92,7 +92,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-08',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-08',
                 'status'         => 'active',
             ],
             [
@@ -104,7 +104,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2025-11-20',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-20',
                 'status'         => 'active',
             ],
             [
@@ -116,7 +116,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-01',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-01',
                 'status'         => 'active',
             ],
             [
@@ -128,7 +128,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-10',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-10',
                 'status'         => 'active',
             ],
             [
@@ -152,7 +152,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-25',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-25',
                 'status'         => 'active',
             ],
             [
@@ -164,7 +164,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-12',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-12',
                 'status'         => 'active',
             ],
             [
@@ -176,7 +176,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-05',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-05',
                 'status'         => 'pending',
             ],
             [
@@ -188,7 +188,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-15',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-15',
                 'status'         => 'active',
             ],
             [
@@ -200,7 +200,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 3,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-18',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-18',
                 'status'         => 'active',
             ],
             [
@@ -212,7 +212,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-10-26',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-10-26',
                 'status'         => 'active',
             ],
             [
@@ -224,7 +224,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-03',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-03',
                 'status'         => 'active',
             ],
             [
@@ -236,7 +236,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2025-11-12',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-12',
                 'status'         => 'active',
             ],
             [
@@ -248,7 +248,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-22',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-22',
                 'status'         => 'active',
             ],
             [
@@ -260,7 +260,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-02',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-02',
                 'status'         => 'active',
             ],
             [
@@ -272,7 +272,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-08',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-08',
                 'status'         => 'active',
             ],
             [
@@ -284,7 +284,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-14',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-14',
                 'status'         => 'active',
             ],
             [
@@ -296,7 +296,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-18',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-18',
                 'status'         => 'active',
             ],
             [
@@ -308,7 +308,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-10-29',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-10-29',
                 'status'         => 'active',
             ],
             [
@@ -320,7 +320,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-20',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-20',
                 'status'         => 'active',
             ],
             [
@@ -332,7 +332,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-28',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-28',
                 'status'         => 'pending',
             ],
             [
@@ -344,7 +344,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 4,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-22',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-22',
                 'status'         => 'active',
             ],
             [
@@ -356,7 +356,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2025-11-01',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-01',
                 'status'         => 'active',
             ],
             [
@@ -368,7 +368,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Solo Room',
                 'move_in_date'   => '2025-11-09',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-09',
                 'status'         => 'active',
             ],
             [
@@ -380,7 +380,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-16',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-16',
                 'status'         => 'active',
             ],
             [
@@ -392,7 +392,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-04',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-04',
                 'status'         => 'active',
             ],
             [
@@ -404,7 +404,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-11',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-11',
                 'status'         => 'active',
             ],
             [
@@ -416,7 +416,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-10-31',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-10-31',
                 'status'         => 'active',
             ],
             [
@@ -428,7 +428,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-19',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-19',
                 'status'         => 'active',
             ],
             [
@@ -440,7 +440,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-14',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-14',
                 'status'         => 'active',
             ],
             [
@@ -452,7 +452,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-11-24',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-11-24',
                 'status'         => 'active',
             ],
             [
@@ -464,7 +464,7 @@ class TenantSeeder extends Seeder
                 'floor'          => 5,
                 'stay_type'      => 'Shared Room',
                 'move_in_date'   => '2025-12-19',
-                'move_out_date'  => null,
+                'move_out_date'  => '2026-12-19',
                 'status'         => 'active',
             ],
         ];
