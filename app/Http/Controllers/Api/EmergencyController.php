@@ -611,7 +611,7 @@ class EmergencyController extends Controller
         $requestedType = $validated['emergency_type'] ?? $validated['type'] ?? null;
         $isPanicAlert = $this->isPanicAlert($requestedType, $cleanedDescription);
         $classification = $this->classify($cleanedDescription, $requestedType, $isPanicAlert);
-        $location = $validated['location'] ?? $this->detectLocation($cleanedDescription) ?? $tenant?->room_number;
+        $location = $this->detectLocation($cleanedDescription) ?? $validated['location'] ?? $tenant?->room_number;
 
         $report = EmergencyReport::create([
             'tenant_id' => $tenant?->tenant_id,
@@ -831,7 +831,72 @@ class EmergencyController extends Controller
             return 'Room ' . Str::upper($matches[1]);
         }
 
-        if (preg_match('/\b(lobby|hallway|kitchen|bathroom|stairs|stairwell|elevator|parking|laundry|banyo|kusina|hagdan|pasilyo)\b/i', $text, $matches)) {
+        $keywords = [
+            'lobby',
+            'hallway',
+            'corridor',
+            'pasilyo',
+            'kitchen',
+            'kusina',
+            'bathroom',
+            'toilet',
+            'restroom',
+            'cr',
+            'comfort room',
+            'comfort rm',
+            'banyo',
+            'shower',
+            'shower room',
+            'stairs',
+            'stairwell',
+            'staircase',
+            'hagdan',
+            'hagdanan',
+            'elevator',
+            'lift',
+            'parking',
+            'parking lot',
+            'garage',
+            'laundry',
+            'laundry room',
+            'canteen',
+            'cafeteria',
+            'gym',
+            'study room',
+            'study area',
+            'library',
+            'lounge',
+            'roof',
+            'rooftop',
+            'bubong',
+            'balcony',
+            'terrace',
+            'garden',
+            'yard',
+            'office',
+            'front desk',
+            'frontdesk',
+            'entrance',
+            'gate',
+            'pinto',
+            'door',
+            'exit',
+            'labasan',
+            'fire escape',
+            'basement'
+        ];
+
+        usort($keywords, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        $escaped = array_map(function ($k) {
+            return preg_quote($k, '/');
+        }, $keywords);
+
+        $pattern = '/\b(' . implode('|', $escaped) . ')\b/i';
+
+        if (preg_match($pattern, $text, $matches)) {
             return Str::title($matches[1]);
         }
 
