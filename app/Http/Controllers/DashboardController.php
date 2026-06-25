@@ -111,7 +111,7 @@ class DashboardController extends Controller
             'unreadNotifCount'     => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'latestEmergency'      => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
             'allEmergencies'       => EmergencyReport::latest('reported_at')->take(50)->get(),
-            'recentActivities'     => VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
+            'recentActivities'     => VisitorLog::with('tenant')->whereNotNull('arrival_time')->latest('arrival_time')->take(5)->get(),
             'chartLabels'          => $chartLabels,
             'chartCollected'       => $chartCollected,
             'chartUnpaid'          => $chartUnpaid,
