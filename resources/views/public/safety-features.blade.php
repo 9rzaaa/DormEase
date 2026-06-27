@@ -224,9 +224,9 @@
       <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory?fbclid=IwY2xjawR1agFleHRuA2FlbQIxMABicmlkETFSMGd2UUk5MFBOMmltNUFuc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHm3CWQe1WuTvPBmFvhFx21eNhAD0Y0JvuJhC5csQx8pZ743hf2XciRZ6CKtT_aem_C2XJTMgOF6fVl_8IZKtidQ" aria-label="Instagram">
         <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
       </a>
-      <a class="footer-social-icon" href="https://l.facebook.com/l.php?u=https%3A%2F%2Ftiktok.com%2F%40srbdormitory%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExUjBndlFJOTBQTjJpbTVBbnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR6_VD_SV6fgSa0DXK4qeWb12Ne2lLBJb3G41h5iz8rzZUjFq372zpT3q8ls0g_aem_9JUss0K1Lc7HjetMsE4voA&h=AUDRue1ADoYkZA6tVa6ikWVG8ujEpdIZMrpxzczAeWIhOpmRnEhV3IRWDokouMeG0yF_vyQsoztM2tgpcrMEqluI-XTDcAmfFZi035sm-pFYQRrSvR8MsbVDjhygV88LNg7M" aria-label="TikTok">
-        <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
-      </a>
+      <a class="footer-social-icon" href="https://tiktok.com/@srbdormitory" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
+        </a>
       </div>
       <div class="footer-links"><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
     </div>
