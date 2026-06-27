@@ -204,8 +204,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">The dormitory is open exclusively to female students, particularly those enrolled at the University of Santo Tomas (UST) and nearby schools in Sampaloc, Manila. Applicants must present a valid school ID and enrollment certificate upon move-in. Priority is given to students who need safe and affordable housing close to their campus.</div>
-          </div>
+<div class="faq-answer-inner">The dormitory is open to anyone, though it primarily caters to female students, particularly those enrolled at the University of Santo Tomas (UST) and nearby schools in Sampaloc, Manila. Applicants must present a valid school ID and enrollment certificate upon move-in. Priority is given to students who need safe and affordable housing close to their campus.</div>          </div>
         </div>
 
         <div class="faq-item">
@@ -224,8 +223,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly rates typically cover water (up to a set consumption limit billed separately), electricity, Wi-Fi access, use of common areas, and building maintenance services. Water billing beyond the standard allowance is computed separately and reflected in your monthly statement through DormEase. Laundry areas and comfort rooms are shared per floor.</div>
-          </div>
+<div class="faq-answer-inner">Monthly rates typically cover water (up to a set consumption limit billed separately), electricity, Wi-Fi access, use of common areas, and building maintenance services. Water billing beyond the standard allowance is computed separately and reflected in your monthly statement through DormEase. Each room has its own private comfort room.</div>          </div>
         </div>
 
         <div class="faq-item">
@@ -268,15 +266,6 @@
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">What happens if I need to move out before my contract ends?</span>
-            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
-          </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">Tenants who wish to end their stay early must submit a formal notice to the management at least 30 days in advance. Early move-out may be subject to terms specified in your lease agreement, including forfeiture of the security deposit or a prorated fee. We encourage tenants to review their contract carefully and coordinate with management as early as possible.</div>
-          </div>
-        </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
@@ -294,8 +283,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Monthly billing statements, including rent and water charges, are accessible through the DormEase tenant portal. Statements are generated and posted each billing cycle so you can review your charges in detail. For payment methods and due dates, please coordinate with the management office. We recommend always keeping a record of your payment receipts.</div>
-          </div>
+<div class="faq-answer-inner">Water billing charges can be conveniently paid through the DormEase tenant portal, with statements generated and posted each billing cycle so you can review your consumption in detail. Electricity is billed directly through Meralco and is settled separately from the app. Rent payments are currently coordinated with the management office, though we're working on expanding the app to support this in the future. We recommend always keeping a record of your payment receipts.</div>          </div>
         </div>
 
       </div>
