@@ -555,7 +555,7 @@
         <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory" aria-label="Instagram">
           <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
         </a>
-        <a class="footer-social-icon" href="#" aria-label="TikTok">
+        <a class="footer-social-icon" href="https://tiktok.com/@srbdormitory" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
           <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
         </a>
       </div>
