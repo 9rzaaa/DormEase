@@ -7,7 +7,7 @@
   <title>DormEase Gallery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -25,8 +25,8 @@
       --border:        rgba(232,23,93,0.18);
       --shadow:        0 4px 32px rgba(232,23,93,0.16);
       --shadow-card:   0 2px 20px rgba(36,16,24,0.09);
-      --font-head:     'Montserrat', sans-serif;
-      --font-body:     'Nunito', sans-serif;
+      --font-head:     'Poppins', sans-serif;
+      --font-body:     'Poppins', sans-serif;
       --r-md: 16px; --r-lg: 28px; --r-xl: 48px;
     }
     html { scroll-behavior: smooth; }
@@ -117,7 +117,7 @@
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
     .carousel-label span { font-size: .72rem; font-weight: 700; letter-spacing: .10em; text-transform: uppercase; color: rgba(255,255,255,.80); }
     .carousel-title { font-family: var(--font-head); font-size: clamp(2.2rem,5vw,4rem); font-weight: 800; color: white; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 12px; }
-    .carousel-title em { color: var(--pink-light); font-style: italic; }
+    .carousel-title em { color: var(--pink-light); font-style: normal; }
     .carousel-desc { font-size: 1rem; color: rgba(255,255,255,.62); max-width: 500px; line-height: 1.75; margin-bottom: 28px; }
     .carousel-cta { display: inline-flex; align-items: center; gap: 8px; background: var(--gradient); color: white; text-decoration: none; font-weight: 700; font-size: .9rem; padding: 13px 28px; border-radius: 100px; box-shadow: 0 8px 24px rgba(232,23,93,.32); transition: filter .2s, transform .15s; width: fit-content; }
     .carousel-cta:hover { filter: brightness(.94); transform: translateY(-2px); }
@@ -163,7 +163,7 @@
     .section-wrap { padding: 72px 6% 0; }
     .section-tag { font-size: .70rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pink); margin-bottom: 10px; }
     .section-title { font-family: var(--font-head); font-size: clamp(1.9rem,3.2vw,2.8rem); font-weight: 800; color: var(--brown); letter-spacing: -.03em; margin-bottom: 14px; }
-    .section-title em { color: var(--pink); font-style: italic; }
+    .section-title em { color: var(--pink); font-style: normal; }
     .section-sub { font-size: 1rem; color: var(--brown-light); line-height: 1.8; max-width: 520px; }
 
     .filter-wrap {
@@ -310,7 +310,7 @@
 
     .gallery-cta { background: var(--pink-pale); padding: 80px 6%; text-align: center; }
     .gallery-cta h2 { font-family: var(--font-head); font-size: clamp(1.9rem,3.5vw,2.8rem); font-weight: 800; color: var(--brown); letter-spacing: -.03em; margin-bottom: 14px; }
-    .gallery-cta h2 em { color: var(--pink); font-style: italic; }
+    .gallery-cta h2 em { color: var(--pink); font-style: normal; }
     .gallery-cta p { font-size: 1rem; color: var(--brown-light); max-width: 460px; margin: 0 auto 30px; line-height: 1.8; }
     .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
     .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--gradient); color: white; text-decoration: none; font-family: var(--font-body); font-size: .9rem; font-weight: 700; padding: 14px 32px; border-radius: 100px; box-shadow: 0 8px 24px rgba(232,23,93,.32); transition: filter .2s, transform .15s; }

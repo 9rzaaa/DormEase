@@ -7,7 +7,7 @@
   <title>Safety Features: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -17,8 +17,8 @@
       --pink-pale:#FFE4F0; --pink-deep:#8A123B; --cream:var(--soft-bg);
       --cream-dark:#FFEAF3; --brown:#241018; --brown-light:#744B5D;
       --white:#fff; --border:rgba(232,23,93,.18);
-      --font-head:'Montserrat','Segoe UI',sans-serif;
-      --font-body:'Nunito','Google Sans',sans-serif;
+      --font-head:'Poppins','Segoe UI',sans-serif;
+      --font-body:'Poppins','Segoe UI',sans-serif;
       --shadow-soft:0 4px 32px rgba(232,23,93,.16);
       --shadow-card:0 2px 20px rgba(36,16,24,.09);
       --r-md:16px; --r-lg:28px;
@@ -49,7 +49,7 @@
     .safety-hero-inner { max-width:1180px; margin:0 auto; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
     h1 { font-family:var(--font-head); font-size:clamp(2.35rem,4.6vw,4.4rem); line-height:1.08; color:var(--brown); letter-spacing:-.03em; max-width:880px; }
-    h1 em { color:var(--pink); font-style:italic; }
+    h1 em { color:var(--pink); font-style:normal; }
     .hero-copy { color:var(--brown-light); font-size:1.05rem; line-height:1.8; max-width:680px; margin-top:22px; }
     .slideshow-section { padding:0 6% 94px; background:var(--cream); }
     .slideshow-shell { max-width:1020px; margin:0 auto; background:white; border:1px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-soft); overflow:hidden; }
@@ -224,9 +224,9 @@
       <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory?fbclid=IwY2xjawR1agFleHRuA2FlbQIxMABicmlkETFSMGd2UUk5MFBOMmltNUFuc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHm3CWQe1WuTvPBmFvhFx21eNhAD0Y0JvuJhC5csQx8pZ743hf2XciRZ6CKtT_aem_C2XJTMgOF6fVl_8IZKtidQ" aria-label="Instagram">
         <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
       </a>
-      <a class="footer-social-icon" href="https://l.facebook.com/l.php?u=https%3A%2F%2Ftiktok.com%2F%40srbdormitory%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExUjBndlFJOTBQTjJpbTVBbnNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR6_VD_SV6fgSa0DXK4qeWb12Ne2lLBJb3G41h5iz8rzZUjFq372zpT3q8ls0g_aem_9JUss0K1Lc7HjetMsE4voA&h=AUDRue1ADoYkZA6tVa6ikWVG8ujEpdIZMrpxzczAeWIhOpmRnEhV3IRWDokouMeG0yF_vyQsoztM2tgpcrMEqluI-XTDcAmfFZi035sm-pFYQRrSvR8MsbVDjhygV88LNg7M" aria-label="TikTok">
-        <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
-      </a>
+      <a class="footer-social-icon" href="https://tiktok.com/@srbdormitory" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
+        </a>
       </div>
       <div class="footer-links"><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('faqs') }}">FAQs</a><a href="{{ route('login') }}">Admin Portal</a></div>
     </div>

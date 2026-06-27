@@ -7,7 +7,7 @@
   <title>FAQs: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -17,8 +17,8 @@
       --pink-pale:#FFE4F0; --pink-deep:#8A123B; --cream:var(--soft-bg);
       --cream-dark:#FFEAF3; --brown:#241018; --brown-light:#744B5D;
       --white:#fff; --border:rgba(232,23,93,.18);
-      --font-head:'Montserrat','Segoe UI',sans-serif;
-      --font-body:'Nunito','Google Sans',sans-serif;
+      --font-head:'Poppins','Segoe UI',sans-serif;
+      --font-body:'Poppins','Segoe UI',sans-serif;
       --shadow-soft:0 4px 32px rgba(232,23,93,.16);
       --shadow-card:0 2px 20px rgba(36,16,24,.09);
       --r-md:16px; --r-lg:28px;
@@ -53,7 +53,7 @@
     .faq-hero-inner { max-width:1180px; margin:0 auto; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
     h1 { font-family:var(--font-head); font-size:clamp(2.35rem,4.6vw,4.4rem); line-height:1.08; color:var(--brown); letter-spacing:-.03em; max-width:880px; }
-    h1 em { color:var(--pink); font-style:italic; }
+    h1 em { color:var(--pink); font-style:normal; }
     .hero-copy { color:var(--brown-light); font-size:1.05rem; line-height:1.8; max-width:680px; margin-top:22px; }
 
     .faq-section { padding:0 6% 100px; background:var(--cream); }
@@ -62,7 +62,7 @@
     .faq-left { position:sticky; top:160px; }
     .faq-left-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:14px; }
     .faq-left-title { font-family:var(--font-head); font-size:clamp(2rem,3.2vw,3.1rem); line-height:1.1; font-weight:800; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
-    .faq-left-title em { color:var(--pink); font-style:italic; }
+    .faq-left-title em { color:var(--pink); font-style:normal; }
     .faq-left-body { color:var(--brown-light); font-size:.96rem; line-height:1.78; margin-bottom:28px; }
     .faq-contact-link { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-head); font-size:.88rem; font-weight:800; color:var(--pink); text-decoration:none; letter-spacing:.02em; transition:gap .2s; }
     .faq-contact-link:hover { gap:14px; }
@@ -204,8 +204,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">The dormitory is open exclusively to female students, particularly those enrolled at the University of Santo Tomas (UST) and nearby schools in Sampaloc, Manila. Applicants must present a valid school ID and enrollment certificate upon move-in. Priority is given to students who need safe and affordable housing close to their campus.</div>
-          </div>
+<div class="faq-answer-inner">The dormitory is open to anyone, though it primarily caters to female students, particularly those enrolled at the University of Santo Tomas (UST) and nearby schools in Sampaloc, Manila. Applicants must present a valid school ID and enrollment certificate upon move-in. Priority is given to students who need safe and affordable housing close to their campus.</div>          </div>
         </div>
 
         <div class="faq-item">
@@ -224,8 +223,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Water consumption is measured per unit using individual sub-meters. Your monthly water bill is computed based on your actual usage and reflected in your billing statement through DormEase. In-unit laundry is not allowed inside the dormitory. Tenants may use nearby laundry shops for pickup and delivery service, several of which are accessible within the immediate area.</div>
-          </div>
+<div class="faq-answer-inner">Monthly rates typically cover water (up to a set consumption limit billed separately), electricity, Wi-Fi access, use of common areas, and building maintenance services. Water billing beyond the standard allowance is computed separately and reflected in your monthly statement through DormEase. Each room has its own private comfort room.</div>          </div>
         </div>
 
         <div class="faq-item">
@@ -318,15 +316,6 @@
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-btn" aria-expanded="false">
-            <span class="faq-question">Can I give tips or gifts to the dormitory staff or guards?</span>
-            <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
-          </button>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">No. Tipping or giving money or gifts to staff and guards is not allowed. Favoritism shall not be tolerated — equal and fair treatment is upheld for all tenants. Please report any concerns regarding staff conduct to the Admin office.</div>
-          </div>
-        </div>
 
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false">
@@ -365,8 +354,7 @@
             <span class="faq-icon"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg></span>
           </button>
           <div class="faq-answer">
-            <div class="faq-answer-inner">Water billing statements are accessible through the DormEase tenant portal, where you can view a full breakdown of your water consumption and charges each billing cycle. Payment can be made directly through the app via <strong>GCash</strong>, <strong>bank transfer</strong>, or <strong>over the counter</strong> at the management office. Tenants can also view their complete payment history anytime through the app. Official receipts are issued by DormEase upon request for any completed payment.</div>
-          </div>
+<div class="faq-answer-inner">Water billing charges can be conveniently paid through the DormEase tenant portal, with statements generated and posted each billing cycle so you can review your consumption in detail. Electricity is billed directly through Meralco and is settled separately from the app. Rent payments are currently coordinated with the management office, though we're working on expanding the app to support this in the future. We recommend always keeping a record of your payment receipts.</div>          </div>
         </div>
 
       </div>
@@ -416,7 +404,7 @@
         <a class="footer-social-icon" href="https://www.instagram.com/SRBdormitory" aria-label="Instagram">
           <img src="{{ asset('icons/instagram.png') }}" alt="" onerror="this.style.display='none'">
         </a>
-        <a class="footer-social-icon" href="#" aria-label="TikTok">
+        <a class="footer-social-icon" href="https://tiktok.com/@srbdormitory" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
           <img src="{{ asset('icons/tiktok.png') }}" alt="" onerror="this.style.display='none'">
         </a>
       </div>
