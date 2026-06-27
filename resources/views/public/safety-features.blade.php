@@ -7,7 +7,7 @@
   <title>Safety Features: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -17,8 +17,8 @@
       --pink-pale:#FFE4F0; --pink-deep:#8A123B; --cream:var(--soft-bg);
       --cream-dark:#FFEAF3; --brown:#241018; --brown-light:#744B5D;
       --white:#fff; --border:rgba(232,23,93,.18);
-      --font-head:'Montserrat','Segoe UI',sans-serif;
-      --font-body:'Nunito','Google Sans',sans-serif;
+      --font-head:'Poppins','Segoe UI',sans-serif;
+      --font-body:'Poppins','Segoe UI',sans-serif;
       --shadow-soft:0 4px 32px rgba(232,23,93,.16);
       --shadow-card:0 2px 20px rgba(36,16,24,.09);
       --r-md:16px; --r-lg:28px;
@@ -49,7 +49,7 @@
     .safety-hero-inner { max-width:1180px; margin:0 auto; }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
     h1 { font-family:var(--font-head); font-size:clamp(2.35rem,4.6vw,4.4rem); line-height:1.08; color:var(--brown); letter-spacing:-.03em; max-width:880px; }
-    h1 em { color:var(--pink); font-style:italic; }
+    h1 em { color:var(--pink); font-style:normal; }
     .hero-copy { color:var(--brown-light); font-size:1.05rem; line-height:1.8; max-width:680px; margin-top:22px; }
     .slideshow-section { padding:0 6% 94px; background:var(--cream); }
     .slideshow-shell { max-width:1020px; margin:0 auto; background:white; border:1px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-soft); overflow:hidden; }

@@ -7,7 +7,7 @@
   <title>Privacy Policy: DormEase</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -17,8 +17,8 @@
       --pink-pale:#FFE4F0; --pink-deep:#8A123B; --cream:var(--soft-bg);
       --cream-dark:#FFEAF3; --brown:#241018; --brown-light:#744B5D;
       --white:#fff; --border:rgba(232,23,93,.18);
-      --font-head:'Montserrat','Segoe UI',sans-serif;
-      --font-body:'Nunito','Google Sans',sans-serif;
+      --font-head:'Poppins','Segoe UI',sans-serif;
+      --font-body:'Poppins','Segoe UI',sans-serif;
       --shadow-soft:0 4px 32px rgba(232,23,93,.16);
       --shadow-card:0 2px 20px rgba(36,16,24,.09);
       --r-md:16px; --r-lg:28px;
@@ -59,7 +59,7 @@
     .priv-hero-title { font-family:var(--font-head); font-size:clamp(3rem,6vw,5.8rem); line-height:1.0; font-weight:800; color:white; letter-spacing:-.04em; margin-bottom:24px; overflow:hidden; }
     .priv-hero-title .line { display:block; transform:translateY(110%); animation:titleSlide .8s cubic-bezier(.16,1,.3,1) forwards; }
     .priv-hero-title .line:nth-child(2) { animation-delay:.14s; }
-    .priv-hero-title em { color:var(--pink-light); font-style:italic; }
+    .priv-hero-title em { color:var(--pink-light); font-style:normal; }
     @keyframes titleSlide { to { transform:translateY(0); } }
 
     .priv-hero-sub { color:rgba(255,255,255,.56); font-size:1.05rem; line-height:1.8; max-width:560px; margin-bottom:36px; opacity:0; animation:fadeUp .7s .4s ease forwards; }
