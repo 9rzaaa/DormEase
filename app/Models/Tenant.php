@@ -120,7 +120,7 @@ class Tenant extends Authenticatable
             $this->update(['status' => 'active']);
             \App\Helpers\NotificationHelper::sendToAll(
                 type: 'tenant_activated',
-                message: "{$this->first_name} {$this->last_name} has logged in and their account is now active.",
+                message: "{$this->first_name} {$this->last_name} has logged in for the first time and is now active.",
                 ref_id: $this->tenant_id,
             );
         }
@@ -144,7 +144,7 @@ class Tenant extends Authenticatable
     {
         return DocumentRequest::where('tenant_id', $this->tenant_id)
             ->where('hidden_from_tenant', false)
-            ->whereIn('status', ['pending', 'processing', 'approved', 'resubmission'])
+            ->whereIn('status', ['pending', 'processing', 'resubmission'])
             ->exists();
     }
 

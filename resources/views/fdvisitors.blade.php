@@ -436,6 +436,81 @@
     .archive-drawer-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; line-height: 1.2; }
     .archive-drawer-sub { font-size: .78rem; color: var(--ink-muted); margin-top: .25rem; font-weight: 500; }
 
+    .overnight-toggle-row {
+        padding: .9rem 1.8rem;
+        background: #fff9fb;
+        border-bottom: 1.5px solid var(--pink-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-text { flex: 1; min-width: 0; }
+
+    .overnight-toggle-title {
+        font-size: .82rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .overnight-toggle-sub {
+        font-size: .72rem;
+        color: var(--ink-muted);
+        margin-top: .2rem;
+        line-height: 1.4;
+    }
+
+    .overnight-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+    }
+
+    .overnight-toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .overnight-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: var(--pink-light);
+        border-radius: 99px;
+        transition: background .2s;
+    }
+
+    .overnight-toggle-slider::before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        bottom: 3px;
+        background: var(--white);
+        border-radius: 50%;
+        transition: transform .2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider {
+        background: var(--bright-pink);
+    }
+
+    .overnight-toggle-switch input:checked + .overnight-toggle-slider::before {
+        transform: translateX(18px);
+    }
+
+    .overnight-toggle-switch input:disabled + .overnight-toggle-slider {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
     .archive-close-btn {
         width: 34px; height: 34px; border-radius: 8px;
         background: var(--white); border: 1.5px solid var(--pink-light);
@@ -520,6 +595,7 @@
     .archive-pill-purpose   { background: var(--pink-bg); color: var(--hot-pink); border: 1px solid var(--pink-light); }
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
     .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
+    .archive-pill-rejected  { background: #fff4e8; color: #c8631c; border: 1px solid #f5c192; }
 
     .archive-card-footer {
         display: flex; align-items: center; gap: .4rem;
@@ -640,8 +716,8 @@
         border-radius: 22px;
         padding: 0;
         overflow: hidden;
-        max-height: 90vh;    
-        display: flex;        
+        max-height: 90vh;
+        display: flex;
         flex-direction: column;
         box-shadow: 0 24px 64px rgba(232,23,93,.18), 0 8px 24px rgba(0,0,0,.1);
     }
@@ -811,6 +887,106 @@
     }
     .amf-btn-submit:hover { opacity: .9; transform: translateY(-1px); }
     .amf-btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .overdue-banner {
+        margin: 0 0 0 0;
+        border-radius: 0;
+        border-left: 4px solid #c8960c;
+        background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
+        border-bottom: 1.5px solid #f0c040;
+        padding: .85rem 1.2rem .85rem 1.2rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        animation: overdueSlidein .35s cubic-bezier(.22,1,.36,1) both;
+        flex-shrink: 0;
+    }
+
+    @keyframes overdueSlidein {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .overdue-banner-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: #fff3cd;
+        border: 1.5px solid #f0c040;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    .overdue-banner-body { flex: 1; min-width: 0; }
+
+    .overdue-banner-title {
+        font-size: .82rem;
+        font-weight: 800;
+        color: #92680a;
+        letter-spacing: .01em;
+        margin-bottom: .22rem;
+    }
+
+    .overdue-banner-list {
+        font-size: .8rem;
+        color: #7a5510;
+        font-weight: 600;
+        line-height: 1.6;
+    }
+
+    .overdue-banner-list span {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        background: #fff3cd;
+        border: 1px solid #f0c040;
+        border-radius: 99px;
+        padding: .12rem .55rem;
+        margin: .1rem .2rem .1rem 0;
+        font-size: .74rem;
+        font-weight: 700;
+        color: #92680a;
+        white-space: nowrap;
+    }
+
+    .overdue-banner-sub {
+        font-size: .73rem;
+        color: #a07820;
+        margin-top: .28rem;
+        font-weight: 500;
+    }
+
+    .overdue-banner-dismiss {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1.5px solid #f0c040;
+        background: #fff3cd;
+        color: #92680a;
+        font-size: .9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background .2s, border-color .2s;
+        font-family: var(--ff-body);
+        line-height: 1;
+        margin-top: .05rem;
+    }
+    .overdue-banner-dismiss:hover {
+        background: #f0c040;
+        border-color: #c8960c;
+        color: #5a3d00;
+    }
+
+    #fd-rejection-other:focus {
+        border-color: var(--bright-pink);
+        background: var(--white);
+    }
 </style>
 @endsection
 
@@ -867,6 +1043,7 @@
     </div>
 
     <div class="table-card fade-up d3">
+        <div id="overdue-banner-slot"></div>
         <div class="table-header">
             <div class="table-controls">
                 <div class="sort-wrap">
@@ -969,6 +1146,17 @@
         <button class="archive-close-btn" onclick="closeArchive()">&#x2715;</button>
     </div>
 
+    <div class="overnight-toggle-row">
+        <div class="overnight-toggle-text">
+            <div class="overnight-toggle-title">Extend overnight expiry</div>
+            <div class="overnight-toggle-sub">Push pending or approved visit deadlines to the next staff shift if they would expire while no one is on duty</div>
+        </div>
+        <label class="overnight-toggle-switch">
+            <input type="checkbox" id="overnight-extend-toggle" onchange="toggleOvernightExtend(this)" {{ $overnightExtend ? 'checked' : '' }}>
+            <span class="overnight-toggle-slider"></span>
+        </label>
+    </div>
+
     <div class="archive-tabs">
         <button class="archive-tab active" id="atab-completed" onclick="switchArchiveTab('completed')">
             Completed
@@ -981,6 +1169,10 @@
         <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
             Cancelled
             <span class="archive-tab-count" id="acount-cancelled">0</span>
+        </button>
+        <button class="archive-tab" id="atab-rejected" onclick="switchArchiveTab('rejected')">
+            Rejected
+            <span class="archive-tab-count" id="acount-rejected">0</span>
         </button>
     </div>
 
@@ -1107,7 +1299,7 @@
                             >
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;">
-                            <div class="amf-error" id="av_visitor_name_err">Please enter the visitor's full name (letters and spaces only).</div>
+                            <div class="amf-error" id="av_visitor_name_err">Please enter the visitor's full name, first and last name, letters and spaces only.</div>
                             <div class="amf-char-count" id="av_name_count">0 / 100</div>
                         </div>
                     </div>
@@ -1223,7 +1415,7 @@
                                 type="datetime-local"
                                 id="av_arrival_time"
                                 name="arrival_time"
-                                value="{{ old('arrival_time', now()->format('Y-m-d\TH:i')) }}"
+                                value="{{ old('arrival_time') }}"
                                 onchange="avValidateArrival(this)"
                                 onblur="avValidateArrival(this, true)"
                             >
@@ -1251,7 +1443,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Time In</div>
-            <button class="modal-close" onclick="closeModal('timein-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="stopLiveClock(); closeModal('timein-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time in for <strong id="timein-name" style="color:var(--ink);"></strong>
@@ -1266,7 +1458,7 @@
                 <div id="timein-input-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.2rem;display:none;">Time in cannot be set in the future or more than 12 hours in the past.</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('timein-modal')">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timein-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
             </div>
         </form>
@@ -1277,7 +1469,7 @@
     <div class="modal">
         <div class="modal-header">
             <div class="modal-title">Log Time Out</div>
-            <button class="modal-close" onclick="closeModal('timeout-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="stopLiveClock(); closeModal('timeout-modal')">&#x2715;</button>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Log time out for <strong id="timeout-name" style="color:var(--ink);"></strong>
@@ -1290,7 +1482,7 @@
                 <div class="hint">Status will automatically change to "Completed"</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('timeout-modal')">Cancel</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" style="background:var(--green);">Confirm Time Out</button>
             </div>
         </form>
@@ -1311,15 +1503,38 @@
             @method('PUT')
             <div class="modal-field">
                 <label>Status</label>
-                <select name="status" id="status-select" class="status-select">
+                <select name="status" id="status-select" class="status-select" onchange="onFdStatusChange(this)">
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
                 </select>
             </div>
+            <div id="fd-rejection-wrap" style="display:none;margin-top:.75rem;">
+                <div class="modal-field">
+                    <label>Rejection Reason <span style="color:var(--red);">*</span></label>
+                   <select id="fd-rejection-reason" class="status-select" onchange="onFdRejectionReasonChange(this)">
+                        <option value="">Select a reason</option>
+                        <option value="No valid ID presented">No valid ID presented</option>
+                        <option value="Tenant unavailable">Tenant unavailable</option>
+                        <option value="Tenant denied the visit">Tenant denied the visit</option>
+                        <option value="Visitor behavior issue">Visitor behavior issue</option>
+                        <option value="Unverified identity">Unverified identity</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <div id="fd-rejection-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.3rem;display:none;">Please select a rejection reason.</div>
+                </div>
+                <div id="fd-rejection-other-wrap" style="display:none;margin-top:.6rem;">
+                    <div class="modal-field">
+                        <label>Specify reason <span style="color:var(--red);">*</span></label>
+                        <input type="text" id="fd-rejection-other" placeholder="Enter reason..." maxlength="255" style="width:100%;padding:.65rem .9rem;border-radius:10px;border:1.5px solid var(--pink-light);font-family:var(--ff-body);font-size:.88rem;color:var(--ink);background:var(--pink-bg);outline:none;transition:border-color .2s;box-sizing:border-box;">
+                        <div id="fd-rejection-other-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.3rem;display:none;">Please specify the reason.</div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="fd-rejection-reason-final" name="rejection_reason">
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Status</button>
+                <button type="submit" class="btn-submit" onclick="return fdStatusSubmit(event)">Save Status</button>
             </div>
         </form>
     </div>
@@ -1361,6 +1576,7 @@
     var completedVisitors = @json($completedVisitors);
     var deletedVisitors   = @json($deletedVisitors);
     var cancelledVisitors = @json($cancelledVisitors);
+    var rejectedVisitors  = @json($rejectedVisitors);
     var allTenants        = @json($tenants);
 
     var PER_PAGE    = 7;
@@ -1403,6 +1619,17 @@
         return (hour % 12 || 12) + ':' + parts[1] + ' ' + (hour >= 12 ? 'PM' : 'AM');
     }
 
+    function fmtExpiry(expiresAt) {
+        if (!expiresAt) return '';
+        var d = new Date(expiresAt);
+        var now = new Date();
+        var diffMs = d - now;
+        if (diffMs <= 0) return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expiring soon</div>';
+        var hrs = Math.round(diffMs / 3600000);
+        if (hrs < 1) return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expires in less than 1 hr</div>';
+        return '<div style="color:var(--ink-muted);font-style:italic;font-size:.72rem;margin-top:.15rem;">Expires in ' + hrs + ' hr' + (hrs === 1 ? '' : 's') + '</div>';
+    }
+
     function badge(status) {
         var map = {
             'inside':    '<span class="badge badge-inside">Inside</span>',
@@ -1441,7 +1668,10 @@
                     + '<td>'
                         + '<div class="td-name">' + (v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '&mdash;') + '</div>'
                     + '</td>'
-                    + '<td>' + badge(v.status) + '</td>'
+                    + '<td>'
+                        + badge(v.status)
+                        + (!v.arrival_time && v.expires_at ? fmtExpiry(v.expires_at) : '')
+                    + '</td>'
                     + '<td>'
                         + '<div class="action-group">'
                             + '<button class="act-btn" title="View Details" onclick="viewVisitorDetail(_rowMap[' + v.visitor_id + '])">'
@@ -1455,6 +1685,9 @@
                             + '</button>'
                             + '<button class="act-btn" title="Notify Tenant" ' + (!v.tenant_id ? 'disabled' : '') + ' onclick="notifyTenant(' + v.visitor_id + ', this)">'
                                 + '<img src="{{ asset('icons/bell.png') }}" alt="Notify">'
+                            + '</button>'
+                            + '<button class="act-btn" title="Update Status" ' + (v.status !== 'pending' ? 'disabled' : '') + ' onclick="openStatusModal(' + v.visitor_id + ', \'' + (v.visitor_name || '').replace(/'/g, "\\'") + '\', \'' + v.status + '\')">'
+                                + '<img src="{{ asset('icons/edit.png') }}" alt="Status">'
                             + '</button>'
                         + '</div>'
                     + '</td>'
@@ -1609,9 +1842,17 @@
             + vmInfoItem('Time Out', timeOutVal);
 
         var staffName = v.staff ? v.staff.first_name + ' ' + v.staff.last_name : '—';
+        var expiryInfo = (!v.arrival_time && v.expires_at) ? fmtExpiry(v.expires_at) : '—';
+
+        var rejectionLine = (v.status === 'rejected' && v.rejection_reason)
+            ? vmInfoItem('Rejection Reason', v.rejection_reason, true)
+            : '';
+
         document.getElementById('vminfo-log').innerHTML =
             vmInfoItem('Status',    badge(v.status))
-            + vmInfoItem('Logged By', staffName);
+            + vmInfoItem('Logged By', staffName)
+            + vmInfoItem('Expires',   expiryInfo)
+            + rejectionLine;
 
         document.getElementById('vminfo-idtype').innerHTML =
             vmInfoItem('ID Type', v.id_type || '—', true);
@@ -1678,17 +1919,99 @@
     function openTimein(id, name) {
         document.getElementById('timein-name').textContent = name;
         document.getElementById('timein-form').action      = '/visitors/timein/' + id;
-        document.getElementById('timein-input').value      = new Date().toISOString().slice(0, 16);
         closeVisitorDetailModal();
         openModal('timein-modal');
+        startLiveClock('timein-input');
+    }
+
+    function openStatusModal(id, name, currentStatus) {
+        document.getElementById('status-name').textContent  = name;
+        document.getElementById('status-form').action        = '/visitors/' + id + '/status';
+        document.getElementById('status-select').value       = currentStatus;
+        document.getElementById('fd-rejection-wrap').style.display        = 'none';
+        document.getElementById('fd-rejection-reason').value              = '';
+        document.getElementById('fd-rejection-other-wrap').style.display  = 'none';
+        document.getElementById('fd-rejection-other').value               = '';
+        document.getElementById('fd-rejection-err').style.display         = 'none';
+        document.getElementById('fd-rejection-other-err').style.display   = 'none';
+        document.getElementById('fd-rejection-reason-final').value        = '';
+        closeVisitorDetailModal();
+        openModal('status-modal');
+    }
+
+    function onFdStatusChange(select) {
+        var wrap = document.getElementById('fd-rejection-wrap');
+        if (select.value === 'rejected') {
+            wrap.style.display = 'block';
+        } else {
+            wrap.style.display = 'none';
+            document.getElementById('fd-rejection-reason').value             = '';
+            document.getElementById('fd-rejection-other-wrap').style.display = 'none';
+            document.getElementById('fd-rejection-other').value              = '';
+            document.getElementById('fd-rejection-err').style.display        = 'none';
+            document.getElementById('fd-rejection-other-err').style.display  = 'none';
+            document.getElementById('fd-rejection-reason-final').value       = '';
+        }
+    }
+
+    function onFdRejectionReasonChange(select) {
+        var otherWrap = document.getElementById('fd-rejection-other-wrap');
+        document.getElementById('fd-rejection-err').style.display = 'none';
+        if (select.value === 'Other') {
+            otherWrap.style.display = 'block';
+        } else {
+            otherWrap.style.display = 'none';
+            document.getElementById('fd-rejection-other').value            = '';
+            document.getElementById('fd-rejection-other-err').style.display = 'none';
+        }
+    }
+
+    function fdStatusSubmit(e) {
+        var status = document.getElementById('status-select').value;
+        if (status !== 'rejected') return true;
+
+        var reasonSelect = document.getElementById('fd-rejection-reason');
+        var otherInput   = document.getElementById('fd-rejection-other');
+        var reasonErr    = document.getElementById('fd-rejection-err');
+        var otherErr     = document.getElementById('fd-rejection-other-err');
+        var finalInput   = document.getElementById('fd-rejection-reason-final');
+
+        var valid = true;
+
+        if (!reasonSelect.value) {
+            reasonErr.style.display = 'block';
+            valid = false;
+        } else {
+            reasonErr.style.display = 'none';
+        }
+
+        if (reasonSelect.value === 'Other') {
+            if (!otherInput.value.trim()) {
+                otherErr.style.display = 'block';
+                valid = false;
+            } else {
+                otherErr.style.display = 'none';
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            return false;
+        }
+
+        finalInput.value = reasonSelect.value === 'Other'
+            ? otherInput.value.trim()
+            : reasonSelect.value;
+
+        return true;
     }
 
     function openTimeout(id, name) {
         document.getElementById('timeout-name').textContent = name;
         document.getElementById('timeout-form').action      = '/visitors/checkout/' + id;
-        document.getElementById('timeout-input').value      = new Date().toISOString().slice(0, 16);
         closeVisitorDetailModal();
         openModal('timeout-modal');
+        startLiveClock('timeout-input');
     }
 
     function notifyTenant(id, btn) {
@@ -1719,8 +2042,10 @@
     }
 
     function exportVisitorsCsv() {
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
+
         var rows = [['Visitor Name', 'Time In', 'Time Out', 'Purpose', 'Tenant', 'Room', 'Logged By', 'Status']];
-        visitors.forEach(function(v) {
+        filtered.forEach(function(v) {
             rows.push([
                 v.visitor_name   || '',
                 v.arrival_time   || '',
@@ -1743,10 +2068,10 @@
     }
 
     function exportVisitorsPdf() {
-        if (!visitors.length) { showToast('No data to export.', 'error'); return; }
+        if (!filtered.length) { showToast('No data to export.', 'error'); return; }
         var win = window.open('', '_blank');
         if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
-        var rows = visitors.map(function(v) {
+        var rows = filtered.map(function(v) {
             return '<tr>'
                 + '<td>' + (v.visitor_name || '') + '</td>'
                 + '<td>' + (v.arrival_time   ? fmtDatePlain(v.arrival_time)   : '') + '</td>'
@@ -1770,10 +2095,40 @@
         win.print();
     }
 
+    function toggleOvernightExtend(checkbox) {
+        var newValue = checkbox.checked ? '1' : '0';
+        checkbox.disabled = true;
+
+        fetch('{{ route("visitors.overnightExtend") }}', {
+            method: 'PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ enabled: newValue })
+        })
+        .then(function(res) {
+            if (!res.ok) throw new Error('Failed');
+            return res.json();
+        })
+        .then(function() {
+            showToast(checkbox.checked ? 'Overnight extension enabled.' : 'Overnight extension disabled.', 'success');
+        })
+        .catch(function() {
+            checkbox.checked = !checkbox.checked;
+            showToast('Could not update the setting. Please try again.', 'error');
+        })
+        .finally(function() {
+            checkbox.disabled = false;
+        });
+    }
+
     function openArchive() {
         document.getElementById('acount-completed').textContent = completedVisitors.length;
         document.getElementById('acount-deleted').textContent   = deletedVisitors.length;
         document.getElementById('acount-cancelled').textContent = cancelledVisitors.length;
+        document.getElementById('acount-rejected').textContent  = rejectedVisitors.length;
         document.getElementById('archive-drawer').classList.add('open');
         document.getElementById('archive-backdrop').classList.add('open');
         switchArchiveTab('completed');
@@ -1789,6 +2144,7 @@
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
         document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
+        document.getElementById('atab-rejected').classList.toggle('active',  tab === 'rejected');
         document.getElementById('archive-search').value = '';
         renderArchive();
     }
@@ -1806,8 +2162,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         var result = data.filter(function(v) {
@@ -1828,9 +2186,17 @@
             return;
         }
 
-        var pillClass   = archiveTab === 'completed' ? 'archive-pill-completed' : 'archive-pill-deleted';
-        var pillLabel   = archiveTab === 'completed' ? 'Completed' : (archiveTab === 'deleted' ? 'Deleted' : 'Cancelled');
-        var footerLabel = archiveTab === 'completed' ? 'Checked out on' : (archiveTab === 'deleted' ? 'Deleted on' : 'Cancelled on');
+        var pillClass = archiveTab === 'completed' ? 'archive-pill-completed'
+            : archiveTab === 'rejected'  ? 'archive-pill-rejected'
+            : 'archive-pill-deleted';
+        var pillLabel = archiveTab === 'completed' ? 'Completed'
+            : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'cancelled' ? 'Cancelled'
+            : 'Rejected';
+        var footerLabel = archiveTab === 'completed' ? 'Checked out on'
+            : archiveTab === 'deleted'   ? 'Deleted on'
+            : archiveTab === 'cancelled' ? 'Cancelled on'
+            : 'Rejected on';
 
         list.innerHTML = result.map(function(v, i) {
             var tenantName = v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : null;
@@ -1838,9 +2204,14 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
+
+            var reasonLine = (archiveTab === 'cancelled' && v.cancel_reason === 'expired')
+                ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Expired automatically (no time in)</span></div>'
+                : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>'
+                : (archiveTab === 'rejected' && v.rejection_reason ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Rejection reason: <span>' + v.rejection_reason + '</span></div>' : ''));
 
             return '<div class="archive-card" style="animation-delay:' + (i * 0.04) + 's;">'
                 + '<div class="archive-card-top">'
@@ -1856,6 +2227,7 @@
                 + '<div class="archive-card-footer">'
                     + footerLabel + ': <span>' + footerDate + '</span>'
                 + '</div>'
+                + reasonLine
                 + '</div>';
         }).join('');
     }
@@ -1866,8 +2238,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
@@ -1877,8 +2251,10 @@
             label = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             label = 'Deleted On';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             label = 'Cancelled On';
+        } else {
+            label = 'Rejected On';
         }
 
         var rows = [['Log ID', 'Visitor Name', 'Contact No.', 'Purpose', 'Tenant', 'Room', 'Time In', 'Time Out', 'Status', label]];
@@ -1886,7 +2262,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             rows.push([
@@ -1917,8 +2293,10 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
-        } else {
+        } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
+        } else {
+            data = rejectedVisitors;
         }
 
         if (!data.length) { showToast('No archive data to export.', 'error'); return; }
@@ -1928,8 +2306,10 @@
             tabLabel = 'Completed';
         } else if (archiveTab === 'deleted') {
             tabLabel = 'Deleted';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             tabLabel = 'Cancelled';
+        } else {
+            tabLabel = 'Rejected';
         }
 
         var footerHead;
@@ -1937,8 +2317,10 @@
             footerHead = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             footerHead = 'Deleted On';
-        } else {
+        } else if (archiveTab === 'cancelled') {
             footerHead = 'Cancelled On';
+        } else {
+            footerHead = 'Rejected On';
         }
 
         var win  = window.open('', '_blank');
@@ -1946,7 +2328,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : archiveTab === 'cancelled'
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             return '<tr>'
@@ -2046,7 +2428,9 @@
         if (count) count.textContent = v.length + ' / 100';
 
         var trimmed = v.trim();
-        var valid   = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(trimmed) && trimmed.length >= 2;
+        var charsetOk = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(trimmed) && trimmed.length >= 2;
+        var parts     = trimmed.split(/\s+/).filter(Boolean);
+        var valid     = charsetOk && parts.length >= 2;
 
         if (strict || trimmed.length > 0) {
             avSetFieldState(input, valid ? 'valid' : 'invalid');
@@ -2280,6 +2664,7 @@
     }
 
     function resetAddForm() {
+        stopLiveClock();
         var form = document.getElementById('add-visitor-form');
         if (form) form.reset();
         _avSelectedTenantId = null;
@@ -2299,7 +2684,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         var ni = document.getElementById('av_arrival_time');
-        if (ni && !ni.value) ni.value = new Date().toISOString().slice(0, 16);
+        if (ni) startLiveClock('av_arrival_time');
 
         var oldTenant = '{{ old('tenant_id') }}';
         if (oldTenant) {
@@ -2324,8 +2709,195 @@
         });
     @endif
 
+    (function () {
+    var OVERDUE_HOURS   = 6;
+    var CHECK_INTERVAL  = 5 * 60 * 1000;
+    var DISMISSED_KEY   = 'fd_overdue_dismissed';
+    var _overdueTimer   = null;
+
+    function getDismissed() {
+        try {
+            return JSON.parse(sessionStorage.getItem(DISMISSED_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function addDismissed(ids) {
+        var current = getDismissed();
+        ids.forEach(function (id) {
+            if (current.indexOf(id) === -1) current.push(id);
+        });
+        try { sessionStorage.setItem(DISMISSED_KEY, JSON.stringify(current)); } catch (e) {}
+    }
+
+    function getOverdueVisitors() {
+        var now        = new Date();
+        var dismissed  = getDismissed();
+        var threshold  = OVERDUE_HOURS * 60 * 60 * 1000;
+        return visitors.filter(function (v) {
+            if (!v.arrival_time || v.departure_time) return false;
+            if (v.status !== 'inside') return false;
+            if (dismissed.indexOf(v.visitor_id) !== -1) return false;
+            var elapsed = now - new Date(v.arrival_time);
+            return elapsed >= threshold;
+        });
+    }
+
+    function fmtElapsed(arrivalTime) {
+        var elapsed = new Date() - new Date(arrivalTime);
+        var hrs     = Math.floor(elapsed / 3600000);
+        var mins    = Math.floor((elapsed % 3600000) / 60000);
+        if (hrs >= 1) return hrs + 'h ' + mins + 'm';
+        return mins + 'm';
+    }
+
+    function renderOverdueBanner() {
+        var slot    = document.getElementById('overdue-banner-slot');
+        var overdue = getOverdueVisitors();
+
+        if (!slot) return;
+
+        if (!overdue.length) {
+            slot.innerHTML = '';
+            return;
+        }
+
+        var ids  = overdue.map(function (v) { return v.visitor_id; });
+        var tags = overdue.map(function (v) {
+            return '<span>' + (v.visitor_name || 'Unknown') + ' &mdash; ' + fmtElapsed(v.arrival_time) + '</span>';
+        }).join('');
+
+        var count = overdue.length;
+        var title = count === 1
+            ? '1 visitor has been inside for over ' + OVERDUE_HOURS + ' hours'
+            : count + ' visitors have been inside for over ' + OVERDUE_HOURS + ' hours';
+
+        slot.innerHTML =
+            '<div class="overdue-banner" id="overdue-banner">'
+                + '<div class="overdue-banner-icon">&#9888;</div>'
+                + '<div class="overdue-banner-body">'
+                    + '<div class="overdue-banner-title">' + title + '</div>'
+                    + '<div class="overdue-banner-list">' + tags + '</div>'
+                    + '<div class="overdue-banner-sub">These visitors may need to be checked out. Please verify their status.</div>'
+                + '</div>'
+                + '<button class="overdue-banner-dismiss" onclick="dismissOverdueBanner(' + JSON.stringify(ids) + ')" title="Dismiss">&#x2715;</button>'
+            + '</div>';
+    }
+
+    window.dismissOverdueBanner = function (ids) {
+        addDismissed(ids);
+        var banner = document.getElementById('overdue-banner');
+        if (banner) {
+            banner.style.transition = 'opacity .25s, transform .25s';
+            banner.style.opacity    = '0';
+            banner.style.transform  = 'translateY(-8px)';
+            setTimeout(function () {
+                var slot = document.getElementById('overdue-banner-slot');
+                if (slot) slot.innerHTML = '';
+            }, 260);
+        }
+    };
+
+    renderOverdueBanner();
+    _overdueTimer = setInterval(function () {
+        renderOverdueBanner();
+    }, CHECK_INTERVAL);
+})();
+
+    var _liveClockTimer  = null;
+    var _liveClockTarget = null;
+
+    function _localISOString() {
+        var now = new Date();
+        var pad = function(n) { return String(n).padStart(2, '0'); };
+        return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+            + 'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+    }
+
+    function startLiveClock(inputId) {
+        stopLiveClock();
+        _liveClockTarget = inputId;
+        function tick() {
+            var el = document.getElementById(_liveClockTarget);
+            if (el && document.activeElement !== el) {
+                el.value = _localISOString();
+            }
+        }
+        tick();
+        _liveClockTimer = setInterval(tick, 1000);
+    }
+
+    function stopLiveClock() {
+        if (_liveClockTimer) { clearInterval(_liveClockTimer); _liveClockTimer = null; }
+        _liveClockTarget = null;
+    }
+
     filtered = visitors.slice();
     renderTable();
+    (function () {
+        var _pollSignature = null;
+        var _pollInterval  = null;
+        var _pollPaused    = false;
+        var _pollUrl       = '{{ route("visitors.poll") }}';
+
+        function isUserBusy() {
+            var activeTag = document.activeElement ? document.activeElement.tagName : '';
+            var isTyping  = activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT';
+
+            var modals = [
+                document.getElementById('add-modal'),
+                document.getElementById('timein-modal'),
+                document.getElementById('timeout-modal'),
+                document.getElementById('status-modal'),
+                document.getElementById('visitorDetailModal'),
+                document.getElementById('photoLightbox'),
+            ];
+            var isModalOpen = modals.some(function (m) {
+                if (!m) return false;
+                var display = window.getComputedStyle(m).display;
+                return display !== 'none';
+            });
+
+            var isDrawerOpen = document.getElementById('archive-drawer') &&
+                document.getElementById('archive-drawer').classList.contains('open');
+
+            return isTyping || isModalOpen || isDrawerOpen;
+        }
+
+        function doPoll() {
+            if (_pollPaused) return;
+            fetch(_pollUrl, { credentials: 'same-origin' })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (_pollSignature === null) {
+                        _pollSignature = data.signature;
+                        return;
+                    }
+                    if (data.signature !== _pollSignature) {
+                        _pollSignature = data.signature;
+                        if (!isUserBusy()) {
+                            window.location.reload();
+                        } else {
+                            var _retryTimer = setInterval(function () {
+                                if (!isUserBusy()) {
+                                    clearInterval(_retryTimer);
+                                    window.location.reload();
+                                }
+                            }, 2000);
+                        }
+                    }
+                })
+                .catch(function () {});
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            _pollPaused = document.hidden;
+        });
+
+        _pollInterval = setInterval(doPoll, 15000);
+        doPoll();
+    })();
 
     (function() {
         var popup = document.getElementById('fd-visitor-legend-popup');

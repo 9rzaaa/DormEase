@@ -25,7 +25,7 @@ class DashboardController extends Controller
         ->select(
             DB::raw('DATE_FORMAT(billing_month, "%Y-%m") as period'),
             DB::raw('SUM(CASE WHEN payment_status = "paid" THEN room_share ELSE 0 END) as collected'),
-            DB::raw('SUM(CASE WHEN payment_status = "unpaid" THEN room_share ELSE 0 END) as unpaid')
+            DB::raw('SUM(CASE WHEN payment_status != "paid" THEN room_share ELSE 0 END) as unpaid')
         )
         ->whereIn('tenant_id', $activeTenantIds)
         ->where('billing_month', '>=', Carbon::now()->subMonths(6)->startOfMonth())
@@ -98,12 +98,12 @@ class DashboardController extends Controller
         return view('dashboard', [
             'staff'                => $staff,
             'totalTenants'         => Tenant::whereIn('status', ['active', 'pending'])->count(),
-            'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', 'unpaid')->count(),
+            'pendingPayments'      => DB::table('water_billing')->whereIn('tenant_id', $activeTenantIds)->where('payment_status', '!=', 'paid')->count(),
             'pendingMaintenance'   => MaintenanceRequest::whereIn('status', ['pending', 'in-progress'])->count(),
             'unresolvedReports'    => EmergencyReport::where('status', '!=', 'resolved')->count(),
             'maintenanceRequests'  => MaintenanceRequest::with('tenant')
                 ->whereIn('status', ['pending', 'in-progress'])
-                ->latest('submitted_at')
+                ->orderBy('submitted_at', 'desc')
                 ->take(3)
                 ->get(),
             'announcements'        => Announcement::latest('posted_at')->take(3)->get(),
@@ -111,7 +111,7 @@ class DashboardController extends Controller
             'unreadNotifCount'     => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'latestEmergency'      => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
             'allEmergencies'       => EmergencyReport::latest('reported_at')->take(50)->get(),
-            'recentActivities'     => VisitorLog::with('tenant')->latest('arrival_time')->take(5)->get(),
+            'recentActivities'     => VisitorLog::with('tenant')->whereNotNull('arrival_time')->latest('arrival_time')->take(5)->get(),
             'chartLabels'          => $chartLabels,
             'chartCollected'       => $chartCollected,
             'chartUnpaid'          => $chartUnpaid,

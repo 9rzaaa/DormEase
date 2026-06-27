@@ -90,11 +90,10 @@
     .priv-card {
       background:white; border:1.5px solid var(--border); border-radius:var(--r-lg);
       box-shadow:var(--shadow-card); overflow:hidden;
-      clip-path:polygon(0 100%,100% 100%,100% 100%,0 100%);
-      transition:clip-path .65s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s;
-      will-change:clip-path;
+      opacity:0; transform:translateY(30px);
+      transition:opacity .6s ease, transform .6s ease, box-shadow .25s, border-color .25s;
     }
-    .priv-card.visible { clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+    .priv-card.visible { opacity:1; transform:translateY(0); }
     .priv-card:hover { box-shadow:0 12px 40px rgba(232,23,93,.14); border-color:rgba(232,23,93,.34); }
 
     .priv-card-top { padding:28px 30px 0; display:flex; align-items:flex-start; gap:16px; }
@@ -198,7 +197,7 @@
       .priv-card-body { padding:14px 22px 24px; }
     }
     @media(prefers-reduced-motion:reduce) {
-      .priv-card { clip-path:none; opacity:1; transition:none; }
+      .priv-card { opacity:1; transform:none; transition:none; }
       .priv-hero-title .line { transform:none; animation:none; }
       .priv-hero-sub, .priv-meta-row { opacity:1; animation:none; }
       .priv-pledge-card { opacity:1; transform:none; transition:none; }

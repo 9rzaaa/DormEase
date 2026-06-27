@@ -354,37 +354,38 @@
             radial-gradient(circle, rgba(232,23,93,.055) 1px, transparent 1px);
         background-size: 100% 100%, 22px 22px;
         position: relative;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
+        overflow: hidden;
     }
 
     .right-inner {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         padding: 2rem 3.5rem;
         box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 23, 93, 0.15) transparent;
     }
 
-    .right::-webkit-scrollbar {
+    .right-inner::-webkit-scrollbar {
         width: 6px;
     }
 
-    .right::-webkit-scrollbar-track {
+    .right-inner::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .right::-webkit-scrollbar-thumb {
+    .right-inner::-webkit-scrollbar-thumb {
         background: rgba(232, 23, 93, 0.15);
         border-radius: 10px;
     }
 
-    .right::-webkit-scrollbar-thumb:hover {
+    .right-inner::-webkit-scrollbar-thumb:hover {
         background: rgba(232, 23, 93, 0.3);
     }
 
@@ -1032,94 +1033,15 @@
         to   { opacity: 1; transform: translateX(0); }
     }
 
-    /* Scale down elements on small viewport heights to prevent scrolling / overflow */
-    @media (max-height: 840px) and (min-width: 821px) {
-        .right-inner {
-            padding: 1.5rem 3.5rem;
-        }
-        .form-wrap {
-            padding: 1.8rem 1.6rem;
-            border-radius: 18px;
-        }
-        .form-header {
-            margin-bottom: 0.8rem;
-        }
-        .form-header h2 {
-            font-size: 1.8rem;
-        }
-        .form-header p {
-            font-size: 0.8rem;
-            margin-top: 0.4rem;
-        }
-        .role-label {
-            margin-bottom: 0.4rem;
-            font-size: 0.74rem;
-        }
-        .role-row {
-            margin-bottom: 0.8rem;
-            gap: 0.5rem;
-        }
-        .role-btn {
-            padding: 0.6rem 0.8rem;
-            border-radius: 12px;
-        }
-        .role-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-        }
-        .role-icon img {
-            width: 16px;
-            height: 16px;
-        }
-        .role-name {
-            font-size: 0.8rem;
-        }
-        .role-desc {
-            font-size: 0.68rem;
-        }
-        .field {
-            margin-bottom: 0.6rem;
-        }
-        .field label {
-            font-size: 0.74rem;
-            margin-bottom: 0.35rem;
-        }
-        .de-input {
-            padding: 0.6rem 0.8rem 0.6rem 2.4rem;
-            font-size: 0.82rem;
-        }
-        .input-icon {
-            left: 0.8rem;
-            width: 16px;
-            height: 16px;
-        }
-        .field-error {
-            height: 0.85rem;
-            line-height: 0.85rem;
-            font-size: 0.7rem;
-            margin-top: 0.2rem;
-        }
-        .field-row {
-            margin-bottom: 0.7rem;
-        }
-        .remember-label, .forgot {
-            font-size: 0.78rem;
-        }
-        .de-btn-primary {
-            padding: 0.65rem 1.2rem;
-            font-size: 0.86rem;
-            margin-top: 0.1rem;
-        }
-    }
+
 
     @media (max-width: 820px) {
         body { flex-direction: column; overflow: auto; height: auto; min-height: 100vh; }
         .left { min-height: 200px; padding: 1.8rem 1.5rem; }
         .left-body h1 { font-size: 1.8rem; }
         .left-body p { font-size: .85rem; max-width: 100%; }
-        .right { width: 100%; padding: 0; overflow-y: visible; }
-        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; }
+        .right { width: 100%; padding: 0; overflow: visible; height: auto; }
+        .right-inner { padding: 2rem 1.5rem 3rem; justify-content: flex-start; overflow: visible; height: auto; }
         .ring, .dot-grid, .student-wrap { display: none; }
         .form-wrap { padding: 2rem 1.5rem; }
     }
@@ -1837,6 +1759,30 @@
                 </button>
             </div>
 
+            <div id="fp-admin-master-step" style="display:none;">
+                <p class="fp-sub">Enter your master password to confirm it's really you before resetting your login password.</p>
+                <div id="fp-master-err" class="fp-alert" style="display:none;">
+                    <img src="{{ asset('icons/warning.png') }}" alt="Error"><span></span>
+                </div>
+                <div style="background:#fff0f6;border:1.5px solid #ffb3d0;border-radius:10px;padding:.65rem .9rem;margin-bottom:1rem;font-size:.78rem;color:#E8175D;line-height:1.55;">
+                    This is the master password you set in your profile settings. If you forgot it, enter your recovery code instead.
+                </div>
+                <div class="fp-field">
+                    <label>Master Password or Recovery Code</label>
+                    <div class="fp-input-wrap">
+                        <img class="fp-input-icon" src="{{ asset('icons/lock.png') }}" alt="">
+                        <input type="password" id="fp-master-input" class="fp-input" placeholder="Enter master password or recovery code" style="padding-right:2.8rem;" autocomplete="off">
+                        <button type="button" class="fp-eye-btn" onclick="fpTogglePw('fp-master-input', this)">
+                            <img src="{{ asset('icons/eye.png') }}" alt="Toggle">
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="fp-btn-primary" onclick="fpVerifyMaster()">
+                    <span id="fp-master-txt">Confirm Identity</span>
+                    <span id="fp-master-loader" class="fp-loader" style="display:none;"></span>
+                </button>
+            </div>
+
             <div id="fp-admin-pw-step" style="display:none;">
                 <p class="fp-sub">Choose a strong new password for your account.</p>
                 <div id="fp-pw-err" class="fp-alert" style="display:none;">
@@ -2222,6 +2168,10 @@
         document.getElementById('fp-step-frontdesk').style.display   = 'none';
         document.getElementById('fp-admin-email-step').style.display = '';
         document.getElementById('fp-admin-pw-step').style.display    = 'none';
+        document.getElementById('fp-admin-master-step').style.display = 'none';
+        document.getElementById('fp-master-input').value              = '';
+        document.getElementById('fp-master-err').style.display        = 'none';
+        fpMasterInFlight = false;
         document.getElementById('fp-admin-done').style.display       = 'none';
         document.getElementById('fp-admin-email').value              = '';
         document.getElementById('fp-new-pw').value                   = '';
@@ -2299,7 +2249,9 @@
         return meta ? meta.content : (input ? input.value : '');
     }
 
-    var fpVerifyInFlight = false;
+    var fpVerifyInFlight  = false;
+    var fpMasterInFlight  = false;
+
     function fpVerifyAdmin() {
         if (fpVerifyInFlight) return;
         var email = document.getElementById('fp-admin-email').value.trim();
@@ -2326,8 +2278,11 @@
             loader.style.display = 'none';
             if (data.success) {
                 fpAdminEmail = email;
-                document.getElementById('fp-admin-email-step').style.display = 'none';
-                document.getElementById('fp-admin-pw-step').style.display    = '';
+                document.getElementById('fp-admin-email-step').style.display  = 'none';
+                document.getElementById('fp-admin-master-step').style.display = '';
+                setTimeout(function () {
+                    document.getElementById('fp-master-input').focus();
+                }, 80);
             } else {
                 fpShowErr('fp-admin-err', data.message || 'No admin account found with that email.');
             }
@@ -2337,6 +2292,44 @@
             txt.style.display    = 'inline';
             loader.style.display = 'none';
             fpShowErr('fp-admin-err', 'Something went wrong. Please try again.');
+        });
+    }
+
+    function fpVerifyMaster() {
+        if (fpMasterInFlight) return;
+        var master = document.getElementById('fp-master-input').value.trim();
+        fpHideErr('fp-master-err');
+        if (!master) { fpShowErr('fp-master-err', 'Please enter your master password or recovery code.'); return; }
+        fpMasterInFlight = true;
+        var txt    = document.getElementById('fp-master-txt');
+        var loader = document.getElementById('fp-master-loader');
+        txt.style.display    = 'none';
+        loader.style.display = 'inline-block';
+        fetch('/forgot-password/verify-master', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fpGetCsrf(), 'Accept': 'application/json' },
+            body: JSON.stringify({ master_password: master })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            fpMasterInFlight = false;
+            txt.style.display    = 'inline';
+            loader.style.display = 'none';
+            if (data.success) {
+                document.getElementById('fp-admin-master-step').style.display = 'none';
+                document.getElementById('fp-admin-pw-step').style.display     = '';
+                setTimeout(function () {
+                    document.getElementById('fp-new-pw').focus();
+                }, 80);
+            } else {
+                fpShowErr('fp-master-err', data.message || 'Incorrect master password. Try your recovery code if you have one.');
+            }
+        })
+        .catch(function () {
+            fpMasterInFlight = false;
+            txt.style.display    = 'inline';
+            loader.style.display = 'none';
+            fpShowErr('fp-master-err', 'Something went wrong. Please try again.');
         });
     }
 
@@ -2376,6 +2369,10 @@
                     fpShowErr('fp-pw-err', 'Session expired. Restarting in ' + count + '...');
                     if (count <= 0) {
                         document.getElementById('fp-admin-pw-step').style.display    = 'none';
+                        document.getElementById('fp-admin-master-step').style.display = 'none';
+                        document.getElementById('fp-master-input').value              = '';
+                        document.getElementById('fp-master-err').style.display        = 'none';
+                        fpMasterInFlight = false;
                         document.getElementById('fp-admin-email-step').style.display = '';
                         document.getElementById('fp-admin-email').value              = '';
                         fpAdminEmail    = '';

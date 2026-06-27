@@ -29,12 +29,14 @@ class ArchivedEmergencyReport extends Model
         'reported_at',
         'resolved_at',
         'archived_at',
+        'hidden_from_tenant',
     ];
 
     protected $casts = [
-        'is_panic_alert' => 'boolean',
-        'reported_at'    => 'datetime',
-        'resolved_at'    => 'datetime',
-        'archived_at'    => 'datetime',
+        'is_panic_alert'     => 'boolean',
+        'reported_at'        => 'datetime',
+        'resolved_at'        => 'datetime',
+        'archived_at'        => 'datetime',
+        'hidden_from_tenant' => 'boolean',
     ];
 }

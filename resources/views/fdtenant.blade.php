@@ -2076,7 +2076,7 @@ function statusBadge(status) {
 }
 
 function vacationBadge(isOnVacation) {
-    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA;">Vacation</span>' : '';
 }
 
 function insideIndicator(isInside) {
@@ -2153,21 +2153,26 @@ function renderTable() {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--ink-muted);">No tenants found.</td></tr>';
     } else {
         tbody.innerHTML = pageData.map(function(t) {
-            var timeBtnHtml = t.is_inside
-                ? '<button class="btn-timeout" onclick="doTimeOut(' + t.tenant_id + ', this)">Time Out</button>'
-                : '<button class="btn-timein"  onclick="doTimeIn('  + t.tenant_id + ', this)">Time In</button>';
+            var timeBtnHtml;
+            if (t.is_inside) {
+                timeBtnHtml = '<button class="btn-timeout" onclick="doTimeOut(' + t.tenant_id + ', this)">Time Out</button>';
+            } else if (t.is_on_vacation) {
+                timeBtnHtml = '<button class="btn-timein" onclick="doTimeIn(' + t.tenant_id + ', this)" title="Tenant is on vacation" style="opacity:.45;cursor:not-allowed;">Time In</button>';
+            } else {
+                timeBtnHtml = '<button class="btn-timein" onclick="doTimeIn(' + t.tenant_id + ', this)">Time In</button>';
+            }
 
             return '<tr id="tenant-row-' + t.tenant_id + '">' +
                 '<td style="font-weight:600;">' + buildNameCell(t) + '</td>' +
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
+                '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td class="td-center" id="inside-cell-' + t.tenant_id + '">' + insideIndicator(t.is_inside) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset('icons/eye.png') }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
+                    '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="/icons/eye.png" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +
                     '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
@@ -2216,12 +2221,11 @@ function renderReservedTable() {
                 '<td>' + (t.floor ? 'Floor ' + t.floor : '\u2014') + '</td>' +
                 '<td>' + (t.room_number || '\u2014') + '</td>' +
                 '<td class="td-center">' + normalizeContactDisplay(t.contact_number) + '</td>' +
-                '<td class="td-center">' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>' +
+                '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="{{ asset("icons/eye.png") }}" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="{{ asset('icons/edit.png') }}" alt="Note"></button>' +
-                '</div></td>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="/icons/eye.png" alt="View"></button>' +
+                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +                '</div></td>' +
             '</tr>';
         }).join('');
     }
@@ -2322,6 +2326,11 @@ function applyFilters() {
 }
 
 async function doTimeIn(id, btn) {
+    var t = tenants.find(function(x) { return x.tenant_id === id; });
+    if (t && t.is_on_vacation) {
+        showToast('Tenant is on vacation. Update their status first to time them in.', 'error');
+        return;
+    }
     btn.disabled = true;
     showActionLoading('Recording time in...');
     try {
@@ -3024,9 +3033,15 @@ function runQuickSearch() {
             : initials;
         var roomLabel = (t.floor && t.room_number) ? 'Floor ' + t.floor + ' \u00b7 Rm ' + t.room_number : (t.room_number ? 'Rm ' + t.room_number : 'No room assigned');
         var isInside  = !!t.is_inside;
-        var actionBtn = isInside
-            ? '<button class="quick-action-btn qab-out" onclick="quickTimeOut(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time Out</button>'
-            : '<button class="quick-action-btn qab-in"  onclick="quickTimeIn('  + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time In</button>';
+
+        var actionBtn;
+        if (isInside) {
+            actionBtn = '<button class="quick-action-btn qab-out" onclick="quickTimeOut(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time Out</button>';
+        } else if (t.is_on_vacation) {
+            actionBtn = '<button class="quick-action-btn qab-in" onclick="quickTimeIn(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;opacity:.45;cursor:not-allowed;" title="Tenant is on vacation">Time In</button>';
+        } else {
+            actionBtn = '<button class="quick-action-btn qab-in" onclick="quickTimeIn(' + t.tenant_id + ', this)" style="animation-delay:' + (i * 0.04) + 's;">Time In</button>';
+        }
 
         return '<div class="quick-result-item ' + (isInside ? 'is-inside' : '') + '" style="animation-delay:' + (i * 0.04) + 's;">'
             + '<div class="quick-result-left">'
@@ -3047,6 +3062,11 @@ function runQuickSearch() {
 }
 
 async function quickTimeIn(id, btn) {
+    var t = tenants.find(function(x) { return x.tenant_id === id; });
+    if (t && t.is_on_vacation) {
+        showToast('Tenant is on vacation. Update their status first to time them in.', 'error');
+        return;
+    }
     btn.disabled = true;
     showActionLoading('Recording time in...');
     try {
@@ -3111,5 +3131,106 @@ document.addEventListener('keydown', function(e) {
 
 applyFilters();
 applyReservedFilters();
+(function () {
+    var POLL_INTERVAL  = 30000;
+    var pollTimer      = null;
+    var lastFingerprint = null;
+
+    function isAnyDrawerOpen() {
+        var logDrawer = document.getElementById('log-drawer');
+        var tadDrawer = document.getElementById('tad-drawer');
+        if (logDrawer && logDrawer.classList.contains('open')) return true;
+        if (tadDrawer && tadDrawer.classList.contains('open')) return true;
+        return false;
+    }
+
+    function isAnyModalOpen() {
+        var viewModal = document.getElementById('view-modal');
+        if (viewModal && viewModal.style.display === 'flex') return true;
+        var overlays = document.querySelectorAll('.modal-overlay');
+        for (var i = 0; i < overlays.length; i++) {
+            if (overlays[i].classList.contains('open')) return true;
+        }
+        return false;
+    }
+
+    function isUserTyping() {
+        var active = document.activeElement;
+        if (!active) return false;
+        var tag = active.tagName.toLowerCase();
+        return tag === 'input' || tag === 'textarea' || tag === 'select' || active.isContentEditable;
+    }
+
+    function shouldSkipPoll() {
+        return isAnyDrawerOpen() || isAnyModalOpen() || isUserTyping();
+    }
+
+    function applyLiveInsideStates(freshTenants) {
+        var changed = false;
+
+        freshTenants.forEach(function (fresh) {
+            var local = tenants.find(function (t) { return t.tenant_id === fresh.tenant_id; });
+            if (!local) return;
+            if (local.is_inside !== fresh.is_inside) {
+                local.is_inside = fresh.is_inside;
+                changed = true;
+
+                var cell = document.getElementById('inside-cell-' + fresh.tenant_id);
+                if (cell) cell.innerHTML = insideIndicator(fresh.is_inside);
+
+                var btnWrap = document.getElementById('timebtn-' + fresh.tenant_id);
+                if (btnWrap) {
+                    btnWrap.innerHTML = fresh.is_inside
+                        ? '<button class="btn-timeout" onclick="doTimeOut(' + fresh.tenant_id + ', this)">Time Out</button>'
+                        : '<button class="btn-timein"  onclick="doTimeIn('  + fresh.tenant_id + ', this)">Time In</button>';
+                }
+            }
+        });
+
+        if (changed) {
+            var insideCount = tenants.filter(function (t) { return t.is_inside; }).length;
+            var statEl = document.getElementById('stat-inside-count');
+            if (statEl) statEl.textContent = insideCount;
+            var liveEl = document.getElementById('quick-live-num');
+            if (liveEl) liveEl.textContent = insideCount;
+        }
+    }
+
+    function poll() {
+        if (shouldSkipPoll()) {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+            return;
+        }
+
+        fetch('/frontdesk/tenants/live', {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (data.fingerprint && data.fingerprint === lastFingerprint) {
+                return;
+            }
+            lastFingerprint = data.fingerprint || null;
+            if (data.tenants && Array.isArray(data.tenants)) {
+                applyLiveInsideStates(data.tenants);
+            }
+        })
+        .catch(function () {})
+        .finally(function () {
+            pollTimer = setTimeout(poll, POLL_INTERVAL);
+        });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') {
+            clearTimeout(pollTimer);
+            poll();
+        } else {
+            clearTimeout(pollTimer);
+        }
+    });
+
+    pollTimer = setTimeout(poll, POLL_INTERVAL);
+})();
 </script>
 @endsection

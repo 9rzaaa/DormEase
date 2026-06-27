@@ -1635,8 +1635,8 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <span class="field-error" id="add-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
-                                <label>Contact No.</label>
-                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" value="{{ old('contact_number') }}">
+                                <label>Contact No. <span class="field-req-star">*</span></label>
+                                <input type="text" name="contact_number" id="add-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required value="{{ old('contact_number') }}">
                                 <span class="field-error" id="add-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                             </div>
                             <div class="modal-field full">
@@ -1722,8 +1722,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <div class="modal-footer" style="justify-content:space-between;">
                 <button type="button" class="btn-outline" id="add-btn-back" style="display:none;" onclick="goAddStep(1)">&#8592; Back</button>
-                <div style="display:flex;align-items:center;gap:.55rem;margin-left:auto;">
-                    <button type="button" class="btn-cancel" id="add-footer-cancel" onclick="closeModal('add-modal')">Cancel</button>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:.55rem;">
                     <button type="button" class="btn-submit" id="add-btn-next" onclick="goAddStep(2)">Next &#8594;</button>
                     <button type="submit" class="btn-submit" id="add-btn-submit" style="display:none;">Add Tenant</button>
                 </div>
@@ -1788,8 +1787,8 @@ tbody tr:hover { background: var(--soft-bg); }
                             <span class="field-error" id="edit-email-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
-                            <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18">
+                            <label>Contact No. <span class="field-req-star">*</span></label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="e.g. 0912-345-6789 or +63 912-345-6789" maxlength="18" required>
                             <span class="field-error" id="edit-contact-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
                         </div>
                         <div class="modal-field full">
@@ -1915,7 +1914,7 @@ tbody tr:hover { background: var(--soft-bg); }
                                 <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
-                                    <option value="reserved">Reserved</option>
+                                    <option value="reserved" id="edit-status-reserved-option">Reserved</option>
                                     <option value="move_out">Move Out</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
@@ -2991,7 +2990,7 @@ function toggleVacationNote() {
 
 function validateAddTenantForm(e) {
     var emailOk    = validateEmailField('add-email', 'add-email-error', null);
-    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', false);
+    var contactOk  = validatePhoneField('add-contact', 'add-contact-error', true);
     var guardianOk = validatePhoneField('add-guardian', 'add-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     var estOk      = validateEstimatedMoveInDate('add-estimated-move-in', 'add-estimated-move-in-error');
@@ -3045,7 +3044,7 @@ function validateAddTenantForm(e) {
 
 function validateEditTenantForm(e) {
     var emailOk    = validateEmailField('edit-email', 'edit-email-error', currentTenant ? currentTenant.tenant_id : null);
-    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', false);
+    var contactOk  = validatePhoneField('edit-contact', 'edit-contact-error', true);
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
     var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
@@ -3070,7 +3069,7 @@ function validateEditTenantForm(e) {
 document.addEventListener('DOMContentLoaded', function() {
    attachEmailValidator('add-email', 'add-email-error', null);
     attachEmailValidator('edit-email', 'edit-email-error', function() { return currentTenant ? currentTenant.tenant_id : null; });
-    attachPhoneFormatter('add-contact', 'add-contact-error', false);
+    attachPhoneFormatter('add-contact', 'add-contact-error', true);
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
@@ -3237,17 +3236,19 @@ function goAddStep(step) {
         var firstName = document.querySelector('#add-modal input[name="first_name"]');
         var lastName  = document.querySelector('#add-modal input[name="last_name"]');
         var email     = document.querySelector('#add-modal input[name="email"]');
-        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+        var contact   = document.getElementById('add-contact');
+        if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim() || !contact.value.trim()) {
             firstName.reportValidity();
             lastName.reportValidity();
             email.reportValidity();
+            contact.reportValidity();
             return;
         }
         if (!validateEmailField('add-email', 'add-email-error')) {
             document.getElementById('add-email').focus();
             return;
         }
-        if (!validatePhoneField('add-contact', 'add-contact-error', false)) {
+        if (!validatePhoneField('add-contact', 'add-contact-error', true)) {
             document.getElementById('add-contact').focus();
             return;
         }
@@ -3366,7 +3367,7 @@ function tempBadge(isTemp) {
 }
 
 function vacationBadge(isOnVacation) {
-    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA; margin-left:5px;">🏖 Vacation</span>' : '';
+    return isOnVacation ? '<span class="badge" style="background:#FFF3CD; color:#856404; border:1px solid #FFEBAA;">Vacation</span>' : '';
 }
 
 function escapeHtml(str) {
@@ -3459,7 +3460,7 @@ function buildRows(list) {
             + '<td>' + col4 + '</td>'
             + '<td>' + (t.move_out_date ? fmtDate(t.move_out_date) : '\u2014') + '</td>'
             + '<td>' + normalizeContactDisplay(t.contact_number) + '</td>'
-            + '<td>' + statusBadge(t.status) + vacationBadge(t.is_on_vacation) + '</td>'
+            + '<td>' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>'
             + '<td><div class="action-group">' + actions + '</div></td></tr>';
     }).join('');
 }
@@ -3820,6 +3821,13 @@ function openEditModal(t) {
     document.getElementById('edit-estimated-move-in').value = hasOld && old.estimated_move_in_date ? old.estimated_move_in_date : (t.estimated_move_in_date || '');
     document.getElementById('edit-reservation-notes').value = hasOld && old.reservation_notes      ? old.reservation_notes      : (t.reservation_notes || '');
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
+    var reservedOption = document.getElementById('edit-status-reserved-option');
+    if (reservedOption) {
+        var hasCredentials = !!(t.account_id);
+        reservedOption.disabled = hasCredentials;
+        reservedOption.title = hasCredentials ? 'Cannot revert to Reserved: this tenant already has login credentials.' : '';
+        reservedOption.textContent = hasCredentials ? 'Reserved (unavailable)' : 'Reserved';
+    }
     var editStatusSel = document.getElementById('edit-status');
     editStatusSel.onchange = function() {
         updateStatusDot(this);
@@ -3841,7 +3849,7 @@ function openEditModal(t) {
 
     updateStatusDot(document.getElementById('edit-status'));
     toggleReservationFields('edit');
-    attachPhoneFormatter('edit-contact', 'edit-contact-error', false);
+    attachPhoneFormatter('edit-contact', 'edit-contact-error', true);
     attachPhoneFormatter('edit-guardian', 'edit-guardian-error', false);
     checkMoveoutWarning();
     var editMoveoutEl = document.getElementById('edit-moveout');
@@ -5253,7 +5261,10 @@ function validateRenewDates() {
     return true;
 }
 
+var _renewInFlight = false;
 async function submitRenewTenant() {
+    if (_renewInFlight) return;
+    _renewInFlight = true;
     var moveIn  = document.getElementById('renew-move-in').value;
     var moveOut = document.getElementById('renew-move-out').value;
     var room    = document.getElementById('renew-room').value.trim();
@@ -5300,7 +5311,7 @@ async function submitRenewTenant() {
     }
 
     var submitBtn = document.querySelector('#renew-modal .btn-submit');
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; submitBtn.textContent = 'Processing...'; }
 
     showActionLoading('Renewing tenant stay...');
 
@@ -5378,11 +5389,58 @@ async function submitRenewTenant() {
     } catch (e) {
         var msg = e.message || 'An unexpected error occurred. Please try again.';
         showToast(msg, 'error');
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; submitBtn.textContent = 'Renew & Generate Credentials'; }
     } finally {
+        _renewInFlight = false;
         document.getElementById('action-loading').classList.remove('open');
     }
 }
+
+(function () {
+    var liveFingerprint = null;
+    var pollInterval = 5000;
+
+    function anyOverlayOpen() {
+        return !!document.querySelector('.modal-overlay.open')
+            || document.getElementById('tad-drawer').classList.contains('open')
+            || document.getElementById('rooms-drawer').classList.contains('open')
+            || document.getElementById('admin-log-drawer').classList.contains('open');
+    }
+
+    function checkForTenantUpdates() {
+        if (anyOverlayOpen()) return;
+
+        fetch('{{ route("tenants.live") }}', { headers: { 'Accept': 'application/json' } })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                if (liveFingerprint === null) {
+                    liveFingerprint = data.fingerprint;
+                    return;
+                }
+                if (data.fingerprint === liveFingerprint) return;
+
+                liveFingerprint = data.fingerprint;
+                tenants = data.tenants;
+
+                var totalEl = document.getElementById('count-total');
+                var activeEl = document.getElementById('count-active');
+                if (totalEl) totalEl.textContent = data.totalTenants;
+                if (activeEl) activeEl.textContent = data.activeCount;
+
+                var keepActivePage   = sectionPages.active;
+                var keepReservedPage = sectionPages.reserved;
+                applyFilters();
+                sectionPages.active   = Math.min(keepActivePage,   Math.max(1, Math.ceil(sectionData.active.length   / PER_PAGE)));
+                sectionPages.reserved = Math.min(keepReservedPage, Math.max(1, Math.ceil(sectionData.reserved.length / PER_PAGE)));
+                renderSection('active');
+                renderSection('reserved');
+            })
+            .catch(function () {});
+    }
+
+    checkForTenantUpdates();
+    setInterval(checkForTenantUpdates, 15000);
+})();
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('search-input').value = '';
@@ -5791,7 +5849,8 @@ function attachAddModalProgress() {
         var fn = document.querySelector('#add-modal input[name="first_name"]');
         var ln = document.querySelector('#add-modal input[name="last_name"]');
         var em = document.getElementById('add-email');
-        return [fn, ln, em].filter(Boolean);
+        var co = document.getElementById('add-contact');
+        return [fn, ln, em, co].filter(Boolean);
     }
 
     function getStep2Vals() {
@@ -5873,7 +5932,7 @@ function attachAddModalProgress() {
 }
 
 function attachEditModalProgress() {
-    var fields = ['edit-first-name', 'edit-last-name', 'edit-email'];
+    var fields = ['edit-first-name', 'edit-last-name', 'edit-email', 'edit-contact'];
 
     function refreshEditProgress() {
         var filled = fields.filter(function(id) {
@@ -6474,11 +6533,12 @@ function printBillSlip(t) {
         doc.line(6, y, W - 6, y);
 
         tenantBills.forEach(function(b, i) {
-            var isOD       = b.payment_status === 'overdue';
-            var rowBg      = i % 2 === 0 ? petal : white;
-            var badgeBg    = isOD ? redBg : amberBg;
-            var badgeBd    = isOD ? redBd : amberBd;
-            var badgeTx    = isOD ? red : [200, 150, 12];
+            var isOD     = b.payment_status === 'overdue';
+            var rowBg    = i % 2 === 0 ? petal : white;
+            var badgeBg  = isOD ? redBg : amberBg;
+            var badgeBd  = isOD ? redBd : amberBd;
+            var badgeTx  = isOD ? red : [200, 150, 12];
+            var badgeLbl = isOD ? 'Overdue' : 'Unpaid';
 
             y += 1;
             doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
@@ -6489,14 +6549,16 @@ function printBillSlip(t) {
             doc.setTextColor(ink[0], ink[1], ink[2]);
             doc.text(fmtMonth(b.billing_month), 7, y + 5);
 
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(4.8);
+            var badgeTextW = doc.getTextWidth(badgeLbl);
+            var badgeW     = badgeTextW + 3;
             doc.setFillColor(badgeBg[0], badgeBg[1], badgeBg[2]);
             doc.setDrawColor(badgeBd[0], badgeBd[1], badgeBd[2]);
             doc.setLineWidth(0.3);
-            doc.roundedRect(7, y + 6.5, 15, 4, 0.8, 0.8, 'FD');
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(4.5);
+            doc.roundedRect(7, y + 6.3, badgeW, 3.8, 1, 1, 'FD');
             doc.setTextColor(badgeTx[0], badgeTx[1], badgeTx[2]);
-            doc.text(isOD ? 'Overdue' : 'Unpaid', 14.5, y + 9.5, { align: 'center' });
+            doc.text(badgeLbl, 7 + (badgeW / 2), y + 9, { align: 'center' });
 
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6.5);
@@ -6504,9 +6566,9 @@ function printBillSlip(t) {
             doc.text(fmtDateSlip(b.due_date), 43, y + 5);
 
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(7.5);
+            doc.setFontSize(7);
             doc.setTextColor(red[0], red[1], red[2]);
-            doc.text('\u20b1' + parseFloat(b.room_share || 0).toFixed(2), W - 6, y + 5, { align: 'right' });
+            doc.text('PHP ' + parseFloat(b.room_share || 0).toFixed(2), W - 7, y + 5.4, { align: 'right' });
 
             y += rowH;
 
@@ -6525,9 +6587,9 @@ function printBillSlip(t) {
         doc.setTextColor(255, 220, 235);
         doc.text('Total Outstanding', 10, y + 7.5);
 
-        doc.setFontSize(11);
+        doc.setFontSize(9.5);
         doc.setTextColor(white[0], white[1], white[2]);
-        doc.text('\u20b1' + total.toFixed(2), W - 8, y + 8, { align: 'right' });
+        doc.text('PHP ' + total.toFixed(2), W - 9, y + 7.8, { align: 'right' });
 
         y += 17;
 

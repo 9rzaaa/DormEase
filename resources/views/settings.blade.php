@@ -315,7 +315,7 @@
         margin-bottom: 1.4rem;
     }
     .archive-warning-banner strong { color: var(--hot-pink); font-weight: 800; text-decoration: underline; }
-    
+
     .archive-table { width: 100%; border-collapse: collapse; }
     .archive-table th {
         font-size: .72rem;
@@ -337,10 +337,10 @@
     }
     .archive-table tr:last-child td { border-bottom: none; }
     .archive-table tr:hover td { background: var(--blush); }
-    
+
     .archive-module-name { font-weight: 700; font-size: .88rem; color: var(--ink); }
     .archive-last-cleared { font-size: .75rem; color: var(--ink-muted); margin-top: .18rem; }
-    
+
     .retention-input {
         width: 80px;
         padding: .42rem .6rem;
@@ -356,7 +356,7 @@
     }
     .retention-input:focus { border-color: var(--bright-pink); background: var(--white); }
     .retention-input:disabled { opacity: .45; cursor: not-allowed; }
-    
+
     .warn-input {
         width: 60px;
         padding: .42rem .6rem;
@@ -372,7 +372,7 @@
     }
     .warn-input:focus { border-color: var(--bright-pink); background: var(--white); }
     .warn-input:disabled { opacity: .45; cursor: not-allowed; }
-    
+
     .btn-clear-now {
         padding: .38rem .85rem;
         border-radius: 8px;
@@ -388,7 +388,81 @@
     }
     .btn-clear-now:hover { background: var(--gradient-pink); color: var(--white); border-color: var(--bright-pink); }
     .btn-clear-now:disabled { opacity: .4; cursor: not-allowed; }
-    
+
+    .archive-guide-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        cursor: default;
+        flex-shrink: 0;
+        vertical-align: middle;
+    }
+    .archive-guide-wrap img {
+        width: 15px;
+        height: 15px;
+        object-fit: contain;
+        opacity: .6;
+        transition: opacity .2s;
+        display: block;
+        cursor: pointer;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    }
+    .archive-guide-wrap:hover img { opacity: 1; }
+    .archive-guide-popup {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        background: var(--white);
+        border: 1.5px solid var(--baby-pink);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(232,23,93,.13), 0 2px 8px rgba(0,0,0,.07);
+        padding: .75rem .9rem;
+        min-width: 310px;
+        max-width: 340px;
+        z-index: 9999;
+        pointer-events: none;
+    }
+    .archive-guide-wrap:hover .archive-guide-popup { display: block; }
+    .agp-title {
+        font-size: .67rem;
+        font-weight: 800;
+        color: var(--hot-pink);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        margin-bottom: .55rem;
+        padding-bottom: .4rem;
+        border-bottom: 1.5px solid var(--petal);
+    }
+    .agp-row {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: .4rem 0;
+        border-bottom: 1px solid var(--petal);
+    }
+    .agp-row:last-child { border-bottom: none; }
+    .agp-col-label {
+        flex-shrink: 0;
+        width: 96px;
+        display: flex;
+        align-items: flex-start;
+        padding-top: .05rem;
+    }
+    .agp-term {
+        font-size: .75rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.4;
+    }
+    .agp-desc {
+        font-size: .75rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+        line-height: 1.45;
+        padding-top: .05rem;
+    }
+
     .apply-all-row {
         display: flex;
         align-items: center;
@@ -546,18 +620,46 @@
     </div>
         @if(Auth::guard('staff')->user()?->role === 'admin')
         <div class="tab-panel fade-up d3" id="tab-archive">
- 
+
         <div class="settings-card">
             <div class="settings-card-header">
                 <div class="settings-card-icon">
                     <img src="{{ asset('icons/archive.png') }}" alt="">
                 </div>
-                <div>
-                    <div class="settings-card-title">Archive Auto-Clear Settings</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <div class="settings-card-title">Archive Auto-Clear Settings</div>
+                        <div class="archive-guide-wrap">
+                            <img src="{{ asset('icons/info.png') }}" alt="Guide">
+                            <div class="archive-guide-popup">
+                                <div class="agp-title">Archive Clearing Guide</div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Enable Toggle</span></div>
+                                    <div class="agp-desc">Turns auto-clearing on or off for a module. When off, no automatic deletion will run for that module.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Retention Days</span></div>
+                                    <div class="agp-desc">Records older than this number of days are deleted when the auto-clear runs. Min 30, max 3650.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Warn Before</span></div>
+                                    <div class="agp-desc">Days before the scheduled clear that you receive a reminder notification. Disable the toggle before that date to cancel.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Clear Now</span></div>
+                                    <div class="agp-desc">Immediately and permanently deletes all records older than the retention period. Save settings first before using this.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Apply to All</span></div>
+                                    <div class="agp-desc">Sets the retention days field to all modules at once. Save settings to confirm the change.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
                 </div>
             </div>
- 
+
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
@@ -568,7 +670,7 @@
                     <strong>Save settings first</strong> before using Clear Now.
                 </span>
             </div>
- 
+
             <div class="apply-all-row">
                 <span class="apply-all-label">Apply retention period to all modules:</span>
                 <input type="number" id="apply-all-days" min="30" max="3650" value="365"
@@ -576,7 +678,7 @@
                 <span style="font-size:.82rem;color:var(--ink-muted);">days</span>
                 <button type="button" class="btn-apply-all" onclick="applyAllRetention()">Apply to All</button>
             </div>
- 
+
             <table class="archive-table" id="archive-table">
                 <thead>
                     <tr>
@@ -654,12 +756,12 @@
                     @endforeach
                 </tbody>
             </table>
- 
+
             <div class="form-actions">
                 <button type="button" class="btn-save" onclick="saveArchiveSettings()">Save Archive Settings</button>
             </div>
         </div>
- 
+
     </div>
     @endif
 </div>
@@ -674,11 +776,12 @@
             <span id="action-loading-text">Please wait...</span>
         </div>
     </div>
-    @endsection
+@endsection
 
-    @section('scripts')
-    <script>
-        function showActionLoading(message) {
+@section('scripts')
+<script>
+    
+    function showActionLoading(message) {
         const overlay = document.getElementById('action-loading');
         document.getElementById('action-loading-text').textContent = message || 'Please wait...';
         overlay.classList.add('open');
@@ -705,6 +808,7 @@
             });
         });
     });
+
     function switchTab(name) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -712,6 +816,7 @@
         document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`).classList.add('active');
         document.getElementById('tab-' + name).classList.add('active');
     }
+
     function checkStrength(val) {
         const fill  = document.getElementById('pw-fill');
         const label = document.getElementById('pw-label');
@@ -733,6 +838,7 @@
         fill.style.background = lv.bg;
         label.textContent     = val.length ? lv.text : '';
     }
+
     const DEFAULTS = {
         maintenance_new:  true,
         maintenance_resubmission: true,
@@ -744,12 +850,14 @@
         document_request: true,
         announcement_new: false,
     };
+
     function resetToggles() {
         Object.entries(DEFAULTS).forEach(([key, val]) => {
             const el = document.querySelector(`input[name="${key}"]`);
             if (el) el.checked = val;
         });
     }
+
     @if(session('open_tab'))
         switchTab("{{ session('open_tab') }}");
     @endif
@@ -763,7 +871,7 @@
         var clearBtn = document.querySelector(`.btn-clear-now[data-module="${module}"]`);
         if (clearBtn) clearBtn.disabled = !enabled;
     }
-    
+
     function applyAllRetention() {
         var days = parseInt(document.getElementById('apply-all-days').value);
         if (!days || days < 30 || days > 3650) {
@@ -775,7 +883,7 @@
         });
         showToast('Retention period applied to all modules. Save to confirm.', 'success');
     }
-    
+
     function saveArchiveSettings() {
         var modules = [];
         document.querySelectorAll('#archive-table tbody tr').forEach(function(row) {
@@ -787,32 +895,46 @@
                 warn_days_before: parseInt(row.querySelector('.module-warn').value),
             });
         });
-    
+
         showActionLoading('Saving archive settings...');
-    
+
         fetch('{{ route("settings.archive.update") }}', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
             body: JSON.stringify({ modules: modules }),
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(r) {
+            return r.json().then(function(data) {
+                return { ok: r.ok, status: r.status, data: data };
+            });
+        })
+        .then(function(result) {
             document.getElementById('action-loading').classList.remove('open');
-            if (data.success) {
+
+            if (result.ok && result.data.success) {
                 showToast('Archive settings saved.', 'success');
-            } else {
-                showToast(data.message || 'Failed to save.', 'error');
+                return;
             }
+
+            if (result.status === 422 && result.data.errors) {
+                var firstError = Object.values(result.data.errors)[0][0];
+                showToast(firstError, 'error');
+                return;
+            }
+
+            showToast(result.data.message || 'Failed to save.', 'error');
         })
         .catch(function() {
             document.getElementById('action-loading').classList.remove('open');
             showToast('Network error.', 'error');
         });
     }
-    
+
     function confirmClearNow(module, label, btn) {
         var retentionInput = document.querySelector(`.module-retention[data-module="${module}"]`);
         var retentionDays  = retentionInput ? parseInt(retentionInput.value) : null;
@@ -820,33 +942,47 @@
         if (!confirm('This will permanently delete all ' + label + ' records older than ' + retentionDays + ' day(s). This action cannot be undone. Proceed?')) {
             return;
         }
-    
+
         btn.disabled = true;
         btn.textContent = 'Clearing...';
         showActionLoading('Clearing ' + label + '...');
-    
+
         fetch('{{ route("settings.archive.clearNow") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
             body: JSON.stringify({ module: module, retention_days: retentionDays }),
         })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+        .then(function(r) {
+            return r.json().then(function(data) {
+                return { ok: r.ok, status: r.status, data: data };
+            });
+        })
+        .then(function(result) {
             document.getElementById('action-loading').classList.remove('open');
             btn.disabled = false;
             btn.textContent = 'Clear Now';
-            if (data.success) {
-                showToast(data.message, 'success');
+
+            if (result.ok && result.data.success) {
+                showToast(result.data.message, 'success');
                 var row = btn.closest('tr');
                 row.querySelectorAll('.last-cleared-val, .last-cleared-display').forEach(function(el) {
-                    el.textContent = data.last_cleared_at;
+                    el.textContent = result.data.last_cleared_at;
                 });
-            } else {
-                showToast(data.message || 'Failed to clear.', 'error');
+                return;
             }
+
+            if (result.status === 422 && result.data.errors) {
+                var firstError = Object.values(result.data.errors)[0][0];
+                showToast(firstError, 'error');
+                return;
+            }
+
+            showToast(result.data.message || 'Failed to clear.', 'error');
         })
         .catch(function() {
             document.getElementById('action-loading').classList.remove('open');

@@ -20,6 +20,10 @@ class ArchivedStaff extends Model
         'contact_number',
         'shift_schedule',
         'duty_status',
+        'is_on_leave',
+        'leave_start',
+        'leave_end',
+        'leave_note',
         'is_active',
         'archived_at',
     ];

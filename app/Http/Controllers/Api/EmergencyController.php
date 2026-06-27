@@ -6,6 +6,7 @@ use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use App\Models\CustomEmergencyKeyword;
 use App\Models\EmergencyReport;
+use App\Models\ArchivedEmergencyReport;
 use App\Models\UnclassifiedEmergencyTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -525,14 +526,61 @@ class EmergencyController extends Controller
     {
         $tenantId = $request->user()?->tenant_id;
 
-        $reports = EmergencyReport::where('tenant_id', $tenantId)
+        $activeReports = EmergencyReport::where('tenant_id', $tenantId)
+            ->where('hidden_from_tenant', false)
             ->latest('reported_at')
             ->get()
             ->map(fn($report) => $this->formatReport($report));
 
+        $archivedReports = ArchivedEmergencyReport::where('tenant_id', $tenantId)
+            ->whereIn('archive_type', ['resolved', 'closed'])
+            ->where('hidden_from_tenant', false)
+            ->latest('reported_at')
+            ->get()
+            ->map(fn($report) => $this->formatArchivedReport($report));
+
+        $allReports = $activeReports->concat($archivedReports)
+            ->sortByDesc('reported_at')
+            ->values();
+
         return response()->json([
-            'reports' => $reports,
+            'reports' => $allReports,
         ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $tenantId = $request->user()?->tenant_id;
+
+        $report = EmergencyReport::where('tenant_id', $tenantId)
+            ->where('report_id', $id)
+            ->first();
+
+        if ($report) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Active emergency reports cannot be removed by the tenant.',
+            ], 403);
+        }
+
+        $archived = ArchivedEmergencyReport::where('tenant_id', $tenantId)
+            ->where('original_id', $id)
+            ->whereIn('archive_type', ['resolved', 'closed'])
+            ->first();
+
+        if ($archived) {
+            $archived->update(['hidden_from_tenant' => true]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Emergency report history cleared.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Emergency report not found.',
+        ], 404);
     }
 
     public function store(Request $request)
@@ -563,7 +611,7 @@ class EmergencyController extends Controller
         $requestedType = $validated['emergency_type'] ?? $validated['type'] ?? null;
         $isPanicAlert = $this->isPanicAlert($requestedType, $cleanedDescription);
         $classification = $this->classify($cleanedDescription, $requestedType, $isPanicAlert);
-        $location = $validated['location'] ?? $this->detectLocation($cleanedDescription) ?? $tenant?->room_number;
+        $location = $this->detectLocation($cleanedDescription) ?? $validated['location'] ?? $tenant?->room_number;
 
         $report = EmergencyReport::create([
             'tenant_id' => $tenant?->tenant_id,
@@ -609,6 +657,24 @@ class EmergencyController extends Controller
             'description' => $report->description,
             'location' => $report->location,
             'status' => $report->status,
+            'admin_notes' => $report->admin_notes,
+            'reported_at' => $this->formatApiDate($report->reported_at),
+            'resolved_at' => $this->formatApiDate($report->resolved_at),
+        ];
+    }
+
+    private function formatArchivedReport(ArchivedEmergencyReport $report): array
+    {
+        return [
+            'id' => $report->original_id,
+            'tenant_id' => $report->tenant_id,
+            'is_panic_alert' => $report->is_panic_alert,
+            'emergency_type' => $report->emergency_type,
+            'urgency_level' => $report->urgency_level,
+            'input_type' => 'text',
+            'description' => $report->description,
+            'location' => $report->location,
+            'status' => $report->archive_type,
             'admin_notes' => $report->admin_notes,
             'reported_at' => $this->formatApiDate($report->reported_at),
             'resolved_at' => $this->formatApiDate($report->resolved_at),
@@ -765,7 +831,72 @@ class EmergencyController extends Controller
             return 'Room ' . Str::upper($matches[1]);
         }
 
-        if (preg_match('/\b(lobby|hallway|kitchen|bathroom|stairs|stairwell|elevator|parking|laundry|banyo|kusina|hagdan|pasilyo)\b/i', $text, $matches)) {
+        $keywords = [
+            'lobby',
+            'hallway',
+            'corridor',
+            'pasilyo',
+            'kitchen',
+            'kusina',
+            'bathroom',
+            'toilet',
+            'restroom',
+            'cr',
+            'comfort room',
+            'comfort rm',
+            'banyo',
+            'shower',
+            'shower room',
+            'stairs',
+            'stairwell',
+            'staircase',
+            'hagdan',
+            'hagdanan',
+            'elevator',
+            'lift',
+            'parking',
+            'parking lot',
+            'garage',
+            'laundry',
+            'laundry room',
+            'canteen',
+            'cafeteria',
+            'gym',
+            'study room',
+            'study area',
+            'library',
+            'lounge',
+            'roof',
+            'rooftop',
+            'bubong',
+            'balcony',
+            'terrace',
+            'garden',
+            'yard',
+            'office',
+            'front desk',
+            'frontdesk',
+            'entrance',
+            'gate',
+            'pinto',
+            'door',
+            'exit',
+            'labasan',
+            'fire escape',
+            'basement'
+        ];
+
+        usort($keywords, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        $escaped = array_map(function ($k) {
+            return preg_quote($k, '/');
+        }, $keywords);
+
+        $pattern = '/\b(' . implode('|', $escaped) . ')\b/i';
+
+        if (preg_match($pattern, $text, $matches)) {
             return Str::title($matches[1]);
         }
 
@@ -777,7 +908,13 @@ class EmergencyController extends Controller
         if (empty($text)) {
             return false;
         }
-        $cleanText = trim(strtolower($text));
+
+        // Normalize censored/masked words (e.g. f**k, s**t, ****) to a valid placeholder
+        $normalizedText = preg_replace('/\b[a-z]*\*+[a-z]*\b/i', 'censor', $text);
+        $normalizedText = preg_replace('/\*+/i', 'censor', $normalizedText);
+        $normalizedText = preg_replace('/\[[^\]]*censor[^\]]*\]/i', 'censor', $normalizedText);
+
+        $cleanText = trim(strtolower($normalizedText));
 
         if (strlen($cleanText) < 3) {
             $validShorts = ['ac', 'tv', 'ng', 'ok', 'hi', 'go', 'no', 'my', 'by', 'to', 'in', 'on', 'at', 'an', 'as', 'he', 'we', 'me', 'us', 'up', 'so', 'do', 'if', 'of', 'or', 'is', 'it', 'am'];

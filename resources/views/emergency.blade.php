@@ -1539,18 +1539,6 @@
         color: #c0303a;
     }
 
-    .kw-validation-msg.error::before {
-        content: '';
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        margin-top: .05rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
-
     .kw-validation-msg.warning {
         display: flex;
         align-items: flex-start;
@@ -1560,18 +1548,6 @@
         border-radius: 8px;
         padding: .4rem .6rem;
         color: #7a5400;
-    }
-
-    .kw-validation-msg.warning::before {
-        content: '';
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        margin-top: .05rem;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
     }
 
     .kw-btn-save:disabled {
@@ -1978,7 +1954,7 @@
             </div>
             <div class="modal-warn-banner">
                 <span style="font-size:.95rem;flex-shrink:0;"></span>
-                <span>Setting status to <strong>Closed</strong> will move this report to the closed archive.</span>
+                <span>Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this report to the archive permanently.</span>
             </div>
         </div>
         <div class="modal-footer">
@@ -2280,7 +2256,7 @@
             dateToEl.style.borderColor = '';
         }
 
-        filtered = reports.filter(r => {
+        filtered = reportsData.filter(r => {
             const matchSearch =
                 normalizeFilterValue(r.emergency_type).includes(q) ||
                 normalizeFilterValue(r.urgency_level).includes(q) ||
@@ -2825,29 +2801,107 @@
         applyFilters();
     }
 
+    const EM_POLL_INTERVAL = 7000;
+    let reportsData = [...reports];
+
     populateTypeFilter();
     applyFilters();
     renderDirList();
 
+    function isAnyEmModalOpen() {
+        return document.querySelector('.modal-overlay.open') !== null ||
+            document.getElementById('archive-drawer').classList.contains('open');
+    }
+
+    function showEmPollToast() {
+        const existing = document.getElementById('em-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'em-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:var(--white);border:1.5px solid var(--pink-200);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Data refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function pollEmReports() {
+        const activeEl = document.activeElement;
+
+        try {
+            const res = await fetch('/emergency/poll/reports', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const fresh = await res.json();
+
+            const prevIds = new Set(reportsData.map(r => r.report_id));
+            const freshIds = new Set(fresh.map(r => r.report_id));
+
+            const hasChanges =
+                fresh.length !== reportsData.length ||
+                fresh.some(r => {
+                    const old = reportsData.find(o => o.report_id === r.report_id);
+                    return !old || old.status !== r.status || old.urgency_level !== r.urgency_level;
+                }) ||
+                [...prevIds].some(id => !freshIds.has(id));
+
+            if (!hasChanges) return;
+
+            const newPanics = fresh.filter(r => r.is_panic_alert && !prevIds.has(r.report_id));
+
+            newPanics.forEach(r => {
+                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
+            });
+
+            if (isAnyEmModalOpen()) return;
+
+            reportsData = fresh;
+
+            const typeSelect = document.getElementById('type-filter');
+            const typeFilterVal = typeSelect.value;
+            const currentTypes = new Set([...typeSelect.options].map(o => o.value).filter(Boolean));
+            const freshTypes = [...new Set(
+                fresh.map(r => String(r.emergency_type ?? '').trim()).filter(t => t && t !== '—')
+            )].sort((a, b) => a.localeCompare(b));
+
+            freshTypes.forEach(t => {
+                if (!currentTypes.has(t)) {
+                    const opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = t;
+                    typeSelect.appendChild(opt);
+                }
+            });
+
+            if (typeFilterVal) typeSelect.value = typeFilterVal;
+
+            applyFilters();
+            showEmPollToast();
+
+            if (activeEl && activeEl.id) {
+                const refocus = document.getElementById(activeEl.id);
+                if (refocus && refocus !== document.activeElement) refocus.focus();
+            }
+        } catch {
+        }
+    }
+
+    setInterval(pollEmReports, EM_POLL_INTERVAL);
+
     @if(session('success'))
         showToast('{{ session("success") }}', 'success');
     @endif
-
-    (function() {
-        var lastPanicId = null;
-        function checkPanic() {
-            fetch('{{ url("/emergency/poll/panic") }}', { headers: { 'Accept': 'application/json' } })
-                .then(function(r) { return r.json(); })
-                .then(function(data) {
-                    if (data.has_panic && data.report_id !== lastPanicId) {
-                        lastPanicId = data.report_id;
-                        showToast('PANIC ALERT: ' + (data.type || 'Emergency') + ' at ' + (data.location || 'unknown'), 'error');
-                    }
-                })
-                .catch(function() {});
-        }
-        setInterval(checkPanic, 30000);
-    })();
 
     const kwEditIcon = "{{ asset('icons/edit.png') }}";
     const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
@@ -3113,13 +3167,13 @@
 
         if (msg) {
             if (error) {
-                msg.textContent = error;
+                msg.innerHTML = '<img src="{{ asset("icons/error.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(23%) sepia(50%) saturate(1000%) hue-rotate(314deg) brightness(80%) contrast(90%);"> ' + escHtml(error);
                 msg.className = 'kw-validation-msg error';
             } else if (warning) {
-                msg.textContent = warning;
+                msg.innerHTML = '<img src="{{ asset("icons/warn.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(500%) hue-rotate(5deg) brightness(85%) contrast(95%);"> ' + escHtml(warning);
                 msg.className = 'kw-validation-msg warning';
             } else {
-                msg.textContent = '';
+                msg.innerHTML = '';
                 msg.className = 'kw-validation-msg';
             }
         }

@@ -9,15 +9,12 @@ use Illuminate\Http\Request;
 
 class VisitorController extends Controller
 {
-    /**
-     * GET /api/visitors
-     */
+
     public function index(Request $request)
     {
         $user     = $request->user();
         $tenantId = $user?->tenant_id ?? $user?->id;
 
-        // ── Resolve tenant full name from separate first/last columns ─────────
         $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
             ?: $user?->name
             ?: 'Unknown';
@@ -32,6 +29,7 @@ class VisitorController extends Controller
                 'visitor_name'   => $v->visitor_name,
                 'contact_no'     => $v->contact_no,
                 'purpose'        => $v->purpose,
+                'relationship'   => $v->relationship,
                 'id_type'        => $v->id_type,
                 'id_photo'       => $v->id_photo
                     ? asset('storage/' . $v->id_photo)
@@ -61,9 +59,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * POST /api/visitors
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -81,6 +76,7 @@ class VisitorController extends Controller
             ],
             'contact_no'    => ['required', 'digits:11', 'regex:/^09\d{9}$/'],
             'purpose'       => 'required|string|max:255',
+            'relationship'  => 'required|string|max:255',
             'id_type'       => 'required|string|max:255',
             'id_photo'      => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
             'date_of_visit' => 'required|date',
@@ -92,7 +88,6 @@ class VisitorController extends Controller
         $user     = $request->user();
         $tenantId = $user?->tenant_id ?? $user?->id;
 
-        // ── Always derive tenant name from authenticated user ─────────────────
         $tenantName = trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
             ?: $user?->name
             ?: 'Unknown';
@@ -107,6 +102,7 @@ class VisitorController extends Controller
             'visitor_name'  => $request->visitor_name,
             'contact_no'    => $request->contact_no,
             'purpose'       => $request->purpose,
+            'relationship'  => $request->relationship,
             'id_type'       => $request->id_type,
             'id_photo'      => $photoPath,
             'date_of_visit' => $request->date_of_visit ?? now()->toDateString(),
@@ -114,6 +110,7 @@ class VisitorController extends Controller
             'arrival_time'  => null,
             'status'        => 'pending',
             'tenant_id'     => $tenantId,
+            'expires_at'    => now()->addHours(24),
         ]);
 
         NotificationHelper::sendToAll(
@@ -129,6 +126,7 @@ class VisitorController extends Controller
                 'visitor_name'  => $visitor->visitor_name,
                 'contact_no'    => $visitor->contact_no,
                 'purpose'       => $visitor->purpose,
+                'relationship'  => $visitor->relationship,
                 'id_type'       => $visitor->id_type,
                 'id_photo'      => $visitor->id_photo
                     ? asset('storage/' . $visitor->id_photo)
@@ -142,9 +140,6 @@ class VisitorController extends Controller
         ], 201);
     }
 
-    /**
-     * PATCH /api/visitors/{id}/checkout
-     */
     public function checkout($id, Request $request)
     {
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;
@@ -182,9 +177,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * PATCH /api/visitors/{id}/cancel
-     */
     public function cancel($id, Request $request)
     {
         $user = $request->user();
@@ -224,9 +216,6 @@ class VisitorController extends Controller
         ]);
     }
 
-    /**
-     * DELETE /api/visitors/{id}
-     */
     public function destroy($id, Request $request)
     {
         $tenantId = $request->user()?->tenant_id ?? $request->user()?->id;

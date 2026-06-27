@@ -13,6 +13,8 @@
         gap: 1.5rem;
         background: var(--blush);
         box-sizing: border-box;
+        overflow-y: auto;
+        min-height: 0;
     }
 
     .page-header {
@@ -263,6 +265,10 @@
         border: 1px solid var(--bright-pink);
         box-shadow: 0 2px 16px rgba(232,23,93,.07);
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
     }
 
     .table-card-header {
@@ -287,16 +293,22 @@
         margin-top: .1rem;
     }
 
-    .table-wrap { overflow-x: auto; }
+    .table-wrap {
+        overflow-x: auto;
+        overflow-y: visible;
+        flex: 1;
+        min-height: 0;
+    }
 
     table {
         width: 100%;
         border-collapse: collapse;
         font-size: .83rem;
+        table-layout: fixed;
     }
 
     thead th {
-        padding: .65rem 1rem;
+        padding: .65rem .85rem;
         text-align: left;
         font-size: .71rem;
         font-weight: 800;
@@ -305,7 +317,8 @@
         letter-spacing: .05em;
         background: linear-gradient(135deg, #fff0f7 0%, #fde8f0 100%);
         border-bottom: 1.5px solid rgba(232,23,93,.18);
-        white-space: nowrap;
+        white-space: normal;
+        word-break: break-word;
     }
 
     thead th.th-center {
@@ -330,6 +343,9 @@
         padding: .75rem 1rem;
         color: var(--ink);
         vertical-align: middle;
+        overflow: hidden;        
+        text-overflow: ellipsis; 
+        white-space: nowrap;
     }
 
     tbody td.td-center {
@@ -341,7 +357,16 @@
         align-items: center;
         gap: .5rem;
         font-weight: 600;
+        overflow: hidden;
     }
+
+    .doc-type-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
 
     .doc-dot {
         width: 8px;
@@ -1544,6 +1569,46 @@
         line-height: 1.45;
         padding-top: .15rem;
     }
+
+    .purpose-cell {
+    position: relative;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .8rem;
+    color: var(--ink-muted);
+    cursor: default;
+}
+
+.purpose-cell .purpose-tooltip {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 6px);
+    background: var(--ink);
+    color: var(--white);
+    font-size: .76rem;
+    font-weight: 500;
+    line-height: 1.5;
+    padding: .45rem .65rem;
+    border-radius: 8px;
+    white-space: normal;
+    width: max-content;
+    max-width: 240px;
+    z-index: 900;
+    box-shadow: 0 6px 18px rgba(26,26,46,.18);
+    pointer-events: none;
+}
+
+.purpose-cell:hover .purpose-tooltip {
+    display: block;
+}
+
+.purpose-cell:hover .purpose-tooltip {
+    display: block;
+}
+
 </style>
 @endsection
 
@@ -1762,7 +1827,7 @@
             <div class="table-card-header">
                 <div>
                     <div class="table-card-title">Downloadable Forms</div>
-                    <div class="table-card-sub">PDF forms tenants can download and fill out, automatically listed in the mobile app</div>
+                    <div class="table-card-sub">Forms tenants can download and fill out, automatically listed in the mobile app</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -2450,6 +2515,7 @@ let areqState = { filterStatus: '', sort: 'newest', search: '', page: 1, perPage
 let formState = { search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let currentDoc = null;
 let currentReq = null;
+let allRequestsCache = [];
 let approvedState   = { search: '', page: 1, perPage: 8,  data: [], filtered: [] };
 let adeniedState    = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
 let acancelledState = { sort: 'newest', search: '', page: 1, perPage: 10, data: [], filtered: [] };
@@ -2570,41 +2636,63 @@ function renderPagination(containerId, currentPage, totalPages, onGo) {
     pg.appendChild(next);
 }
 
-async function fetchDocs() {
-    document.getElementById('doc-tbody').innerHTML =
-        `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
+async function fetchAllRequests(isInitial = false) {
+    if (isInitial) {
+        document.getElementById('doc-tbody').innerHTML =
+            `<tr><td colspan="7"><div class="empty-state">Loading...</div></td></tr>`;
+        document.getElementById('req-tbody').innerHTML =
+            `<tr><td colspan="8"><div class="empty-state">Loading...</div></td></tr>`;
+    }
     try {
         const res  = await fetch('/admin/document-requests', {
             headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
         });
         const data = await res.json();
         const all  = data.data ?? data;
+        allRequestsCache = all;
+
+        const freshDocIds = new Set(all.filter(r => r.category === 'form').map(r => r.doc_request_id));
+        const freshReqIds = new Set(all.filter(r => r.category === 'certificate').map(r => r.doc_request_id));
+
+        if (currentDoc && freshDocIds.has(currentDoc.doc_request_id)) {
+            currentDoc = all.find(r => r.doc_request_id === currentDoc.doc_request_id) ?? currentDoc;
+        }
+        if (currentReq && freshReqIds.has(currentReq.doc_request_id)) {
+            currentReq = all.find(r => r.doc_request_id === currentReq.doc_request_id) ?? currentReq;
+        }
+
         docState.data = all.filter(r => r.category === 'form');
+        reqState.data = all.filter(r => r.category === 'certificate');
+
         document.getElementById('tab-docs-count').textContent = docState.data.filter(r => r.status === 'pending').length;
+        document.getElementById('tab-reqs-count').textContent = reqState.data.filter(r => r.status === 'pending').length;
+
         docApplyFilters();
-        approvedApplyFilters();
+        reqApplyFilters();
+
+        const approvedPanelOpen = document.getElementById('approved-panel-body').classList.contains('open');
+        if (!approvedPanelOpen) {
+            approvedApplyFilters();
+        } else {
+            document.getElementById('approved-count-badge').textContent =
+                docState.data.filter(r => r.status === 'approved').length;
+        }
     } catch {
-        document.getElementById('doc-tbody').innerHTML =
-            `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
+        if (isInitial) {
+            document.getElementById('doc-tbody').innerHTML =
+                `<tr><td colspan="7"><div class="empty-state" style="color:var(--red)">Failed to load submissions.</div></td></tr>`;
+            document.getElementById('req-tbody').innerHTML =
+                `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
+        }
     }
 }
 
+async function fetchDocs() {
+    await fetchAllRequests(false);
+}
+
 async function fetchReqs() {
-    document.getElementById('req-tbody').innerHTML =
-        `<tr><td colspan="8"><div class="empty-state">Loading...</div></td></tr>`;
-    try {
-        const res  = await fetch('/admin/document-requests', {
-            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF }
-        });
-        const data = await res.json();
-        const all  = data.data ?? data;
-        reqState.data = all.filter(r => r.category === 'certificate');
-        document.getElementById('tab-reqs-count').textContent = reqState.data.filter(r => r.status === 'pending').length;
-        reqApplyFilters();
-    } catch {
-        document.getElementById('req-tbody').innerHTML =
-            `<tr><td colspan="8"><div class="empty-state" style="color:var(--red)">Failed to load requests.</div></td></tr>`;
-    }
+    await fetchAllRequests(false);
 }
 
 function docApplyFilters() {
@@ -2631,6 +2719,7 @@ function docApplyFilters() {
 }
 
 function renderDocTable() {
+    const activeEl = document.activeElement;
     const start = (docState.page - 1) * docState.perPage;
     const page  = docState.filtered.slice(start, start + docState.perPage);
     const tbody = document.getElementById('doc-tbody');
@@ -2644,7 +2733,7 @@ function renderDocTable() {
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(r.doc_request_id).padStart(3,'0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${tenantName}</td>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(r.document_type)}</div></td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(r.attachment)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
                 <td class="td-center">${reqStatusBadge(r.status)}</td>
@@ -2672,6 +2761,10 @@ function renderDocTable() {
     renderPagination('doc-pagination', docState.page,
         Math.ceil(total / docState.perPage),
         p => { docState.page = p; renderDocTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 function viewDoc(r) {
@@ -2909,6 +3002,7 @@ function reqApplyFilters() {
 }
 
 function renderReqTable() {
+    const activeEl = document.activeElement;
     const start = (reqState.page - 1) * reqState.perPage;
     const page  = reqState.filtered.slice(start, start + reqState.perPage);
     const tbody = document.getElementById('req-tbody');
@@ -2947,6 +3041,10 @@ function renderReqTable() {
     renderPagination('req-pagination', reqState.page,
         Math.ceil(total / reqState.perPage),
         p => { reqState.page = p; renderReqTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 function viewReq(r) {
@@ -3201,7 +3299,7 @@ function renderAdocTable() {
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
                 <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+                <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(d.attachment)}</td>
                 <td class="td-center">${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
@@ -3414,6 +3512,7 @@ function formApplyFilters() {
     formState.filtered = formState.data.filter(f =>
         !q || (f.label ?? '').toLowerCase().includes(q)
     );
+    formState.filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     formState.page = 1;
     renderFormTable();
 }
@@ -3423,6 +3522,7 @@ function openFormFile(filePath) {
 }
 
 function renderFormTable() {
+    const activeEl = document.activeElement;
     const start = (formState.page - 1) * formState.perPage;
     const page  = formState.filtered.slice(start, start + formState.perPage);
     const tbody = document.getElementById('form-tbody');
@@ -3457,6 +3557,10 @@ function renderFormTable() {
     renderPagination('form-pagination', formState.page,
         Math.ceil(total / formState.perPage),
         p => { formState.page = p; renderFormTable(); });
+    if (activeEl && activeEl.id) {
+        const refocus = document.getElementById(activeEl.id);
+        if (refocus && refocus !== document.activeElement) refocus.focus();
+    }
 }
 
 async function submitUploadForm() {
@@ -3680,7 +3784,7 @@ function renderAdeniedTable() {
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
             <td>${fileTypeBadge(d.attachment)}</td>
             <td class="td-center">${reqStatusBadge(d.status)}</td>
             <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
@@ -3748,7 +3852,7 @@ function renderAcancelledTable() {
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
             <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
-            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span>${escHtml(d.document_type)}</div></td>
+            <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(d.document_type)}</span></div></td>
             <td>${escHtml(d.purpose ?? '—')}</td>
             <td>${deliveryOrFile}</td>
             <td class="td-center"><span class="req-status-badge req-cancelled">Cancelled</span></td>
@@ -3776,8 +3880,65 @@ function renderAcancelledTable() {
         p => { acancelledState.page = p; renderAcancelledTable(); });
 }
 
-fetchDocs();
-fetchReqs();
+fetchAllRequests(true);
 fetchForms();
+
+const POLL_INTERVAL = 30000;
+
+function getActiveTab() {
+    if (document.getElementById('panel-docs').classList.contains('active')) return 'docs';
+    if (document.getElementById('panel-reqs').classList.contains('active')) return 'reqs';
+    if (document.getElementById('panel-forms').classList.contains('active')) return 'forms';
+    return 'docs';
+}
+
+function isAnyModalOpen() {
+    return document.querySelector('.modal-overlay.open') !== null ||
+        document.getElementById('archive-drawer-overlay').classList.contains('open');
+}
+
+function showPollToast() {
+    const existing = document.getElementById('poll-toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.id = 'poll-toast';
+    toast.style.cssText = `
+        position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+        background:var(--white);border:1.5px solid var(--baby-pink);
+        border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+        color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+        z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+        pointer-events:none;
+    `;
+    toast.textContent = 'Data refreshed';
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => { toast.style.opacity = '1'; });
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+
+async function pollActiveTab() {
+    if (isAnyModalOpen()) return;
+    const prevDocCount = docState.data.length;
+    const prevReqCount = reqState.data.length;
+    const prevFormCount = formState.data.length;
+    const tab = getActiveTab();
+    if (tab === 'docs' || tab === 'reqs') await fetchAllRequests(false);
+    if (tab === 'forms') await fetchForms();
+    const changed =
+        docState.data.length !== prevDocCount ||
+        reqState.data.length !== prevReqCount ||
+        formState.data.length !== prevFormCount;
+    if (changed) showPollToast();
+}
+
+setInterval(async () => {
+    await pollActiveTab();
+    if (!isAnyModalOpen() && document.getElementById('archive-drawer-overlay').classList.contains('open')) {
+        fetchArchive();
+    }
+}, POLL_INTERVAL);
 </script>
 @endsection

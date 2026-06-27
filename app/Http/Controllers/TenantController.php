@@ -127,7 +127,7 @@ class TenantController extends Controller
                 'email',
                 Rule::unique('tenants', 'email')->where(fn ($q) => $q->where('status', '!=', 'inactive')),
             ],
-            'contact_number'         => 'nullable|string|max:20',
+            'contact_number' => ['required', 'string', 'regex:/^(\+63[\s]?9\d{2}[-]?\d{3}[-]?\d{4}|09\d{2}[-]?\d{3}[-]?\d{4}|\+639\d{9}|09\d{9})$/'],
             'guardian_number'        => 'nullable|string|max:20',
             'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:99',
@@ -137,6 +137,9 @@ class TenantController extends Controller
             'estimated_move_in_date' => 'nullable|date|after_or_equal:today',
             'reservation_notes'      => 'nullable|string|max:500',
             'referred_by'            => 'nullable|string|max:150',
+        ], [
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.regex'    => 'Enter a valid PH mobile number (e.g. 0912-345-6789 or +63 912-345-6789).',
         ]);
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
@@ -263,7 +266,7 @@ class TenantController extends Controller
             'first_name'             => 'required|string|max:100',
             'last_name'              => 'required|string|max:100',
             'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
-            'contact_number'         => 'nullable|string|max:20',
+            'contact_number' => ['required', 'string', 'regex:/^(\+63[\s]?9\d{2}[-]?\d{3}[-]?\d{4}|09\d{2}[-]?\d{3}[-]?\d{4}|\+639\d{9}|09\d{9})$/'],
             'guardian_number'        => 'nullable|string|max:20',
             'room_number'            => 'nullable|string|min:3|max:20',
             'floor'                  => 'nullable|integer|min:1|max:99',
@@ -282,6 +285,8 @@ class TenantController extends Controller
             'stay_type'     => 'stay type',
             'move_in_date'  => 'move-in date',
             'move_out_date' => 'move-out date',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.regex'    => 'Enter a valid PH mobile number (e.g. 0912-345-6789 or +63 912-345-6789).',
         ]);
 
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
@@ -478,6 +483,15 @@ class TenantController extends Controller
 
         try {
             [$accountId, $tempPassword, $newTenantId] = \Illuminate\Support\Facades\DB::transaction(function () use ($archived, $request, $roomNumber, $floor) {
+                $alreadyRenewed = Tenant::where('email', $archived->email)
+                    ->whereIn('status', ['pending', 'active', 'reserved'])
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($alreadyRenewed) {
+                    throw new \RuntimeException('ALREADY_RENEWED');
+                }
+
                 $conflictingTenant = Tenant::where('email', $archived->email)->first();
 
                 if ($conflictingTenant) {
@@ -506,6 +520,11 @@ class TenantController extends Controller
 
                 return [$accountId, $tempPassword, $tenant->tenant_id];
             });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'ALREADY_RENEWED') {
+                return response()->json(['message' => 'This tenant has already been renewed. Refresh the page and check the active tenants list.'], 422);
+            }
+            return response()->json(['message' => 'Failed to create tenant account. Please try again.'], 500);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'This tenant email is already linked to another account. Please try renewing again.'], 422);
         } catch (\Exception $e) {
@@ -701,7 +720,6 @@ class TenantController extends Controller
         \Illuminate\Support\Facades\DB::transaction(function () use ($tenant) {
             $this->archiveTenant($tenant, 'deleted');
 
-            \App\Models\TenantLog::where('tenant_id', $tenant->tenant_id)->delete();
             \App\Models\WaterBilling::where('tenant_id', $tenant->tenant_id)
                 ->whereIn('payment_status', ['unpaid', 'overdue'])
                 ->update([
@@ -738,7 +756,7 @@ class TenantController extends Controller
             ->get()
             ->map(fn($r) => $this->formatArchive($r));
 
-        $totalUnits    = \App\Models\Room::where('is_active', true)->sum('capacity');
+        $totalUnits    = (int) (\App\Models\Room::where('is_active', true)->sum('capacity') ?? 0);
         $occupiedUnits = Tenant::whereNotIn('status', ['inactive', 'move_out'])->whereNotNull('room_number')->distinct('room_number')->count('room_number');
 
         return view('fdtenant', [
@@ -830,6 +848,134 @@ class TenantController extends Controller
                 'estimated_move_in_date' => $tenant->estimated_move_in_date,
                 'reservation_notes'      => $tenant->reservation_notes,
             ],
+        ]);
+   }
+
+   public function frontdeskLive()
+{
+    $tenants = Tenant::where('is_active', true)
+        ->select('tenant_id', 'is_inside', 'updated_at')
+        ->get();
+
+    $fingerprint = md5($tenants->max('updated_at') . $tenants->count());
+
+    return response()->json([
+        'fingerprint' => $fingerprint,
+        'tenants'     => $tenants,
+    ]);
+}
+
+public function timeIn($id)
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $tenant = Tenant::findOrFail($id);
+
+    if (!in_array($tenant->status, ['active', 'pending'])) {
+        return response()->json(['error' => 'Only active tenants can time in.'], 422);
+    }
+
+    if ($tenant->is_on_vacation) {
+        return response()->json(['error' => 'Tenant is on vacation. Update their status first to time them in.'], 422);
+    }
+
+    if ($tenant->is_inside) {
+        return response()->json(['error' => 'Tenant is already inside.'], 422);
+    }
+
+    $tenant->update(['is_inside' => true]);
+
+    $staff = Auth::guard('staff')->user();
+    \App\Models\TenantLog::create([
+        'tenant_id'   => $tenant->tenant_id,
+        'account_id'  => $tenant->account_id,
+        'first_name'  => $tenant->first_name,
+        'last_name'   => $tenant->last_name,
+        'room_number' => $tenant->room_number,
+        'floor'       => $tenant->floor,
+        'action'      => 'time_in',
+        'logged_at'   => now(),
+        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+    ]);
+
+    return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed in successfully.']);
+}
+
+public function timeOut($id)
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $tenant = Tenant::findOrFail($id);
+
+    if (!$tenant->is_inside) {
+        return response()->json(['error' => 'Tenant is already outside.'], 422);
+    }
+
+    $tenant->update(['is_inside' => false]);
+
+    $staff = Auth::guard('staff')->user();
+    \App\Models\TenantLog::create([
+        'tenant_id'   => $tenant->tenant_id,
+        'account_id'  => $tenant->account_id,
+        'first_name'  => $tenant->first_name,
+        'last_name'   => $tenant->last_name,
+        'room_number' => $tenant->room_number,
+        'floor'       => $tenant->floor,
+        'action'      => 'time_out',
+        'logged_at'   => now(),
+        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+    ]);
+
+    return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed out successfully.']);
+}
+
+public function tenantLogs()
+{
+    if (!Auth::guard('staff')->check()) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    $logs = \App\Models\TenantLog::with('tenant')
+        ->orderByDesc('logged_at')
+        ->limit(200)
+        ->get()
+        ->map(function ($log) {
+            return [
+                'tenant_id'   => $log->tenant_id,
+                'account_id'  => $log->tenant?->account_id,
+                'first_name'  => $log->tenant?->first_name,
+                'last_name'   => $log->tenant?->last_name,
+                'room_number' => $log->tenant?->room_number,
+                'floor'       => $log->tenant?->floor,
+                'action'      => $log->action,
+                'logged_at'   => $log->logged_at,
+                'logged_by'   => $log->logged_by,
+            ];
+        });
+
+    return response()->json($logs);
+}
+
+    public function live()
+    {
+        $tenants = Tenant::orderBy('created_at', 'desc')->get();
+
+        $fingerprint = md5(
+            $tenants->max('updated_at') .
+            $tenants->count() .
+            \App\Models\Room::max('updated_at')
+        );
+
+        return response()->json([
+            'fingerprint' => $fingerprint,
+            'tenants'     => $tenants,
+            'totalTenants'  => $tenants->count(),
+            'activeCount'   => $tenants->where('status', 'active')->count(),
+            'reservedCount' => $tenants->where('status', 'reserved')->count(),
         ]);
     }
 }

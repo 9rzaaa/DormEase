@@ -162,8 +162,8 @@ class DocumentRequestController extends Controller
                     'max:20480',
                     function ($attribute, $value, $fail) {
                         $ext = strtolower($value->getClientOriginalExtension());
-                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx'])) {
-                            $fail('Only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
+                        if (!in_array($ext, ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'])) {
+                            $fail('Only PDF, Image (.png, .jpg, .jpeg), Word (.doc, .docx), or Excel (.xls, .xlsx) files are allowed.');
                         }
                     },
                 ],

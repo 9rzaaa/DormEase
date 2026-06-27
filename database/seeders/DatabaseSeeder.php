@@ -10,6 +10,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             StaffSeeder::class,
+            RoomSeeder::class,
+            DownloadableFormSeeder::class,
+            WaterBillingSeeder::class,
         ]);
 
         $this->call(TenantSeeder::class);

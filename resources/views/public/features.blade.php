@@ -385,8 +385,8 @@
           <div class="feat-info">
             <div class="feat-number">Feature 03</div>
             <div class="feat-title">Maintenance Request</div>
-            <p class="feat-desc">Submit requests via typed text or voice input powered by the Vosk Speech Recognition Engine. The system auto-classifies urgency (Low / Medium / High) and detects the issue category using rule-based NLP before you confirm.</p>
-            <div class="feat-tags"><span class="feat-tag">Voice Input</span><span class="feat-tag">NLP Classification</span><span class="feat-tag">Urgency Detection</span></div>
+            <p class="feat-desc">Submit requests via typed text or voice input. You can also upload photos or capture images directly using your device's camera. Urgency and issue classification are processed automatically on the backend.</p>
+            <div class="feat-tags"><span class="feat-tag">Voice Input</span><span class="feat-tag">Camera Capture</span><span class="feat-tag">Backend Processing</span></div>
           </div>
           <div class="feat-img-wrap">
             <div class="phone-shell">
@@ -431,8 +431,8 @@
           <div class="feat-info">
             <div class="feat-number">Feature 05</div>
             <div class="feat-title">Water Bill</div>
-            <p class="feat-desc">View your current billing amount, consumption breakdown, due date, and payment history. Pay directly via QR code using GCash, Maya, or bank transfer, then upload your proof of payment right in the app.</p>
-            <div class="feat-tags"><span class="feat-tag">GCash / Maya</span><span class="feat-tag">QR Payment</span><span class="feat-tag">Proof Upload</span><span class="feat-tag">History</span></div>
+            <p class="feat-desc">View your current billing amount, consumption breakdown, due date, and payment history. Pay directly via QR code using GCash or bank transfer and upload your proof of payment in the app, or pay via cash directly to the Admin.</p>
+            <div class="feat-tags"><span class="feat-tag">GCash / Bank Transfer</span><span class="feat-tag">Cash to Admin</span><span class="feat-tag">QR Payment</span><span class="feat-tag">History</span></div>
           </div>
           <div class="feat-img-wrap">
             <div class="phone-shell">
@@ -477,8 +477,8 @@
           <div class="feat-info">
             <div class="feat-number">Feature 07</div>
             <div class="feat-title">Document Request</div>
-            <p class="feat-desc">Submit requests for administrative documents, choose between a digital or printed copy, and track your request status in real time.</p>
-            <div class="feat-tags"><span class="feat-tag">Digital or Print</span><span class="feat-tag">Status Tracking</span><span class="feat-tag">Download</span></div>
+            <p class="feat-desc">Request available administrative documents, fill out and submit fillable forms directly in the app, choose between digital or printed copies, and track your request status in real time.</p>
+            <div class="feat-tags"><span class="feat-tag">Available Documents</span><span class="feat-tag">Fillable Forms</span><span class="feat-tag">Digital or Print</span><span class="feat-tag">Status Tracking</span></div>
           </div>
           <div class="feat-img-wrap">
             <div class="phone-shell">

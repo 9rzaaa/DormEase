@@ -391,6 +391,14 @@
     #keyword-modal .modal {
         max-height: 85vh;
         height: 85vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #keyword-modal .modal-header,
+    #keyword-modal .modal-actions {
+        flex-shrink: 0;
     }
 
     .maint-modal-field { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .9rem; }
@@ -1499,18 +1507,6 @@
     color: #c0303a;
 }
 
-.kw-validation-msg.error::before {
-    content: '';
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    margin-top: .05rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
 .kw-validation-msg.warning {
     display: flex;
     align-items: flex-start;
@@ -1520,18 +1516,6 @@
     border-radius: 8px;
     padding: .4rem .6rem;
     color: #7a5400;
-}
-
-.kw-validation-msg.warning::before {
-    content: '';
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    margin-top: .05rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a5400' stroke-width='2.5'%3E%3Cpath d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/%3E%3Cline x1='12' y1='9' x2='12' y2='13'/%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-repeat: no-repeat;
 }
 
 .kw-type-pill {
@@ -1937,7 +1921,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;">
             <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.04em;">Reason for resubmission</label>
-            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
+            <select id="resubmit-reason-select" style="padding:.6rem 2rem .6rem .85rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.84rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .65rem center;cursor:pointer;transition:border-color .2s,background .2s;width:100%;box-sizing:border-box;" onfocus="this.style.borderColor='var(--bright-pink)';this.style.background='var(--white)'" onblur="this.style.borderColor='var(--baby-pink)';this.style.background='var(--blush)'">
                 <option value="">Select a reason...</option>
                 <option value="Photo is blurry or out of focus">Photo is blurry or out of focus</option>
                 <option value="Photo is too dark or poorly lit">Photo is too dark or poorly lit</option>
@@ -2058,7 +2042,7 @@
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;">
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Status</label>
-                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                        <select name="status" id="edit-status" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
                             <option value="pending">Pending</option>
                             <option value="in-progress">In-Progress</option>
                             <option value="resolved">Resolve &amp; Archive</option>
@@ -2067,7 +2051,7 @@
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.4rem;">
                         <label style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.05em;">Urgency</label>
-                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
+                        <select name="urgency" id="edit-urgency" style="padding:.65rem 2rem .65rem .9rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--blush);color:var(--ink);font-size:.875rem;font-family:var(--ff-body);font-weight:600;outline:none;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23FF2D78' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right .7rem center;cursor:pointer;transition:border-color .2s;">
                             <option value="low">Low</option>
                             <option value="moderate">Moderate</option>
                             <option value="urgent">Urgent</option>
@@ -2198,11 +2182,17 @@
 @section('scripts')
 <script>
     function showActionLoading(message) {
-    const overlay = document.getElementById('action-loading');
-    document.getElementById('action-loading-text').textContent = message || 'Please wait...';
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-}
+        const overlay = document.getElementById('action-loading');
+        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideActionLoading() {
+        const overlay = document.getElementById('action-loading');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
 
 function setFormLoading(form, message) {
     form.querySelectorAll('button[type="submit"]').forEach(btn => {
@@ -2219,7 +2209,8 @@ function setFormLoading(form, message) {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('form[data-loading-message]').forEach(form => {
-        form.addEventListener('submit', function () {
+        form.addEventListener('submit', function (e) {
+            if (e.defaultPrevented) return;
             setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
         });
     });
@@ -2239,7 +2230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
     const perPage  = 10;
-    let filtered    = [...requests];
+    let filtered    = [];
     let currentPage = 1;
     let currentReq  = null;
     let archiveTab  = 'closed';
@@ -2423,7 +2414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('date-to').style.borderColor   = '';
         document.getElementById('date-clear-btn').style.display = (from || to) ? 'inline' : 'none';
 
-        filtered = requests.filter(function(r) {
+        filtered = requestsData.filter(function(r) {
             var matchSearch =
                 ('#req-' + String(r.id).padStart(3,'0')).includes(q) ||
                 (r.tenant_name || '').toLowerCase().includes(q) ||
@@ -2858,6 +2849,79 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     @endif
 
+    const MAINT_POLL_INTERVAL = 30000;
+    let requestsData = [...requests];
+
+    function isAnyMaintModalOpen() {
+        return document.querySelector('.modal-overlay.open') !== null ||
+            document.getElementById('archive-drawer').classList.contains('open') ||
+            document.getElementById('resubmit-confirm-overlay').classList.contains('open');
+    }
+
+    function showMaintPollToast() {
+        const existing = document.getElementById('maint-poll-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'maint-poll-toast';
+        toast.style.cssText = `
+            position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);
+            background:var(--white);border:1.5px solid var(--baby-pink);
+            border-radius:10px;padding:.45rem 1rem;font-size:.78rem;font-weight:600;
+            color:var(--ink-muted);box-shadow:0 4px 16px rgba(232,23,93,.1);
+            z-index:2000;opacity:0;transition:opacity .3s;white-space:nowrap;
+            pointer-events:none;
+        `;
+        toast.textContent = 'Data refreshed';
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    async function pollMaintRequests() {
+        if (isAnyMaintModalOpen()) return;
+
+        const activeEl = document.activeElement;
+
+        try {
+            const res = await fetch('/maintenance/poll/requests', {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const fresh = await res.json();
+
+            const prevIds = new Set(requestsData.map(r => r.id));
+            const freshIds = new Set(fresh.map(r => r.id));
+
+            const hasChanges =
+                fresh.length !== requestsData.length ||
+                fresh.some(r => {
+                    const old = requestsData.find(o => o.id === r.id);
+                    return !old || old.status !== r.status || old.urgency !== r.urgency;
+                }) ||
+                [...prevIds].some(id => !freshIds.has(id));
+
+            if (!hasChanges) return;
+
+            requestsData = fresh;
+            _rowDataMap = {};
+            fresh.forEach(r => { _rowDataMap[r.id] = r; });
+
+            applyFilters();
+            showMaintPollToast();
+
+            if (activeEl && activeEl.id) {
+                const refocus = document.getElementById(activeEl.id);
+                if (refocus && refocus !== document.activeElement) refocus.focus();
+            }
+        } catch {
+        }
+    }
+
+    setInterval(pollMaintRequests, MAINT_POLL_INTERVAL);
+
     applyFilters();
 
     (function() {
@@ -2925,6 +2989,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var urgency = document.getElementById('edit-urgency').value;
         if (!status || !urgency) {
             e.preventDefault();
+            e.stopImmediatePropagation();
             showToast('Please select a status and urgency before saving.', 'error');
             return false;
         }
@@ -3194,13 +3259,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (msg) {
             if (error) {
-                msg.textContent = error;
+                msg.innerHTML = '<img src="{{ asset("icons/error.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(23%) sepia(50%) saturate(1000%) hue-rotate(314deg) brightness(80%) contrast(90%);"> ' + escHtml(error);
                 msg.className = 'kw-validation-msg error';
             } else if (warning) {
-                msg.textContent = warning;
+                msg.innerHTML = '<img src="{{ asset("icons/warn.png") }}" style="width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:.05rem;filter:brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(500%) hue-rotate(5deg) brightness(85%) contrast(95%);"> ' + escHtml(warning);
                 msg.className = 'kw-validation-msg warning';
             } else {
-                msg.textContent = '';
+                msg.innerHTML = '';
                 msg.className = 'kw-validation-msg';
             }
         }
@@ -3259,10 +3324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (res.ok && data.success) {
                 showToast('Keyword saved' + (data.reclassified_count > 0 ? ' and ' + data.reclassified_count + ' request(s) reclassified' : ''), 'success');
-                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
-                delete kwPhraseState[termId];
-                trainedKeywords.unshift(data.keyword);
-                renderKwList();
+                setTimeout(() => location.reload(), 800);
             } else {
                 const errMsg = extractErrorMessage(data, 'Failed to save keyword.');
                 if (data.existing_keyword) {
@@ -3294,9 +3356,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (res.ok && data.success) {
-                pendingTerms = pendingTerms.filter(function(t) { return t.id !== termId; });
-                delete kwPhraseState[termId];
-                renderKwList();
+                showToast('Snippet ignored.', 'success');
+                setTimeout(() => location.reload(), 800);
             } else {
                 showToast('Failed to ignore snippet.', 'error');
             }
@@ -3334,8 +3395,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 '<div class="kw-trained-audit">Added by ' + escHtml(addedBy) + (addedAt ? ' on ' + escHtml(addedAt) : '') + '</div>' +
                 '</div>' +
                 '<div class="kw-trained-actions">' +
-                '<button class="act-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
-                '<button class="act-btn danger" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="' + kwDeleteIcon + '" alt="Delete"></button>' +
+                '<button class="action-btn" title="Edit" onclick="editKwKeyword(' + kw.id + ')"><img src="' + kwEditIcon + '" alt="Edit"></button>' +
+                '<button class="action-btn" title="Delete" onclick="deleteKwKeyword(' + kw.id + ')"><img src="' + kwDeleteIcon + '" alt="Delete"></button>' +
                 '</div>' +
                 '</div>';
         }).join('');

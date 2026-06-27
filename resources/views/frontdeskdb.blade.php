@@ -266,7 +266,7 @@
 
     .empty-state { text-align: center; padding: 1.8rem; color: var(--ink-muted); font-size: .88rem; }
 
-    .right-col { display: flex; flex-direction: column; gap: 1.4rem; }
+    .right-col { display: flex; flex-direction: column; gap: 1.4rem; position: sticky; top: 90px; }
     .right-col .card h3 { font-size: .9rem; font-weight: 700; color: var(--ink); margin-bottom: .9rem; }
 
     .notif-item {
@@ -630,47 +630,49 @@
     <div class="right-col fade-up d5">
         <div class="card">
             <h3>Notifications</h3>
+            <div class="notif-container">
             @if($notifications->isEmpty())
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
                 @foreach($notifications->take(6) as $notif)
-            @php
-                $notifTypeLabel = match($notif->type ?? '') {
-                    'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'visitor',
-                    'emergency_new'    => 'emergency',
-                    'announcement_new' => 'announcement',
-                    default            => 'general',
-                };
-                $notifIcon = match($notif->type ?? '') {
-                    'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'nav-visit',
-                    'emergency_new'    => 'warn',
-                    'announcement_new' => 'nav-announ',
-                    default            => 'bell',
-                };
-            @endphp
-                <div class="notif-item"
-                     onclick="handleNotifClick(event, this)"
-                     data-notif='{!! json_encode([
-                         "id"      => $notif->notif_id,
-                         "type"    => $notifTypeLabel,
-                         "icon"    => asset("icons/{$notifIcon}.png"),
-                         "message" => $notif->message,
-                         "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
-                         "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
-                         "url"     => $notif->url ?? "",
-                         "isRead"  => (bool) $notif->is_read,
-                     ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
-                    <div class="notif-ico">
-                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
-                             onerror="this.src='{{ asset('icons/bell.png') }}'">
+                @php
+                    $notifTypeLabel = match($notif->type ?? '') {
+                        'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'visitor',
+                        'emergency_new'    => 'emergency',
+                        'announcement_new' => 'announcement',
+                        default            => 'general',
+                    };
+                    $notifIcon = match($notif->type ?? '') {
+                        'visitor_registration', 'visitor_checkin', 'visitor_checkout', 'visitor_cancelled' => 'nav-visit',
+                        'emergency_new'    => 'warn',
+                        'announcement_new' => 'nav-announ',
+                        default            => 'bell',
+                    };
+                @endphp
+                    <div class="notif-item"
+                        onclick="handleNotifClick(event, this)"
+                        data-notif='{!! json_encode([
+                            "id"      => $notif->notif_id,
+                            "type"    => $notifTypeLabel,
+                            "icon"    => asset("icons/{$notifIcon}.png"),
+                            "message" => $notif->message,
+                            "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                            "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                            "url"     => $notif->url ?? "",
+                            "isRead"  => (bool) $notif->is_read,
+                        ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
+                        <div class="notif-ico">
+                            <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt=""
+                                onerror="this.src='{{ asset('icons/bell.png') }}'">
+                        </div>
+                        <div>
+                            <div class="notif-text">{{ $notif->message }}</div>
+                            <div class="notif-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
+                        </div>
                     </div>
-                <div>
-                        <div class="notif-text">{{ $notif->message }}</div>
-                        <div class="notif-time">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</div>
-                    </div>
-                </div>
-            @endforeach
+                @endforeach
             @endif
+            </div>
         </div>
     </div>
 

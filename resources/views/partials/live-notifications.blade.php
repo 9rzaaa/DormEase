@@ -270,6 +270,13 @@
                 .catch(function() {});
         }
 
+        function escapeBannerHtml(value) {
+            return (value == null ? '' : String(value))
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
         function pollEmergencyAlerts() {
             fetch('/live-alerts', {
                 headers: {
