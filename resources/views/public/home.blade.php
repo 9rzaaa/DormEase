@@ -7,7 +7,7 @@
   <title>DormEase: Sanctissimo Rosario Ladies Dormitory</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,7 +28,7 @@
       --white:       #FFFFFF;
       --border:      rgba(232,23,93,0.18);
       --font-head:   'Poppins', 'Segoe UI', sans-serif;
-      --font-body:   'Poppins', 'Google Sans', sans-serif;
+      --font-body:   'Poppins', 'Segoe UI', sans-serif;
       --shadow-soft: 0 4px 32px rgba(232,23,93,0.16);
       --shadow-card: 0 2px 20px rgba(36,16,24,0.09);
       --r-sm: 8px; --r-md: 16px; --r-lg: 28px; --r-xl: 48px;
@@ -156,7 +156,7 @@
       font-weight: 800; line-height: 1.08;
       color: var(--brown); margin-bottom: 22px; letter-spacing: -0.03em;
     }
-    .hero h1 em { font-style: italic; color: var(--pink); font-weight: 700; }
+    .hero h1 em { font-style: normal; color: var(--pink); font-weight: 700; }
 
     .hero-title-word {
       display: inline-block;
@@ -299,7 +299,7 @@
     section { padding: 100px 6%; }
     .section-tag { font-size:.70rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
     .section-title { font-family:var(--font-head); font-size:clamp(1.8rem,3.2vw,2.8rem); font-weight:800; line-height:1.15; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
-    .section-title em { color:var(--pink); font-style:italic; font-weight:700; }
+    .section-title em { color:var(--pink); font-style:normal; font-weight:700; }
     .section-sub { font-size:1rem; color:var(--brown-light); line-height:1.8; max-width:540px; }
 
     .gallery { background:var(--cream-dark); padding-top:80px; padding-bottom:80px; }
@@ -421,22 +421,29 @@
     .de-notice-date { font-size: 5.5px; color: var(--pink-light); font-weight: 700; margin-top: 2px; }
 
     .about {
-    background:var(--brown); color:white; position:relative; overflow:hidden;
-  }
-  .about-bg-photo {
-    position:absolute; inset:0; z-index:0;
-    background-image:url('{{ asset('images/main.png') }}');
-    background-size:cover; background-position:center;
-    opacity:0.16; filter:saturate(0.7);
-  }
-  .about-bg-fade {
-    position:absolute; inset:0; z-index:0;
-    background:
-      linear-gradient(115deg, var(--brown) 0%, rgba(36,16,24,0.85) 30%, rgba(36,16,24,0.4) 55%, var(--brown) 85%),
-      radial-gradient(circle at 75% 30%, rgba(36,16,24,0.2) 0%, var(--brown) 70%);
-  }
-    .about::before { content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px; border-radius:50%; background:rgba(255,45,120,0.16); z-index:1; }
-  .about-inner { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; position:relative; z-index:2; }    .about .section-tag { color:var(--pink-light); }
+      background:var(--brown); color:white; position:relative; overflow:hidden;
+    }
+    .about-bg-photo {
+      position:absolute; inset:0; z-index:0;
+      background-image:url('{{ asset('images/main.png') }}');
+      background-size:cover; background-position:center;
+      opacity:0.16; filter:saturate(0.7);
+    }
+    .about-bg-fade {
+      position:absolute; inset:0; z-index:0;
+      background:
+        linear-gradient(115deg, var(--brown) 0%, rgba(36,16,24,0.85) 30%, rgba(36,16,24,0.4) 55%, var(--brown) 85%),
+        radial-gradient(circle at 75% 30%, rgba(36,16,24,0.2) 0%, var(--brown) 70%);
+    }
+    .about::before {
+      content:''; position:absolute; bottom:-100px; right:-100px; width:400px; height:400px;
+      border-radius:50%; background:rgba(255,45,120,0.16); z-index:1;
+    }
+    .about-inner {
+      display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center;
+      position:relative; z-index:2;
+    }
+    .about .section-tag { color:var(--pink-light); }
     .about .section-title { color:white; }
     .about .section-sub { color:rgba(255,255,255,0.60); }
     .amenities { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:32px; }
@@ -445,7 +452,10 @@
     .about-photos { display:flex; align-items:stretch; justify-content:center; height:100%; }
     .about-photo { border-radius:var(--r-lg); overflow:hidden; box-shadow:0 16px 34px rgba(0,0,0,0.18); }
     .about-main-photo { width:min(100%,460px); height:clamp(500px,42vw,620px); }
-    .about-img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; border-radius:var(--r-lg); filter:brightness(1.05) saturate(1.1); }
+    .about-img {
+      width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+      border-radius:var(--r-lg); filter:brightness(1.05) saturate(1.1);
+    }
 
     .cta-section { background:var(--pink-pale); }
     .contact-inner { display:grid; grid-template-columns:minmax(460px,1fr) minmax(260px,360px); gap:54px; align-items:center; max-width:1100px; margin:0 auto; }
@@ -1317,7 +1327,7 @@
       </div>
 
       <p style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:var(--brown);margin-top:20px;line-height:1.4;">
-        Dorm life, <em style="color:var(--pink);font-style:italic;">simplified.</em>
+        Dorm life, <em style="color:var(--pink);font-style:normal;">simplified.</em>
       </p>
       <p style="font-size:.82rem;color:var(--brown-light);margin-top:6px;font-weight:600;letter-spacing:0.02em;">
         Everything your tenants need is in one place.
