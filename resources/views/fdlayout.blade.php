@@ -1032,6 +1032,36 @@
         }).then(function() { location.reload(); });
     }
 
+    (function monitorStaffSession() {
+        var redirecting = false;
+
+        function forceLogin() {
+            if (redirecting) return;
+            redirecting = true;
+            window.location.replace('{{ route('login') }}');
+        }
+
+        function checkSession() {
+            fetch('{{ route('session.check') }}', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                cache: 'no-store',
+            }).then(function(response) {
+                if (response.status === 401 || response.status === 403 || response.redirected) {
+                    forceLogin();
+                }
+            }).catch(function() {});
+        }
+
+        checkSession();
+        setInterval(checkSession, 5000);
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) checkSession();
+        });
+    })();
+
     function toggleTmpPw(inputId, btn) {
         var inp = document.getElementById(inputId);
         inp.type = inp.type === 'text' ? 'password' : 'text';
