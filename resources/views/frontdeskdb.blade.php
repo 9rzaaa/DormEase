@@ -866,7 +866,7 @@
             sub:   'Breakdown of all emergency reports by status',
             legend: [
                 { color: '#E8175D', label: 'Active' },
-                { color: '#f5a24b', label: 'Pending' },
+                { color: '#f5a24b', label: 'Closed' },
                 { color: '#29BD9B', label: 'Resolved' }
             ],
             type: 'doughnut',
