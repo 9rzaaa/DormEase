@@ -1962,6 +1962,7 @@
             <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
         </div>
     </div>
+</div>
 
 <div class="modal-overlay" id="delete-modal" onclick="handleOverlayClick(event, 'delete-modal')">
     <div class="modal" style="max-width:400px;">
