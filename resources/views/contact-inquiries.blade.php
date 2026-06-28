@@ -888,11 +888,12 @@ function statusBadge(status) {
     };
     const [bg, color, border, label] = map[status] || map.new;
     return `<span style="display:inline-flex;align-items:center;padding:.26rem .65rem;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:${bg};color:${color};border:1px solid ${border};">${label}</span>`;
+}
 @if(session('success'))
-    if (typeof showToast === 'function') showToast("{{ session('success') }}", 'success');
+if (typeof showToast === 'function') showToast("{{ session('success') }}", 'success');
 @endif
 @if(session('error'))
-    if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error');
+if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error');
 @endif
 
 (function () {
