@@ -1479,7 +1479,7 @@
                         </div>
                         <div class="modal-field">
                             <label>Role <span class="field-req-star">*</span></label>
-                            <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':'var(--red)'">
+                            <select name="role" id="add-role" required onchange="checkAdminCapOnChange(this)">
                                 <option value="">Select role</option>
                                 <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
                                 <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
@@ -1592,11 +1592,12 @@
                         </div>
                         <div class="modal-field">
                             <label>Role</label>
-                            <select name="role" id="edit-role">
+                            <select name="role" id="edit-role" onchange="checkEditAdminCap(this)">
                                 <option value="admin">Admin</option>
                                 <option value="secretary">Secretary</option>
                                 <option value="frontdesk">Front Desk</option>
                             </select>
+                            <div id="edit-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Maximum admin accounts reached.</div>
                         </div>
                         <div class="modal-field">
                             <label>Shift Schedule</label>
@@ -1728,6 +1729,15 @@
     });
 
     var staffList  = @json($staffList);
+    var ADMIN_CAP = 2;
+
+    function getActiveAdminCount(excludeId) {
+        return staffList.filter(function(s) {
+            return s.role === 'admin'
+                && s.is_active
+                && String(s.staff_id) !== String(excludeId);
+        }).length;
+    }
     var PER_PAGE   = 8;
     var currentPage  = 1;
     var filtered     = staffList.slice();
@@ -2087,6 +2097,29 @@
         return true;
     }
 
+    function checkAdminCapOnChange(select) {
+        var errEl = document.getElementById('add-role-error');
+        if (select.value === 'admin' && getActiveAdminCount() >= ADMIN_CAP) {
+            select.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; errEl.style.display = 'block'; }
+        } else {
+            select.style.borderColor = select.value ? '' : 'var(--red)';
+            if (errEl) errEl.style.display = 'none';
+        }
+    }
+
+    function checkEditAdminCap(select) {
+        var errEl = document.getElementById('edit-role-error');
+        var excludeId = currentStaff ? currentStaff.staff_id : null;
+        if (select.value === 'admin' && getActiveAdminCount(excludeId) >= ADMIN_CAP) {
+            select.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; errEl.style.display = 'block'; }
+        } else {
+            select.style.borderColor = '';
+            if (errEl) errEl.style.display = 'none';
+        }
+    }
+
     function validateAddForm() {
         var ok = true;
         if (!validateName(document.getElementById('add-first-name')))       ok = false;
@@ -2098,6 +2131,10 @@
         if (!roleEl.value) {
             roleEl.style.borderColor = 'var(--red)';
             if (roleErr) { roleErr.textContent = 'Please select a role.'; roleErr.style.display = 'block'; }
+            ok = false;
+        } else if (roleEl.value === 'admin' && getActiveAdminCount() >= ADMIN_CAP) {
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErr) { roleErr.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; roleErr.style.display = 'block'; }
             ok = false;
         } else {
             roleEl.style.borderColor = '';
@@ -2112,6 +2149,20 @@
         if (!validateName(document.getElementById('edit-last-name')))        ok = false;
         if (!validateEmail(document.getElementById('edit-email'), currentStaff ? currentStaff.staff_id : null)) ok = false;
         if (!validateContactNumber(document.getElementById('edit-contact'), currentStaff ? currentStaff.staff_id : null)) ok = false;
+
+        var roleEl    = document.getElementById('edit-role');
+        var activeEl  = document.getElementById('edit-is-active');
+        var excludeId = currentStaff ? currentStaff.staff_id : null;
+        var wasAlreadyAdmin = currentStaff && currentStaff.role === 'admin' && currentStaff.is_active;
+        var becomingAdmin   = roleEl.value === 'admin' && activeEl.value === '1' && !wasAlreadyAdmin;
+
+        if (becomingAdmin && getActiveAdminCount(excludeId) >= ADMIN_CAP) {
+            var roleErrEl = document.getElementById('edit-role-error');
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErrEl) { roleErrEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; roleErrEl.style.display = 'block'; }
+            ok = false;
+        }
+
         if (document.getElementById('edit-is-on-leave').checked) {
             if (!validateLeaveDates()) ok = false;
         }
