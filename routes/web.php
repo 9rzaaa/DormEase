@@ -23,6 +23,8 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ArchiveSettingsController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\PublicContactController;
+use App\Http\Controllers\ContactInquiryController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -30,6 +32,7 @@ Route::get('/safety-features', fn() => view('public.safety-features'))->name('sa
 Route::get('/faqs', fn() => view('public.faqs'))->name('faqs');
 Route::get('/features', fn() => view('public.features'))->name('features');
 Route::get('/gallery', fn() => view('public.gallery'))->name('gallery');
+Route::post('/contact', [PublicContactController::class, 'store'])->name('contact.submit')->middleware('throttle:5,1');
 Route::redirect('/register', '/login')->name('register');
 Route::get('/privacy-policy', function () {
     return view('public.privacy');
@@ -214,6 +217,8 @@ Route::middleware(['auth:staff', 'no.back'])->group(function () {
 
         // documents
         Route::get('/documents', [DocumentController::class, 'page'])->name('documents.index');
+        Route::get('/contact-inquiries', [ContactInquiryController::class, 'index'])->name('contact-inquiries.index');
+        Route::patch('/contact-inquiries/{contactInquiry}/status', [ContactInquiryController::class, 'updateStatus'])->name('contact-inquiries.update-status');
         Route::get('/admin/documents', [DocumentController::class, 'index'])->name('admin.documents.index');
         Route::post('/admin/documents', [DocumentController::class, 'store'])->name('admin.documents.store');
         Route::get('/admin/documents/{document}', [DocumentController::class, 'show'])->name('admin.documents.show');
