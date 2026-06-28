@@ -323,6 +323,10 @@ Route::middleware(['auth:staff', 'staff.active', 'no.back'])->group(function () 
     Route::put('/visitors/settings/overnight-extend', [VisitorController::class, 'updateOvernightExtend'])->name('visitors.overnightExtend');
 
     // notifications
+    Route::get('/session/check', function () {
+        return response()->json(['active' => true])->header('Cache-Control', 'no-store');
+    })->name('session.check');
+
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::get('/live-alerts', [NotificationController::class, 'liveAlerts'])->name('live-alerts');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
