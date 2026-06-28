@@ -800,7 +800,9 @@
     .amf-input-wrap input:focus,
     .amf-input-wrap select:focus { border-color: var(--bright-pink); background: var(--white); box-shadow: 0 0 0 3px rgba(232,23,93,.08); }
 
-    .amf-input-wrap input.valid   { border-color: var(--green) !important; background: #f0fdf8 !important; }
+    .amf-input-wrap input.valid,
+    .amf-input-wrap select.valid,
+    .amf-input-wrap .amf-select-display.valid { border-color: var(--green) !important; background: #f0fdf8 !important; }
     .amf-input-wrap input.invalid,
     .amf-input-wrap select.invalid,
     .amf-input-wrap .amf-select-display.invalid { border-color: var(--red) !important; background: #fff5f5 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.07) !important; }
@@ -2509,6 +2511,9 @@
         if (strict || select.value) {
             avSetFieldState(select, valid ? 'valid' : 'invalid');
             avShowErr('av_purpose_err', !valid);
+        } else {
+            avSetFieldState(select, '');
+            avShowErr('av_purpose_err', false);
         }
         return valid;
     }
