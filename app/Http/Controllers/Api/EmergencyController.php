@@ -522,6 +522,12 @@ class EmergencyController extends Controller
         ]);
     }
 
+    public function classifyText(string $text, ?string $requestedType = null, bool $isPanicAlert = false): array
+    {
+        $cleaned = $this->cleanText($text);
+        return $this->classify($cleaned, $requestedType, $isPanicAlert);
+    }
+
     public function index(Request $request)
     {
         $tenantId = $request->user()?->tenant_id;
