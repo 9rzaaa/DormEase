@@ -14,15 +14,16 @@ class NotificationController extends Controller
     {
         $staff = Auth::guard('staff')->user();
 
-        $query = Notification::where('staff_id', $staff->staff_id);
-
-        if ($request->filled('tenant_id')) {
-            $query->where('tenant_id', $request->tenant_id);
-        }
+        $query = Notification::where('staff_id', $staff->staff_id)
+            ->whereIn('type', NotificationComposer::visibleTypesFor($staff->role));
 
         $notifications = $query->orderByDesc('created_at')->paginate(20);
 
-        return response()->json($notifications);
+        if ($staff->role === 'frontdesk') {
+            return view('fdnotifications', compact('notifications'));
+        }
+
+        return view('notifications', compact('notifications'));
     }
 
     public function live(Request $request)
@@ -30,7 +31,8 @@ class NotificationController extends Controller
         $staff = Auth::guard('staff')->user();
 
         $query = Notification::where('staff_id', $staff->staff_id)
-            ->whereIn('type', NotificationComposer::visibleTypesFor($staff->role));
+            ->whereIn('type', NotificationComposer::visibleTypesFor($staff->role))
+            ->where('created_at', '>=', now()->subDays(3));
 
         if ($request->filled('tenant_id')) {
             $query->where('tenant_id', $request->tenant_id);

@@ -323,6 +323,7 @@ Route::middleware(['auth:staff', 'no.back', 'force.temp.password'])->group(funct
     Route::put('/visitors/settings/overnight-extend', [VisitorController::class, 'updateOvernightExtend'])->name('visitors.overnightExtend');
 
     // notifications
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::get('/live-alerts', [NotificationController::class, 'liveAlerts'])->name('live-alerts');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
