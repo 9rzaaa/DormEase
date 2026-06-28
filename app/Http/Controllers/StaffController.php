@@ -207,6 +207,18 @@ class StaffController extends Controller
             'contact_number.unique' => 'This mobile number is already registered to another staff member.',
         ]);
 
+        if ($request->role === 'admin') {
+            $adminCount = Staff::where('role', 'admin')
+                ->where('is_active', true)
+                ->count();
+
+            if ($adminCount >= 2) {
+                return back()
+                    ->withErrors(['role' => 'Cannot add more admins. Maximum of 2 active admin accounts allowed.'])
+                    ->withInput();
+            }
+        }
+
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $suffix = '';
         for ($i = 0; $i < 6; $i++) {
@@ -273,6 +285,24 @@ class StaffController extends Controller
             'email.unique'           => 'This email is already registered to another staff member.',
             'contact_number.unique'  => 'This mobile number is already registered to another staff member.',
         ]);
+
+        $willBeAdmin       = $request->role === 'admin';
+        $willBeActive      = $request->boolean('is_active');
+        $wasAlreadyAdmin   = $staff->role === 'admin' && $staff->is_active;
+        $becomingAdmin     = $willBeAdmin && $willBeActive && ! $wasAlreadyAdmin;
+
+        if ($becomingAdmin) {
+            $adminCount = Staff::where('role', 'admin')
+                ->where('is_active', true)
+                ->where('staff_id', '!=', $staff->staff_id)
+                ->count();
+
+            if ($adminCount >= 2) {
+                return back()
+                    ->withErrors(['role' => 'Cannot set this account to admin. Maximum of 2 active admin accounts allowed.'])
+                    ->withInput();
+            }
+        }
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;
         $isBeingReactivated = $request->is_active == '1' && ! $staff->is_active;
