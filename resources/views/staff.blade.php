@@ -230,7 +230,13 @@
         transition: border-color .2s; box-sizing: border-box;
     }
     .modal-field input:focus, .modal-field select:focus { border-color: var(--hot-pink); background: var(--white); }
-    .modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .modal-actions {
+        display: flex;
+        gap: .7rem;
+        margin-top: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+    }   
     .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
     .btn-cancel:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
     .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pink-btn); transition: opacity .2s; }
@@ -1492,15 +1498,23 @@
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Staff Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
+                    <img src="{{ asset('icons/staff-2.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="view-modal-name">Staff Details</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;" id="view-modal-role-sub">—</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
-        <div id="view-content"></div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div id="view-content" style="padding:1.25rem 1.5rem 0;"></div>
+        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;">
             <button class="btn-submit" onclick="switchToEdit()">Edit</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -1839,23 +1853,28 @@
     }
 
     function viewStaff(s) {
-        currentStaff = s;
-        document.getElementById('view-content').innerHTML =
-            '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
-            + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
-                ? leaveBadge(s)
-                    + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '\u2014') + ' \u2192 ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
-                    + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
-                : 'Not on leave') + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">' + (s.is_active ? 'Active' : 'Inactive') + '</span></div>';
-        openModal('view-modal');
-    }
+    currentStaff = s;
+    document.getElementById('view-modal-name').textContent = s.first_name + ' ' + s.last_name;
+    document.getElementById('view-modal-role-sub').textContent = fmtStaffId(s.staff_id) + ' · ' + (s.role ? s.role.charAt(0).toUpperCase() + s.role.slice(1) : '—') + ' · ' + (s.shift_schedule || 'No shift set');
+    document.getElementById('view-content').innerHTML =
+        '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (s.email || '—') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
+        + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
+            ? leaveBadge(s)
+                + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '—') + ' → ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
+                + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
+            : 'Not on leave') + '</span></div>'
+        + '<div class="view-row" style="border-bottom:none;"><span class="view-label">Account Status</span><span class="view-val">'
+            + (s.is_active
+                ? '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#1f9d69;background:#e8faf5;border:1px solid #8ce0bb;padding:.18rem .6rem;border-radius:99px;">Active</span>'
+                : '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#888;background:#f3f4f6;border:1px solid #d0d0d8;padding:.18rem .6rem;border-radius:99px;">Inactive</span>')
+            + '</span></div>';
+    openModal('view-modal');
+}
 
     function switchToEdit() {
         if (currentStaff) {
