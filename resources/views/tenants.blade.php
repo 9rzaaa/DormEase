@@ -1977,7 +1977,7 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <form method="POST" id="tag-movedin-form" action="" data-loading-message="Tagging as moved in..." style="display:contents;">
             @csrf
-            <div class="modal-footer">
+            <div class="modal-footer" style="justify-content:space-between;">
                 <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Confirm</button>
             </div>
