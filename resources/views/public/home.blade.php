@@ -458,7 +458,7 @@
     }
 
     .cta-section { background:var(--pink-pale); }
-    .contact-inner { display:grid; grid-template-columns:minmax(460px,1fr) minmax(260px,360px); gap:54px; align-items:center; max-width:1100px; margin:0 auto; }
+    .contact-inner { display:grid; grid-template-columns:minmax(460px,1fr) minmax(260px,360px); gap:54px; align-items:start; max-width:1100px; margin:0 auto; }
     .contact-copy { text-align:left; }
     .cta-section .section-tag { margin-bottom:9px; }
     .cta-section .section-title { color:var(--brown); margin:0 0 16px; font-size:clamp(2.35rem,4vw,3.35rem); max-width:620px; }
@@ -466,6 +466,62 @@
     .cta-section .btn-primary { font-size:1.02rem; padding:16px 38px; }
     .cta-contact { margin-top:26px; font-size:1rem; line-height:1.65; color:var(--brown-light); max-width:520px; }
     .cta-contact a { color:var(--pink); text-decoration:none; font-weight:700; }
+    .contact-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .contact-actions .btn-primary,
+    .contact-actions .btn-outline { min-height:54px; cursor:pointer; }
+    .contact-form-card { margin:0; background:white; border:0; border-radius:0; padding:0; box-shadow:none; max-width:none; }
+    .contact-form-head { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:20px; }
+    .contact-form-title { font-family:var(--font-head); font-size:1.1rem; font-weight:800; color:var(--brown); line-height:1.25; }
+    .contact-form-note { margin-top:5px; font-size:.84rem; color:var(--brown-light); line-height:1.55; }
+    .contact-status {
+      margin-bottom:18px; padding:12px 14px; border-radius:var(--r-sm);
+      font-size:.86rem; font-weight:700; line-height:1.45;
+    }
+    .contact-status.success { background:#ecfdf3; color:#146c3e; border:1px solid rgba(20,108,62,.18); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .contact-field { display:flex; flex-direction:column; gap:7px; }
+    .contact-field.full { grid-column:1 / -1; }
+    .contact-field label { font-size:.74rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--brown-mid); }
+    .contact-field input,
+    .contact-field select,
+    .contact-field textarea {
+      width:100%; border:1px solid rgba(232,23,93,.18); border-radius:var(--r-sm);
+      background:#fffafd; color:var(--brown); font-family:var(--font-body); font-size:.92rem;
+      padding:12px 13px; outline:none; transition:border-color .2s, box-shadow .2s, background .2s;
+    }
+    .contact-field textarea { min-height:128px; resize:vertical; line-height:1.65; }
+    .contact-field input:focus,
+    .contact-field select:focus,
+    .contact-field textarea:focus {
+      border-color:var(--pink); background:white; box-shadow:0 0 0 4px rgba(232,23,93,.10);
+    }
+    .contact-field .is-invalid { border-color:#d9305f; background:#fff4f8; }
+    .contact-error { color:#d9305f; font-size:.76rem; font-weight:700; line-height:1.4; }
+    .contact-honeypot { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+    .contact-form-actions { margin-top:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .contact-form-actions .btn-primary { border:0; cursor:pointer; }
+    .contact-smallprint { font-size:.76rem; color:var(--brown-light); line-height:1.55; max-width:340px; }
+    .contact-modal-backdrop {
+      position:fixed; inset:0; z-index:1200; display:flex; align-items:center; justify-content:center;
+      padding:22px; background:rgba(36,16,24,.46); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+      opacity:0; visibility:hidden; pointer-events:none; transition:opacity .22s ease, visibility .22s ease;
+    }
+    .contact-modal-backdrop.open { opacity:1; visibility:visible; pointer-events:auto; }
+    .contact-modal {
+      position:relative; width:min(680px,100%); max-height:calc(100svh - 44px); overflow:auto;
+      background:white; border:1px solid rgba(232,23,93,.18); border-radius:var(--r-lg);
+      box-shadow:0 30px 80px rgba(36,16,24,.28); padding:28px;
+      transform:translateY(16px) scale(.97); transition:transform .22s ease;
+    }
+    .contact-modal-backdrop.open .contact-modal { transform:translateY(0) scale(1); }
+    .contact-modal-close {
+      position:absolute; top:16px; right:16px; width:38px; height:38px; border:0; border-radius:50%;
+      background:var(--pink-pale); color:var(--pink-deep); display:inline-flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:background .2s, transform .2s;
+    }
+    .contact-modal-close:hover { background:var(--cream-dark); transform:scale(1.05); }
+    .contact-modal-close svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; }
+    body.contact-modal-open { overflow:hidden; }
     .contact-map-wrap {
       position:relative; width:100%; margin:0; border-radius:var(--r-lg); overflow:hidden;
       border:1px solid rgba(232,23,93,0.20); box-shadow:var(--shadow-card); display:block;
@@ -557,6 +613,7 @@
       .about-photos { max-width:760px; width:100%; margin:0 auto; }
       .footer-inner { grid-template-columns:1fr 1fr; }
       .contact-inner { grid-template-columns:minmax(0,1fr) minmax(240px,320px); gap:36px; }
+      .contact-grid { grid-template-columns:1fr; }
       .cta-section .section-title { font-size:clamp(2rem,4vw,2.7rem); }
       .cta-section .section-sub { font-size:1rem; }
       .header-info-inner { grid-template-columns:1fr 1fr; gap:18px; }
@@ -595,6 +652,11 @@
       .contact-copy { text-align:center; }
       .cta-section .section-title,.cta-section .section-sub { margin-left:auto; margin-right:auto; }
       .cta-contact { margin-left:auto; margin-right:auto; text-align:center; }
+      .contact-actions { justify-content:center; }
+      .contact-actions .btn-primary,.contact-actions .btn-outline { width:100%; }
+      .contact-form-card { text-align:left; }
+      .contact-form-actions .btn-primary { width:100%; }
+      .contact-smallprint { max-width:none; text-align:center; }
       .footer-btm { flex-direction:column; gap:16px; align-items:flex-start; }
       .footer-btm-right { align-items:flex-start; }
       #scrollTopBtn { bottom:22px; right:18px; width:44px; height:44px; }
@@ -611,6 +673,8 @@
       .hero-arch-wrap { display:none; }
       .amenities { grid-template-columns:1fr; }
       .contact-map-wrap { border-radius:var(--r-md); }
+      .contact-modal { padding:24px 20px 22px; border-radius:var(--r-md); }
+      .contact-modal-close { top:12px; right:12px; }
       .header-info-inner { grid-template-columns:1fr; }
       .header-info-item { grid-template-columns:40px 1fr; }
       .header-info-icon { width:40px; height:40px; }
@@ -1379,10 +1443,15 @@
       <div class="section-tag">Get DormEase</div>
       <h2 class="section-title">Ready to experience<br>a <em>smarter</em> dorm life?</h2>
       <p class="section-sub">DormEase is available to all tenants of Sanctissimo Rosario Ladies Dormitory. Contact the administration to get access.</p>
-      <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
-        <svg viewBox="0 0 20 20" style="width:18px;height:18px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
-        Call +63 917 535 9723
-      </a>
+      <div class="contact-actions">
+        <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
+          <svg viewBox="0 0 20 20" style="width:18px;height:18px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          Call +63 917 535 9723
+        </a>
+        <button type="button" class="btn-outline" data-contact-modal-open>
+          Send Inquiry
+        </button>
+      </div>
       <div class="cta-contact">1229 Navarra Street, Sampaloc, Manila &nbsp;&middot;&nbsp; Near UST &amp; University Belt</div>
     </div>
     <a class="contact-map-link"
@@ -1399,6 +1468,81 @@
     </a>
   </div>
 </section>
+
+<div class="contact-modal-backdrop" id="contactModal" data-open="{{ $errors->contact->any() || session('contact_success') ? 'true' : 'false' }}" aria-hidden="true">
+  <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+    <button type="button" class="contact-modal-close" data-contact-modal-close aria-label="Close contact form">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+    </button>
+    <form class="contact-form-card" method="POST" action="{{ route('contact.submit') }}" novalidate>
+      @csrf
+      <div class="contact-form-head">
+        <div>
+          <div class="contact-form-title" id="contactModalTitle">Send us a message</div>
+          <div class="contact-form-note">Use this form for room inquiries, concerns, feedback, or DormEase access questions.</div>
+        </div>
+      </div>
+
+      @if (session('contact_success'))
+        <div class="contact-status success">{{ session('contact_success') }}</div>
+      @endif
+
+      <div class="contact-honeypot" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-field">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" class="{{ $errors->contact->has('name') ? 'is-invalid' : '' }}" type="text" name="name" value="{{ old('name') }}" autocomplete="name" required>
+          @if ($errors->contact->has('name'))
+            <div class="contact-error">{{ $errors->contact->first('name') }}</div>
+          @endif
+        </div>
+        <div class="contact-field">
+          <label for="contact-email">Email</label>
+          <input id="contact-email" class="{{ $errors->contact->has('email') ? 'is-invalid' : '' }}" type="email" name="email" value="{{ old('email') }}" autocomplete="email" required>
+          @if ($errors->contact->has('email'))
+            <div class="contact-error">{{ $errors->contact->first('email') }}</div>
+          @endif
+        </div>
+        <div class="contact-field">
+          <label for="contact-phone">Contact No.</label>
+          <input id="contact-phone" class="{{ $errors->contact->has('phone') ? 'is-invalid' : '' }}" type="tel" name="phone" value="{{ old('phone') }}" placeholder="0912-345-6789" autocomplete="tel">
+          @if ($errors->contact->has('phone'))
+            <div class="contact-error">{{ $errors->contact->first('phone') }}</div>
+          @endif
+        </div>
+        <div class="contact-field">
+          <label for="contact-type">Inquiry Type</label>
+          <select id="contact-type" class="{{ $errors->contact->has('inquiry_type') ? 'is-invalid' : '' }}" name="inquiry_type" required>
+            <option value="general" @selected(old('inquiry_type', 'general') === 'general')>General inquiry</option>
+            <option value="reservation" @selected(old('inquiry_type') === 'reservation')>Reservation</option>
+            <option value="concern" @selected(old('inquiry_type') === 'concern')>Concern</option>
+            <option value="feedback" @selected(old('inquiry_type') === 'feedback')>Feedback</option>
+            <option value="maintenance" @selected(old('inquiry_type') === 'maintenance')>Maintenance</option>
+          </select>
+          @if ($errors->contact->has('inquiry_type'))
+            <div class="contact-error">{{ $errors->contact->first('inquiry_type') }}</div>
+          @endif
+        </div>
+        <div class="contact-field full">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" class="{{ $errors->contact->has('message') ? 'is-invalid' : '' }}" name="message" required>{{ old('message') }}</textarea>
+          @if ($errors->contact->has('message'))
+            <div class="contact-error">{{ $errors->contact->first('message') }}</div>
+          @endif
+        </div>
+      </div>
+
+      <div class="contact-form-actions">
+        <button type="submit" class="btn-primary">Submit Inquiry</button>
+        <div class="contact-smallprint">The admin team will review your message and contact you through the details provided.</div>
+      </div>
+    </form>
+  </div>
+</div>
 
 <footer>
   <div class="footer-inner">
@@ -1579,6 +1723,40 @@
   const scrollTopBtn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('visible', scrollY > 300));
   scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  const contactModal = document.getElementById('contactModal');
+  const contactModalOpeners = document.querySelectorAll('[data-contact-modal-open]');
+  const contactModalClosers = document.querySelectorAll('[data-contact-modal-close]');
+  const firstContactField = document.getElementById('contact-name');
+
+  function openContactModal() {
+    if (!contactModal) return;
+    contactModal.classList.add('open');
+    contactModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('contact-modal-open');
+    setTimeout(() => firstContactField?.focus(), 120);
+  }
+
+  function closeContactModal() {
+    if (!contactModal) return;
+    contactModal.classList.remove('open');
+    contactModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('contact-modal-open');
+  }
+
+  contactModalOpeners.forEach(btn => btn.addEventListener('click', openContactModal));
+  contactModalClosers.forEach(btn => btn.addEventListener('click', closeContactModal));
+  if (contactModal) {
+    contactModal.addEventListener('click', (e) => {
+      if (e.target === contactModal) closeContactModal();
+    });
+    if (contactModal.dataset.open === 'true') {
+      requestAnimationFrame(openContactModal);
+    }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && contactModal?.classList.contains('open')) closeContactModal();
+  });
 
   const revealEls = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {

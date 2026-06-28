@@ -568,6 +568,9 @@
         <a href="{{ route('announcements.index') }}" class="nav-item {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
             <span class="nav-icon"><img src="{{ asset('icons/nav-announ.png') }}" alt=""></span> Announcements
         </a>
+        <a href="{{ route('contact-inquiries.index') }}" class="nav-item {{ request()->routeIs('contact-inquiries.*') ? 'active' : '' }}">
+            <span class="nav-icon"><img src="{{ asset('icons/email.png') }}" alt=""></span> Contact Inquiries
+        </a>
         <div class="nav-divider"></div>
         @if(auth('staff')->user()->role === 'admin')
         <a href="{{ route('staff.index') }}" class="nav-item {{ request()->routeIs('staff.*') ? 'active' : '' }}">
