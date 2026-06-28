@@ -1,11 +1,8 @@
 @extends('layout')
-
 @section('title', 'DormEase: Contact Inquiries')
 @section('page-title', 'Contact Inquiries')
-
 @section('styles')
 <style>
-/* ── Page Shell ────────────────────────────────────────────────────── */
 .ci-page {
     padding: 1.8rem 2rem;
     flex: 1;
@@ -15,8 +12,6 @@
     background: var(--soft-bg, #fdf6f9);
     box-sizing: border-box;
 }
-
-/* ── Page Header ───────────────────────────────────────────────────── */
 .ci-page-header {
     display: flex;
     align-items: flex-start;
@@ -38,8 +33,6 @@
     color: var(--bright-pink);
     margin-top: .2rem;
 }
-
-/* ── Stat Cards  (mirrors .ann-stat-card) ──────────────────────────── */
 .ci-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -85,8 +78,6 @@
 .ci-stat-num   { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
 .ci-stat-label { font-size: .8rem; color: rgba(247,245,245,.97); margin-bottom: .15rem; font-weight: 700; }
 .ci-stat-sub   { font-size: .75rem; color: rgba(255,255,255,.82); font-weight: 600; letter-spacing: .04em; margin-top: .2rem; }
-
-/* ── Filter Bar ────────────────────────────────────────────────────── */
 .ci-filter {
     display: grid;
     grid-template-columns: minmax(220px, 1fr) 160px 180px auto;
@@ -165,8 +156,6 @@
     box-shadow: 0 4px 12px rgba(232,23,93,.12);
     transform: translateY(-1px);
 }
-
-/* ── Card List ─────────────────────────────────────────────────────── */
 .ci-list {
     display: flex;
     flex-direction: column;
@@ -190,7 +179,6 @@
 .ci-card.status-new      { border-left-color: var(--hot-pink); }
 .ci-card.status-read     { border-left-color: #f59e0b; }
 .ci-card.status-resolved { border-left-color: var(--green, #1f9d69); }
-
 .ci-card-head {
     display: flex;
     align-items: flex-start;
@@ -214,7 +202,6 @@
 }
 .ci-meta a { color: var(--hot-pink); text-decoration: none; }
 .ci-meta a:hover { text-decoration: underline; }
-
 .ci-badges {
     display: flex;
     align-items: center;
@@ -238,7 +225,6 @@
 .ci-badge.status-new      { background: #fff0f6; color: var(--hot-pink); border-color: var(--baby-pink); }
 .ci-badge.status-read     { background: #fff8e6; color: #a15c00; border-color: #f8d78b; }
 .ci-badge.status-resolved { background: #effdf6; color: #16835b; border-color: #a6e7d8; }
-
 .ci-message-preview {
     color: var(--ink-muted);
     font-size: .85rem;
@@ -252,7 +238,6 @@
     background: var(--blush);
     border: 1px solid var(--border-pink-mid, #f4c0d0);
 }
-
 .ci-card-foot {
     margin-top: .85rem;
     display: flex;
@@ -310,7 +295,6 @@
     transition: border-color .2s;
 }
 .ci-status-form select:focus { border-color: var(--bright-pink); }
-
 .ci-empty {
     background: #fff;
     border: 1.5px dashed var(--baby-pink);
@@ -321,8 +305,6 @@
     font-weight: 700;
     font-size: .9rem;
 }
-
-/* ── Pagination ────────────────────────────────────────────────────── */
 .ci-pagination { display: flex; justify-content: flex-end; }
 .ci-pagination nav { display: flex; gap: .35rem; align-items: center; flex-wrap: wrap; }
 .ci-pagination span,
@@ -351,8 +333,6 @@
     color: #fff;
     border-color: transparent;
 }
-
-/* ── View Modal ────────────────────────────────────────────────────── */
 #ci-view-modal {
     position: fixed; inset: 0; z-index: 600;
     background: rgba(232,23,93,.15);
@@ -376,7 +356,6 @@
     overflow: hidden;
 }
 #ci-view-modal.open .ci-modal-box { transform: none; }
-
 .ci-modal-header {
     padding: 1.3rem 1.5rem 0;
     border-bottom: 1px solid var(--baby-pink);
@@ -414,7 +393,6 @@
     flex-shrink: 0;
 }
 .ci-modal-close:hover { background: var(--baby-pink); }
-
 .ci-modal-tabs { display: flex; }
 .ci-modal-tab {
     padding: .62rem 1.1rem;
@@ -433,19 +411,15 @@
 .ci-modal-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
 .ci-modal-tab svg { width: 13px; height: 13px; opacity: .6; transition: opacity .18s; flex-shrink: 0; }
 .ci-modal-tab.active svg { opacity: 1; }
-
 .ci-modal-body {
     flex: 1; overflow-y: auto;
     padding: 1.3rem 1.5rem;
 }
 .ci-modal-body::-webkit-scrollbar { width: 4px; }
 .ci-modal-body::-webkit-scrollbar-thumb { background: var(--baby-pink); border-radius: 99px; }
-
 .ci-modal-panel { display: none; flex-direction: column; gap: .85rem; animation: ciPanelIn .18s ease both; }
 .ci-modal-panel.active { display: flex; }
 @keyframes ciPanelIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
-
-/* detail rows */
 .ci-view-row {
     display: flex; justify-content: space-between; align-items: flex-start;
     padding: .62rem 0; border-bottom: 1px solid var(--baby-pink);
@@ -455,7 +429,6 @@
 .ci-view-label { color: var(--ink-muted); font-weight: 500; flex-shrink: 0; }
 .ci-view-val   { font-weight: 600; color: var(--ink); text-align: right; }
 .ci-view-val a { color: var(--hot-pink); }
-
 .ci-view-message {
     white-space: pre-wrap;
     font-size: .92rem; color: var(--ink);
@@ -464,8 +437,6 @@
     background: var(--blush);
     border: 1px solid var(--border-pink-mid, #f4c0d0);
 }
-
-/* update status panel */
 .ci-update-panel { display: flex; flex-direction: column; gap: 1rem; }
 .ci-update-label { font-size: .72rem; font-weight: 800; color: var(--ink-muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .35rem; }
 .ci-status-pills { display: flex; gap: .55rem; flex-wrap: wrap; }
@@ -489,7 +460,6 @@
     transition: border-color .2s, background .2s;
 }
 .ci-note-box:focus { border-color: var(--bright-pink); background: #fff; }
-
 .ci-modal-footer {
     padding: .9rem 1.5rem;
     border-top: 1px solid var(--baby-pink);
@@ -497,16 +467,12 @@
     flex-shrink: 0; background: #fff;
 }
 .ci-modal-footer-left { font-size: .75rem; color: var(--ink-muted); font-weight: 600; }
-
-/* ── Fade-up animation (same as ann-page) ──────────────────────────── */
 .fade-up { animation: fadeUp .42s ease both; }
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
 .d3 { animation-delay: .2s;  }
 .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
-
-/* ── Action loading overlay ────────────────────────────────────────── */
 .ci-loading-overlay {
     position: fixed; inset: 0; z-index: 1200;
     display: none; align-items: center; justify-content: center;
@@ -529,8 +495,6 @@
 }
 .ci-loading-logo svg { width: 28px; height: 28px; color: #fff; }
 @keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
-
-/* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .ci-stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -552,19 +516,16 @@
 }
 </style>
 @endsection
-
 @section('content')
 <div class="ci-page">
-
-    {{-- ── Page Header ── --}}
+    
     <div class="ci-page-header fade-up d1">
         <div>
             <h1>Contact Inquiries</h1>
             <div class="dorm-name">Messages submitted from the public Contact Us form</div>
         </div>
     </div>
-
-    {{-- ── Stat Cards ── --}}
+    
     <div class="ci-stats-row fade-up d2">
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
@@ -576,7 +537,6 @@
                 <div class="ci-stat-sub">All Time</div>
             </div>
         </div>
-
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -587,7 +547,6 @@
                 <div class="ci-stat-sub">Needs Attention</div>
             </div>
         </div>
-
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -598,7 +557,6 @@
                 <div class="ci-stat-sub">In Progress</div>
             </div>
         </div>
-
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -610,8 +568,7 @@
             </div>
         </div>
     </div>
-
-    {{-- ── Filter Bar ── --}}
+    
     <form class="ci-filter fade-up d3" method="GET" action="{{ route('contact-inquiries.index') }}">
         <div class="ci-field">
             <label for="search">Search</label>
@@ -645,14 +602,12 @@
             <a class="ci-btn secondary" href="{{ route('contact-inquiries.index') }}">Reset</a>
         </div>
     </form>
-
-    {{-- ── Inquiry Cards ── --}}
+    
     <div class="ci-list fade-up d4">
         @forelse($inquiries as $inquiry)
             <article class="ci-card status-{{ $inquiry->status }}"
                      onclick="openCiModal({{ $inquiry->getKey() }})"
                      data-id="{{ $inquiry->getKey() }}">
-
                 <div class="ci-card-head">
                     <div class="ci-sender">
                         <div class="ci-name">{{ $inquiry->name }}</div>
@@ -671,9 +626,7 @@
                         <span class="ci-badge status-{{ $inquiry->status }}">{{ ucfirst($inquiry->status) }}</span>
                     </div>
                 </div>
-
                 <div class="ci-message-preview">{{ $inquiry->message }}</div>
-
                 <div class="ci-card-foot">
                     <div class="ci-handler">
                         @if($inquiry->handler)
@@ -711,24 +664,19 @@
             <div class="ci-empty">No contact inquiries found.</div>
         @endforelse
     </div>
-
-    {{-- ── Pagination ── --}}
+    
     @if($inquiries->hasPages())
         <div class="ci-pagination">
             {{ $inquiries->links() }}
         </div>
     @endif
-
 </div>
 @endsection
-
 @section('modals')
 
-{{-- ── View / Update Modal ── --}}
 <div id="ci-view-modal" onclick="if(event.target===this) closeCiModal()">
     <div class="ci-modal-box">
-
-        {{-- Header --}}
+        
         <div class="ci-modal-header">
             <div class="ci-modal-header-top">
                 <div class="ci-modal-title-group">
@@ -757,11 +705,9 @@
                 </button>
             </div>
         </div>
-
-        {{-- Body --}}
+        
         <div class="ci-modal-body">
-
-            {{-- Tab 0: Details --}}
+            
             <div class="ci-modal-panel active" id="ci-panel-0">
                 <div class="ci-view-row">
                     <span class="ci-view-label">Name</span>
@@ -792,13 +738,11 @@
                     <span class="ci-view-val" id="ci-v-handler">—</span>
                 </div>
             </div>
-
-            {{-- Tab 1: Full Message --}}
+            
             <div class="ci-modal-panel" id="ci-panel-1">
                 <div class="ci-view-message" id="ci-v-message"></div>
             </div>
-
-            {{-- Tab 2: Update Status --}}
+            
             <div class="ci-modal-panel" id="ci-panel-2">
                 <form id="ci-update-form" method="POST" onsubmit="showCiLoading()">
                     @csrf
@@ -824,10 +768,8 @@
                     </div>
                 </form>
             </div>
-
         </div>
-
-        {{-- Footer --}}
+        
         <div class="ci-modal-footer">
             <div class="ci-modal-footer-left" id="ci-modal-footer-label"></div>
             <div style="display:flex;gap:.5rem;">
@@ -839,11 +781,9 @@
                 </button>
             </div>
         </div>
-
     </div>
 </div>
 
-{{-- ── Loading overlay ── --}}
 <div class="ci-loading-overlay" id="ci-loading">
     <div class="ci-loading-box">
         <div class="ci-loading-logo">
@@ -852,9 +792,7 @@
         <span>Please wait…</span>
     </div>
 </div>
-
 @endsection
-
 @section('scripts')
 @php
 $ciDataMap = [];
@@ -878,31 +816,20 @@ foreach ($inquiries as $i) {
 }
 @endphp
 <script>
-/* ── Inquiry data from server ── */
 const ciData = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
-
-/* ── Loading overlay ── */
 function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
 }
-
-/* ── Modal open / close ── */
 function openCiModal(id) {
     const d = ciData[id];
     if (!d) return;
-
-    /* header */
     document.getElementById('ci-modal-name').textContent = d.name;
     document.getElementById('ci-modal-sub').textContent  =
         ucFirst(d.inquiry_type.replace('_',' ')) + ' · ' + ucFirst(d.status);
-
-    /* details tab */
     document.getElementById('ci-v-name').textContent = d.name;
-
     const emailEl = document.getElementById('ci-v-email');
     emailEl.textContent = d.email;
     emailEl.href = 'mailto:' + d.email;
-
     const phoneRow = document.getElementById('ci-v-phone-row');
     if (d.phone) {
         document.getElementById('ci-v-phone').textContent = d.phone;
@@ -910,13 +837,10 @@ function openCiModal(id) {
     } else {
         phoneRow.style.display = 'none';
     }
-
     document.getElementById('ci-v-type').textContent =
         ucFirst(d.inquiry_type.replace(/_/g,' '));
-
     document.getElementById('ci-v-status').innerHTML = statusBadge(d.status);
     document.getElementById('ci-v-date').textContent = d.created_at;
-
     const handlerRow = document.getElementById('ci-v-handler-row');
     if (d.handler) {
         document.getElementById('ci-v-handler').textContent =
@@ -926,30 +850,18 @@ function openCiModal(id) {
         document.getElementById('ci-v-handler').textContent = 'Not yet handled';
         handlerRow.style.display = '';
     }
-
-    /* message tab */
     document.getElementById('ci-v-message').textContent = d.message;
-
-    /* footer label */
     document.getElementById('ci-modal-footer-label').textContent =
         'ID #' + d.id + ' · ' + d.created_at;
-
-    /* update status form */
     document.getElementById('ci-update-form').action = d.update_url;
     selectCiStatus(d.status);
     document.querySelector('#ci-update-form textarea[name="note"]').value = '';
-
-    /* show first tab */
     switchCiTab(0);
-
     document.getElementById('ci-view-modal').classList.add('open');
 }
-
 function closeCiModal() {
     document.getElementById('ci-view-modal').classList.remove('open');
 }
-
-/* ── Tab switcher ── */
 let _ciTab = 0;
 function switchCiTab(idx) {
     _ciTab = idx;
@@ -958,8 +870,6 @@ function switchCiTab(idx) {
         document.getElementById('ci-panel-' + i).classList.toggle('active', i === idx);
     });
 }
-
-/* ── Status pill selector ── */
 function selectCiStatus(val) {
     document.querySelectorAll('.ci-status-pill').forEach(p => {
         p.className = 'ci-status-pill';
@@ -967,12 +877,9 @@ function selectCiStatus(val) {
     });
     document.getElementById('ci-status-input').value = val;
 }
-
-/* ── Helpers ── */
 function ucFirst(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
-
 function statusBadge(status) {
     const map = {
         new:      ['#fff0f6', 'var(--hot-pink)',  'var(--baby-pink)', 'New'],
@@ -981,14 +888,166 @@ function statusBadge(status) {
     };
     const [bg, color, border, label] = map[status] || map.new;
     return `<span style="display:inline-flex;align-items:center;padding:.26rem .65rem;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:${bg};color:${color};border:1px solid ${border};">${label}</span>`;
-}
-
-/* ── Toast (reuse if global showToast exists, else noop) ── */
 @if(session('success'))
     if (typeof showToast === 'function') showToast("{{ session('success') }}", 'success');
 @endif
 @if(session('error'))
     if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error');
 @endif
+
+(function () {
+    const POLL_URL         = '{{ route("contact-inquiries.index") }}';
+    const POLL_INTERVAL_MS = 15000;
+    let lastSignature = buildSignature();
+    let pollTimer     = null;
+    let inFlight      = false;
+    function buildSignature() {
+        const ids = Array.from(
+            document.querySelectorAll('.ci-card[data-id]')
+        ).map(el => el.dataset.id).sort().join(',');
+        const statNums = Array.from(
+            document.querySelectorAll('.ci-stat-num')
+        ).map(el => el.textContent.trim()).join('|');
+        return statNums + '::' + ids;
+    }
+    function buildSignatureFromDoc(doc) {
+        const ids = Array.from(
+            doc.querySelectorAll('.ci-card[data-id]')
+        ).map(el => el.dataset.id).sort().join(',');
+        const statNums = Array.from(
+            doc.querySelectorAll('.ci-stat-num')
+        ).map(el => el.textContent.trim()).join('|');
+        return statNums + '::' + ids;
+    }
+    function isBusy() {
+        if (document.getElementById('ci-view-modal').classList.contains('open')) return true;
+        const a = document.activeElement;
+        if (a && a !== document.body) {
+            const t = a.tagName;
+            if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return true;
+        }
+        return false;
+    }
+    function showNewInquiryBanner(diff) {
+        const existing = document.getElementById('ci-new-banner');
+        if (existing) existing.remove();
+        const banner = document.createElement('div');
+        banner.id = 'ci-new-banner';
+        banner.style.cssText = [
+            'position:fixed','top:1.2rem','left:50%','transform:translateX(-50%)',
+            'z-index:3000','background:#fff',
+            'border:1.5px solid var(--baby-pink)',
+            'border-left:4px solid var(--hot-pink)',
+            'border-radius:12px','padding:.65rem 1.1rem',
+            'display:flex','align-items:center','gap:.65rem',
+            'font-size:.83rem','font-weight:700','color:var(--ink)',
+            'box-shadow:0 8px 28px rgba(232,23,93,.18)',
+            'cursor:pointer','opacity:0','transition:opacity .3s',
+            'white-space:nowrap',
+        ].join(';');
+        const dot = document.createElement('span');
+        dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:var(--hot-pink);flex-shrink:0;animation:pulseLogo 1s ease-in-out infinite';
+        banner.appendChild(dot);
+        const msg = document.createElement('span');
+        msg.textContent = (diff > 1)
+            ? diff + ' new inquiries — click to refresh'
+            : 'New inquiry received — click to refresh';
+        banner.appendChild(msg);
+        const x = document.createElement('button');
+        x.innerHTML = '&#x2715;';
+        x.style.cssText = 'background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--ink-muted);margin-left:.4rem;padding:0;';
+        x.onclick = function (e) { e.stopPropagation(); banner.remove(); };
+        banner.appendChild(x);
+        banner.addEventListener('click', function () {
+            banner.remove();
+            showCiLoading();
+            window.location.reload();
+        });
+        document.body.appendChild(banner);
+        requestAnimationFrame(() => { banner.style.opacity = '1'; });
+        setTimeout(() => {
+            if (banner.parentNode) {
+                banner.style.opacity = '0';
+                setTimeout(() => banner.remove(), 350);
+            }
+        }, 12000);
+    }
+    async function softRefresh() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const url    = POLL_URL + (params.toString() ? '?' + params.toString() : '');
+            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) return;
+            const html = await res.text();
+            const doc  = new DOMParser().parseFromString(html, 'text/html');
+            const fs = doc.querySelector('.ci-stats-row');
+            const cs = document.querySelector('.ci-stats-row');
+            if (fs && cs) cs.innerHTML = fs.innerHTML;
+            const fl = doc.querySelector('.ci-list');
+            const cl = document.querySelector('.ci-list');
+            if (fl && cl) cl.innerHTML = fl.innerHTML;
+            const fp = doc.querySelector('.ci-pagination');
+            const cp = document.querySelector('.ci-pagination');
+            if (fp && cp) cp.innerHTML = fp.innerHTML;
+            const freshScript = Array.from(doc.querySelectorAll('script')).find(s =>
+                s.textContent.includes('const ciData =')
+            );
+            if (freshScript) {
+                const m = freshScript.textContent.match(/const ciData\s*=\s*(\{[\s\S]*?\});/);
+                if (m) {
+                    try {
+                        const freshMap = JSON.parse(m[1]);
+                        Object.keys(ciData).forEach(k => delete ciData[k]);
+                        Object.assign(ciData, freshMap);
+                    } catch (_) {}
+                }
+            }
+            lastSignature = buildSignature();
+        } catch (_) {}
+    }
+    async function poll() {
+        if (inFlight || isBusy()) return;
+        inFlight = true;
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const url    = POLL_URL + (params.toString() ? '?' + params.toString() : '');
+            const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            if (!res.ok) return;
+            const html     = await res.text();
+            const doc      = new DOMParser().parseFromString(html, 'text/html');
+            const freshSig = buildSignatureFromDoc(doc);
+            if (freshSig !== lastSignature) {
+                const oldTotal = parseInt(
+                    document.querySelector('.ci-stat-num')?.textContent || '0', 10
+                );
+                const newTotal = parseInt(
+                    doc.querySelector('.ci-stat-num')?.textContent || '0', 10
+                );
+                lastSignature = freshSig;
+                if (!isBusy()) {
+                    await softRefresh();
+                    const diff = newTotal - oldTotal;
+                    if (diff > 0) showNewInquiryBanner(diff);
+                }
+            }
+        } catch (_) {
+        } finally {
+            inFlight = false;
+        }
+    }
+    function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(poll, POLL_INTERVAL_MS);
+    }
+    function stopPolling() {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { stopPolling(); }
+        else { startPolling(); poll(); }
+    });
+    startPolling();
+})();
 </script>
 @endsection
