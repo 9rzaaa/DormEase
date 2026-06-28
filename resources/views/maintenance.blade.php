@@ -2012,9 +2012,9 @@
             <button class="modal-close" onclick="closeModal('view-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
         <div id="view-content" style="padding:1.2rem 1.5rem;max-height:55vh;overflow-y:auto;"></div>
-        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;display:flex;justify-content:space-between;">
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -2076,17 +2076,17 @@
 
             </div>
 
-            <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;">
-                <button type="button" onclick="closeModal('edit-modal')"
-                    style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
-                    onmouseover="this.style.borderColor='var(--bright-pink)'"
-                    onmouseout="this.style.borderColor='var(--baby-pink)'"
-                >Cancel</button>
+            <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:.6rem;">
                 <button type="submit"
                     style="padding:.6rem 1.6rem;border-radius:10px;border:none;background:var(--gradient-pink);color:#fff;font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);box-shadow:0 4px 14px rgba(232,23,93,.3);transition:.2s;"
                     onmouseover="this.style.boxShadow='0 6px 18px rgba(232,23,93,.45)'"
                     onmouseout="this.style.boxShadow='0 4px 14px rgba(232,23,93,.3)'"
                 >Save Changes</button>
+                <button type="button" onclick="closeModal('edit-modal')"
+                    style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
+                    onmouseover="this.style.borderColor='var(--bright-pink)'"
+                    onmouseout="this.style.borderColor='var(--baby-pink)'"
+                >Cancel</button>
             </div>
         </form>
     </div>
@@ -2166,13 +2166,13 @@
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
             Delete <strong id="delete-label" style="color:var(--ink);"></strong>?
         </p>
-        <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+        <div class="modal-actions" style="display:flex;justify-content:space-between;align-items:center;">
             <form id="delete-form" method="POST" data-loading-message="Deleting request...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
             </form>
+            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
 </div>

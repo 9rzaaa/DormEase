@@ -72,12 +72,14 @@ class NotificationComposer
 
         $notifications = Notification::where('staff_id', $staff->staff_id)
             ->whereIn('type', $types)
+            ->where('created_at', '>=', now()->subDays(3))
             ->orderByDesc('created_at')
             ->get();
 
         $unreadNotifCount = Notification::where('staff_id', $staff->staff_id)
             ->whereIn('type', $types)
             ->where('is_read', 0)
+            ->where('created_at', '>=', now()->subDays(3))
             ->count();
 
         $view->with('notifications', $notifications);

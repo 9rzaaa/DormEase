@@ -80,11 +80,18 @@ class EmergencyController extends Controller
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
 
+        $description = $validated['description'] ?? '';
+        $isPanicAlert = $request->boolean('is_panic_alert');
+        $requestedType = $validated['emergency_type'];
+
+        $apiController = new ApiEmergencyController();
+        $classification = $apiController->classifyText($description, $requestedType, $isPanicAlert);
+
         $report = EmergencyReport::create([
             'tenant_id' => $validated['tenant_id'] ?? null,
-            'is_panic_alert' => $request->boolean('is_panic_alert'),
-            'emergency_type' => $validated['emergency_type'],
-            'urgency_level' => $validated['urgency_level'] ?? null,
+            'is_panic_alert' => $isPanicAlert,
+            'emergency_type' => $classification['emergency_type'],
+            'urgency_level' => $validated['urgency_level'] ?? $classification['urgency_level'],
             'description' => $validated['description'] ?? null,
             'location' => $validated['location'],
             'status' => 'active',

@@ -230,7 +230,13 @@
         transition: border-color .2s; box-sizing: border-box;
     }
     .modal-field input:focus, .modal-field select:focus { border-color: var(--hot-pink); background: var(--white); }
-    .modal-actions { display: flex; gap: .7rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .modal-actions {
+        display: flex;
+        gap: .7rem;
+        margin-top: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+    }   
     .btn-cancel { padding: .6rem 1.2rem; border-radius: 9px; border: 1.5px solid var(--gray-light); background: none; font-size: .87rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; }
     .btn-cancel:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
     .btn-submit { padding: .6rem 1.4rem; border-radius: 9px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .87rem; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-pink-btn); transition: opacity .2s; }
@@ -1408,174 +1414,222 @@
 </div>
 
 <div class="modal-overlay" id="add-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">
-                <img src="{{ asset('icons/staff-2.png') }}" class="icon-sm" alt="Add Staff">
-                Add New Staff
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
+                    <img src="{{ asset('icons/staff-2.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em;">Add New Staff</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;">Sanctissimo Rosario Ladies Dormitory</div>
+                </div>
             </div>
-            <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('add-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
 
-        <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);margin-bottom:1.1rem;line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
-            <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
-            <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
-        </div>
-
-        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form" style="display:flex;flex-direction:column;max-height:calc(90vh - 88px);overflow:hidden;">
             @csrf
-            <div class="modal-grid">
-                <div class="form-progress-wrap full">
-                    <div class="form-progress-label">
-                        <span id="add-staff-progress-text">Fill in required fields</span>
-                        <span id="add-staff-progress-count" class="partial"></span>
-                    </div>
-                    <div class="form-progress-bar">
-                        <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
-                    </div>
-                </div>
 
-                <div class="modal-field full" style="margin-bottom:-.2rem;">
-                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Personal Information</div>
+            <div style="padding:.75rem 1.5rem .4rem;flex-shrink:0;border-bottom:1px solid var(--baby-pink);">
+                <div class="form-progress-label">
+                    <span id="add-staff-progress-text">Fill in required fields</span>
+                    <span id="add-staff-progress-count" class="partial"></span>
                 </div>
-
-                <div class="modal-field">
-                    <label>First Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
-                    <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Last Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
-                    <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
-                </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
-                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
-                </div>
-
-                <div class="modal-field full" style="margin-bottom:-.2rem;margin-top:.3rem;padding-top:.8rem;border-top:1px solid var(--petal);">
-                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Account Details</div>
-                </div>
-
-                <div class="modal-field full">
-                    <label>Email <span class="field-req-star">*</span></label>
-                    <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
-                    <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Role <span class="field-req-star">*</span></label>
-                    <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':' var(--red)'">
-                        <option value="">Select role</option>
-                        <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
-                        <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
-                        <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
-                    </select>
-                    <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Shift Schedule</label>
-                    <select name="shift_schedule" id="add-shift">
-                        <option value="">Select shift</option>
-                        <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
-                        <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
-                    </select>
+                <div class="form-progress-bar" style="margin-top:.25rem;">
+                    <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
+
+            <div style="overflow-y:auto;flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.1rem;">
+
+                <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
+                    <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
+                    <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Personal Information</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field">
+                            <label>First Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
+                            <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Last Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
+                            <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                            <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Account Details</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field full">
+                            <label>Email <span class="field-req-star">*</span></label>
+                            <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
+                            <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Role <span class="field-req-star">*</span></label>
+                            <select name="role" id="add-role" required onchange="checkAdminCapOnChange(this)">
+                                <option value="">Select role</option>
+                                <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
+                                <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
+                                <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
+                            </select>
+                            <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Shift Schedule</label>
+                            <select name="shift_schedule" id="add-shift">
+                                <option value="">Select shift</option>
+                                <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
+                                <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
                 <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
             </div>
         </form>
     </div>
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">Staff Details</div>
-            <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
+                    <img src="{{ asset('icons/staff-2.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="view-modal-name">Staff Details</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;" id="view-modal-role-sub">—</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
-        <div id="view-content"></div>
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div id="view-content" style="padding:1.25rem 1.5rem 0;"></div>
+        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;">
             <button class="btn-submit" onclick="switchToEdit()">Edit</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="edit-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">
-                <img src="{{ asset('icons/edit.png') }}" class="icon-sm" alt="Edit">
-                Edit Staff
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
+                    <img src="{{ asset('icons/edit.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="edit-modal-name">Edit Staff</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;" id="edit-modal-sub">Update staff information</div>
+                </div>
             </div>
-            <button class="modal-close" onclick="closeModal('edit-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('edit-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
-        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes...">
+
+        <form method="POST" id="edit-form" action="" data-loading-message="Saving changes..." style="display:flex;flex-direction:column;max-height:calc(90vh - 88px);overflow:hidden;">
             @csrf
             @method('PUT')
-            <div class="modal-grid">
-                <div class="form-progress-wrap full">
-                    <div class="form-progress-label">
-                        <span id="edit-staff-progress-text">Fill in required fields</span>
-                        <span id="edit-staff-progress-count" class="partial"></span>
+
+            <div style="padding:.75rem 1.5rem .4rem;flex-shrink:0;border-bottom:1px solid var(--baby-pink);">
+                <div class="form-progress-label">
+                    <span id="edit-staff-progress-text">Fill in required fields</span>
+                    <span id="edit-staff-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar" style="margin-top:.25rem;">
+                    <div class="form-progress-fill" id="edit-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+            </div>
+
+            <div style="overflow-y:auto;flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.1rem;">
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Personal Information</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field">
+                            <label>First Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="first_name" id="edit-first-name" required maxlength="100" oninput="validateName(this)">
+                            <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Last Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="last_name" id="edit-last-name" required maxlength="100" oninput="validateName(this)">
+                            <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this, currentStaff ? currentStaff.staff_id : null)" maxlength="13">
+                            <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                        </div>
                     </div>
-                    <div class="form-progress-bar">
-                        <div class="form-progress-fill" id="edit-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Account Details</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field full">
+                            <label>Email <span class="field-req-star">*</span></label>
+                            <input type="email" name="email" id="edit-email" required oninput="validateEmail(this, currentStaff ? currentStaff.staff_id : null)">
+                            <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Role</label>
+                            <select name="role" id="edit-role" onchange="checkEditAdminCap(this)">
+                                <option value="admin">Admin</option>
+                                <option value="secretary">Secretary</option>
+                                <option value="frontdesk">Front Desk</option>
+                            </select>
+                            <div id="edit-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Maximum admin accounts reached.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Shift Schedule</label>
+                            <select name="shift_schedule" id="edit-shift">
+                                <option value="Day">Day</option>
+                                <option value="Night">Night</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Duty Status</label>
+                            <select name="duty_status" id="edit-duty-status">
+                                <option value="on_duty">On Duty</option>
+                                <option value="off_duty">Off Duty</option>
+                            </select>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Active</label>
+                            <select name="is_active" id="edit-is-active">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-field">
-                    <label>First Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="first_name" id="edit-first-name" required maxlength="100" oninput="validateName(this)">
-                    <div id="edit-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Last Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="last_name" id="edit-last-name" required maxlength="100" oninput="validateName(this)">
-                    <div id="edit-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
-                </div>
-                <div class="modal-field full">
-                    <label>Email <span class="field-req-star">*</span></label>
-                    <input type="email" name="email" id="edit-email" required oninput="validateEmail(this, currentStaff ? currentStaff.staff_id : null)">
-                    <div id="edit-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Role</label>
-                    <select name="role" id="edit-role">
-                        <option value="admin">Admin</option>
-                        <option value="secretary">Secretary</option>
-                        <option value="frontdesk">Front Desk</option>
-                    </select>
-                </div>
-                <div class="modal-field">
-                    <label>Shift Schedule</label>
-                    <select name="shift_schedule" id="edit-shift">
-                        <option value="Day">Day</option>
-                        <option value="Night">Night</option>
-                    </select>
-                </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
-                    <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
-                </div>
-                <div class="modal-field full">
-                    <label>Duty Status</label>
-                    <select name="duty_status" id="edit-duty-status">
-                        <option value="on_duty">On Duty</option>
-                        <option value="off_duty">Off Duty</option>
-                    </select>
-                </div>
-                <div class="modal-field full" style="border:1.5px solid var(--baby-pink);border-radius:10px;padding:.75rem .9rem;background:var(--soft-bg);">
-                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-bottom:0;">
-                        <input type="checkbox" name="is_on_leave" id="edit-is-on-leave" value="1" onchange="toggleLeaveFields()" style="width:auto;margin:0;">
+
+                <div style="border:1.5px solid var(--baby-pink);border-radius:12px;padding:.85rem 1rem;background:var(--soft-bg);">
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-bottom:0;font-size:.85rem;font-weight:700;color:var(--ink);">
+                        <input type="checkbox" name="is_on_leave" id="edit-is-on-leave" value="1" onchange="toggleLeaveFields()" style="width:auto;margin:0;accent-color:var(--hot-pink);">
                         Mark as On Leave
                     </label>
-                    <div id="edit-leave-fields" style="display:none;margin-top:.75rem;">
-                        <div class="modal-grid" style="margin-bottom:.75rem;">
+                    <div id="edit-leave-fields" style="display:none;margin-top:.85rem;">
+                        <div class="modal-grid" style="margin-bottom:.75rem;gap:.85rem;">
                             <div class="modal-field">
                                 <label>Leave Start</label>
                                 <input type="date" name="leave_start" id="edit-leave-start" onchange="validateLeaveDates()">
@@ -1586,26 +1640,22 @@
                                 <div id="leave-date-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Leave end must be after start date.</div>
                             </div>
                         </div>
-                        <div class="modal-field full">
+                        <div class="modal-field">
                             <label>Reason / Note</label>
                             <input type="text" name="leave_note" id="edit-leave-note" placeholder="e.g. Sick leave, vacation, family emergency" maxlength="255">
                         </div>
                     </div>
                 </div>
-                <div class="modal-field full">
-                    <label>Active</label>
-                    <select name="is_active" id="edit-is-active">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
+
+                <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;line-height:1.5;">
+                    Setting status to <strong>Inactive</strong> will move this staff member to the archive.
                 </div>
+
             </div>
-            <div style="background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.6rem .9rem;font-size:.78rem;color:#7a5400;margin-bottom:.9rem;line-height:1.5;">
-                Setting status to <strong>Inactive</strong> will move this staff member to the archive.
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+
+            <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
                 <button type="submit" class="btn-submit" onclick="if(!validateEditForm()){event.preventDefault();}">Save Changes</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
             </div>
         </form>
     </div>
@@ -1679,6 +1729,15 @@
     });
 
     var staffList  = @json($staffList);
+    var ADMIN_CAP = 2;
+
+    function getActiveAdminCount(excludeId) {
+        return staffList.filter(function(s) {
+            return s.role === 'admin'
+                && s.is_active
+                && String(s.staff_id) !== String(excludeId);
+        }).length;
+    }
     var PER_PAGE   = 8;
     var currentPage  = 1;
     var filtered     = staffList.slice();
@@ -1839,23 +1898,28 @@
     }
 
     function viewStaff(s) {
-        currentStaff = s;
-        document.getElementById('view-content').innerHTML =
-            '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Full Name</span><span class="view-val">' + s.first_name + ' ' + s.last_name + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + s.email + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
-            + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
-                ? leaveBadge(s)
-                    + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '\u2014') + ' \u2192 ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
-                    + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
-                : 'Not on leave') + '</span></div>'
-            + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">' + (s.is_active ? 'Active' : 'Inactive') + '</span></div>';
-        openModal('view-modal');
-    }
+    currentStaff = s;
+    document.getElementById('view-modal-name').textContent = s.first_name + ' ' + s.last_name;
+    document.getElementById('view-modal-role-sub').textContent = fmtStaffId(s.staff_id) + ' · ' + (s.role ? s.role.charAt(0).toUpperCase() + s.role.slice(1) : '—') + ' · ' + (s.shift_schedule || 'No shift set');
+    document.getElementById('view-content').innerHTML =
+        '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (s.email || '—') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
+        + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Leave Status</span><span class="view-val" style="text-align:right;">' + (s.is_on_leave
+            ? leaveBadge(s)
+                + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '—') + ' → ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
+                + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
+            : 'Not on leave') + '</span></div>'
+        + '<div class="view-row" style="border-bottom:none;"><span class="view-label">Account Status</span><span class="view-val">'
+            + (s.is_active
+                ? '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#1f9d69;background:#e8faf5;border:1px solid #8ce0bb;padding:.18rem .6rem;border-radius:99px;">Active</span>'
+                : '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#888;background:#f3f4f6;border:1px solid #d0d0d8;padding:.18rem .6rem;border-radius:99px;">Inactive</span>')
+            + '</span></div>';
+    openModal('view-modal');
+}
 
     function switchToEdit() {
         if (currentStaff) {
@@ -1866,6 +1930,8 @@
 
     function openEditModal(s) {
         currentStaff = s;
+        document.getElementById('edit-modal-name').textContent = s.first_name + ' ' + s.last_name;
+        document.getElementById('edit-modal-sub').textContent  = fmtStaffId(s.staff_id) + ' · ' + (s.role ? s.role.charAt(0).toUpperCase() + s.role.slice(1) : '—');
         document.getElementById('edit-form').action           = '/staff/' + s.staff_id;
         document.getElementById('edit-first-name').value      = s.first_name     || '';
         document.getElementById('edit-last-name').value       = s.last_name      || '';
@@ -1875,7 +1941,7 @@
         var editContactEl = document.getElementById('edit-contact');
         editContactEl.value = s.contact_number || '';
         formatContactNumber(editContactEl);
-        validateContactNumber(editContactEl);
+        validateContactNumber(editContactEl, s.staff_id);
         document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
@@ -1909,9 +1975,8 @@
         input.value = formatted;
     }
 
-    function validateContactNumber(input) {
+    function validateContactNumber(input, excludeId) {
         var raw   = input.value.trim();
-        var val   = raw.replace(/\D/g, '');
         var errId = input.id + '-error';
         var errEl = document.getElementById(errId);
 
@@ -1927,6 +1992,15 @@
             input.style.borderColor = 'var(--red)';
             if (errEl) {
                 errEl.textContent = 'Enter a valid number in 09XX-XXX-XXXX format.';
+                errEl.style.display = 'block';
+            }
+            return false;
+        }
+
+        if (isContactTaken(raw, excludeId)) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) {
+                errEl.textContent = 'This mobile number is already registered to another staff member.';
                 errEl.style.display = 'block';
             }
             return false;
@@ -1979,6 +2053,16 @@
         });
     }
 
+    function isContactTaken(contact, excludeId) {
+        var normalized = contact.trim();
+        var allRecords = staffList.concat(inactiveStaffArchive, deletedStaffArchive);
+        return allRecords.some(function(r) {
+            return r.contact_number
+                && r.contact_number === normalized
+                && String(r.staff_id) !== String(excludeId);
+        });
+    }
+
     function validateName(input) {
         var val     = input.value.trim();
         var errId   = input.id + '-error';
@@ -2013,6 +2097,29 @@
         return true;
     }
 
+    function checkAdminCapOnChange(select) {
+        var errEl = document.getElementById('add-role-error');
+        if (select.value === 'admin' && getActiveAdminCount() >= ADMIN_CAP) {
+            select.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; errEl.style.display = 'block'; }
+        } else {
+            select.style.borderColor = select.value ? '' : 'var(--red)';
+            if (errEl) errEl.style.display = 'none';
+        }
+    }
+
+    function checkEditAdminCap(select) {
+        var errEl = document.getElementById('edit-role-error');
+        var excludeId = currentStaff ? currentStaff.staff_id : null;
+        if (select.value === 'admin' && getActiveAdminCount(excludeId) >= ADMIN_CAP) {
+            select.style.borderColor = 'var(--red)';
+            if (errEl) { errEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; errEl.style.display = 'block'; }
+        } else {
+            select.style.borderColor = '';
+            if (errEl) errEl.style.display = 'none';
+        }
+    }
+
     function validateAddForm() {
         var ok = true;
         if (!validateName(document.getElementById('add-first-name')))       ok = false;
@@ -2024,6 +2131,10 @@
         if (!roleEl.value) {
             roleEl.style.borderColor = 'var(--red)';
             if (roleErr) { roleErr.textContent = 'Please select a role.'; roleErr.style.display = 'block'; }
+            ok = false;
+        } else if (roleEl.value === 'admin' && getActiveAdminCount() >= ADMIN_CAP) {
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErr) { roleErr.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; roleErr.style.display = 'block'; }
             ok = false;
         } else {
             roleEl.style.borderColor = '';
@@ -2037,7 +2148,21 @@
         if (!validateName(document.getElementById('edit-first-name')))       ok = false;
         if (!validateName(document.getElementById('edit-last-name')))        ok = false;
         if (!validateEmail(document.getElementById('edit-email'), currentStaff ? currentStaff.staff_id : null)) ok = false;
-        if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
+        if (!validateContactNumber(document.getElementById('edit-contact'), currentStaff ? currentStaff.staff_id : null)) ok = false;
+
+        var roleEl    = document.getElementById('edit-role');
+        var activeEl  = document.getElementById('edit-is-active');
+        var excludeId = currentStaff ? currentStaff.staff_id : null;
+        var wasAlreadyAdmin = currentStaff && currentStaff.role === 'admin' && currentStaff.is_active;
+        var becomingAdmin   = roleEl.value === 'admin' && activeEl.value === '1' && !wasAlreadyAdmin;
+
+        if (becomingAdmin && getActiveAdminCount(excludeId) >= ADMIN_CAP) {
+            var roleErrEl = document.getElementById('edit-role-error');
+            roleEl.style.borderColor = 'var(--red)';
+            if (roleErrEl) { roleErrEl.textContent = 'Maximum of ' + ADMIN_CAP + ' active admin accounts allowed.'; roleErrEl.style.display = 'block'; }
+            ok = false;
+        }
+
         if (document.getElementById('edit-is-on-leave').checked) {
             if (!validateLeaveDates()) ok = false;
         }

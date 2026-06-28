@@ -1741,9 +1741,9 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div class="modal-footer" style="justify-content:space-between;">
             <button class="btn-submit" onclick="switchToEdit()">Edit</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -1947,10 +1947,10 @@ tbody tr:hover { background: var(--soft-bg); }
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
-                <button type="submit" class="btn-submit">Save Changes</button>
-            </div>
+            <div class="modal-footer" style="justify-content:space-between;">
+               <button type="submit" class="btn-submit">Save Changes</button>
+               <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+           </div>
         </form>
     </div>
 </div>
@@ -1977,7 +1977,7 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <form method="POST" id="tag-movedin-form" action="" data-loading-message="Tagging as moved in..." style="display:contents;">
             @csrf
-            <div class="modal-footer">
+            <div class="modal-footer" style="justify-content:space-between;">
                 <button type="button" class="btn-cancel" onclick="closeModal('tag-movedin-modal')">Cancel</button>
                 <button type="submit" class="btn-submit">Confirm</button>
             </div>
