@@ -2012,9 +2012,9 @@
             <button class="modal-close" onclick="closeModal('view-modal')" style="background:transparent;border-color:rgba(255,255,255,.5);color:#fff;">&#x2715;</button>
         </div>
         <div id="view-content" style="padding:1.2rem 1.5rem;max-height:55vh;overflow-y:auto;"></div>
-        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;display:flex;justify-content:space-between;">
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -2166,13 +2166,13 @@
         <p style="font-size:.9rem;color:var(--ink-muted);margin-bottom:1rem;">
             Delete <strong id="delete-label" style="color:var(--ink);"></strong>?
         </p>
-        <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+        <div class="modal-actions" style="display:flex;justify-content:space-between;align-items:center;">
             <form id="delete-form" method="POST" data-loading-message="Deleting request...">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
             </form>
+            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
 </div>
