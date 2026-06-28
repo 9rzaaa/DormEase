@@ -2343,29 +2343,30 @@
     }
 
     function exportTable(format) {
-        if (format === 'pdf') {
-            const win  = window.open('', '_blank');
-            const rows = filtered.map(r =>
-                `<tr><td>${escHtml(r.emergency_type||'')}</td><td>${escHtml(r.urgency_level||'')}</td><td>${escHtml(r.location||'')}</td><td>${escHtml(r.tenant_name||'')}</td><td>${r.room_number ? escHtml(String(r.room_number)) : ''}</td><td>${fmtDatePlain(r.reported_at)}</td><td>${escHtml(r.status||'')}</td><td>${escHtml(r.description||'')}</td></tr>`
-            ).join('');
-            win.document.write(`<!DOCTYPE html><html><head><title>Emergency Reports</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Emergency Reports as of ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr><th>Type</th><th>Urgency</th><th>Location</th><th>Tenant / Reporter</th><th>Room</th><th>Date Reported</th><th>Status</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
-            win.document.close();
-            win.print();
-            return;
-        }
-
-        const rows = [['Report ID','Reported At','Type','Urgency','Location','Tenant / Reporter','Room','Status','Description']];
-        filtered.forEach(r => rows.push([
+        const columns = ['Report ID','Reported At','Type','Urgency','Location','Tenant / Reporter','Room','Status','Description'];
+        const buildRow = r => [
             '#EM-' + String(r.report_id).padStart(3,'0'),
             fmtDatePlain(r.reported_at),
             r.emergency_type || '',
             r.urgency_level  || '',
             r.location       || '',
             r.tenant_name    || '',
-            r.room_number    || '',
+            (r.room_number && r.room_number !== '—') ? String(r.room_number) : '',
             r.status         || '',
             r.description    || '',
-        ]));
+        ];
+
+        if (format === 'pdf') {
+            const win  = window.open('', '_blank');
+            const rows = filtered.map(r => `<tr>${buildRow(r).map(c => `<td>${escHtml(String(c))}</td>`).join('')}</tr>`).join('');
+            win.document.write(`<!DOCTYPE html><html><head><title>Emergency Reports</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Emergency Reports as of ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`);
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        const rows = [columns];
+        filtered.forEach(r => rows.push(buildRow(r)));
         const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
@@ -2378,33 +2379,33 @@
         const data     = archiveTab === 'closed' ? closedArchive : archiveTab === 'resolved' ? resolvedArchive : deletedArchive;
         const label    = archiveTab === 'closed' ? 'Closed On' : archiveTab === 'resolved' ? 'Resolved On' : 'Deleted On';
         const byLbl    = archiveTab === 'closed' ? 'Closed By' : archiveTab === 'resolved' ? 'Resolved By' : 'Deleted By';
-
-        if (format === 'pdf') {
-            const win      = window.open('', '_blank');
-            const tabLabel = archiveTab === 'closed' ? 'Closed' : archiveTab === 'resolved' ? 'Resolved' : 'Deleted';
-            const rows = data.map(r =>
-                `<tr><td>#EM-${String(r.id).padStart(3,'0')}</td><td>${escHtml(r.emergency_type||'')}</td><td>${escHtml(r.urgency_level||'')}</td><td>${escHtml(r.location||'')}</td><td>${escHtml(r.tenant_name||'')}</td><td>${escHtml(r.status||'')}</td><td>${fmtDatePlain(r.archived_at)}</td><td>${escHtml(r.archived_by_label||'')}</td></tr>`
-            ).join('');
-            win.document.write(`<!DOCTYPE html><html><head><title>Emergency Archive - ${tabLabel}</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Emergency Archive - ${tabLabel}</h2><p>Sanctissimo Rosario Ladies Dormitory — exported ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr><th>Report ID</th><th>Type</th><th>Urgency</th><th>Location</th><th>Tenant / Reporter</th><th>Status</th><th>${label}</th><th>${byLbl}</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
-            win.document.close();
-            win.print();
-            return;
-        }
-
-        const rows = [['Report ID','Reported At','Type','Urgency','Location','Tenant / Reporter','Room','Status','Description',label,byLbl]];
-        data.forEach(r => rows.push([
+        const columns  = ['Report ID','Reported At','Type','Urgency','Location','Tenant / Reporter','Room','Status','Description',label,byLbl];
+        const buildRow = r => [
             '#EM-' + String(r.id).padStart(3,'0'),
             fmtDatePlain(r.reported_at),
             r.emergency_type    || '',
             r.urgency_level     || '',
             r.location          || '',
             r.tenant_name       || '',
-            r.room_number       || '',
+            (r.room_number && r.room_number !== '—') ? String(r.room_number) : '',
             r.status            || '',
             r.description       || '',
             fmtDatePlain(r.archived_at),
             r.archived_by_label || '',
-        ]));
+        ];
+
+        if (format === 'pdf') {
+            const win      = window.open('', '_blank');
+            const tabLabel = archiveTab === 'closed' ? 'Closed' : archiveTab === 'resolved' ? 'Resolved' : 'Deleted';
+            const rows = data.map(r => `<tr>${buildRow(r).map(c => `<td>${escHtml(String(c))}</td>`).join('')}</tr>`).join('');
+            win.document.write(`<!DOCTYPE html><html><head><title>Emergency Archive - ${tabLabel}</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Emergency Archive - ${tabLabel}</h2><p>Sanctissimo Rosario Ladies Dormitory — exported ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`);
+            win.document.close();
+            win.print();
+            return;
+        }
+
+        const rows = [columns];
+        data.forEach(r => rows.push(buildRow(r)));
         const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
         const a = document.createElement('a');
         a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
