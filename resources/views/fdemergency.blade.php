@@ -1165,6 +1165,85 @@
         line-height: 1.45;
     }
 
+    .location-search-wrap {
+    position: relative;
+}
+
+.location-search-wrap > input[type="text"] {
+    width: 100%;
+    padding: .6rem .9rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--pink-200);
+    background: var(--pink-50);
+    font-size: .875rem;
+    color: var(--ink);
+    font-family: var(--ff-body);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .2s, background .2s;
+}
+
+.location-search-wrap > input[type="text"]:focus {
+    border-color: var(--bright-pink);
+    background: var(--white);
+}
+
+.location-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--pink-200);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(232,23,93,.15);
+    z-index: 9999;
+    max-height: 220px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pink-200) transparent;
+}
+
+.location-dropdown.open { display: block; }
+
+.location-dropdown::-webkit-scrollbar { width: 4px; }
+.location-dropdown::-webkit-scrollbar-thumb { background: var(--pink-200); border-radius: 99px; }
+
+.loc-group-label {
+    font-size: .65rem;
+    font-weight: 800;
+    color: var(--bright-pink);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    padding: .5rem .85rem .2rem;
+}
+
+.loc-option {
+    padding: .5rem .85rem;
+    font-size: .84rem;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .12s;
+}
+
+.loc-option:hover, .loc-option.highlighted {
+    background: var(--pink-50);
+    color: var(--hot-pink);
+}
+
+.loc-option.selected {
+    background: var(--pink-100);
+    color: var(--hot-pink);
+    font-weight: 700;
+}
+
+.loc-no-results {
+    padding: .75rem .85rem;
+    font-size: .82rem;
+    color: var(--ink-muted);
+    text-align: center;
+}
+
     @media (max-width: 900px) {
         .stats-row { grid-template-columns: 1fr 1fr; }
         .page-body { padding: 1.2rem 1rem; }
@@ -1442,9 +1521,14 @@
                     </select>
                 </div>
                 <div class="em-modal-field">
-                    <label>Location</label>
-                    <input type="text" name="location" placeholder="e.g. Room 301" required>
-                </div>
+    <label>Location</label>
+    <div class="location-search-wrap" id="location-search-wrap">
+        <input type="text" id="location-search-input" placeholder="Search or select location…"
+               autocomplete="off" oninput="filterLocationOptions(this.value)" onfocus="openLocationDropdown()" onblur="closeLocationDropdown(500)">
+        <input type="hidden" name="location" id="location-hidden-input" required>
+        <div class="location-dropdown" id="location-dropdown"></div>
+    </div>
+</div>
                 <div class="em-modal-field modal-field-full">
                     <label>Description</label>
                     <textarea name="description" placeholder="Describe the emergency..." oninput="handleDescriptionInput(this.value)"></textarea>
@@ -1690,6 +1774,18 @@
             </div>
         `;
     }
+
+    function toggleCustomLocation(val) {
+    const custom = document.getElementById('report-location-custom');
+    if (val === '__other__') {
+        custom.style.display = 'block';
+        custom.required = true;
+    } else {
+        custom.style.display = 'none';
+        custom.required = false;
+        custom.value = '';
+    }
+}
 
     function buildReportHotlines(emergencyType) {
         const type = (emergencyType ?? '').toLowerCase();
@@ -2380,25 +2476,90 @@
     @endif
 
     document.getElementById('report-form').addEventListener('submit', function(event) {
-        const btn  = document.getElementById('report-submit-btn');
-        const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
-        const loc  = document.querySelector('#report-modal input[name="location"]').value.trim();
+    const btn  = document.getElementById('report-submit-btn');
+    const type = document.querySelector('#report-modal select[name="emergency_type"]').value;
+    const loc  = document.getElementById('location-hidden-input').value.trim();
 
-        if (!type) {
-            showToast('Please select an emergency type.', 'error');
-            event.preventDefault();
-            return;
-        }
-            if (!loc) {
-            showToast('Please enter a location.', 'error');
-            event.preventDefault();
-            return;
-        }
+    if (!type) {
+        showToast('Please select an emergency type.', 'error');
+        event.preventDefault();
+        return;
+    }
+    if (!loc) {
+        showToast('Please select a location.', 'error');
+        event.preventDefault();
+        return;
+    }
 
-        btn.disabled = true;
-        btn.textContent = 'Submitting...';
-        showActionLoading('Submitting emergency report...');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    showActionLoading('Submitting emergency report...');
+});
+
+    const LOCATION_OPTIONS = [
+    { group: 'Common Areas', options: [
+        'Lobby', 'Main Entrance',
+        'Hallway – Ground Floor', 'Hallway – 2nd Floor', 'Hallway – 3rd Floor', 'Hallway – 4th Floor',
+        'Stairwell', 'Fire Exit', 'Rooftop',
+        'Comfort Room – Ground Floor', 'Comfort Room – 2nd Floor', 'Comfort Room – 3rd Floor', 'Comfort Room – 4th Floor',
+        'Kitchen / Pantry', 'Laundry Area', 'Study Room', 'Dining Area', 'Receiving Area', 'Parking / Garage',
+    ]},
+    { group: 'Rooms', options: [
+        'Room 101','Room 102','Room 103','Room 104',
+        'Room 201','Room 202','Room 203','Room 204',
+        'Room 301','Room 302','Room 303','Room 304',
+        'Room 401','Room 402','Room 403','Room 404',
+    ]},
+];
+
+function buildLocationDropdown(query) {
+    const dd  = document.getElementById('location-dropdown');
+    const q   = (query ?? '').trim().toLowerCase();
+    let html  = '';
+    let total = 0;
+
+    LOCATION_OPTIONS.forEach(group => {
+        const filtered = group.options.filter(o => !q || o.toLowerCase().includes(q));
+        if (!filtered.length) return;
+        html += `<div class="loc-group-label">${escHtml(group.group)}</div>`;
+        filtered.forEach(o => {
+            const selected = document.getElementById('location-hidden-input').value === o ? ' selected' : '';
+            html += `<div class="loc-option${selected}" onmousedown="selectLocation('${o.replace(/'/g, "\\'")}')">${escHtml(o)}</div>`;
+        });
+        total += filtered.length;
     });
+
+    if (q && total === 0) {
+        html = `<div class="loc-option" onmousedown="selectLocation('${escHtml(q)}')" style="font-style:italic;">Use "${escHtml(query)}"</div>`;
+    }
+
+    dd.innerHTML = html;
+}
+
+function filterLocationOptions(val) {
+    buildLocationDropdown(val);
+    document.getElementById('location-dropdown').classList.add('open');
+    if (!val.trim()) {
+        document.getElementById('location-hidden-input').value = '';
+    }
+}
+
+function openLocationDropdown() {
+    buildLocationDropdown(document.getElementById('location-search-input').value);
+    document.getElementById('location-dropdown').classList.add('open');
+}
+
+function closeLocationDropdown(delay) {
+    setTimeout(() => {
+        document.getElementById('location-dropdown').classList.remove('open');
+    }, delay ?? 0);
+}
+
+function selectLocation(value) {
+    document.getElementById('location-hidden-input').value = value;
+    document.getElementById('location-search-input').value = value;
+    document.getElementById('location-dropdown').classList.remove('open');
+}
 
     function populateTypeFilter() {
         const select = document.getElementById('type-filter');
