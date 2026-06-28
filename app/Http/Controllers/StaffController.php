@@ -201,8 +201,10 @@ class StaffController extends Controller
             'last_name'      => 'required|string|max:100',
             'email'          => 'required|email|unique:staff,email',
             'role'           => 'required|string|max:50',
-            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
+            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/', 'unique:staff,contact_number'],
             'shift_schedule' => 'nullable|string|max:50',
+        ], [
+            'contact_number.unique' => 'This mobile number is already registered to another staff member.',
         ]);
 
         $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -254,7 +256,12 @@ class StaffController extends Controller
                 Rule::unique('staff', 'email')->ignore($staff->staff_id, 'staff_id'),
             ],
             'role'           => 'required|string|max:50',
-            'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/'],
+            'contact_number' => [
+                'nullable',
+                'string',
+                'regex:/^09\d{2}-\d{3}-\d{4}$/',
+                Rule::unique('staff', 'contact_number')->ignore($staff->staff_id, 'staff_id'),
+            ],
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
@@ -263,7 +270,8 @@ class StaffController extends Controller
             'leave_end'      => 'nullable|date|after_or_equal:leave_start',
             'leave_note'     => 'nullable|string|max:255',
         ], [
-            'email.unique' => 'This email is already registered to another staff member.',
+            'email.unique'           => 'This email is already registered to another staff member.',
+            'contact_number.unique'  => 'This mobile number is already registered to another staff member.',
         ]);
 
         $isBeingDeactivated = $request->is_active == '0' && $staff->is_active;

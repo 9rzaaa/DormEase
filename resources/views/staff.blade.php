@@ -1576,7 +1576,7 @@
                         </div>
                         <div class="modal-field full">
                             <label>Contact No.</label>
-                            <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                            <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this, currentStaff ? currentStaff.staff_id : null)" maxlength="13">
                             <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
                         </div>
                     </div>
@@ -1931,7 +1931,7 @@
         var editContactEl = document.getElementById('edit-contact');
         editContactEl.value = s.contact_number || '';
         formatContactNumber(editContactEl);
-        validateContactNumber(editContactEl);
+        validateContactNumber(editContactEl, s.staff_id);
         document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
@@ -1965,9 +1965,8 @@
         input.value = formatted;
     }
 
-    function validateContactNumber(input) {
+    function validateContactNumber(input, excludeId) {
         var raw   = input.value.trim();
-        var val   = raw.replace(/\D/g, '');
         var errId = input.id + '-error';
         var errEl = document.getElementById(errId);
 
@@ -1983,6 +1982,15 @@
             input.style.borderColor = 'var(--red)';
             if (errEl) {
                 errEl.textContent = 'Enter a valid number in 09XX-XXX-XXXX format.';
+                errEl.style.display = 'block';
+            }
+            return false;
+        }
+
+        if (isContactTaken(raw, excludeId)) {
+            input.style.borderColor = 'var(--red)';
+            if (errEl) {
+                errEl.textContent = 'This mobile number is already registered to another staff member.';
                 errEl.style.display = 'block';
             }
             return false;
@@ -2031,6 +2039,16 @@
             return allRecords.some(function(r) {
             return r.email
                 && r.email.toLowerCase() === normalized
+                && String(r.staff_id) !== String(excludeId);
+        });
+    }
+
+    function isContactTaken(contact, excludeId) {
+        var normalized = contact.trim();
+        var allRecords = staffList.concat(inactiveStaffArchive, deletedStaffArchive);
+        return allRecords.some(function(r) {
+            return r.contact_number
+                && r.contact_number === normalized
                 && String(r.staff_id) !== String(excludeId);
         });
     }
@@ -2093,7 +2111,7 @@
         if (!validateName(document.getElementById('edit-first-name')))       ok = false;
         if (!validateName(document.getElementById('edit-last-name')))        ok = false;
         if (!validateEmail(document.getElementById('edit-email'), currentStaff ? currentStaff.staff_id : null)) ok = false;
-        if (!validateContactNumber(document.getElementById('edit-contact'))) ok = false;
+        if (!validateContactNumber(document.getElementById('edit-contact'), currentStaff ? currentStaff.staff_id : null)) ok = false;
         if (document.getElementById('edit-is-on-leave').checked) {
             if (!validateLeaveDates()) ok = false;
         }
