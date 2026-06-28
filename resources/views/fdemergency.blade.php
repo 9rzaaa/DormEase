@@ -491,7 +491,7 @@
     .modal-footer {
         padding: .7rem 1.1rem;
         border-top: 1.5px solid var(--pink-100);
-        display: flex; align-items: center; justify-content: flex-end; gap: .55rem;
+        display: flex; align-items: center; justify-content: space-between; gap: .55rem;
         flex-shrink: 0; background: #fffafd;
     }
 
@@ -1475,8 +1475,8 @@
         </div>
         <div class="modal-body" id="view-content"></div>
         <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
 </div>
@@ -1520,8 +1520,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
             <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
         </div>
     </div>
 </div>
@@ -1539,8 +1539,8 @@
             </p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
             <button type="button" class="btn-submit" style="background:var(--red);box-shadow:0 6px 16px rgba(224,72,103,.3);" onclick="submitDelete()">Delete</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
 </div>
