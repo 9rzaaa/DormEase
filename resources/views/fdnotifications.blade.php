@@ -9,11 +9,25 @@
         padding: 1.8rem 2rem;
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1.2rem;
         flex: 1;
         background: var(--soft-bg, #fdf6f9);
         box-sizing: border-box;
     }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--hot-pink);
+        text-decoration: none;
+        margin-bottom: .2rem;
+        transition: opacity .15s;
+        align-self: flex-start;
+    }
+    .back-link:hover { opacity: .75; }
+
     .notif-header {
         display: flex;
         flex-direction: column;
@@ -52,6 +66,16 @@
         font-size: 1.1rem;
         font-weight: 700;
         color: var(--ink, #1a1a2e);
+    }
+    .notif-date-group-header {
+        padding: 0.8rem 1.5rem;
+        background: var(--petal, #fce4ec);
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--hot-pink, #e8175d);
+        border-bottom: 1px solid var(--baby-pink, #f8bbd0);
     }
     .notif-list {
         display: flex;
@@ -191,32 +215,64 @@
     .notif-pagination {
         padding: 1.2rem 1.5rem;
         border-top: 1.5px solid var(--petal, #fce4ec);
-        display: flex;
-        justify-content: center;
     }
-    
+
+    /* Fix Laravel default paginator SVG size issues */
+    .notif-pagination svg {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        display: inline-block !important;
+        vertical-align: middle;
+    }
     .notif-pagination nav {
         display: flex;
-        gap: 0.25rem;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
     }
-    .notif-pagination span, .notif-pagination a {
-        padding: 0.4rem 0.8rem;
-        border-radius: 8px;
-        border: 1px solid var(--border-pink);
-        text-decoration: none;
-        color: var(--ink);
+    .notif-pagination nav div:first-child {
         font-size: 0.85rem;
+        color: var(--ink-muted);
     }
-    .notif-pagination .active span {
+    .notif-pagination nav div:last-child {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+    }
+    .notif-pagination nav a, .notif-pagination nav span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 .65rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--baby-pink);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .8rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+    .notif-pagination nav span[aria-current="page"] {
         background: var(--bright-pink);
         color: var(--white);
-        border-color: var(--bright-pink);
+        border-color: transparent;
     }
 </style>
 @endsection
 
 @section('content')
 <main class="notif-page">
+    <a href="{{ route('frontdesk.dashboard') }}" class="back-link">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Dashboard
+    </a>
+
     <div class="notif-header">
         <h1>Notifications History</h1>
         <div class="subtitle">Access and manage all your historical notifications</div>
@@ -230,69 +286,87 @@
             @endif
         </div>
 
-        <div class="notif-list">
-            @forelse($notifications as $notif)
-                @php
-                    $isReservation = $notif->type === 'tenant_reserved';
+        @if($notifications->isEmpty())
+            <div class="notif-empty">No notifications found.</div>
+        @else
+            @php
+                $grouped = $notifications->groupBy(function($notif) {
+                    $date = \Carbon\Carbon::parse($notif->created_at);
+                    if ($date->isToday()) {
+                        return 'Today';
+                    } elseif ($date->isYesterday()) {
+                        return 'Yesterday';
+                    } else {
+                        return $date->format('F j, Y');
+                    }
+                });
+            @endphp
 
-                    $notifIcon = match($notif->type) {
-                        'visitor_registration' => 'nav-visit',
-                        'visitor_checkin'      => 'nav-visit',
-                        'visitor_checkout'     => 'nav-visit',
-                        'visitor_cancelled'    => 'nav-visit',
-                        'emergency_new'        => 'warn',
-                        'announcement_new'     => 'nav-announ',
-                        default                => 'bell',
-                    };
+            @foreach($grouped as $day => $dayNotifs)
+                <div class="notif-date-group-header">{{ $day }}</div>
+                <div class="notif-list">
+                    @foreach($dayNotifs as $notif)
+                        @php
+                            $isReservation = $notif->type === 'tenant_reserved';
 
-                    $notifTypeLabel = match($notif->type) {
-                        'visitor_registration' => 'visitor',
-                        'visitor_checkin'      => 'visitor',
-                        'visitor_checkout'     => 'visitor',
-                        'visitor_cancelled'    => 'visitor',
-                        'emergency_new'        => 'emergency',
-                        'announcement_new'     => 'announcement',
-                        default                => 'general',
-                    };
-                @endphp
+                            $notifIcon = match($notif->type) {
+                                'visitor_registration' => 'nav-visit',
+                                'visitor_checkin'      => 'nav-visit',
+                                'visitor_checkout'     => 'nav-visit',
+                                'visitor_cancelled'    => 'nav-visit',
+                                'emergency_new'        => 'warn',
+                                'announcement_new'     => 'nav-announ',
+                                default                => 'bell',
+                            };
 
-                <div class="notif-page-item {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
-                     onclick="handleNotifClick(event, this); this.classList.remove('unread'); var dot = this.querySelector('.notif-page-dot'); if(dot) dot.remove();"
-                     data-notif='{!! json_encode([
-                         "id"      => $notif->notif_id,
-                         "type"    => $notifTypeLabel,
-                         "icon"    => asset("icons/{$notifIcon}.png"),
-                         "message" => $notif->message,
-                         "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
-                         "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
-                         "url"     => $notif->url ?? "",
-                         "isRead"  => (bool) $notif->is_read,
-                     ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
-                    <div class="notif-dot-col">
-                        @if(!$notif->is_read)
-                            <div class="notif-page-dot"></div>
-                        @endif
-                    </div>
-                    <div class="notif-page-icon {{ $isReservation ? 'reservation-icon' : '' }}">
-                        <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
-                             alt=""
-                             onerror="this.src='{{ asset('icons/bell.png') }}'">
-                    </div>
-                    <div class="notif-page-body">
-                        <span class="notif-page-type-badge {{ $notifTypeLabel }}">{{ $notifTypeLabel }}</span>
-                        <div class="notif-page-msg">{{ $notif->message }}</div>
-                        <div class="notif-page-time">{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }} ({{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }})</div>
-                    </div>
-                    @if($notif->url)
-                        <div class="notif-page-action">
-                            <span class="notif-action-btn">View Details</span>
+                            $notifTypeLabel = match($notif->type) {
+                                'visitor_registration' => 'visitor',
+                                'visitor_checkin'      => 'visitor',
+                                'visitor_checkout'     => 'visitor',
+                                'visitor_cancelled'    => 'visitor',
+                                'emergency_new'        => 'emergency',
+                                'announcement_new'     => 'announcement',
+                                default                => 'general',
+                            };
+                        @endphp
+
+                        <div class="notif-page-item {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
+                             onclick="handleNotifClick(event, this); this.classList.remove('unread'); var dot = this.querySelector('.notif-page-dot'); if(dot) dot.remove();"
+                             data-notif='{!! json_encode([
+                                 "id"      => $notif->notif_id,
+                                 "type"    => $notifTypeLabel,
+                                 "icon"    => asset("icons/{$notifIcon}.png"),
+                                 "message" => $notif->message,
+                                 "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                                 "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                                 "url"     => $notif->url ?? "",
+                                 "isRead"  => (bool) $notif->is_read,
+                             ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
+                            <div class="notif-dot-col">
+                                @if(!$notif->is_read)
+                                    <div class="notif-page-dot"></div>
+                                @endif
+                            </div>
+                            <div class="notif-page-icon {{ $isReservation ? 'reservation-icon' : '' }}">
+                                <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
+                                     alt=""
+                                     onerror="this.src='{{ asset('icons/bell.png') }}'">
+                            </div>
+                            <div class="notif-page-body">
+                                <span class="notif-page-type-badge {{ $notifTypeLabel }}">{{ $notifTypeLabel }}</span>
+                                <div class="notif-page-msg">{{ $notif->message }}</div>
+                                <div class="notif-page-time">{{ \Carbon\Carbon::parse($notif->created_at)->format('g:i A') }}</div>
+                            </div>
+                            @if($notif->url)
+                                <div class="notif-page-action">
+                                    <span class="notif-action-btn">View Details</span>
+                                </div>
+                            @endif
                         </div>
-                    @endif
+                    @endforeach
                 </div>
-            @empty
-                <div class="notif-empty">No notifications found.</div>
-            @endforelse
-        </div>
+            @endforeach
+        @endif
 
         @if($notifications->hasPages())
             <div class="notif-pagination">
