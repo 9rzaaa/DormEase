@@ -1912,11 +1912,10 @@
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+        <div class="modal-footer" style="justify-content:space-between;">
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
-    </div>
 </div>
 
 <div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event, 'edit-modal')">
@@ -1957,12 +1956,11 @@
                 <span>Setting status to <strong>Closed</strong> or <strong>Resolved</strong> will move this report to the archive permanently.</span>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+        <div class="modal-footer" style="justify-content:space-between;">
             <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
         </div>
     </div>
-</div>
 
 <div class="modal-overlay" id="delete-modal" onclick="handleOverlayClick(event, 'delete-modal')">
     <div class="modal" style="max-width:400px;">
@@ -1976,7 +1974,7 @@
                 Delete report for <strong id="delete-label" style="color:var(--ink);"></strong>?
             </p>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="justify-content:space-between;">
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
             <button type="button" class="btn-submit" style="background:#e04867;box-shadow:0 6px 16px rgba(224,72,103,.3);" onclick="submitDelete()">Delete</button>
         </div>
