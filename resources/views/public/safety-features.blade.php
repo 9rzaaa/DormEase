@@ -291,8 +291,8 @@
       <h4>Features</h4>
       <a href="{{ route('features') }}#maintenance">Maintenance</a>
       <a href="{{ route('features') }}#announcements">Announcements</a>
-      <a href="{{ route('features') }}#water-bill">Water Billing</a>
-      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#water-billing">Water Billing</a>
+      <a href="{{ route('features') }}#visitor-log">Visitor Log</a>
       <a href="{{ route('features') }}#emergency">Emergency</a>
       <a href="{{ route('safety.features') }}">Safety Features</a></div>
     <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>

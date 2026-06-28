@@ -385,8 +385,8 @@
       <h4>Features</h4>
       <a href="{{ route('features') }}#maintenance">Maintenance</a>
       <a href="{{ route('features') }}#announcements">Announcements</a>
-      <a href="{{ route('features') }}#water-bill">Water Billing</a>
-      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#water-billing">Water Billing</a>
+      <a href="{{ route('features') }}#visitor-log">Visitor Log</a>
       <a href="{{ route('features') }}#emergency">Emergency</a>
       <a href="{{ route('safety.features') }}">Safety Features</a>
     </div>

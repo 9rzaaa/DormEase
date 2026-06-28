@@ -1178,13 +1178,13 @@
 </section>
 
 <section class="gallery" id="gallery">
-  <div class="reveal from-bottom">
+  <div class="from-bottom reveal">
     <div class="section-tag">Our Rooms</div>
     <h2 class="section-title">Room Types at <em>Sanctissimo Rosario</em></h2>
     <p class="section-sub">Choose the setup that fits your lifestyle, safe, clean, and near UST and the University Belt.</p>
   </div>
   <div class="gallery-grid">
-    <div class="gal-item reveal from-bottom d1" data-room="solo">
+    <div class="from-bottom gal-item reveal d1" data-room="solo">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/solo.jpg') }}" alt="Solo Room" class="gal-img">
@@ -1195,7 +1195,7 @@
         <p class="gal-desc">Semi-furnished private room ideal for one student. Includes a bed, wardrobe, and study desk.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d2" data-room="double">
+    <div class="from-bottom gal-item reveal d2" data-room="double">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/two.jpg') }}" alt="Double Room" class="gal-img">
@@ -1206,7 +1206,7 @@
         <p class="gal-desc">Semi-furnished room for two. Each occupant gets a bed, individual wardrobe, and shared study area.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d3" data-room="triple">
+    <div class="from-bottom gal-item reveal d3" data-room="triple">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="gal-img">
@@ -1217,7 +1217,7 @@
         <p class="gal-desc">Spacious room for three students. Comes with three beds, wardrobes, and a shared study corner.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d4" data-room="quad">
+    <div class="from-bottom gal-item reveal d4" data-room="quad">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/four.jpg') }}" alt="Quad Room" class="gal-img">
@@ -1234,25 +1234,25 @@
 <section class="how" id="how">
   <div class="how-inner">
     <div>
-      <div class="section-tag reveal from-left">Simple Process</div>
-      <h2 class="section-title reveal from-left d1">Getting started is <em>effortless</em></h2>
-      <p class="section-sub reveal from-left d2">DormEase is designed so every tenant can use it with zero learning curve.</p>
+      <div class="from-left section-tag reveal">Simple Process</div>
+      <h2 class="from-left section-title reveal d1">Getting started is <em>effortless</em></h2>
+      <p class="from-left section-sub reveal d2">DormEase is designed so every tenant can use it with zero learning curve.</p>
       <div class="steps" style="margin-top:48px;">
-        <div class="step reveal from-left d1">
+        <div class="from-left step reveal d1">
           <div class="step-num">1</div>
           <div>
             <div class="step-title">Inquire now and be a Tenant</div>
             <p class="step-desc">Contact us to learn more about our dormitory and start your application process.</p>
           </div>
         </div>
-        <div class="step reveal from-left d2">
+        <div class="from-left step reveal d2">
           <div class="step-num">2</div>
           <div>
             <div class="step-title">Access all dorm services</div>
             <p class="step-desc">Report issues by voice or text, check your water bill, register visitors, and receive announcements instantly.</p>
           </div>
         </div>
-        <div class="step reveal from-left d3">
+        <div class="from-left step reveal d3">
           <div class="step-num">3</div>
           <div>
             <div class="step-title">Stay informed, stay safe</div>
@@ -1262,7 +1262,7 @@
       </div>
     </div>
 
-    <div class="how-img-main reveal from-right">
+    <div class="from-right how-img-main reveal">
       <div class="de-mockup-wrap">
         <div class="de-phone side">
           <div class="de-notch"></div>
@@ -1345,10 +1345,10 @@
     <div class="about-bg-fade"></div>
     <div class="about-inner">
     <div>
-      <div class="section-tag reveal from-left">About the Dormitory</div>
-      <h2 class="section-title reveal from-left d1">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
-      <p class="section-sub reveal from-left d2">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
-      <div class="amenities reveal from-left d3">
+      <div class="from-left section-tag reveal">About the Dormitory</div>
+      <h2 class="from-left section-title reveal d1">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
+      <p class="from-left section-sub reveal d2">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
+      <div class="from-left amenities reveal d3">
         <div class="amenity"><div class="amenity-dot"></div>24/7 Security + CCTV</div>
         <div class="amenity"><div class="amenity-dot"></div>Elevator Access</div>
         <div class="amenity"><div class="amenity-dot"></div>Wi-Fi Available</div>
@@ -1358,14 +1358,14 @@
         <div class="amenity"><div class="amenity-dot"></div>Near UST &amp; UBelt</div>
         <div class="amenity"><div class="amenity-dot"></div>Strong Water Supply</div>
       </div>
-      <div style="margin-top:40px;" class="reveal from-left d4">
+      <div style="margin-top:40px;" class="from-left reveal d4">
         <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
           <svg viewBox="0 0 20 20" style="width:18px;height:18px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
           Reserve: +63 917 535 9723
         </a>
       </div>
     </div>
-    <div class="about-photos reveal from-right">
+    <div class="from-right about-photos reveal">
       <div class="about-photo about-main-photo">
         <img src="{{ asset('images/main.png') }}" alt="Sanctissimo Rosario Ladies Dormitory" class="about-img" style="object-position:center;">
       </div>
@@ -1374,7 +1374,7 @@
 </section>
 
 <section class="cta-section" id="contact">
-  <div class="contact-inner reveal from-bottom">
+  <div class="from-bottom contact-inner reveal">
     <div class="contact-copy">
       <div class="section-tag">Get DormEase</div>
       <h2 class="section-title">Ready to experience<br>a <em>smarter</em> dorm life?</h2>
@@ -1413,8 +1413,8 @@
       <h4>Features</h4>
       <a href="{{ route('features') }}#maintenance">Maintenance</a>
       <a href="{{ route('features') }}#announcements">Announcements</a>
-      <a href="{{ route('features') }}#water-bill">Water Billing</a>
-      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#water-billing">Water Billing</a>
+      <a href="{{ route('features') }}#visitor-log">Visitor Log</a>
       <a href="{{ route('features') }}#emergency">Emergency</a>
     </div>
     <div class="footer-col">
