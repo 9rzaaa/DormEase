@@ -127,9 +127,9 @@
         display: flex;
         align-items: center;
         gap: .75rem;
-        padding: .55rem 1.5rem;
+        padding: .4rem 1.5rem;
         background: var(--pink-bg, #fdf0f5);
-        border-bottom: 1px solid var(--pink-light, #FFB0CE);
+        border-bottom: 1.5px solid var(--hot-pink, #e8175d);
     }
     .np-day-label span {
         font-size: .68rem;
@@ -142,14 +142,15 @@
     .np-day-line {
         flex: 1;
         height: 1px;
-        background: var(--pink-light, #FFB0CE);
+        background: var(--hot-pink, #e8175d);
+        opacity: 0.45;
     }
-
+ 
     .np-item {
         display: flex;
         align-items: center;
-        gap: .9rem;
-        padding: .8rem 1.5rem .8rem 0;
+        gap: .7rem;
+        padding: .5rem 1.5rem .5rem 0;
         border-bottom: 1px solid var(--pink-light, #FFB0CE);
         cursor: pointer;
         transition: background .13s;
@@ -189,9 +190,9 @@
     }
 
     .np-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -199,8 +200,8 @@
         border: 1.5px solid transparent;
     }
     .np-icon img {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         object-fit: contain;
     }
 
