@@ -58,9 +58,12 @@ class ProfileController extends Controller
             return back()->with('error', 'Current password is incorrect.');
         }
 
-        $staff->update(['password_hash' => Hash::make($request->password)]);
+        $staff->update([
+            'password_hash'    => Hash::make($request->password),
+            'is_temp_password' => false,
+        ]);
 
-        return back()->with('success', 'Password updated successfully.');
+        return redirect()->route('dashboard')->with('success', 'Password updated successfully. Welcome to DormEase!');
     }
 
     public function updateAvatar(Request $request)
