@@ -1178,13 +1178,13 @@
 </section>
 
 <section class="gallery" id="gallery">
-  <div class="reveal from-bottom">
+  <div class="from-bottom reveal">
     <div class="section-tag">Our Rooms</div>
     <h2 class="section-title">Room Types at <em>Sanctissimo Rosario</em></h2>
     <p class="section-sub">Choose the setup that fits your lifestyle, safe, clean, and near UST and the University Belt.</p>
   </div>
   <div class="gallery-grid">
-    <div class="gal-item reveal from-bottom d1" data-room="solo">
+    <div class="from-bottom gal-item reveal d1" data-room="solo">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/solo.jpg') }}" alt="Solo Room" class="gal-img">
@@ -1195,7 +1195,7 @@
         <p class="gal-desc">Semi-furnished private room ideal for one student. Includes a bed, wardrobe, and study desk.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d2" data-room="double">
+    <div class="from-bottom gal-item reveal d2" data-room="double">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/two.jpg') }}" alt="Double Room" class="gal-img">
@@ -1206,7 +1206,7 @@
         <p class="gal-desc">Semi-furnished room for two. Each occupant gets a bed, individual wardrobe, and shared study area.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d3" data-room="triple">
+    <div class="from-bottom gal-item reveal d3" data-room="triple">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/three.jpg') }}" alt="Triple Room" class="gal-img">
@@ -1217,7 +1217,7 @@
         <p class="gal-desc">Spacious room for three students. Comes with three beds, wardrobes, and a shared study corner.</p>
       </div>
     </div>
-    <div class="gal-item reveal from-bottom d4" data-room="quad">
+    <div class="from-bottom gal-item reveal d4" data-room="quad">
       <div class="gal-img-wrap">
         <div class="gal-item-overlay"></div>
         <img src="{{ asset('images/four.jpg') }}" alt="Quad Room" class="gal-img">
@@ -1234,25 +1234,25 @@
 <section class="how" id="how">
   <div class="how-inner">
     <div>
-      <div class="section-tag reveal from-left">Simple Process</div>
-      <h2 class="section-title reveal from-left d1">Getting started is <em>effortless</em></h2>
-      <p class="section-sub reveal from-left d2">DormEase is designed so every tenant can use it with zero learning curve.</p>
+      <div class="from-left section-tag reveal">Simple Process</div>
+      <h2 class="from-left section-title reveal d1">Getting started is <em>effortless</em></h2>
+      <p class="from-left section-sub reveal d2">DormEase is designed so every tenant can use it with zero learning curve.</p>
       <div class="steps" style="margin-top:48px;">
-        <div class="step reveal from-left d1">
+        <div class="from-left step reveal d1">
           <div class="step-num">1</div>
           <div>
             <div class="step-title">Inquire now and be a Tenant</div>
             <p class="step-desc">Contact us to learn more about our dormitory and start your application process.</p>
           </div>
         </div>
-        <div class="step reveal from-left d2">
+        <div class="from-left step reveal d2">
           <div class="step-num">2</div>
           <div>
             <div class="step-title">Access all dorm services</div>
             <p class="step-desc">Report issues by voice or text, check your water bill, register visitors, and receive announcements instantly.</p>
           </div>
         </div>
-        <div class="step reveal from-left d3">
+        <div class="from-left step reveal d3">
           <div class="step-num">3</div>
           <div>
             <div class="step-title">Stay informed, stay safe</div>
@@ -1262,7 +1262,7 @@
       </div>
     </div>
 
-    <div class="how-img-main reveal from-right">
+    <div class="from-right how-img-main reveal">
       <div class="de-mockup-wrap">
         <div class="de-phone side">
           <div class="de-notch"></div>
@@ -1345,10 +1345,10 @@
     <div class="about-bg-fade"></div>
     <div class="about-inner">
     <div>
-      <div class="section-tag reveal from-left">About the Dormitory</div>
-      <h2 class="section-title reveal from-left d1">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
-      <p class="section-sub reveal from-left d2">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
-      <div class="amenities reveal from-left d3">
+      <div class="from-left section-tag reveal">About the Dormitory</div>
+      <h2 class="from-left section-title reveal d1">Sanctissimo Rosario<br><em>Ladies Dormitory</em></h2>
+      <p class="from-left section-sub reveal d2">A five-storey residential building at 1229 Navarra Street, Sampaloc, Manila. A safe, comfortable, study-friendly home for female students near UST and the University Belt.</p>
+      <div class="from-left amenities reveal d3">
         <div class="amenity"><div class="amenity-dot"></div>24/7 Security + CCTV</div>
         <div class="amenity"><div class="amenity-dot"></div>Elevator Access</div>
         <div class="amenity"><div class="amenity-dot"></div>Wi-Fi Available</div>
@@ -1358,14 +1358,14 @@
         <div class="amenity"><div class="amenity-dot"></div>Near UST &amp; UBelt</div>
         <div class="amenity"><div class="amenity-dot"></div>Strong Water Supply</div>
       </div>
-      <div style="margin-top:40px;" class="reveal from-left d4">
+      <div style="margin-top:40px;" class="from-left reveal d4">
         <a href="tel:+639175359723" class="btn-primary" style="display:inline-flex;">
           <svg viewBox="0 0 20 20" style="width:18px;height:18px;fill:white;flex-shrink:0;"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
           Reserve: +63 917 535 9723
         </a>
       </div>
     </div>
-    <div class="about-photos reveal from-right">
+    <div class="from-right about-photos reveal">
       <div class="about-photo about-main-photo">
         <img src="{{ asset('images/main.png') }}" alt="Sanctissimo Rosario Ladies Dormitory" class="about-img" style="object-position:center;">
       </div>
@@ -1374,7 +1374,7 @@
 </section>
 
 <section class="cta-section" id="contact">
-  <div class="contact-inner reveal from-bottom">
+  <div class="from-bottom contact-inner reveal">
     <div class="contact-copy">
       <div class="section-tag">Get DormEase</div>
       <h2 class="section-title">Ready to experience<br>a <em>smarter</em> dorm life?</h2>
@@ -1413,8 +1413,8 @@
       <h4>Features</h4>
       <a href="{{ route('features') }}#maintenance">Maintenance</a>
       <a href="{{ route('features') }}#announcements">Announcements</a>
-      <a href="{{ route('features') }}#water-bill">Water Billing</a>
-      <a href="{{ route('features') }}#visitor">Visitor Log</a>
+      <a href="{{ route('features') }}#water-billing">Water Billing</a>
+      <a href="{{ route('features') }}#visitor-log">Visitor Log</a>
       <a href="{{ route('features') }}#emergency">Emergency</a>
     </div>
     <div class="footer-col">
@@ -1732,11 +1732,11 @@
       { id: 'visitor', keys: ['visitor','bisita','bring visitor','puwede bang magdala','pwede bang magdala','visitor policy','bisita policy','female visitor','how many visitor','visitor limit'], answer: "Only female friends and relatives are allowed inside the units. Male visitors, including male relatives, are not permitted inside. The limit is 1 to 2 visitors per unit for 1 to 2 hours only. All visitors must register at the front desk and must leave before curfew at 10:00 PM.", follow: ['male_visitor','sleepover','curfew'] },      { id: 'login_logout', keys: ['log in','log out','login','logout','sign in','sign out','mag log','logbook','guard','log in log out'], answer: "Log in/log out is required at all times. When entering and going out of the building, tenants must log in/log out with the guard for reasons of safety and security.", follow: ['curfew','security','rules'] },
       { id: 'cleanliness', keys: ['clean','linis','neat','keep clean','room cleanliness','dirty','malinis','neat room'], answer: "Tenants are required to keep their rooms neat and clean at all times. Monthly room inspections are conducted to ensure this. Please keep rooms tidy and free of prohibited items.", follow: ['inspection','garbage','rules'] },
       { id: 'garbage', keys: ['garbage','basura','trash','waste','disposal','throw','tapusin','garbage disposal'], answer: "Garbage disposal is the responsibility of tenants. Garbage should be regularly brought down to the ground floor under the stair. Please keep the lobbies and landings clear of your belongings, and do not throw anything out the window.", follow: ['cleanliness','rules','inspection'] },
-      { id: 'laundry', keys: ['laundry','labada','washing clothes','laundry area','may laundry','laundry room'], answer: "Doing laundry inside the units is not allowed. However, there are nearby laundry shops that offer pickup and delivery service. You can arrange for your clothes to be collected and returned directly to the dorm.", follow: ['ironing','near','contact'] },      { id: 'ironing', keys: ['iron','ironing','flat iron','plancha','flat ironing','may iron'], answer: "Flat ironing is NOT allowed inside the dormitory to avoid fire hazards. Please arrange ironing outside the building.", follow: ['rules','laundry','contact'] },
+      { id: 'laundry', keys: ['laundry','labada','washing clothes','laundry area','may laundry','laundry room'], answer: "Doing laundry inside the units is NOT allowed. However, there are nearby laundry shops that offer pickup and delivery service. You can arrange for your clothes to be collected and returned directly to the dorm.", follow: ['ironing','near','contact'] },      { id: 'ironing', keys: ['iron','ironing','flat iron','plancha','flat ironing','may iron'], answer: "Flat ironing is NOT allowed inside the dormitory to avoid fire hazards. Please arrange ironing outside the building.", follow: ['rules','laundry','contact'] },
       { id: 'maintenance', keys: ['maintenance','repair','fix','broken','issue','request','problem','leaky','faucet','sira','report problem','report issue','repair request','damage'], answer: "To report maintenance issues, please submit a written report to the Admin office about any damages in the unit for repair. You can also submit maintenance requests through the DormEase app and track the status in real time.", follow: ['dormease','announcements','water'] },
-      { id: 'smoking', keys: ['smoking','smoke','cigarette','sigarilyo','usok','no smoking','bawal manigarilyo'], answer: "No smoking is allowed inside the building. This is strictly enforced for the safety and comfort of all tenants.", follow: ['drinking','rules','contact'] },
-      { id: 'drinking', keys: ['drinking','alcohol','alak','beer','wine','liquor','no drinking','bawal uminom'], answer: "No drinking of alcohol is allowed inside the building. This rule is strictly enforced. Violations may result in a warning or termination of tenancy.", follow: ['smoking','rules','contact'] },
-      { id: 'tipping', keys: ['tip','tipping','gifts','gift','give money','bribe','palakol','lagay','suhulan'], answer: "No tipping or giving of money or gifts to our staff and guards. Favoritism shall not be tolerated — equal and fair treatment to all.", follow: ['rules','contact','security'] },
+      { id: 'smoking', keys: ['smoking','smoke','cigarette','sigarilyo','usok','no smoking','bawal manigarilyo'], answer: "Smoking is NOT allowed inside the building. This is strictly enforced for the safety and comfort of all tenants.", follow: ['drinking','rules','contact'] },
+      { id: 'drinking', keys: ['drinking','alcohol','alak','beer','wine','liquor','no drinking','bawal uminom'], answer: "Drinking of alcohol is NOT allowed inside the building. This rule is strictly enforced. Violations may result in a warning or termination of tenancy.", follow: ['smoking','rules','contact'] },
+      { id: 'tipping', keys: ['tip','tipping','gifts','gift','give money','bribe','palakol','lagay','suhulan'], answer: "Tipping or giving of money or gifts to our staff and guards is NOT allowed. Favoritism shall not be tolerated — equal and fair treatment to all.", follow: ['rules','contact','security'] },
       { id: 'inspection', keys: ['inspection','inspect','room check','room inspection','monthly inspection','cleanliness check'], answer: "Monthly room inspections are conducted to ensure cleanliness and safety. Tenants are notified in advance via DormEase announcements. Please keep your room neat and free of prohibited items.", follow: ['cleanliness','dormease','rules'] },
       { id: 'rules', keys: ['rule','rules','policy','policies','conduct','allowed','prohibited','bawal','house rule','house rules','dorm rules','dorm policy'], answer: "We have a few important house rules here at Sanctissimo Rosario! Which one would you like to know about?", follow: ['curfew','visitor','smoking','laundry','cleanliness','garbage','ironing','drinking','tipping','login_logout','inspection'] },      { id: 'wifi', keys: ['wifi','wi-fi','internet','connection','internet connection','may wifi','may internet','signal'], answer: "You have two options for internet. You can self-connect your own internet or Wi-Fi line, or use the dorm connection at 300 pesos per device per month. Contact our admin team for setup details.", follow: ['furnished','dormease','contact'] },      { id: 'aircon', keys: ['aircon','air con','air conditioning','ac unit','malamig','cold room','may aircon','aircon slot'], answer: "Every room has an aircon slot — you can install your own air conditioning unit. Contact our admin for more details on aircon policies.", follow: ['amenities','furnished','price'] },
       { id: 'elevator', keys: ['elevator','elev','lift','may elevator','floor','storey','floors','palapag','piso','gaano kataas'], answer: "Sanctissimo Rosario is a 5-storey building with elevator access, so you don't have to worry about climbing stairs with your luggage!", follow: ['amenities','location','about'] },
@@ -1747,7 +1747,6 @@
       { id: 'water', keys: ['water supply','tubig','water bill','bill sa tubig','water interruption','water pressure','suplay ng tubig','sub meter','submeter'], answer: "We have a strong and reliable water supply. Each room has its own sub-meter, so you are billed only for your actual water usage. Water bills are tracked and viewable through the DormEase app. For billing questions, contact our admin team directly at +63 917 535 9723.", follow: ['dormease','price','contact'] },      { id: 'location', keys: ['location','address','where','saan','how to get there','directions','map','navarra','sampaloc','manila','nasaan','how to go'], answer: "We are located at 1229 Navarra Street, Sampaloc, Manila — just a short walk from UST and the University Belt area. Click the map on our homepage for full directions!", follow: ['near','transport','contact'] },
       { id: 'near', keys: ['near','close to','how far','malapit','ust','university','school','campus','espana','nearby','nearby places','paligid'], answer: "We are very close to UST (University of Santo Tomas) and the University Belt. Nearby landmarks include:\n\n• Barangay Hall — just around the corner\n• Tricycle station — steps away from the dorm\n• Major universities (FEU, CEU, UE) — short commute\n• Espana Blvd — easy jeepney and bus access", follow: ['transport','location','contact'] },
       { id: 'transport', keys: ['transport','tricycle','jeepney','commute','paano pumunta','how to commute','sakay','lrt','bus','mrt','tricycle station','trike'], answer: "Getting to the dorm is easy! There is a tricycle station right near the dormitory. You can also take a jeepney or bus along Espana Blvd and ride a tricycle to Navarra Street. The Barangay Hall is also nearby, making the area very accessible.", follow: ['location','near','contact'] },
-      { id: 'barangay', keys: ['barangay','barangay hall','brgy','brgy hall','malapit sa barangay','near barangay'], answer: "The Barangay Hall is located near the dormitory, making it very convenient for official documents, community services, and local needs.", follow: ['location','near','transport'] },
       { id: 'furniture', keys: ['furniture','bring furniture','own furniture','magdala ng gamit','sariling kasangkapan','ref','refrigerator','appliance','cabinet','sala set','pwede magdala','puwede magdala','bring own','own items','furniture policy','kasangkapan'], answer: "Yes, tenants may bring their own furniture or appliances! However, you will need to get the admin's permission first, and some paperwork will need to be completed. Please contact the admin team for the specific requirements.\n\n📞 +63 917 535 9723\n📍 1229 Navarra St., Sampaloc, Manila", follow: ['rules','contact','apply'] },
       { id: 'apply', keys: ['apply','reserve','reservation','how to apply','how to avail','sign up','mag-apply','mag-reserve','slot','availability','available','vacant','book a room','how to reserve'], answer: "To reserve a room:\n\n1️⃣ Call or message us at +63 917 535 9723\n2️⃣ Visit us at 1229 Navarra St., Sampaloc, Manila\n3️⃣ Our admin team will walk you through the requirements\n\nOnce you're a tenant, you'll get DormEase app access for all dorm services!", follow: ['requirements','price','contact'] },
       { id: 'requirements', keys: ['requirement','requirements','needed','documents','bring','id','contract','ano ang kailangan','papeles','what to bring','requirements to apply'], answer: "For requirements and documentary needs, please contact our admin team directly:\n\n📞 +63 917 535 9723\n📍 1229 Navarra St., Sampaloc, Manila\n\nThey'll give you a complete checklist based on current policies.", follow: ['apply','contact','price'] },

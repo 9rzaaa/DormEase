@@ -253,7 +253,7 @@
       .feat-card { border-radius: var(--r-md); }
     }
 
-    .feat-card { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; }
+    .feat-card { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; scroll-margin-top: 140px; }
     .feat-card.visible { opacity:1; transform:translateY(0); }
     .feat-card:hover { transform:translateY(-4px) !important; }
   </style>
@@ -442,7 +442,7 @@
           </div>
         </div>
 
-        <div class="feat-card flip">
+        <div class="feat-card flip" id="emergency">
           <div class="feat-info">
             <div class="feat-number">Feature 04</div>
             <div class="feat-title">Emergency Report</div>
@@ -465,7 +465,7 @@
           </div>
         </div>
 
-        <div class="feat-card" id="water-bill">
+        <div class="feat-card" id="water-billing">
           <div class="feat-info">
             <div class="feat-number">Feature 05</div>
             <div class="feat-title">Water Bill</div>
@@ -488,7 +488,7 @@
           </div>
         </div>
 
-        <div class="feat-card flip" id="visitor">
+        <div class="feat-card flip" id="visitor-log">
           <div class="feat-info">
             <div class="feat-number">Feature 06</div>
             <div class="feat-title">Visitor Registration</div>
@@ -576,8 +576,9 @@
         <h4>Features</h4>
         <a href="#maintenance">Maintenance</a>
         <a href="#announcements">Announcements</a>
-        <a href="#water-bill">Water Billing</a>
-        <a href="#visitor">Visitor Log</a>
+        <a href="#water-billing">Water Billing</a>
+        <a href="#visitor-log">Visitor Log</a>
+        <a href="#emergency">Emergency</a>
         <a href="{{ route('safety.features') }}">Safety Features</a>
     </div>
     <div class="footer-col"><h4>Dormitory</h4><a href="{{ route('home') }}#about">About</a><a href="{{ route('home') }}#gallery">Room Types</a><a href="{{ route('home') }}#about">Amenities</a><a href="{{ route('home') }}#contact">Location</a></div>
@@ -643,6 +644,18 @@
     });
   }, { threshold: 0.12 });
   cards.forEach(card => cardObserver.observe(card));
+
+  window.addEventListener('load', () => {
+    if (window.location.hash) {
+      const target = document.querySelector(window.location.hash);
+      if (target && target.classList.contains('feat-card')) {
+        target.classList.add('visible');
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+  });
 </script>
 </body>
 </html>
