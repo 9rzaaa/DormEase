@@ -1460,8 +1460,8 @@
                 <div class="modal-field-full report-hotline-wrap" id="report-hotline-wrap"></div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
             </div>
         </form>
     </div>
