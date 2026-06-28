@@ -249,8 +249,9 @@
     .np-item.unread .np-msg { font-weight: 600; }
 
     .np-time {
-        font-size: .72rem;
-        color: var(--ink-muted, #7a5f6e);
+        font-size: .78rem;
+        color: var(--ink-soft, #5a5a75);
+        font-weight: 600;
         margin-top: .05rem;
     }
 

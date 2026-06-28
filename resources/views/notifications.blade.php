@@ -1,4 +1,4 @@
-@extends('fdlayout')
+@extends('layout')
 
 @section('title', 'DormEase: Notifications History')
 @section('page-title', 'Notifications History')
@@ -162,9 +162,14 @@
     .np-item.unread { background: #fdf5f8; }
     .np-item.unread:hover { background: var(--pink-bg, #fdf0f5); }
 
+    .np-item.type-reservation  { border-left-color: #f0c840; }
+    .np-item.type-maintenance  { border-left-color: #38bdf8; }
     .np-item.type-emergency    { border-left-color: #f87171; }
+    .np-item.type-billing      { border-left-color: #4ade80; }
+    .np-item.type-document     { border-left-color: #c084fc; }
     .np-item.type-announcement { border-left-color: #fb923c; }
     .np-item.type-visitor      { border-left-color: #34d399; }
+    .np-item.type-tenant       { border-left-color: #a78bfa; }
     .np-item.type-general      { border-left-color: #d1d5db; }
 
     .np-unread-col {
@@ -199,12 +204,22 @@
         object-fit: contain;
     }
 
+    .np-icon.type-reservation  { background: #fffbeb; border-color: #fef3c7; }
+    .np-icon.type-reservation img { filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(95%); }
+    .np-icon.type-maintenance  { background: #f0f9ff; border-color: #bae6fd; }
+    .np-icon.type-maintenance img { filter: brightness(0) saturate(100%) invert(39%) sepia(92%) saturate(548%) hue-rotate(167deg) brightness(93%) contrast(98%); }
     .np-icon.type-emergency    { background: #fff1f2; border-color: #fecdd3; }
     .np-icon.type-emergency img { filter: brightness(0) saturate(100%) invert(52%) sepia(60%) saturate(700%) hue-rotate(315deg) brightness(90%) contrast(95%); }
+    .np-icon.type-billing      { background: #f0fdf4; border-color: #bbf7d0; }
+    .np-icon.type-billing img { filter: brightness(0) saturate(100%) invert(32%) sepia(88%) saturate(394%) hue-rotate(94deg) brightness(93%) contrast(92%); }
+    .np-icon.type-document     { background: #faf5ff; border-color: #e9d5ff; }
+    .np-icon.type-document img { filter: brightness(0) saturate(100%) invert(27%) sepia(80%) saturate(1500%) hue-rotate(250deg) brightness(90%) contrast(90%); }
     .np-icon.type-announcement { background: #fff7ed; border-color: #fed7aa; }
     .np-icon.type-announcement img { filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(500%) hue-rotate(15deg) brightness(90%) contrast(95%); }
     .np-icon.type-visitor      { background: #f0fdf4; border-color: #a7f3d0; }
     .np-icon.type-visitor img { filter: brightness(0) saturate(100%) invert(62%) sepia(50%) saturate(400%) hue-rotate(120deg) brightness(85%) contrast(90%); }
+    .np-icon.type-tenant       { background: #f5f3ff; border-color: #ddd6fe; }
+    .np-icon.type-tenant img { filter: brightness(0) saturate(100%) invert(20%) sepia(85%) saturate(1400%) hue-rotate(240deg) brightness(85%) contrast(90%); }
     .np-icon.type-general      { background: #f9fafb; border-color: #e5e7eb; }
     .np-icon.type-general img  { filter: brightness(0) saturate(100%) invert(60%); }
 
@@ -231,9 +246,14 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
+    .np-badge.type-reservation  { background: #fffbeb; color: #b45309; border-color: #fef3c7; }
+    .np-badge.type-maintenance  { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
     .np-badge.type-emergency    { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .np-badge.type-billing      { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .np-badge.type-document     { background: #faf5ff; color: #6b21a8; border-color: #e9d5ff; }
     .np-badge.type-announcement { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
     .np-badge.type-visitor      { background: #f0fdf4; color: #166534; border-color: #a7f3d0; }
+    .np-badge.type-tenant       { background: #f5f3ff; color: #4c1d95; border-color: #ddd6fe; }
     .np-badge.type-general      { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
 
     .np-msg {
@@ -249,8 +269,9 @@
     .np-item.unread .np-msg { font-weight: 600; }
 
     .np-time {
-        font-size: .72rem;
-        color: var(--ink-muted, #7a5f6e);
+        font-size: .78rem;
+        color: var(--ink-soft, #5a5a75);
+        font-weight: 600;
         margin-top: .05rem;
     }
 
@@ -387,7 +408,7 @@
 @section('content')
 <main class="np-page">
 
-    <a href="{{ route('frontdesk.dashboard') }}" class="np-back">
+    <a href="{{ route('dashboard') }}" class="np-back">
         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -415,9 +436,14 @@
             $currentType = request('type', '');
             $pills = [
                 ''             => ['label' => 'All',           'color' => '#e8175d'],
+                'reservation'  => ['label' => 'Reservations',  'color' => '#f0c840'],
+                'maintenance'  => ['label' => 'Maintenance',   'color' => '#38bdf8'],
                 'emergency'    => ['label' => 'Emergency',     'color' => '#f87171'],
+                'billing'      => ['label' => 'Billing',       'color' => '#4ade80'],
+                'document'     => ['label' => 'Documents',     'color' => '#c084fc'],
                 'announcement' => ['label' => 'Announcements', 'color' => '#fb923c'],
                 'visitor'      => ['label' => 'Visitors',      'color' => '#34d399'],
+                'tenant'       => ['label' => 'Tenants',       'color' => '#a78bfa'],
             ];
         @endphp
         @foreach($pills as $value => $pill)
@@ -461,38 +487,44 @@
 
                 @foreach($dayNotifs as $notif)
                     @php
-                        $notifIcon = match($notif->type) {
-                            'visitor_registration' => 'nav-visit',
-                            'visitor_checkin'      => 'nav-visit',
-                            'visitor_checkout'     => 'nav-visit',
-                            'visitor_cancelled'    => 'nav-visit',
-                            'emergency_new'        => 'warn',
-                            'announcement_new'     => 'nav-announ',
-                            default                => 'bell',
+                        $isReservation = $notif->type === 'tenant_reserved';
+
+                        $notifIcon = match(true) {
+                            $notif->type === 'tenant_reserved'            => 'pending',
+                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                            str_starts_with($notif->type, 'emergency')    => 'warn',
+                            str_starts_with($notif->type, 'billing')      => 'billing',
+                            str_starts_with($notif->type, 'document')     => 'nav-docu',
+                            str_starts_with($notif->type, 'announcement') => 'nav-announ',
+                            str_starts_with($notif->type, 'visitor')      => 'nav-visit',
+                            str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
+                            default                                        => 'bell',
                         };
-                        $notifTypeLabel = match($notif->type) {
-                            'visitor_registration' => 'visitor',
-                            'visitor_checkin'      => 'visitor',
-                            'visitor_checkout'     => 'visitor',
-                            'visitor_cancelled'    => 'visitor',
-                            'emergency_new'        => 'emergency',
-                            'announcement_new'     => 'announcement',
-                            default                => 'general',
+
+                        $notifTypeLabel = match(true) {
+                            $notif->type === 'tenant_reserved'            => 'reservation',
+                            str_starts_with($notif->type, 'maintenance')  => 'maintenance',
+                            str_starts_with($notif->type, 'emergency')    => 'emergency',
+                            str_starts_with($notif->type, 'billing')      => 'billing',
+                            str_starts_with($notif->type, 'document')     => 'document',
+                            str_starts_with($notif->type, 'announcement') => 'announcement',
+                            str_starts_with($notif->type, 'visitor')      => 'visitor',
+                            str_starts_with($notif->type, 'tenant')       => 'tenant',
+                            default                                        => 'general',
                         };
                     @endphp
 
-                    <div class="np-item type-{{ $notifTypeLabel }} {{ $notif->is_read ? '' : 'unread' }}"
-                         onclick="handleNotifClick(event, this); this.classList.remove('unread'); var dot = this.querySelector('.np-unread-dot'); if(dot) dot.remove();"
-                         data-notif='{!! json_encode([
-                             "id"      => $notif->notif_id,
-                             "type"    => $notifTypeLabel,
-                             "icon"    => asset("icons/{$notifIcon}.png"),
-                             "message" => $notif->message,
-                             "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
-                             "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
-                             "url"     => $notif->url ?? "",
-                             "isRead"  => (bool) $notif->is_read,
-                         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
+                    <div class="np-item type-{{ $notifTypeLabel }} {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
+                         onclick="openNotifDetail({
+                             id:      {{ $notif->notif_id }},
+                             type:    '{{ $notifTypeLabel }}',
+                             icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
+                             message: {{ json_encode($notif->message) }},
+                             time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
+                             ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
+                             url:     '{{ $notif->url ?? '' }}',
+                             isRead:  {{ $notif->is_read ? 'true' : 'false' }}
+                         }); this.classList.remove('unread'); var dot = this.querySelector('.np-unread-dot'); if(dot) dot.remove();">
                         <div class="np-unread-col">
                             @if(!$notif->is_read)
                                 <div class="np-unread-dot"></div>
