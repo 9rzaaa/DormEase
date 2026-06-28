@@ -56,21 +56,38 @@
         flex-direction: column;
     }
     .notif-list-header {
-        padding: 1.2rem 1.5rem;
+        padding: 1rem 1.5rem;
         border-bottom: 1.5px solid var(--petal, #fce4ec);
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
     .notif-list-title {
         font-size: 1.1rem;
         font-weight: 700;
         color: var(--black, #1e1e24);
     }
+    .filter-select {
+        padding: .45rem .85rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-pink);
+        background: var(--white);
+        font-size: .82rem;
+        color: var(--black);
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        transition: border-color .18s;
+    }
+    .filter-select:focus {
+        border-color: var(--bright-pink);
+    }
     .notif-date-group-header {
-        padding: 0.8rem 1.5rem;
+        padding: 0.6rem 1.5rem;
         background: var(--petal, #fce4ec);
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -84,8 +101,8 @@
     .notif-page-item {
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        padding: 1.2rem 1.5rem;
+        gap: 0.8rem;
+        padding: 0.65rem 1.5rem;
         border-bottom: 1px solid var(--petal, #fce4ec);
         cursor: pointer;
         transition: background .15s;
@@ -112,21 +129,21 @@
         background: #fff7e0;
     }
     .notif-dot-col {
-        width: 10px;
+        width: 8px;
         display: flex;
         justify-content: center;
         flex-shrink: 0;
     }
     .notif-page-dot {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         background: var(--bright-pink, #E8175D);
     }
     .notif-page-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         background: var(--petal, #fce4ec);
         border: 1.5px solid var(--baby-pink, #f8bbd0);
         display: flex;
@@ -139,8 +156,8 @@
         border-color: #f0c840;
     }
     .notif-page-icon img {
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         object-fit: contain;
         filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
@@ -152,28 +169,27 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.15rem;
     }
     .notif-page-msg {
-        font-size: 0.95rem;
+        font-size: 0.88rem;
         font-weight: 500;
         color: var(--black, #1e1e24);
-        line-height: 1.4;
+        line-height: 1.35;
     }
     .notif-page-time {
-        font-size: 0.8rem;
+        font-size: 0.76rem;
         color: var(--ink-muted, #7c7c8c);
     }
     .notif-page-type-badge {
         display: inline-block;
-        font-size: 0.65rem;
+        font-size: 0.6rem;
         font-weight: 800;
         letter-spacing: .05em;
         text-transform: uppercase;
-        padding: .15rem .45rem;
+        padding: .1rem .35rem;
         border-radius: 4px;
         align-self: flex-start;
-        margin-bottom: 0.15rem;
     }
     .notif-page-type-badge.reservation { background: #fff0c0; color: #9a6200; border: 1px solid #f0c840; }
     .notif-page-type-badge.maintenance { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
@@ -191,11 +207,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 8px;
         background: var(--bright-pink, #E8175D);
         color: var(--white, #ffffff);
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 600;
         text-decoration: none;
         border: none;
@@ -213,28 +229,33 @@
         color: var(--ink-muted, #7c7c8c);
     }
     .notif-pagination {
-        padding: 1.2rem 1.5rem;
+        padding: 1rem 1.5rem;
         border-top: 1.5px solid var(--petal, #fce4ec);
     }
     
-    /* Fix Laravel default paginator SVG size issues */
+    /* Fix Laravel default paginator SVG size and duplicate layout issues */
+    .notif-pagination nav > div:first-child {
+        display: none !important;
+    }
+    .notif-pagination nav > div:last-child {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
     .notif-pagination svg {
-        width: 1.2rem !important;
-        height: 1.2rem !important;
+        width: 1.1rem !important;
+        height: 1.1rem !important;
         display: inline-block !important;
         vertical-align: middle;
     }
-    .notif-pagination nav {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .notif-pagination nav div:first-child {
-        font-size: 0.85rem;
+    .notif-pagination nav div:last-child > div:first-child {
+        font-size: 0.83rem;
         color: var(--ink-muted);
     }
-    .notif-pagination nav div:last-child {
+    .notif-pagination nav div:last-child > div:last-child {
         display: flex;
         gap: 0.25rem;
         align-items: center;
@@ -243,15 +264,15 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 34px;
-        height: 34px;
-        padding: 0 .65rem;
-        border-radius: 9px;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 .5rem;
+        border-radius: 8px;
         border: 1.5px solid var(--baby-pink);
         background: var(--white);
         color: var(--ink-muted);
         font-size: .8rem;
-        font-weight: 800;
+        font-weight: 700;
         text-decoration: none;
         box-sizing: border-box;
     }
@@ -259,6 +280,10 @@
         background: var(--bright-pink);
         color: var(--white);
         border-color: transparent;
+    }
+    .notif-pagination nav span[aria-disabled="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 </style>
 @endsection
@@ -280,7 +305,22 @@
 
     <div class="notif-card">
         <div class="notif-list-header">
-            <div class="notif-list-title">All Notifications</div>
+            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <div class="notif-list-title">All Notifications</div>
+                
+                <select id="type-filter" onchange="filterType(this.value)" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="reservation" {{ request('type') === 'reservation' ? 'selected' : '' }}>Reservations</option>
+                    <option value="maintenance" {{ request('type') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                    <option value="emergency" {{ request('type') === 'emergency' ? 'selected' : '' }}>Emergency</option>
+                    <option value="billing" {{ request('type') === 'billing' ? 'selected' : '' }}>Billing</option>
+                    <option value="document" {{ request('type') === 'document' ? 'selected' : '' }}>Documents</option>
+                    <option value="announcement" {{ request('type') === 'announcement' ? 'selected' : '' }}>Announcements</option>
+                    <option value="visitor" {{ request('type') === 'visitor' ? 'selected' : '' }}>Visitors</option>
+                    <option value="tenant" {{ request('type') === 'tenant' ? 'selected' : '' }}>Tenants</option>
+                </select>
+            </div>
+            
             @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
                 <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
             @endif
@@ -373,9 +413,24 @@
 
         @if($notifications->hasPages())
             <div class="notif-pagination">
-                {{ $notifications->links() }}
+                {{ $notifications->appends(request()->query())->links() }}
             </div>
         @endif
     </div>
 </main>
+@endsection
+
+@section('scripts')
+<script>
+    function filterType(value) {
+        var url = new URL(window.location.href);
+        if (value) {
+            url.searchParams.set('type', value);
+        } else {
+            url.searchParams.delete('type');
+        }
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    }
+</script>
 @endsection

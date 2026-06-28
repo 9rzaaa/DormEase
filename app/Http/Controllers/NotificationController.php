@@ -17,6 +17,15 @@ class NotificationController extends Controller
         $query = Notification::where('staff_id', $staff->staff_id)
             ->whereIn('type', NotificationComposer::visibleTypesFor($staff->role));
 
+        if ($request->filled('type')) {
+            $type = $request->type;
+            if ($type === 'reservation') {
+                $query->where('type', 'tenant_reserved');
+            } else {
+                $query->where('type', 'like', $type . '%');
+            }
+        }
+
         $notifications = $query->orderByDesc('created_at')->paginate(20);
 
         if ($staff->role === 'frontdesk') {
