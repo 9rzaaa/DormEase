@@ -26,7 +26,7 @@ class EnsureStaffAccountIsActive
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'message' => 'Your account has been deactivated. Please log in again.',
                 ], 401);
