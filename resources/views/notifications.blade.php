@@ -1,422 +1,536 @@
-@extends('layout')
+@extends('fdlayout')
 
-@section('title', 'DormEase: Previous Notifications')
-@section('page-title', 'Previous Notifications')
+@section('title', 'DormEase: Notifications History')
+@section('page-title', 'Notifications History')
 
 @section('styles')
 <style>
-    .notif-page {
+    .np-page {
         padding: 1.8rem 2rem;
         display: flex;
         flex-direction: column;
-        gap: 1.2rem;
+        gap: 1.4rem;
         flex: 1;
-        background: var(--blush, #fef2f4);
+        background: var(--pink-bg, #fdf0f5);
         box-sizing: border-box;
+        min-height: 100vh;
     }
-    .back-link {
+
+    .np-back {
         display: inline-flex;
         align-items: center;
         gap: .4rem;
-        font-size: .85rem;
+        font-size: .82rem;
         font-weight: 600;
         color: var(--hot-pink);
         text-decoration: none;
-        margin-bottom: .2rem;
-        transition: opacity .15s;
         align-self: flex-start;
+        transition: opacity .15s;
     }
-    .back-link:hover { opacity: .75; }
-    
-    .notif-header {
+    .np-back:hover { opacity: .7; }
+    .np-back svg { flex-shrink: 0; }
+
+    .np-toprow {
         display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-    .notif-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--black, #1e1e24);
-        letter-spacing: -.02em;
-        line-height: 1.15;
-        margin: 0;
-    }
-    .notif-header .subtitle {
-        font-size: 0.9rem;
-        color: var(--ink-muted, #7c7c8c);
-        font-weight: 500;
-    }
-    .notif-card {
-        background: var(--white, #ffffff);
-        border: 1.5px solid var(--border-pink, #fce4ec);
-        border-radius: 18px;
-        box-shadow: 0 4px 16px rgba(232,23,93,0.03);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    .notif-list-header {
-        padding: 1rem 1.5rem;
-        border-bottom: 1.5px solid var(--petal, #fce4ec);
-        display: flex;
-        align-items: center;
+        align-items: flex-end;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 1rem;
     }
-    .notif-list-title {
-        font-size: 1.1rem;
+    .np-heading { margin: 0; }
+    .np-heading h1 {
+        font-size: 1.75rem;
         font-weight: 700;
-        color: var(--black, #1e1e24);
+        color: var(--ink, #1a1a2e);
+        letter-spacing: -.025em;
+        line-height: 1.1;
+        margin: 0 0 .2rem;
     }
-    .filter-select {
-        padding: .45rem .85rem;
+    .np-heading p {
+        font-size: .85rem;
+        color: var(--ink-muted, #7a5f6e);
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .np-mark-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .5rem 1rem;
         border-radius: 10px;
-        border: 1.5px solid var(--border-pink);
-        background: var(--white);
-        font-size: .82rem;
-        color: var(--black);
-        font-weight: 600;
-        outline: none;
-        cursor: pointer;
-        transition: border-color .18s;
-    }
-    .filter-select:focus {
-        border-color: var(--bright-pink);
-    }
-    .notif-date-group-header {
-        padding: 0.6rem 1.5rem;
-        background: var(--petal, #fce4ec);
-        font-size: 0.72rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        background: var(--white, #fff);
         color: var(--hot-pink, #e8175d);
-        border-bottom: 1px solid var(--baby-pink, #f8bbd0);
+        font-size: .82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .15s, border-color .15s;
+        white-space: nowrap;
     }
-    .notif-list {
-        display: flex;
-        flex-direction: column;
+    .np-mark-all-btn:hover {
+        background: var(--pink-card, #fce8f1);
+        border-color: var(--hot-pink);
     }
-    .notif-page-item {
+    .np-mark-all-btn svg { flex-shrink: 0; }
+
+    .np-filters {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
-        padding: 0.65rem 1.5rem;
-        border-bottom: 1px solid var(--petal, #fce4ec);
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+    .np-filter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .38rem .85rem;
+        border-radius: 999px;
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        background: var(--white, #fff);
+        color: var(--ink-muted, #7a5f6e);
+        font-size: .78rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: background .15s;
         text-decoration: none;
-        color: inherit;
+        transition: background .15s, border-color .15s, color .15s;
+        white-space: nowrap;
     }
-    .notif-page-item:last-child {
-        border-bottom: none;
+    .np-filter-pill:hover {
+        background: var(--pink-card, #fce8f1);
+        color: var(--hot-pink);
+        border-color: var(--hot-pink);
     }
-    .notif-page-item:hover {
-        background: var(--blush, #fef2f4);
+    .np-filter-pill.active {
+        background: var(--hot-pink, #e8175d);
+        border-color: var(--hot-pink);
+        color: #fff;
     }
-    .notif-page-item.unread {
-        background: var(--pink-50, #fff0f3);
-    }
-    .notif-page-item.unread:hover {
-        background: var(--pink-100, #ffe0e6);
-    }
-    .notif-page-item.reservation {
-        border-left: 4px solid #f0c840;
-        background: #fffbf0;
-    }
-    .notif-page-item.reservation:hover {
-        background: #fff7e0;
-    }
-    .notif-dot-col {
-        width: 8px;
-        display: flex;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    .notif-page-dot {
+    .np-filter-dot {
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: var(--bright-pink, #E8175D);
+        flex-shrink: 0;
     }
-    .notif-page-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: var(--petal, #fce4ec);
-        border: 1.5px solid var(--baby-pink, #f8bbd0);
+
+    .np-shell {
+        background: var(--white, #fff);
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        border-radius: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 20px rgba(202,93,134,.05);
+    }
+
+    .np-day-label {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .55rem 1.5rem;
+        background: var(--pink-bg, #fdf0f5);
+        border-bottom: 1px solid var(--pink-light, #FFB0CE);
+    }
+    .np-day-label span {
+        font-size: .68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: var(--hot-pink, #e8175d);
+        white-space: nowrap;
+    }
+    .np-day-line {
+        flex: 1;
+        height: 1px;
+        background: var(--pink-light, #FFB0CE);
+    }
+
+    .np-item {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        padding: .8rem 1.5rem .8rem 0;
+        border-bottom: 1px solid var(--pink-light, #FFB0CE);
+        cursor: pointer;
+        transition: background .13s;
+        border-left: 3px solid transparent;
+        position: relative;
+    }
+    .np-item:last-child { border-bottom: none; }
+    .np-item:hover { background: var(--pink-bg, #fdf0f5); }
+
+    .np-item.unread { background: #fdf5f8; }
+    .np-item.unread:hover { background: var(--pink-bg, #fdf0f5); }
+
+    .np-item.type-emergency    { border-left-color: #f87171; }
+    .np-item.type-announcement { border-left-color: #fb923c; }
+    .np-item.type-visitor      { border-left-color: #34d399; }
+    .np-item.type-general      { border-left-color: #d1d5db; }
+
+    .np-unread-col {
+        width: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        padding-left: 6px;
     }
-    .notif-page-icon.reservation-icon {
-        background: #fff8e0;
-        border-color: #f0c840;
+    .np-unread-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--hot-pink, #e8175d);
+        flex-shrink: 0;
     }
-    .notif-page-icon img {
-        width: 15px;
-        height: 15px;
+
+    .np-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: 1.5px solid transparent;
+    }
+    .np-icon img {
+        width: 16px;
+        height: 16px;
         object-fit: contain;
-        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
-    .notif-page-icon.reservation-icon img {
-        filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(600%) hue-rotate(5deg) brightness(95%) contrast(95%);
-    }
-    .notif-page-body {
+
+    .np-icon.type-emergency    { background: #fff1f2; border-color: #fecdd3; }
+    .np-icon.type-emergency img { filter: brightness(0) saturate(100%) invert(52%) sepia(60%) saturate(700%) hue-rotate(315deg) brightness(90%) contrast(95%); }
+    .np-icon.type-announcement { background: #fff7ed; border-color: #fed7aa; }
+    .np-icon.type-announcement img { filter: brightness(0) saturate(100%) invert(55%) sepia(80%) saturate(500%) hue-rotate(15deg) brightness(90%) contrast(95%); }
+    .np-icon.type-visitor      { background: #f0fdf4; border-color: #a7f3d0; }
+    .np-icon.type-visitor img { filter: brightness(0) saturate(100%) invert(62%) sepia(50%) saturate(400%) hue-rotate(120deg) brightness(85%) contrast(90%); }
+    .np-icon.type-general      { background: #f9fafb; border-color: #e5e7eb; }
+    .np-icon.type-general img  { filter: brightness(0) saturate(100%) invert(60%); }
+
+    .np-body {
         flex: 1;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.15rem;
+        gap: .18rem;
     }
-    .notif-page-msg {
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: var(--black, #1e1e24);
-        line-height: 1.35;
+    .np-body-top {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
     }
-    .notif-page-time {
-        font-size: 0.76rem;
-        color: var(--ink-muted, #7c7c8c);
-    }
-    .notif-page-type-badge {
-        display: inline-block;
-        font-size: 0.6rem;
+    .np-badge {
+        font-size: .6rem;
         font-weight: 800;
         letter-spacing: .05em;
         text-transform: uppercase;
-        padding: .1rem .35rem;
-        border-radius: 4px;
-        align-self: flex-start;
-    }
-    .notif-page-type-badge.reservation { background: #fff0c0; color: #9a6200; border: 1px solid #f0c840; }
-    .notif-page-type-badge.maintenance { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-    .notif-page-type-badge.emergency { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
-    .notif-page-type-badge.billing { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-    .notif-page-type-badge.document { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
-    .notif-page-type-badge.announcement { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-    .notif-page-type-badge.visitor { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .notif-page-type-badge.general { background: #f4f4f5; color: #71717a; border: 1px solid #e4e4e7; }
-    
-    .notif-page-action {
+        padding: .12rem .45rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        white-space: nowrap;
         flex-shrink: 0;
     }
-    .notif-action-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.4rem 0.8rem;
-        border-radius: 8px;
-        background: var(--bright-pink, #E8175D);
-        color: var(--white, #ffffff);
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
-        transition: opacity 0.2s;
+    .np-badge.type-emergency    { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+    .np-badge.type-announcement { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+    .np-badge.type-visitor      { background: #f0fdf4; color: #166534; border-color: #a7f3d0; }
+    .np-badge.type-general      { background: #f9fafb; color: #6b7280; border-color: #e5e7eb; }
+
+    .np-msg {
+        font-size: .875rem;
+        font-weight: 500;
+        color: var(--ink, #1a1a2e);
+        line-height: 1.4;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
-    .notif-action-btn:hover {
-        opacity: 0.9;
+    .np-item.unread .np-msg { font-weight: 600; }
+
+    .np-time {
+        font-size: .72rem;
+        color: var(--ink-muted, #7a5f6e);
+        margin-top: .05rem;
     }
 
-    .notif-empty {
-        padding: 3rem 2rem;
+    .np-action {
+        flex-shrink: 0;
+        padding-right: 1.5rem;
+    }
+    .np-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        padding: .38rem .8rem;
+        border-radius: 8px;
+        background: var(--pink-card, #fce8f1);
+        color: var(--hot-pink, #e8175d);
+        font-size: .75rem;
+        font-weight: 700;
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        cursor: pointer;
+        text-decoration: none;
+        transition: background .15s;
+        white-space: nowrap;
+    }
+    .np-action-btn:hover { background: var(--pink-light, #FFB0CE); }
+
+    .np-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .75rem;
+        padding: 4rem 2rem;
         text-align: center;
-        font-size: 0.95rem;
-        color: var(--ink-muted, #7c7c8c);
     }
-    .notif-pagination {
-        padding: 1rem 1.5rem;
-        border-top: 1.5px solid var(--petal, #fce4ec);
+    .np-empty-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: var(--pink-card, #fce8f1);
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    
-    /* Fix Laravel default paginator SVG size and duplicate layout issues */
-    .notif-pagination nav > div:first-child {
-        display: none !important;
+    .np-empty-icon img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
     }
-    .notif-pagination nav > div:last-child {
+    .np-empty h3 {
+        font-size: .95rem;
+        font-weight: 700;
+        color: var(--ink, #1a1a2e);
+        margin: 0;
+    }
+    .np-empty p {
+        font-size: .82rem;
+        color: var(--ink-muted, #7a5f6e);
+        margin: 0;
+    }
+
+    .np-pagination {
+        padding: .9rem 1.5rem;
+        border-top: 1.5px solid var(--pink-light, #FFB0CE);
+        background: var(--pink-bg, #fdf0f5);
+    }
+    .np-pagination nav > div:first-child { display: none !important; }
+    .np-pagination nav > div:last-child {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: .75rem;
     }
-    .notif-pagination svg {
-        width: 1.1rem !important;
-        height: 1.1rem !important;
+    .np-pagination svg {
+        width: 1rem !important;
+        height: 1rem !important;
         display: inline-block !important;
         vertical-align: middle;
     }
-    .notif-pagination nav div:last-child > div:first-child {
-        font-size: 0.83rem;
-        color: var(--ink-muted);
+    .np-pagination nav div:last-child > div:first-child {
+        font-size: .78rem;
+        color: var(--ink-muted, #7a5f6e);
     }
-    .notif-pagination nav div:last-child > div:last-child {
+    .np-pagination nav div:last-child > div:last-child {
         display: flex;
-        gap: 0.25rem;
+        gap: .25rem;
         align-items: center;
     }
-    .notif-pagination nav a, .notif-pagination nav span {
+    .np-pagination nav a,
+    .np-pagination nav span {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 32px;
-        height: 32px;
-        padding: 0 .5rem;
+        min-width: 30px;
+        height: 30px;
+        padding: 0 .45rem;
         border-radius: 8px;
-        border: 1.5px solid var(--baby-pink);
-        background: var(--white);
-        color: var(--ink-muted);
-        font-size: .8rem;
+        border: 1.5px solid var(--pink-light, #FFB0CE);
+        background: var(--white, #fff);
+        color: var(--ink-muted, #7a5f6e);
+        font-size: .78rem;
         font-weight: 700;
         text-decoration: none;
         box-sizing: border-box;
+        transition: background .13s, border-color .13s;
     }
-    .notif-pagination nav span[aria-current="page"] {
-        background: var(--bright-pink);
-        color: var(--white);
+    .np-pagination nav a:hover {
+        background: var(--pink-card, #fce8f1);
+        border-color: var(--hot-pink);
+        color: var(--hot-pink);
+    }
+    .np-pagination nav span[aria-current="page"] {
+        background: var(--hot-pink, #e8175d);
+        color: #fff;
         border-color: transparent;
     }
-    .notif-pagination nav span[aria-disabled="true"] {
-        opacity: 0.5;
+    .np-pagination nav span[aria-disabled="true"] {
+        opacity: .4;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+        .np-page { padding: 1.2rem 1rem; }
+        .np-item { padding: .7rem 1rem .7rem 0; gap: .65rem; }
+        .np-action { padding-right: 1rem; }
+        .np-action-btn span { display: none; }
     }
 </style>
 @endsection
 
 @section('content')
-<main class="notif-page">
-    <a href="{{ route('dashboard') }}" class="back-link">
-        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<main class="np-page">
+
+    <a href="{{ route('frontdesk.dashboard') }}" class="np-back">
+        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
         Back to Dashboard
     </a>
 
-    <div class="notif-header">
-        <h1>Notifications History</h1>
-        <div class="subtitle">Access and manage all your historical notifications</div>
+    <div class="np-toprow">
+        <div class="np-heading">
+            <h1>Notification History</h1>
+            <p>All your past notifications in one place</p>
+        </div>
+        @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
+            <button class="np-mark-all-btn" onclick="markAllRead()">
+                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Mark all read
+            </button>
+        @endif
     </div>
 
-    <div class="notif-card">
-        <div class="notif-list-header">
-            <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                <div class="notif-list-title">All Notifications</div>
-                
-                <select id="type-filter" onchange="filterType(this.value)" class="filter-select">
-                    <option value="">All Types</option>
-                    <option value="reservation" {{ request('type') === 'reservation' ? 'selected' : '' }}>Reservations</option>
-                    <option value="maintenance" {{ request('type') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                    <option value="emergency" {{ request('type') === 'emergency' ? 'selected' : '' }}>Emergency</option>
-                    <option value="billing" {{ request('type') === 'billing' ? 'selected' : '' }}>Billing</option>
-                    <option value="document" {{ request('type') === 'document' ? 'selected' : '' }}>Documents</option>
-                    <option value="announcement" {{ request('type') === 'announcement' ? 'selected' : '' }}>Announcements</option>
-                    <option value="visitor" {{ request('type') === 'visitor' ? 'selected' : '' }}>Visitors</option>
-                    <option value="tenant" {{ request('type') === 'tenant' ? 'selected' : '' }}>Tenants</option>
-                </select>
-            </div>
-            
-            @if(isset($unreadNotifCount) && $unreadNotifCount > 0)
-                <button class="notif-mark-all" onclick="markAllRead()">Mark all read</button>
-            @endif
-        </div>
+    <div class="np-filters">
+        @php
+            $currentType = request('type', '');
+            $pills = [
+                ''             => ['label' => 'All',           'color' => '#e8175d'],
+                'emergency'    => ['label' => 'Emergency',     'color' => '#f87171'],
+                'announcement' => ['label' => 'Announcements', 'color' => '#fb923c'],
+                'visitor'      => ['label' => 'Visitors',      'color' => '#34d399'],
+            ];
+        @endphp
+        @foreach($pills as $value => $pill)
+            @php
+                $url = request()->fullUrlWithQuery(['type' => $value ?: null, 'page' => null]);
+                $isActive = $currentType === $value;
+            @endphp
+            <a href="{{ $url }}" class="np-filter-pill {{ $isActive ? 'active' : '' }}">
+                @if(!$isActive)
+                    <span class="np-filter-dot" style="background: {{ $pill['color'] }};"></span>
+                @endif
+                {{ $pill['label'] }}
+            </a>
+        @endforeach
+    </div>
 
+    <div class="np-shell">
         @if($notifications->isEmpty())
-            <div class="notif-empty">No notifications found.</div>
+            <div class="np-empty">
+                <div class="np-empty-icon">
+                    <img src="{{ asset('icons/bell.png') }}" alt="">
+                </div>
+                <h3>No notifications found</h3>
+                <p>Try a different filter or check back later.</p>
+            </div>
         @else
             @php
                 $grouped = $notifications->groupBy(function($notif) {
                     $date = \Carbon\Carbon::parse($notif->created_at);
-                    if ($date->isToday()) {
-                        return 'Today';
-                    } elseif ($date->isYesterday()) {
-                        return 'Yesterday';
-                    } else {
-                        return $date->format('F j, Y');
-                    }
+                    if ($date->isToday())     return 'Today';
+                    if ($date->isYesterday()) return 'Yesterday';
+                    return $date->format('F j, Y');
                 });
             @endphp
 
             @foreach($grouped as $day => $dayNotifs)
-                <div class="notif-date-group-header">{{ $day }}</div>
-                <div class="notif-list">
-                    @foreach($dayNotifs as $notif)
-                        @php
-                            $isReservation = $notif->type === 'tenant_reserved';
+                <div class="np-day-label">
+                    <span>{{ $day }}</span>
+                    <div class="np-day-line"></div>
+                </div>
 
-                            $notifIcon = match(true) {
-                                $notif->type === 'tenant_reserved'            => 'pending',
-                                str_starts_with($notif->type, 'maintenance')  => 'maintenance',
-                                str_starts_with($notif->type, 'emergency')    => 'warn',
-                                str_starts_with($notif->type, 'billing')      => 'billing',
-                                str_starts_with($notif->type, 'document')     => 'nav-docu',
-                                str_starts_with($notif->type, 'announcement') => 'nav-announ',
-                                str_starts_with($notif->type, 'visitor')      => 'nav-visit',
-                                str_starts_with($notif->type, 'tenant')       => 'nav-tenants',
-                                default                                        => 'bell',
-                            };
+                @foreach($dayNotifs as $notif)
+                    @php
+                        $notifIcon = match($notif->type) {
+                            'visitor_registration' => 'nav-visit',
+                            'visitor_checkin'      => 'nav-visit',
+                            'visitor_checkout'     => 'nav-visit',
+                            'visitor_cancelled'    => 'nav-visit',
+                            'emergency_new'        => 'warn',
+                            'announcement_new'     => 'nav-announ',
+                            default                => 'bell',
+                        };
+                        $notifTypeLabel = match($notif->type) {
+                            'visitor_registration' => 'visitor',
+                            'visitor_checkin'      => 'visitor',
+                            'visitor_checkout'     => 'visitor',
+                            'visitor_cancelled'    => 'visitor',
+                            'emergency_new'        => 'emergency',
+                            'announcement_new'     => 'announcement',
+                            default                => 'general',
+                        };
+                    @endphp
 
-                            $notifTypeLabel = match(true) {
-                                $notif->type === 'tenant_reserved'            => 'reservation',
-                                str_starts_with($notif->type, 'maintenance')  => 'maintenance',
-                                str_starts_with($notif->type, 'emergency')    => 'emergency',
-                                str_starts_with($notif->type, 'billing')      => 'billing',
-                                str_starts_with($notif->type, 'document')     => 'document',
-                                str_starts_with($notif->type, 'announcement') => 'announcement',
-                                str_starts_with($notif->type, 'visitor')      => 'visitor',
-                                str_starts_with($notif->type, 'tenant')       => 'tenant',
-                                default                                        => 'general',
-                            };
-                        @endphp
-
-                        <div class="notif-page-item {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
-                             onclick="openNotifDetail({
-                                 id:      {{ $notif->notif_id }},
-                                 type:    '{{ $notifTypeLabel }}',
-                                 icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
-                                 message: {{ json_encode($notif->message) }},
-                                 time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
-                                 ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
-                                 url:     '{{ $notif->url ?? '' }}',
-                                 isRead:  {{ $notif->is_read ? 'true' : 'false' }}
-                             }); this.classList.remove('unread'); var dot = this.querySelector('.notif-page-dot'); if(dot) dot.remove();">
-                            <div class="notif-dot-col">
-                                @if(!$notif->is_read)
-                                    <div class="notif-page-dot"></div>
-                                @endif
-                            </div>
-                            <div class="notif-page-icon {{ $isReservation ? 'reservation-icon' : '' }}">
-                                <img src="{{ asset('icons/' . $notifIcon . '.png') }}"
-                                     alt=""
-                                     onerror="this.src='{{ asset('icons/bell.png') }}'">
-                            </div>
-                            <div class="notif-page-body">
-                                <span class="notif-page-type-badge {{ $notifTypeLabel }}">{{ $notifTypeLabel }}</span>
-                                <div class="notif-page-msg">{{ $notif->message }}</div>
-                                <div class="notif-page-time">{{ \Carbon\Carbon::parse($notif->created_at)->format('g:i A') }}</div>
-                            </div>
-                            @if($notif->url)
-                                <div class="notif-page-action">
-                                    <span class="notif-action-btn">View Details</span>
-                                </div>
+                    <div class="np-item type-{{ $notifTypeLabel }} {{ $notif->is_read ? '' : 'unread' }}"
+                         onclick="handleNotifClick(event, this); this.classList.remove('unread'); var dot = this.querySelector('.np-unread-dot'); if(dot) dot.remove();"
+                         data-notif='{!! json_encode([
+                             "id"      => $notif->notif_id,
+                             "type"    => $notifTypeLabel,
+                             "icon"    => asset("icons/{$notifIcon}.png"),
+                             "message" => $notif->message,
+                             "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                             "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                             "url"     => $notif->url ?? "",
+                             "isRead"  => (bool) $notif->is_read,
+                         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
+                        <div class="np-unread-col">
+                            @if(!$notif->is_read)
+                                <div class="np-unread-dot"></div>
                             @endif
                         </div>
-                    @endforeach
-                </div>
+                        <div class="np-icon type-{{ $notifTypeLabel }}">
+                            <img src="{{ asset('icons/' . $notifIcon . '.png') }}" alt="" onerror="this.src='{{ asset('icons/bell.png') }}'">
+                        </div>
+                        <div class="np-body">
+                            <div class="np-body-top">
+                                <span class="np-badge type-{{ $notifTypeLabel }}">{{ $notifTypeLabel }}</span>
+                            </div>
+                            <div class="np-msg">{{ $notif->message }}</div>
+                            <div class="np-time">{{ \Carbon\Carbon::parse($notif->created_at)->format('g:i A') }}</div>
+                        </div>
+                        @if($notif->url)
+                            <div class="np-action">
+                                <span class="np-action-btn">
+                                    <span>View</span>
+                                    <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </span>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
             @endforeach
         @endif
 
         @if($notifications->hasPages())
-            <div class="notif-pagination">
+            <div class="np-pagination">
                 {{ $notifications->appends(request()->query())->links() }}
             </div>
         @endif
     </div>
+
 </main>
 @endsection
 
@@ -424,11 +538,8 @@
 <script>
     function filterType(value) {
         var url = new URL(window.location.href);
-        if (value) {
-            url.searchParams.set('type', value);
-        } else {
-            url.searchParams.delete('type');
-        }
+        if (value) { url.searchParams.set('type', value); }
+        else        { url.searchParams.delete('type'); }
         url.searchParams.delete('page');
         window.location.href = url.toString();
     }
