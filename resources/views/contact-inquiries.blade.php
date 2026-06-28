@@ -5,6 +5,7 @@
 
 @section('styles')
 <style>
+/* ── Page Shell ────────────────────────────────────────────────────── */
 .ci-page {
     padding: 1.8rem 2rem;
     flex: 1;
@@ -15,6 +16,7 @@
     box-sizing: border-box;
 }
 
+/* ── Page Header ───────────────────────────────────────────────────── */
 .ci-page-header {
     display: flex;
     align-items: flex-start;
@@ -37,6 +39,7 @@
     margin-top: .2rem;
 }
 
+/* ── Stat Cards  (mirrors .ann-stat-card) ──────────────────────────── */
 .ci-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -163,6 +166,7 @@
     transform: translateY(-1px);
 }
 
+/* ── Card List ─────────────────────────────────────────────────────── */
 .ci-list {
     display: flex;
     flex-direction: column;
@@ -318,6 +322,7 @@
     font-size: .9rem;
 }
 
+/* ── Pagination ────────────────────────────────────────────────────── */
 .ci-pagination { display: flex; justify-content: flex-end; }
 .ci-pagination nav { display: flex; gap: .35rem; align-items: center; flex-wrap: wrap; }
 .ci-pagination span,
@@ -347,6 +352,7 @@
     border-color: transparent;
 }
 
+/* ── View Modal ────────────────────────────────────────────────────── */
 #ci-view-modal {
     position: fixed; inset: 0; z-index: 600;
     background: rgba(232,23,93,.15);
@@ -439,6 +445,7 @@
 .ci-modal-panel.active { display: flex; }
 @keyframes ciPanelIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: none; } }
 
+/* detail rows */
 .ci-view-row {
     display: flex; justify-content: space-between; align-items: flex-start;
     padding: .62rem 0; border-bottom: 1px solid var(--baby-pink);
@@ -458,6 +465,7 @@
     border: 1px solid var(--border-pink-mid, #f4c0d0);
 }
 
+/* update status panel */
 .ci-update-panel { display: flex; flex-direction: column; gap: 1rem; }
 .ci-update-label { font-size: .72rem; font-weight: 800; color: var(--ink-muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .35rem; }
 .ci-status-pills { display: flex; gap: .55rem; flex-wrap: wrap; }
@@ -490,6 +498,7 @@
 }
 .ci-modal-footer-left { font-size: .75rem; color: var(--ink-muted); font-weight: 600; }
 
+/* ── Fade-up animation (same as ann-page) ──────────────────────────── */
 .fade-up { animation: fadeUp .42s ease both; }
 .d1 { animation-delay: .05s; }
 .d2 { animation-delay: .12s; }
@@ -497,6 +506,7 @@
 .d4 { animation-delay: .28s; }
 @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: none; } }
 
+/* ── Action loading overlay ────────────────────────────────────────── */
 .ci-loading-overlay {
     position: fixed; inset: 0; z-index: 1200;
     display: none; align-items: center; justify-content: center;
@@ -520,6 +530,7 @@
 .ci-loading-logo svg { width: 28px; height: 28px; color: #fff; }
 @keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
 
+/* ── Responsive ────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .ci-stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -545,6 +556,7 @@
 @section('content')
 <div class="ci-page">
 
+    {{-- ── Page Header ── --}}
     <div class="ci-page-header fade-up d1">
         <div>
             <h1>Contact Inquiries</h1>
@@ -552,6 +564,7 @@
         </div>
     </div>
 
+    {{-- ── Stat Cards ── --}}
     <div class="ci-stats-row fade-up d2">
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
@@ -598,6 +611,7 @@
         </div>
     </div>
 
+    {{-- ── Filter Bar ── --}}
     <form class="ci-filter fade-up d3" method="GET" action="{{ route('contact-inquiries.index') }}">
         <div class="ci-field">
             <label for="search">Search</label>
@@ -606,21 +620,21 @@
         <div class="ci-field">
             <label for="status">Status</label>
             <select id="status" name="status">
-                <option value="all"      @selected($status === 'all')>All</option>
-                <option value="new"      @selected($status === 'new')>New</option>
-                <option value="read"     @selected($status === 'read')>Read</option>
-                <option value="resolved" @selected($status === 'resolved')>Resolved</option>
+                <option value="all"      {{ $status === 'all' ? 'selected' : '' }}>All</option>
+                <option value="new"      {{ $status === 'new' ? 'selected' : '' }}>New</option>
+                <option value="read"     {{ $status === 'read' ? 'selected' : '' }}>Read</option>
+                <option value="resolved" {{ $status === 'resolved' ? 'selected' : '' }}>Resolved</option>
             </select>
         </div>
         <div class="ci-field">
             <label for="type">Inquiry Type</label>
             <select id="type" name="type">
-                <option value="all"         @selected($type === 'all')>All Types</option>
-                <option value="general"     @selected($type === 'general')>General</option>
-                <option value="reservation" @selected($type === 'reservation')>Reservation</option>
-                <option value="concern"     @selected($type === 'concern')>Concern</option>
-                <option value="feedback"    @selected($type === 'feedback')>Feedback</option>
-                <option value="maintenance" @selected($type === 'maintenance')>Maintenance</option>
+                <option value="all"         {{ $type === 'all' ? 'selected' : '' }}>All Types</option>
+                <option value="general"     {{ $type === 'general' ? 'selected' : '' }}>General</option>
+                <option value="reservation" {{ $type === 'reservation' ? 'selected' : '' }}>Reservation</option>
+                <option value="concern"     {{ $type === 'concern' ? 'selected' : '' }}>Concern</option>
+                <option value="feedback"    {{ $type === 'feedback' ? 'selected' : '' }}>Feedback</option>
+                <option value="maintenance" {{ $type === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
             </select>
         </div>
         <div class="ci-filter-actions">
@@ -632,11 +646,12 @@
         </div>
     </form>
 
+    {{-- ── Inquiry Cards ── --}}
     <div class="ci-list fade-up d4">
         @forelse($inquiries as $inquiry)
             <article class="ci-card status-{{ $inquiry->status }}"
-                     onclick="openCiModal({{ $inquiry->id }})"
-                     data-id="{{ $inquiry->id }}">
+                     onclick="openCiModal({{ $inquiry->getKey() }})"
+                     data-id="{{ $inquiry->getKey() }}">
 
                 <div class="ci-card-head">
                     <div class="ci-sender">
@@ -671,7 +686,7 @@
                         @endif
                     </div>
                     <div class="ci-foot-actions" onclick="event.stopPropagation()">
-                        <button class="ci-view-btn" onclick="openCiModal({{ $inquiry->id }})">
+                        <button class="ci-view-btn" onclick="openCiModal({{ $inquiry->getKey() }})">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             View
                         </button>
@@ -681,9 +696,9 @@
                             @csrf
                             @method('PATCH')
                             <select name="status" aria-label="Update status">
-                                <option value="new"      @selected($inquiry->status === 'new')>New</option>
-                                <option value="read"     @selected($inquiry->status === 'read')>Read</option>
-                                <option value="resolved" @selected($inquiry->status === 'resolved')>Resolved</option>
+                                <option value="new"      {{ $inquiry->status === 'new' ? 'selected' : '' }}>New</option>
+                                <option value="read"     {{ $inquiry->status === 'read' ? 'selected' : '' }}>Read</option>
+                                <option value="resolved" {{ $inquiry->status === 'resolved' ? 'selected' : '' }}>Resolved</option>
                             </select>
                             <button class="ci-btn" type="submit" style="min-height:36px;padding:.45rem .9rem;font-size:.8rem;">
                                 Update
@@ -697,6 +712,7 @@
         @endforelse
     </div>
 
+    {{-- ── Pagination ── --}}
     @if($inquiries->hasPages())
         <div class="ci-pagination">
             {{ $inquiries->links() }}
@@ -708,9 +724,11 @@
 
 @section('modals')
 
+{{-- ── View / Update Modal ── --}}
 <div id="ci-view-modal" onclick="if(event.target===this) closeCiModal()">
     <div class="ci-modal-box">
 
+        {{-- Header --}}
         <div class="ci-modal-header">
             <div class="ci-modal-header-top">
                 <div class="ci-modal-title-group">
@@ -740,8 +758,10 @@
             </div>
         </div>
 
+        {{-- Body --}}
         <div class="ci-modal-body">
 
+            {{-- Tab 0: Details --}}
             <div class="ci-modal-panel active" id="ci-panel-0">
                 <div class="ci-view-row">
                     <span class="ci-view-label">Name</span>
@@ -773,10 +793,12 @@
                 </div>
             </div>
 
+            {{-- Tab 1: Full Message --}}
             <div class="ci-modal-panel" id="ci-panel-1">
                 <div class="ci-view-message" id="ci-v-message"></div>
             </div>
 
+            {{-- Tab 2: Update Status --}}
             <div class="ci-modal-panel" id="ci-panel-2">
                 <form id="ci-update-form" method="POST" onsubmit="showCiLoading()">
                     @csrf
@@ -805,6 +827,7 @@
 
         </div>
 
+        {{-- Footer --}}
         <div class="ci-modal-footer">
             <div class="ci-modal-footer-left" id="ci-modal-footer-label"></div>
             <div style="display:flex;gap:.5rem;">
@@ -820,6 +843,7 @@
     </div>
 </div>
 
+{{-- ── Loading overlay ── --}}
 <div class="ci-loading-overlay" id="ci-loading">
     <div class="ci-loading-box">
         <div class="ci-loading-logo">
@@ -832,39 +856,47 @@
 @endsection
 
 @section('scripts')
+@php
+$ciDataMap = [];
+foreach ($inquiries as $i) {
+    $pk = $i->getKey();
+    $ciDataMap[$pk] = [
+        'id'           => $pk,
+        'name'         => $i->name,
+        'email'        => $i->email,
+        'phone'        => $i->phone ?? null,
+        'inquiry_type' => $i->inquiry_type,
+        'status'       => $i->status,
+        'message'      => $i->message,
+        'created_at'   => $i->created_at->format('M j, Y g:i A'),
+        'handler'      => $i->handler
+                            ? ($i->handler->first_name . ' ' . $i->handler->last_name)
+                            : null,
+        'handled_at'   => $i->handled_at ? $i->handled_at->format('M j, Y g:i A') : null,
+        'update_url'   => route('contact-inquiries.update-status', $i),
+    ];
+}
+@endphp
 <script>
-const ciData = @json(
-    $inquiries->mapWithKeys(fn($i) => [
-        $i->id => [
-            'id'           => $i->id,
-            'name'         => $i->name,
-            'email'        => $i->email,
-            'phone'        => $i->phone,
-            'inquiry_type' => $i->inquiry_type,
-            'status'       => $i->status,
-            'message'      => $i->message,
-            'created_at'   => $i->created_at->format('M j, Y g:i A'),
-            'handler'      => $i->handler
-                                ? $i->handler->first_name . ' ' . $i->handler->last_name
-                                : null,
-            'handled_at'   => $i->handled_at?->format('M j, Y g:i A'),
-            'update_url'   => route('contact-inquiries.update-status', $i),
-        ]
-    ])
-);
+/* ── Inquiry data from server ── */
+const ciData = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
 
+/* ── Loading overlay ── */
 function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
 }
 
+/* ── Modal open / close ── */
 function openCiModal(id) {
     const d = ciData[id];
     if (!d) return;
 
+    /* header */
     document.getElementById('ci-modal-name').textContent = d.name;
     document.getElementById('ci-modal-sub').textContent  =
         ucFirst(d.inquiry_type.replace('_',' ')) + ' · ' + ucFirst(d.status);
 
+    /* details tab */
     document.getElementById('ci-v-name').textContent = d.name;
 
     const emailEl = document.getElementById('ci-v-email');
@@ -895,15 +927,19 @@ function openCiModal(id) {
         handlerRow.style.display = '';
     }
 
+    /* message tab */
     document.getElementById('ci-v-message').textContent = d.message;
 
+    /* footer label */
     document.getElementById('ci-modal-footer-label').textContent =
         'ID #' + d.id + ' · ' + d.created_at;
 
+    /* update status form */
     document.getElementById('ci-update-form').action = d.update_url;
     selectCiStatus(d.status);
     document.querySelector('#ci-update-form textarea[name="note"]').value = '';
 
+    /* show first tab */
     switchCiTab(0);
 
     document.getElementById('ci-view-modal').classList.add('open');
@@ -913,6 +949,7 @@ function closeCiModal() {
     document.getElementById('ci-view-modal').classList.remove('open');
 }
 
+/* ── Tab switcher ── */
 let _ciTab = 0;
 function switchCiTab(idx) {
     _ciTab = idx;
@@ -922,6 +959,7 @@ function switchCiTab(idx) {
     });
 }
 
+/* ── Status pill selector ── */
 function selectCiStatus(val) {
     document.querySelectorAll('.ci-status-pill').forEach(p => {
         p.className = 'ci-status-pill';
@@ -930,6 +968,7 @@ function selectCiStatus(val) {
     document.getElementById('ci-status-input').value = val;
 }
 
+/* ── Helpers ── */
 function ucFirst(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
@@ -944,6 +983,7 @@ function statusBadge(status) {
     return `<span style="display:inline-flex;align-items:center;padding:.26rem .65rem;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:${bg};color:${color};border:1px solid ${border};">${label}</span>`;
 }
 
+/* ── Toast (reuse if global showToast exists, else noop) ── */
 @if(session('success'))
     if (typeof showToast === 'function') showToast("{{ session('success') }}", 'success');
 @endif
