@@ -51,6 +51,14 @@
 
     .features-hero { padding:70px 6% 60px; background:var(--cream); }
     .features-hero-inner { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    .features-hero-inner > div:first-child {
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: heroFadeInLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroFadeInLeft {
+      to { opacity: 1; transform: translateX(0); }
+    }
     .section-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:12px; }
     .hero-headline { font-family:var(--font-head); font-size:clamp(2.35rem,4.2vw,4rem); line-height:1.08; color:var(--brown); letter-spacing:-.03em; }
     .hero-headline em { color:var(--pink); font-style:normal; }
@@ -58,7 +66,15 @@
     .hero-badges { display:flex; flex-wrap:wrap; gap:10px; }
     .hero-badge { display:inline-flex; align-items:center; gap:7px; background:white; border:1.5px solid var(--border); border-radius:100px; padding:8px 16px; font-size:.82rem; font-weight:700; color:var(--brown); box-shadow:var(--shadow-card); }
     .hero-badge svg { width:15px; height:15px; stroke:var(--pink); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
-    .hero-phones { position:relative; display:flex; justify-content:center; align-items:flex-end; gap:-20px; height:420px; }
+    .hero-phones {
+      position:relative; display:flex; justify-content:center; align-items:flex-end; gap:-20px; height:420px;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: heroFadeInRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroFadeInRight {
+      to { opacity: 1; transform: translateX(0); }
+    }
     .hero-phone { width:180px; background:white; border-radius:28px; box-shadow:0 24px 56px rgba(232,23,93,.18), 0 8px 24px rgba(36,16,24,.10); overflow:hidden; position:absolute; border:2px solid var(--border); }
     .hero-phone-1 { left:50%; transform:translateX(-120%) rotate(-8deg); bottom:0; height:340px; animation: floatPhone1 6s ease-in-out infinite; }
     .hero-phone-2 { left:50%; transform:translateX(-50%); bottom:20px; height:380px; z-index:2; border-color:rgba(232,23,93,.35); box-shadow:0 28px 64px rgba(232,23,93,.22), 0 8px 24px rgba(36,16,24,.10); animation: floatPhone2 6s ease-in-out infinite 0.7s; }
