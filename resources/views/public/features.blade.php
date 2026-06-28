@@ -54,7 +54,7 @@
     .features-hero-inner > div:first-child {
       opacity: 0;
       transform: translateX(-30px);
-      animation: heroFadeInLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: heroFadeInLeft 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     @keyframes heroFadeInLeft {
       to { opacity: 1; transform: translateX(0); }
@@ -70,7 +70,7 @@
       position:relative; display:flex; justify-content:center; align-items:flex-end; gap:-20px; height:420px;
       opacity: 0;
       transform: translateX(30px);
-      animation: heroFadeInRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: heroFadeInRight 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     @keyframes heroFadeInRight {
       to { opacity: 1; transform: translateX(0); }

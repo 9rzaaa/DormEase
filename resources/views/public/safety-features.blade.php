@@ -102,7 +102,7 @@
       background: radial-gradient(circle at 30% 20%, rgba(232, 23, 93, 0.05) 0%, transparent 60%);
     }
     .slide-media img {
-      width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3;
+      max-width: 100%; height: auto; max-height: 420px;
       display: block; border-radius: var(--r-md);
       box-shadow: 0 20px 40px rgba(36,16,24,.14), 0 4px 12px rgba(232,23,93,.06);
     }
@@ -181,7 +181,7 @@
       .nav-toggle{display:inline-flex;flex-shrink:0}
       .slide-stage{grid-template-columns:1fr; min-height:auto;}
       .slide-media { padding: 32px 32px 16px; }
-      .slide-media img { max-height: 380px; aspect-ratio: 16/9; }
+      .slide-media img { max-height: 380px; }
       .slide-info { padding: 24px 32px 32px; }
       .footer-inner{grid-template-columns:1fr 1fr}
     }
