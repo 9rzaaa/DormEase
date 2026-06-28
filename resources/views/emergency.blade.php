@@ -1916,6 +1916,7 @@
             <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
+    </div>
 </div>
 
 <div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event, 'edit-modal')">
