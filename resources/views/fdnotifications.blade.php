@@ -310,11 +310,7 @@
                 
                 <select id="type-filter" onchange="filterType(this.value)" class="filter-select">
                     <option value="">All Types</option>
-                    <option value="reservation" {{ request('type') === 'reservation' ? 'selected' : '' }}>Reservations</option>
-                    <option value="maintenance" {{ request('type') === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
                     <option value="emergency" {{ request('type') === 'emergency' ? 'selected' : '' }}>Emergency</option>
-                    <option value="billing" {{ request('type') === 'billing' ? 'selected' : '' }}>Billing</option>
-                    <option value="document" {{ request('type') === 'document' ? 'selected' : '' }}>Documents</option>
                     <option value="announcement" {{ request('type') === 'announcement' ? 'selected' : '' }}>Announcements</option>
                     <option value="visitor" {{ request('type') === 'visitor' ? 'selected' : '' }}>Visitors</option>
                     <option value="tenant" {{ request('type') === 'tenant' ? 'selected' : '' }}>Tenants</option>
