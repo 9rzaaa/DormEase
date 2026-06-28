@@ -355,7 +355,8 @@
     .footer-socials { display: flex; gap: 12px; }
     .footer-social-icon { width: 46px; height: 46px; border-radius: 50%; background: #111; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border: 1.5px solid var(--pink-light); transition: transform .2s, background .2s; text-decoration: none; position: relative; }
     .footer-social-icon:hover { transform: translateY(-2px); background: var(--pink); }
-    .footer-social-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .footer-social-icon img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); transition: transform .2s ease; }
+    .footer-social-icon:hover img { transform: translate(-50%, -50%) scale(1.1); }
 
     #scrollTopBtn { position: fixed; bottom: 32px; right: 32px; z-index: 999; width: 50px; height: 50px; border: none; border-radius: 50%; background: var(--gradient); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 24px rgba(232,23,93,.36); opacity: 0; transform: translateY(16px) scale(.85); transition: opacity .3s, transform .3s; pointer-events: none; }
     #scrollTopBtn.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
