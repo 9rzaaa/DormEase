@@ -366,8 +366,8 @@
   <div class="footer-inner">
     <div>
       <a href="{{ route('login') }}" class="footer-logo">
-        <img src="{{ asset('images/logo.png') }}" alt="DormEase" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <span class="footer-logo-fb" style="display:none;">Dorm<span>Ease</span></span>
+        <img src="{{ asset('images/logo.png') }}" alt="DormEase" onerror="this.style.display='none'">
+        <span class="footer-logo-fb">Dorm<span>Ease</span></span>
       </a>
       <p class="footer-brand">A web and mobile dormitory management system for Sanctissimo Rosario Ladies Dormitory, Sampaloc, Manila.</p>
     </div>
