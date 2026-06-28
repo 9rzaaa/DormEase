@@ -6,6 +6,7 @@ use App\Models\Staff;
 use App\Models\ArchivedStaff;
 use App\Models\StaffAttendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -329,6 +330,10 @@ class StaffController extends Controller
             'inactivated_at' => $isBeingDeactivated ? now() : ($isBeingReactivated ? null : $staff->inactivated_at),
         ]);
 
+        if ($isBeingDeactivated) {
+            $this->terminateActiveSessions($staff);
+        }
+
         $message = $isBeingReactivated
             ? $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.'
             : 'Staff details updated successfully.';
@@ -377,6 +382,23 @@ class StaffController extends Controller
 
         return redirect()->route('staff.index')
             ->with('success', $staff->first_name . ' ' . $staff->last_name . '\'s account has been reactivated.');
+    }
+
+    private function terminateActiveSessions(Staff $staff): void
+    {
+        $staff->updateQuietly(['duty_status' => 'off_duty']);
+
+        StaffAttendance::where('staff_id', $staff->staff_id)
+            ->whereNull('logout_at')
+            ->latest('login_at')
+            ->first()
+            ?->update(['logout_at' => now()]);
+
+        if (config('session.driver') === 'database') {
+            DB::table(config('session.table', 'sessions'))
+                ->where('user_id', $staff->staff_id)
+                ->delete();
+        }
     }
 
     public function clearAttendance()
