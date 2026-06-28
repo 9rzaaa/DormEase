@@ -1414,82 +1414,93 @@
 </div>
 
 <div class="modal-overlay" id="add-modal">
-    <div class="modal">
-        <div class="modal-header">
-            <div class="modal-title">
-                <img src="{{ asset('icons/staff-2.png') }}" class="icon-sm" alt="Add Staff">
-                Add New Staff
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
+                    <img src="{{ asset('icons/staff-2.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-.02em;">Add New Staff</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;">Sanctissimo Rosario Ladies Dormitory</div>
+                </div>
             </div>
-            <button class="modal-close" onclick="closeModal('add-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('add-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
 
-        <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);margin-bottom:1.1rem;line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
-            <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
-            <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
-        </div>
-
-        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form">
+        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form" style="display:flex;flex-direction:column;max-height:calc(90vh - 88px);overflow:hidden;">
             @csrf
-            <div class="modal-grid">
-                <div class="form-progress-wrap full">
-                    <div class="form-progress-label">
-                        <span id="add-staff-progress-text">Fill in required fields</span>
-                        <span id="add-staff-progress-count" class="partial"></span>
-                    </div>
-                    <div class="form-progress-bar">
-                        <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
-                    </div>
-                </div>
 
-                <div class="modal-field full" style="margin-bottom:-.2rem;">
-                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Personal Information</div>
+            <div style="padding:.75rem 1.5rem .4rem;flex-shrink:0;border-bottom:1px solid var(--baby-pink);">
+                <div class="form-progress-label">
+                    <span id="add-staff-progress-text">Fill in required fields</span>
+                    <span id="add-staff-progress-count" class="partial"></span>
                 </div>
-
-                <div class="modal-field">
-                    <label>First Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
-                    <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Last Name <span class="field-req-star">*</span></label>
-                    <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
-                    <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
-                </div>
-                <div class="modal-field full">
-                    <label>Contact No.</label>
-                    <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
-                    <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
-                </div>
-
-                <div class="modal-field full" style="margin-bottom:-.2rem;margin-top:.3rem;padding-top:.8rem;border-top:1px solid var(--petal);">
-                    <div style="font-size:.72rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.06em;">Account Details</div>
-                </div>
-
-                <div class="modal-field full">
-                    <label>Email <span class="field-req-star">*</span></label>
-                    <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
-                    <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Role <span class="field-req-star">*</span></label>
-                    <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':' var(--red)'">
-                        <option value="">Select role</option>
-                        <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
-                        <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
-                        <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
-                    </select>
-                    <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
-                </div>
-                <div class="modal-field">
-                    <label>Shift Schedule</label>
-                    <select name="shift_schedule" id="add-shift">
-                        <option value="">Select shift</option>
-                        <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
-                        <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
-                    </select>
+                <div class="form-progress-bar" style="margin-top:.25rem;">
+                    <div class="form-progress-fill" id="add-staff-progress-fill" style="width:0%;background:var(--gradient-pink);"></div>
                 </div>
             </div>
-            <div class="modal-actions">
+
+            <div style="overflow-y:auto;flex:1;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.1rem;">
+
+                <div style="background:var(--petal);border:1.5px solid var(--baby-pink);border-radius:10px;padding:.65rem .9rem;font-size:.8rem;color:var(--hot-pink);line-height:1.55;display:flex;gap:.5rem;align-items:flex-start;">
+                    <span style="font-size:1rem;flex-shrink:0;margin-top:.05rem;">&#x1F511;</span>
+                    <span>A temporary password and Staff ID will be generated automatically once this form is submitted. You'll need to share both with the new staff member.</span>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Personal Information</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field">
+                            <label>First Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="first_name" id="add-first-name" placeholder="e.g. Juan" required maxlength="100" value="{{ old('first_name') }}" oninput="validateName(this)" autofocus>
+                            <div id="add-first-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">First name is required.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Last Name <span class="field-req-star">*</span></label>
+                            <input type="text" name="last_name" id="add-last-name" placeholder="e.g. Dela Cruz" required maxlength="100" value="{{ old('last_name') }}" oninput="validateName(this)">
+                            <div id="add-last-name-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Last name is required.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Contact No.</label>
+                            <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
+                            <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Account Details</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field full">
+                            <label>Email <span class="field-req-star">*</span></label>
+                            <input type="email" name="email" id="add-email" placeholder="e.g. juan@dormease.com" required value="{{ old('email') }}" oninput="validateEmail(this)">
+                            <div id="add-email-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid email address.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Role <span class="field-req-star">*</span></label>
+                            <select name="role" id="add-role" required onchange="this.style.borderColor=this.value?'':'var(--red)'">
+                                <option value="">Select role</option>
+                                <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>Admin</option>
+                                <option value="secretary" {{ old('role') === 'secretary' ? 'selected' : '' }}>Secretary</option>
+                                <option value="frontdesk" {{ old('role') === 'frontdesk' ? 'selected' : '' }}>Front Desk</option>
+                            </select>
+                            <div id="add-role-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Please select a role.</div>
+                        </div>
+                        <div class="modal-field">
+                            <label>Shift Schedule</label>
+                            <select name="shift_schedule" id="add-shift">
+                                <option value="">Select shift</option>
+                                <option value="Day"   {{ old('shift_schedule') === 'Day'   ? 'selected' : '' }}>Day</option>
+                                <option value="Night" {{ old('shift_schedule') === 'Night' ? 'selected' : '' }}>Night</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
                 <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
             </div>
