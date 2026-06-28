@@ -177,6 +177,13 @@
 
     .empty-state { text-align: center; padding: 2.5rem; color: var(--ink-muted); font-size: .88rem; }
 
+    .modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .65rem;
+    }
+
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .modal-field.full { grid-column: 1 / -1; }
     .modal-field label { display: block; font-size: .8rem; font-weight: 700; color: var(--ink-muted); margin-bottom: .35rem; }
@@ -865,7 +872,7 @@
 
     .add-modal-footer {
         padding: 1rem 1.8rem 1.4rem;
-        display: flex; align-items: center; justify-content: flex-end; gap: .65rem;
+        display: flex; align-items: center; justify-content: space-between; gap: .65rem;
         border-top: 1.5px solid var(--pink-light); background: #fefcfe;
     }
 
@@ -1429,10 +1436,10 @@
             </div>
 
             <div class="add-modal-footer">
-                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
                 <button type="submit" class="amf-btn-submit" id="av_submit_btn" onclick="return avSubmit(event)">
                     Log Visitor
                 </button>
+                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
             </div>
 
         </form>
@@ -1458,8 +1465,8 @@
                 <div id="timein-input-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.2rem;display:none;">Time in cannot be set in the future or more than 12 hours in the past.</div>
             </div>
             <div class="modal-actions">
+               <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
                 <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timein-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
             </div>
         </form>
     </div>
@@ -1482,8 +1489,8 @@
                 <div class="hint">Status will automatically change to "Completed"</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" style="background:var(--green);">Confirm Time Out</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
             </div>
         </form>
     </div>
@@ -1533,8 +1540,8 @@
             </div>
             <input type="hidden" id="fd-rejection-reason-final" name="rejection_reason">
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" onclick="return fdStatusSubmit(event)">Save Status</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
             </div>
         </form>
     </div>
