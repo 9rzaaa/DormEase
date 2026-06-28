@@ -253,7 +253,7 @@
       .feat-card { border-radius: var(--r-md); }
     }
 
-    .feat-card { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; }
+    .feat-card { opacity:0; transform:translateY(30px); transition:opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; scroll-margin-top: 140px; }
     .feat-card.visible { opacity:1; transform:translateY(0); }
     .feat-card:hover { transform:translateY(-4px) !important; }
   </style>
@@ -644,6 +644,18 @@
     });
   }, { threshold: 0.12 });
   cards.forEach(card => cardObserver.observe(card));
+
+  window.addEventListener('load', () => {
+    if (window.location.hash) {
+      const target = document.querySelector(window.location.hash);
+      if (target && target.classList.contains('feat-card')) {
+        target.classList.add('visible');
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+  });
 </script>
 </body>
 </html>

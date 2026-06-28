@@ -70,7 +70,7 @@
     .faq-contact-link svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
 
     .faq-list { display:flex; flex-direction:column; gap:12px; }
-    .faq-item { background:white; border:1.5px solid var(--border); border-radius:var(--r-md); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .faq-item { background:white; border:1.5px solid var(--border); border-radius:var(--r-md); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); scroll-margin-top: 140px; }
     .faq-item:hover { transform: translateY(-2px); border-color: rgba(232, 23, 93, 0.25); box-shadow: 0 6px 20px rgba(232, 23, 93, 0.08); }
     .faq-item.open:hover { transform: none; }
     .faq-item.open { border-color:rgba(232,23,93,.38); box-shadow:0 4px 28px rgba(232,23,93,.12); }
