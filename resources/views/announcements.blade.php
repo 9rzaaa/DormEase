@@ -1696,11 +1696,11 @@
         <div class="delete-warning" id="delete-warning-default">This action cannot be undone. The announcement will be permanently removed.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
             <form method="POST" id="delete-form" style="display:inline;" data-loading-message="Please wait...">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
             </form>
+            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
 </div>
