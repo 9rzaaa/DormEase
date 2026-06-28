@@ -998,6 +998,45 @@
         border-color: var(--bright-pink);
         background: var(--white);
     }
+
+    .form-progress-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+        padding: .6rem 1.8rem;
+        flex-shrink: 0;
+        border-bottom: 1.5px solid var(--pink-light);
+        background: #fefcfe;
+    }
+    .form-progress-wrap.status-progress {
+        padding: 0;
+        border-bottom: none;
+        margin-bottom: 1rem;
+    }
+    .form-progress-bar {
+        width: 100%;
+        height: 3px;
+        background: var(--pink-light);
+        border-radius: 99px;
+        overflow: hidden;
+    }
+    .form-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width .35s cubic-bezier(.4,0,.2,1), background .35s;
+        width: 0%;
+        background: linear-gradient(135deg, var(--hot-pink), var(--bright-pink));
+    }
+    .form-progress-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .68rem;
+        font-weight: 700;
+        color: var(--ink-muted);
+    }
+    .form-progress-label span.ready   { color: #1f9d69; font-weight: 800; }
+    .form-progress-label span.partial { color: var(--bright-pink); }
 </style>
 @endsection
 
@@ -1286,6 +1325,16 @@
         <form method="POST" action="{{ route('visitors.store') }}" id="add-visitor-form" novalidate>
             @csrf
 
+            <div class="form-progress-wrap" id="av-progress-wrap">
+                <div class="form-progress-label">
+                    <span id="av-progress-text">Fill in required fields</span>
+                    <span id="av-progress-count" class="partial"></span>
+                </div>
+                <div class="form-progress-bar">
+                    <div class="form-progress-fill" id="av-progress-fill"></div>
+                </div>
+            </div>
+
             <div class="add-modal-body">
 
                 <div class="add-modal-section">Visitor Information</div>
@@ -1506,6 +1555,15 @@
         <div class="modal-header">
             <div class="modal-title">Update Visitor Status</div>
             <button class="modal-close" onclick="closeModal('status-modal')">&#x2715;</button>
+        </div>
+        <div class="form-progress-wrap status-progress" id="sv-progress-wrap">
+            <div class="form-progress-label">
+                <span id="sv-progress-text">Fill in required fields</span>
+                <span id="sv-progress-count" class="partial"></span>
+            </div>
+            <div class="form-progress-bar">
+                <div class="form-progress-fill" id="sv-progress-fill"></div>
+            </div>
         </div>
         <p style="font-size:.9rem;color:var(--ink-muted);line-height:1.6;margin-bottom:1rem;">
             Update status for <strong id="status-name" style="color:var(--ink);"></strong>
@@ -1949,6 +2007,7 @@
         document.getElementById('fd-rejection-reason-final').value        = '';
         closeVisitorDetailModal();
         openModal('status-modal');
+        refreshStatusVisitorProgress();
     }
 
     function onFdStatusChange(select) {
@@ -2643,6 +2702,7 @@
         document.getElementById('av_tenant_search').classList.add('valid');
         avShowErr('av_tenant_err', false);
         avCloseTenantDropdown();
+        refreshAddVisitorProgress();
     }
 
     function avFilterTenants() {
@@ -2702,6 +2762,97 @@
         return true;
     }
 
+    var AV_REQUIRED_FIELDS = ['av_visitor_name', 'av_id_type', 'av_purpose', 'av_arrival_time'];
+
+    function refreshAddVisitorProgress() {
+        var nameOk = (function() {
+            var v = document.getElementById('av_visitor_name').value.trim();
+            return /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-\.]+$/.test(v) && v.split(/\s+/).filter(Boolean).length >= 2;
+        })();
+        var idOk           = !!document.getElementById('av_id_type').value;
+        var purposeOk      = !!document.getElementById('av_purpose').value;
+        var relationshipOk = !!document.getElementById('av_relationship').value;
+        var arrivalOk      = !!document.getElementById('av_arrival_time').value;
+        var tenantOk       = !!_avSelectedTenantId;
+
+        var checks = [nameOk, idOk, purposeOk, relationshipOk, arrivalOk, tenantOk];
+        var filled = checks.filter(Boolean).length;
+        var total  = checks.length;
+        var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+        var fill  = document.getElementById('av-progress-fill');
+        var text  = document.getElementById('av-progress-text');
+        var count = document.getElementById('av-progress-count');
+        if (!fill) return;
+
+        fill.style.width = pct + '%';
+
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            text.textContent = 'All required fields filled';
+            text.className = 'ready';
+            count.textContent = filled + '/' + total;
+            count.className = 'ready';
+        } else {
+            fill.style.background = 'linear-gradient(135deg, var(--hot-pink), var(--bright-pink))';
+            text.textContent = pct >= 50 ? 'Almost there' : 'Fill in required fields';
+            text.className = '';
+            count.textContent = filled + '/' + total;
+            count.className = 'partial';
+        }
+    }
+
+    function refreshStatusVisitorProgress() {
+        var statusVal = document.getElementById('status-select').value;
+        var checks = [!!statusVal];
+
+        if (statusVal === 'rejected') {
+            var reasonVal = document.getElementById('fd-rejection-reason').value;
+            checks.push(!!reasonVal);
+            if (reasonVal === 'Other') {
+                checks.push(!!document.getElementById('fd-rejection-other').value.trim());
+            }
+        }
+
+        var filled = checks.filter(Boolean).length;
+        var total  = checks.length;
+        var pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+
+        var fill  = document.getElementById('sv-progress-fill');
+        var text  = document.getElementById('sv-progress-text');
+        var count = document.getElementById('sv-progress-count');
+        if (!fill) return;
+
+        fill.style.width = pct + '%';
+
+        if (pct === 100) {
+            fill.style.background = 'linear-gradient(90deg,#1f9d69,#4ecb8d)';
+            text.textContent = 'All required fields filled';
+            text.className = 'ready';
+            count.textContent = filled + '/' + total;
+            count.className = 'ready';
+        } else {
+            fill.style.background = 'linear-gradient(135deg, var(--hot-pink), var(--bright-pink))';
+            text.textContent = pct >= 50 ? 'Almost there' : 'Fill in required fields';
+            text.className = '';
+            count.textContent = filled + '/' + total;
+            count.className = 'partial';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var addModal = document.getElementById('add-modal');
+        if (addModal) {
+            addModal.addEventListener('input',  refreshAddVisitorProgress);
+            addModal.addEventListener('change', refreshAddVisitorProgress);
+        }
+        var statusModal = document.getElementById('status-modal');
+        if (statusModal) {
+            statusModal.addEventListener('input',  refreshStatusVisitorProgress);
+            statusModal.addEventListener('change', refreshStatusVisitorProgress);
+        }
+    });
+
     function resetAddForm() {
         stopLiveClock();
         var form = document.getElementById('add-visitor-form');
@@ -2723,6 +2874,7 @@
         if (vacationErr) vacationErr.style.display = 'none';
         var submitBtn = document.getElementById('av_submit_btn');
         if (submitBtn) submitBtn.disabled = false;
+        refreshAddVisitorProgress();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
