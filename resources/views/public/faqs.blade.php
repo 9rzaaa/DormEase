@@ -35,10 +35,10 @@
     .nav-logo-fb { font-family:var(--font-head); font-size:1.55rem; font-weight:800; color:var(--brown); letter-spacing:-.02em; }
     .nav-logo-fb span { color:var(--pink); }
     .nav-links { display:flex; align-items:center; gap:30px; list-style:none; }
-    .nav-links a { text-decoration:none; font-size:.98rem; font-weight:700; color:var(--brown); letter-spacing:.01em; transition:color .2s,background .2s; }
-    .nav-links a:hover { color:var(--pink); }
-    .nav-links a.nav-active { color:var(--pink); position:relative; }
-    .nav-links a.nav-active::after { content:''; position:absolute; bottom:-4px; left:0; right:0; height:2.5px; border-radius:99px; background:var(--gradient-pink); }
+    .nav-links a { text-decoration:none; font-size:.98rem; font-weight:700; color:var(--brown); letter-spacing:.01em; transition:color 0.3s ease; position:relative; }
+    .nav-links a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2.5px; border-radius:99px; background:var(--gradient-pink); transition:width 0.3s ease; }
+    .nav-links a:hover::after, .nav-links a.nav-active::after { width:100%; }
+    .nav-links a:hover, .nav-links a.nav-active { color:var(--pink); }
     .nav-cta { background:var(--gradient-pink) !important; color:white !important; padding:11px 26px !important; border-radius:100px !important; font-weight:700 !important; transition:filter .2s,transform .15s !important; box-shadow:0 8px 18px rgba(232,23,93,.24); }
     .nav-cta:hover { filter:brightness(.94); transform:translateY(-1px); }
     .nav-toggle { display:none; width:44px; height:44px; border:0; border-radius:50%; background:var(--gradient-pink); color:white; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 18px rgba(232,23,93,.24); }
@@ -59,17 +59,20 @@
     .faq-section { padding:0 6% 100px; background:var(--cream); }
     .faq-inner { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1fr 1.72fr; gap:72px; align-items:start; }
 
-    .faq-left { position:sticky; top:160px; }
+    .faq-left { position:sticky; top:160px; opacity:0; transform:translateX(-20px); animation:faqLeftFade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes faqLeftFade { to { opacity:1; transform:translateX(0); } }
     .faq-left-tag { font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--pink); margin-bottom:14px; }
     .faq-left-title { font-family:var(--font-head); font-size:clamp(2rem,3.2vw,3.1rem); line-height:1.1; font-weight:800; color:var(--brown); letter-spacing:-.03em; margin-bottom:18px; }
-    .faq-left-title em { color:var(--pink); font-style:normal; }
+    .faq-left-title em { color:var(--pink); font-style:italic; }
     .faq-left-body { color:var(--brown-light); font-size:.96rem; line-height:1.78; margin-bottom:28px; }
     .faq-contact-link { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-head); font-size:.88rem; font-weight:800; color:var(--pink); text-decoration:none; letter-spacing:.02em; transition:gap .2s; }
     .faq-contact-link:hover { gap:14px; }
     .faq-contact-link svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
 
     .faq-list { display:flex; flex-direction:column; gap:12px; }
-    .faq-item { background:white; border:1.5px solid var(--border); border-radius:var(--r-md); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow .25s, border-color .25s; }
+    .faq-item { background:white; border:1.5px solid var(--border); border-radius:var(--r-md); box-shadow:var(--shadow-card); overflow:hidden; transition:box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .faq-item:hover { transform: translateY(-2px); border-color: rgba(232, 23, 93, 0.25); box-shadow: 0 6px 20px rgba(232, 23, 93, 0.08); }
+    .faq-item.open:hover { transform: none; }
     .faq-item.open { border-color:rgba(232,23,93,.38); box-shadow:0 4px 28px rgba(232,23,93,.12); }
     .faq-btn { width:100%; background:none; border:none; cursor:pointer; padding:22px 26px; display:flex; align-items:center; justify-content:space-between; gap:18px; text-align:left; }
     .faq-question { font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--brown); line-height:1.35; flex:1; transition:color .2s; }
@@ -78,9 +81,10 @@
     .faq-icon svg { width:16px; height:16px; stroke:var(--brown-light); fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; transition:stroke .25s; }
     .faq-item.open .faq-icon { background:var(--gradient-pink); border-color:var(--pink); transform:rotate(180deg); }
     .faq-item.open .faq-icon svg { stroke:white; }
-    .faq-answer { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.4,0,.2,1), padding .3s; }
-    .faq-answer-inner { padding:0 26px 22px; color:var(--brown-light); font-size:.95rem; line-height:1.78; border-top:1px solid rgba(232,23,93,.10); padding-top:18px; }
+    .faq-answer { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(.16,1,.3,1), padding .3s; }
+    .faq-answer-inner { padding:0 26px 22px; color:var(--brown-light); font-size:.95rem; line-height:1.78; border-top:1px solid rgba(232,23,93,.10); padding-top:18px; opacity:0; transform:translateY(-8px); transition:opacity 0.3s ease, transform 0.3s ease; }
     .faq-item.open .faq-answer { max-height:600px; }
+    .faq-item.open .faq-answer-inner { opacity:1; transform:translateY(0); transition-delay:0.1s; }
 
     footer { background:var(--brown); color:rgba(255,255,255,.48); padding:64px 6% 40px; }
     .footer-inner { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; margin-bottom:48px; }
@@ -141,6 +145,12 @@
       .footer-inner{grid-template-columns:1fr}
       .faq-btn{padding:18px 20px;}
       .faq-answer-inner{padding:0 20px 18px;padding-top:16px;}
+    }
+    @media (max-width: 480px) {
+      .faq-hero { padding: 48px 5% 36px; }
+      .faq-section { padding: 0 5% 60px; }
+      .faq-left-title { font-size: 2.1rem; }
+      .faq-btn { padding: 16px 20px; }
     }
   </style>
 </head>
