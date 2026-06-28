@@ -353,7 +353,7 @@
     .footer-btm a { color: rgba(255,255,255,.32); text-decoration: none; }
     .footer-btm a:hover { color: var(--pink-light); }
     .footer-socials { display: flex; gap: 12px; }
-    .footer-social-icon { width: 46px; height: 46px; border-radius: 50%; background: #111; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,.14); transition: transform .2s, background .2s; text-decoration: none; position: relative; }
+    .footer-social-icon { width: 46px; height: 46px; border-radius: 50%; background: #111; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border: 1.5px solid var(--pink-light); transition: transform .2s, background .2s; text-decoration: none; position: relative; }
     .footer-social-icon:hover { transform: translateY(-2px); background: var(--pink); }
     .footer-social-icon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
