@@ -158,7 +158,7 @@
     .footer-btm a { color:rgba(255,255,255,.32); text-decoration:none; }
     .footer-btm a:hover { color:var(--pink-light); }
     .footer-socials { display:flex; align-items:center; gap:12px; }
-    .footer-social-icon { position:relative; width:46px; height:46px; border-radius:50%; background:#111; color:white; display:inline-flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid rgba(255,255,255,.14); transition:transform .2s,background .2s,border-color .2s; text-decoration:none; }
+    .footer-social-icon { position:relative; width:46px; height:46px; border-radius:50%; background:#111; color:white; display:inline-flex; align-items:center; justify-content:center; overflow:hidden; border:1.5px solid var(--pink-light); transition:transform .2s,background .2s,border-color .2s; text-decoration:none; }
     .footer-social-icon:hover { transform:translateY(-2px); background:var(--pink); border-color:var(--pink-light); }
     .footer-social-icon img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
 
