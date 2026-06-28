@@ -889,7 +889,8 @@
     }
 
     function closeNotifDetail() {
-        closeModal('notif-detail-modal');
+        var el = document.getElementById('notif-detail-modal');
+        if (el) el.classList.remove('open');
     }
 
     function markAllRead() {
