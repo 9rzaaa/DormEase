@@ -507,6 +507,22 @@
         <div class="dorm-sub">Sanctissimo Rosario Ladies Dormitory</div>
     </div>
 
+    @if($staff->is_temp_password)
+    <div class="fade-up d2" style="background:#fff0f6;border:2px solid #ff6ba8;border-radius:16px;padding:1rem 1.3rem;display:flex;align-items:flex-start;gap:.75rem;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e8175d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <div>
+            <div style="font-size:.88rem;font-weight:800;color:#9a1248;">You're using a temporary password</div>
+            <div style="font-size:.79rem;color:#b03060;margin-top:.2rem;line-height:1.5;">
+                For your account's security, please set a new password below before continuing to use DormEase. You won't be able to access other pages until this is done.
+            </div>
+        </div>
+    </div>
+    @endif
+
     @php
         $rc = ['bg'=>'#e8f4ff','color'=>'#1a6fbd','border'=>'#90c4f8'];
 
