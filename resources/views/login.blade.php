@@ -919,10 +919,11 @@
         font-weight: 600;
         color: var(--hot-pink);
         padding-left: .1rem;
-        height: 1rem;
-        line-height: 1rem;
+        min-height: 1rem;
+        line-height: 1.35;
         margin-top: .3rem;
         visibility: hidden;
+        overflow-wrap: anywhere;
     }
 
     .field-error.visible {
