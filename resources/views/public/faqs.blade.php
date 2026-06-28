@@ -128,7 +128,7 @@
       .faq-left{position:static;}
     }
     @media(max-width:760px){
-      nav{top:46px;height:auto;min-height:76px;padding:10px 5%;gap:14px;flex-wrap:wrap;border-radius:28px;width:calc(100% - 28px)}
+      nav{top:66px;height:auto;min-height:76px;padding:10px 5%;gap:14px;flex-wrap:wrap;border-radius:28px;width:calc(100% - 28px)}
       nav.scrolled{top:12px}
       .top-notice{font-size:.74rem;min-height:30px}
       .header-spacer{height:138px}
