@@ -155,7 +155,7 @@ Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
-Route::middleware(['auth:staff', 'staff.active', 'no.back'])->group(function () {
+Route::middleware(['auth:staff', 'staff.active', 'force.temp.password', 'no.back'])->group(function () {
 
     Route::middleware('staffrole:admin,secretary')->group(function () {
 
@@ -327,6 +327,7 @@ Route::middleware(['auth:staff', 'staff.active', 'no.back'])->group(function () 
         return response()->json(['active' => true])->header('Cache-Control', 'no-store');
     })->name('session.check');
 
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/live', [NotificationController::class, 'live'])->name('notifications.live');
     Route::get('/live-alerts', [NotificationController::class, 'liveAlerts'])->name('live-alerts');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');

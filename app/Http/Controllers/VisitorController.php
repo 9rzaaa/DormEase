@@ -165,6 +165,13 @@ class VisitorController extends Controller
             'contact_no.regex'      => 'The contact number must be a valid PH mobile number (e.g. 09123456789).',
         ]);
 
+        $visitedTenant = Tenant::find($request->tenant_id);
+        if ($visitedTenant && $visitedTenant->is_on_vacation) {
+            return back()->withErrors([
+                'tenant_id' => 'This tenant is currently on vacation. Walk-in visits cannot be registered for tenants on vacation.',
+            ])->withInput();
+        }
+
         $arrivalTime = $request->filled('arrival_time')
             ? Carbon::parse($request->arrival_time)
             : now();

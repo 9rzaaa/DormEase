@@ -1476,7 +1476,6 @@
                     <button type="button" class="em-nav-btn" id="pm-next-btn" onclick="switchPostTab(window._pmTab + 1)">Next &#8594;</button>
                 </div>
                 <div class="em-footer-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal('post-modal')">Cancel</button>
                     <button type="button" class="btn-submit" id="post-submit-btn" onclick="submitPostModal()">Post Announcement</button>
                 </div>
             </div>
@@ -1571,7 +1570,6 @@
                     <button type="button" class="em-nav-btn" id="em-next-btn" onclick="switchTab(window._emTab + 1)">Next &#8594;</button>
                 </div>
                 <div class="em-footer-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
                     <button type="button" class="btn-submit" id="edit-submit-btn" onclick="submitEditModal()">Save Changes</button>
                 </div>
             </div>
@@ -1675,7 +1673,6 @@
                     <button type="button" class="em-nav-btn" id="vm-next-btn" onclick="switchViewTab(window._vmTab + 1)">Next &#8594;</button>
                 </div>
                 <div class="em-footer-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal('view-modal')">Cancel</button>
                     <button type="button" class="btn-submit" onclick="submitViewEditModal()">Save Changes</button>
                 </div>
             </div>
@@ -1683,7 +1680,6 @@
         <div class="em-footer" id="vm-details-footer">
             <div></div>
             <div class="em-footer-actions">
-                <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
                 <button class="btn-submit" onclick="enableViewEdit()">Edit</button>
             </div>
         </div>
@@ -1700,11 +1696,12 @@
         <div class="delete-warning" id="delete-warning-default">This action cannot be undone. The announcement will be permanently removed.</div>
         <p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to delete <strong id="delete-ann-name" style="color:var(--ink);"></strong>?</p>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
             <form method="POST" id="delete-form" style="display:inline;" data-loading-message="Please wait...">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
             </form>
+            <div style="flex:1;"></div>
+            <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
 </div>

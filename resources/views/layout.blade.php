@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -690,8 +690,9 @@
                             @endif
                         </div>
 
-                        <div class="notif-dropdown-footer">
-                            <span style="font-size:.75rem;color:var(--ink-muted);">Click a notification to view details</span>
+                        <div class="notif-dropdown-footer" style="display: flex; align-items: center; justify-content: space-between; padding: .6rem 1rem; border-top: 1.5px solid var(--petal);">
+                            <span style="font-size:.72rem;color:var(--ink-muted);">Click to view details</span>
+                            <a href="{{ route('notifications.index') }}" class="notif-see-all" style="text-decoration: none;">View Previous</a>
                         </div>
                     </div>
                 </div>
@@ -922,7 +923,8 @@
     }
 
     function closeNotifDetail() {
-        closeModal('notif-detail-modal');
+        var el = document.getElementById('notif-detail-modal');
+        if (el) el.classList.remove('open');
     }
 
     function markAllRead() {

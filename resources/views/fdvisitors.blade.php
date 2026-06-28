@@ -177,6 +177,13 @@
 
     .empty-state { text-align: center; padding: 2.5rem; color: var(--ink-muted); font-size: .88rem; }
 
+    .modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .65rem;
+    }
+
     .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .modal-field.full { grid-column: 1 / -1; }
     .modal-field label { display: block; font-size: .8rem; font-weight: 700; color: var(--ink-muted); margin-bottom: .35rem; }
@@ -793,7 +800,9 @@
     .amf-input-wrap input:focus,
     .amf-input-wrap select:focus { border-color: var(--bright-pink); background: var(--white); box-shadow: 0 0 0 3px rgba(232,23,93,.08); }
 
-    .amf-input-wrap input.valid   { border-color: var(--green) !important; background: #f0fdf8 !important; }
+    .amf-input-wrap input.valid,
+    .amf-input-wrap select.valid,
+    .amf-input-wrap .amf-select-display.valid { border-color: var(--green) !important; background: #f0fdf8 !important; }
     .amf-input-wrap input.invalid,
     .amf-input-wrap select.invalid,
     .amf-input-wrap .amf-select-display.invalid { border-color: var(--red) !important; background: #fff5f5 !important; box-shadow: 0 0 0 3px rgba(220,38,38,.07) !important; }
@@ -852,6 +861,8 @@
     .tenant-option:last-child { border-bottom: none; }
     .tenant-option:hover, .tenant-option.focused { background: var(--pink-bg); color: var(--hot-pink); }
     .tenant-option.selected { background: #fff0f7; }
+    .tenant-option-vacation { opacity: .55; cursor: not-allowed; }
+    .tenant-option-vacation .tenant-option-name::after { content: ' (On Vacation)'; font-size: .7rem; color: #9a6200; font-weight: 600; }
 
     .tenant-option-name { font-weight: 600; }
     .tenant-option-room { font-size: .75rem; color: var(--ink-muted); background: var(--pink-light); padding: .1rem .45rem; border-radius: 6px; font-weight: 600; flex-shrink: 0; }
@@ -865,7 +876,7 @@
 
     .add-modal-footer {
         padding: 1rem 1.8rem 1.4rem;
-        display: flex; align-items: center; justify-content: flex-end; gap: .65rem;
+        display: flex; align-items: center; justify-content: space-between; gap: .65rem;
         border-top: 1.5px solid var(--pink-light); background: #fefcfe;
     }
 
@@ -1363,6 +1374,7 @@
                             <div class="tenant-dropdown" id="av_tenant_dropdown"></div>
                         </div>
                         <div class="amf-error" id="av_tenant_err">Please select a tenant to visit.</div>
+                        <div class="amf-error show" id="av_tenant_vacation_err" style="display:none;">This tenant is currently on vacation. Walk-in visits are not allowed.</div>
                     </div>
 
                     <div class="amf amf-full">
@@ -1429,10 +1441,10 @@
             </div>
 
             <div class="add-modal-footer">
-                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
                 <button type="submit" class="amf-btn-submit" id="av_submit_btn" onclick="return avSubmit(event)">
                     Log Visitor
                 </button>
+                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
             </div>
 
         </form>
@@ -1458,8 +1470,8 @@
                 <div id="timein-input-err" style="font-size:.72rem;color:var(--red);font-weight:600;margin-top:.2rem;display:none;">Time in cannot be set in the future or more than 12 hours in the past.</div>
             </div>
             <div class="modal-actions">
+               <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
                 <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timein-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" id="timein-submit-btn">Confirm Time In</button>
             </div>
         </form>
     </div>
@@ -1482,8 +1494,8 @@
                 <div class="hint">Status will automatically change to "Completed"</div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" style="background:var(--green);">Confirm Time Out</button>
+                <button type="button" class="btn-cancel" onclick="stopLiveClock(); closeModal('timeout-modal')">Cancel</button>
             </div>
         </form>
     </div>
@@ -1533,8 +1545,8 @@
             </div>
             <input type="hidden" id="fd-rejection-reason-final" name="rejection_reason">
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
                 <button type="submit" class="btn-submit" onclick="return fdStatusSubmit(event)">Save Status</button>
+                <button type="button" class="btn-cancel" onclick="closeModal('status-modal')">Cancel</button>
             </div>
         </form>
     </div>
@@ -2499,6 +2511,9 @@
         if (strict || select.value) {
             avSetFieldState(select, valid ? 'valid' : 'invalid');
             avShowErr('av_purpose_err', !valid);
+        } else {
+            avSetFieldState(select, '');
+            avShowErr('av_purpose_err', false);
         }
         return valid;
     }
@@ -2552,7 +2567,8 @@
             dd.innerHTML = list.map(function(t, i) {
                 var fullName = t.first_name + ' ' + t.last_name;
                 var selected = String(t.tenant_id) === String(_avSelectedTenantId);
-                return '<div class="tenant-option' + (selected ? ' selected' : '') + '" '
+                var isOnVacation = !!t.is_on_vacation;
+                return '<div class="tenant-option' + (selected ? ' selected' : '') + (isOnVacation ? ' tenant-option-vacation' : '') + '" '
                     + 'data-id="' + t.tenant_id + '" '
                     + 'data-name="' + _escHtml(fullName) + '" '
                     + 'data-idx="' + i + '" '
@@ -2589,6 +2605,8 @@
             avCloseTenantDropdown();
             if (!_avSelectedTenantId) {
                 document.getElementById('av_tenant_search').value = '';
+                var vacationErr = document.getElementById('av_tenant_vacation_err');
+                if (vacationErr) vacationErr.style.display = 'none';
             }
             avValidateTenant();
         }, 180);
@@ -2597,6 +2615,27 @@
     function avSelectTenant(e, id, name) {
         e.preventDefault();
         clearTimeout(_avBlurTimer);
+
+        var tenant = allTenants.find(function(t) { return String(t.tenant_id) === String(id); });
+        var vacationErr = document.getElementById('av_tenant_vacation_err');
+        var submitBtn = document.getElementById('av_submit_btn');
+
+        if (tenant && tenant.is_on_vacation) {
+            _avSelectedTenantId = null;
+            document.getElementById('av_tenant_id').value = '';
+            document.getElementById('av_tenant_search').value = name;
+            document.getElementById('av_tenant_search').classList.remove('valid');
+            document.getElementById('av_tenant_search').classList.add('invalid');
+            avShowErr('av_tenant_err', false);
+            if (vacationErr) vacationErr.style.display = 'block';
+            if (submitBtn) submitBtn.disabled = true;
+            avCloseTenantDropdown();
+            return;
+        }
+
+        if (vacationErr) vacationErr.style.display = 'none';
+        if (submitBtn) submitBtn.disabled = false;
+
         _avSelectedTenantId = id;
         document.getElementById('av_tenant_id').value        = id;
         document.getElementById('av_tenant_search').value    = name;
@@ -2680,6 +2719,10 @@
         ['av_visitor_name_err','av_contact_err','av_tenant_err','av_id_err','av_relationship_err','av_purpose_err','av_arrival_err'].forEach(function(id) {
             avShowErr(id, false);
         });
+        var vacationErr = document.getElementById('av_tenant_vacation_err');
+        if (vacationErr) vacationErr.style.display = 'none';
+        var submitBtn = document.getElementById('av_submit_btn');
+        if (submitBtn) submitBtn.disabled = false;
     }
 
     document.addEventListener('DOMContentLoaded', function() {

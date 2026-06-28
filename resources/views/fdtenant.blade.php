@@ -1576,7 +1576,7 @@ tbody tr:hover { background: var(--soft-bg); }
 .modal-actions {
     padding: .65rem 1.1rem;
     border-top: 1px solid var(--pink-100);
-    display: flex; align-items: center; justify-content: flex-end;
+    display: flex; align-items: center; justify-content: space-between;
     gap: .55rem; flex-shrink: 0; background: #fffafd;
 }
 .btn-cancel {
@@ -1976,8 +1976,8 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
             <button type="button" class="btn-submit" id="notes-save-btn" onclick="submitNote()">Save Note</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
         </div>
     </div>
 </div>
