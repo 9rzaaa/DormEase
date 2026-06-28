@@ -1459,7 +1459,7 @@
                 </div>
                 <div class="modal-field-full report-hotline-wrap" id="report-hotline-wrap"></div>
             </div>
-            <div class="modal-actions">
+            <div class="modal-actions" style="display:flex;align-items:center;justify-content:space-between;gap:.55rem;">
                 <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
             </div>
