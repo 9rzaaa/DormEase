@@ -152,7 +152,7 @@ Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
-Route::middleware(['auth:staff', 'no.back'])->group(function () {
+Route::middleware(['auth:staff', 'no.back', 'force.temp.password'])->group(function () {
 
     Route::middleware('staffrole:admin,secretary')->group(function () {
 
