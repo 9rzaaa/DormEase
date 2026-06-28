@@ -1700,6 +1700,7 @@
                 @csrf @method('DELETE')
                 <button type="submit" class="btn-danger">Delete</button>
             </form>
+            <div style="flex:1;"></div>
             <button class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
         </div>
     </div>
