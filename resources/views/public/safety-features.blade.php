@@ -251,7 +251,7 @@
   <section class="safety-hero">
     <div class="safety-hero-inner">
       <div class="section-tag">Building Safety</div>
-      <h1>A Guide to <em>Sanctissiomo Rosario</em> Building's Safety Features</h1>
+      <h1>A Guide to <em>Sanctissimo Rosario</em> Building's Safety Features</h1>
       <p class="hero-copy">Review the safety systems, building rules, and tenant support areas that help keep Sanctissimo Rosario Ladies Dormitory organized, monitored, and secure.</p>
     </div>
   </section>
