@@ -19,7 +19,11 @@ class ContactInquiryController extends Controller
 
         $inquiries = ContactInquiry::query()
             ->with('handler')
-            ->when($status !== 'all', fn ($query) => $query->where('status', $status))
+            ->when(
+                $status !== 'all',
+                fn ($query) => $query->where('status', $status),
+                fn ($query) => $query->where('status', '!=', 'resolved')
+            )
             ->when($type !== 'all', fn ($query) => $query->where('inquiry_type', $type))
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
