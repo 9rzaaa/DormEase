@@ -262,7 +262,7 @@ class TenantController extends Controller
     {
         $tenant = Tenant::findOrFail($id);
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'first_name'             => 'required|string|max:100',
             'last_name'              => 'required|string|max:100',
             'email'                  => 'required|email|unique:tenants,email,' . $id . ',tenant_id',
@@ -289,9 +289,13 @@ class TenantController extends Controller
             'contact_number.regex'    => 'Enter a valid PH mobile number (e.g. 0912-345-6789 or +63 912-345-6789).',
         ]);
 
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput()->with('edit_tenant_id', $id);
+        }
+
         if ($request->filled('move_in_date') && $request->filled('move_out_date')) {
             if ($request->move_out_date < $request->move_in_date) {
-                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput();
+                return back()->withErrors(['move_out_date' => 'Move-out date cannot be earlier than move-in date.'])->withInput()->with('edit_tenant_id', $id);
             }
         }
 
