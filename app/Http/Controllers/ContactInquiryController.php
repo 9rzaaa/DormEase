@@ -51,7 +51,7 @@ class ContactInquiryController extends Controller
         return view('contact-inquiries', [
             'inquiries' => $inquiries,
             'stats' => [
-                'total' => (clone $baseQuery)->count(),
+                'total' => (clone $baseQuery)->whereIn('status', ['new', 'read'])->count(),
                 'new' => (clone $baseQuery)->where('status', 'new')->count(),
                 'read' => (clone $baseQuery)->where('status', 'read')->count(),
                 'resolved' => (clone $baseQuery)->where('status', 'resolved')->count(),
