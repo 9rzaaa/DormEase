@@ -505,6 +505,19 @@ class TenantSeeder extends Seeder
                 'move_out_date'   => '2026-12-19',
                 'status'          => 'active',
             ],
+            [
+                'first_name'      => 'Carmela',
+                'last_name'       => 'Lopez',
+                'email'           => 'carmela.lopez@example.com',
+                'contact_number'  => '09201234511',
+                'guardian_number' => '09180000039',
+                'room_number'     => '506',
+                'floor'           => 5,
+                'stay_type'       => 'Shared Room',
+                'move_in_date'    => '2025-07-05',
+                'move_out_date'   => '2026-07-05',
+                'status'          => 'active',
+            ],
         ];
 
         foreach ($tenants as $data) {
