@@ -1233,11 +1233,62 @@ function closeCiDeleteConfirm() {
     _ciPendingDeleteForm = null;
 }
 
-function confirmCiDeleteProceed() {
+async function confirmCiDeleteProceed() {
     if (!_ciPendingDeleteForm) return;
+    const form = _ciPendingDeleteForm;
     closeCiDeleteConfirm();
     showCiLoading();
-    _ciPendingDeleteForm.submit();
+
+    try {
+        const formData = new FormData(form);
+        const res = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            body: formData,
+        });
+
+        if (!res.ok) throw new Error('Delete failed');
+
+        const id = form.closest('.ci-card')?.dataset.id
+            || document.getElementById('ci-modal-footer-label').textContent.match(/#(\d+)/)?.[1];
+
+        if (id) {
+            delete ciData[id];
+            const card = document.querySelector('.ci-card[data-id="' + id + '"]');
+            if (card) {
+                card.style.transition = 'opacity .2s, transform .2s';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(8px)';
+                setTimeout(() => {
+                    card.remove();
+                    refreshCiStatsAfterDelete();
+                }, 200);
+            }
+        }
+
+        if (document.getElementById('ci-view-modal').classList.contains('open')) {
+            closeCiModal();
+        }
+
+        document.getElementById('ci-loading').classList.remove('open');
+        if (typeof showToast === 'function') showToast('Inquiry deleted successfully.', 'success');
+    } catch (err) {
+        document.getElementById('ci-loading').classList.remove('open');
+        if (typeof showToast === 'function') showToast('Failed to delete inquiry.', 'error');
+    } finally {
+        _ciPendingDeleteForm = null;
+    }
+}
+
+function refreshCiStatsAfterDelete() {
+    const total = document.querySelectorAll('.ci-card[data-id]').length;
+    if (!total) {
+        const list = document.querySelector('.ci-list');
+        if (list) list.innerHTML = '<div class="ci-empty">No contact inquiries found.</div>';
+    }
 }
 
 function openCiModal(id) {

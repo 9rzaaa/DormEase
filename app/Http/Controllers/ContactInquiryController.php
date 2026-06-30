@@ -53,9 +53,13 @@ class ContactInquiryController extends Controller
         ]);
     }
 
-    public function destroy(ContactInquiry $contactInquiry): RedirectResponse
+    public function destroy(ContactInquiry $contactInquiry)
     {
         $contactInquiry->delete();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json(['success' => true]);
+        }
 
         return redirect()
             ->route('contact-inquiries.index')
