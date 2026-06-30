@@ -947,11 +947,11 @@
     </div>
 </div>
 
-<div class="modal-overlay" id="notif-detail-modal" onclick="handleOverlayClick(event, 'notif-detail-modal')">
+<div class="modal-overlay" id="dashboard-notif-detail-modal" onclick="handleOverlayClick(event, 'dashboard-notif-detail-modal')">
     <div class="modal" style="max-width:420px;" onclick="event.stopPropagation()">
         <div class="modal-header">
             <div class="modal-title">Notification</div>
-            <button class="modal-close" onclick="closeModal('notif-detail-modal')">&#x2715;</button>
+            <button class="modal-close" onclick="closeModal('dashboard-notif-detail-modal')">&#x2715;</button>
         </div>
         <div style="padding:.3rem 0 .5rem;">
             <div style="display:flex;gap:1rem;align-items:flex-start;">
@@ -968,7 +968,7 @@
             </div>
         </div>
         <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal('notif-detail-modal')">Dismiss</button>
+            <button class="btn-cancel" onclick="closeModal('dashboard-notif-detail-modal')">Dismiss</button>
         </div>
     </div>
 </div>
@@ -1243,7 +1243,7 @@ window.openNotifModal = function(message, type, time, id) {
     var icon = document.getElementById('nd-icon');
     icon.src = '{{ asset('icons/') }}' + type + '.png';
     icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
-    openModal('notif-detail-modal');
+    openModal('dashboard-notif-detail-modal');
     if (id) {
         fetch('/notifications/' + id + '/read', {
             method: 'POST',
