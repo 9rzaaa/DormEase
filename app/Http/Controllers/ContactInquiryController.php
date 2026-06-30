@@ -47,6 +47,15 @@ class ContactInquiryController extends Controller
         ]);
     }
 
+    public function destroy(ContactInquiry $contactInquiry)
+    {
+        $contactInquiry->delete();
+
+        return redirect()
+            ->route('contact-inquiries.index')
+            ->with('success', 'Inquiry deleted successfully.');
+    }
+
     public function updateStatus(Request $request, ContactInquiry $contactInquiry): RedirectResponse
     {
         $validated = $request->validate([

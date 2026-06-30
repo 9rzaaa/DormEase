@@ -75,6 +75,18 @@
     color: var(--hot-pink);
     flex-shrink: 0;
 }
+.ci-btn.danger {
+    background: #fff0f0;
+    color: #c0392b;
+    border: 1.5px solid #f3c4c0;
+    box-shadow: none;
+}
+.ci-btn.danger:hover {
+    background: #ffe2e0;
+    border-color: #c0392b;
+    box-shadow: 0 4px 12px rgba(192,57,43,.15);
+    transform: translateY(-1px);
+}
 .ci-stat-num   { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
 .ci-stat-label { font-size: .8rem; color: rgba(247,245,245,.97); margin-bottom: .15rem; font-weight: 700; }
 .ci-stat-sub   { font-size: .75rem; color: rgba(255,255,255,.82); font-weight: 600; letter-spacing: .04em; margin-top: .2rem; }
@@ -657,6 +669,16 @@
                                 Update
                             </button>
                         </form>
+                        <form method="POST"
+                              action="{{ route('contact-inquiries.destroy', $inquiry) }}"
+                              onsubmit="return confirmCiDelete(event)">
+                            @csrf
+                            @method('DELETE')
+                            <button class="ci-btn danger" type="submit" style="min-height:36px;padding:.45rem .9rem;font-size:.8rem;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </article>
@@ -773,6 +795,14 @@
         <div class="ci-modal-footer">
             <div class="ci-modal-footer-left" id="ci-modal-footer-label"></div>
             <div style="display:flex;gap:.5rem;">
+                <form id="ci-delete-form" method="POST" onsubmit="return confirmCiDelete(event)">
+                    @csrf
+                    @method('DELETE')
+                    <button class="ci-btn danger" type="submit" style="font-size:.8rem;min-height:36px;padding:.45rem .9rem;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        Delete
+                    </button>
+                </form>
                 <button class="ci-btn secondary" onclick="switchCiTab(2)" style="font-size:.8rem;min-height:36px;padding:.45rem .9rem;">
                     Update Status
                 </button>
@@ -812,6 +842,7 @@ foreach ($inquiries as $i) {
                             : null,
         'handled_at'   => $i->handled_at ? $i->handled_at->format('M j, Y g:i A') : null,
         'update_url'   => route('contact-inquiries.update-status', $i),
+        'delete_url'   => route('contact-inquiries.destroy', $i),
     ];
 }
 @endphp
@@ -819,6 +850,15 @@ foreach ($inquiries as $i) {
 const ciData = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
 function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
+}
+function confirmCiDelete(e) {
+    e.preventDefault();
+    const form = e.target;
+    if (confirm('Delete this inquiry? This cannot be undone.')) {
+        showCiLoading();
+        form.submit();
+    }
+    return false;
 }
 function openCiModal(id) {
     const d = ciData[id];
@@ -854,6 +894,7 @@ function openCiModal(id) {
     document.getElementById('ci-modal-footer-label').textContent =
         'ID #' + d.id + ' · ' + d.created_at;
     document.getElementById('ci-update-form').action = d.update_url;
+    document.getElementById('ci-delete-form').action = d.delete_url;
     selectCiStatus(d.status);
     document.querySelector('#ci-update-form textarea[name="note"]').value = '';
     switchCiTab(0);

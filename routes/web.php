@@ -337,4 +337,7 @@ Route::middleware(['auth:staff', 'no.back', 'force.temp.password'])->group(funct
     Route::post('/tenants/{id}/time-out', [TenantController::class, 'timeOut']);
     Route::patch('/tenants/{id}/notes',   [TenantController::class, 'updateNotes']);
     Route::get('/tenant-logs',            [TenantController::class, 'tenantLogs']); 
+
+    Route::delete('contact-inquiries/{contactInquiry}', [ContactInquiryController::class, 'destroy'])
+    ->name('contact-inquiries.destroy');
 });
