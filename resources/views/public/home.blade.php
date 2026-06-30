@@ -198,6 +198,7 @@
     }
     .btn-primary:hover::after { transform: translateX(100%); }
     .btn-primary:hover { filter: brightness(0.94); transform: translateY(-2px); }
+    .btn-primary:disabled { opacity: .7; cursor: not-allowed; transform: none; }
     .btn-outline {
       display: inline-flex; align-items: center; gap: 8px;
       background: transparent; color: var(--brown); text-decoration: none;
@@ -1470,12 +1471,12 @@
   </div>
 </section>
 
-<div class="contact-modal-backdrop" id="contactModal" data-open="{{ $errors->contact->any() || session('contact_success') ? 'true' : 'false' }}" aria-hidden="true">
+<div class="contact-modal-backdrop" id="contactModal" data-open="{{ $errors->contact->any() ? 'true' : 'false' }}" aria-hidden="true">
   <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
     <button type="button" class="contact-modal-close" data-contact-modal-close aria-label="Close contact form">
       <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
     </button>
-    <form class="contact-form-card" method="POST" action="{{ route('contact.submit') }}" novalidate>
+    <form class="contact-form-card" id="contactForm" method="POST" action="{{ route('contact.submit') }}" novalidate>
       @csrf
       <div class="contact-form-head">
         <div>
@@ -1483,10 +1484,6 @@
           <div class="contact-form-note">Use this form for room inquiries, concerns, feedback, or DormEase access questions.</div>
         </div>
       </div>
-
-      @if (session('contact_success'))
-        <div class="contact-status success">{{ session('contact_success') }}</div>
-      @endif
 
       <div class="contact-honeypot" aria-hidden="true">
         <label for="website">Website</label>
@@ -1542,6 +1539,19 @@
         <div class="contact-smallprint">The admin team will review your message and contact you through the details provided.</div>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="contact-modal-backdrop" id="contactSuccessModal" aria-hidden="true">
+  <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="contactSuccessTitle" style="max-width:420px; text-align:center; padding:40px 32px;">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--pink-pale);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+      <svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--pink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3 id="contactSuccessTitle" style="font-family:var(--font-head);font-size:1.25rem;font-weight:800;color:var(--brown);margin-bottom:10px;">Message Sent!</h3>
+    <p style="font-size:.9rem;color:var(--brown-light);line-height:1.7;margin-bottom:24px;">
+      Thank you for reaching out. Our admin team has received your inquiry and will get back to you through the contact details you provided.
+    </p>
+    <button type="button" class="btn-primary" id="contactSuccessClose" style="width:100%;justify-content:center;border:0;cursor:pointer;">Got it</button>
   </div>
 </div>
 
@@ -1726,9 +1736,12 @@
   scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   const contactModal = document.getElementById('contactModal');
+  const contactSuccessModal = document.getElementById('contactSuccessModal');
   const contactModalOpeners = document.querySelectorAll('[data-contact-modal-open]');
   const contactModalClosers = document.querySelectorAll('[data-contact-modal-close]');
   const firstContactField = document.getElementById('contact-name');
+  const contactForm = document.getElementById('contactForm');
+  const contactSubmitBtn = contactForm.querySelector('button[type="submit"]');
 
   function openContactModal() {
     if (!contactModal) return;
@@ -1745,8 +1758,28 @@
     document.body.classList.remove('contact-modal-open');
   }
 
+  function openContactSuccessModal() {
+    if (!contactSuccessModal) return;
+    contactSuccessModal.classList.add('open');
+    contactSuccessModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('contact-modal-open');
+  }
+
+  function closeContactSuccessModal() {
+    if (!contactSuccessModal) return;
+    contactSuccessModal.classList.remove('open');
+    contactSuccessModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('contact-modal-open');
+  }
+
   contactModalOpeners.forEach(btn => btn.addEventListener('click', openContactModal));
   contactModalClosers.forEach(btn => btn.addEventListener('click', closeContactModal));
+
+  document.getElementById('contactSuccessClose')?.addEventListener('click', closeContactSuccessModal);
+  contactSuccessModal?.addEventListener('click', (e) => {
+    if (e.target === contactSuccessModal) closeContactSuccessModal();
+  });
+
   if (contactModal) {
     contactModal.addEventListener('click', (e) => {
       if (e.target === contactModal) closeContactModal();
@@ -1755,9 +1788,68 @@
       requestAnimationFrame(openContactModal);
     }
   }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && contactModal?.classList.contains('open')) closeContactModal();
+    if (e.key !== 'Escape') return;
+    if (contactSuccessModal?.classList.contains('open')) closeContactSuccessModal();
+    else if (contactModal?.classList.contains('open')) closeContactModal();
   });
+
+  function clearContactErrors() {
+    contactForm.querySelectorAll('.contact-error').forEach(el => el.remove());
+    contactForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+  }
+
+  function showContactErrors(errors) {
+    clearContactErrors();
+    Object.keys(errors).forEach(field => {
+      const fieldInput = contactForm.querySelector(`[name="${field}"]`);
+      if (!fieldInput) return;
+      fieldInput.classList.add('is-invalid');
+      const errEl = document.createElement('div');
+      errEl.className = 'contact-error';
+      errEl.textContent = errors[field][0];
+      fieldInput.closest('.contact-field')?.appendChild(errEl);
+    });
+  }
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearContactErrors();
+      contactSubmitBtn.disabled = true;
+      const originalLabel = contactSubmitBtn.textContent;
+      contactSubmitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(contactForm.action, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: new FormData(contactForm),
+        });
+
+        if (res.status === 422) {
+          const data = await res.json();
+          showContactErrors(data.errors || {});
+          return;
+        }
+
+        if (!res.ok) throw new Error('Request failed');
+
+        contactForm.reset();
+        closeContactModal();
+        setTimeout(openContactSuccessModal, 280);
+      } catch (err) {
+        alert('Something went wrong sending your message. Please try again or call us directly.');
+      } finally {
+        contactSubmitBtn.disabled = false;
+        contactSubmitBtn.textContent = originalLabel;
+      }
+    });
+  }
 
   const revealEls = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {
