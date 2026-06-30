@@ -1608,6 +1608,141 @@
 .purpose-cell:hover .purpose-tooltip {
     display: block;
 }
+/* ===== TABLET (≤1024px) ===== */
+@media (max-width: 1024px) {
+    .page-body { padding: 1.4rem 1.2rem; }
+
+    .tab-bar {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .tab-btn { flex-shrink: 0; }
+
+    .toolbar { gap: .5rem; }
+    .search-wrap input { width: 160px; }
+    .search-wrap input:focus { width: 190px; }
+    .toolbar .search-wrap { margin-left: 0; flex-basis: 100%; }
+    .toolbar .search-wrap input { width: 100%; }
+
+    .vd-detail-grid { grid-template-columns: 1fr; }
+    .archive-drawer { width: min(620px, 92vw); }
+}
+
+/* ===== TABLET / SMALL LAPTOP (≤900px) — replaces your old block ===== */
+@media (max-width: 900px) {
+    .modal-two-col { grid-template-columns: 1fr; }
+    .page-body { padding: 1.2rem 1rem; }
+    .archive-drawer { width: 100vw; }
+    .vd-detail-grid { grid-template-columns: 1fr; }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .header-actions { justify-content: flex-end; }
+
+    .table-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    table { min-width: 720px; }
+
+    .approved-zone-header { flex-wrap: wrap; gap: .5rem; }
+    .approved-zone-toolbar { flex-direction: column; align-items: stretch; }
+    .approved-tray-search input { width: 100%; }
+    .approved-pagination { margin-left: 0 !important; align-self: flex-end; }
+
+    .drawer-tab-bar {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 1rem;
+    }
+    .drawer-tab-btn { flex-shrink: 0; }
+
+    .drawer-toolbar { flex-wrap: wrap; }
+    .drawer-toolbar .search-wrap { margin-left: 0 !important; flex-basis: 100%; }
+    .drawer-toolbar .search-wrap input { width: 100%; }
+}
+
+/* ===== MOBILE (≤600px) ===== */
+@media (max-width: 600px) {
+    .page-body { padding: 1rem .7rem; gap: 1rem; }
+
+    .page-header-text h1 { font-size: 1.4rem; }
+    .page-header-text .dorm-sub { font-size: .8rem; }
+
+    .header-actions { width: 100%; }
+    .btn-archive { flex: 1; justify-content: center; }
+
+    .tab-bar { padding: .25rem; }
+    .tab-btn { padding: .45rem .8rem; font-size: .78rem; }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
+    .toolbar-label { display: none; }
+    .toolbar-select { width: 100%; }
+    .status-legend-wrap { align-self: flex-end; }
+    .status-legend-popup {
+        left: auto;
+        right: 0;
+        min-width: 260px;
+        max-width: 90vw;
+    }
+
+    .toolbar-forms .btn-upload { width: 100%; justify-content: center; }
+
+    .table-card-title { font-size: .92rem; }
+    .table-card-sub { font-size: .7rem; }
+
+    table { min-width: 640px; font-size: .78rem; }
+    thead th { padding: .55rem .6rem; font-size: .65rem; }
+    tbody td { padding: .6rem .7rem; }
+
+    .act-btn { width: 26px; height: 26px; }
+    .act-btn img { width: 11px; height: 11px; }
+
+    .table-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .6rem;
+    }
+    .pagination { justify-content: center; flex-wrap: wrap; }
+
+    .approved-card { width: 160px; }
+    .approved-tray-info { display: none; }
+
+    .drawer-header { padding: 1rem; }
+    .drawer-header-text h2 { font-size: 1rem; }
+    .drawer-body { padding: 1rem; }
+    .drawer-tab-btn { padding: .45rem .75rem; font-size: .76rem; }
+
+    .modal { width: 94vw !important; max-width: 94vw !important; margin: 0 auto; }
+    .modal-footer-split,
+    .dm-modal-footer {
+        flex-direction: column-reverse;
+        gap: .5rem;
+    }
+    .modal-footer-split button,
+    .dm-modal-footer button { width: 100%; }
+
+    .vd-tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .vd-tab-btn { flex-shrink: 0; padding: .5rem .75rem; font-size: .75rem; }
+
+    .purpose-cell { max-width: 90px; }
+
+    .action-loading-box { padding: 1rem 1.2rem; }
+    .loading-logo-wrap { width: 64px; height: 64px; }
+    .loading-logo-wrap img { width: 44px; height: 44px; }
+}
 
 </style>
 @endsection
