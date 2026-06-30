@@ -1096,19 +1096,54 @@ class MaintenanceController extends Controller
 
     private function classifyPriority(string $text, string $issue, ?CustomMaintenanceKeyword $decidingCustomKeyword = null): string
     {
-        foreach (self::PRIORITY_RULES as $priority => $keywords) {
-            foreach ($keywords as $keyword) {
+        $urgentMatches = 0;
+        $moderateMatches = 0;
+
+        if (isset(self::PRIORITY_RULES['urgent'])) {
+            foreach (self::PRIORITY_RULES['urgent'] as $keyword) {
                 if ($this->matchesKeyword($text, $keyword)) {
-                    return $priority;
+                    $urgentMatches++;
                 }
             }
         }
 
+        if (isset(self::PRIORITY_RULES['moderate'])) {
+            foreach (self::PRIORITY_RULES['moderate'] as $keyword) {
+                if ($this->matchesKeyword($text, $keyword)) {
+                    $moderateMatches++;
+                }
+            }
+        }
+        if ($urgentMatches >= 1) {
+            return 'urgent';
+        }
+        if ($moderateMatches >= 2) {
+            return 'urgent';
+        }
+        if ($moderateMatches === 1) {
+            return 'moderate';
+        }
         if ($decidingCustomKeyword && $decidingCustomKeyword->urgency_level) {
             return $decidingCustomKeyword->urgency_level;
         }
 
-        return self::ISSUE_RULES[$issue]['priority'] ?? 'low';
+        $defaultPriority = self::ISSUE_RULES[$issue]['priority'] ?? 'low';
+
+        if ($defaultPriority === 'low') {
+            $issueMatches = 0;
+            if (isset(self::ISSUE_RULES[$issue]['keywords'])) {
+                foreach (self::ISSUE_RULES[$issue]['keywords'] as $keyword) {
+                    if ($this->matchesKeyword($text, $keyword)) {
+                        $issueMatches++;
+                    }
+                }
+            }
+            if ($issueMatches >= 2) {
+                return 'moderate';
+            }
+        }
+
+        return $defaultPriority;
     }
 
     private function isGibberish(string $text): bool
