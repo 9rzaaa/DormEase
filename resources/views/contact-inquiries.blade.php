@@ -805,6 +805,48 @@
     justify-content: flex-end;
     flex-shrink: 0;
 }
+.ciad-tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 1.6rem;
+    border-bottom: 1px solid var(--baby-pink);
+    flex-shrink: 0;
+    background: #fff;
+}
+.ciad-tab {
+    padding: .75rem 1rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color .18s, border-color .18s;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+.ciad-tab:hover { color: var(--hot-pink); }
+.ciad-tab.active { color: var(--hot-pink); border-bottom-color: var(--hot-pink); }
+.ciad-tab-count {
+    font-size: .66rem;
+    font-weight: 800;
+    padding: .1rem .42rem;
+    border-radius: 99px;
+    background: var(--petal);
+    color: var(--ink-muted);
+    min-width: 16px;
+    text-align: center;
+}
+.ciad-tab.active .ciad-tab-count {
+    background: var(--bright-pink);
+    color: #fff;
+}
+.ciad-pill-resolved { background: #effdf6; color: #16835b; border: 1px solid #a6e7d8; }
 @media (max-width: 1024px) {
     .ci-stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1122,14 +1164,22 @@
     <div class="ciad-header">
         <div>
             <div class="ciad-title">Archive / History</div>
-            <div class="ciad-sub">Deleted contact inquiries</div>
+            <div class="ciad-sub">Deleted and resolved contact inquiries</div>
         </div>
         <button class="ciad-close" onclick="closeCiArchive()">&#x2715;</button>
+    </div>
+    <div class="ciad-tabs">
+        <button class="ciad-tab active" id="ciad-tab-deleted" onclick="switchCiArchiveTab('deleted')">
+            Deleted <span class="ciad-tab-count" id="ciad-count-deleted">0</span>
+        </button>
+        <button class="ciad-tab" id="ciad-tab-resolved" onclick="switchCiArchiveTab('resolved')">
+            Resolved <span class="ciad-tab-count" id="ciad-count-resolved">0</span>
+        </button>
     </div>
     <div class="ciad-search-bar">
         <div class="ciad-search-inner">
             <svg class="ciad-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="ciad-search" placeholder="Search deleted inquiries..." oninput="renderCiArchive()">
+            <input type="text" id="ciad-search" placeholder="Search archived inquiries..." oninput="renderCiArchive()">
         </div>
     </div>
     <div class="ciad-list" id="ciad-list"></div>
@@ -1207,10 +1257,29 @@ foreach (($deletedInquiries ?? collect()) as $d) {
                             : null,
     ];
 }
+
+$ciResolvedMap = [];
+foreach (($resolvedInquiries ?? collect()) as $r) {
+    $ciResolvedMap[] = [
+        'id'           => $r->getKey(),
+        'name'         => $r->name,
+        'email'        => $r->email,
+        'phone'        => $r->phone ?? null,
+        'inquiry_type' => $r->inquiry_type,
+        'status'       => $r->status,
+        'message'      => $r->message,
+        'created_at'   => optional($r->created_at)->format('M j, Y g:i A'),
+        'handled_at'   => optional($r->handled_at)->format('M j, Y g:i A'),
+        'handler'      => $r->handler
+                            ? ($r->handler->first_name . ' ' . $r->handler->last_name)
+                            : null,
+    ];
+}
 @endphp
 <script>
-const ciData          = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
-const ciDeletedArchive = {!! json_encode($ciDeletedMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+const ciData           = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+const ciDeletedArchive  = {!! json_encode($ciDeletedMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+const ciResolvedArchive = {!! json_encode($ciResolvedMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
 
 function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
@@ -1282,6 +1351,7 @@ async function confirmCiDeleteProceed() {
         document.getElementById('ci-loading').classList.remove('open');
         if (typeof showToast === 'function') showToast('Inquiry deleted successfully.', 'success');
 
+        _ciArchiveTab = 'deleted';
         openCiArchive();
     } catch (err) {
         document.getElementById('ci-loading').classList.remove('open');
@@ -1394,7 +1464,7 @@ function escapeHtml(v) {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
                     </div>
                     <div>
-                        <div class="ciadd-title" id="ciadd-title">Deleted Inquiry</div>
+                        <div class="ciadd-title" id="ciadd-title">Archived Inquiry</div>
                         <div class="ciadd-sub" id="ciadd-sub">Archived record</div>
                     </div>
                 </div>
@@ -1411,16 +1481,30 @@ function escapeHtml(v) {
     document.body.appendChild(modal);
 })();
 
+let _ciArchiveTab = 'deleted';
+
 function openCiArchive() {
     document.getElementById('ciad-drawer').classList.add('open');
     document.getElementById('ciad-backdrop').classList.add('open');
     document.getElementById('ciad-search').value = '';
+    document.getElementById('ciad-tab-deleted').classList.toggle('active',  _ciArchiveTab === 'deleted');
+    document.getElementById('ciad-tab-resolved').classList.toggle('active', _ciArchiveTab === 'resolved');
+    document.getElementById('ciad-count-deleted').textContent  = ciDeletedArchive.length;
+    document.getElementById('ciad-count-resolved').textContent = ciResolvedArchive.length;
     renderCiArchive();
 }
 
 function closeCiArchive() {
     document.getElementById('ciad-drawer').classList.remove('open');
     document.getElementById('ciad-backdrop').classList.remove('open');
+}
+
+function switchCiArchiveTab(tab) {
+    _ciArchiveTab = tab;
+    document.getElementById('ciad-tab-deleted').classList.toggle('active',  tab === 'deleted');
+    document.getElementById('ciad-tab-resolved').classList.toggle('active', tab === 'resolved');
+    document.getElementById('ciad-search').value = '';
+    renderCiArchive();
 }
 
 function fmtDatePlain(d) {
@@ -1430,7 +1514,8 @@ function fmtDatePlain(d) {
 
 function renderCiArchive() {
     const q = document.getElementById('ciad-search').value.toLowerCase();
-    const data = ciDeletedArchive.filter(r =>
+    const source = _ciArchiveTab === 'deleted' ? ciDeletedArchive : ciResolvedArchive;
+    const data = source.filter(r =>
         (r.name    || '').toLowerCase().includes(q) ||
         (r.email   || '').toLowerCase().includes(q) ||
         (r.message || '').toLowerCase().includes(q) ||
@@ -1440,11 +1525,14 @@ function renderCiArchive() {
     document.getElementById('ciad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
 
     if (!data.length) {
-        list.innerHTML = '<div class="ciad-empty">No deleted inquiries found.</div>';
+        list.innerHTML = '<div class="ciad-empty">No ' + _ciArchiveTab + ' inquiries found.</div>';
         return;
     }
 
     list.innerHTML = data.map((r, i) => {
+        const dateLabel = _ciArchiveTab === 'deleted' ? 'Deleted on' : 'Resolved on';
+        const dateValue = _ciArchiveTab === 'deleted' ? (r.deleted_at || '—') : (r.handled_at || '—');
+        const statusPillClass = _ciArchiveTab === 'resolved' ? 'ciad-pill-resolved' : '';
         return '<div class="ciad-card" style="animation-delay:' + (i * 0.04) + 's;" onclick=\'openCiArchiveDetail(' + JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'\\u0027') + ')\'>'
             + '<div class="ciad-card-top">'
                 + '<div class="ciad-card-id">#' + r.id + '</div>'
@@ -1454,16 +1542,20 @@ function renderCiArchive() {
             + '<div class="ciad-card-desc">' + escapeHtml(r.message || '') + '</div>'
             + '<div class="ciad-card-meta">'
                 + '<span class="ciad-pill" style="background:var(--petal);color:var(--hot-pink);border:1px solid var(--baby-pink);">' + ucFirst((r.inquiry_type || '').replace(/_/g,' ')) + '</span>'
-                + '<span class="ciad-pill" style="background:#f3f4f6;color:#888;border:1px solid #d0d0d8;">' + ucFirst(r.status || 'new') + '</span>'
+                + '<span class="ciad-pill ' + statusPillClass + '" style="' + (statusPillClass ? '' : 'background:#f3f4f6;color:#888;border:1px solid #d0d0d8;') + '">' + ucFirst(r.status || 'new') + '</span>'
             + '</div>'
-            + '<div class="ciad-card-deleted">Deleted on: <span>' + (r.deleted_at || '—') + '</span></div>'
+            + '<div class="ciad-card-deleted">' + dateLabel + ': <span>' + dateValue + '</span></div>'
         + '</div>';
     }).join('');
 }
 
 function openCiArchiveDetail(record) {
     document.getElementById('ciadd-title').textContent = record.name || 'Untitled';
-    document.getElementById('ciadd-sub').textContent   = '#' + record.id + ' · Deleted ' + (record.deleted_at || '—');
+
+    const isDeleted = _ciArchiveTab === 'deleted';
+    document.getElementById('ciadd-sub').textContent = isDeleted
+        ? '#' + record.id + ' · Deleted ' + (record.deleted_at || '—')
+        : '#' + record.id + ' · Resolved ' + (record.handled_at || '—');
 
     document.getElementById('ciadd-body').innerHTML = `
         <div class="ci-view-row"><span class="ci-view-label">Name</span><span class="ci-view-val">${escapeHtml(record.name || '')}</span></div>
@@ -1472,7 +1564,9 @@ function openCiArchiveDetail(record) {
         <div class="ci-view-row"><span class="ci-view-label">Inquiry Type</span><span class="ci-view-val">${ucFirst((record.inquiry_type || '').replace(/_/g,' '))}</span></div>
         <div class="ci-view-row"><span class="ci-view-label">Status</span><span class="ci-view-val">${statusBadge(record.status)}</span></div>
         <div class="ci-view-row"><span class="ci-view-label">Submitted</span><span class="ci-view-val">${record.created_at || '—'}</span></div>
-        <div class="ci-view-row"><span class="ci-view-label">Deleted On</span><span class="ci-view-val" style="color:#e04867;">${record.deleted_at || '—'}</span></div>
+        ${isDeleted
+            ? `<div class="ci-view-row"><span class="ci-view-label">Deleted On</span><span class="ci-view-val" style="color:#e04867;">${record.deleted_at || '—'}</span></div>`
+            : `<div class="ci-view-row"><span class="ci-view-label">Resolved On</span><span class="ci-view-val" style="color:#16835b;">${record.handled_at || '—'}</span></div>`}
         ${record.handler ? `<div class="ci-view-row"><span class="ci-view-label">Handled By</span><span class="ci-view-val">${escapeHtml(record.handler)}</span></div>` : ''}
         <div style="margin-top:1rem;">
             <div class="ci-update-label">Message</div>
@@ -1490,9 +1584,12 @@ function closeCiArchiveDetail() {
 }
 
 function exportCiArchive() {
-    if (!ciDeletedArchive.length) return;
-    const rows = [['ID','Name','Email','Phone','Inquiry Type','Status','Message','Submitted','Deleted On']];
-    ciDeletedArchive.forEach(r => {
+    const source   = _ciArchiveTab === 'deleted' ? ciDeletedArchive : ciResolvedArchive;
+    const filename = _ciArchiveTab === 'deleted' ? 'contact_inquiries_deleted.csv' : 'contact_inquiries_resolved.csv';
+    if (!source.length) return;
+
+    const rows = [['ID','Name','Email','Phone','Inquiry Type','Status','Message','Submitted', _ciArchiveTab === 'deleted' ? 'Deleted On' : 'Resolved On']];
+    source.forEach(r => {
         rows.push([
             r.id,
             r.name        || '',
@@ -1502,13 +1599,13 @@ function exportCiArchive() {
             r.status      || '',
             r.message     || '',
             r.created_at  || '',
-            r.deleted_at  || '',
+            _ciArchiveTab === 'deleted' ? (r.deleted_at || '') : (r.handled_at || ''),
         ]);
     });
     const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
     const a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'contact_inquiries_deleted.csv';
+    a.download = filename;
     a.click();
 }
 
@@ -1626,6 +1723,7 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
             if (freshScript) {
                 const m  = freshScript.textContent.match(/const ciData\s*=\s*(\{[\s\S]*?\});/);
                 const dm = freshScript.textContent.match(/const ciDeletedArchive\s*=\s*(\[[\s\S]*?\]);/);
+                const rm = freshScript.textContent.match(/const ciResolvedArchive\s*=\s*(\[[\s\S]*?\]);/);
                 if (m) {
                     try {
                         const freshMap = JSON.parse(m[1]);
@@ -1638,6 +1736,13 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
                         const freshDeleted = JSON.parse(dm[1]);
                         ciDeletedArchive.length = 0;
                         ciDeletedArchive.push(...freshDeleted);
+                    } catch (_) {}
+                }
+                if (rm) {
+                    try {
+                        const freshResolved = JSON.parse(rm[1]);
+                        ciResolvedArchive.length = 0;
+                        ciResolvedArchive.push(...freshResolved);
                     } catch (_) {}
                 }
             }
