@@ -758,7 +758,7 @@
                 <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
             @else
                 @foreach($notifications as $notif)
-                    <div class="notif-item" onclick="openNotifModal({{ json_encode($notif->message) }}, {{ json_encode($notif->type ?? 'bell') }}, {{ json_encode(\Carbon\Carbon::parse($notif->created_at)->diffForHumans()) }}, {{ $notif->id }})">
+                    <div class="notif-item" onclick="openNotifModal({{ json_encode($notif->message) }}, {{ json_encode($notif->type ?? 'bell') }}, {{ json_encode(\Carbon\Carbon::parse($notif->created_at)->diffForHumans()) }}, {{ $notif->notif_id }})">
                         <div class="notif-ico">
                             <img src="{{ asset('icons/' . ($notif->type ?? 'bell') . '.png') }}" alt=""
                                  onerror="this.src='{{ asset('icons/bell.png') }}'">

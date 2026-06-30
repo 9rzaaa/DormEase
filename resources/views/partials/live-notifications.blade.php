@@ -68,7 +68,7 @@
 
             list.innerHTML = '';
             notifications.forEach(function(notif) {
-                var isReservation = notif.type === 'tenant_reserved';
+                var isReservation = notif.type === 'reservation' || notif.raw_type === 'tenant_reserved';
 
                 var resolvedIcon = notif.icon;
                 if (isReservation && (!resolvedIcon || resolvedIcon === '')) {
@@ -104,19 +104,22 @@
                     return function() {
                         var typeMap = {
                             'tenant_reserved':  'reservation',
+                            'reservation':      'reservation',
+                            'reservation_overdue': 'reservation_overdue',
                             'maintenance':      'maintenance',
                             'emergency':        'emergency',
                             'billing':          'billing',
                             'document':         'document',
                             'announcement':     'announcement',
                             'visitor':          'visitor',
+                            'moveout_reminder': 'moveout_reminder',
                             'tenant':           'tenant',
                         };
-                        var mappedType = typeMap[n.type];
+                        var mappedType = typeMap[n.type] || typeMap[n.raw_type];
                         if (!mappedType) {
                             var keys = Object.keys(typeMap);
                             for (var i = 0; i < keys.length; i++) {
-                                if (n.type && n.type.indexOf(keys[i]) === 0) {
+                                if ((n.type && n.type.indexOf(keys[i]) === 0) || (n.raw_type && n.raw_type.indexOf(keys[i]) === 0)) {
                                     mappedType = typeMap[keys[i]];
                                     break;
                                 }
