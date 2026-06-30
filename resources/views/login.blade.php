@@ -2085,8 +2085,14 @@
         })();
     @endif
 
-    document.getElementById('login-btn').addEventListener('click', function () {
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
         var form     = document.getElementById('login-form');
+        var btn      = document.getElementById('login-btn');
+
+        if (btn.disabled) return;
+
         var emailVal = emailInput.value.trim();
         var pwVal    = document.getElementById('password').value;
         var valid    = true;
@@ -2109,7 +2115,6 @@
 
         if (!valid) return;
 
-        var btn = this;
         btn.disabled = true;
         document.getElementById('login-btn-text').style.display = 'none';
         document.getElementById('login-spinner').style.display  = 'inline-block';
@@ -2121,7 +2126,7 @@
             showEmailErr('Connection timed out. Try again.');
         }, 12000);
 
-        form.addEventListener('submit', function () { clearTimeout(timeout); }, { once: true });
+        window.addEventListener('beforeunload', function () { clearTimeout(timeout); }, { once: true });
         form.submit();
     });
 
