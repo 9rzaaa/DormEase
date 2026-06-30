@@ -33,6 +33,33 @@
     color: var(--bright-pink);
     margin-top: .2rem;
 }
+.ci-header-actions {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    flex-wrap: wrap;
+}
+.btn-ci-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .6rem 1.2rem;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--hot-pink);
+    border: 1.5px solid var(--baby-pink);
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+    font-family: var(--ff-body);
+    white-space: nowrap;
+}
+.btn-ci-outline:hover {
+    border-color: var(--bright-pink);
+    box-shadow: 0 4px 14px rgba(232,23,93,.12);
+}
+.btn-ci-outline svg { width: 14px; height: 14px; }
 .ci-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -74,18 +101,6 @@
     height: 26px;
     color: var(--hot-pink);
     flex-shrink: 0;
-}
-.ci-btn.danger {
-    background: #fff0f0;
-    color: #c0392b;
-    border: 1.5px solid #f3c4c0;
-    box-shadow: none;
-}
-.ci-btn.danger:hover {
-    background: #ffe2e0;
-    border-color: #c0392b;
-    box-shadow: 0 4px 12px rgba(192,57,43,.15);
-    transform: translateY(-1px);
 }
 .ci-stat-num   { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
 .ci-stat-label { font-size: .8rem; color: rgba(247,245,245,.97); margin-bottom: .15rem; font-weight: 700; }
@@ -166,6 +181,18 @@
 .ci-btn.secondary:hover {
     border-color: var(--bright-pink);
     box-shadow: 0 4px 12px rgba(232,23,93,.12);
+    transform: translateY(-1px);
+}
+.ci-btn.danger {
+    background: #fff0f0;
+    color: #c0392b;
+    border: 1.5px solid #f3c4c0;
+    box-shadow: none;
+}
+.ci-btn.danger:hover {
+    background: #ffe2e0;
+    border-color: #c0392b;
+    box-shadow: 0 4px 12px rgba(192,57,43,.15);
     transform: translateY(-1px);
 }
 .ci-list {
@@ -287,6 +314,36 @@
     border-color: var(--bright-pink);
     background: var(--petal);
     transform: translateY(-1px);
+}
+.ci-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    border: 1.5px solid var(--baby-pink);
+    background: #fff;
+    color: var(--hot-pink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+    flex-shrink: 0;
+}
+.ci-icon-btn svg { width: 15px; height: 15px; }
+.ci-icon-btn:hover {
+    border-color: var(--bright-pink);
+    background: var(--petal);
+    transform: translateY(-1px);
+}
+.ci-icon-btn.danger {
+    color: #c0392b;
+    border-color: #f3c4c0;
+    background: #fff0f0;
+}
+.ci-icon-btn.danger:hover {
+    background: #ffe2e0;
+    border-color: #c0392b;
+    box-shadow: 0 4px 12px rgba(192,57,43,.15);
 }
 .ci-status-form {
     display: flex;
@@ -507,6 +564,194 @@
 }
 .ci-loading-logo svg { width: 28px; height: 28px; color: #fff; }
 @keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.ci-archive-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(232,23,93,.18);
+    backdrop-filter: blur(3px);
+    z-index: 499; opacity: 0; pointer-events: none;
+    transition: opacity .38s ease;
+}
+.ci-archive-backdrop.open { opacity: 1; pointer-events: auto; }
+.ci-archive-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(620px, 100vw);
+    background: var(--soft-bg, #fdf6f9);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .38s cubic-bezier(.4,0,.2,1);
+    box-shadow: -8px 0 40px rgba(214,51,117,.15);
+}
+.ci-archive-drawer.open { transform: translateX(0); }
+.ciad-header {
+    padding: 1.4rem 1.6rem 1rem;
+    border-bottom: 1px solid var(--baby-pink);
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 1rem; flex-shrink: 0;
+}
+.ciad-title { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+.ciad-sub   { font-size: .78rem; color: var(--ink-muted); margin-top: .2rem; }
+.ciad-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--baby-pink);
+    background: var(--petal);
+    color: var(--bright-pink);
+    font-size: .95rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+.ciad-close:hover { background: var(--baby-pink); }
+.ciad-search-bar { padding: 1rem 1.6rem .65rem; flex-shrink: 0; }
+.ciad-search-inner { position: relative; display: flex; align-items: center; }
+.ciad-search-inner input {
+    width: 100%;
+    padding: .52rem .9rem .52rem 2.1rem;
+    border-radius: 10px;
+    border: 1px solid var(--baby-pink);
+    background: #fff;
+    font-size: .82rem;
+    font-family: var(--ff-body);
+    outline: none;
+    box-sizing: border-box;
+}
+.ciad-search-inner input:focus { border-color: var(--bright-pink); background: var(--blush); }
+.ciad-search-icon { position: absolute; left: .72rem; width: 13px; height: 13px; opacity: .45; pointer-events: none; }
+.ciad-list {
+    flex: 1; overflow-y: auto;
+    padding: 0 1.6rem 1.6rem;
+    display: flex; flex-direction: column; gap: .7rem;
+}
+.ciad-list::-webkit-scrollbar { width: 4px; }
+.ciad-list::-webkit-scrollbar-thumb { background: var(--pink-200, #f4b8d0); border-radius: 99px; }
+.ciad-card {
+    background: #fff;
+    border: 1px solid var(--baby-pink);
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    animation: ciadSlide .3s ease both;
+}
+@keyframes ciadSlide { from { opacity:0; transform: translateX(10px); } to { opacity:1; transform: none; } }
+.ciad-card:hover { border-color: var(--bright-pink); background: var(--blush); }
+.ciad-card-top { display: flex; justify-content: space-between; gap: .8rem; margin-bottom: .4rem; }
+.ciad-card-id  { font-size: .72rem; font-weight: 800; color: var(--bright-pink); font-family: monospace; }
+.ciad-card-time { font-size: .68rem; color: var(--ink-muted); white-space: nowrap; }
+.ciad-card-title { font-size: .88rem; font-weight: 700; color: var(--ink); margin-bottom: .18rem; }
+.ciad-card-desc { font-size: .74rem; color: var(--ink-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ciad-card-meta { display: flex; gap: .4rem; margin-top: .55rem; flex-wrap: wrap; }
+.ciad-pill { font-size: .66rem; font-weight: 700; padding: .16rem .52rem; border-radius: 99px; text-transform: uppercase; letter-spacing: .03em; }
+.ciad-card-deleted {
+    font-size: .68rem; color: var(--ink-muted);
+    margin-top: .55rem; padding-top: .5rem;
+    border-top: 1px solid var(--baby-pink);
+}
+.ciad-card-deleted span { color: #e04867; font-weight: 700; }
+.ciad-empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink-muted); font-size: .84rem; }
+.ciad-footer {
+    padding: .85rem 1.6rem;
+    border-top: 1px solid var(--baby-pink);
+    background: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+}
+.ciad-count-label { font-size: .75rem; color: var(--ink-muted); font-weight: 600; }
+.ciad-export-btn {
+    display: inline-flex; align-items: center; gap: .38rem;
+    font-size: .74rem; font-weight: 700; color: var(--bright-pink);
+    background: var(--petal); border: 1px solid var(--baby-pink);
+    border-radius: 8px; padding: .32rem .8rem;
+    cursor: pointer; transition: background .2s; font-family: var(--ff-body);
+}
+.ciad-export-btn:hover { background: var(--gradient-pink); color: #fff; border-color: transparent; }
+.ciad-export-btn svg { width: 12px; height: 12px; }
+#ciadd-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 800;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+}
+#ciadd-backdrop.open { opacity: 1; pointer-events: auto; }
+#ciadd-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -48%) scale(.97);
+    width: min(560px, calc(100vw - 2rem));
+    max-height: 88vh;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(26,26,46,.22);
+    z-index: 801;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+    overflow: hidden;
+}
+#ciadd-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+#ciadd-modal .ciadd-header {
+    padding: 1.3rem 1.5rem 0;
+    border-bottom: 1px solid var(--baby-pink);
+    background: #fff;
+    flex-shrink: 0;
+}
+#ciadd-modal .ciadd-header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+#ciadd-modal .ciadd-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+#ciadd-modal .ciadd-icon svg { width: 16px; height: 16px; color: #888; }
+#ciadd-modal .ciadd-title { font-size: 1rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+#ciadd-modal .ciadd-sub { font-size: .7rem; color: var(--ink-muted); font-weight: 500; margin-top: .1rem; }
+#ciadd-modal .ciadd-close {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--baby-pink);
+    background: var(--petal);
+    color: var(--bright-pink);
+    font-size: .8rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+#ciadd-modal .ciadd-close:hover { background: var(--baby-pink); }
+#ciadd-modal .ciadd-body {
+    padding: 1.3rem 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+#ciadd-modal .ciadd-footer {
+    padding: .9rem 1.5rem;
+    border-top: 1px solid var(--baby-pink);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
 @media (max-width: 1024px) {
     .ci-stats-row { grid-template-columns: repeat(2, 1fr); }
 }
@@ -530,14 +775,20 @@
 @endsection
 @section('content')
 <div class="ci-page">
-    
+
     <div class="ci-page-header fade-up d1">
         <div>
             <h1>Contact Inquiries</h1>
             <div class="dorm-name">Messages submitted from the public Contact Us form</div>
         </div>
+        <div class="ci-header-actions">
+            <button class="btn-ci-outline" onclick="openCiArchive()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                Archive / History
+            </button>
+        </div>
     </div>
-    
+
     <div class="ci-stats-row fade-up d2">
         <div class="ci-stat-card">
             <div class="ci-stat-icon">
@@ -580,7 +831,7 @@
             </div>
         </div>
     </div>
-    
+
     <form class="ci-filter fade-up d3" method="GET" action="{{ route('contact-inquiries.index') }}">
         <div class="ci-field">
             <label for="search">Search</label>
@@ -614,7 +865,7 @@
             <a class="ci-btn secondary" href="{{ route('contact-inquiries.index') }}">Reset</a>
         </div>
     </form>
-    
+
     <div class="ci-list fade-up d4">
         @forelse($inquiries as $inquiry)
             <article class="ci-card status-{{ $inquiry->status }}"
@@ -674,9 +925,8 @@
                               onsubmit="return confirmCiDelete(event)">
                             @csrf
                             @method('DELETE')
-                            <button class="ci-btn danger" type="submit" style="min-height:36px;padding:.45rem .9rem;font-size:.8rem;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                Delete
+                            <button class="ci-icon-btn danger" type="submit" title="Delete inquiry" aria-label="Delete inquiry">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                             </button>
                         </form>
                     </div>
@@ -686,7 +936,7 @@
             <div class="ci-empty">No contact inquiries found.</div>
         @endforelse
     </div>
-    
+
     @if($inquiries->hasPages())
         <div class="ci-pagination">
             {{ $inquiries->links() }}
@@ -698,7 +948,7 @@
 
 <div id="ci-view-modal" onclick="if(event.target===this) closeCiModal()">
     <div class="ci-modal-box">
-        
+
         <div class="ci-modal-header">
             <div class="ci-modal-header-top">
                 <div class="ci-modal-title-group">
@@ -727,9 +977,9 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="ci-modal-body">
-            
+
             <div class="ci-modal-panel active" id="ci-panel-0">
                 <div class="ci-view-row">
                     <span class="ci-view-label">Name</span>
@@ -760,11 +1010,11 @@
                     <span class="ci-view-val" id="ci-v-handler">—</span>
                 </div>
             </div>
-            
+
             <div class="ci-modal-panel" id="ci-panel-1">
                 <div class="ci-view-message" id="ci-v-message"></div>
             </div>
-            
+
             <div class="ci-modal-panel" id="ci-panel-2">
                 <form id="ci-update-form" method="POST" onsubmit="showCiLoading()">
                     @csrf
@@ -791,16 +1041,15 @@
                 </form>
             </div>
         </div>
-        
+
         <div class="ci-modal-footer">
             <div class="ci-modal-footer-left" id="ci-modal-footer-label"></div>
             <div style="display:flex;gap:.5rem;">
                 <form id="ci-delete-form" method="POST" onsubmit="return confirmCiDelete(event)">
                     @csrf
                     @method('DELETE')
-                    <button class="ci-btn danger" type="submit" style="font-size:.8rem;min-height:36px;padding:.45rem .9rem;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                        Delete
+                    <button type="submit" class="ci-icon-btn danger" title="Delete inquiry" aria-label="Delete inquiry">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                     </button>
                 </form>
                 <button class="ci-btn secondary" onclick="switchCiTab(2)" style="font-size:.8rem;min-height:36px;padding:.45rem .9rem;">
@@ -811,6 +1060,32 @@
                 </button>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="ci-archive-backdrop" id="ciad-backdrop" onclick="closeCiArchive()"></div>
+
+<div class="ci-archive-drawer" id="ciad-drawer">
+    <div class="ciad-header">
+        <div>
+            <div class="ciad-title">Archive / History</div>
+            <div class="ciad-sub">Deleted contact inquiries</div>
+        </div>
+        <button class="ciad-close" onclick="closeCiArchive()">&#x2715;</button>
+    </div>
+    <div class="ciad-search-bar">
+        <div class="ciad-search-inner">
+            <svg class="ciad-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="ciad-search" placeholder="Search deleted inquiries..." oninput="renderCiArchive()">
+        </div>
+    </div>
+    <div class="ciad-list" id="ciad-list"></div>
+    <div class="ciad-footer">
+        <div class="ciad-count-label" id="ciad-count-label">0 records</div>
+        <button class="ciad-export-btn" onclick="exportCiArchive()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+        </button>
     </div>
 </div>
 
@@ -845,12 +1120,33 @@ foreach ($inquiries as $i) {
         'delete_url'   => route('contact-inquiries.destroy', $i),
     ];
 }
+
+$ciDeletedMap = [];
+foreach (($deletedInquiries ?? collect()) as $d) {
+    $ciDeletedMap[] = [
+        'id'           => $d->getKey(),
+        'name'         => $d->name,
+        'email'        => $d->email,
+        'phone'        => $d->phone ?? null,
+        'inquiry_type' => $d->inquiry_type,
+        'status'       => $d->status,
+        'message'      => $d->message,
+        'created_at'   => optional($d->created_at)->format('M j, Y g:i A'),
+        'deleted_at'   => optional($d->deleted_at)->format('M j, Y g:i A'),
+        'handler'      => $d->handler
+                            ? ($d->handler->first_name . ' ' . $d->handler->last_name)
+                            : null,
+    ];
+}
 @endphp
 <script>
-const ciData = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+const ciData          = {!! json_encode($ciDataMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+const ciDeletedArchive = {!! json_encode($ciDeletedMap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!};
+
 function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
 }
+
 function confirmCiDelete(e) {
     e.preventDefault();
     const form = e.target;
@@ -860,6 +1156,7 @@ function confirmCiDelete(e) {
     }
     return false;
 }
+
 function openCiModal(id) {
     const d = ciData[id];
     if (!d) return;
@@ -900,9 +1197,11 @@ function openCiModal(id) {
     switchCiTab(0);
     document.getElementById('ci-view-modal').classList.add('open');
 }
+
 function closeCiModal() {
     document.getElementById('ci-view-modal').classList.remove('open');
 }
+
 let _ciTab = 0;
 function switchCiTab(idx) {
     _ciTab = idx;
@@ -911,6 +1210,7 @@ function switchCiTab(idx) {
         document.getElementById('ci-panel-' + i).classList.toggle('active', i === idx);
     });
 }
+
 function selectCiStatus(val) {
     document.querySelectorAll('.ci-status-pill').forEach(p => {
         p.className = 'ci-status-pill';
@@ -918,9 +1218,11 @@ function selectCiStatus(val) {
     });
     document.getElementById('ci-status-input').value = val;
 }
+
 function ucFirst(str) {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
+
 function statusBadge(status) {
     const map = {
         new:      ['#fff0f6', 'var(--hot-pink)',  'var(--baby-pink)', 'New'],
@@ -930,6 +1232,144 @@ function statusBadge(status) {
     const [bg, color, border, label] = map[status] || map.new;
     return `<span style="display:inline-flex;align-items:center;padding:.26rem .65rem;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:${bg};color:${color};border:1px solid ${border};">${label}</span>`;
 }
+
+function escapeHtml(v) {
+    return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+(function buildCiadd() {
+    const backdrop = document.createElement('div');
+    backdrop.id = 'ciadd-backdrop';
+    backdrop.onclick = closeCiArchiveDetail;
+
+    const modal = document.createElement('div');
+    modal.id = 'ciadd-modal';
+    modal.innerHTML = `
+        <div class="ciadd-header">
+            <div class="ciadd-header-top">
+                <div style="display:flex;align-items:center;gap:.65rem;">
+                    <div class="ciadd-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                    </div>
+                    <div>
+                        <div class="ciadd-title" id="ciadd-title">Deleted Inquiry</div>
+                        <div class="ciadd-sub" id="ciadd-sub">Archived record</div>
+                    </div>
+                </div>
+                <button class="ciadd-close" onclick="closeCiArchiveDetail()">&#x2715;</button>
+            </div>
+        </div>
+        <div class="ciadd-body" id="ciadd-body"></div>
+        <div class="ciadd-footer">
+            <button class="ci-btn secondary" onclick="closeCiArchiveDetail()">Close</button>
+        </div>
+    `;
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(modal);
+})();
+
+function openCiArchive() {
+    document.getElementById('ciad-drawer').classList.add('open');
+    document.getElementById('ciad-backdrop').classList.add('open');
+    document.getElementById('ciad-search').value = '';
+    renderCiArchive();
+}
+
+function closeCiArchive() {
+    document.getElementById('ciad-drawer').classList.remove('open');
+    document.getElementById('ciad-backdrop').classList.remove('open');
+}
+
+function fmtDatePlain(d) {
+    if (!d) return '—';
+    return d;
+}
+
+function renderCiArchive() {
+    const q = document.getElementById('ciad-search').value.toLowerCase();
+    const data = ciDeletedArchive.filter(r =>
+        (r.name    || '').toLowerCase().includes(q) ||
+        (r.email   || '').toLowerCase().includes(q) ||
+        (r.message || '').toLowerCase().includes(q) ||
+        (r.inquiry_type || '').toLowerCase().includes(q)
+    );
+    const list = document.getElementById('ciad-list');
+    document.getElementById('ciad-count-label').textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+    if (!data.length) {
+        list.innerHTML = '<div class="ciad-empty">No deleted inquiries found.</div>';
+        return;
+    }
+
+    list.innerHTML = data.map((r, i) => {
+        return '<div class="ciad-card" style="animation-delay:' + (i * 0.04) + 's;" onclick=\'openCiArchiveDetail(' + JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'\\u0027') + ')\'>'
+            + '<div class="ciad-card-top">'
+                + '<div class="ciad-card-id">#' + r.id + '</div>'
+                + '<div class="ciad-card-time">' + (r.created_at || '—') + '</div>'
+            + '</div>'
+            + '<div class="ciad-card-title">' + escapeHtml(r.name || '') + '</div>'
+            + '<div class="ciad-card-desc">' + escapeHtml(r.message || '') + '</div>'
+            + '<div class="ciad-card-meta">'
+                + '<span class="ciad-pill" style="background:var(--petal);color:var(--hot-pink);border:1px solid var(--baby-pink);">' + ucFirst((r.inquiry_type || '').replace(/_/g,' ')) + '</span>'
+                + '<span class="ciad-pill" style="background:#f3f4f6;color:#888;border:1px solid #d0d0d8;">' + ucFirst(r.status || 'new') + '</span>'
+            + '</div>'
+            + '<div class="ciad-card-deleted">Deleted on: <span>' + (r.deleted_at || '—') + '</span></div>'
+        + '</div>';
+    }).join('');
+}
+
+function openCiArchiveDetail(record) {
+    document.getElementById('ciadd-title').textContent = record.name || 'Untitled';
+    document.getElementById('ciadd-sub').textContent   = '#' + record.id + ' · Deleted ' + (record.deleted_at || '—');
+
+    document.getElementById('ciadd-body').innerHTML = `
+        <div class="ci-view-row"><span class="ci-view-label">Name</span><span class="ci-view-val">${escapeHtml(record.name || '')}</span></div>
+        <div class="ci-view-row"><span class="ci-view-label">Email</span><span class="ci-view-val"><a href="mailto:${escapeHtml(record.email || '')}">${escapeHtml(record.email || '')}</a></span></div>
+        ${record.phone ? `<div class="ci-view-row"><span class="ci-view-label">Phone</span><span class="ci-view-val">${escapeHtml(record.phone)}</span></div>` : ''}
+        <div class="ci-view-row"><span class="ci-view-label">Inquiry Type</span><span class="ci-view-val">${ucFirst((record.inquiry_type || '').replace(/_/g,' '))}</span></div>
+        <div class="ci-view-row"><span class="ci-view-label">Status</span><span class="ci-view-val">${statusBadge(record.status)}</span></div>
+        <div class="ci-view-row"><span class="ci-view-label">Submitted</span><span class="ci-view-val">${record.created_at || '—'}</span></div>
+        <div class="ci-view-row"><span class="ci-view-label">Deleted On</span><span class="ci-view-val" style="color:#e04867;">${record.deleted_at || '—'}</span></div>
+        ${record.handler ? `<div class="ci-view-row"><span class="ci-view-label">Handled By</span><span class="ci-view-val">${escapeHtml(record.handler)}</span></div>` : ''}
+        <div style="margin-top:1rem;">
+            <div class="ci-update-label">Message</div>
+            <div class="ci-view-message">${escapeHtml(record.message || '')}</div>
+        </div>
+    `;
+
+    document.getElementById('ciadd-backdrop').classList.add('open');
+    document.getElementById('ciadd-modal').classList.add('open');
+}
+
+function closeCiArchiveDetail() {
+    document.getElementById('ciadd-backdrop').classList.remove('open');
+    document.getElementById('ciadd-modal').classList.remove('open');
+}
+
+function exportCiArchive() {
+    if (!ciDeletedArchive.length) return;
+    const rows = [['ID','Name','Email','Phone','Inquiry Type','Status','Message','Submitted','Deleted On']];
+    ciDeletedArchive.forEach(r => {
+        rows.push([
+            r.id,
+            r.name        || '',
+            r.email       || '',
+            r.phone       || '',
+            r.inquiry_type || '',
+            r.status      || '',
+            r.message     || '',
+            r.created_at  || '',
+            r.deleted_at  || '',
+        ]);
+    });
+    const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = 'contact_inquiries_deleted.csv';
+    a.click();
+}
+
 @if(session('success'))
 if (typeof showToast === 'function') showToast("{{ session('success') }}", 'success');
 @endif
@@ -943,6 +1383,7 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
     let lastSignature = buildSignature();
     let pollTimer     = null;
     let inFlight      = false;
+
     function buildSignature() {
         const ids = Array.from(
             document.querySelectorAll('.ci-card[data-id]')
@@ -952,6 +1393,7 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
         ).map(el => el.textContent.trim()).join('|');
         return statNums + '::' + ids;
     }
+
     function buildSignatureFromDoc(doc) {
         const ids = Array.from(
             doc.querySelectorAll('.ci-card[data-id]')
@@ -961,8 +1403,11 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
         ).map(el => el.textContent.trim()).join('|');
         return statNums + '::' + ids;
     }
+
     function isBusy() {
         if (document.getElementById('ci-view-modal').classList.contains('open')) return true;
+        if (document.getElementById('ciad-drawer').classList.contains('open')) return true;
+        if (document.getElementById('ciadd-modal').classList.contains('open')) return true;
         const a = document.activeElement;
         if (a && a !== document.body) {
             const t = a.tagName;
@@ -970,6 +1415,7 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
         }
         return false;
     }
+
     function showNewInquiryBanner(diff) {
         const existing = document.getElementById('ci-new-banner');
         if (existing) existing.remove();
@@ -1014,6 +1460,7 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
             }
         }, 12000);
     }
+
     async function softRefresh() {
         try {
             const params = new URLSearchParams(window.location.search);
@@ -1032,10 +1479,11 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
             const cp = document.querySelector('.ci-pagination');
             if (fp && cp) cp.innerHTML = fp.innerHTML;
             const freshScript = Array.from(doc.querySelectorAll('script')).find(s =>
-                s.textContent.includes('const ciData =')
+                s.textContent.includes('const ciData ')
             );
             if (freshScript) {
-                const m = freshScript.textContent.match(/const ciData\s*=\s*(\{[\s\S]*?\});/);
+                const m  = freshScript.textContent.match(/const ciData\s*=\s*(\{[\s\S]*?\});/);
+                const dm = freshScript.textContent.match(/const ciDeletedArchive\s*=\s*(\[[\s\S]*?\]);/);
                 if (m) {
                     try {
                         const freshMap = JSON.parse(m[1]);
@@ -1043,10 +1491,18 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
                         Object.assign(ciData, freshMap);
                     } catch (_) {}
                 }
+                if (dm) {
+                    try {
+                        const freshDeleted = JSON.parse(dm[1]);
+                        ciDeletedArchive.length = 0;
+                        ciDeletedArchive.push(...freshDeleted);
+                    } catch (_) {}
+                }
             }
             lastSignature = buildSignature();
         } catch (_) {}
     }
+
     async function poll() {
         if (inFlight || isBusy()) return;
         inFlight = true;
@@ -1077,18 +1533,22 @@ if (typeof showToast === 'function') showToast("{{ session('error') }}", 'error'
             inFlight = false;
         }
     }
+
     function startPolling() {
         if (pollTimer) return;
         pollTimer = setInterval(poll, POLL_INTERVAL_MS);
     }
+
     function stopPolling() {
         clearInterval(pollTimer);
         pollTimer = null;
     }
+
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) { stopPolling(); }
         else { startPolling(); poll(); }
     });
+
     startPolling();
 })();
 </script>
