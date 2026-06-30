@@ -1703,6 +1703,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <div class="modal-field full" id="add-movein-wrap">
                                 <label>Move-In Date <span class="field-req-star">*</span></label>
                                 <input type="date" name="move_in_date" id="add-move-in-date" value="{{ old('move_in_date') }}">
+                                <span id="add-movein-future-warning" style="display:none;margin-top:.4rem;font-size:.75rem;color:#9a6200;font-weight:600;background:#fff9e6;border:1px solid #f0c040;border-radius:8px;padding:.45rem .65rem;line-height:1.4;"></span>
                             </div>
                             <div class="modal-field full" id="add-moveout-wrap">
                                 <label>Move-Out Date</label>
@@ -2693,6 +2694,32 @@ function attachEstimatedMoveInValidator(inputId, errorId) {
     input.addEventListener('change', function() { validateEstimatedMoveInDate(inputId, errorId); });
 }
 
+function checkAddMoveInFutureWarning() {
+    var input = document.getElementById('add-move-in-date');
+    var warn  = document.getElementById('add-movein-future-warning');
+    var mode  = document.getElementById('add-mode-input');
+    if (!input || !warn || !mode) return;
+    if (mode.value !== 'moved_in') {
+        warn.style.display = 'none';
+        return;
+    }
+    var val = input.value;
+    if (!val) {
+        warn.style.display = 'none';
+        return;
+    }
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var picked = new Date(val + 'T00:00:00');
+    if (picked > today) {
+        var diffDays = Math.ceil((picked - today) / 86400000);
+        warn.textContent = 'This date is ' + diffDays + ' day' + (diffDays !== 1 ? 's' : '') + ' in the future. Tenants marked as Moved In should normally have a move-in date today or earlier. Use Reservation mode instead if they have not moved in yet.';
+        warn.style.display = 'block';
+    } else {
+        warn.style.display = 'none';
+    }
+}
+
 function triggerTenantPhotoUpload(tenantId) {
     var input = document.getElementById('tenant-photo-upload-input');
     input.dataset.tenantId = tenantId;
@@ -3079,6 +3106,11 @@ document.addEventListener('DOMContentLoaded', function() {
     attachPhoneFormatter('add-guardian', 'add-guardian-error', false);
     attachMoveOutValidator('add-move-in-date', 'add-move-out-date', 'add-moveout-error');
     attachStayDuration('add-move-in-date', 'add-move-out-date', 'add-stay-duration-display');
+    var addMoveInFutureEl = document.getElementById('add-move-in-date');
+    if (addMoveInFutureEl) {
+        addMoveInFutureEl.addEventListener('change', checkAddMoveInFutureWarning);
+        addMoveInFutureEl.addEventListener('input', checkAddMoveInFutureWarning);
+    }
     var addMoveInEl = document.getElementById('add-move-in-date');
     if (addMoveInEl) {
         addMoveInEl.addEventListener('change', function() {
@@ -3166,6 +3198,8 @@ function closeModal(id) {
         var amoErr = document.getElementById('add-moveout-error');
         if (amo) { amo.value = ''; amo.classList.remove('field-invalid'); }
         if (amoErr) { amoErr.style.display = 'none'; amoErr.textContent = ''; }
+        var amfWarn = document.getElementById('add-movein-future-warning');
+        if (amfWarn) amfWarn.style.display = 'none';
         var ae = document.getElementById('add-email');
         var aeErr = document.getElementById('add-email-error');
         if (ae) ae.classList.remove('field-invalid');
@@ -5020,6 +5054,7 @@ async function submitDeleteRoom() {
 
 function setAddMode(mode) {
     document.getElementById('add-mode-input').value = mode;
+    checkAddMoveInFutureWarning();
     var btnMovedIn     = document.getElementById('add-mode-btn-movedin');
     var btnReservation = document.getElementById('add-mode-btn-reservation');
     if (mode === 'moved_in') {
