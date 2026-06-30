@@ -3051,6 +3051,7 @@ function validateEditTenantForm(e) {
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
     var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
+    console.log('VALIDATE RESULTS', { emailOk: emailOk, contactOk: contactOk, guardianOk: guardianOk, moveOutOk: moveOutOk, estOk: estOk });
     if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
