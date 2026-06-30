@@ -619,6 +619,59 @@
     outline: none;
     box-sizing: border-box;
 }
+#ci-delete-confirm-modal {
+    position: fixed; inset: 0; z-index: 700;
+    background: rgba(232,23,93,.15);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+    padding: 1rem;
+}
+#ci-delete-confirm-modal.open { opacity: 1; pointer-events: auto; }
+.ci-confirm-box {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(26,26,46,.22);
+    width: min(420px, 100%);
+    padding: 1.6rem;
+    transform: translateY(10px) scale(.97);
+    transition: transform .25s ease;
+}
+#ci-delete-confirm-modal.open .ci-confirm-box { transform: none; }
+.ci-confirm-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #fff0f0;
+    border: 1.5px solid #f3c4c0;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+}
+.ci-confirm-icon svg { width: 24px; height: 24px; color: #c0392b; }
+.ci-confirm-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ink);
+    text-align: center;
+    margin-bottom: .5rem;
+}
+.ci-confirm-text {
+    font-size: .87rem;
+    color: var(--ink-muted);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 1.4rem;
+}
+.ci-confirm-text strong { color: var(--ink); }
+.ci-confirm-actions {
+    display: flex;
+    gap: .6rem;
+}
+.ci-confirm-actions .ci-btn,
+.ci-confirm-actions .ci-btn.secondary {
+    flex: 1;
+    justify-content: center;
+}
 .ciad-search-inner input:focus { border-color: var(--bright-pink); background: var(--blush); }
 .ciad-search-icon { position: absolute; left: .72rem; width: 13px; height: 13px; opacity: .45; pointer-events: none; }
 .ciad-list {
@@ -1089,6 +1142,22 @@
     </div>
 </div>
 
+<div id="ci-delete-confirm-modal" onclick="if(event.target===this) closeCiDeleteConfirm()">
+    <div class="ci-confirm-box">
+        <div class="ci-confirm-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </div>
+        <div class="ci-confirm-title">Delete this inquiry?</div>
+        <div class="ci-confirm-text">
+            Are you sure you want to delete the inquiry from <strong id="ci-confirm-name">this sender</strong>? This action cannot be undone.
+        </div>
+        <div class="ci-confirm-actions">
+            <button class="ci-btn secondary" onclick="closeCiDeleteConfirm()">Cancel</button>
+            <button class="ci-btn danger" onclick="confirmCiDeleteProceed()">Delete</button>
+        </div>
+    </div>
+</div>
+
 <div class="ci-loading-overlay" id="ci-loading">
     <div class="ci-loading-box">
         <div class="ci-loading-logo">
@@ -1147,14 +1216,28 @@ function showCiLoading() {
     document.getElementById('ci-loading').classList.add('open');
 }
 
+let _ciPendingDeleteForm = null;
+
 function confirmCiDelete(e) {
     e.preventDefault();
-    const form = e.target;
-    if (confirm('Delete this inquiry? This cannot be undone.')) {
-        showCiLoading();
-        form.submit();
-    }
+    _ciPendingDeleteForm = e.target;
+    const card = _ciPendingDeleteForm.closest('.ci-card');
+    const name = card ? card.querySelector('.ci-name')?.textContent : document.getElementById('ci-modal-name')?.textContent;
+    document.getElementById('ci-confirm-name').textContent = name || 'this sender';
+    document.getElementById('ci-delete-confirm-modal').classList.add('open');
     return false;
+}
+
+function closeCiDeleteConfirm() {
+    document.getElementById('ci-delete-confirm-modal').classList.remove('open');
+    _ciPendingDeleteForm = null;
+}
+
+function confirmCiDeleteProceed() {
+    if (!_ciPendingDeleteForm) return;
+    closeCiDeleteConfirm();
+    showCiLoading();
+    _ciPendingDeleteForm.submit();
 }
 
 function openCiModal(id) {
