@@ -3935,6 +3935,26 @@ function openEditModal(t) {
 function openTagMovedInModal(id, name) {
     document.getElementById('tag-movedin-name').textContent = name;
     document.getElementById('tag-movedin-form').action = '/tenants/' + id + '/tag-moved-in';
+
+    var tenant = tenants.find(function(t) { return t.tenant_id == id; });
+    var warnBanner = document.getElementById('tag-movedin-early-warning');
+    if (warnBanner) warnBanner.remove();
+
+    if (tenant && tenant.estimated_move_in_date) {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var est = new Date(tenant.estimated_move_in_date + 'T00:00:00');
+        if (est > today) {
+            var diffDays = Math.ceil((est - today) / 86400000);
+            var banner = document.createElement('div');
+            banner.id = 'tag-movedin-early-warning';
+            banner.className = 'modal-warn-banner';
+            banner.style.marginTop = '.6rem';
+            banner.innerHTML = '<span>Heads up: this tenant\'s estimated move-in date is ' + fmtDate(tenant.estimated_move_in_date) + ', which is ' + diffDays + ' day' + (diffDays !== 1 ? 's' : '') + ' from today. Tagging them as moved in now will record today as their actual move-in date instead.</span>';
+            document.querySelector('#tag-movedin-modal .modal-body').appendChild(banner);
+        }
+    }
+
     openModal('tag-movedin-modal');
 }
 
