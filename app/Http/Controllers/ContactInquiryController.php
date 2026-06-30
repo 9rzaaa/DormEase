@@ -33,6 +33,11 @@ class ContactInquiryController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $deletedInquiries = ContactInquiry::onlyTrashed()
+            ->with('handler')
+            ->latest('deleted_at')
+            ->get();
+
         return view('contact-inquiries', [
             'inquiries' => $inquiries,
             'stats' => [
@@ -44,10 +49,11 @@ class ContactInquiryController extends Controller
             'status' => $status,
             'type' => $type,
             'search' => $search,
+            'deletedInquiries' => $deletedInquiries,
         ]);
     }
 
-    public function destroy(ContactInquiry $contactInquiry)
+    public function destroy(ContactInquiry $contactInquiry): RedirectResponse
     {
         $contactInquiry->delete();
 
