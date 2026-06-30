@@ -1914,7 +1914,7 @@ tbody tr:hover { background: var(--soft-bg); }
                             <label>Status</label>
                             <div class="status-select-wrap">
                                 <span class="status-dot" id="edit-status-dot"></span>
-                                <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');">
+                                <select name="status" id="edit-status" onchange="updateStatusDot(this); toggleReservationFields('edit');" @error('status') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
                                     <option value="active">Active</option>
                                     <option value="pending">Pending</option>
                                     <option value="reserved" id="edit-status-reserved-option">Reserved</option>
@@ -1922,6 +1922,9 @@ tbody tr:hover { background: var(--soft-bg); }
                                     <option value="inactive">Inactive</option>
                                 </select>
                             </div>
+                            @error('status')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:block;">{{ $message }}</span>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-warn-banner" style="margin-top:.8rem;">
@@ -3051,7 +3054,6 @@ function validateEditTenantForm(e) {
     var guardianOk = validatePhoneField('edit-guardian', 'edit-guardian-error', false);
     var moveOutOk  = validateMoveOutDate('edit-date', 'edit-moveout', 'edit-moveout-error');
     var estOk      = validateEstimatedMoveInDate('edit-estimated-move-in', 'edit-estimated-move-in-error');
-    console.log('VALIDATE RESULTS', { emailOk: emailOk, contactOk: contactOk, guardianOk: guardianOk, moveOutOk: moveOutOk, estOk: estOk });
     if (!emailOk || !contactOk || !guardianOk || !moveOutOk || !estOk) {
         e.preventDefault();
         if (!emailOk) {
@@ -3130,18 +3132,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-
-document.addEventListener('DOMContentLoaded', function() {
-    var editForm = document.getElementById('edit-form');
-    if (editForm) {
-        editForm.addEventListener('submit', function(e) {
-            console.log('EDIT FORM SUBMIT FIRED');
-            console.log('action:', this.action);
-            console.log('status value:', document.getElementById('edit-status').value);
-            console.log('estimated_move_in_date value:', document.getElementById('edit-estimated-move-in').value);
-        });
-    }
-});
 
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 
@@ -3839,7 +3829,7 @@ function openEditModal(t) {
     document.getElementById('edit-status').value = hasOld && old.status ? old.status : (t.status || 'pending');
     var reservedOption = document.getElementById('edit-status-reserved-option');
     if (reservedOption) {
-        var hasCredentials = !!(t.account_id);
+        var hasCredentials = !!(t.account_id) && t.status !== 'reserved';
         reservedOption.disabled = hasCredentials;
         reservedOption.title = hasCredentials ? 'Cannot revert to Reserved: this tenant already has login credentials.' : '';
         reservedOption.textContent = hasCredentials ? 'Reserved (unavailable)' : 'Reserved';
