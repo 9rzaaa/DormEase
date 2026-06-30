@@ -20,6 +20,7 @@ class ForceTempPasswordChange
             'fdprofile.index',
             'fdprofile.updatePassword',
             'fdprofile.dismissTempPassword',
+            'session.check',
             'logout',
         ];
         if (in_array($request->route()?->getName(), $allowedRoutes, true)) {
