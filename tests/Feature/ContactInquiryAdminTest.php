@@ -59,6 +59,58 @@ class ContactInquiryAdminTest extends TestCase
         ]);
     }
 
+    public function test_secretary_can_view_contact_inquiries_module(): void
+    {
+        $this->prepareDatabase();
+
+        $secretary = $this->createSecretary();
+
+        ContactInquiry::create([
+            'name' => 'Cia Ramos',
+            'email' => 'cia@example.com',
+            'phone' => '0912-333-4444',
+            'inquiry_type' => 'reservation',
+            'message' => 'I would like to ask if there are rooms available next month.',
+            'status' => 'new',
+        ]);
+
+        $response = $this->actingAs($secretary, 'staff')->get(route('contact-inquiries.index'));
+
+        $response->assertOk();
+        $response->assertSee('href="' . route('contact-inquiries.index') . '"', false);
+        $response->assertSee('Contact Inquiries');
+        $response->assertSee('Cia Ramos');
+        $response->assertSee('cia@example.com');
+    }
+
+    public function test_secretary_can_update_inquiry_status(): void
+    {
+        $this->prepareDatabase();
+
+        $secretary = $this->createSecretary();
+
+        $inquiry = ContactInquiry::create([
+            'name' => 'Dani Lim',
+            'email' => 'dani@example.com',
+            'inquiry_type' => 'general',
+            'message' => 'May I know your office hours for inquiries?',
+            'status' => 'new',
+        ]);
+
+        $response = $this->actingAs($secretary, 'staff')
+            ->patch(route('contact-inquiries.update-status', $inquiry), [
+                'status' => 'read',
+            ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('contact_inquiries', [
+            'contact_inquiry_id' => $inquiry->contact_inquiry_id,
+            'status' => 'read',
+            'handled_by' => $secretary->staff_id,
+        ]);
+    }
+
     private function createAdmin(): Staff
     {
         return Staff::create([
@@ -68,6 +120,19 @@ class ContactInquiryAdminTest extends TestCase
             'email' => 'admin@example.com',
             'password_hash' => 'unused',
             'role' => 'admin',
+            'is_active' => true,
+        ]);
+    }
+
+    private function createSecretary(): Staff
+    {
+        return Staff::create([
+            'staff_code' => 'SEC-TEST',
+            'first_name' => 'Dorm',
+            'last_name' => 'Secretary',
+            'email' => 'secretary@example.com',
+            'password_hash' => 'unused',
+            'role' => 'secretary',
             'is_active' => true,
         ]);
     }
