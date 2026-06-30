@@ -298,6 +298,7 @@
         overflow-y: visible;
         flex: 1;
         min-height: 0;
+        -webkit-overflow-scrolling: touch;
     }
 
     table {
@@ -305,6 +306,7 @@
         border-collapse: collapse;
         font-size: .83rem;
         table-layout: fixed;
+        min-width: 620px;
     }
 
     thead th {
@@ -367,12 +369,18 @@
         min-width: 0;
     }
 
-
     .doc-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
         flex-shrink: 0;
+    }
+
+    /* tenant/name cells wrap instead of truncating so full names stay visible */
+    .tenant-name-cell {
+        white-space: normal !important;
+        word-break: break-word;
+        line-height: 1.3;
     }
 
     .file-type-badge {
@@ -505,6 +513,7 @@
         display: flex;
         align-items: center;
         gap: .3rem;
+        flex-wrap: wrap;
     }
 
     .page-btn {
@@ -567,6 +576,8 @@
         margin: 0 -1.4rem;
         padding: 0 1.4rem;
         background: var(--white);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .vd-tab-btn {
@@ -585,6 +596,7 @@
         font-family: var(--ff-body);
         white-space: nowrap;
         margin-bottom: -1.5px;
+        flex-shrink: 0;
     }
 
     .vd-tab-btn.active {
@@ -1046,6 +1058,8 @@
         border-bottom: 1.5px solid var(--baby-pink);
         padding: .5rem 1.5rem 0;
         flex-shrink: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .drawer-tab-btn {
@@ -1064,6 +1078,7 @@
         font-family: var(--ff-body);
         white-space: nowrap;
         margin-bottom: -1.5px;
+        flex-shrink: 0;
     }
 
     .drawer-tab-btn.active {
@@ -1159,13 +1174,6 @@
     @keyframes pulseLogo {
         0%, 100% { transform: scale(1);     box-shadow: 0 10px 24px rgba(232,23,93,.25); }
         50%       { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); }
-    }
-
-    @media (max-width: 900px) {
-        .modal-two-col { grid-template-columns: 1fr; }
-        .page-body { padding: 1.2rem 1rem; }
-        .archive-drawer { width: 100vw; }
-        .vd-detail-grid { grid-template-columns: 1fr; }
     }
 
     .approved-zone {
@@ -1355,6 +1363,7 @@
         margin: -.25rem -.25rem -.25rem -.25rem;
         scrollbar-width: thin;
         scrollbar-color: rgba(232,23,93,.25) transparent;
+        -webkit-overflow-scrolling: touch;
     }
 
     .approved-tray::-webkit-scrollbar { height: 3px; }
@@ -1571,179 +1580,168 @@
     }
 
     .purpose-cell {
-    position: relative;
-    max-width: 140px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: .8rem;
-    color: var(--ink-muted);
-    cursor: default;
-}
-
-.purpose-cell .purpose-tooltip {
-    display: none;
-    position: absolute;
-    left: 0;
-    top: calc(100% + 6px);
-    background: var(--ink);
-    color: var(--white);
-    font-size: .76rem;
-    font-weight: 500;
-    line-height: 1.5;
-    padding: .45rem .65rem;
-    border-radius: 8px;
-    white-space: normal;
-    width: max-content;
-    max-width: 240px;
-    z-index: 900;
-    box-shadow: 0 6px 18px rgba(26,26,46,.18);
-    pointer-events: none;
-}
-
-.purpose-cell:hover .purpose-tooltip {
-    display: block;
-}
-
-.purpose-cell:hover .purpose-tooltip {
-    display: block;
-}
-/* ===== TABLET (≤1024px) ===== */
-@media (max-width: 1024px) {
-    .page-body { padding: 1.4rem 1.2rem; }
-
-    .tab-bar {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    .tab-btn { flex-shrink: 0; }
-
-    .toolbar { gap: .5rem; }
-    .search-wrap input { width: 160px; }
-    .search-wrap input:focus { width: 190px; }
-    .toolbar .search-wrap { margin-left: 0; flex-basis: 100%; }
-    .toolbar .search-wrap input { width: 100%; }
-
-    .vd-detail-grid { grid-template-columns: 1fr; }
-    .archive-drawer { width: min(620px, 92vw); }
-}
-
-/* ===== TABLET / SMALL LAPTOP (≤900px) — replaces your old block ===== */
-@media (max-width: 900px) {
-    .modal-two-col { grid-template-columns: 1fr; }
-    .page-body { padding: 1.2rem 1rem; }
-    .archive-drawer { width: 100vw; }
-    .vd-detail-grid { grid-template-columns: 1fr; }
-
-    .page-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .header-actions { justify-content: flex-end; }
-
-    .table-card-header {
-        flex-direction: column;
-        align-items: flex-start;
+        position: relative;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: .8rem;
+        color: var(--ink-muted);
+        cursor: default;
     }
 
-    .table-wrap {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    table { min-width: 720px; }
-
-    .approved-zone-header { flex-wrap: wrap; gap: .5rem; }
-    .approved-zone-toolbar { flex-direction: column; align-items: stretch; }
-    .approved-tray-search input { width: 100%; }
-    .approved-pagination { margin-left: 0 !important; align-self: flex-end; }
-
-    .drawer-tab-bar {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-right: 1rem;
-    }
-    .drawer-tab-btn { flex-shrink: 0; }
-
-    .drawer-toolbar { flex-wrap: wrap; }
-    .drawer-toolbar .search-wrap { margin-left: 0 !important; flex-basis: 100%; }
-    .drawer-toolbar .search-wrap input { width: 100%; }
-}
-
-/* ===== MOBILE (≤600px) ===== */
-@media (max-width: 600px) {
-    .page-body { padding: 1rem .7rem; gap: 1rem; }
-
-    .page-header-text h1 { font-size: 1.4rem; }
-    .page-header-text .dorm-sub { font-size: .8rem; }
-
-    .header-actions { width: 100%; }
-    .btn-archive { flex: 1; justify-content: center; }
-
-    .tab-bar { padding: .25rem; }
-    .tab-btn { padding: .45rem .8rem; font-size: .78rem; }
-
-    .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: .5rem;
-    }
-    .toolbar-label { display: none; }
-    .toolbar-select { width: 100%; }
-    .status-legend-wrap { align-self: flex-end; }
-    .status-legend-popup {
-        left: auto;
-        right: 0;
-        min-width: 260px;
-        max-width: 90vw;
+    .purpose-cell .purpose-tooltip {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: calc(100% + 6px);
+        background: var(--ink);
+        color: var(--white);
+        font-size: .76rem;
+        font-weight: 500;
+        line-height: 1.5;
+        padding: .45rem .65rem;
+        border-radius: 8px;
+        white-space: normal;
+        width: max-content;
+        max-width: 240px;
+        z-index: 900;
+        box-shadow: 0 6px 18px rgba(26,26,46,.18);
+        pointer-events: none;
     }
 
-    .toolbar-forms .btn-upload { width: 100%; justify-content: center; }
-
-    .table-card-title { font-size: .92rem; }
-    .table-card-sub { font-size: .7rem; }
-
-    table { min-width: 640px; font-size: .78rem; }
-    thead th { padding: .55rem .6rem; font-size: .65rem; }
-    tbody td { padding: .6rem .7rem; }
-
-    .act-btn { width: 26px; height: 26px; }
-    .act-btn img { width: 11px; height: 11px; }
-
-    .table-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: .6rem;
+    .purpose-cell:hover .purpose-tooltip {
+        display: block;
     }
-    .pagination { justify-content: center; flex-wrap: wrap; }
 
-    .approved-card { width: 160px; }
-    .approved-tray-info { display: none; }
+    /* ===== TABLET (≤1024px) ===== */
+    @media (max-width: 1024px) {
+        .page-body { padding: 1.4rem 1.2rem; }
 
-    .drawer-header { padding: 1rem; }
-    .drawer-header-text h2 { font-size: 1rem; }
-    .drawer-body { padding: 1rem; }
-    .drawer-tab-btn { padding: .45rem .75rem; font-size: .76rem; }
+        .tab-bar {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab-btn { flex-shrink: 0; }
 
-    .modal { width: 94vw !important; max-width: 94vw !important; margin: 0 auto; }
-    .modal-footer-split,
-    .dm-modal-footer {
-        flex-direction: column-reverse;
-        gap: .5rem;
+        .toolbar { gap: .5rem; }
+        .search-wrap input { width: 160px; }
+        .search-wrap input:focus { width: 190px; }
+        .toolbar .search-wrap { margin-left: 0; flex-basis: 100%; }
+        .toolbar .search-wrap input { width: 100%; }
+
+        .vd-detail-grid { grid-template-columns: 1fr; }
+        .archive-drawer { width: min(620px, 92vw); }
     }
-    .modal-footer-split button,
-    .dm-modal-footer button { width: 100%; }
 
-    .vd-tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .vd-tab-btn { flex-shrink: 0; padding: .5rem .75rem; font-size: .75rem; }
+    /* ===== TABLET / SMALL LAPTOP (≤900px) ===== */
+    @media (max-width: 900px) {
+        .modal-two-col { grid-template-columns: 1fr; }
+        .page-body { padding: 1.2rem 1rem; }
+        .archive-drawer { width: 100vw; }
+        .vd-detail-grid { grid-template-columns: 1fr; }
 
-    .purpose-cell { max-width: 90px; }
+        .page-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .header-actions { justify-content: flex-end; }
 
-    .action-loading-box { padding: 1rem 1.2rem; }
-    .loading-logo-wrap { width: 64px; height: 64px; }
-    .loading-logo-wrap img { width: 44px; height: 44px; }
-}
+        .table-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
+        table { min-width: 580px; }
+
+        .approved-zone-header { flex-wrap: wrap; gap: .5rem; }
+        .approved-zone-toolbar { flex-direction: column; align-items: stretch; }
+        .approved-tray-search input { width: 100%; }
+        .approved-pagination { margin-left: 0 !important; align-self: flex-end; }
+
+        .drawer-toolbar { flex-wrap: wrap; }
+        .drawer-toolbar .search-wrap { margin-left: 0 !important; flex-basis: 100%; }
+        .drawer-toolbar .search-wrap input { width: 100%; }
+    }
+
+    /* ===== MOBILE (≤600px) ===== */
+    @media (max-width: 600px) {
+        .page-body { padding: 1rem .7rem; gap: 1rem; }
+
+        .page-header-text h1 { font-size: 1.4rem; }
+        .page-header-text .dorm-sub { font-size: .8rem; }
+
+        .header-actions { width: 100%; }
+        .btn-archive { flex: 1; justify-content: center; }
+
+        .tab-bar { padding: .25rem; }
+        .tab-btn {
+            padding: .45rem .8rem;
+            font-size: .78rem;
+        }
+
+        .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: .5rem;
+        }
+        .toolbar-label { display: none; }
+        .toolbar-select { width: 100%; }
+        .status-legend-wrap { align-self: flex-end; }
+        .status-legend-popup {
+            left: auto;
+            right: 0;
+            min-width: 260px;
+            max-width: 90vw;
+        }
+
+        .toolbar-forms .btn-upload { width: 100%; justify-content: center; }
+
+        .table-card-title { font-size: .92rem; }
+        .table-card-sub { font-size: .7rem; }
+
+        table { min-width: 540px; font-size: .78rem; }
+        thead th { padding: .55rem .6rem; font-size: .65rem; }
+        tbody td { padding: .6rem .7rem; }
+
+        .act-btn { width: 26px; height: 26px; }
+        .act-btn img { width: 11px; height: 11px; }
+
+        .table-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: .6rem;
+        }
+        .pagination { justify-content: center; flex-wrap: wrap; }
+
+        .approved-card { width: 160px; }
+        .approved-tray-info { display: none; }
+
+        .drawer-header { padding: 1rem; }
+        .drawer-header-text h2 { font-size: 1rem; }
+        .drawer-body { padding: 1rem; }
+        .drawer-tab-btn { padding: .45rem .75rem; font-size: .76rem; }
+
+        .modal { width: 94vw !important; max-width: 94vw !important; margin: 0 auto; }
+        .modal-footer-split,
+        .dm-modal-footer {
+            flex-direction: column-reverse;
+            gap: .5rem;
+        }
+        .modal-footer-split button,
+        .dm-modal-footer button { width: 100%; }
+
+        .vd-tab-btn { padding: .5rem .75rem; font-size: .75rem; }
+
+        .purpose-cell { max-width: 90px; }
+
+        .action-loading-box { padding: 1rem 1.2rem; }
+        .loading-logo-wrap { width: 64px; height: 64px; }
+        .loading-logo-wrap img { width: 44px; height: 44px; }
+
+        .tenant-name-cell { max-width: 110px; }
+    }
 </style>
 @endsection
 
@@ -2867,7 +2865,7 @@ function renderDocTable() {
             const tenantName = escHtml(r.tenant_name ?? r.full_name ?? '—');
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(r.doc_request_id).padStart(3,'0')}</td>
-                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${tenantName}</td>
+                <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${tenantName}</td>
                 <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(r.attachment)}</td>
                 <td style="font-size:.8rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
@@ -3147,9 +3145,9 @@ function renderReqTable() {
     } else {
         tbody.innerHTML = page.map(r => `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(r.doc_request_id).padStart(3,'0')}</td>
-            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(r.tenant_name ?? '—')}</td>
+            <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${escHtml(r.tenant_name ?? '—')}</td>
             <td style="font-size:.82rem;">${escHtml(r.document_type)}</td>
-            <td style="font-size:.8rem;color:var(--ink-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.purpose)}">${escHtml(r.purpose ?? '—')}</td>
+            <td class="purpose-cell"><span>${escHtml(r.purpose ?? '—')}</span><span class="purpose-tooltip">${escHtml(r.purpose ?? '—')}</span></td>
             <td style="font-size:.8rem;">${escHtml(r.delivery_type ?? r.delivery_method ?? '—')}</td>
             <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(r.submitted_at)}</td>
             <td class="td-center">${reqStatusBadge(r.status)}</td>
@@ -3433,7 +3431,7 @@ function renderAdocTable() {
             const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
-                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+                <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
                 <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
                 <td>${fileTypeBadge(d.attachment)}</td>
                 <td class="td-center">${reqStatusBadge(d.status)}</td>
@@ -3546,9 +3544,9 @@ function renderAreqTable() {
             const d = r.data ?? {};
             return `<tr>
                 <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#DRQ-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
-                <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? '—')}</td>
+                <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${escHtml(d.tenant_name ?? '—')}</td>
                 <td style="font-size:.82rem;">${escHtml(d.document_type)}</td>
-                <td style="font-size:.8rem;color:var(--ink-muted);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(d.purpose)}">${escHtml(d.purpose ?? '—')}</td>
+                <td class="purpose-cell"><span>${escHtml(d.purpose ?? '—')}</span><span class="purpose-tooltip">${escHtml(d.purpose ?? '—')}</span></td>
                 <td style="font-size:.8rem;">${escHtml(d.delivery_type ?? d.delivery_method ?? '—')}</td>
                 <td class="td-center">${reqStatusBadge(d.status)}</td>
                 <td style="font-size:.78rem;color:var(--ink-muted);white-space:nowrap;">${fmtDate(d.submitted_at)}</td>
@@ -3918,7 +3916,7 @@ function renderAdeniedTable() {
         const color = TYPE_COLORS[d.document_type] || '#B5B7C0';
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#FSB-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
-            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+            <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
             <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(r.document_type)}</span></div></td>
             <td>${fileTypeBadge(d.attachment)}</td>
             <td class="td-center">${reqStatusBadge(d.status)}</td>
@@ -3986,7 +3984,7 @@ function renderAcancelledTable() {
 
         return `<tr>
             <td style="font-weight:700;color:var(--hot-pink);font-size:.8rem;white-space:nowrap;">#${prefix}-${String(d.doc_request_id ?? 0).padStart(3,'0')}</td>
-            <td style="font-weight:600;font-size:.84rem;white-space:nowrap;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
+            <td class="tenant-name-cell" style="font-weight:600;font-size:.84rem;">${escHtml(d.tenant_name ?? d.full_name ?? '—')}</td>
             <td><div class="doc-title-cell"><span class="doc-dot" style="background:${color}"></span><span class="doc-type-text">${escHtml(d.document_type)}</span></div></td>
             <td>${escHtml(d.purpose ?? '—')}</td>
             <td>${deliveryOrFile}</td>
