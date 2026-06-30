@@ -656,16 +656,17 @@
                                     @endphp
 
                                     <div class="notif-dd-item {{ $notif->is_read ? '' : 'unread' }} {{ $isReservation ? 'reservation' : '' }}"
-                                         onclick="openNotifDetail({
-                                             id:      {{ $notif->notif_id }},
-                                             type:    '{{ $notifTypeLabel }}',
-                                             icon:    '{{ asset('icons/' . $notifIcon . '.png') }}',
-                                             message: {{ json_encode($notif->message) }},
-                                             time:    '{{ \Carbon\Carbon::parse($notif->created_at)->format('F j, Y \a\t g:i A') }}',
-                                             ago:     '{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}',
-                                             url:     '{{ $notif->url ?? '' }}',
-                                             isRead:  {{ $notif->is_read ? 'true' : 'false' }}
-                                         })">
+                                         onclick="handleNotifClick(event, this)"
+                                         data-notif='{!! json_encode([
+                                             "id"      => $notif->notif_id,
+                                             "type"    => $notifTypeLabel,
+                                             "icon"    => asset("icons/{$notifIcon}.png"),
+                                             "message" => $notif->message,
+                                             "time"    => \Carbon\Carbon::parse($notif->created_at)->format("F j, Y \\a\\t g:i A"),
+                                             "ago"     => \Carbon\Carbon::parse($notif->created_at)->diffForHumans(),
+                                             "url"     => $notif->url ?? "",
+                                             "isRead"  => (bool) $notif->is_read,
+                                         ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) !!}'>
                                         @if(!$notif->is_read)
                                             <div class="notif-unread-dot"></div>
                                         @else
@@ -859,10 +860,34 @@
         visitor:      'Visitor',
         tenant:       'Tenant',
         reservation:  'New Reservation',
+        reservation_overdue: 'Reservation Overdue',
+        moveout_reminder: 'Move-out Reminder',
         general:      'General',
     };
 
-    function openNotifDetail(notif) {
+    function handleNotifClick(e, el) {
+        if (e) e.stopPropagation();
+        var dd = document.getElementById('notif-dropdown');
+        if (dd) dd.classList.remove('locked');
+        openNotifDetail(el);
+    }
+
+    function openNotifDetail(source) {
+        var notif;
+
+        if (source && source.nodeType) {
+            try {
+                notif = JSON.parse(source.dataset.notif || '{}');
+            } catch (e) {
+                console.error('openNotifDetail: failed to parse notification data', e);
+                return;
+            }
+        } else if (source && typeof source === 'object') {
+            notif = source;
+        } else {
+            return;
+        }
+
         var isReservation = notif.type === 'reservation';
 
         var badge = document.getElementById('notif-detail-badge');
@@ -902,7 +927,7 @@
             viewBtn.style.display = 'none';
         }
 
-        if (!notif.isRead) {
+        if (!notif.isRead && notif.id) {
             fetch('/notifications/' + notif.id + '/read', {
                 method: 'POST',
                 headers: {
@@ -915,6 +940,12 @@
                     var current = parseInt(badge.textContent) || 0;
                     if (current <= 1) badge.remove();
                     else badge.textContent = current - 1;
+                }
+                if (source && source.nodeType) {
+                    source.classList.remove('unread');
+                    var dot = source.querySelector('.notif-unread-dot');
+                    if (dot) dot.style.background = 'transparent';
+                    source.dataset.notif = JSON.stringify(Object.assign({}, notif, { isRead: true }));
                 }
             });
         }
