@@ -1252,8 +1252,10 @@ async function confirmCiDeleteProceed() {
 
         if (!res.ok) throw new Error('Delete failed');
 
-        const id = form.closest('.ci-card')?.dataset.id
-            || document.getElementById('ci-modal-footer-label').textContent.match(/#(\d+)/)?.[1];
+        const data = await res.json();
+        const deletedRecord = data.deleted;
+
+        const id = form.closest('.ci-card')?.dataset.id || (deletedRecord ? deletedRecord.id : null);
 
         if (id) {
             delete ciData[id];
@@ -1269,12 +1271,18 @@ async function confirmCiDeleteProceed() {
             }
         }
 
+        if (deletedRecord) {
+            ciDeletedArchive.unshift(deletedRecord);
+        }
+
         if (document.getElementById('ci-view-modal').classList.contains('open')) {
             closeCiModal();
         }
 
         document.getElementById('ci-loading').classList.remove('open');
         if (typeof showToast === 'function') showToast('Inquiry deleted successfully.', 'success');
+
+        openCiArchive();
     } catch (err) {
         document.getElementById('ci-loading').classList.remove('open');
         if (typeof showToast === 'function') showToast('Failed to delete inquiry.', 'error');

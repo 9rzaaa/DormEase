@@ -55,10 +55,31 @@ class ContactInquiryController extends Controller
 
     public function destroy(ContactInquiry $contactInquiry)
     {
+        $contactInquiry->load('handler');
+
+        $payload = [
+            'id'           => $contactInquiry->getKey(),
+            'name'         => $contactInquiry->name,
+            'email'        => $contactInquiry->email,
+            'phone'        => $contactInquiry->phone,
+            'inquiry_type' => $contactInquiry->inquiry_type,
+            'status'       => $contactInquiry->status,
+            'message'      => $contactInquiry->message,
+            'created_at'   => optional($contactInquiry->created_at)->format('M j, Y g:i A'),
+            'handler'      => $contactInquiry->handler
+                ? ($contactInquiry->handler->first_name . ' ' . $contactInquiry->handler->last_name)
+                : null,
+        ];
+
         $contactInquiry->delete();
 
+        $payload['deleted_at'] = optional($contactInquiry->fresh()->deleted_at)->format('M j, Y g:i A');
+
         if (request()->wantsJson() || request()->ajax()) {
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true,
+                'deleted' => $payload,
+            ]);
         }
 
         return redirect()
