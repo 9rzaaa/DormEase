@@ -3130,6 +3130,18 @@ document.addEventListener('DOMContentLoaded', function() {
 document.getElementById('table-date').textContent =
     'as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
+document.addEventListener('DOMContentLoaded', function() {
+    var editForm = document.getElementById('edit-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function(e) {
+            console.log('EDIT FORM SUBMIT FIRED');
+            console.log('action:', this.action);
+            console.log('status value:', document.getElementById('edit-status').value);
+            console.log('estimated_move_in_date value:', document.getElementById('edit-estimated-move-in').value);
+        });
+    }
+});
+
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 
 function openPhotoLightbox(url) {
