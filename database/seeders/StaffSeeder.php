@@ -28,5 +28,15 @@ class StaffSeeder extends Seeder
             'role'           => 'frontdesk',
             'is_active'      => true,
         ]);
+
+        Staff::create([
+            'staff_code'     => 'STF003',
+            'first_name'     => 'Secretary',
+            'last_name'      => 'User',
+            'email'          => 'secretary@dormease.com',
+            'password_hash'  => bcrypt('Secretary123'),
+            'role'           => 'secretary',
+            'is_active'      => true,
+        ]);
     }
 }
