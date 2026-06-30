@@ -59,7 +59,7 @@ class BillingController extends Controller
 
         $floors = $allTenants->pluck('floor')->unique()->sort()->values();
 
-        $activeFloors = $allTenants->where('status', 'active')->pluck('floor')->unique()->sort()->values();
+        $activeFloors = $allTenants->whereIn('status', ['active', 'pending'])->pluck('floor')->unique()->sort()->values();
 
         $loggedFloors = WaterBilling::whereYear('billing_month', Carbon::parse($selectedMonth)->year)
             ->whereMonth('billing_month', Carbon::parse($selectedMonth)->month)
@@ -267,6 +267,27 @@ class BillingController extends Controller
                 ];
             });
             $floors = $readings->pluck('floor')->unique()->values();
+
+            $existingBillings = WaterBilling::whereIn('floor', $floors->all())
+                ->whereDate('billing_month', $billingMonthDate->format('Y-m-d'))
+                ->get();
+
+            if ($existingBillings->isNotEmpty() && !$request->boolean('force_overwrite')) {
+                $affectedFloors = $existingBillings->pluck('floor')->unique()->sort()->values()->implode(', ');
+                $paidCount      = $existingBillings->where('payment_status', 'paid')->count();
+                $pendingCount   = $existingBillings->where('payment_status', 'pending')->count();
+
+                $extra = '';
+                if ($paidCount > 0 || $pendingCount > 0) {
+                    $extra = " This includes {$paidCount} tenant(s) already marked paid and {$pendingCount} tenant(s) pending verification.";
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'requires_overwrite_confirmation' => true,
+                    'message' => "Billing data already exists for floor(s) {$affectedFloors} for this billing month.{$extra} Logging again will delete the existing records and reset all tenants on these floors to unpaid. Do you want to continue?",
+                ], 422);
+            }
 
             DB::transaction(function () use ($readings, $floors, $billingMonthDate, $ratePerM3, $staffId, $request) {
 

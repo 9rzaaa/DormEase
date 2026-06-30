@@ -2761,56 +2761,71 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        setButtonLoading(submitBtn, 'Logging...');
-        showActionLoading('Logging water consumption...');
+        const doLogSubmit = async (force) => {
+            setButtonLoading(submitBtn, 'Logging...');
+            showActionLoading('Logging water consumption...');
 
-        try {
-            const response = await fetch("{{ route('billing.log') }}", {
-                method  : 'POST',
-                headers : {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body    : new FormData(logForm),
-            });
+            try {
+                const formData = new FormData(logForm);
+                if (force) formData.append('force_overwrite', '1');
 
-            const contentType = response.headers.get('content-type') || '';
-            if (!contentType.includes('application/json')) {
-                showToast('Unexpected server response. Please contact support.', 'error');
+                const response = await fetch("{{ route('billing.log') }}", {
+                    method  : 'POST',
+                    headers : {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body    : formData,
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    showToast('Unexpected server response. Please contact support.', 'error');
+                    resetButton(submitBtn, 'Log and Distribute');
+                    hideActionLoading();
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    submitBtn.innerHTML = `<span style="font-size:1rem;">ok</span> Done`;
+                    showToast(data.message || 'Water billing logged successfully.', 'success');
+
+                    const billingMonth = document.getElementById('log-billing-month').value;
+                    const monthForUrl  = billingMonth + '-01';
+                    const floor        = document.getElementById('filter-floor').value;
+                    let   url          = "{{ route('billing.index') }}?month=" + monthForUrl;
+                    if (floor) url    += '&floor=' + floor;
+
+                    setTimeout(() => { window.location.href = url; }, 1000);
+
+                } else if (data.requires_overwrite_confirmation) {
+                    hideActionLoading();
+                    resetButton(submitBtn, 'Log and Distribute');
+                    showConfirm(
+                        'Overwrite existing billing data?',
+                        data.message || 'Billing data already exists for this period.',
+                        () => doLogSubmit(true)
+                    );
+                } else {
+                    let errMsg = 'Failed to log billing. Please check your inputs.';
+                    if (data.message) errMsg = data.message;
+                    else if (data.errors) errMsg = Object.values(data.errors).flat().join(' ');
+                    showToast(errMsg, 'error');
+                    resetButton(submitBtn, 'Log and Distribute');
+                    hideActionLoading();
+                }
+
+            } catch (err) {
+                showToast('Network error. Please check your connection and try again.', 'error');
                 resetButton(submitBtn, 'Log and Distribute');
                 hideActionLoading();
-                return;
             }
+        };
 
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                submitBtn.innerHTML = `<span style="font-size:1rem;">ok</span> Done`;
-                showToast(data.message || 'Water billing logged successfully.', 'success');
-
-                const billingMonth = document.getElementById('log-billing-month').value;
-                const monthForUrl  = billingMonth + '-01';
-                const floor        = document.getElementById('filter-floor').value;
-                let   url          = "{{ route('billing.index') }}?month=" + monthForUrl;
-                if (floor) url    += '&floor=' + floor;
-
-                setTimeout(() => { window.location.href = url; }, 1000);
-
-            } else {
-                let errMsg = 'Failed to log billing. Please check your inputs.';
-                if (data.message) errMsg = data.message;
-                else if (data.errors) errMsg = Object.values(data.errors).flat().join(' ');
-                showToast(errMsg, 'error');
-                resetButton(submitBtn, 'Log and Distribute');
-                hideActionLoading();
-            }
-
-        } catch (err) {
-            showToast('Network error. Please check your connection and try again.', 'error');
-            resetButton(submitBtn, 'Log and Distribute');
-            hideActionLoading();
-        }
+        await doLogSubmit(false);
     });
 });
 
