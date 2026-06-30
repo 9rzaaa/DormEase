@@ -1895,8 +1895,11 @@ tbody tr:hover { background: var(--soft-bg); }
                         </div>
                         <div class="modal-field full" id="edit-est-movein-wrap" style="display:none;">
                             <label>Estimated Move-In Date</label>
-                            <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in">
+                            <input type="date" name="estimated_move_in_date" id="edit-estimated-move-in" @error('estimated_move_in_date') style="border-color:#e04867;box-shadow:0 0 0 3px rgba(224,72,103,.15);" @enderror>
                             <span class="field-error" id="edit-estimated-move-in-error" style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:none;"></span>
+                            @error('estimated_move_in_date')
+                                <span style="font-size:.75rem;color:#e04867;font-weight:600;margin-top:.2rem;display:block;">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="modal-field full" id="edit-reservation-notes-wrap" style="display:none;">
                             <label>Reservation Notes</label>
