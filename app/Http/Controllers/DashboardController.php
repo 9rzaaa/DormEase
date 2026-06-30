@@ -10,6 +10,7 @@ use App\Models\EmergencyReport;
 use App\Models\Announcement;
 use App\Models\Notification;
 use App\Models\VisitorLog;
+use App\Http\ViewComposers\NotificationComposer;
 use Carbon\Carbon;
 use App\Models\Staff;
 
@@ -107,7 +108,11 @@ class DashboardController extends Controller
                 ->take(3)
                 ->get(),
             'announcements'        => Announcement::latest('posted_at')->take(3)->get(),
-            'notifications'        => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->latest('created_at')->take(4)->get(),
+            'notifications'        => Notification::where('staff_id', $staff->staff_id)
+                ->whereIn('type', NotificationComposer::visibleTypesFor($staff->role))
+                ->latest('created_at')
+                ->take(4)
+                ->get(),
             'unreadNotifCount'     => Notification::where('staff_id', $staff->staff_id)->where('is_read', false)->count(),
             'latestEmergency'      => EmergencyReport::where('status', '!=', 'resolved')->latest('reported_at')->first(),
             'allEmergencies'       => EmergencyReport::latest('reported_at')->take(50)->get(),

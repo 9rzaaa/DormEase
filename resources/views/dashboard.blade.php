@@ -755,7 +755,7 @@
         <div class="card">
             <h3>Notifications</h3>
             @if($notifications->isEmpty())
-                <div class="empty-state" style="padding:1rem 0;">No new notifications.</div>
+                <div class="empty-state" style="padding:1rem 0;">No notifications yet.</div>
             @else
                 @foreach($notifications as $notif)
                     <div class="notif-item" onclick="openNotifModal({{ json_encode($notif->message) }}, {{ json_encode($notif->type ?? 'bell') }}, {{ json_encode(\Carbon\Carbon::parse($notif->created_at)->diffForHumans()) }}, {{ $notif->notif_id }})">
