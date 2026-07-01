@@ -1022,7 +1022,7 @@
         preview.src = modalPrev.src;
         preview.style.display = 'block';
         if (initials) initials.style.display = 'none';
-        closeAvatarModal();
+        document.getElementById('avatar-modal').style.display = 'none';
         showActionLoading('Uploading photo...');
         document.getElementById('avatar-form').submit();
     }

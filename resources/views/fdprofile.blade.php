@@ -909,7 +909,7 @@
         preview.src = modalPrev.src;
         preview.style.display = 'block';
         if (initials) initials.style.display = 'none';
-        closeAvatarModal();
+        document.getElementById('avatar-modal').style.display = 'none';
         document.getElementById('avatar-form').submit();
     }
 
