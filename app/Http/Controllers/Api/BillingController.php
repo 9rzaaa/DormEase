@@ -145,10 +145,12 @@ class BillingController extends Controller
 
     public function tenantPay(Request $request)
     {
+        $isCash = $request->payment_method === 'cash';
+
         $request->validate([
             'billing_id' => 'required|integer',
-            'proof_of_payment' => 'required|image|mimes:jpg,jpeg,png|max:4096',
-            'reference_code' => 'required|string|max:100',
+            'proof_of_payment' => $isCash ? 'nullable|image|mimes:jpg,jpeg,png|max:4096' : 'required|image|mimes:jpg,jpeg,png|max:4096',
+            'reference_code' => $isCash ? 'nullable|string|max:100' : 'required|string|max:100',
             'payment_method' => 'nullable|string|max:100',
         ], [
             'proof_of_payment.required' => 'Please upload your proof of payment.',
@@ -177,16 +179,31 @@ class BillingController extends Controller
             return response()->json(['message' => 'Already verified as paid.'], 422);
         }
 
-        if ($billing->proof_of_payment) {
-            Storage::disk('public')->delete($billing->proof_of_payment);
+        $path = null;
+        if ($request->hasFile('proof_of_payment')) {
+            if ($billing->proof_of_payment) {
+                Storage::disk('public')->delete($billing->proof_of_payment);
+            }
+            $path = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        } else if ($isCash) {
+            if ($billing->proof_of_payment) {
+                Storage::disk('public')->delete($billing->proof_of_payment);
+            }
+            $path = null;
+        } else {
+            $path = $billing->proof_of_payment;
         }
 
-        $path = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        // If it's a cash payment and no reference code is provided, set a default reference code
+        $refCode = $request->reference_code;
+        if ($isCash && empty($refCode)) {
+            $refCode = 'CASH-' . strtoupper(uniqid());
+        }
 
         $billing->update([
             'payment_status' => 'pending',
             'proof_of_payment' => $path,
-            'payment_reference_code' => $request->reference_code,
+            'payment_reference_code' => $refCode,
             'payment_submitted_at' => now(),
             'rejection_reason' => null,
         ]);
@@ -201,7 +218,7 @@ class BillingController extends Controller
                 'payment_method' => $request->payment_method,
                 'amount_paid' => $billing->room_share,
                 'proof_of_payment' => $path,
-                'reference_number' => $request->reference_code,
+                'reference_number' => $refCode,
                 'payment_date' => now(),
                 'status' => 'pending',
             ]
@@ -209,13 +226,17 @@ class BillingController extends Controller
 
         NotificationHelper::sendToAll(
             type: 'billing_overdue',
-            message: "{$tenant->first_name} {$tenant->last_name} submitted payment proof for water billing.",
+            message: $isCash 
+                ? "{$tenant->first_name} {$tenant->last_name} submitted a cash payment request for water billing."
+                : "{$tenant->first_name} {$tenant->last_name} submitted payment proof for water billing.",
             ref_id: $billing->billing_id,
         );
 
         return response()->json([
             'success' => true,
-            'message' => 'Payment proof submitted for verification.',
+            'message' => $isCash 
+                ? 'Cash payment request submitted for verification.' 
+                : 'Payment proof submitted for verification.',
             'status' => 'Pending',
         ]);
     }
