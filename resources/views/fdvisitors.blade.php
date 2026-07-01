@@ -2615,7 +2615,7 @@
         var q    = (query || '').toLowerCase().trim();
         var list = allTenants.filter(function(t) {
             if (!t.is_active && t.is_active !== undefined) return false;
-            if (t.status && t.status !== 'active') return false;
+            if (t.status && ['active', 'pending'].indexOf(t.status) === -1) return false;
             var name = (t.first_name + ' ' + t.last_name).toLowerCase();
             return !q || name.includes(q);
         });
