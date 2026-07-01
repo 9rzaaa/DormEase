@@ -1960,7 +1960,7 @@
         editContactEl.value = s.contact_number || '';
         formatContactNumber(editContactEl);
         validateContactNumber(editContactEl, s.staff_id);
-        document.getElementById('edit-duty-status').value     = (s.duty_status === 'on_leave' ? 'off_duty' : s.duty_status) || 'off_duty';
+        delete document.getElementById('edit-duty-status').dataset.preLeaveValue;
         document.getElementById('edit-is-active').value       = s.is_active ? '1' : '0';
         document.getElementById('edit-is-on-leave').checked   = !!s.is_on_leave;
         document.getElementById('edit-leave-start').value     = s.leave_start || '';
@@ -2194,6 +2194,10 @@
         fields.style.display = checked ? 'block' : 'none';
 
         if (!checked) {
+            if (duty.dataset.preLeaveValue !== undefined) {
+                duty.value = duty.dataset.preLeaveValue;
+                delete duty.dataset.preLeaveValue;
+            }
             duty.disabled = false;
             return;
         }
@@ -2203,9 +2207,16 @@
         var leaveStartedOrUndated = !startVal || startVal <= todayStr;
 
         if (leaveStartedOrUndated) {
+            if (duty.dataset.preLeaveValue === undefined) {
+                duty.dataset.preLeaveValue = duty.value;
+            }
             duty.value    = 'off_duty';
             duty.disabled = true;
         } else {
+            if (duty.dataset.preLeaveValue !== undefined) {
+                duty.value = duty.dataset.preLeaveValue;
+                delete duty.dataset.preLeaveValue;
+            }
             duty.disabled = false;
         }
     }
