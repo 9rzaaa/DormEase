@@ -321,7 +321,7 @@ class StaffController extends Controller
             'shift_schedule' => $request->shift_schedule,
             'shift_start'    => $shiftTimes['shift_start'],
             'shift_end'      => $shiftTimes['shift_end'],
-            'duty_status'    => ($isOnLeave && (!$request->leave_start || $request->leave_start <= $today)) ? 'off_duty' : $request->duty_status,
+            'duty_status'    => ($isOnLeave && (!$request->leave_start || $request->leave_start <= $today)) ? 'off_duty' : ($request->duty_status ?? $staff->duty_status),
             'is_on_leave'    => $isOnLeave,
             'leave_start'    => $isOnLeave ? $request->leave_start : null,
             'leave_end'      => $isOnLeave ? $request->leave_end   : null,

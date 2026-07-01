@@ -1632,7 +1632,7 @@
                         <div class="modal-grid" style="margin-bottom:.75rem;gap:.85rem;">
                             <div class="modal-field">
                                 <label>Leave Start</label>
-                                <input type="date" name="leave_start" id="edit-leave-start" onchange="validateLeaveDates()">
+                                <input type="date" name="leave_start" id="edit-leave-start" onchange="validateLeaveDates(); toggleLeaveFields();">
                             </div>
                             <div class="modal-field">
                                 <label>Leave End</label>
@@ -1760,6 +1760,20 @@
         return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
+    function isLeaveActive(s) {
+        if (!s.is_on_leave) return false;
+        var todayStr = new Date().toISOString().slice(0, 10);
+        if (s.leave_start && s.leave_start > todayStr) return false;
+        if (s.leave_end && s.leave_end < todayStr) return false;
+        return true;
+    }
+
+    function isLeaveUpcoming(s) {
+        if (!s.is_on_leave) return false;
+        var todayStr = new Date().toISOString().slice(0, 10);
+        return !!(s.leave_start && s.leave_start > todayStr);
+    }
+
     function leaveBadge(s) {
         if (!s.is_on_leave) return '';
         var start = fmtLeaveDate(s.leave_start);
@@ -1768,6 +1782,10 @@
         if (start || end || s.leave_note) {
             title = ' title="' + (start || '\u2014') + ' to ' + (end || 'Ongoing') + (s.leave_note ? ' \u2014 ' + String(s.leave_note).replace(/"/g, '&quot;') : '') + '"';
         }
+        if (isLeaveUpcoming(s)) {
+            return '<span class="badge badge-leave"' + title + '>Upcoming Leave</span>';
+        }
+        if (!isLeaveActive(s)) return '';
         return '<span class="badge badge-leave"' + title + '>On Leave</span>';
     }
 
@@ -1881,7 +1899,7 @@
                 (s.contact_number || '').toLowerCase().includes(q) ||
                 (s.email          || '').toLowerCase().includes(q);
             var matchRole = role === '' || s.role === role;
-            var matchDuty = duty === '' || (duty === 'on_leave' ? !!s.is_on_leave : s.duty_status === duty);
+            var matchDuty = duty === '' || (duty === 'on_leave' ? isLeaveActive(s) : s.duty_status === duty);
             return matchSearch && matchRole && matchDuty;
         });
         sortTable();
@@ -2174,7 +2192,17 @@
         var fields  = document.getElementById('edit-leave-fields');
         var duty    = document.getElementById('edit-duty-status');
         fields.style.display = checked ? 'block' : 'none';
-        if (checked) {
+
+        if (!checked) {
+            duty.disabled = false;
+            return;
+        }
+
+        var startVal = document.getElementById('edit-leave-start').value;
+        var todayStr = new Date().toISOString().slice(0, 10);
+        var leaveStartedOrUndated = !startVal || startVal <= todayStr;
+
+        if (leaveStartedOrUndated) {
             duty.value    = 'off_duty';
             duty.disabled = true;
         } else {
