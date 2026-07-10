@@ -1518,7 +1518,7 @@
                         <option value="Security">Security</option>
                         <option value="Structural">Structural</option>
                         <option value="Natural Disaster">Natural Disaster</option>
-                        <option value="Other">Other</option>
+                        <option value="Unknown">Unknown</option>
                     </select>
                 </div>
                 <div class="em-modal-field">

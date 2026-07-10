@@ -383,7 +383,7 @@ class EmergencyController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Other',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Unknown',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
 
@@ -430,7 +430,7 @@ class EmergencyController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Other',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Unknown',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
             'reclassify_matching' => 'nullable|boolean',
         ]);
@@ -534,7 +534,7 @@ class EmergencyController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Other',
+            'emergency_type' => 'required|in:Medical,Fire/Smoke,Electrical Hazard,Lockout,Security,Structural,Flood/Water Leak,Natural Disaster,Unknown',
             'urgency_level' => 'nullable|in:moderate,urgent,critical',
         ]);
 
