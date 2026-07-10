@@ -2226,7 +2226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const kwEditIcon = "{{ asset('icons/edit.png') }}";
     const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
     const kwEmptyIcon = "{{ asset('icons/maintenance.png') }}";
-    const ISSUE_TYPE_OPTIONS = ['Plumbing', 'Electrical', 'Hvac', 'Appliance', 'Carpentry', 'Pest', 'Cleaning', 'Internet', 'Other'];
+    const ISSUE_TYPE_OPTIONS = ['Plumbing', 'Electrical', 'Hvac', 'Appliance', 'Carpentry', 'Pest', 'Cleaning', 'Internet', 'Unknown'];
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
     const perPage  = 10;
@@ -2245,7 +2245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cleaning:   'issue-general',
         internet:   'issue-hvac',
         general:    'issue-general',
-        other:      'issue-other',
+        unknown:    'issue-other',
     };
 
     function urgencyBadge(u) {
@@ -3184,10 +3184,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 '</div>' +
                 '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-counter-' + term.id + '">' + buildKwPhrase(term.id).length + '/255</span><span class="kw-validation-msg" id="kw-msg-' + term.id + '"></span></div>' +
                 '<div class="kw-card-row">' +
-                '<div><span class="kw-field-label">Issue type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('other') + '</select></div>' +
+                '<div><span class="kw-field-label">Issue type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('unknown') + '</select></div>' +
                 '<div><span class="kw-field-label">Urgency override</span><select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select></div>' +
                 '</div>' +
-                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past requests still marked Other</label>' +
+                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past requests still marked Unknown</label>' +
                 '<div class="kw-card-actions">' +
                 '<button class="kw-btn-ignore" onclick="ignoreKwTerm(' + term.id + ')">Ignore</button>' +
                 '<button class="kw-btn-save" onclick="submitKwClassify(' + term.id + ')">Save Keyword</button>' +
@@ -3277,7 +3277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rules = hardcodedRules.issue_rules || {};
         const lower = value.toLowerCase();
         for (const type in rules) {
-            if (type === 'other') continue;
+            if (type === 'unknown') continue;
             const rule = rules[type];
             if ((rule.keywords || []).some(function(k) { return k.toLowerCase() === lower; })) {
                 return { type: type, urgency: rule.priority || 'low' };
@@ -3413,7 +3413,7 @@ document.addEventListener('DOMContentLoaded', () => {
             '</div>' +
             '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-add-counter">0/255</span><span class="kw-validation-msg" id="kw-add-msg"></span></div>' +
             '<div class="kw-card-row">' +
-            '<div><span class="kw-field-label">Issue type</span><select id="kw-add-type">' + typeOptionsHtml('other') + '</select></div>' +
+            '<div><span class="kw-field-label">Issue type</span><select id="kw-add-type">' + typeOptionsHtml('unknown') + '</select></div>' +
             '<div><span class="kw-field-label">Urgency override</span><select id="kw-add-urgency">' + urgencyOptionsHtml('') + '</select></div>' +
             '</div>' +
             '<div class="kw-card-actions">' +

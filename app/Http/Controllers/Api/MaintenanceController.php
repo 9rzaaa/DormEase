@@ -901,7 +901,7 @@ class MaintenanceController extends Controller
             'submitted_at'  => now(),
         ]);
 
-        if ($maintenance->issue_type === 'other' && !empty($cleanedDescription)) {
+        if ($maintenance->issue_type === 'unknown' && !empty($cleanedDescription)) {
             UnclassifiedMaintenanceTerm::create([
                 'request_id' => $maintenance->request_id,
                 'description_snapshot' => $cleanedDescription,
@@ -1128,8 +1128,8 @@ class MaintenanceController extends Controller
     private function classify(string $text, ?string $requestedIssue = null): array
     {
         $normalizedIssue = $this->normalizeIssueType($requestedIssue);
-        $bestIssue = $normalizedIssue ?? 'other';
-        $bestScore = ($normalizedIssue && $normalizedIssue !== 'other') ? 1.0 : 0.0;
+        $bestIssue = $normalizedIssue ?? 'unknown';
+        $bestScore = ($normalizedIssue && $normalizedIssue !== 'unknown') ? 1.0 : 0.0;
         $bestPriorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$bestIssue]['priority'] ?? 'low'] ?? 0;
         $decidingCustomKeyword = null;
 
@@ -1216,7 +1216,7 @@ class MaintenanceController extends Controller
             'pest', 'pest control' => 'pest',
             'cleaning' => 'cleaning',
             'internet', 'cable', 'internet / cable' => 'internet',
-            'other', 'others' => 'other',
+            'other', 'others', 'unknown' => 'unknown',
             default => null,
         };
     }
