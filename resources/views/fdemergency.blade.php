@@ -1880,40 +1880,21 @@
 
     function renderTypeSuggestion(emergencyType, urgencyLevel) {
         const select = document.getElementById('report-type-select');
-        const banner = document.getElementById('type-suggest-banner');
-        const text   = document.getElementById('type-suggest-text');
-        const apply  = document.getElementById('type-suggest-apply');
+        const checkbox = document.getElementById('panic-check');
 
-        if (emergencyType === 'Panic Alert') {
-            const checkbox = document.getElementById('panic-check');
-            if (checkbox.checked) {
-                hideTypeSuggestion();
-                return;
-            }
-            text.innerHTML = 'This sounds urgent. Consider marking it as a <strong>Panic Alert</strong>.';
-            apply.textContent = 'Mark as Panic';
-            apply.onclick = function() {
+        if (urgencyLevel === 'critical' || emergencyType === 'Panic Alert') {
+            if (checkbox) {
                 checkbox.checked = true;
-                hideTypeSuggestion();
-            };
-            banner.classList.add('visible');
-            return;
+            }
         }
 
         const mapped = TYPE_SUGGEST_MAP[emergencyType];
-        if (!mapped || select.value === mapped) {
-            hideTypeSuggestion();
-            return;
-        }
-
-        text.innerHTML = 'Based on the description, this looks like <strong>' + escHtml(mapped) + '</strong>.';
-        apply.textContent = 'Apply';
-        apply.onclick = function() {
+        if (mapped && select.value !== mapped) {
             select.value = mapped;
             updateReportHotlines(mapped);
-            hideTypeSuggestion();
-        };
-        banner.classList.add('visible');
+        }
+
+        hideTypeSuggestion();
     }
 
     function hideTypeSuggestion() {
