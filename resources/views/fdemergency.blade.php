@@ -1517,6 +1517,7 @@
                         <option value="Lockout">Lockout</option>
                         <option value="Security">Security</option>
                         <option value="Structural">Structural</option>
+                        <option value="Natural Disaster">Natural Disaster</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
@@ -1829,6 +1830,9 @@
         'Security': 'Security',
         'Electrical Hazard': 'Electrical Hazard',
         'Flood/Water Leak': 'Flood/Water Leak',
+        'Lockout': 'Lockout',
+        'Structural': 'Structural',
+        'Natural Disaster': 'Natural Disaster',
     };
 
     let suggestDebounceTimer = null;

@@ -17,14 +17,14 @@ class EmergencyController extends Controller
         'Panic Alert' => [
             'urgency' => 'critical',
             'keywords' => [
-                'panic alert',
+                'panic alert' => 2.0,
+                'emergency button' => 2.0,
+                'help now' => 2.0,
+                'send help' => 2.0,
+                'tulong ngayon' => 2.0,
+                'kailangan ng tulong' => 2.0,
+                'sos' => 2.0,
                 'panic',
-                'emergency button',
-                'help now',
-                'send help',
-                'tulong ngayon',
-                'kailangan ng tulong',
-                'sos',
                 'help me',
                 'danger',
                 'threatened',
@@ -39,24 +39,30 @@ class EmergencyController extends Controller
                 'pakiusap tulong',
                 'panganib',
             ],
+            'exclude' => [],
         ],
         'Medical' => [
             'urgency' => 'critical',
             'keywords' => [
+                'hospital' => 2.0,
+                'paramedic' => 2.0,
+                'heart attack' => 2.0,
+                'stroke' => 2.0,
+                'unconscious' => 2.0,
+                'chest pain' => 2.0,
+                'bleeding' => 2.0,
+                'ambulance' => 2.0,
+                'ambulansya' => 2.0,
+                'kombulsyon' => 2.0,
+                'atake' => 2.0,
                 'medical',
                 'injury',
                 'injured',
                 'hurt',
-                'bleeding',
                 'blood',
                 'fainted',
-                'unconscious',
                 'sick',
-                'ambulance',
-                'heart attack',
-                'chest pain',
                 'seizure',
-                'stroke',
                 'nahilo',
                 'himatay',
                 'sugat',
@@ -64,13 +70,8 @@ class EmergencyController extends Controller
                 'dugo',
                 'may sakit',
                 'masakit',
-                'ambulansya',
-                'atake',
-                'kombulsyon',
                 'doctor',
-                'paramedic',
                 'first aid',
-                'hospital',
                 'asthma',
                 'difficulty breathing',
                 'choking',
@@ -111,24 +112,26 @@ class EmergencyController extends Controller
                 'sakit ng ulo',
                 'sakit ng tiyan',
             ],
+            'exclude' => ['electric', 'short circuit', 'spark', 'smoke', 'fire', 'sunog', 'outlet'],
         ],
         'Fire/Smoke' => [
             'urgency' => 'critical',
             'keywords' => [
-                'fire',
-                'smoke',
-                'burning',
+                'fire' => 2.0,
+                'smoke' => 2.0,
+                'burning' => 2.0,
+                'gas leak' => 2.0,
+                'explosion' => 2.0,
+                'sunog' => 2.0,
+                'usok' => 2.0,
+                'apoy' => 2.0,
+                'pagsabog' => 2.0,
                 'burn',
                 'flame',
-                'gas leak',
                 'smells like gas',
-                'sunog',
-                'usok',
                 'nasusunog',
-                'apoy',
                 'amoy gas',
                 'tagas gas',
-                'explosion',
                 'explode',
                 'sparks',
                 'fire alarm',
@@ -150,20 +153,25 @@ class EmergencyController extends Controller
                 'sunog sa kusina',
                 'sunog sa wire',
             ],
+            'exclude' => ['medical', 'doctor', 'locked out', 'lockout', 'key', 'thief', 'robbery'],
         ],
         'Electrical Hazard' => [
             'urgency' => 'urgent',
             'keywords' => [
+                'exposed wire' => 2.0,
+                'short circuit' => 2.0,
+                'electric shock' => 2.0,
+                'high voltage' => 2.0,
+                'sparking outlet' => 2.0,
+                'power surge' => 2.0,
                 'electric',
                 'electrical',
                 'spark',
                 'sparking',
                 'wire',
-                'exposed wire',
                 'outlet',
                 'power',
                 'shock',
-                'short circuit',
                 'breaker',
                 'kuryente',
                 'kurente',
@@ -172,13 +180,9 @@ class EmergencyController extends Controller
                 'kumukuryente',
                 'pumutok',
                 'kawad',
-                'high voltage',
                 'live wire',
                 'bare wire',
-                'electric shock',
-                'sparking outlet',
                 'blackout',
-                'power surge',
                 'smell of burning plastic',
                 'melted wire',
                 'transformer explosion',
@@ -195,33 +199,57 @@ class EmergencyController extends Controller
                 'plakada',
                 'singaw ng kuryente',
             ],
+            'exclude' => ['medical', 'doctor', 'bleeding', 'thief', 'robbery'],
+        ],
+        'Lockout' => [
+            'urgency' => 'moderate',
+            'keywords' => [
+                'lockout' => 2.0,
+                'locked out' => 2.0,
+                'lost key' => 2.0,
+                'broken lock' => 2.0,
+                'lock',
+                'key',
+                'card key',
+                'naka-lock',
+                'nakalock',
+                'nawawalang susi',
+                'susi',
+                'kandado',
+            ],
+            'exclude' => ['fire', 'smoke', 'bleeding', 'heart attack', 'electric'],
         ],
         'Security' => [
             'urgency' => 'urgent',
             'keywords' => [
+                'intruder' => 2.0,
+                'break in' => 2.0,
+                'stolen' => 2.0,
+                'theft' => 2.0,
+                'thief' => 2.0,
+                'thieves' => 2.0,
+                'robbery' => 2.0,
+                'robbed' => 2.0,
+                'assault' => 2.0,
+                'harassment' => 2.0,
+                'stalker' => 2.0,
+                'magnanakaw' => 2.0,
+                'nakaw' => 2.0,
+                'baril' => 2.0,
+                'knife' => 2.0,
+                'gun' => 2.0,
                 'security',
-                'intruder',
-                'break in',
                 'break-in',
-                'stolen',
-                'theft',
-                'thief',
-                'thieves',
                 'fight',
                 'threat',
                 'stranger',
                 'harass',
-                'assault',
-                'magnanakaw',
                 'nanakaw',
-                'nakaw',
                 'away',
                 'gulo',
                 'banta',
                 'estranghero',
                 'panliligalig',
-                'robbery',
-                'robbed',
                 'stole',
                 'stealing',
                 'shoplift',
@@ -229,13 +257,9 @@ class EmergencyController extends Controller
                 'burglar',
                 'trespass',
                 'trespassing',
-                'harassment',
-                'stalker',
                 'stalking',
                 'peeping tom',
                 'weapon',
-                'knife',
-                'gun',
                 'vandalism',
                 'vandalized',
                 'physical fight',
@@ -250,25 +274,51 @@ class EmergencyController extends Controller
                 'sinira',
                 'patalim',
                 'kutsilyo',
-                'baril',
                 'awayan',
                 'bugbog',
                 'binugbog',
                 'sinasaktan',
             ],
+            'exclude' => ['leak', 'water', 'clog', 'electric', 'aircon'],
+        ],
+        'Structural' => [
+            'urgency' => 'urgent',
+            'keywords' => [
+                'collapse' => 2.0,
+                'collapsed' => 2.0,
+                'falling debris' => 2.0,
+                'elevator' => 2.0,
+                'stuck in elevator' => 2.0,
+                'structural',
+                'lift',
+                'button in elevator',
+                'crack',
+                'cracks',
+                'wall crack',
+                'broken ceiling',
+                'ceiling crack',
+                'pader',
+                'giba',
+                'sira na pader',
+                'basag na semento',
+                'guho',
+            ],
+            'exclude' => ['water leak', 'outlet', 'wifi', 'internet', 'theft'],
         ],
         'Flood/Water Leak' => [
             'urgency' => 'urgent',
             'keywords' => [
-                'flood',
-                'flooding',
+                'flood' => 2.0,
+                'flooding' => 2.0,
+                'pipe burst' => 2.0,
+                'sewage backup' => 2.0,
+                'baha' => 2.0,
+                'tagas ng tubig' => 2.0,
                 'water leak',
                 'leak',
-                'pipe burst',
                 'overflow',
                 'overflowing',
                 'water everywhere',
-                'baha',
                 'binabaha',
                 'tagas',
                 'tulo',
@@ -280,7 +330,6 @@ class EmergencyController extends Controller
                 'busted pipe',
                 'water damage',
                 'dripping',
-                'sewage backup',
                 'toilet overflow',
                 'sink overflow',
                 'broken faucet',
@@ -290,7 +339,6 @@ class EmergencyController extends Controller
                 'ceiling leak',
                 'baradong tubo',
                 'baradong kanal',
-                'tagas ng tubig',
                 'tumutulong bubong',
                 'apaw na toilet',
                 'sira na gripo',
@@ -298,10 +346,37 @@ class EmergencyController extends Controller
                 'baha sa banyo',
                 'baha sa kwarto',
             ],
+            'exclude' => ['fire', 'smoke', 'electric', 'power', 'thief'],
+        ],
+        'Natural Disaster' => [
+            'urgency' => 'critical',
+            'keywords' => [
+                'earthquake' => 2.0,
+                'typhoon' => 2.0,
+                'tsunami' => 2.0,
+                'landslide' => 2.0,
+                'tornado' => 2.0,
+                'volcano' => 2.0,
+                'lindol' => 2.0,
+                'bagyo' => 2.0,
+                'flood',
+                'hurricane',
+                'storm',
+                'eruption',
+                'calamity',
+                'disaster',
+                'baha',
+                'pagguho ng lupa',
+                'buhawi',
+                'bulkan',
+                'pagsabog',
+            ],
+            'exclude' => ['lockout', 'lost key', 'wifi', 'internet'],
         ],
         'Other' => [
             'urgency' => 'moderate',
             'keywords' => [],
+            'exclude' => [],
         ],
     ];
 
@@ -541,7 +616,7 @@ class EmergencyController extends Controller
             return true;
         }
         $len = min(strlen($w1), strlen($w2));
-        if ($len <= 3) {
+        if ($len <= 4) {
             return false;
         }
         $dist = levenshtein($w1, $w2);
@@ -881,6 +956,76 @@ class EmergencyController extends Controller
         return array_unique($forms);
     }
 
+    private function getMatchingTokenIndices(string $text, array $keywords): array
+    {
+        $text = strtolower($text);
+        $text = preg_replace('/[^\p{L}\p{N}\s\-\/]/u', ' ', $text);
+        $textTokens = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $tCount = count($textTokens);
+
+        $matchedWeights = [];
+
+        foreach ($keywords as $keySpec => $weightSpec) {
+            if (is_int($keySpec)) {
+                $keyword = $weightSpec;
+                $weight = 1.0;
+            } else {
+                $keyword = $keySpec;
+                $weight = (float)$weightSpec;
+            }
+
+            $keyword = strtolower(trim($keyword));
+            $keywordTokens = preg_split('/\s+/', $keyword, -1, PREG_SPLIT_NO_EMPTY);
+            $kCount = count($keywordTokens);
+
+            if (empty($textTokens) || empty($keywordTokens)) {
+                continue;
+            }
+
+            for ($i = 0; $i < $tCount; $i++) {
+                if ($this->tokenMatches($textTokens[$i], $keywordTokens[0])) {
+                    if ($this->isIndexNegated($textTokens, $i)) {
+                        continue;
+                    }
+
+                    if ($kCount === 1) {
+                        $matchedWeights[$i] = max($matchedWeights[$i] ?? 0.0, $weight);
+                        continue;
+                    }
+
+                    $textIdx = $i + 1;
+                    $matchedAll = true;
+                    $tempIndices = [$i];
+
+                    for ($k = 1; $k < $kCount; $k++) {
+                        $foundNext = false;
+                        $maxIdx = min($textIdx + 2, $tCount);
+                        for ($t = $textIdx; $t < $maxIdx; $t++) {
+                            if ($this->tokenMatches($textTokens[$t], $keywordTokens[$k])) {
+                                $textIdx = $t + 1;
+                                $foundNext = true;
+                                $tempIndices[] = $t;
+                                break;
+                            }
+                        }
+                        if (!$foundNext) {
+                            $matchedAll = false;
+                            break;
+                        }
+                    }
+
+                    if ($matchedAll) {
+                        foreach ($tempIndices as $idx) {
+                            $matchedWeights[$idx] = max($matchedWeights[$idx] ?? 0.0, $weight);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $matchedWeights;
+    }
+
     private function classify(string $text, ?string $requestedType, bool $isPanicAlert): array
     {
         if ($isPanicAlert) {
@@ -892,17 +1037,27 @@ class EmergencyController extends Controller
 
         $normalizedType = $this->normalizeEmergencyType($requestedType);
         $bestType = $normalizedType ?? 'Other';
-        $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1 : 0;
+        $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1.0 : 0.0;
         $decidingCustomKeyword = null;
 
         foreach (self::EMERGENCY_RULES as $type => $rule) {
-            $score = 0;
-
-            foreach ($rule['keywords'] as $keyword) {
-                if ($this->matchesKeyword($text, $keyword)) {
-                    $score++;
+            $shouldExclude = false;
+            if (isset($rule['exclude'])) {
+                foreach ($rule['exclude'] as $exWord) {
+                    $matchedEx = $this->getMatchingTokenIndices($text, [$exWord]);
+                    if (count($matchedEx) > 0) {
+                        $shouldExclude = true;
+                        break;
+                    }
                 }
             }
+
+            if ($shouldExclude) {
+                continue;
+            }
+
+            $matchedTokens = $this->getMatchingTokenIndices($text, $rule['keywords']);
+            $score = (float)array_sum($matchedTokens);
 
             if ($score > $bestScore) {
                 $bestType = $type;
@@ -915,8 +1070,9 @@ class EmergencyController extends Controller
         $customScoresByType = [];
 
         foreach ($customKeywords as $custom) {
-            if ($this->matchesKeyword($text, strtolower($custom->keyword))) {
-                $customScoresByType[$custom->emergency_type] = ($customScoresByType[$custom->emergency_type] ?? 0) + 1;
+            $matchedCustom = $this->getMatchingTokenIndices($text, [strtolower($custom->keyword)]);
+            if (count($matchedCustom) > 0) {
+                $customScoresByType[$custom->emergency_type] = ($customScoresByType[$custom->emergency_type] ?? 0.0) + array_sum($matchedCustom);
                 if (!isset($customScoresByType[$custom->emergency_type . '_match'])) {
                     $customScoresByType[$custom->emergency_type . '_match'] = $custom;
                 }
@@ -975,8 +1131,11 @@ class EmergencyController extends Controller
             'medical', 'medical emergency' => 'Medical',
             'fire', 'smoke', 'fire/smoke', 'fire smoke' => 'Fire/Smoke',
             'electrical', 'electrical hazard', 'electric hazard' => 'Electrical Hazard',
+            'lockout' => 'Lockout',
             'security' => 'Security',
+            'structural' => 'Structural',
             'flood', 'water leak', 'flood/water leak', 'flood water leak' => 'Flood/Water Leak',
+            'natural disaster', 'disaster', 'calamity' => 'Natural Disaster',
             'other', 'others' => 'Other',
             default => null,
         };

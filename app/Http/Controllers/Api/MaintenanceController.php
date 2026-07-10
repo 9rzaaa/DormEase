@@ -17,6 +17,11 @@ class MaintenanceController extends Controller
         'plumbing' => [
             'priority' => 'moderate',
             'keywords' => [
+                'pipe burst' => 2.0,
+                'sewage' => 2.0,
+                'clogged toilet' => 2.0,
+                'busted pipe' => 2.0,
+                'water leak' => 2.0,
                 'leak',
                 'leaking',
                 'drip',
@@ -43,15 +48,10 @@ class MaintenanceController extends Controller
                 'barado',
                 'baha',
                 'faucet leak',
-                'busted pipe',
                 'water pressure',
-                'sewage',
-                'clogged toilet',
                 'clogged shower',
                 'clogged sink',
                 'drain backup',
-                'water leak',
-                'pipe burst',
                 'flush handle',
                 'leaking hose',
                 'bidet',
@@ -68,10 +68,17 @@ class MaintenanceController extends Controller
                 'walang tubig',
                 'walang tulo',
             ],
+            'exclude' => ['electric', 'power', 'light', 'breaker', 'fire', 'smoke'],
         ],
         'electrical' => [
             'priority' => 'urgent',
             'keywords' => [
+                'blown fuse' => 2.0,
+                'burnt outlet' => 2.0,
+                'exposed wire' => 2.0,
+                'short circuit' => 2.0,
+                'power cut' => 2.0,
+                'blackout' => 2.0,
                 'electric',
                 'electrical',
                 'power',
@@ -81,7 +88,6 @@ class MaintenanceController extends Controller
                 'wire',
                 'wiring',
                 'breaker',
-                'short circuit',
                 'brownout',
                 'light',
                 'lights',
@@ -94,12 +100,7 @@ class MaintenanceController extends Controller
                 'kutitap',
                 'walang kuryente',
                 'walang ilaw',
-                'blown fuse',
-                'burnt outlet',
                 'loose outlet',
-                'exposed wire',
-                'power cut',
-                'blackout',
                 'broken bulb',
                 'lightbulb',
                 'fluorescent',
@@ -120,10 +121,14 @@ class MaintenanceController extends Controller
                 'saklar',
                 'short ng kuryente',
             ],
+            'exclude' => ['leak', 'water', 'clog', 'pipe', 'sink', 'toilet', 'faucet'],
         ],
         'hvac' => [
             'priority' => 'moderate',
             'keywords' => [
+                'ac leak' => 2.0,
+                'ac water leak' => 2.0,
+                'ac not cooling' => 2.0,
                 'aircon',
                 'air conditioning',
                 'ac',
@@ -138,9 +143,6 @@ class MaintenanceController extends Controller
                 'mainit',
                 'lamig',
                 'bentilador',
-                'ac leak',
-                'ac water leak',
-                'ac not cooling',
                 'ac filter',
                 'ac remote',
                 'noisy ac',
@@ -157,10 +159,14 @@ class MaintenanceController extends Controller
                 'singaw ng init',
                 'kulob',
             ],
+            'exclude' => ['stove', 'microwave', 'fridge', 'refrigerator', 'internet', 'wifi'],
         ],
         'appliance' => [
             'priority' => 'low',
             'keywords' => [
+                'fridge not cooling' => 2.0,
+                'induction cooker' => 2.0,
+                'washing machine spin' => 2.0,
                 'appliance',
                 'fridge',
                 'refrigerator',
@@ -174,12 +180,9 @@ class MaintenanceController extends Controller
                 'takure',
                 'plantsa',
                 'rice cooker',
-                'fridge not cooling',
                 'refrigerator door',
                 'microwave timer',
                 'stove burner',
-                'induction cooker',
-                'washing machine spin',
                 'dryer',
                 'rice cooker error',
                 'kettle switch',
@@ -189,10 +192,16 @@ class MaintenanceController extends Controller
                 'plantsa na de kuryente',
                 'takure na de kuryente',
             ],
+            'exclude' => ['aircon', 'ac', 'plumbing', 'leak', 'wifi', 'internet'],
         ],
         'carpentry' => [
             'priority' => 'low',
             'keywords' => [
+                'broken door' => 2.0,
+                'door lock' => 2.0,
+                'broken window' => 2.0,
+                'window lock' => 2.0,
+                'broken bed' => 2.0,
                 'door',
                 'cabinet',
                 'chair',
@@ -214,16 +223,11 @@ class MaintenanceController extends Controller
                 'bisagra',
                 'kahoy',
                 'sira',
-                'broken door',
                 'door knob',
-                'door lock',
                 'hinge squeak',
-                'broken window',
-                'window lock',
                 'broken cabinet',
                 'cabinet door',
                 'broken chair',
-                'broken bed',
                 'squeaky bed',
                 'broken table',
                 'loose screw',
@@ -240,10 +244,16 @@ class MaintenanceController extends Controller
                 'maluwag na turnilyo',
                 'pako',
             ],
+            'exclude' => ['electric', 'leak', 'wifi', 'internet', 'pest', 'bugs'],
         ],
         'pest' => [
             'priority' => 'urgent',
             'keywords' => [
+                'infestation' => 2.0,
+                'bed bugs' => 2.0,
+                'anay sa dingding' => 2.0,
+                'maraming ipis' => 2.0,
+                'maraming langgam' => 2.0,
                 'pest',
                 'cockroach',
                 'roach',
@@ -264,9 +274,7 @@ class MaintenanceController extends Controller
                 'lamok',
                 'insekto',
                 'surot',
-                'infestation',
                 'bugs',
-                'bed bugs',
                 'fleas',
                 'ticks',
                 'spiders',
@@ -277,16 +285,19 @@ class MaintenanceController extends Controller
                 'lizards',
                 'surot sa kama',
                 'kuto sa kama',
-                'anay sa dingding',
-                'maraming ipis',
-                'maraming langgam',
                 'bubuyog',
                 'butiki',
             ],
+            'exclude' => ['plumbing', 'water', 'wifi', 'internet', 'aircon'],
         ],
         'cleaning' => [
             'priority' => 'low',
             'keywords' => [
+                'trash full' => 2.0,
+                'garbage overflow' => 2.0,
+                'bad odor' => 2.0,
+                'smelly room' => 2.0,
+                'amoy bulok' => 2.0,
                 'clean',
                 'cleaning',
                 'dirty',
@@ -305,10 +316,6 @@ class MaintenanceController extends Controller
                 'amag',
                 'linis',
                 'kalat',
-                'trash full',
-                'garbage overflow',
-                'bad odor',
-                'smelly room',
                 'dusty',
                 'dust',
                 'cobwebs',
@@ -317,7 +324,6 @@ class MaintenanceController extends Controller
                 'dirty bathroom',
                 'dirty floor',
                 'puno na basura',
-                'amoy bulok',
                 'maamoy',
                 'maalikabok',
                 'alikabok',
@@ -325,10 +331,16 @@ class MaintenanceController extends Controller
                 'maruming banyo',
                 'maruming sahig',
             ],
+            'exclude' => ['electric', 'wire', 'outlet', 'wifi', 'internet'],
         ],
         'internet' => [
             'priority' => 'moderate',
             'keywords' => [
+                'no connection' => 2.0,
+                'slow wifi' => 2.0,
+                'weak signal' => 2.0,
+                'router blinking' => 2.0,
+                'disconnected' => 2.0,
                 'internet',
                 'wifi',
                 'wi fi',
@@ -344,14 +356,9 @@ class MaintenanceController extends Controller
                 'mabagal internet',
                 'mabagal wifi',
                 'putol',
-                'no connection',
-                'slow wifi',
-                'weak signal',
-                'router blinking',
                 'lan cable',
                 'ethernet',
                 'dns error',
-                'disconnected',
                 'slow loading',
                 'walang koneksyon',
                 'mabagal ang load',
@@ -359,6 +366,7 @@ class MaintenanceController extends Controller
                 'disconnected ang router',
                 'putol ang cable',
             ],
+            'exclude' => ['water', 'leak', 'clog', 'door', 'window', 'bugs'],
         ],
     ];
 
@@ -627,7 +635,7 @@ class MaintenanceController extends Controller
             return true;
         }
         $len = min(strlen($w1), strlen($w2));
-        if ($len <= 3) {
+        if ($len <= 4) {
             return false;
         }
         $dist = levenshtein($w1, $w2);
@@ -907,9 +915,45 @@ class MaintenanceController extends Controller
             ref_id: $maintenance->request_id,
         );
 
+        $escalated = false;
+        $escalationMsg = null;
+        try {
+            $emergencyController = new \App\Http\Controllers\Api\EmergencyController();
+            $emergClassification = $emergencyController->classifyText($cleanedDescription, null);
+            
+            if ($emergClassification['emergency_type'] !== 'Other' && in_array($emergClassification['urgency_level'], ['critical', 'urgent'])) {
+                $location = $tenant?->room_number ?? 'Unknown';
+                
+                $emergencyReport = \App\Models\EmergencyReport::create([
+                    'tenant_id' => $tenant?->tenant_id,
+                    'is_panic_alert' => false,
+                    'emergency_type' => $emergClassification['emergency_type'],
+                    'urgency_level' => $emergClassification['urgency_level'],
+                    'input_type' => $validated['input_type'] ?? 'text',
+                    'description' => "[Escalated from Maintenance] " . $cleanedDescription,
+                    'location' => $location,
+                    'status' => 'active',
+                    'reported_at' => now(),
+                ]);
+
+                NotificationHelper::sendToAll(
+                    type: 'emergency_new',
+                    message: "CRITICAL: Maintenance request from Room {$location} escalated to {$emergClassification['emergency_type']} Emergency!",
+                    ref_id: $emergencyReport->report_id,
+                );
+
+                $escalated = true;
+                $escalationMsg = "This issue has been flagged as an Emergency ({$emergClassification['emergency_type']}) and staff has been alerted immediately.";
+            }
+        } catch (\Exception $e) {
+            \Log::error("Maintenance escalation error: " . $e->getMessage());
+        }
+
         return response()->json([
             'message' => 'Maintenance request submitted successfully.',
             'request' => $this->formatRequest($maintenance),
+            'escalated_to_emergency' => $escalated,
+            'escalation_message' => $escalationMsg,
         ], 201);
     }
 
@@ -1011,28 +1055,110 @@ class MaintenanceController extends Controller
         return CustomMaintenanceKeyword::all();
     }
 
+    private function getMatchingTokenIndices(string $text, array $keywords): array
+    {
+        $text = strtolower($text);
+        $text = preg_replace('/[^\p{L}\p{N}\s\-\/]/u', ' ', $text);
+        $textTokens = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $tCount = count($textTokens);
+        
+        $matchedWeights = [];
+
+        foreach ($keywords as $keySpec => $weightSpec) {
+            if (is_int($keySpec)) {
+                $keyword = $weightSpec;
+                $weight = 1.0;
+            } else {
+                $keyword = $keySpec;
+                $weight = (float)$weightSpec;
+            }
+
+            $keyword = strtolower(trim($keyword));
+            $keywordTokens = preg_split('/\s+/', $keyword, -1, PREG_SPLIT_NO_EMPTY);
+            $kCount = count($keywordTokens);
+
+            if (empty($textTokens) || empty($keywordTokens)) {
+                continue;
+            }
+
+            for ($i = 0; $i < $tCount; $i++) {
+                if ($this->tokenMatches($textTokens[$i], $keywordTokens[0])) {
+                    if ($this->isIndexNegated($textTokens, $i)) {
+                        continue;
+                    }
+
+                    if ($kCount === 1) {
+                        $matchedWeights[$i] = max($matchedWeights[$i] ?? 0.0, $weight);
+                        continue;
+                    }
+
+                    $textIdx = $i + 1;
+                    $matchedAll = true;
+                    $tempIndices = [$i];
+
+                    for ($k = 1; $k < $kCount; $k++) {
+                        $foundNext = false;
+                        $maxIdx = min($textIdx + 2, $tCount);
+                        for ($t = $textIdx; $t < $maxIdx; $t++) {
+                            if ($this->tokenMatches($textTokens[$t], $keywordTokens[$k])) {
+                                $textIdx = $t + 1;
+                                $foundNext = true;
+                                $tempIndices[] = $t;
+                                break;
+                            }
+                        }
+                        if (!$foundNext) {
+                            $matchedAll = false;
+                            break;
+                        }
+                    }
+
+                    if ($matchedAll) {
+                        foreach ($tempIndices as $idx) {
+                            $matchedWeights[$idx] = max($matchedWeights[$idx] ?? 0.0, $weight);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $matchedWeights;
+    }
+
     private function classify(string $text, ?string $requestedIssue = null): array
     {
         $normalizedIssue = $this->normalizeIssueType($requestedIssue);
         $bestIssue = $normalizedIssue ?? 'other';
-        $bestScore = ($normalizedIssue && $normalizedIssue !== 'other') ? 1 : 0;
+        $bestScore = ($normalizedIssue && $normalizedIssue !== 'other') ? 1.0 : 0.0;
         $bestPriorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$bestIssue]['priority'] ?? 'low'] ?? 0;
         $decidingCustomKeyword = null;
 
         foreach (self::ISSUE_RULES as $issue => $rule) {
-            $score = 0;
-
-            foreach ($rule['keywords'] as $keyword) {
-                if ($this->matchesKeyword($text, $keyword)) {
-                    $score++;
+            // Check exclusions first
+            $shouldExclude = false;
+            if (isset($rule['exclude'])) {
+                foreach ($rule['exclude'] as $exWord) {
+                    $matchedEx = $this->getMatchingTokenIndices($text, [$exWord]);
+                    if (count($matchedEx) > 0) {
+                        $shouldExclude = true;
+                        break;
+                    }
                 }
             }
-            if ($score === 0) {
+
+            if ($shouldExclude) {
+                continue;
+            }
+
+            $matchedTokens = $this->getMatchingTokenIndices($text, $rule['keywords']);
+            $score = (float)array_sum($matchedTokens);
+
+            if ($score === 0.0) {
                 continue;
             }
             $priorityWeight = self::PRIORITY_WEIGHT[$rule['priority']] ?? 0;
 
-            if ($score > $bestScore || ($score === $bestScore && $priorityWeight > $bestPriorityWeight)) {
+            if ($score > $bestScore || (abs($score - $bestScore) < 0.0001 && $priorityWeight > $bestPriorityWeight)) {
                 $bestIssue          = $issue;
                 $bestScore          = $score;
                 $bestPriorityWeight = $priorityWeight;
@@ -1044,8 +1170,9 @@ class MaintenanceController extends Controller
         $customScoresByIssue = [];
 
         foreach ($customKeywords as $custom) {
-            if ($this->matchesKeyword($text, strtolower($custom->keyword))) {
-                $customScoresByIssue[$custom->issue_type] = ($customScoresByIssue[$custom->issue_type] ?? 0) + 1;
+            $matchedCustom = $this->getMatchingTokenIndices($text, [strtolower($custom->keyword)]);
+            if (count($matchedCustom) > 0) {
+                $customScoresByIssue[$custom->issue_type] = ($customScoresByIssue[$custom->issue_type] ?? 0.0) + array_sum($matchedCustom);
                 if (!isset($customScoresByIssue[$custom->issue_type . '_match'])) {
                     $customScoresByIssue[$custom->issue_type . '_match'] = $custom;
                 }
@@ -1057,7 +1184,7 @@ class MaintenanceController extends Controller
                 continue;
             }
             $priorityWeight = self::PRIORITY_WEIGHT[self::ISSUE_RULES[$issue]['priority'] ?? 'low'] ?? 0;
-            if ($score > $bestScore || ($score === $bestScore && $priorityWeight > $bestPriorityWeight)) {
+            if ($score > $bestScore || (abs($score - $bestScore) < 0.0001 && $priorityWeight > $bestPriorityWeight)) {
                 $bestIssue = $issue;
                 $bestScore = $score;
                 $bestPriorityWeight = $priorityWeight;
