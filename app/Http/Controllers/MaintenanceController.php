@@ -240,7 +240,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
         ]);
 
@@ -287,7 +287,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
             'reclassify_matching' => 'nullable|boolean',
         ]);
@@ -335,7 +335,7 @@ class MaintenanceController extends Controller
         $reclassifiedCount = 0;
 
         $originatingRequest = MaintenanceRequest::find($term->request_id);
-        if ($originatingRequest && strtolower($originatingRequest->issue_type) === 'other') {
+        if ($originatingRequest && strtolower($originatingRequest->issue_type) === 'unknown') {
             $originatingRequest->update([
                 'issue_type'    => $validated['issue_type'],
                 'urgency_level' => $validated['urgency_level'] ?? $originatingRequest->urgency_level,
@@ -347,7 +347,7 @@ class MaintenanceController extends Controller
             $needle = strtolower(trim($validated['keyword']));
             $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
 
-            $matchingRequests = MaintenanceRequest::where('issue_type', 'other')
+            $matchingRequests = MaintenanceRequest::where('issue_type', 'unknown')
                 ->where('description', 'like', '%' . $needle . '%')
                 ->get();
 
@@ -359,7 +359,7 @@ class MaintenanceController extends Controller
                 $reclassifiedCount++;
             }
 
-            $matchingArchives = ArchivedMaintReq::where('issue_type', 'other')
+            $matchingArchives = ArchivedMaintReq::where('issue_type', 'unknown')
                 ->where('description', 'like', '%' . $needle . '%')
                 ->get();
 
@@ -391,7 +391,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,other',
+            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
         ]);
 

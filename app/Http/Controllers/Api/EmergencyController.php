@@ -373,7 +373,7 @@ class EmergencyController extends Controller
             ],
             'exclude' => ['lockout', 'lost key', 'wifi', 'internet'],
         ],
-        'Other' => [
+        'Unknown' => [
             'urgency' => 'moderate',
             'keywords' => [],
             'exclude' => [],
@@ -745,7 +745,7 @@ class EmergencyController extends Controller
         $isPanicAlert = $this->isPanicAlert(null, $cleanedDescription);
         $classification = $this->classify($cleanedDescription, null, $isPanicAlert);
 
-        if ($classification['emergency_type'] === 'Other') {
+        if ($classification['emergency_type'] === 'Unknown') {
             return response()->json(['emergency_type' => null, 'urgency_level' => null]);
         }
 
@@ -864,7 +864,7 @@ class EmergencyController extends Controller
             'reported_at' => now(),
         ]);
 
-        if ($report->emergency_type === 'Other' && !empty($cleanedDescription)) {
+        if ($report->emergency_type === 'Unknown' && !empty($cleanedDescription)) {
             UnclassifiedEmergencyTerm::create([
                 'report_id' => $report->report_id,
                 'description_snapshot' => $cleanedDescription,
@@ -1036,8 +1036,8 @@ class EmergencyController extends Controller
         }
 
         $normalizedType = $this->normalizeEmergencyType($requestedType);
-        $bestType = $normalizedType ?? 'Other';
-        $bestScore = ($normalizedType && $normalizedType !== 'Other') ? 1.0 : 0.0;
+        $bestType = $normalizedType ?? 'Unknown';
+        $bestScore = ($normalizedType && $normalizedType !== 'Unknown') ? 1.0 : 0.0;
         $decidingCustomKeyword = null;
 
         foreach (self::EMERGENCY_RULES as $type => $rule) {
@@ -1136,7 +1136,7 @@ class EmergencyController extends Controller
             'structural' => 'Structural',
             'flood', 'water leak', 'flood/water leak', 'flood water leak' => 'Flood/Water Leak',
             'natural disaster', 'disaster', 'calamity' => 'Natural Disaster',
-            'other', 'others' => 'Other',
+            'other', 'others', 'unknown' => 'Unknown',
             default => null,
         };
     }

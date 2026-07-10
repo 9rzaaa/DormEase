@@ -2923,7 +2923,7 @@
     const kwEditIcon = "{{ asset('icons/edit.png') }}";
     const kwDeleteIcon = "{{ asset('icons/delete.png') }}";
     const kwEmptyIcon = "{{ asset('icons/nav-emerg.png') }}";
-    const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Lockout', 'Security', 'Structural', 'Flood/Water Leak', 'Natural Disaster', 'Other'];
+    const EMERGENCY_TYPE_OPTIONS = ['Medical', 'Fire/Smoke', 'Electrical Hazard', 'Lockout', 'Security', 'Structural', 'Flood/Water Leak', 'Natural Disaster', 'Unknown'];
     let kwActiveTab = 'pending';
     const kwPhraseState = {};
 
