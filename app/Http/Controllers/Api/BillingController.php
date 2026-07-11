@@ -334,7 +334,6 @@ class BillingController extends Controller
 
             $billing->update([
                 'payment_reference_code' => $sessionId,
-                'payment_status' => 'pending',
             ]);
 
             return response()->json([
