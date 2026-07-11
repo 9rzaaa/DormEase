@@ -31,7 +31,11 @@ class VisitorController extends Controller
         );
 
         $cancelledVisitors = $this->formatVisitorLogs(
-            $allVisitors->where('status', 'cancelled')
+            $allVisitors->filter(fn($v) => $v->status === 'cancelled' && $v->cancel_reason !== 'expired')
+        );
+
+        $expiredVisitors = $this->formatVisitorLogs(
+            $allVisitors->filter(fn($v) => $v->status === 'cancelled' && $v->cancel_reason === 'expired')
         );
 
         $rejectedVisitors = $this->formatVisitorLogs(
@@ -58,6 +62,7 @@ class VisitorController extends Controller
             'completedVisitors',
             'deletedVisitors',
             'cancelledVisitors',
+            'expiredVisitors',
             'rejectedVisitors',
             'visitorsToday',
             'currentlyInside',
@@ -85,7 +90,11 @@ class VisitorController extends Controller
         );
 
         $cancelledVisitors = $this->formatVisitorLogs(
-            $allVisitors->where('status', 'cancelled')
+            $allVisitors->filter(fn($v) => $v->status === 'cancelled' && $v->cancel_reason !== 'expired')
+        );
+
+        $expiredVisitors = $this->formatVisitorLogs(
+            $allVisitors->filter(fn($v) => $v->status === 'cancelled' && $v->cancel_reason === 'expired')
         );
 
         $rejectedVisitors = $this->formatVisitorLogs(
@@ -111,6 +120,7 @@ class VisitorController extends Controller
             'completedVisitors' => $completedVisitors,
             'deletedVisitors'   => $deletedVisitors,
             'cancelledVisitors' => $cancelledVisitors,
+            'expiredVisitors'   => $expiredVisitors,
             'rejectedVisitors'  => $rejectedVisitors,
             'visitorsToday'     => $visitorsToday,
             'currentlyInside'   => $currentlyInside,

@@ -603,6 +603,7 @@
     .archive-pill-completed { background: #f0f0f0; color: #555; border: 1px solid #ddd; }
     .archive-pill-deleted   { background: #fff0f0; color: var(--red); border: 1px solid #ffc8d0; }
     .archive-pill-rejected  { background: #fff4e8; color: #c8631c; border: 1px solid #f5c192; }
+    .archive-pill-expired   { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
 
     .archive-card-footer {
         display: flex; align-items: center; gap: .4rem;
@@ -1216,6 +1217,10 @@
             Deleted
             <span class="archive-tab-count" id="acount-deleted">0</span>
         </button>
+        <button class="archive-tab" id="atab-expired" onclick="switchArchiveTab('expired')">
+            Expired
+            <span class="archive-tab-count" id="acount-expired">0</span>
+        </button>
         <button class="archive-tab" id="atab-cancelled" onclick="switchArchiveTab('cancelled')">
             Cancelled
             <span class="archive-tab-count" id="acount-cancelled">0</span>
@@ -1645,6 +1650,7 @@
     var visitors          = @json($visitors);
     var completedVisitors = @json($completedVisitors);
     var deletedVisitors   = @json($deletedVisitors);
+    var expiredVisitors   = @json($expiredVisitors);
     var cancelledVisitors = @json($cancelledVisitors);
     var rejectedVisitors  = @json($rejectedVisitors);
     var allTenants        = @json($tenants);
@@ -2183,6 +2189,7 @@
     function openArchive() {
         document.getElementById('acount-completed').textContent = completedVisitors.length;
         document.getElementById('acount-deleted').textContent   = deletedVisitors.length;
+        document.getElementById('acount-expired').textContent   = expiredVisitors.length;
         document.getElementById('acount-cancelled').textContent = cancelledVisitors.length;
         document.getElementById('acount-rejected').textContent  = rejectedVisitors.length;
         document.getElementById('archive-drawer').classList.add('open');
@@ -2199,6 +2206,7 @@
         archiveTab = tab;
         document.getElementById('atab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('atab-deleted').classList.toggle('active',   tab === 'deleted');
+        document.getElementById('atab-expired').classList.toggle('active',   tab === 'expired');
         document.getElementById('atab-cancelled').classList.toggle('active', tab === 'cancelled');
         document.getElementById('atab-rejected').classList.toggle('active',  tab === 'rejected');
         document.getElementById('archive-search').value = '';
@@ -2218,6 +2226,8 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
+        } else if (archiveTab === 'expired') {
+            data = expiredVisitors;
         } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
         } else {
@@ -2244,13 +2254,16 @@
 
         var pillClass = archiveTab === 'completed' ? 'archive-pill-completed'
             : archiveTab === 'rejected'  ? 'archive-pill-rejected'
+            : archiveTab === 'expired'   ? 'archive-pill-expired'
             : 'archive-pill-deleted';
         var pillLabel = archiveTab === 'completed' ? 'Completed'
             : archiveTab === 'deleted'   ? 'Deleted'
+            : archiveTab === 'expired'   ? 'Expired'
             : archiveTab === 'cancelled' ? 'Cancelled'
             : 'Rejected';
         var footerLabel = archiveTab === 'completed' ? 'Checked out on'
             : archiveTab === 'deleted'   ? 'Deleted on'
+            : archiveTab === 'expired'   ? 'Expired on'
             : archiveTab === 'cancelled' ? 'Cancelled on'
             : 'Rejected on';
 
@@ -2260,11 +2273,11 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected' || archiveTab === 'expired')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
-            var reasonLine = (archiveTab === 'cancelled' && v.cancel_reason === 'expired')
+            var reasonLine = (archiveTab === 'expired')
                 ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Expired automatically (no time in)</span></div>'
                 : (archiveTab === 'cancelled' ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Reason: <span>Cancelled by tenant</span></div>'
                 : (archiveTab === 'rejected' && v.rejection_reason ? '<div class="archive-card-footer" style="border-top:none;padding-top:0;margin-top:.3rem;">Rejection reason: <span>' + v.rejection_reason + '</span></div>' : ''));
@@ -2294,6 +2307,8 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
+        } else if (archiveTab === 'expired') {
+            data = expiredVisitors;
         } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
         } else {
@@ -2307,6 +2322,8 @@
             label = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             label = 'Deleted On';
+        } else if (archiveTab === 'expired') {
+            label = 'Expired On';
         } else if (archiveTab === 'cancelled') {
             label = 'Cancelled On';
         } else {
@@ -2318,7 +2335,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected' || archiveTab === 'expired')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             rows.push([
@@ -2349,6 +2366,8 @@
             data = completedVisitors;
         } else if (archiveTab === 'deleted') {
             data = deletedVisitors;
+        } else if (archiveTab === 'expired') {
+            data = expiredVisitors;
         } else if (archiveTab === 'cancelled') {
             data = cancelledVisitors;
         } else {
@@ -2362,6 +2381,8 @@
             tabLabel = 'Completed';
         } else if (archiveTab === 'deleted') {
             tabLabel = 'Deleted';
+        } else if (archiveTab === 'expired') {
+            tabLabel = 'Expired';
         } else if (archiveTab === 'cancelled') {
             tabLabel = 'Cancelled';
         } else {
@@ -2373,6 +2394,8 @@
             footerHead = 'Checked Out On';
         } else if (archiveTab === 'deleted') {
             footerHead = 'Deleted On';
+        } else if (archiveTab === 'expired') {
+            footerHead = 'Expired On';
         } else if (archiveTab === 'cancelled') {
             footerHead = 'Cancelled On';
         } else {
@@ -2383,7 +2406,7 @@
             var logTime    = v.arrival_time ? fmtDatePlain(v.arrival_time) : (v.date_of_visit ? fmtDate(v.date_of_visit) + ' ' + (v.time_of_visit ? fmtTime(v.time_of_visit) : '') : '—');
             var footerDate = archiveTab === 'completed'
                 ? (v.departure_time ? fmtDatePlain(v.departure_time) : fmtDatePlain(v.arrival_time))
-                : (archiveTab === 'cancelled' || archiveTab === 'rejected')
+                : (archiveTab === 'cancelled' || archiveTab === 'rejected' || archiveTab === 'expired')
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
             return ['LOG-' + String(v.visitor_id).padStart(4, '0'), v.visitor_name || '', v.contact_no || '', v.purpose || '', v.tenant ? v.tenant.first_name + ' ' + v.tenant.last_name : '', v.tenant && v.tenant.room_number ? v.tenant.room_number : '', v.arrival_time ? fmtDatePlain(v.arrival_time) : '', v.departure_time ? fmtDatePlain(v.departure_time) : '', v.status || '', footerDate];
