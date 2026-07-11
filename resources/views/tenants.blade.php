@@ -597,6 +597,17 @@ tbody tr:hover { background: var(--soft-bg); }
 .loading-logo-wrap { width: 86px; height: 86px; border: 3px solid var(--pink-50); border-radius: 50%; background: var(--gradient-pink); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 24px rgba(232,23,93,.25); animation: pulseLogo 1s ease-in-out infinite; flex-shrink: 0; }
 .loading-logo-wrap img { width: 62px; height: 62px; object-fit: contain; }
 .is-loading { opacity: .75; pointer-events: none; }
+.confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); z-index: 9500; display: none; align-items: center; justify-content: center; }
+.confirm-overlay.open { display: flex; }
+.confirm-box { background: var(--white); border-radius: 22px; padding: 1.8rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2); animation: modalIn .28s cubic-bezier(.34,1.3,.64,1) both; }
+.confirm-box-title { font-size: 1rem; font-weight: 700; color: var(--ink); margin-bottom: .5rem; }
+.confirm-box-body { font-size: .86rem; color: var(--ink-muted); line-height: 1.6; margin-bottom: 1.4rem; }
+.confirm-box-actions { display: flex; gap: .6rem; justify-content: flex-end; }
+.btn-confirm-yes { padding: .6rem 1.3rem; border-radius: 12px; border: none; background: var(--gradient-pink); color: var(--white); font-size: .86rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform .2s; }
+.btn-confirm-yes:hover { transform: translateY(-1px); }
+.btn-confirm-yes.danger { background: #e04867; box-shadow: 0 8px 20px rgba(224,72,103,.25); }
+.btn-confirm-no { padding: .6rem 1.1rem; border-radius: 12px; border: 1.5px solid var(--pink-100); background: var(--white); color: var(--ink-muted); font-size: .86rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-confirm-no:hover { border-color: var(--bright-pink); color: var(--hot-pink); }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .page-body { padding: 1.2rem 1rem 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
@@ -2003,7 +2014,7 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
             <button class="modal-close" onclick="closeModal('reschedule-modal')">&#x2715;</button>
         </div>
-        <form method="POST" id="reschedule-form" action="" data-loading-message="Rescheduling reservation..." style="display:contents;">
+        <form method="POST" id="reschedule-form" action="" data-loading-message="Rescheduling reservation..." style="display:contents;" onsubmit="return confirmReschedule(event)">
             @csrf
             <div class="modal-body">
                 <p style="font-size:.9rem;color:var(--ink);font-weight:600;margin:0 0 .6rem;">
@@ -2278,6 +2289,17 @@ tbody tr:hover { background: var(--soft-bg); }
 <input type="file" id="tenant-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitTenantPhoto(this)">
 <input type="file" id="renew-photo-upload-input" accept="image/jpg,image/jpeg,image/png" style="display:none;" onchange="submitRenewPhoto(this)">
 
+<div class="confirm-overlay" id="confirm-dialog">
+    <div class="confirm-box">
+        <div class="confirm-box-title" id="confirm-title">Are you sure?</div>
+        <div class="confirm-box-body" id="confirm-body"></div>
+        <div class="confirm-box-actions">
+            <button type="button" class="btn-confirm-no" id="confirm-no">Cancel</button>
+            <button type="button" class="btn-confirm-yes" id="confirm-yes">Confirm</button>
+        </div>
+    </div>
+</div>
+
 <div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
     <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
     <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
@@ -2311,6 +2333,32 @@ function showToast(message, type) {
         setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
     }, 4000);
 }
+
+function showConfirm(title, body, onConfirm, options) {
+    options = options || {};
+    document.getElementById('confirm-title').textContent = title || 'Are you sure?';
+    document.getElementById('confirm-body').textContent = body || '';
+    var yesBtn = document.getElementById('confirm-yes');
+    yesBtn.textContent = options.confirmLabel || 'Confirm';
+    yesBtn.classList.toggle('danger', !!options.danger);
+    document.getElementById('confirm-dialog').classList.add('open');
+    var close = function() {
+        document.getElementById('confirm-dialog').classList.remove('open');
+        yesBtn.classList.remove('danger');
+        yesBtn.onclick = null;
+        document.getElementById('confirm-no').onclick = null;
+    };
+    yesBtn.onclick = function() { close(); if (onConfirm) onConfirm(); };
+    document.getElementById('confirm-no').onclick = close;
+}
+
+function confirmAndSubmitForm(form, title, body, options) {
+    showConfirm(title, body, function() {
+        setFormLoading(form, form.dataset.loadingMessage || 'Please wait...');
+        form.submit();
+    }, options);
+}
+
 var _pdfBlobUrl = null;
 var _pdfDownloadName = 'document.pdf';
 
@@ -2746,6 +2794,15 @@ async function submitTenantPhoto(input) {
         return;
     }
 
+    input.value = '';
+    showConfirm(
+        'Upload Photo?',
+        'Upload this photo to the tenant profile?',
+        function() { uploadTenantPhoto(tenantId, file); }
+    );
+}
+
+async function uploadTenantPhoto(tenantId, file) {
     showActionLoading('Uploading photo...');
 
     var formData = new FormData();
@@ -3070,9 +3127,20 @@ function validateAddTenantForm(e) {
         } else if (!estOk) {
             document.getElementById('add-estimated-move-in').focus();
         }
+        showToast('Please fix the highlighted fields before continuing.', 'error');
         return false;
     }
-    return true;
+
+    e.preventDefault();
+    var modeLabel = mode === 'reservation' ? 'reservation' : 'tenant';
+    var tenantName = document.querySelector('#add-modal input[name="first_name"]').value.trim()
+        + ' ' + document.querySelector('#add-modal input[name="last_name"]').value.trim();
+    confirmAndSubmitForm(
+        e.target,
+        'Add ' + (mode === 'reservation' ? 'Reservation' : 'Tenant') + '?',
+        'Create a new ' + modeLabel + ' record for ' + tenantName.trim() + '? Account credentials will be generated after saving.'
+    );
+    return false;
 }
 
 function validateEditTenantForm(e) {
@@ -3094,6 +3162,7 @@ function validateEditTenantForm(e) {
         } else if (!estOk) {
             document.getElementById('edit-estimated-move-in').focus();
         }
+        showToast('Please fix the highlighted fields before saving.', 'error');
         return false;
     }
     return true;
@@ -4013,6 +4082,23 @@ function openRescheduleModal(id, name, currentDate) {
     openModal('reschedule-modal');
 }
 
+function confirmReschedule(e) {
+    e.preventDefault();
+    var name = document.getElementById('reschedule-name').textContent;
+    var date = document.getElementById('reschedule-date').value;
+    if (!date) {
+        showToast('Please select a new estimated move-in date.', 'error');
+        document.getElementById('reschedule-date').focus();
+        return false;
+    }
+    confirmAndSubmitForm(
+        e.target,
+        'Reschedule Reservation?',
+        'Update the estimated move-in date for ' + name + ' to ' + fmtDate(date) + '?'
+    );
+    return false;
+}
+
 function isOverdue(dateStr) {
     if (!dateStr) return false;
     var today = new Date();
@@ -4043,6 +4129,7 @@ function openDeleteModal(id, name) {
 
 function exportTenants() {
     var data = sectionData.active.concat(sectionData.reserved);
+    if (!data.length) { showToast('No tenant data to export.', 'error'); return; }
     var rows = [['Account ID','First Name','Last Name','Email','Room','Floor','Move-In Date','Move-Out Date','Contact','Status']];
     data.forEach(function(t) {
         rows.push([t.account_id||'',t.first_name,t.last_name,t.email,t.room_number||'',t.floor||'',t.move_in_date||'',t.move_out_date||'',t.contact_number||'',t.status]);
@@ -4053,10 +4140,12 @@ function exportTenants() {
     a.href = URL.createObjectURL(blob);
     a.download = 'dormease-tenants.csv';
     a.click();
+    showToast('Tenant list exported as CSV.', 'success');
 }
 
 function exportTenantsPDF() {
     var data = sectionData.active.concat(sectionData.reserved);
+    if (!data.length) { showToast('No tenant data to export.', 'error'); return; }
     var rows = data.map(function(t) {
         return [t.account_id || '', t.first_name + ' ' + t.last_name, t.floor && t.room_number ? t.floor + '-' + t.room_number : (t.room_number || ''), fmtDate(t.move_in_date), t.move_out_date ? fmtDate(t.move_out_date) : 'N/A', t.contact_number || '', t.status || ''];
     });
@@ -4066,13 +4155,17 @@ function exportTenantsPDF() {
         columns: ['Account ID','Name','Floor & Room','Move-In','Move-Out','Contact','Status'],
         rows: rows
     });
+    showToast('Tenant list opened for printing.', 'success');
 }
 
 function copyText(elementId, btn) {
     var text = document.getElementById(elementId).textContent;
     navigator.clipboard.writeText(text).then(function() {
         btn.textContent = 'Copied';
+        showToast('Copied to clipboard.', 'success');
         setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+    }).catch(function() {
+        showToast('Failed to copy to clipboard.', 'error');
     });
 }
 
@@ -4088,7 +4181,18 @@ function copyText(elementId, btn) {
 @endif
 
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
-    document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });
+    document.addEventListener('DOMContentLoaded', function() { showToast(@json(session('success')), 'success'); });
+@endif
+
+@if(session('error'))
+    document.addEventListener('DOMContentLoaded', function() { showToast(@json(session('error')), 'error'); });
+@endif
+
+@if($errors->any() && !session('error'))
+    document.addEventListener('DOMContentLoaded', function() {
+        var firstError = @json($errors->first());
+        if (firstError) showToast(firstError, 'error');
+    });
 @endif
 
 var roomsData = [];
@@ -4288,12 +4392,14 @@ function setRoomFloor(floor) {
 async function fetchRooms() {
     try {
         const res = await fetch('/rooms', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        if (!res.ok) throw new Error('Failed to load rooms.');
         roomsData = await res.json();
         var floors = [...new Set(roomsData.map(r => r.floor))].sort(function(a,b){return a-b;});
         rebuildFloorFilters(floors);
         renderRooms();
-    } catch {
+    } catch (e) {
         document.getElementById('rooms-list').innerHTML = '<div class="tad-empty">Failed to load rooms.</div>';
+        showToast(e.message || 'Failed to load rooms.', 'error');
     }
 }
 
@@ -4537,23 +4643,30 @@ async function submitAddRoom() {
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
     const duplicate = roomsData.find(function(r) { return r.room_number.toLowerCase() === number.toLowerCase(); });
     if (duplicate) { showToast('Room ' + number + ' already exists on Floor ' + duplicate.floor + '.', 'error'); document.getElementById('ar-number').classList.add('field-invalid'); return; }
-    showActionLoading('Adding room...');
-    try {
-        const res = await fetch('/rooms', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message ?? 'Failed to add room.');
-        closeModal('add-room-modal');
-        showToast('Room added successfully.', 'success');
-        fetchRooms();
-    } catch (e) {
-        showToast(e.message, 'error');
-    } finally {
-        document.getElementById('action-loading').classList.remove('open');
-    }
+
+    showConfirm(
+        'Add Room?',
+        'Add Room ' + number + ' on Floor ' + floor + ' with capacity ' + capacity + '?',
+        async function() {
+            showActionLoading('Adding room...');
+            try {
+                const res = await fetch('/rooms', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message ?? 'Failed to add room.');
+                closeModal('add-room-modal');
+                showToast('Room added successfully.', 'success');
+                fetchRooms();
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                document.getElementById('action-loading').classList.remove('open');
+            }
+        }
+    );
 }
 
 function openViewRoomModal(el) {
@@ -4659,23 +4772,30 @@ async function submitEditRoom() {
     if (!number || !floor || !capacity) { showToast('Please fill in all fields.', 'error'); return; }
     if (number.length < 3) { showToast('Room number must be at least 3 digits.', 'error'); document.getElementById('er-number').classList.add('field-invalid'); return; }
     if (parseInt(floor, 10) > 99) { showToast('Floor cannot exceed 99.', 'error'); return; }
-    showActionLoading('Saving room...');
-    try {
-        const res = await fetch('/rooms/' + id, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
-            body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType, is_active: isActive }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message ?? 'Failed to update room.');
-        closeModal('edit-room-modal');
-        showToast('Room updated successfully.', 'success');
-        fetchRooms();
-    } catch (e) {
-        showToast(e.message, 'error');
-    } finally {
-        document.getElementById('action-loading').classList.remove('open');
-    }
+
+    showConfirm(
+        'Save Room Changes?',
+        'Update Room ' + number + ' on Floor ' + floor + '?',
+        async function() {
+            showActionLoading('Saving room...');
+            try {
+                const res = await fetch('/rooms/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    body: JSON.stringify({ room_number: number, floor, capacity, stay_type: stayType, is_active: isActive }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message ?? 'Failed to update room.');
+                closeModal('edit-room-modal');
+                showToast('Room updated successfully.', 'success');
+                fetchRooms();
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                document.getElementById('action-loading').classList.remove('open');
+            }
+        }
+    );
 }
 
 let deleteRoomId = null;
@@ -5152,6 +5272,7 @@ async function submitRenewPhoto(input) {
     var tenantId = _renewCredNewTenantId;
     if (!tenantId) {
         showRenewPhotoStatus('error', 'No tenant ID found. Please close and try again.');
+        showToast('No tenant ID found. Please close and try again.', 'error');
         input.value = '';
         return;
     }
@@ -5161,15 +5282,26 @@ async function submitRenewPhoto(input) {
     var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (allowedTypes.indexOf(file.type) === -1) {
         showRenewPhotoStatus('error', 'Invalid file type. Only JPG and PNG are accepted.');
+        showToast('Invalid file type. Only JPG and PNG are accepted.', 'error');
         input.value = '';
         return;
     }
     if (file.size > 4 * 1024 * 1024) {
         showRenewPhotoStatus('error', 'File is too large. Maximum size is 4MB.');
+        showToast('File is too large. Maximum size is 4MB.', 'error');
         input.value = '';
         return;
     }
 
+    input.value = '';
+    showConfirm(
+        'Upload Photo?',
+        'Upload this photo to the renewed tenant profile?',
+        function() { uploadRenewPhoto(tenantId, file); }
+    );
+}
+
+async function uploadRenewPhoto(tenantId, file) {
     var btn = document.getElementById('renew-cred-upload-btn');
     var btnLabel = document.getElementById('renew-cred-upload-btn-label');
     if (btn) { btn.disabled = true; btn.style.opacity = '.65'; }
@@ -5197,12 +5329,14 @@ async function submitRenewPhoto(input) {
 
         if (btnLabel) btnLabel.textContent = 'Change Photo';
         showRenewPhotoStatus('success', 'Photo uploaded successfully.');
+        showToast('Photo uploaded successfully.', 'success');
 
         var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
         if (idx !== -1) tenants[idx].tenant_photo = data.tenant_photo;
         applyFilters();
     } catch (e) {
         showRenewPhotoStatus('error', e.message || 'Upload failed. Please try again.');
+        showToast(e.message || 'Upload failed. Please try again.', 'error');
         if (btnLabel) btnLabel.textContent = 'Try Again';
     } finally {
         if (btn) { btn.disabled = false; btn.style.opacity = ''; }
@@ -5340,7 +5474,6 @@ function validateRenewDates() {
 var _renewInFlight = false;
 async function submitRenewTenant() {
     if (_renewInFlight) return;
-    _renewInFlight = true;
     var moveIn  = document.getElementById('renew-move-in').value;
     var moveOut = document.getElementById('renew-move-out').value;
     var room    = document.getElementById('renew-room').value.trim();
@@ -5383,8 +5516,21 @@ async function submitRenewTenant() {
 
     if (!valid) {
         if (!moveIn) document.getElementById('renew-move-in').focus();
+        showToast('Please complete all required renewal fields.', 'error');
         return;
     }
+
+    var tenantName = document.getElementById('renew-tenant-name').textContent;
+    showConfirm(
+        'Renew Tenant Stay?',
+        'Renew the stay for ' + tenantName + ' and generate new login credentials?',
+        function() { executeRenewTenant(moveIn, moveOut, room, tenantName); }
+    );
+}
+
+async function executeRenewTenant(moveIn, moveOut, room, tenantName) {
+    if (_renewInFlight) return;
+    _renewInFlight = true;
 
     var submitBtn = document.querySelector('#renew-modal .btn-submit');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '.65'; submitBtn.textContent = 'Processing...'; }
@@ -5427,8 +5573,6 @@ async function submitRenewTenant() {
             }
             throw new Error(errMsg);
         }
-
-        var tenantName = document.getElementById('renew-tenant-name').textContent;
 
         closeModal('renew-modal');
 
@@ -5606,7 +5750,7 @@ function renderTenantArchive() {
         var stayPill = r.stay_type ? '<span class="tad-pill tad-pill-stay">'+r.stay_type+'</span>' : '';
         var isAdmin = {{ Auth::guard('staff')->user()?->role === 'admin' ? 'true' : 'false' }};
         var reactivateForm = tenantArchiveTab === 'inactive' && r.id && isAdmin
-            ? '<form method="POST" action="/tenants/' + r.id + '/reactivate" style="margin-top:.75rem;" onsubmit="this.querySelector(\'button\').disabled=true;showActionLoading(\'Reactivating account...\');">'
+            ? '<form method="POST" action="/tenants/' + r.id + '/reactivate" style="margin-top:.75rem;" data-loading-message="Reactivating account..." onsubmit="return confirmReactivate(event, \'' + escapeJs(r.first_name + ' ' + r.last_name) + '\')">'
                 + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
                 + '<button type="submit" style="width:100%;padding:.45rem 0;border-radius:8px;border:none;background:var(--gradient-pink);color:var(--white);font-size:.76rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);letter-spacing:.02em;">Reactivate Account</button>'
                 + '</form>'
@@ -5636,12 +5780,23 @@ function renderTenantArchive() {
     }).join('');
 }
 
+function confirmReactivate(e, tenantName) {
+    e.preventDefault();
+    confirmAndSubmitForm(
+        e.target,
+        'Reactivate Account?',
+        'Restore access for ' + tenantName + '? A new login session will be required.'
+    );
+    return false;
+}
+
 function exportTenantArchive(format) {
     var source;
     if (tenantArchiveTab === 'deleted')  source = deletedTenantArchive;
     if (tenantArchiveTab === 'inactive') source = inactiveTenantArchive;
     if (tenantArchiveTab === 'move_out') source = moveoutTenantArchive;
     var labelMap = { deleted:'Deleted On', inactive:'Marked Inactive On', move_out:'Moved Out On' };
+    if (!source.length) { showToast('No archive data to export.', 'error'); return; }
     if (format === 'pdf') {
         var tabLabel = { deleted:'Deleted', inactive:'Inactive', move_out:'Move Out' };
         var rows = source.map(function(r) {
@@ -5653,6 +5808,7 @@ function exportTenantArchive(format) {
             columns: ['Account ID','Name','Email','Room','Stay Type','Status',labelMap[tenantArchiveTab]],
             rows: rows
         });
+        showToast('Archive report opened for printing.', 'success');
         return;
     }
     var rows = [['Account ID','First Name','Last Name','Email','Contact','Floor','Room','Stay Type','Move-In','Move-Out','Status',labelMap[tenantArchiveTab]]];
@@ -5664,6 +5820,7 @@ function exportTenantArchive(format) {
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'tenants_' + tenantArchiveTab + '_archive.csv';
     a.click();
+    showToast('Archive exported as CSV.', 'success');
 }
 
 var _exportMenuPortal = null;
@@ -5745,6 +5902,11 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        var confirmDialog = document.getElementById('confirm-dialog');
+        if (confirmDialog && confirmDialog.classList.contains('open')) {
+            confirmDialog.classList.remove('open');
+            return;
+        }
         var lb = document.getElementById('photo-lightbox');
         if (lb && lb.classList.contains('open')) closePhotoLightbox();
     }
@@ -5810,10 +5972,12 @@ async function fetchAdminLogs() {
     document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Loading...</div>';
     try {
         var res = await fetch('/tenant-logs', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+        if (!res.ok) throw new Error('Failed to load logs.');
         adminLogData = await res.json();
         renderAdminLogDrawer();
     } catch(e) {
         document.getElementById('admin-log-list').innerHTML = '<div class="tad-empty">Failed to load logs.</div>';
+        showToast(e.message || 'Failed to load entry/exit logs.', 'error');
     }
 }
 
@@ -6142,6 +6306,8 @@ function exportAdminLog(format) {
         return matchFilter && matchDate && matchSearch;
     });
 
+    if (!data.length) { showToast('No log data to export.', 'error'); return; }
+
     if (format === 'pdf') {
         var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
         var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
@@ -6156,6 +6322,7 @@ function exportAdminLog(format) {
             columns: ['Name','Account ID','Floor','Room','Action','Date / Time'],
             rows: rows
         });
+        showToast('Entry/exit log opened for printing.', 'success');
         return;
     }
 
@@ -6168,6 +6335,7 @@ function exportAdminLog(format) {
     a.href     = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'tenant-entry-exit-log.csv';
     a.click();
+    showToast('Entry/exit log exported as CSV.', 'success');
 }
 
 function exportRoomsCSV() {
@@ -6192,6 +6360,7 @@ function exportRoomsCSV() {
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'dormease-rooms-' + new Date().toISOString().slice(0,10) + '.csv';
     a.click();
+    showToast('Room list exported as CSV.', 'success');
 }
 
 function exportRoomsPDF() {
@@ -6304,6 +6473,7 @@ function exportRoomsPDF() {
         + '</body></html>');
     win.document.close();
     win.print();
+    showToast('Room report opened for printing.', 'success');
 }
 
 function fmtDateTime(d) {
@@ -6319,18 +6489,30 @@ var _moveOutTenantCache   = null;
 
 function interceptMoveOut(e) {
     var statusSel = document.getElementById('edit-status');
-    if (!statusSel || statusSel.value !== 'move_out') {
-        return validateEditTenantForm(e);
+    if (statusSel && statusSel.value === 'move_out') {
+        if (_moveOutPendingSubmit) {
+            _moveOutPendingSubmit = false;
+            return validateEditTenantForm(e);
+        }
+        e.preventDefault();
+        if (!validateEditTenantForm({ preventDefault: function() {} })) {
+            return false;
+        }
+        openMoveOutVerify();
+        return false;
     }
-    if (_moveOutPendingSubmit) {
-        _moveOutPendingSubmit = false;
-        return validateEditTenantForm(e);
-    }
+
     e.preventDefault();
     if (!validateEditTenantForm({ preventDefault: function() {} })) {
         return false;
     }
-    openMoveOutVerify();
+    var tenantName = document.getElementById('edit-first-name').value.trim()
+        + ' ' + document.getElementById('edit-last-name').value.trim();
+    confirmAndSubmitForm(
+        e.target,
+        'Save Changes?',
+        'Update tenant information for ' + tenantName.trim() + '?'
+    );
     return false;
 }
 
