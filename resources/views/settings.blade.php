@@ -579,6 +579,11 @@
                                 'desc' => 'When a tenant\'s water billing payment is past due.',
                                 'icon'  => 'billing',
                             ],
+                            'billing_paid'     => [
+                                'label' => 'Water Bill Paid Online',
+                                'desc' => 'When a tenant successfully pays their water bill via QR Ph.',
+                                'icon'  => 'billing',
+                            ],
                             'document_request' => [
                                 'label' => 'Document Request',
                                 'desc'  => 'When a tenant submits a request for a document.',
@@ -847,6 +852,7 @@
         visitor_checkout: false,
         visitor_cancelled: true,
         billing_overdue:  true,
+        billing_paid:     true,
         document_request: true,
         announcement_new: false,
     };

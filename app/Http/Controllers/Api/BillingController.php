@@ -269,7 +269,7 @@ class BillingController extends Controller
         }
 
         $amount = (float) $billing->room_share;
-        $totalPayable = round($amount / 0.9866, 2);
+        $totalPayable = round($amount / 0.984992, 2);
         $surcharge = round($totalPayable - $amount, 2);
 
         $totalPayableCentavos = (int) round($totalPayable * 100);
@@ -431,9 +431,23 @@ class BillingController extends Controller
 
                     NotificationHelper::sendToAll(
                         type: 'billing_paid',
-                        message: "Water bill payment of ₱" . number_format($billing->room_share, 2) . " from {$tenantName} was successfully automated & paid.",
+                        message: "Tenant {$tenantName} has paid their water bill (₱" . number_format($billing->room_share, 2) . ").",
                         ref_id: $billing->billing_id,
                     );
+
+                    if ($tenant) {
+                        try {
+                            app(\App\Services\TenantPushNotificationService::class)->sendToTenant(
+                                tenant: $billing->tenant_id,
+                                type: 'payment',
+                                title: 'Payment Confirmed',
+                                body: "Your water bill payment of ₱" . number_format($billing->room_share, 2) . " has been verified.",
+                                route: '/tenant/water-bill'
+                            );
+                        } catch (\Exception $e) {
+                            Log::error('Webhook Push Notification Error', ['error' => $e->getMessage()]);
+                        }
+                    }
 
                     Log::info('PayMongo Automated Verification Successful', [
                         'billing_id' => $billing->billing_id,

@@ -23,6 +23,7 @@ class NotificationComposer
         'maintenance_deleted',
         'document_request',
         'billing_overdue',
+        'billing_paid',
         'tenant_new',
         'tenant_activated',
         'tenant_updated',
