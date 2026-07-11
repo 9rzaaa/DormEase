@@ -1031,6 +1031,7 @@
 
 @include('partials.emergency-live-alerts')
 @include('partials.live-notifications')
+@include('partials.pdf-report-helper')
 
 @yield('scripts')
 </body>
