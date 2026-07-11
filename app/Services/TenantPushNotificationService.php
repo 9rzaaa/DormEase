@@ -29,7 +29,8 @@ class TenantPushNotificationService
         string $title,
         string $body,
         ?int $refId = null,
-        ?string $route = null
+        ?string $route = null,
+        array $extraData = []
     ): void {
         $tenantId = $tenant instanceof Tenant ? $tenant->tenant_id : $tenant;
         $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
@@ -60,20 +61,16 @@ class TenantPushNotificationService
             return;
         }
 
-        $messages = $tokens->map(fn(string $token) => [
-            'to' => $token,
-            'sound' => 'default',
-            'channelId' => 'default',
-            'priority' => 'high',
-            'title' => $title,
-            'body' => $body,
-            'badge' => $unreadCount,
-            'data' => [
-                'type' => $type,
-                'route' => $route,
-                'ref_id' => $refId,
-            ],
-        ])->all();
+        $messages = $tokens->map(fn(string $token) => $this->formatPushMessage(
+            $token,
+            $type,
+            $title,
+            $body,
+            $unreadCount,
+            $route,
+            $refId,
+            $extraData
+        ))->all();
 
         $this->sendExpoMessages($messages);
     }
@@ -84,7 +81,8 @@ class TenantPushNotificationService
         string $title,
         string $body,
         ?int $refId = null,
-        ?string $route = null
+        ?string $route = null,
+        array $extraData = []
     ): int {
         $tenantId = $tenant instanceof Tenant ? $tenant->tenant_id : $tenant;
         $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
@@ -102,20 +100,16 @@ class TenantPushNotificationService
             return 0;
         }
 
-        $messages = $tokens->map(fn(string $token) => [
-            'to' => $token,
-            'sound' => 'default',
-            'channelId' => 'default',
-            'priority' => 'high',
-            'title' => $title,
-            'body' => $body,
-            'badge' => $unreadCount,
-            'data' => [
-                'type' => $type,
-                'route' => $route,
-                'ref_id' => $refId,
-            ],
-        ])->all();
+        $messages = $tokens->map(fn(string $token) => $this->formatPushMessage(
+            $token,
+            $type,
+            $title,
+            $body,
+            $unreadCount,
+            $route,
+            $refId,
+            $extraData
+        ))->all();
 
         $this->sendExpoMessages($messages);
 
@@ -127,13 +121,14 @@ class TenantPushNotificationService
         string $title,
         string $body,
         ?int $refId = null,
-        ?string $route = null
+        ?string $route = null,
+        array $extraData = []
     ): void {
         $route ??= self::ROUTES[$type] ?? '/tenant/notifications';
 
         Tenant::where('is_active', true)
             ->select('tenant_id')
-            ->chunkById(500, function ($tenants) use ($type, $title, $body, $refId, $route) {
+            ->chunkById(500, function ($tenants) use ($type, $title, $body, $refId, $route, $extraData) {
                 $tenantIds = $tenants->pluck('tenant_id')->all();
 
                 if (empty($tenantIds)) {
@@ -170,20 +165,16 @@ class TenantPushNotificationService
                     ->get()
                     ->filter(fn($dt) => !empty($dt->expo_push_token))
                     ->unique('expo_push_token')
-                    ->map(fn($dt) => [
-                        'to' => $dt->expo_push_token,
-                        'sound' => 'default',
-                        'channelId' => 'default',
-                        'priority' => 'high',
-                        'title' => $title,
-                        'body' => $body,
-                        'badge' => $unreadCounts[$dt->tenant_id] ?? 0,
-                        'data' => [
-                            'type' => $type,
-                            'route' => $route,
-                            'ref_id' => $refId,
-                        ],
-                    ])
+                    ->map(fn($dt) => $this->formatPushMessage(
+                        $dt->expo_push_token,
+                        $type,
+                        $title,
+                        $body,
+                        $unreadCounts[$dt->tenant_id] ?? 0,
+                        $route,
+                        $refId,
+                        $extraData
+                    ))
                     ->values()
                     ->all();
 
@@ -353,5 +344,43 @@ class TenantPushNotificationService
                 'ticket_count' => count($ticketIds),
             ]);
         }
+    }
+
+    private function formatPushMessage(
+        string $token,
+        string $type,
+        string $title,
+        string $body,
+        int $badge,
+        string $route,
+        ?int $refId,
+        array $extraData = []
+    ): array {
+        $message = [
+            'to'        => $token,
+            'sound'     => $type === 'emergency' ? 'siren.wav' : 'default',
+            'channelId' => $type === 'emergency' ? 'emergency_alert' : 'default',
+            'priority'  => 'high',
+            'title'     => $title,
+            'body'      => $body,
+            'badge'     => $badge,
+            'data'      => array_merge([
+                'type'   => $type,
+                'route'  => $route,
+                'ref_id' => $refId,
+            ], $extraData),
+        ];
+
+        if ($type === 'emergency') {
+            $message['ios'] = [
+                'sound' => [
+                    'critical' => true,
+                    'name'     => 'siren.wav',
+                    'volume'   => 1.0,
+                ],
+            ];
+        }
+
+        return $message;
     }
 }
