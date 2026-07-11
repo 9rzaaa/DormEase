@@ -370,11 +370,11 @@ class EmergencyController extends Controller
         $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
             ->where('status', 'active')
             ->orderByDesc('reported_at')
-            ->take(5)
             ->get()
             ->map(fn($r) => [
                 'report_id'     => $r->report_id,
                 'urgency_level' => $r->urgency_level,
+                'is_panic_alert' => $r->is_panic_alert,
                 'emergency_type' => $r->emergency_type,
                 'location'      => $r->location,
                 'reported_at'   => $r->reported_at?->format('Y-m-d H:i:s'),
