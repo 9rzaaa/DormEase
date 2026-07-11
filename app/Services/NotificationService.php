@@ -56,6 +56,7 @@ class NotificationService
             'visitor_checkout' => false,
             'visitor_cancelled' => true,
             'billing_overdue'  => true,
+            'billing_paid'     => true,
             'document_request' => true,
             'announcement_new' => false,
         ];
