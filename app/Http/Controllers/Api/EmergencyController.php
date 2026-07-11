@@ -1150,8 +1150,11 @@ class EmergencyController extends Controller
 
     private function detectLocation(string $text): ?string
     {
-        if (preg_match('/\b(?:room|rm|kwarto|kuwarto)\s*([a-z0-9\-]+)/i', $text, $matches)) {
-            return 'Room ' . Str::upper($matches[1]);
+        if (preg_match('/\b(?:room|rm|kwarto|kuwarto)(?:\b\s*([a-z0-9\-]+)|([0-9][a-z0-9\-]*))/i', $text, $matches)) {
+            $roomNum = !empty($matches[1]) ? $matches[1] : ($matches[2] ?? '');
+            if ($roomNum !== '' && !preg_match('/^[a-z]{3,}$/i', $roomNum)) {
+                return 'Room ' . Str::upper($roomNum);
+            }
         }
 
         $keywords = [
