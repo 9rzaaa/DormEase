@@ -2,6 +2,7 @@
 
 @section('title', 'DormEase: Manage Staff')
 @section('page-title', 'Manage Staff')
+@include('partials._confirm-popups')
 
 @section('styles')
 <style>
