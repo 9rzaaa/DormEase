@@ -943,11 +943,30 @@ function openPaymentDetails(monthIndex, floorIndex, roomIndex, tenantIndex) {
     const referenceCode = tenant.payment_reference_code ? escapeHtml(tenant.payment_reference_code) : '';
     const submittedAt   = tenant.payment_submitted_at   ? escapeHtml(tenant.payment_submitted_at)   : '';
     const proofUrl      = tenant.proof_of_payment_url   ? escapeHtml(tenant.proof_of_payment_url)   : '';
-    const proofHtml     = proofUrl
-        ? `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
+    let proofHtml = '';
+    if (proofUrl) {
+        proofHtml = `<a class="proof-image-link" href="${proofUrl}" target="_blank" rel="noopener">
                <img src="${proofUrl}" alt="Proof of payment for ${escapeHtml(tenant.name)}" class="proof-image">
-           </a>`
-        : `<div class="proof-empty">No proof of payment submitted yet.</div>`;
+           </a>`;
+    } else if (tenant.payment_method && tenant.payment_method.indexOf('QR Ph') !== -1) {
+        proofHtml = `
+            <div style="border:1.5px solid #1f9d69;border-radius:12px;padding:1.2rem;background:#f0fdf4;color:#1a1a2e;text-align:left;margin-top:10px;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-weight:700;font-size:12.5px;color:#1f9d69;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Automated QR Ph Payment</span>
+                </div>
+                <div style="font-size:11.5px;line-height:1.6;color:var(--ink-deep);">
+                    <div><strong style="color:var(--ink-soft);">Method:</strong> ${escapeHtml(tenant.payment_method)}</div>
+                    <div><strong style="color:var(--ink-soft);">Amount Paid:</strong> PHP ${escapeHtml(tenant.payment_amount_paid || tenant.room_share)}</div>
+                    <div><strong style="color:var(--ink-soft);">Payment ID:</strong> ${escapeHtml(tenant.payment_reference || referenceCode)}</div>
+                    <div><strong style="color:var(--ink-soft);">Verified Date:</strong> ${escapeHtml(tenant.payment_date || submittedAt)}</div>
+                </div>
+            </div>`;
+    } else {
+        proofHtml = `<div class="proof-empty">No proof of payment submitted yet.</div>`;
+    }
 
     document.getElementById('payment-detail-content').innerHTML = `
         <div class="view-row">

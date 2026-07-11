@@ -3173,13 +3173,32 @@ function openUpdateModal(room) {
         const safeUrl  = t.proof_of_payment_url   ? t.proof_of_payment_url               : '';
         const safeName = t.name;
 
-        const imgHtml = proofUrl
-            ? `<div style="border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);cursor:pointer;"
+        let imgHtml = '';
+        if (proofUrl) {
+            imgHtml = `<div style="border:1px solid var(--border-pink);border-radius:12px;overflow:hidden;background:var(--white);cursor:pointer;"
                     onclick="openLightbox('${safeUrl.replace(/'/g,"\\'")}', '${safeName.replace(/'/g,"\\'")}')">
                    <img src="${proofUrl}" style="width:100%;max-height:200px;object-fit:contain;display:block;transition:opacity .15s;"
                         onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-               </div>`
-            : `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
+               </div>`;
+        } else if (t.payment_method && t.payment_method.indexOf('QR Ph') !== -1) {
+            imgHtml = `
+                <div style="border:1.5px solid #1f9d69;border-radius:12px;padding:1.2rem;background:#f0fdf4;color:#1a1a2e;text-align:left;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-weight:700;font-size:12.5px;color:#1f9d69;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Automated QR Ph Payment</span>
+                    </div>
+                    <div style="font-size:11.5px;line-height:1.6;color:var(--ink-deep);">
+                        <div><strong style="color:var(--ink-soft);">Method:</strong> ${escapeHtml(t.payment_method)}</div>
+                        <div><strong style="color:var(--ink-soft);">Amount Paid:</strong> PHP ${escapeHtml(t.payment_amount_paid || t.room_share)}</div>
+                        <div><strong style="color:var(--ink-soft);">Payment ID:</strong> ${escapeHtml(t.payment_reference || refCode)}</div>
+                        <div><strong style="color:var(--ink-soft);">Verified Date:</strong> ${escapeHtml(t.payment_date || subAt)}</div>
+                    </div>
+                </div>`;
+        } else {
+            imgHtml = `<div style="border:1.5px dashed var(--border-pink);border-radius:12px;padding:1.2rem;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--pink-bg-soft);">No proof of payment submitted yet.</div>`;
+        }
 
         proofHtml += `
             <div style="margin-bottom:16px;">
