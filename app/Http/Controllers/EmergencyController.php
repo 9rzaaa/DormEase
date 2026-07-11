@@ -346,20 +346,24 @@ class EmergencyController extends Controller
     }
 
     public function pollPanic()
-    {
-        $latest = EmergencyReport::where('is_panic_alert', true)
-            ->where('status', 'active')
-            ->orderByDesc('reported_at')
-            ->first();
+{
+    $reports = EmergencyReport::where('is_panic_alert', true)
+        ->where('status', 'active')
+        ->orderByDesc('reported_at')
+        ->get(['report_id', 'emergency_type', 'location', 'reported_at']);
 
-        return response()->json([
-            'has_panic' => (bool) $latest,
-            'report_id' => $latest?->report_id,
-            'type'      => $latest?->emergency_type,
-            'location'  => $latest?->location,
-            'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
-        ]);
-    }
+    return response()->json([
+        'has_panic' => $reports->isNotEmpty(),
+        'reports'   => $reports->map(function ($r) {
+            return [
+                'report_id'   => $r->report_id,
+                'type'        => $r->emergency_type,
+                'location'    => $r->location,
+                'reported_at' => $r->reported_at?->format('Y-m-d H:i:s'),
+            ];
+        }),
+    ]);
+}
 
     public function pollCritical()
     {
