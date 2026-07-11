@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.not_on_vacation' => \App\Http\Middleware\CheckNotOnVacation::class,
             'no.back'                => \App\Http\Middleware\PreventBackHistory::class,
             'force.temp.password'    => \App\Http\Middleware\ForceTempPasswordChange::class,
+            'activity.log'           => \App\Http\Middleware\LogUserActivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
