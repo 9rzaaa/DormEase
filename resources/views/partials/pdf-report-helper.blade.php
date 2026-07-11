@@ -56,7 +56,8 @@ window.DormEasePdfReport = (function() {
             + '*{box-sizing:border-box;}'
             + 'body{font-family:Arial,Helvetica,sans-serif;color:#232333;background:#fff;margin:0;font-size:11px;line-height:1.45;}'
             + '.report-header{display:flex;align-items:center;gap:14px;border-bottom:2px solid #E8175D;padding-bottom:12px;margin-bottom:14px;}'
-            + '.report-logo{width:54px;height:54px;object-fit:contain;}'
+            + '.report-logo-badge{width:58px;height:58px;border-radius:10px;background:#E8175D;border:1px solid #d91453;display:flex;align-items:center;justify-content:center;flex:0 0 58px;}'
+            + '.report-logo{width:44px;height:44px;object-fit:contain;}'
             + '.brand{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#E8175D;margin-bottom:2px;}'
             + 'h1{font-size:22px;line-height:1.2;margin:0;color:#1f1f2f;font-weight:800;}'
             + '.subtitle{font-size:12px;color:#666879;margin-top:4px;}'
@@ -75,7 +76,7 @@ window.DormEasePdfReport = (function() {
             + '@media screen{body{padding:24px;}.footer{position:static;margin-top:18px;}}'
             + '</style></head><body>'
             + '<header class="report-header">'
-            + '<img class="report-logo" src="' + escapeHtml(logoUrl) + '" alt="' + escapeHtml(appName) + ' logo">'
+            + '<div class="report-logo-badge"><img class="report-logo" src="' + escapeHtml(logoUrl) + '" alt="' + escapeHtml(appName) + ' logo"></div>'
             + '<div><div class="brand">' + escapeHtml(brandName) + '</div><h1>' + escapeHtml(title) + '</h1>'
             + (subtitle ? '<div class="subtitle">' + escapeHtml(subtitle) + '</div>' : '')
             + '</div></header>'
