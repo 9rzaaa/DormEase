@@ -89,7 +89,7 @@ class EmergencyController extends Controller
 
         $report = EmergencyReport::create([
             'tenant_id' => $validated['tenant_id'] ?? null,
-            'is_panic_alert' => $isPanicAlert,
+            'is_panic_alert' => $isPanicAlert || ($classification['emergency_type'] === 'Panic Alert'),
             'emergency_type' => $classification['emergency_type'],
             'urgency_level' => $validated['urgency_level'] ?? $classification['urgency_level'],
             'description' => $validated['description'] ?? null,
@@ -98,7 +98,7 @@ class EmergencyController extends Controller
             'reported_at' => now(),
         ]);
 
-        if ($report->emergency_type === 'Other' && !empty($report->description)) {
+        if ($report->emergency_type === 'Unknown' && !empty($report->description)) {
             UnclassifiedEmergencyTerm::create([
                 'report_id'            => $report->report_id,
                 'description_snapshot' => $report->description,
