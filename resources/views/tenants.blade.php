@@ -1742,8 +1742,8 @@ tbody tr:hover { background: var(--soft-bg); }
             <button class="modal-close" onclick="closeModal('view-modal')">&#x2715;</button>
         </div>
         <div class="modal-body" id="view-content"></div>
-        <div class="modal-footer" style="justify-content:space-between;">
-            <button class="btn-submit" onclick="switchToEdit()">Edit</button>
+        <div class="modal-footer" style="justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
+            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
@@ -3476,18 +3476,7 @@ function buildRows(list) {
        var isReserved = t.status === 'reserved';
         var dataAttr = 'data-tenant=\'' + JSON.stringify(t).replace(/'/g, "&#39;") + '\'';
         var actions = ''
-            + '<button class="act-btn" title="View" ' + dataAttr + ' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>'
-            + '<button class="act-btn" title="Edit" ' + dataAttr + ' onclick="openEditModal(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/edit.png") }}" class="icon-sm"></button>';
-
-        if (isReserved) {
-            actions += '<button class="act-btn" title="Tag as Moved In" data-tenant-id="' + t.tenant_id + '" data-tenant-name="' + escapeJs(t.first_name + ' ' + t.last_name) + '" onclick="openTagMovedInModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')">'
-                + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-sm"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'
-                + '</button>';
-        } else {
-            actions += '<button class="act-btn" title="Reset Password" onclick="openResetModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/reset.png") }}" class="icon-sm"></button>';
-        }
-
-        actions += '<button class="act-btn" title="Delete" onclick="openDeleteModal(' + t.tenant_id + ', \'' + escapeJs(t.first_name + ' ' + t.last_name) + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm"></button>';
+            + '<button class="act-btn" title="View" ' + dataAttr + ' onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/eye.png") }}" class="icon-sm"></button>';
 
         if (!isReserved) {
             actions += '<button class="act-btn" title="Bill Slip" ' + dataAttr + ' onclick="printBillSlip(JSON.parse(this.dataset.tenant))"><img src="{{ asset("icons/billing.png") }}" class="icon-sm" style="filter:brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);"></button>';
@@ -3691,6 +3680,7 @@ function initials(t) {
 function viewTenant(t) {
     currentTenant = t;
     var floorRoom = (t.floor && t.room_number) ? (t.floor + '-' + t.room_number) : (t.room_number || '\u2014');
+    var tenantName = escapeJs(t.first_name + ' ' + t.last_name);
     var reservationItems = '';
     if (t.status === 'reserved') {
         reservationItems += '<div class="tv-item"><div class="tv-item-label">Est. Move-In</div><div class="tv-item-value" style="color:#9a6200;">' + fmtDate(t.estimated_move_in_date) + '</div></div>';
@@ -3747,6 +3737,15 @@ function viewTenant(t) {
     if (viewPhotoImg) {
         viewPhotoImg.onclick = function() { openPhotoLightbox(viewPhotoImg.src); };
     }
+    var viewActions = document.getElementById('view-actions');
+    if (viewActions) {
+        viewActions.innerHTML =
+            '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
+            + (t.status === 'reserved'
+                ? '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>'
+                : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>')
+            + '<button class="btn-submit" onclick="openDeleteFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.25);">Delete</button>';
+    }
     openModal('view-modal');
 }
 
@@ -3755,6 +3754,21 @@ function switchToEdit() {
         closeModal('view-modal');
         setTimeout(function() { openEditModal(currentTenant); }, 200);
     }
+}
+
+function openTagMovedInFromView(id, name) {
+    closeModal('view-modal');
+    setTimeout(function() { openTagMovedInModal(id, name); }, 200);
+}
+
+function openResetFromView(id, name) {
+    closeModal('view-modal');
+    setTimeout(function() { openResetModal(id, name); }, 200);
+}
+
+function openDeleteFromView(id, name) {
+    closeModal('view-modal');
+    setTimeout(function() { openDeleteModal(id, name); }, 200);
 }
 
 function lockEditRoomFields(locked) {
@@ -4410,7 +4424,6 @@ function renderRooms() {
                         <span style="font-size:.7rem;font-weight:600;color:var(--ink-muted);letter-spacing:.02em;">${r.stay_type}</span>
                     </div>
                     <div style="display:flex;gap:.25rem;flex-shrink:0;">
-                       <button class="act-btn" title="Edit" onclick="event.stopPropagation();openEditRoomModal(JSON.parse(this.closest('[data-room]').dataset.room))" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/edit.png') }}" class="icon-sm"></button>
                         <button class="act-btn" title="Delete" onclick="event.stopPropagation();openDeleteRoomModal(${r.id}, 'Rm.${r.room_number}')" style="width:28px;height:28px;border-radius:8px;"><img src="{{ asset('icons/delete.png') }}" class="icon-sm"></button>
                     </div>
                 </div>
