@@ -2639,14 +2639,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function exportTablePDF() {
-        var win = window.open('', '_blank');
-        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(r) {
-            return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.description || '') + '</td></tr>';
-        }).join('');
-        win.document.write('<!DOCTYPE html><html><head><title>Maintenance Requests</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Maintenance Requests as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Request ID</th><th>Date</th><th>Room</th><th>Tenant</th><th>Issue Type</th><th>Urgency</th><th>Status</th><th>Description</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
-        win.document.close();
-        win.print();
+            return ['#REQ-' + String(r.id).padStart(3,'0'), fmtDatePlain(r.created_at), r.room_number || '', r.tenant_name || '', r.issue_type || '', r.urgency || '', r.status || '', r.description || ''];
+        });
+        DormEasePdfReport.printTableReport({
+            title: 'Maintenance Requests',
+            subtitle: 'Current maintenance request list',
+            columns: ['Request ID','Date','Room','Tenant','Issue Type','Urgency','Status','Description'],
+            rows: rows
+        });
     }
 
     function openArchive() {
@@ -2745,18 +2746,19 @@ document.addEventListener('DOMContentLoaded', () => {
                   : 'Deleted On';
 
         if (format === 'pdf') {
-            var win = window.open('', '_blank');
-            if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
             var tabLabel = archiveTab === 'closed' ? 'Closed'
                          : archiveTab === 'resolved' ? 'Resolved'
                          : archiveTab === 'cancelled' ? 'Cancelled'
                          : 'Deleted';
             var rows = data.map(function(r) {
-                return '<tr><td>#REQ-' + String(r.id).padStart(3,'0') + '</td><td>' + fmtDatePlain(r.created_at) + '</td><td>' + (r.room_number || '') + '</td><td>' + (r.tenant_name || '') + '</td><td>' + (r.issue_type || '') + '</td><td>' + (r.urgency || '') + '</td><td>' + (r.status || '') + '</td><td>' + fmtDatePlain(r.archived_at) + '</td></tr>';
-            }).join('');
-            win.document.write('<!DOCTYPE html><html><head><title>Maintenance Archive - ' + tabLabel + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Maintenance Archive - ' + tabLabel + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Request ID</th><th>Submitted</th><th>Room</th><th>Tenant</th><th>Issue Type</th><th>Urgency</th><th>Status</th><th>' + label + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
-            win.document.close();
-            win.print();
+                return ['#REQ-' + String(r.id).padStart(3,'0'), fmtDatePlain(r.created_at), r.room_number || '', r.tenant_name || '', r.issue_type || '', r.urgency || '', r.status || '', fmtDatePlain(r.archived_at)];
+            });
+            DormEasePdfReport.printTableReport({
+                title: 'Maintenance Archive - ' + tabLabel,
+                subtitle: 'Archived maintenance requests',
+                columns: ['Request ID','Submitted','Room','Tenant','Issue Type','Urgency','Status',label],
+                rows: rows
+            });
             return;
         }
 
