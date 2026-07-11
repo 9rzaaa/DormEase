@@ -32,6 +32,8 @@ class ReceiptController extends Controller
 
         $receiptNumber = 'RCP-' . Carbon::parse($billing->billing_month)->format('Y') . '-' . str_pad($billing->billing_id, 5, '0', STR_PAD_LEFT);
 
+        $payment = \App\Models\Payment::where('billing_id', $billing->billing_id)->first();
+
         $data = [
             'receipt_number'      => $receiptNumber,
             'date_issued'         => now()->format('M d, Y'),
@@ -49,11 +51,13 @@ class ReceiptController extends Controller
             'rooms_sharing'       => $billing->rooms_sharing ?? '-',
             'total_floor_bill'    => number_format((float) $billing->total_floor_bill, 2),
             'amount_paid'         => number_format((float) $billing->room_share, 2),
-            'reference_code'      => $billing->payment_reference_code ?? '',
-            'payment_method'      => 'Online Transfer',
-            'confirmed_at'        => $billing->payment_submitted_at
-                ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
-                : now()->format('M d, Y h:i A'),
+            'reference_code'      => $payment?->reference_number ?? $billing->payment_reference_code ?? '',
+            'payment_method'      => $payment?->payment_method ?? 'Online Transfer',
+            'confirmed_at'        => $payment?->payment_date
+                ? Carbon::parse($payment->payment_date)->format('M d, Y h:i A')
+                : ($billing->payment_submitted_at
+                    ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
+                    : now()->format('M d, Y h:i A')),
         ];
 
         $html = $this->buildReceiptHtml($data);

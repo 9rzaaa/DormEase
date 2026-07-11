@@ -74,6 +74,8 @@ class BillingController extends Controller
             ->get()
             ->keyBy('tenant_id');
 
+        $payments = Payment::whereIn('billing_id', $billings->pluck('billing_id')->filter())->get()->keyBy('billing_id');
+
         $tenantsForStats = $selectedFloor !== ''
             ? $allTenants->where('floor', $selectedFloor)
             : $allTenants;
@@ -107,9 +109,10 @@ class BillingController extends Controller
 
             foreach ($floorTenants->groupBy('room_number') as $roomNumber => $roomTenants) {
 
-                $tenantRows = $roomTenants->map(function ($tenant) use ($billings) {
+                $tenantRows = $roomTenants->map(function ($tenant) use ($billings, $payments) {
 
                     $billing = $billings->get($tenant->tenant_id);
+                    $payment = $billing ? $payments->get($billing->billing_id) : null;
 
                     if ($tenant->status === 'inactive') {
                         $paymentStatus = 'inactive-tenant';
@@ -139,12 +142,20 @@ class BillingController extends Controller
                         'proof_of_payment_url'   => $billing?->proof_of_payment
                             ? Storage::disk('public')->url($billing->proof_of_payment)
                             : null,
-                        'payment_reference_code' => $billing?->payment_reference_code,
-                        'payment_submitted_at'   => $billing?->payment_submitted_at
-                            ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
-                            : null,
+                        'payment_reference_code' => $payment?->reference_number ?? $billing?->payment_reference_code,
+                        'payment_submitted_at'   => $payment?->payment_date
+                            ? Carbon::parse($payment->payment_date)->format('M d, Y h:i A')
+                            : ($billing?->payment_submitted_at
+                                ? Carbon::parse($billing->payment_submitted_at)->format('M d, Y h:i A')
+                                : null),
                         'rejection_reason'       => $billing?->rejection_reason,
                         'dot_class'              => $dotClass,
+                        'payment_method'         => $payment?->payment_method,
+                        'payment_amount_paid'    => $payment?->amount_paid ? number_format($payment->amount_paid, 2) : null,
+                        'payment_reference'      => $payment?->reference_number,
+                        'payment_date'           => $payment?->payment_date
+                            ? Carbon::parse($payment->payment_date)->format('M d, Y h:i A')
+                            : null,
                     ];
                 })->values()->toArray();
 

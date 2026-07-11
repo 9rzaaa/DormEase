@@ -58,6 +58,7 @@ class BillingHistoryController extends Controller
         }
 
         $allRecords = $detailQuery->get();
+        $payments = \App\Models\Payment::whereIn('billing_id', $allRecords->pluck('billing_id')->filter())->get()->keyBy('billing_id');
 
         $grouped = $allRecords->groupBy(function ($b) {
             return Carbon::parse($b->billing_month)->format('Y-m-01');
@@ -86,7 +87,8 @@ class BillingHistoryController extends Controller
                     return $b->tenant->room_number ?? '?';
                 })->sortKeys() as $roomNumber => $roomBillings) {
 
-                    $tenantRows = $roomBillings->map(function ($b) {
+                    $tenantRows = $roomBillings->map(function ($b) use ($payments) {
+                        $payment = $payments->get($b->billing_id);
                         if ($b->tenant->status === 'inactive') {
                             $paymentStatus = 'inactive-tenant';
                         } else {
@@ -97,10 +99,12 @@ class BillingHistoryController extends Controller
                             'name'                   => trim(($b->tenant->first_name ?? '') . ' ' . ($b->tenant->last_name ?? '')),
                             'room_share'             => $b->room_share ?? 0,
                             'payment_status'         => $paymentStatus,
-                            'payment_reference_code' => $b->payment_reference_code,
-                            'payment_submitted_at'   => $b->payment_submitted_at
-                                ? Carbon::parse($b->payment_submitted_at)->format('M d, Y h:i A')
-                                : null,
+                            'payment_reference_code' => $payment?->reference_number ?? $b->payment_reference_code,
+                            'payment_submitted_at'   => $payment?->payment_date
+                                ? Carbon::parse($payment->payment_date)->format('M d, Y h:i A')
+                                : ($b->payment_submitted_at
+                                    ? Carbon::parse($b->payment_submitted_at)->format('M d, Y h:i A')
+                                    : null),
                             'proof_of_payment_url'   => $b->proof_of_payment
                                 ? Storage::disk('public')->url($b->proof_of_payment)
                                 : null,
@@ -112,6 +116,12 @@ class BillingHistoryController extends Controller
                                 'not billed' => 'dot-gray',
                                 default      => 'dot-orange',
                             },
+                            'payment_method'         => $payment?->payment_method,
+                            'payment_amount_paid'    => $payment?->amount_paid ? number_format($payment->amount_paid, 2) : null,
+                            'payment_reference'      => $payment?->reference_number,
+                            'payment_date'           => $payment?->payment_date
+                                ? Carbon::parse($payment->payment_date)->format('M d, Y h:i A')
+                                : null,
                         ];
                     })->values()->toArray();
 
