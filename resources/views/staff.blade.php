@@ -2321,28 +2321,15 @@
 
     function exportStaffPdf() {
         if (!staffList.length) { showToast('No data to export.', 'error'); return; }
-        var win  = window.open('', '_blank');
         var rows = staffList.map(function(s) {
-            return '<tr>'
-                + '<td>' + fmtStaffId(s.staff_id) + '</td>'
-                + '<td>' + s.first_name + ' ' + s.last_name + '</td>'
-                + '<td>' + (s.email || '') + '</td>'
-                + '<td>' + (s.role || '') + '</td>'
-                + '<td>' + (s.shift_schedule || '') + '</td>'
-                + '<td>' + (s.contact_number || '') + '</td>'
-                + '<td>' + (s.duty_status || '') + '</td>'
-                + '</tr>';
-        }).join('');
-        win.document.write('<!DOCTYPE html><html><head><title>Staff List</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Staff List - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Staff ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Contact</th><th>Duty Status</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
+            return [fmtStaffId(s.staff_id), s.first_name + ' ' + s.last_name, s.email || '', s.role || '', s.shift_schedule || '', s.contact_number || '', s.duty_status || ''];
+        });
+        DormEasePdfReport.printTableReport({
+            title: 'Staff List',
+            subtitle: 'Current staff directory',
+            columns: ['Staff ID','Name','Email','Role','Shift','Contact','Duty Status'],
+            rows: rows
+        });
         showToast('Staff list opened for printing.', 'success');
     }
 
@@ -2903,29 +2890,16 @@
         if (!source.length) { showToast('No archive data to export.', 'error'); return; }
 
         if (format === 'pdf') {
-            var win  = window.open('', '_blank');
             var rows = source.map(function(r) {
                 var dateValue = staffArchiveTab === 'deleted' ? r.archived_at : r.inactivated_at;
-                return '<tr>'
-                    + '<td>' + (r.account_id || r.staff_code || '') + '</td>'
-                    + '<td>' + r.first_name + ' ' + r.last_name + '</td>'
-                    + '<td>' + (r.email || '') + '</td>'
-                    + '<td>' + (r.role || '') + '</td>'
-                    + '<td>' + (r.shift_schedule || '') + '</td>'
-                    + '<td>' + (r.duty_status || '') + '</td>'
-                    + '<td>' + fmtDatePlain(dateValue) + '</td>'
-                    + '</tr>';
-            }).join('');
-            win.document.write('<!DOCTYPE html><html><head><title>Staff Archive - ' + tabLabel + '</title>'
-                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-                + '</head><body>'
-                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-                + '<p>Staff Archive (' + tabLabel + ') - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-                + '<table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Role</th><th>Shift</th><th>Duty Status</th><th>' + archiveColLabel + '</th></tr></thead>'
-                + '<tbody>' + rows + '</tbody></table>'
-                + '</body></html>');
-            win.document.close();
-            win.print();
+                return [r.account_id || r.staff_code || '', r.first_name + ' ' + r.last_name, r.email || '', r.role || '', r.shift_schedule || '', r.duty_status || '', fmtDatePlain(dateValue)];
+            });
+            DormEasePdfReport.printTableReport({
+                title: 'Staff Archive - ' + tabLabel,
+                subtitle: 'Archived staff records',
+                columns: ['Account ID','Name','Email','Role','Shift','Duty Status',archiveColLabel],
+                rows: rows
+            });
             return;
         }
 
@@ -3016,29 +2990,16 @@
         if (!attendanceLogsArchive.length) { showToast('No attendance data to export.', 'error'); return; }
 
         if (format === 'pdf') {
-            var win  = window.open('', '_blank');
             var rows = attendanceLogsArchive.map(function(r) {
-                return '<tr>'
-                    + '<td>' + 'ST-' + String(r.staff_id).padStart(3, '0') + '</td>'
-                    + '<td>' + r.staff_name + '</td>'
-                    + '<td>' + (r.role || '') + '</td>'
-                    + '<td>' + (r.shift_schedule || '') + '</td>'
-                    + '<td>' + fmtDatePlain(r.login_at) + '</td>'
-                    + '<td>' + (r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in') + '</td>'
-                    + '<td>' + (r.duration || '') + '</td>'
-                    + '<td>' + (r.duty_status || '') + '</td>'
-                    + '</tr>';
-            }).join('');
-            win.document.write('<!DOCTYPE html><html><head><title>Staff Attendance Log</title>'
-                + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-                + '</head><body>'
-                + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-                + '<p>Staff Attendance Log - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-                + '<table><thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Shift</th><th>Login</th><th>Logout</th><th>Duration</th><th>Duty Status</th></tr></thead>'
-                + '<tbody>' + rows + '</tbody></table>'
-                + '</body></html>');
-            win.document.close();
-            win.print();
+                return ['ST-' + String(r.staff_id).padStart(3, '0'), r.staff_name, r.role || '', r.shift_schedule || '', fmtDatePlain(r.login_at), r.logout_at ? fmtDatePlain(r.logout_at) : 'Still logged in', r.duration || '', r.duty_status || ''];
+            });
+            DormEasePdfReport.printTableReport({
+                title: 'Staff Attendance Log',
+                subtitle: 'Staff login and duty history',
+                columns: ['Staff ID','Name','Role','Shift','Login','Logout','Duration','Duty Status'],
+                rows: rows,
+                orientation: 'landscape'
+            });
             return;
         }
 

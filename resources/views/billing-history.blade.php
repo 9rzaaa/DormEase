@@ -1048,34 +1048,21 @@ function exportMonth(monthKey, format) {
     if (!group) { showToast('No data for this month.', 'error'); return; }
 
     if (format === 'pdf') {
-        var win  = window.open('', '_blank');
-        var rows = '';
+        var rows = [];
         group.floor_groups.forEach(function(fg) {
             fg.rooms.forEach(function(room) {
                 room.tenants.forEach(function(t) {
-                    rows += '<tr>'
-                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
-                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
-                        + '<td>' + escapeHtml(t.name) + '</td>'
-                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
-                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
-                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
-                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
-                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
-                        + '</tr>';
+                    rows.push([String(fg.floor), String(room.room_number), t.name, 'PHP ' + Number(t.room_share || 0).toFixed(2), t.payment_status || '', fg.due_date || '', String(fg.floor_consumption_m3 || '') + ' m3', 'PHP ' + Number(fg.total_floor_bill || 0).toFixed(2)]);
                 });
             });
         });
-        win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escapeHtml(group.month_label) + '</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Water Billing History ' + escapeHtml(group.month_label) + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
+        DormEasePdfReport.printTableReport({
+            title: 'Water Billing History - ' + group.month_label,
+            subtitle: 'Monthly water billing records',
+            columns: ['Floor','Room','Tenant','Share','Status','Due Date','Consumption','Floor Total'],
+            rows: rows,
+            orientation: 'landscape'
+        });
         return;
     }
 
@@ -1184,37 +1171,23 @@ async function exportAllHistoryPdf() {
 
     if (!groups || groups.length === 0) { showToast('No billing data to export.', 'error'); return; }
 
-    var win  = window.open('', '_blank');
-    var rows = '';
+    var rows = [];
     groups.forEach(function(group) {
         group.floor_groups.forEach(function(fg) {
             fg.rooms.forEach(function(room) {
                 room.tenants.forEach(function(t) {
-                    rows += '<tr>'
-                        + '<td>' + escapeHtml(group.month_label) + '</td>'
-                        + '<td>' + escapeHtml(String(fg.floor)) + '</td>'
-                        + '<td>' + escapeHtml(String(room.room_number)) + '</td>'
-                        + '<td>' + escapeHtml(t.name) + '</td>'
-                        + '<td>&#8369;' + Number(t.room_share || 0).toFixed(2) + '</td>'
-                        + '<td>' + escapeHtml(t.payment_status || '') + '</td>'
-                        + '<td>' + escapeHtml(fg.due_date || '') + '</td>'
-                        + '<td>' + escapeHtml(String(fg.floor_consumption_m3 || '')) + ' m&#179;</td>'
-                        + '<td>&#8369;' + Number(fg.total_floor_bill || 0).toFixed(2) + '</td>'
-                        + '</tr>';
+                    rows.push([group.month_label, String(fg.floor), String(room.room_number), t.name, 'PHP ' + Number(t.room_share || 0).toFixed(2), t.payment_status || '', fg.due_date || '', String(fg.floor_consumption_m3 || '') + ' m3', 'PHP ' + Number(fg.total_floor_bill || 0).toFixed(2)]);
                 });
             });
         });
     });
-    win.document.write('<!DOCTYPE html><html><head><title>Water Billing History</title>'
-        + '<style>body{font-family:sans-serif;font-size:11px;padding:20px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:14px;font-size:10px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:7px;text-align:left;font-size:10px;text-transform:uppercase}td{padding:6px 7px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-        + '</head><body>'
-        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-        + '<p>Water Billing History - All Records exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-        + '<table><thead><tr><th>Month</th><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (&#8369;)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
-        + '<tbody>' + rows + '</tbody></table>'
-        + '</body></html>');
-    win.document.close();
-    win.print();
+    DormEasePdfReport.printTableReport({
+        title: 'Water Billing History',
+        subtitle: 'All exported water billing records',
+        columns: ['Month','Floor','Room','Tenant','Share','Status','Due Date','Consumption','Floor Total'],
+        rows: rows,
+        orientation: 'landscape'
+    });
 }
 
 function toggleMonthExport(btn) {

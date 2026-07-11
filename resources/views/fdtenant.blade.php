@@ -2545,44 +2545,19 @@ function exportLog(format) {
     });
 
     if (format === 'pdf') {
-        var win         = window.open('', '_blank');
         var actionLabel = { '': 'All', 'time_in': 'Time In', 'time_out': 'Time Out' };
         var dateLabel   = { all: 'All Dates', today: 'Today', yesterday: 'Yesterday', week: 'This Week' };
         var subtitle    = 'Filter: ' + (actionLabel[logFilter] || 'All') + '  \u2022  Date: ' + (dateLabel[logDateFilter] || 'All Dates');
         var rows = data.map(function(l) {
             var isIn = l.action === 'time_in';
-            return '<tr>'
-                + '<td>' + l.first_name + ' ' + l.last_name + '</td>'
-                + '<td>' + (l.account_id || '') + '</td>'
-                + '<td>' + (l.floor ? 'Floor ' + l.floor : '') + '</td>'
-                + '<td>' + (l.room_number || '') + '</td>'
-                + '<td style="color:' + (isIn ? '#1f9d69' : '#b0163a') + ';font-weight:700;">' + (isIn ? 'Time In' : 'Time Out') + '</td>'
-                + '<td>' + (l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '') + '</td>'
-                + '</tr>';
-        }).join('');
-        var exportedOn = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        win.document.write('<!DOCTYPE html><html><head><title>Entry / Exit Log</title>'
-            + '<style>'
-            + 'body{font-family:sans-serif;font-size:12px;padding:24px;color:#1a1a2e}'
-            + 'h2{color:#E8175D;margin:0 0 2px;font-size:16px}'
-            + '.sub{color:#888;font-size:11px;margin-bottom:4px}'
-            + '.meta{color:#b06080;font-size:10px;margin-bottom:16px}'
-            + 'table{width:100%;border-collapse:collapse}'
-            + 'thead tr{background:#fce8f1}'
-            + 'th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:#E8175D;letter-spacing:.04em}'
-            + 'td{padding:7px 10px;border-bottom:1px solid #fce4ec;font-size:11px}'
-            + 'tbody tr:nth-child(even){background:#fff8fb}'
-            + '</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<div class="sub">Entry / Exit Log</div>'
-            + '<div class="meta">' + subtitle + ' &nbsp;&bull;&nbsp; Exported ' + exportedOn + '</div>'
-            + '<table><thead><tr>'
-            + '<th>Name</th><th>Account ID</th><th>Floor</th><th>Room</th><th>Action</th><th>Date / Time</th>'
-            + '</tr></thead><tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
+            return [l.first_name + ' ' + l.last_name, l.account_id || '', l.floor ? 'Floor ' + l.floor : '', l.room_number || '', isIn ? 'Time In' : 'Time Out', l.logged_at ? new Date(l.logged_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : ''];
+        });
+        DormEasePdfReport.printTableReport({
+            title: 'Entry / Exit Log',
+            subtitle: subtitle,
+            columns: ['Name','Account ID','Floor','Room','Action','Date / Time'],
+            rows: rows
+        });
         return;
     }
 
@@ -2859,13 +2834,15 @@ function exportTenants() {
 }
 
 function exportTenantsPDF() {
-    var win  = window.open('', '_blank');
     var rows = filtered.map(function(t) {
-        return '<tr><td>' + t.first_name + ' ' + t.last_name + '</td><td>' + (t.floor ? 'Floor ' + t.floor : '') + '</td><td>' + (t.room_number || '') + '</td><td>' + (t.contact_number || '') + '</td><td>' + (t.status || '') + '</td><td>' + (t.is_inside ? 'Inside' : 'Outside') + '</td><td>' + (t.notes || '') + '</td></tr>';
-    }).join('');
-    win.document.write('<!DOCTYPE html><html><head><title>Tenant Directory</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Tenant Directory as of ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Name</th><th>Floor</th><th>Room</th><th>Contact</th><th>Status</th><th>Location</th><th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
-    win.document.close();
-    win.print();
+        return [t.first_name + ' ' + t.last_name, t.floor ? 'Floor ' + t.floor : '', t.room_number || '', t.contact_number || '', t.status || '', t.is_inside ? 'Inside' : 'Outside', t.notes || ''];
+    });
+    DormEasePdfReport.printTableReport({
+        title: 'Tenant Directory',
+        subtitle: 'Current tenant directory',
+        columns: ['Name','Floor','Room','Contact','Status','Location','Notes'],
+        rows: rows
+    });
 }
 
 function exportTenantArchive(format) {
@@ -2877,14 +2854,16 @@ function exportTenantArchive(format) {
     var labelMap = { deleted: 'Deleted On', inactive: 'Marked Inactive On', move_out: 'Moved Out On' };
 
     if (format === 'pdf') {
-        var win      = window.open('', '_blank');
         var tabLabel = { deleted: 'Deleted', inactive: 'Inactive', move_out: 'Move Out' };
         var rows     = source.map(function(r) {
-            return '<tr><td>' + (r.account_id || '') + '</td><td>' + r.first_name + ' ' + r.last_name + '</td><td>' + (r.email || '') + '</td><td>' + (r.floor && r.room_number ? r.floor + '-' + r.room_number : (r.room_number || '')) + '</td><td>' + (r.stay_type || '') + '</td><td>' + (r.status || '') + '</td><td>' + (r.archived_at || '') + '</td></tr>';
-        }).join('');
-        win.document.write('<!DOCTYPE html><html><head><title>Archive - ' + tabLabel[tenantArchiveTab] + '</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec}</style></head><body><h2>Tenant Archive - ' + tabLabel[tenantArchiveTab] + '</h2><p>Sanctissimo Rosario Ladies Dormitory - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p><table><thead><tr><th>Account ID</th><th>Name</th><th>Email</th><th>Room</th><th>Stay Type</th><th>Status</th><th>' + labelMap[tenantArchiveTab] + '</th></tr></thead><tbody>' + rows + '</tbody></table></body></html>');
-        win.document.close();
-        win.print();
+            return [r.account_id || '', r.first_name + ' ' + r.last_name, r.email || '', r.floor && r.room_number ? r.floor + '-' + r.room_number : (r.room_number || ''), r.stay_type || '', r.status || '', r.archived_at || ''];
+        });
+        DormEasePdfReport.printTableReport({
+            title: 'Tenant Archive - ' + tabLabel[tenantArchiveTab],
+            subtitle: 'Archived tenant records',
+            columns: ['Account ID','Name','Email','Room','Stay Type','Status',labelMap[tenantArchiveTab]],
+            rows: rows
+        });
         return;
     }
 

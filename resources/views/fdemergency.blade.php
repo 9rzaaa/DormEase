@@ -2339,11 +2339,13 @@
         ];
 
         if (format === 'pdf') {
-            const win  = window.open('', '_blank');
-            const rows = filtered.map(r => `<tr>${buildRow(r).map(c => `<td>${escHtml(String(c))}</td>`).join('')}</tr>`).join('');
-            win.document.write(`<!DOCTYPE html><html><head><title>Emergency Reports</title><style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style></head><body><h2>Sanctissimo Rosario Ladies Dormitory</h2><p>Emergency Reports as of ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p><table><thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`);
-            win.document.close();
-            win.print();
+            DormEasePdfReport.printTableReport({
+                title: 'Emergency Reports',
+                subtitle: 'Current emergency report records',
+                columns: columns,
+                rows: filtered.map(buildRow),
+                orientation: 'landscape'
+            });
             return;
         }
 
