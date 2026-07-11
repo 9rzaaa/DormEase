@@ -2875,12 +2875,6 @@
 
             if (!hasChanges) return;
 
-            const newPanics = fresh.filter(r => r.is_panic_alert && !prevIds.has(r.report_id));
-
-            newPanics.forEach(r => {
-                showToast('PANIC ALERT: ' + (r.emergency_type || 'Emergency') + ' at ' + (r.location || 'unknown'), 'error');
-            });
-
             if (isAnyEmModalOpen()) return;
 
             reportsData = fresh;
