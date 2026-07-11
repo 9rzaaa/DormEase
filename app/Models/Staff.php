@@ -24,6 +24,8 @@ class Staff extends Authenticatable
         'position',
         'account_id',
         'contact_number',
+        'staff_address',
+        'valid_id_path',
         'shift_schedule',
         'shift_start',
         'shift_end',

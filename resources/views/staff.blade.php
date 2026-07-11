@@ -1428,7 +1428,7 @@
             <button class="modal-close" onclick="closeModal('add-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
 
-        <form method="POST" action="{{ route('staff.store') }}" data-loading-message="Adding staff..." id="add-form" style="display:flex;flex-direction:column;max-height:calc(90vh - 88px);overflow:hidden;">
+        <form method="POST" action="{{ route('staff.store') }}" enctype="multipart/form-data" data-loading-message="Adding staff..." id="add-form" style="display:flex;flex-direction:column;max-height:calc(90vh - 88px);overflow:hidden;">
             @csrf
 
             <div style="padding:.75rem 1.5rem .4rem;flex-shrink:0;border-bottom:1px solid var(--baby-pink);">
@@ -1465,6 +1465,26 @@
                             <label>Contact No.</label>
                             <input type="text" name="contact_number" id="add-contact" placeholder="0912-345-6789" value="{{ old('contact_number') }}" oninput="formatContactNumber(this)" onblur="validateContactNumber(this)" maxlength="13">
                             <div id="add-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Address <span class="field-req-star">*</span></label>
+                            <input type="text" name="staff_address" id="add-address" placeholder="House no., street, barangay, city" required maxlength="500" value="{{ old('staff_address') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:.68rem;font-weight:800;color:var(--bright-pink);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--petal);">Identity Documents</div>
+                    <div class="modal-grid" style="gap:.85rem;">
+                        <div class="modal-field full">
+                            <label>Valid ID <span class="field-req-star">*</span></label>
+                            <input type="file" name="valid_id" id="add-valid-id" required accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf">
+                            <div style="font-size:.72rem;color:var(--ink-muted);margin-top:.28rem;">Upload at least one government or school ID. JPG, PNG, or PDF only.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Staff Picture <span class="field-req-star">*</span></label>
+                            <input type="file" name="staff_photo" id="add-staff-photo" required accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                            <div style="font-size:.72rem;color:var(--ink-muted);margin-top:.28rem;">Upload a clear photo of the staff member.</div>
                         </div>
                     </div>
                 </div>
@@ -1578,6 +1598,10 @@
                             <label>Contact No.</label>
                             <input type="text" name="contact_number" id="edit-contact" placeholder="0912-345-6789" oninput="formatContactNumber(this)" onblur="validateContactNumber(this, currentStaff ? currentStaff.staff_id : null)" maxlength="13">
                             <div id="edit-contact-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:.3rem;">Enter a valid 11-digit phone number.</div>
+                        </div>
+                        <div class="modal-field full">
+                            <label>Address</label>
+                            <input type="text" name="staff_address" id="edit-address" maxlength="500">
                         </div>
                     </div>
                 </div>
@@ -1897,6 +1921,7 @@
                 fmtStaffId(s.staff_id).toLowerCase().includes(q) ||
                 (s.role           || '').toLowerCase().includes(q) ||
                 (s.contact_number || '').toLowerCase().includes(q) ||
+                (s.staff_address  || '').toLowerCase().includes(q) ||
                 (s.email          || '').toLowerCase().includes(q);
             var matchRole = role === '' || s.role === role;
             var matchDuty = duty === '' || (duty === 'on_leave' ? isLeaveActive(s) : s.duty_status === duty);
@@ -1916,13 +1941,22 @@
     }
 
     function viewStaff(s) {
+    var photoHtml = s.profile_picture
+        ? '<div style="display:flex;justify-content:center;margin-bottom:1rem;"><img src="' + s.profile_picture + '" alt="Staff photo" style="width:96px;height:96px;border-radius:14px;object-fit:cover;border:2px solid var(--baby-pink);"></div>'
+        : '';
+    var validIdHtml = s.valid_id_url
+        ? '<a href="' + s.valid_id_url + '" target="_blank" style="color:var(--hot-pink);font-weight:800;text-decoration:none;">View uploaded ID</a>'
+        : 'Not uploaded';
     currentStaff = s;
     document.getElementById('view-modal-name').textContent = s.first_name + ' ' + s.last_name;
     document.getElementById('view-modal-role-sub').textContent = fmtStaffId(s.staff_id) + ' · ' + (s.role ? s.role.charAt(0).toUpperCase() + s.role.slice(1) : '—') + ' · ' + (s.shift_schedule || 'No shift set');
     document.getElementById('view-content').innerHTML =
-        '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
+        photoHtml
+        + '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (s.email || '—') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
+        + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Address</span><span class="view-val" style="text-align:right;">' + (s.staff_address || 'Not set') + '</span></div>'
+        + '<div class="view-row"><span class="view-label">Valid ID</span><span class="view-val">' + validIdHtml + '</span></div>'
         + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
@@ -1954,6 +1988,7 @@
         document.getElementById('edit-first-name').value      = s.first_name     || '';
         document.getElementById('edit-last-name').value       = s.last_name      || '';
         document.getElementById('edit-email').value           = s.email          || '';
+        document.getElementById('edit-address').value         = s.staff_address  || '';
         document.getElementById('edit-role').value            = s.role           || '';
         document.getElementById('edit-shift').value           = s.shift_schedule || '';
         var editContactEl = document.getElementById('edit-contact');
@@ -2144,6 +2179,9 @@
         if (!validateName(document.getElementById('add-last-name')))        ok = false;
         if (!validateEmail(document.getElementById('add-email')))           ok = false;
         if (!validateContactNumber(document.getElementById('add-contact'))) ok = false;
+        if (!document.getElementById('add-address').value.trim())           ok = false;
+        if (!document.getElementById('add-valid-id').value)                 ok = false;
+        if (!document.getElementById('add-staff-photo').value)              ok = false;
         var roleEl  = document.getElementById('add-role');
         var roleErr = document.getElementById('add-role-error');
         if (!roleEl.value) {
@@ -3176,7 +3214,7 @@
         }
     }
 
-    var ADD_STAFF_FIELDS  = ['add-first-name', 'add-last-name', 'add-email', 'add-role'];
+    var ADD_STAFF_FIELDS  = ['add-first-name', 'add-last-name', 'add-address', 'add-valid-id', 'add-staff-photo', 'add-email', 'add-role'];
     var EDIT_STAFF_FIELDS = ['edit-first-name', 'edit-last-name', 'edit-email'];
 
     document.addEventListener('DOMContentLoaded', function() {
