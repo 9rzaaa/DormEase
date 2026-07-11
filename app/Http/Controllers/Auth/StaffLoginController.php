@@ -19,7 +19,6 @@ class StaffLoginController extends Controller
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
-            'role'     => 'required|in:admin,frontdesk',
         ]);
 
         $staff = Staff::where('email', $request->email)
@@ -32,17 +31,12 @@ class StaffLoginController extends Controller
                 ->onlyInput('email');
         }
 
-        if ($staff->role !== $request->role) {
-            return back()
-                ->withErrors(['email' => 'Access denied. You are not authorized for this portal.'])
-                ->onlyInput('email');
-        }
-
         Auth::guard('staff')->login($staff, $request->boolean('remember'));
         $request->session()->regenerate();
 
         return redirect()->intended('/staff/dashboard');
     }
+
     public function logout(Request $request)
     {
         Auth::guard('staff')->logout();
