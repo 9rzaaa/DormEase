@@ -39,4 +39,11 @@ return [
         'verify_ssl' => env('EXPO_VERIFY_SSL', true),
     ],
 
+    'paymongo' => [
+        'public_key' => env('PAYMONGO_PUBLIC_KEY'),
+        'secret_key' => env('PAYMONGO_SECRET_KEY'),
+        'webhook_sig' => env('PAYMONGO_WEBHOOK_SIGNATURE_KEY'),
+    ],
+
 ];
+
