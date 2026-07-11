@@ -608,6 +608,12 @@ tbody tr:hover { background: var(--soft-bg); }
 .btn-confirm-yes.danger { background: #e04867; box-shadow: 0 8px 20px rgba(224,72,103,.25); }
 .btn-confirm-no { padding: .6rem 1.1rem; border-radius: 12px; border: 1.5px solid var(--pink-100); background: var(--white); color: var(--ink-muted); font-size: .86rem; font-weight: 600; cursor: pointer; font-family: inherit; }
 .btn-confirm-no:hover { border-color: var(--bright-pink); color: var(--hot-pink); }
+.success-box { text-align: center; }
+.success-popup-icon { width: 56px; height: 56px; border-radius: 50%; background: #e8faf5; border: 2px solid #8ce0bb; display: flex; align-items: center; justify-content: center; margin: 0 auto .85rem; box-shadow: 0 8px 24px rgba(31,157,105,.18); }
+.success-box .confirm-box-title { color: #1a7a52; font-size: 1.05rem; }
+.success-box .confirm-box-body { margin-bottom: 1.1rem; }
+.success-box .confirm-box-actions { justify-content: center; }
+.success-box .btn-confirm-yes { background: linear-gradient(135deg, #1f9d69, #4ecb8d); box-shadow: 0 8px 20px rgba(31,157,105,.25); min-width: 120px; }
 @keyframes pulseLogo { 0%, 100% { transform: scale(1); box-shadow: 0 10px 24px rgba(232,23,93,.25); } 50% { transform: scale(1.07); box-shadow: 0 14px 32px rgba(232,23,93,.45); } }
 @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(3, 1fr); } .stat-num { font-size: 1.6rem; } }
 @media (max-width: 900px) { .page-body { padding: 1.2rem 1rem 1.2rem 1.2rem; gap: 1.2rem; } .stats-row { grid-template-columns: 1fr 1fr; } .modal-grid { grid-template-columns: 1fr; } .stat-box { padding: 1rem 1.1rem; gap: .9rem; } .stat-icon-circle { width: 44px; height: 44px; } .stat-icon-circle img { width: 22px; height: 22px; } .stat-num { font-size: 1.5rem; } }
@@ -2300,6 +2306,19 @@ tbody tr:hover { background: var(--soft-bg); }
     </div>
 </div>
 
+<div class="confirm-overlay" id="success-dialog">
+    <div class="confirm-box success-box">
+        <div class="success-popup-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1f9d69" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="confirm-box-title" id="success-title">Success</div>
+        <div class="confirm-box-body" id="success-body"></div>
+        <div class="confirm-box-actions">
+            <button type="button" class="btn-confirm-yes" id="success-ok">OK</button>
+        </div>
+    </div>
+</div>
+
 <div class="photo-lightbox" id="photo-lightbox" onclick="if(event.target===this){closePhotoLightbox();}">
     <button class="photo-lightbox-close" onclick="closePhotoLightbox()">&#x2715;</button>
     <img class="photo-lightbox-img" id="photo-lightbox-img" src="" alt="">
@@ -2357,6 +2376,16 @@ function confirmAndSubmitForm(form, title, body, options) {
         setFormLoading(form, form.dataset.loadingMessage || 'Please wait...');
         form.submit();
     }, options);
+}
+
+function showSuccessPopup(title, message) {
+    document.getElementById('success-title').textContent = title || 'Success';
+    document.getElementById('success-body').textContent = message || 'Action completed successfully.';
+    var dialog = document.getElementById('success-dialog');
+    dialog.classList.add('open');
+    var close = function() { dialog.classList.remove('open'); };
+    document.getElementById('success-ok').onclick = close;
+    dialog.onclick = function(e) { if (e.target === dialog) close(); };
 }
 
 var _pdfBlobUrl = null;
@@ -2831,7 +2860,7 @@ async function uploadTenantPhoto(tenantId, file) {
         }
 
         applyFilters();
-        showToast('Photo uploaded successfully.', 'success');
+        showSuccessPopup('Photo Uploaded', 'Tenant photo uploaded successfully.');
     } catch (e) {
         showToast(e.message, 'error');
     } finally {
@@ -4181,7 +4210,7 @@ function copyText(elementId, btn) {
 @endif
 
 @if(session('success') && !session('new_account_id') && !session('reset_account_id'))
-    document.addEventListener('DOMContentLoaded', function() { showToast(@json(session('success')), 'success'); });
+    document.addEventListener('DOMContentLoaded', function() { showSuccessPopup('Success', @json(session('success'))); });
 @endif
 
 @if(session('error'))
@@ -4658,7 +4687,7 @@ async function submitAddRoom() {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message ?? 'Failed to add room.');
                 closeModal('add-room-modal');
-                showToast('Room added successfully.', 'success');
+                showSuccessPopup('Room Added', 'Room added successfully.');
                 fetchRooms();
             } catch (e) {
                 showToast(e.message, 'error');
@@ -4787,7 +4816,7 @@ async function submitEditRoom() {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.message ?? 'Failed to update room.');
                 closeModal('edit-room-modal');
-                showToast('Room updated successfully.', 'success');
+                showSuccessPopup('Room Updated', 'Room updated successfully.');
                 fetchRooms();
             } catch (e) {
                 showToast(e.message, 'error');
@@ -4815,7 +4844,7 @@ async function submitDeleteRoom() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message ?? 'Failed to delete room.');
         closeModal('delete-room-modal');
-        showToast('Room deleted.', 'success');
+        showSuccessPopup('Room Deleted', 'Room deleted successfully.');
         fetchRooms();
     } catch (e) {
         showToast(e.message, 'error');
@@ -5329,7 +5358,7 @@ async function uploadRenewPhoto(tenantId, file) {
 
         if (btnLabel) btnLabel.textContent = 'Change Photo';
         showRenewPhotoStatus('success', 'Photo uploaded successfully.');
-        showToast('Photo uploaded successfully.', 'success');
+        showSuccessPopup('Photo Uploaded', 'Tenant photo uploaded successfully.');
 
         var idx = tenants.findIndex(function(t) { return t.tenant_id == tenantId; });
         if (idx !== -1) tenants[idx].tenant_photo = data.tenant_photo;
@@ -5605,7 +5634,7 @@ async function executeRenewTenant(moveIn, moveOut, room, tenantName) {
         document.getElementById('tcount-moveout').textContent = moveoutTenantArchive.length;
         renderTenantArchive();
 
-        showToast(tenantName + ' has been renewed successfully.', 'success');
+        showSuccessPopup('Tenant Renewed', tenantName + ' has been renewed successfully.');
     } catch (e) {
         var msg = e.message || 'An unexpected error occurred. Please try again.';
         showToast(msg, 'error');
@@ -5902,6 +5931,11 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        var successDialog = document.getElementById('success-dialog');
+        if (successDialog && successDialog.classList.contains('open')) {
+            successDialog.classList.remove('open');
+            return;
+        }
         var confirmDialog = document.getElementById('confirm-dialog');
         if (confirmDialog && confirmDialog.classList.contains('open')) {
             confirmDialog.classList.remove('open');
