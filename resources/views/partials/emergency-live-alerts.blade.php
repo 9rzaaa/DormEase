@@ -9,19 +9,7 @@
                 .replace(/'/g, '&#039;');
         }
 
-        function __firePanicBrowserNotification(type, location) {
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try { new Notification('Panic Alert', { body: type + ' \u2014 ' + location }); } catch (e) {}
-            }
-        }
-
-        var __panicSeenIds = new Set();
-        var __panicActiveReports = [];
-        var __panicBeepIntervalConsolidated = null;
-        var __panicRotateIndex = 0;
-        var __panicRotateInterval = null;
-
-        function __panicBeep() {
+        function __beep() {
             try {
                 var ctx = new (window.AudioContext || window.webkitAudioContext)();
                 function sirenPulse(freqLow, freqHigh, start, dur) {
@@ -45,11 +33,25 @@
             } catch (e) {}
         }
 
+        function __fireBrowserNotification(title, type, location) {
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                try { new Notification(title, { body: type + ' \u2014 ' + location }); } catch (e) {}
+            }
+        }
+
+        /* ── PANIC ALERTS ── */
+
+        var __panicSeenIds = new Set();
+        var __panicActiveReports = [];
+        var __panicBeepInterval = null;
+        var __panicRotateIndex = 0;
+        var __panicRotateInterval = null;
+
         function __renderPanicBanner() {
             if (__panicActiveReports.length === 0) {
                 var existing = document.getElementById('__panic-alert-banner');
                 if (existing) existing.remove();
-                if (__panicBeepIntervalConsolidated) { clearInterval(__panicBeepIntervalConsolidated); __panicBeepIntervalConsolidated = null; }
+                if (__panicBeepInterval) { clearInterval(__panicBeepInterval); __panicBeepInterval = null; }
                 if (__panicRotateInterval) { clearInterval(__panicRotateInterval); __panicRotateInterval = null; }
                 __panicRotateIndex = 0;
                 return;
@@ -145,63 +147,102 @@
 
                 if (!__panicSeenIds.has(r.report_id)) {
                     __panicSeenIds.add(r.report_id);
-                    __firePanicBrowserNotification(r.type, r.location);
+                    __fireBrowserNotification('Panic Alert', r.type, r.location);
                 }
             });
 
             if (changed) {
-                __panicBeep();
-                if (__panicBeepIntervalConsolidated) clearInterval(__panicBeepIntervalConsolidated);
-                __panicBeepIntervalConsolidated = setInterval(__panicBeep, 3000);
+                __beep();
+                if (__panicBeepInterval) clearInterval(__panicBeepInterval);
+                __panicBeepInterval = setInterval(__beep, 3000);
             }
 
             __renderPanicBanner();
         }
 
-        var __criticalSeen = new Set();
-        var __criticalQueue = [];
-        var __criticalActive = false;
+        /* ── CRITICAL / URGENT ALERTS ── */
+
+        var __criticalSeenIds = new Set();
+        var __criticalActiveReports = [];
         var __criticalBeepInterval = null;
+        var __criticalRotateIndex = 0;
+        var __criticalRotateInterval = null;
 
-        function __criticalEscHtml(str) {
-            return (str == null ? '' : String(str))
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        function __criticalAccent(r) {
+            return r.urgency_level === 'critical'
+                ? { grad: '#ff2d78,#c0303a', solid: '#c0303a', label: 'Critical Emergency' }
+                : { grad: '#f59e0b,#c07800', solid: '#c07800', label: 'Urgent Emergency' };
         }
 
-        function __criticalBeep() {
-            try {
-                var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                function sirenPulse(freqLow, freqHigh, start, dur) {
-                    var o = ctx.createOscillator();
-                    var g = ctx.createGain();
-                    o.connect(g); g.connect(ctx.destination);
-                    o.type = 'sawtooth';
-                    o.frequency.setValueAtTime(freqLow, ctx.currentTime + start);
-                    o.frequency.linearRampToValueAtTime(freqHigh, ctx.currentTime + start + dur * 0.5);
-                    o.frequency.linearRampToValueAtTime(freqLow, ctx.currentTime + start + dur);
-                    g.gain.setValueAtTime(0.85, ctx.currentTime + start);
-                    g.gain.setValueAtTime(0.85, ctx.currentTime + start + dur - 0.03);
-                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-                    o.start(ctx.currentTime + start);
-                    o.stop(ctx.currentTime + start + dur + 0.05);
-                }
-                sirenPulse(660, 1100, 0.00, 0.25);
-                sirenPulse(660, 1100, 0.28, 0.25);
-                sirenPulse(660, 1100, 0.56, 0.25);
-                sirenPulse(660, 1100, 0.84, 0.30);
-            } catch (e) {}
+        function __renderCriticalBanner() {
+            if (__criticalActiveReports.length === 0) {
+                var existing = document.getElementById('__critical-alert-banner');
+                if (existing) existing.remove();
+                if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
+                if (__criticalRotateInterval) { clearInterval(__criticalRotateInterval); __criticalRotateInterval = null; }
+                __criticalRotateIndex = 0;
+                return;
+            }
+
+            if (__criticalRotateIndex >= __criticalActiveReports.length) __criticalRotateIndex = 0;
+
+            var existing = document.getElementById('__critical-alert-banner');
+            if (!existing) {
+                var banner = document.createElement('div');
+                banner.id = '__critical-alert-banner';
+                banner.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+                banner.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}'
+                    + '@keyframes __cf{0%{opacity:0;transform:translateY(4px);}100%{opacity:1;transform:translateY(0);}}</style>'
+                    + '<div id="__critical-box" style="padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;color:#fff;animation:__cp 1.5s infinite;">'
+                    + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                    + '<div id="__critical-count-label" style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;"></div>'
+                    + '<div id="__critical-rotate-content"></div>'
+                    + '<button id="__critical-dismiss-btn" onclick="__dismissAllCritical()" style="margin-top:1.6rem;background:#fff;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss All</button>'
+                    + '</div>';
+                document.body.appendChild(banner);
+            }
+
+            __updateCriticalContent();
+
+            if (!__criticalRotateInterval && __criticalActiveReports.length > 1) {
+                __criticalRotateInterval = setInterval(function() {
+                    __criticalRotateIndex = (__criticalRotateIndex + 1) % __criticalActiveReports.length;
+                    __updateCriticalContent();
+                }, 3000);
+            } else if (__criticalActiveReports.length <= 1 && __criticalRotateInterval) {
+                clearInterval(__criticalRotateInterval);
+                __criticalRotateInterval = null;
+                __criticalRotateIndex = 0;
+            }
         }
 
-        function __fireCriticalBrowserNotification(report) {
-            if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+        function __updateCriticalContent() {
+            var count = __criticalActiveReports.length;
+            var r = __criticalActiveReports[__criticalRotateIndex];
+            if (!r) return;
 
-            try {
-                var isCritical = report.urgency_level === 'critical';
-                new Notification(isCritical ? 'Critical Emergency' : 'Urgent Emergency', {
-                    body: (report.emergency_type || 'Emergency report') + ' - ' + (report.location || 'Location unavailable'),
-                });
-            } catch (e) {}
+            var box = document.getElementById('__critical-box');
+            var countLabel = document.getElementById('__critical-count-label');
+            var content = document.getElementById('__critical-rotate-content');
+            var btn = document.getElementById('__critical-dismiss-btn');
+            if (!box || !countLabel || !content) return;
+
+            var accent = __criticalAccent(r);
+            box.style.background = 'linear-gradient(135deg,' + accent.grad + ')';
+            if (btn) btn.style.color = accent.solid;
+
+            countLabel.textContent = count === 1
+                ? accent.label
+                : accent.label + ' (' + (__criticalRotateIndex + 1) + ' of ' + count + ')';
+
+            var formattedTime = __formatTime12h(r.reported_at);
+
+            content.style.animation = 'none';
+            void content.offsetWidth;
+            content.style.animation = '__cf .3s ease';
+            content.innerHTML = '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(r.emergency_type) + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(r.location) + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;letter-spacing:.02em;">Reported: ' + __escHtml(formattedTime) + '</div>';
         }
 
         function __formatTime12h(dateStr) {
@@ -216,64 +257,57 @@
             return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' \u2014 ' + hours + ':' + mins + ' ' + ampm;
         }
 
-        function __showNextCritical() {
-            if (__criticalActive || __criticalQueue.length === 0) return;
-            __criticalActive = true;
-            var report = __criticalQueue.shift();
-            var isCritical = report.urgency_level === 'critical';
-            if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
-            __criticalBeep();
-            __criticalBeepInterval = setInterval(__criticalBeep, 3000);
-            var accentColor = isCritical ? '#ff2d78,#c0303a' : '#f59e0b,#c07800';
-            var accentSolid = isCritical ? '#c0303a' : '#c07800';
-            var label       = isCritical ? 'Critical Emergency' : 'Urgent Emergency';
-            var formattedTime = __formatTime12h(report.reported_at);
-            var overlay = document.createElement('div');
-            overlay.id = '__critical-alert-overlay';
-            overlay.__reportId = report.report_id;
-            overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-            overlay.innerHTML = '<style>@keyframes __cp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
-                + '<div style="background:linear-gradient(135deg,' + accentColor + ');color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__cp 1.5s infinite;">'
-                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
-                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + label + '</div>'
-                + '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __criticalEscHtml(report.emergency_type) + '</div>'
-                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __criticalEscHtml(report.location) + '</div>'
-                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;margin-bottom:2rem;letter-spacing:.02em;">Reported: ' + __criticalEscHtml(formattedTime) + '</div>'
-                + '<button onclick="__dismissCritical()" style="background:#fff;color:' + accentSolid + ';border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss</button>'
-                + '</div>';
-            document.body.appendChild(overlay);
-        }
-
-        window.__dismissCritical = function() {
-            var overlay = document.getElementById('__critical-alert-overlay');
-            if (!overlay) return;
-            var reportId = overlay.__reportId;
-            if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
-            sessionStorage.setItem('criticalDismissed_' + reportId, '1');
-            overlay.remove();
-            __criticalActive = false;
-            __showNextCritical();
-
-            if (reportId) {
-                var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
-                fetch('/emergency/' + reportId + '/acknowledge', {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
-                }).catch(function(e) {});
-            }
+        window.__dismissAllCritical = function() {
+            var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+            __criticalActiveReports.forEach(function(r) {
+                sessionStorage.setItem('criticalDismissed_' + r.report_id, '1');
+                if (r.report_id) {
+                    fetch('/emergency/' + r.report_id + '/acknowledge', {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }
+                    }).catch(function(e) {});
+                }
+            });
+            __criticalActiveReports = [];
+            __renderCriticalBanner();
         };
 
         function __handleCriticalData(data) {
-            (data && data.reports ? data.reports : []).forEach(function(r) {
+            var incoming = (data && data.reports) ? data.reports : [];
+
+            var stillActiveIds = incoming.map(function(r) { return r.report_id; });
+            __criticalActiveReports = __criticalActiveReports.filter(function(r) {
+                return stillActiveIds.indexOf(r.report_id) !== -1;
+            });
+
+            var changed = false;
+
+            incoming.forEach(function(r) {
                 if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
-                if (__criticalSeen.has(r.report_id)) return;
                 if (sessionStorage.getItem('criticalDismissed_' + r.report_id)) return;
 
-                __criticalSeen.add(r.report_id);
-                __fireCriticalBrowserNotification(r);
-                __criticalQueue.push(r);
-                __showNextCritical();
+                var alreadyShown = __criticalActiveReports.some(function(existing) {
+                    return existing.report_id === r.report_id;
+                });
+                if (alreadyShown) return;
+
+                __criticalActiveReports.push(r);
+                changed = true;
+
+                if (!__criticalSeenIds.has(r.report_id)) {
+                    __criticalSeenIds.add(r.report_id);
+                    var accent = __criticalAccent(r);
+                    __fireBrowserNotification(accent.label, r.emergency_type, r.location);
+                }
             });
+
+            if (changed) {
+                __beep();
+                if (__criticalBeepInterval) clearInterval(__criticalBeepInterval);
+                __criticalBeepInterval = setInterval(__beep, 3000);
+            }
+
+            __renderCriticalBanner();
         }
 
         window.__processLiveEmergencyAlerts = function(panic, critical) {
