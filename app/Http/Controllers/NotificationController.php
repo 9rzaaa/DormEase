@@ -80,11 +80,11 @@ class NotificationController extends Controller
         $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
             ->where('status', 'active')
             ->orderByDesc('reported_at')
-            ->take(5)
             ->get()
             ->map(fn ($report) => [
                 'report_id'      => $report->report_id,
                 'urgency_level'  => $report->urgency_level,
+                'is_panic_alert' => $report->is_panic_alert,
                 'emergency_type' => $report->emergency_type,
                 'location'       => $report->location,
                 'reported_at'    => $report->reported_at?->format('Y-m-d H:i:s'),
