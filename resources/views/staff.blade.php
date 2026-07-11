@@ -1275,7 +1275,7 @@
 @endsection
 
 @section('modals')
-@include('partials._confirm-popups')
+@include('partials.confirm-popups')
 <div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
     <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
         <div class="modal-header" style="margin-bottom:.85rem;">
