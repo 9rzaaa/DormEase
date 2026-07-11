@@ -112,6 +112,18 @@ class EmergencyController extends Controller
             ref_id: $report->report_id,
         );
 
+        app(\App\Services\TenantPushNotificationService::class)->sendToAllTenants(
+            type: 'emergency',
+            title: 'EMERGENCY WARNING',
+            body: "A critical emergency ({$report->emergency_type}) has been reported at {$report->location}. Please remain calm and take safety precautions.",
+            refId: $report->report_id,
+            route: '/tenant/emergencyhistory',
+            extraData: [
+                'location'       => $report->location,
+                'emergency_type' => $report->emergency_type,
+            ]
+        );
+
         return redirect()->route('frontdesk.emergency')
             ->with('success', 'Emergency report filed successfully.');
     }
@@ -346,24 +358,24 @@ class EmergencyController extends Controller
     }
 
     public function pollPanic()
-{
-    $reports = EmergencyReport::where('is_panic_alert', true)
-        ->where('status', 'active')
-        ->orderByDesc('reported_at')
-        ->get(['report_id', 'emergency_type', 'location', 'reported_at']);
+    {
+        $reports = EmergencyReport::where('is_panic_alert', true)
+            ->where('status', 'active')
+            ->orderByDesc('reported_at')
+            ->get(['report_id', 'emergency_type', 'location', 'reported_at']);
 
-    return response()->json([
-        'has_panic' => $reports->isNotEmpty(),
-        'reports'   => $reports->map(function ($r) {
-            return [
-                'report_id'   => $r->report_id,
-                'type'        => $r->emergency_type,
-                'location'    => $r->location,
-                'reported_at' => $r->reported_at?->format('Y-m-d H:i:s'),
-            ];
-        }),
-    ]);
-}
+        return response()->json([
+            'has_panic' => $reports->isNotEmpty(),
+            'reports'   => $reports->map(function ($r) {
+                return [
+                    'report_id'   => $r->report_id,
+                    'type'        => $r->emergency_type,
+                    'location'    => $r->location,
+                    'reported_at' => $r->reported_at?->format('Y-m-d H:i:s'),
+                ];
+            }),
+        ]);
+    }
 
     public function pollCritical()
     {
