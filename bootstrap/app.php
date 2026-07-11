@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'api/webhooks/paymongo',
+        ]);
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'dormhead'               => \App\Http\Middleware\DormHeadOnly::class,
