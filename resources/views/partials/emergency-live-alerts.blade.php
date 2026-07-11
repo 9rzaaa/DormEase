@@ -81,7 +81,7 @@
                 __panicRotateInterval = setInterval(function() {
                     __panicRotateIndex = (__panicRotateIndex + 1) % __panicActiveReports.length;
                     __updatePanicContent();
-                }, 3000);
+                }, 2000);
             } else if (__panicActiveReports.length <= 1 && __panicRotateInterval) {
                 clearInterval(__panicRotateInterval);
                 __panicRotateInterval = null;
@@ -105,8 +105,11 @@
             content.style.animation = 'none';
             void content.offsetWidth;
             content.style.animation = '__pf .3s ease';
+            var formattedTime = __formatTime12h(r.reported_at);
+
             content.innerHTML = '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(r.type || 'Emergency') + '</div>'
-                + '<div style="font-size:1rem;opacity:.9;font-weight:600;">' + __escHtml(r.location || 'unknown') + '</div>';
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;margin-bottom:.75rem;">' + __escHtml(r.location || 'unknown') + '</div>'
+                + '<div style="font-size:.75rem;opacity:.75;font-weight:500;letter-spacing:.02em;">Reported: ' + __escHtml(formattedTime) + '</div>';
         }
 
         window.__dismissAllPanic = function() {
@@ -163,19 +166,24 @@
         /* ── CRITICAL / URGENT ALERTS ── */
 
         var __criticalSeenIds = new Set();
-        var __criticalActiveReports = [];
+        var __criticalActiveReportsByLevel = { critical: [], urgent: [] };
         var __criticalBeepInterval = null;
         var __criticalRotateIndex = 0;
         var __criticalRotateInterval = null;
+        var __criticalActiveLevel = null;
 
-        function __criticalAccent(r) {
-            return r.urgency_level === 'critical'
+        function __criticalAccent(level) {
+            return level === 'critical'
                 ? { grad: '#ff2d78,#c0303a', solid: '#c0303a', label: 'Critical Emergency' }
                 : { grad: '#f59e0b,#c07800', solid: '#c07800', label: 'Urgent Emergency' };
         }
 
         function __renderCriticalBanner() {
-            if (__criticalActiveReports.length === 0) {
+            __criticalActiveLevel = __criticalActiveReportsByLevel.critical.length > 0
+                ? 'critical'
+                : (__criticalActiveReportsByLevel.urgent.length > 0 ? 'urgent' : null);
+
+            if (!__criticalActiveLevel) {
                 var existing = document.getElementById('__critical-alert-banner');
                 if (existing) existing.remove();
                 if (__criticalBeepInterval) { clearInterval(__criticalBeepInterval); __criticalBeepInterval = null; }
@@ -184,7 +192,8 @@
                 return;
             }
 
-            if (__criticalRotateIndex >= __criticalActiveReports.length) __criticalRotateIndex = 0;
+            var activeReports = __criticalActiveReportsByLevel[__criticalActiveLevel] || [];
+            if (__criticalRotateIndex >= activeReports.length) __criticalRotateIndex = 0;
 
             var existing = document.getElementById('__critical-alert-banner');
             if (!existing) {
@@ -204,12 +213,14 @@
 
             __updateCriticalContent();
 
-            if (!__criticalRotateInterval && __criticalActiveReports.length > 1) {
+            if (!__criticalRotateInterval && activeReports.length > 1) {
                 __criticalRotateInterval = setInterval(function() {
-                    __criticalRotateIndex = (__criticalRotateIndex + 1) % __criticalActiveReports.length;
+                    var reports = __criticalActiveReportsByLevel[__criticalActiveLevel] || [];
+                    if (reports.length === 0) return;
+                    __criticalRotateIndex = (__criticalRotateIndex + 1) % reports.length;
                     __updateCriticalContent();
-                }, 3000);
-            } else if (__criticalActiveReports.length <= 1 && __criticalRotateInterval) {
+                }, 2000);
+            } else if (activeReports.length <= 1 && __criticalRotateInterval) {
                 clearInterval(__criticalRotateInterval);
                 __criticalRotateInterval = null;
                 __criticalRotateIndex = 0;
@@ -217,8 +228,10 @@
         }
 
         function __updateCriticalContent() {
-            var count = __criticalActiveReports.length;
-            var r = __criticalActiveReports[__criticalRotateIndex];
+            var level = __criticalActiveLevel;
+            var activeReports = level ? (__criticalActiveReportsByLevel[level] || []) : [];
+            var count = activeReports.length;
+            var r = activeReports[__criticalRotateIndex];
             if (!r) return;
 
             var box = document.getElementById('__critical-box');
@@ -227,9 +240,10 @@
             var btn = document.getElementById('__critical-dismiss-btn');
             if (!box || !countLabel || !content) return;
 
-            var accent = __criticalAccent(r);
+            var accent = __criticalAccent(level);
             box.style.background = 'linear-gradient(135deg,' + accent.grad + ')';
             if (btn) btn.style.color = accent.solid;
+            if (btn) btn.innerHTML = 'Acknowledge &amp; Dismiss ' + (level === 'critical' ? 'Critical' : 'Urgent') + ' Alerts';
 
             countLabel.textContent = count === 1
                 ? accent.label
@@ -259,7 +273,9 @@
 
         window.__dismissAllCritical = function() {
             var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
-            __criticalActiveReports.forEach(function(r) {
+            var level = __criticalActiveLevel;
+            var reportsToDismiss = level ? (__criticalActiveReportsByLevel[level] || []) : [];
+            reportsToDismiss.forEach(function(r) {
                 sessionStorage.setItem('criticalDismissed_' + r.report_id, '1');
                 if (r.report_id) {
                     fetch('/emergency/' + r.report_id + '/acknowledge', {
@@ -268,7 +284,8 @@
                     }).catch(function(e) {});
                 }
             });
-            __criticalActiveReports = [];
+            if (level) __criticalActiveReportsByLevel[level] = [];
+            __criticalRotateIndex = 0;
             __renderCriticalBanner();
         };
 
@@ -276,27 +293,32 @@
             var incoming = (data && data.reports) ? data.reports : [];
 
             var stillActiveIds = incoming.map(function(r) { return r.report_id; });
-            __criticalActiveReports = __criticalActiveReports.filter(function(r) {
-                return stillActiveIds.indexOf(r.report_id) !== -1;
+            ['critical', 'urgent'].forEach(function(level) {
+                __criticalActiveReportsByLevel[level] = __criticalActiveReportsByLevel[level].filter(function(r) {
+                    return stillActiveIds.indexOf(r.report_id) !== -1;
+                });
             });
 
             var changed = false;
 
             incoming.forEach(function(r) {
                 if ((r.emergency_type || '').toLowerCase() === 'panic alert') return;
+                if (r.is_panic_alert) return;
                 if (sessionStorage.getItem('criticalDismissed_' + r.report_id)) return;
+                if (r.urgency_level !== 'critical' && r.urgency_level !== 'urgent') return;
 
-                var alreadyShown = __criticalActiveReports.some(function(existing) {
+                var levelReports = __criticalActiveReportsByLevel[r.urgency_level];
+                var alreadyShown = levelReports.some(function(existing) {
                     return existing.report_id === r.report_id;
                 });
                 if (alreadyShown) return;
 
-                __criticalActiveReports.push(r);
+                levelReports.push(r);
                 changed = true;
 
                 if (!__criticalSeenIds.has(r.report_id)) {
                     __criticalSeenIds.add(r.report_id);
-                    var accent = __criticalAccent(r);
+                    var accent = __criticalAccent(r.urgency_level);
                     __fireBrowserNotification(accent.label, r.emergency_type, r.location);
                 }
             });
