@@ -1950,6 +1950,7 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="td-modal-body" id="td-modal-body"></div>
         <div class="td-modal-footer">
+            <button class="btn-submit" id="td-note-action-btn" onclick="openNoteFromView()">Add / Edit Note</button>
             <button class="td-modal-close-btn" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
@@ -1998,6 +1999,7 @@ let currentPage      = 1;
 let filtered         = [];
 let tenantArchiveTab = 'deleted';
 let currentNoteId    = null;
+let currentViewedTenant = null;
 let logData          = [];
 let logFilter        = '';
 let logDateFilter    = 'all';
@@ -2172,7 +2174,6 @@ function renderTable() {
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
                     '<button class="act-btn" title="View Details" data-tenant="' + escapeHtml(JSON.stringify(t)) + '" onclick="viewTenant(JSON.parse(this.dataset.tenant))"><img src="/icons/eye.png" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +
                     '<span id="timebtn-' + t.tenant_id + '" style="display:inline-flex;min-width:80px;justify-content:center;">' + timeBtnHtml + '</span>' +
                 '</div></td>' +
             '</tr>';
@@ -2224,8 +2225,7 @@ function renderReservedTable() {
                 '<td class="td-center">' + (t.is_on_vacation ? vacationBadge(true) : statusBadge(t.status)) + '</td>' +
                 '<td style="color:var(--ink-muted);font-size:.85rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (t.notes || '\u2014') + '</td>' +
                 '<td class="td-center"><div class="action-group">' +
-                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="/icons/eye.png" alt="View"></button>' +
-                    '<button class="act-btn" title="Add / Edit Note" data-tid="' + t.tenant_id + '" data-tname="' + escapeHtml(t.first_name + ' ' + t.last_name) + '" data-tnote="' + escapeHtml(t.notes || '') + '" onclick="openNotesModalFromBtn(this)"><img src="/icons/edit.png" alt="Note"></button>' +                '</div></td>' +
+                    '<button class="act-btn" title="View Details" onclick=\'viewTenant(' + JSON.stringify(t).replace(/'/g, "&#39;") + ')\'><img src="/icons/eye.png" alt="View"></button>' +                '</div></td>' +
             '</tr>';
         }).join('');
     }
@@ -2619,6 +2619,7 @@ function statusPillModalClass(status) {
 }
 
 function viewTenant(t) {
+    currentViewedTenant = t;
     document.getElementById('td-modal-name').textContent = t.first_name + ' ' + t.last_name;
 
     var avatarWrap = document.getElementById('td-modal-avatar-wrap');
@@ -2697,6 +2698,18 @@ function viewTenant(t) {
     document.getElementById('td-modal-body').innerHTML = bodyHtml;
 
     document.getElementById('view-modal').style.display = 'flex';
+}
+
+function openNoteFromView() {
+    if (!currentViewedTenant) return;
+    closeModal('view-modal');
+    setTimeout(function() {
+        openNotesModal(
+            currentViewedTenant.tenant_id,
+            (currentViewedTenant.first_name || '') + ' ' + (currentViewedTenant.last_name || ''),
+            currentViewedTenant.notes || ''
+        );
+    }, 180);
 }
 
 function openNotesModalFromBtn(btn) {

@@ -1543,8 +1543,8 @@
             <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
         <div id="view-content" style="padding:1.25rem 1.5rem 0;"></div>
-        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;">
-            <button class="btn-submit" onclick="switchToEdit()">Edit</button>
+        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;">
+            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
     </div>
@@ -1866,15 +1866,6 @@
                             + '<button class="act-btn" title="View" onclick=\'viewStaff(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
                                 + '<img src="{{ asset("icons/eye.png") }}" class="icon-sm" alt="View">'
                             + '</button>'
-                            + '<button class="act-btn" title="Edit" onclick=\'openEditModal(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
-                                + '<img src="{{ asset("icons/edit.png") }}" class="icon-sm" alt="Edit">'
-                            + '</button>'
-                            + '<button class="act-btn delete" title="Delete" onclick="openDeleteModal(' + s.staff_id + ', \'' + (s.first_name + ' ' + s.last_name).replace(/'/g, "\\'") + '\')">'
-                                + '<img src="{{ asset("icons/delete.png") }}" class="icon-sm" alt="Delete">'
-                            + '</button>'
-                            + '<button class="act-btn toggle" title="Reset Password" onclick=\'resetTempPassword(' + JSON.stringify(s).replace(/'/g, "&#39;") + ')\'>'
-                                + '<img src="{{ asset("icons/reset.png") }}" class="icon-sm" alt="Reset">'
-                            + '</button>'
                         + '</div>'
                     + '</td>'
                     + '</tr>';
@@ -1970,6 +1961,13 @@
                 ? '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#1f9d69;background:#e8faf5;border:1px solid #8ce0bb;padding:.18rem .6rem;border-radius:99px;">Active</span>'
                 : '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#888;background:#f3f4f6;border:1px solid #d0d0d8;padding:.18rem .6rem;border-radius:99px;">Inactive</span>')
             + '</span></div>';
+    var viewActions = document.getElementById('view-actions');
+    if (viewActions) {
+        viewActions.innerHTML =
+            '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
+            + '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>'
+            + '<button class="btn-submit" onclick="openDeleteFromView()" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.25);">Delete</button>';
+    }
     openModal('view-modal');
 }
 
@@ -1978,6 +1976,19 @@
             closeModal('view-modal');
             setTimeout(function() { openEditModal(currentStaff); }, 200);
         }
+    }
+
+    function resetTempPasswordFromView() {
+        if (!currentStaff) return;
+        closeModal('view-modal');
+        setTimeout(function() { resetTempPassword(currentStaff); }, 200);
+    }
+
+    function openDeleteFromView() {
+        if (!currentStaff) return;
+        var staffName = currentStaff.first_name + ' ' + currentStaff.last_name;
+        closeModal('view-modal');
+        setTimeout(function() { openDeleteModal(currentStaff.staff_id, staffName); }, 200);
     }
 
     function openEditModal(s) {

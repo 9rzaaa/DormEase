@@ -1659,8 +1659,8 @@
                                 <span class="room-meta-occ">{{ $room['occupants_in_room'] }} occupant{{ $room['occupants_in_room'] != 1 ? 's' : '' }}</span>
                             </div>
                         </div>
-                        <button class="btn-update" onclick='openUpdateModal(@json($room))' title="Edit Billing">
-                            <img src="{{ asset('icons/edit.png') }}" alt="Edit">
+                        <button class="btn-update" onclick='openUpdateModal(@json($room))' title="View / Manage Billing">
+                            <img src="{{ asset('icons/eye.png') }}" alt="View">
                         </button>
                     </div>
                     <div class="tenants-list">
