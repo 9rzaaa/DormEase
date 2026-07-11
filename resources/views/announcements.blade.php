@@ -3,6 +3,8 @@
 @section('title', 'DormEase: Announcements')
 @section('page-title', 'Announcements')
 
+@include('partials._confirm-popups')
+
 @section('styles')
 <style>
 .ann-page {
