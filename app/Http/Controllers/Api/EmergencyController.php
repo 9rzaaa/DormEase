@@ -765,13 +765,19 @@ class EmergencyController extends Controller
     {
         $tenantId = $request->user()?->tenant_id;
 
-        $activeReports = EmergencyReport::where('tenant_id', $tenantId)
+        $activeReports = EmergencyReport::where(function ($query) use ($tenantId) {
+                $query->where('tenant_id', $tenantId)
+                      ->orWhereNull('tenant_id');
+            })
             ->where('hidden_from_tenant', false)
             ->latest('reported_at')
             ->get()
             ->map(fn($report) => $this->formatReport($report));
 
-        $archivedReports = ArchivedEmergencyReport::where('tenant_id', $tenantId)
+        $archivedReports = ArchivedEmergencyReport::where(function ($query) use ($tenantId) {
+                $query->where('tenant_id', $tenantId)
+                      ->orWhereNull('tenant_id');
+            })
             ->whereIn('archive_type', ['resolved', 'closed'])
             ->where('hidden_from_tenant', false)
             ->latest('reported_at')
