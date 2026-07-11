@@ -530,32 +530,8 @@
         width: 100%;
         background: linear-gradient(90deg, var(--hot-pink), var(--bright-pink));
         border-radius: 2px;
-        transform: scaleX(0);
-        transform-origin: left center;
-        transition: transform .38s cubic-bezier(.22,1,.36,1);
-    }
-
-    .eyebrow.line-drawn::after {
         transform: scaleX(1);
-    }
-
-    .eyebrow-inner {
-        display: inline-block;
-        transition: opacity .22s ease, transform .22s cubic-bezier(.4,0,.2,1);
-    }
-
-    .eyebrow-inner.switching {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-
-    .eyebrow-inner.entering {
-        animation: eyebrowEnter .28s cubic-bezier(.22,1,.36,1) forwards;
-    }
-
-    @keyframes eyebrowEnter {
-        from { opacity: 0; transform: translateY(8px); }
-        to   { opacity: 1; transform: translateY(0); }
+        transform-origin: left center;
     }
 
     .form-header h2 {
@@ -578,138 +554,6 @@
         margin-top: .55rem;
         line-height: 1.6;
     }
-
-    .role-label {
-        font-size: .78rem;
-        font-weight: 600;
-        color: var(--ink);
-        margin-bottom: .5rem;
-        display: block;
-    }
-
-    .role-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .6rem;
-        margin-bottom: 1.1rem;
-    }
-
-    .role-btn {
-        border: 1.5px solid var(--gray-light);
-        border-radius: 14px;
-        padding: .85rem 1rem;
-        background: var(--white);
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: .65rem;
-        transition: border-color var(--transition), background var(--transition),
-                    box-shadow var(--transition);
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-        will-change: transform;
-    }
-
-    .role-btn::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg,rgba(255,45,120,.07) 0%,transparent 60%);
-        opacity: 0;
-        transition: opacity var(--transition);
-    }
-
-    .role-btn:hover::before { opacity: 1; }
-
-    .role-btn:hover {
-        border-color: var(--pink-light);
-    }
-
-    .role-btn:active { transform: scale(.97); }
-
-    .role-btn.active {
-        border-color: var(--bright-pink);
-        background: var(--pink-tint);
-        box-shadow: 0 0 0 3px rgba(255,45,120,.12);
-        transform: scale(1.03);
-    }
-
-    .ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255,45,120,.18);
-        transform: scale(0);
-        animation: rippleAnim .5s linear;
-        pointer-events: none;
-    }
-
-    @keyframes rippleAnim {
-        to { transform: scale(4); opacity: 0; }
-    }
-
-    .role-icon {
-        width: 38px; height: 38px;
-        flex-shrink: 0;
-        border-radius: 10px;
-        background: var(--gray-light);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background var(--transition);
-        position: relative;
-    }
-
-    .role-icon img {
-        width: 20px; height: 20px;
-        object-fit: contain;
-        position: relative;
-        z-index: 1;
-    }
-
-    .role-btn.active .role-icon {
-        background: linear-gradient(135deg,var(--hot-pink),var(--bright-pink));
-    }
-
-    .role-btn.active .role-icon img { filter: brightness(0) invert(1); }
-
-    .role-icon::after {
-        content: '';
-        position: absolute;
-        top: -3px; right: -3px;
-        width: 9px; height: 9px;
-        border-radius: 50%;
-        background: var(--bright-pink);
-        border: 2px solid var(--white);
-        opacity: 0;
-        transform: scale(0);
-        transition: opacity .2s, transform .25s cubic-bezier(.34,1.56,.64,1);
-    }
-
-    .role-btn.active .role-icon::after {
-        opacity: 1;
-        transform: scale(1);
-        animation: pulseDot 1.8s ease-in-out infinite;
-    }
-
-    @keyframes pulseDot {
-        0%,100% { box-shadow: 0 0 0 0 rgba(255,45,120,.5); }
-        50%      { box-shadow: 0 0 0 5px rgba(255,45,120,0); }
-    }
-
-    .role-name {
-        font-size: .84rem;
-        font-weight: 600;
-        color: var(--ink);
-    }
-
-    .role-desc {
-        font-size: .71rem;
-        color: var(--ink-muted);
-        margin-top: .1rem;
-    }
-
-    .role-btn.active .role-name { color: var(--hot-pink); }
 
     .field { margin-bottom: .9rem; }
 
@@ -1055,8 +899,6 @@
         .right-inner { padding: 1.5rem 1rem 2.5rem; }
         .form-wrap { padding: 1.6rem 1.2rem; border-radius: 16px; }
         .form-header h2 { font-size: 1.7rem; }
-        .role-row { gap: .4rem; }
-        .role-btn { padding: .7rem .8rem; }
         .de-input { font-size: .85rem; }
         .de-btn-primary { font-size: .88rem; padding: .7rem 1rem; }
     }
@@ -1066,7 +908,6 @@
         .logo-text { font-size: 1.2rem; }
         .form-wrap { padding: 1.4rem 1rem; }
         .form-header h2 { font-size: 1.5rem; }
-        .role-row { grid-template-columns: 1fr; }
         .field-row { flex-direction: column; align-items: flex-start; gap: .6rem; }
     }
 
@@ -1569,44 +1410,16 @@
         <div class="form-wrap">
 
         <div class="form-header">
-            <div class="eyebrow form-header-eyebrow" id="eyebrow-label">
-                <span class="eyebrow-inner" id="eyebrow-text">Admin Portal</span>
-            </div>
+            <div class="eyebrow form-header-eyebrow">Staff Portal</div>
             <h2 class="form-header-title">
                 <span class="title-halo"></span>
                 Welcome to<br><em>DormEase</em>
             </h2>
-            <p class="form-header-sub">Select your role and sign in with your credentials to continue.</p>
-        </div>
-
-        <span class="role-label">Sign in as</span>
-
-        <div class="role-row">
-            <button type="button" class="role-btn {{ old('role', 'admin') === 'admin' ? 'active' : '' }}" id="role-admin" onclick="setRole('admin')">
-                <div class="role-icon">
-                    <img src="{{ asset('icons/admin.png') }}" alt="Admin">
-                </div>
-                <div>
-                    <div class="role-name">Admin</div>
-                    <div class="role-desc">Full access</div>
-                </div>
-            </button>
-
-            <button type="button" class="role-btn {{ old('role') === 'frontdesk' ? 'active' : '' }}" id="role-frontdesk" onclick="setRole('frontdesk')">
-                <div class="role-icon">
-                    <img src="{{ asset('icons/staff.png') }}" alt="Front Desk">
-                </div>
-                <div>
-                    <div class="role-name">Front Desk</div>
-                    <div class="role-desc">Staff access</div>
-                </div>
-            </button>
+            <p class="form-header-sub">Sign in with your credentials to continue.</p>
         </div>
 
         <form method="POST" action="/login" id="login-form">
             @csrf
-
-            <input type="hidden" name="role" id="role-input" value="{{ old('role', 'admin') }}">
 
             <div class="field">
                 <label for="email">Email Address</label>
@@ -1935,25 +1748,6 @@
     });
 
     (function () {
-        var cards = document.querySelectorAll('.role-btn');
-        cards.forEach(function (card) {
-            card.addEventListener('mousemove', function (e) {
-                var rect = card.getBoundingClientRect();
-                var dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-                var dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-                card.style.transform = 'translate(' + (dx * 6) + 'px,' + (dy * 4) + 'px) scale(1.03)';
-                card.style.boxShadow = '0 8px 28px rgba(232,23,93,.18)';
-            });
-            card.addEventListener('mouseleave', function () {
-                card.style.transform = '';
-                card.style.boxShadow = '';
-            });
-            card.addEventListener('mousedown', function () { card.style.transform = 'scale(.97)'; });
-            card.addEventListener('mouseup', function () { card.style.transform = ''; });
-        });
-    })();
-
-    (function () {
         var pwInput = document.getElementById('password');
         var normal  = document.getElementById('student-normal');
         var cover   = document.getElementById('student-cover');
@@ -1963,72 +1757,6 @@
     })();
 
     var fpAdminEmail = '';
-
-    function setRole(role, skipAnim) {
-        ['admin', 'frontdesk'].forEach(function (r) {
-            document.getElementById('role-' + r).classList.toggle('active', r === role);
-        });
-        document.getElementById('role-input').value = role;
-        var textEl  = document.getElementById('eyebrow-text');
-        var eyebrow = document.getElementById('eyebrow-label');
-        var next    = role === 'admin' ? 'Admin Portal' : 'Staff Portal';
-        if (skipAnim) {
-            textEl.textContent = next;
-            setTimeout(function () { eyebrow.classList.add('line-drawn'); }, 320);
-            return;
-        }
-        eyebrow.classList.remove('line-drawn');
-        textEl.classList.remove('entering');
-        textEl.classList.add('switching');
-        setTimeout(function () {
-            textEl.textContent = next;
-            textEl.classList.remove('switching');
-            textEl.classList.add('entering');
-        }, 220);
-        setTimeout(function () { eyebrow.classList.add('line-drawn'); }, 280);
-    }
-
-    (function () {
-        var saved = document.getElementById('role-input').value;
-        if (saved) setRole(saved, true);
-    })();
-
-    document.querySelectorAll('.role-btn').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            var r    = document.createElement('span');
-            r.className = 'ripple';
-            var rect = btn.getBoundingClientRect();
-            var size = Math.max(rect.width, rect.height);
-            r.style.width  = r.style.height = size + 'px';
-            r.style.left   = (e.clientX - rect.left - size / 2) + 'px';
-            r.style.top    = (e.clientY - rect.top  - size / 2) + 'px';
-            btn.appendChild(r);
-            setTimeout(function () { r.remove(); }, 500);
-        });
-    });
-
-    function togglePw() {
-        var input = document.getElementById('password');
-        var icon  = document.getElementById('pw-eye-icon');
-        var show  = input.type === 'password';
-        input.type = show ? 'text' : 'password';
-        icon.src   = show ? "{{ asset('icons/eye-off.png') }}" : "{{ asset('icons/eye.png') }}";
-    }
-
-    (function () {
-        var pwInput  = document.getElementById('password');
-        var capsIcon = document.getElementById('caps-icon');
-
-        function checkCaps(e) {
-            var caps = e.getModifierState && e.getModifierState('CapsLock');
-            capsIcon.classList.toggle('visible', !!caps);
-        }
-
-        pwInput.addEventListener('keyup',  checkCaps);
-        pwInput.addEventListener('keydown', checkCaps);
-        pwInput.addEventListener('focus', function (e) { checkCaps(e); });
-        pwInput.addEventListener('blur',  function () { capsIcon.classList.remove('visible'); });
-    })();
 
     var emailInput    = document.getElementById('email');
     var emailFieldErr = document.getElementById('email-field-error');
