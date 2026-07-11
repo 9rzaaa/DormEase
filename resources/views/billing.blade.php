@@ -3107,19 +3107,21 @@ function openUpdateModal(room) {
         const counterDisplay  = isOtherReason ? 'block' : 'none';
         const charCount       = isOtherReason ? currentRejReason.length : 0;
 
-        const noProofWarning = !isPendingOrInactive && !t.proof_of_payment_url
+        const isQrPh = t.payment_method && t.payment_method.indexOf('QR Ph') !== -1;
+
+        const noProofWarning = !isPendingOrInactive && !t.proof_of_payment_url && !isQrPh
             ? `<div class="inline-notice inline-notice-warn" style="margin-top:.6rem;">No proof of payment has been uploaded. If this tenant paid in person or via cash, enable the onsite payment toggle below and then set the status to Paid.</div>`
             : '';
 
         const onsiteToggle = !isPendingOrInactive
-            ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:.75rem;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1.5px solid var(--border-pink);">
+            ? `<div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:.75rem;padding:.65rem .85rem;border-radius:12px;background:var(--pink-bg-soft);border:1.5px solid var(--border-pink);opacity:${isQrPh ? 0.6 : 1};pointer-events:${isQrPh ? 'none' : 'auto'};">
                 <div>
                     <div style="font-size:.8rem;font-weight:700;color:var(--ink-deep);">Paid onsite (face to face)</div>
-                    <div style="font-size:.72rem;color:var(--ink-soft);margin-top:.1rem;">Toggle this if the tenant paid in person. No proof required.</div>
+                    <div style="font-size:.72rem;color:var(--ink-soft);margin-top:.1rem;">${isQrPh ? 'Paid online via QR Ph.' : 'Toggle this if the tenant paid in person. No proof required.'}</div>
                 </div>
                 <label style="position:relative;display:inline-flex;align-items:center;cursor:pointer;flex-shrink:0;">
                     <input type="checkbox" class="onsite-toggle" data-billing-id="${t.billing_id??''}" style="opacity:0;width:0;height:0;position:absolute;"
-                        onchange="handleOnsiteToggle(this)" ${t.payment_status === 'paid' && !t.proof_of_payment_url ? 'checked' : ''}>
+                        onchange="handleOnsiteToggle(this)" ${t.payment_status === 'paid' && !t.proof_of_payment_url && !isQrPh ? 'checked' : ''} ${isQrPh ? 'disabled' : ''}>
                     <div class="onsite-track"></div>
                 </label>
               </div>`
