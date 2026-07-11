@@ -18,6 +18,8 @@
         var __panicSeenIds = new Set();
         var __panicActiveReports = [];
         var __panicBeepIntervalConsolidated = null;
+        var __panicRotateIndex = 0;
+        var __panicRotateInterval = null;
 
         function __panicBeep() {
             try {
@@ -44,35 +46,65 @@
         }
 
         function __renderPanicBanner() {
-            var existing = document.getElementById('__panic-alert-banner');
-            if (existing) existing.remove();
-
             if (__panicActiveReports.length === 0) {
+                var existing = document.getElementById('__panic-alert-banner');
+                if (existing) existing.remove();
                 if (__panicBeepIntervalConsolidated) { clearInterval(__panicBeepIntervalConsolidated); __panicBeepIntervalConsolidated = null; }
+                if (__panicRotateInterval) { clearInterval(__panicRotateInterval); __panicRotateInterval = null; }
+                __panicRotateIndex = 0;
                 return;
             }
 
-            var count = __panicActiveReports.length;
-            var title = count === 1 ? '1 Panic Alert' : count + ' Panic Alerts';
+            if (__panicRotateIndex >= __panicActiveReports.length) __panicRotateIndex = 0;
 
-            var rowsHtml = __panicActiveReports.map(function(r) {
-                return '<div style="display:flex;justify-content:space-between;gap:.8rem;padding:.55rem 0;border-top:1px solid rgba(255,255,255,.25);text-align:left;">'
-                    + '<span style="font-weight:700;">' + __escHtml(r.type || 'Emergency') + '</span>'
-                    + '<span style="opacity:.9;font-size:.85rem;">' + __escHtml(r.location || 'unknown') + '</span>'
+            var existing = document.getElementById('__panic-alert-banner');
+            if (!existing) {
+                var banner = document.createElement('div');
+                banner.id = '__panic-alert-banner';
+                banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+                banner.innerHTML = '<style>@keyframes __pp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}'
+                    + '@keyframes __pf{0%{opacity:0;transform:translateY(4px);}100%{opacity:1;transform:translateY(0);}}</style>'
+                    + '<div style="background:linear-gradient(135deg,#ff2d78,#c0303a);color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__pp 1.5s infinite;">'
+                    + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
+                    + '<div id="__panic-count-label" style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;"></div>'
+                    + '<div id="__panic-rotate-content"></div>'
+                    + '<button onclick="__dismissAllPanic()" style="margin-top:1.6rem;background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss All</button>'
                     + '</div>';
-            }).join('');
+                document.body.appendChild(banner);
+            }
 
-            var banner = document.createElement('div');
-            banner.id = '__panic-alert-banner';
-            banner.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-            banner.innerHTML = '<style>@keyframes __pp{0%,100%{box-shadow:0 0 0 0 rgba(255,45,120,.6),0 24px 60px rgba(255,45,120,.4)}50%{box-shadow:0 0 0 18px rgba(255,45,120,0),0 24px 60px rgba(255,45,120,.4)}}</style>'
-                + '<div style="background:linear-gradient(135deg,#ff2d78,#c0303a);color:#fff;padding:2.5rem 2.8rem;border-radius:24px;max-width:460px;width:90vw;text-align:center;font-family:inherit;animation:__pp 1.5s infinite;">'
-                + '<div style="font-size:3.5rem;margin-bottom:.5rem;">&#9888;</div>'
-                + '<div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.85;margin-bottom:.4rem;">' + title + '</div>'
-                + rowsHtml
-                + '<button onclick="__dismissAllPanic()" style="margin-top:1.6rem;background:#fff;color:#c0303a;border:none;padding:.75rem 2.2rem;border-radius:12px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;">Acknowledge &amp; Dismiss All</button>'
-                + '</div>';
-            document.body.appendChild(banner);
+            __updatePanicContent();
+
+            if (!__panicRotateInterval && __panicActiveReports.length > 1) {
+                __panicRotateInterval = setInterval(function() {
+                    __panicRotateIndex = (__panicRotateIndex + 1) % __panicActiveReports.length;
+                    __updatePanicContent();
+                }, 3000);
+            } else if (__panicActiveReports.length <= 1 && __panicRotateInterval) {
+                clearInterval(__panicRotateInterval);
+                __panicRotateInterval = null;
+                __panicRotateIndex = 0;
+            }
+        }
+
+        function __updatePanicContent() {
+            var count = __panicActiveReports.length;
+            var r = __panicActiveReports[__panicRotateIndex];
+            if (!r) return;
+
+            var countLabel = document.getElementById('__panic-count-label');
+            var content = document.getElementById('__panic-rotate-content');
+            if (!countLabel || !content) return;
+
+            countLabel.textContent = count === 1
+                ? 'Panic Alert'
+                : 'Panic Alert (' + (__panicRotateIndex + 1) + ' of ' + count + ')';
+
+            content.style.animation = 'none';
+            void content.offsetWidth;
+            content.style.animation = '__pf .3s ease';
+            content.innerHTML = '<div style="font-size:1.6rem;font-weight:800;line-height:1.2;margin-bottom:.5rem;">' + __escHtml(r.type || 'Emergency') + '</div>'
+                + '<div style="font-size:1rem;opacity:.9;font-weight:600;">' + __escHtml(r.location || 'unknown') + '</div>';
         }
 
         window.__dismissAllPanic = function() {
