@@ -3,8 +3,6 @@
 @section('title', 'DormEase: Announcements')
 @section('page-title', 'Announcements')
 
-@include('partials._confirm-popups')
-
 @section('styles')
 <style>
 .ann-page {
@@ -1345,6 +1343,7 @@
 @endsection
 
 @section('modals')
+@include('partials.confirm-popups')
 
 <div class="ann-dropdown" id="ann-global-dropdown"></div>
 
