@@ -65,10 +65,17 @@ class NotificationController extends Controller
     {
         $payload = $this->live($request)->getData(true);
 
-        $latest = EmergencyReport::where('is_panic_alert', true)
+        $panicReports = EmergencyReport::where('is_panic_alert', true)
             ->where('status', 'active')
             ->orderByDesc('reported_at')
-            ->first();
+            ->get(['report_id', 'emergency_type', 'location', 'reported_at'])
+            ->map(fn ($report) => [
+                'report_id'   => $report->report_id,
+                'type'        => $report->emergency_type,
+                'location'    => $report->location,
+                'reported_at' => $report->reported_at?->format('Y-m-d H:i:s'),
+            ])
+            ->values();
 
         $reports = EmergencyReport::whereIn('urgency_level', ['critical', 'urgent'])
             ->where('status', 'active')
@@ -86,11 +93,8 @@ class NotificationController extends Controller
 
         return response()->json(array_merge($payload, [
             'panic' => [
-                'has_panic'   => (bool) $latest,
-                'report_id'   => $latest?->report_id,
-                'type'        => $latest?->emergency_type,
-                'location'    => $latest?->location,
-                'reported_at' => $latest?->reported_at?->format('Y-m-d H:i:s'),
+                'has_panic' => $panicReports->isNotEmpty(),
+                'reports'   => $panicReports,
             ],
             'critical' => ['reports' => $reports],
         ]));
