@@ -2894,37 +2894,24 @@ function exportBillingPdf() {
         return;
     }
 
-    var win = window.open('', '_blank');
-    var rows = '';
+    var rows = [];
     billingExportGroups.forEach(function(group) {
         group.rooms.forEach(function(room) {
             room.tenants.filter(function(tenant) {
                 return tenant.payment_status !== 'pending-tenant' && tenant.payment_status !== 'inactive-tenant';
             }).forEach(function(tenant) {
-                rows += '<tr>'
-                    + '<td>' + escHtml(group.floor) + '</td>'
-                    + '<td>' + escHtml(String(room.room_number)) + '</td>'
-                    + '<td>' + escHtml(tenant.name) + '</td>'
-                    + '<td>' + Number(tenant.room_share || 0).toFixed(2) + '</td>'
-                    + '<td>' + escHtml(tenant.payment_status || '') + '</td>'
-                    + '<td>' + escHtml(group.due_date || '') + '</td>'
-                    + '<td>' + escHtml(String(group.floor_consumption_m3 || '')) + ' m3</td>'
-                    + '<td>P' + Number(group.total_floor_bill || 0).toFixed(2) + '</td>'
-                    + '</tr>';
+                rows.push([group.floor, String(room.room_number), tenant.name, 'PHP ' + Number(tenant.room_share || 0).toFixed(2), tenant.payment_status || '', group.due_date || '', String(group.floor_consumption_m3 || '') + ' m3', 'PHP ' + Number(group.total_floor_bill || 0).toFixed(2)]);
             });
         });
     });
 
-    win.document.write('<!DOCTYPE html><html><head><title>Water Billing - ' + escHtml(selectedBillingMonth || '') + '</title>'
-        + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-        + '</head><body>'
-        + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-        + '<p>Water Billing - ' + escHtml(selectedBillingMonth || '') + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-        + '<table><thead><tr><th>Floor</th><th>Room</th><th>Tenant</th><th>Share (P)</th><th>Status</th><th>Due Date</th><th>Consumption</th><th>Floor Total</th></tr></thead>'
-        + '<tbody>' + rows + '</tbody></table>'
-        + '</body></html>');
-    win.document.close();
-    win.print();
+    DormEasePdfReport.printTableReport({
+        title: 'Water Billing - ' + (selectedBillingMonth || ''),
+        subtitle: 'Current water billing records',
+        columns: ['Floor','Room','Tenant','Share','Status','Due Date','Consumption','Floor Total'],
+        rows: rows,
+        orientation: 'landscape'
+    });
 }
 
 function escHtml(str) {
