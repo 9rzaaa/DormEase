@@ -54,30 +54,21 @@ Route::post('/login', function () {
     request()->validate([
         'email'    => 'required|email|max:255',
         'password' => 'required|string',
-        'role'     => 'required|in:admin,frontdesk',
     ]);
     $email    = request('email');
     $password = request('password');
-    $role     = request('role');
 
     $email = trim(strtolower($email));
     $user = \App\Models\Staff::where('email', $email)->first();
 
     if (!$user || !\Illuminate\Support\Facades\Hash::check($password, $user->password_hash)) {
-        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput(request()->only('email', 'role'));
+        return back()->withErrors(['email' => 'Invalid email or password.'])->withInput(request()->only('email'));
     }
 
     $staffRoles = ['frontdesk'];
-    $adminRoles = ['admin', 'secretary'];
-    if (in_array($user->role, $adminRoles, true) && $role !== 'admin') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
-    }
-    if (in_array($user->role, $staffRoles, true) && $role !== 'frontdesk') {
-        return back()->withErrors(['email' => 'Invalid role for this account.'])->withInput(request()->only('email', 'role'));
-    }
 
     if (! ($user->is_active ?? false)) {
-        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput(request()->only('email', 'role'));
+        return back()->withErrors(['email' => 'Your account has been temporarily deactivated. Please contact your administrator to reactivate your account.'])->withInput(request()->only('email'));
     }
 
     Auth::guard('staff')->login($user, request()->boolean('remember'));
@@ -129,7 +120,6 @@ Route::post('/login', function () {
     }
 
     \App\Services\ActivityLogger::log('auth', 'login', "{$user->first_name} {$user->last_name} logged in.", [
-        'selected_role' => $role,
         'duty_status' => $dutyStatus,
     ], request(), $user);
 
