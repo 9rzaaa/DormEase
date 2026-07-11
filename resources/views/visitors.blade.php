@@ -1870,31 +1870,16 @@
     function exportLogsPdf() {
         if (!filtered.length) { showToast('No data to export.', 'error'); return; }
 
-        var win = window.open('', '_blank');
-        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = filtered.map(function(v) {
-            return '<tr>'
-                + '<td>' + (v.visitor_name ?? '') + '</td>'
-                + '<td>' + fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit) + '</td>'
-                + '<td>' + (v.arrival_time   ? fmtDateTime(v.arrival_time)   : 'Not yet') + '</td>'
-                + '<td>' + (v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside') + '</td>'
-                + '<td>' + (v.purpose ?? '') + '</td>'
-                + '<td>' + (v.tenant?.full_name ?? '') + '</td>'
-                + '<td>' + (v.staff?.name ?? '') + '</td>'
-                + '<td>' + (v.status ?? '') + '</td>'
-                + '</tr>';
-        }).join('');
+            return [v.visitor_name ?? '', fmtDate(v.date_of_visit) + ' ' + fmtTime(v.time_of_visit), v.arrival_time ? fmtDateTime(v.arrival_time) : 'Not yet', v.departure_time ? fmtDateTime(v.departure_time) : 'Still Inside', v.purpose ?? '', v.tenant?.full_name ?? '', v.staff?.name ?? '', v.status ?? ''];
+        });
 
-        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Visitor Logs - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Name</th><th>Expected Visit</th><th>Time In</th><th>Time Out</th><th>Purpose</th><th>Tenant Visited</th><th>Logged By</th><th>Status</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
+        DormEasePdfReport.printTableReport({
+            title: 'Visitor Logs',
+            subtitle: 'Current visitor log records',
+            columns: ['Name','Expected Visit','Time In','Time Out','Purpose','Tenant Visited','Logged By','Status'],
+            rows: rows
+        });
     }
 
     function exportArchiveCsv() {
@@ -1971,8 +1956,6 @@
             : archiveTab === 'cancelled' ? 'Cancelled On'
             : 'Rejected On';
 
-        var win = window.open('', '_blank');
-        if (!win) { showToast('PDF export was blocked. Please allow popups for this site.', 'error'); return; }
         var rows = data.map(function(v) {
             const logId      = v.visitor_id ?? v.id ?? 0;
             const tenantName = v.tenant?.full_name ?? v.tenant?.name ?? '';
@@ -1983,29 +1966,15 @@
                     ? (v.cancelled_at ? fmtDatePlain(v.cancelled_at) : logTime)
                     : logTime;
 
-            return '<tr>'
-                + '<td>VST-' + String(logId).padStart(3, '0') + '</td>'
-                + '<td>' + (v.visitor_name ?? '') + '</td>'
-                + '<td>' + (v.contact_no ?? '') + '</td>'
-                + '<td>' + (v.purpose ?? '') + '</td>'
-                + '<td>' + tenantName + '</td>'
-                + '<td>' + (v.arrival_time   ? fmtDatePlain(v.arrival_time)   : '') + '</td>'
-                + '<td>' + (v.departure_time ? fmtDatePlain(v.departure_time) : '') + '</td>'
-                + '<td>' + (v.status ?? '') + '</td>'
-                + '<td>' + footerDate + '</td>'
-                + '</tr>';
-        }).join('');
+            return ['VST-' + String(logId).padStart(3, '0'), v.visitor_name ?? '', v.contact_no ?? '', v.purpose ?? '', tenantName, v.arrival_time ? fmtDatePlain(v.arrival_time) : '', v.departure_time ? fmtDatePlain(v.departure_time) : '', v.status ?? '', footerDate];
+        });
 
-        win.document.write('<!DOCTYPE html><html><head><title>Visitor Logs Archive - ' + tabLabel + '</title>'
-            + '<style>body{font-family:sans-serif;font-size:12px;padding:24px}h2{color:#E8175D;margin-bottom:4px}p{color:#888;margin-bottom:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#fce8f1;color:#E8175D;padding:8px;text-align:left;font-size:11px;text-transform:uppercase}td{padding:7px 8px;border-bottom:1px solid #fce4ec;vertical-align:top}</style>'
-            + '</head><body>'
-            + '<h2>Sanctissimo Rosario Ladies Dormitory</h2>'
-            + '<p>Visitor Logs Archive - ' + tabLabel + ' - exported ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '</p>'
-            + '<table><thead><tr><th>Log ID</th><th>Visitor Name</th><th>Contact No.</th><th>Purpose</th><th>Tenant Visited</th><th>Time In</th><th>Time Out</th><th>Status</th><th>' + footerHead + '</th></tr></thead>'
-            + '<tbody>' + rows + '</tbody></table>'
-            + '</body></html>');
-        win.document.close();
-        win.print();
+        DormEasePdfReport.printTableReport({
+            title: 'Visitor Logs Archive - ' + tabLabel,
+            subtitle: 'Archived visitor log records',
+            columns: ['Log ID','Visitor Name','Contact No.','Purpose','Tenant Visited','Time In','Time Out','Status',footerHead],
+            rows: rows
+        });
     }
 
     function getMenuForDropdown(id) {
