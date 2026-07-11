@@ -19,6 +19,7 @@ class SettingsController extends Controller
             'visitor_checkout'   => false,
             'visitor_cancelled'  => true,
             'billing_overdue'    => true,
+            'billing_paid'       => true,
             'document_request'   => true,
             'announcement_new'   => false,
         ];
@@ -48,6 +49,7 @@ class SettingsController extends Controller
             'visitor_checkout',
             'visitor_cancelled',
             'billing_overdue',
+            'billing_paid',
             'document_request',
             'announcement_new',
         ];
