@@ -1707,6 +1707,8 @@
 @endsection
 
 @section('modals')
+@include('partials.confirm-popups')
+
 <div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
     <div class="action-loading-box">
         <span class="loading-logo-wrap">

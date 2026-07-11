@@ -1039,7 +1039,9 @@
     @endif
 </div>
 @endsection
+
 @section('modals')
+@include('partials.confirm-popups')
 
 <div id="ci-view-modal" onclick="if(event.target===this) closeCiModal()">
     <div class="ci-modal-box">
