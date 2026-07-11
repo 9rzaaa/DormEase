@@ -2,7 +2,6 @@
 
 @section('title', 'DormEase: Manage Staff')
 @section('page-title', 'Manage Staff')
-@include('resources/views/partials/_confirm-popups.blade.php')
 
 @section('styles')
 <style>
@@ -1276,6 +1275,7 @@
 @endsection
 
 @section('modals')
+@include('partials._confirm-popups')
 <div class="modal-overlay" id="pdf-preview-modal" style="z-index:9000;">
     <div class="modal" style="max-width:520px;width:95%;padding:1.25rem;">
         <div class="modal-header" style="margin-bottom:.85rem;">
@@ -1291,14 +1291,6 @@
         <div style="margin-top:.85rem;font-size:.76rem;color:var(--ink-muted);text-align:center;">
             Use the <strong>Download</strong> button above to save the PDF, or use your browser's built-in print option inside the preview.
         </div>
-    </div>
-</div>
-<div class="action-loading-overlay" id="action-loading" aria-live="polite" aria-hidden="true">
-    <div class="action-loading-box">
-        <span class="loading-logo-wrap">
-            <img src="{{ asset('images/logo.png') }}" alt="DormEase">
-        </span>
-        <span id="action-loading-text">Please wait...</span>
     </div>
 </div>
 <div class="status-legend-popup" id="status-legend-popup" onmouseenter="clearTimeout(statusLegendHideTimer)" onmouseleave="scheduleHideStatusLegend()">
@@ -1718,40 +1710,6 @@
 @section('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-    function showActionLoading(message) {
-        var overlay = document.getElementById('action-loading');
-        document.getElementById('action-loading-text').textContent = message || 'Please wait...';
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-    }
-
-    function hideActionLoading() {
-        var overlay = document.getElementById('action-loading');
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-    }
-
-    function setFormLoading(form, message) {
-        form.querySelectorAll('button[type="submit"]').forEach(function(btn) {
-            btn.textContent = 'Please wait...';
-            btn.disabled    = true;
-            btn.classList.add('is-loading');
-        });
-        form.querySelectorAll('button:not([type="submit"])').forEach(function(btn) {
-            btn.disabled = true;
-            btn.classList.add('is-loading');
-        });
-        showActionLoading(message);
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('form[data-loading-message]').forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                if (e.defaultPrevented) return;
-                setFormLoading(this, this.dataset.loadingMessage || 'Please wait...');
-            });
-        });
-    });
 
     var staffList  = @json($staffList);
     var ADMIN_CAP = 2;
