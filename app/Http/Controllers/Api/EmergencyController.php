@@ -854,7 +854,7 @@ class EmergencyController extends Controller
 
         $report = EmergencyReport::create([
             'tenant_id' => $tenant?->tenant_id,
-            'is_panic_alert' => $isPanicAlert,
+            'is_panic_alert' => $isPanicAlert || ($classification['emergency_type'] === 'Panic Alert'),
             'emergency_type' => $classification['emergency_type'],
             'urgency_level' => $classification['urgency_level'],
             'input_type' => $validated['input_type'] ?? 'text',

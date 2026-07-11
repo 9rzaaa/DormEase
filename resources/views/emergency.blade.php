@@ -3004,9 +3004,27 @@
         document.getElementById('kw-summary-bar').classList.toggle('open', kwSummaryOpen);
     }
 
+    function getKeywordStrings(keywords) {
+        if (!keywords) return [];
+        if (Array.isArray(keywords)) {
+            return keywords;
+        }
+        const result = [];
+        for (const key in keywords) {
+            const val = keywords[key];
+            if (!isNaN(key) && typeof val === 'string') {
+                result.push(val);
+            } else {
+                result.push(key);
+            }
+        }
+        return result;
+    }
+
     function renderKwSummary() {
         const refCount = Object.values(hardcodedRules.emergency_rules || {}).reduce(function(sum, rule) {
-            return sum + (rule.keywords ? rule.keywords.length : 0);
+            const kList = getKeywordStrings(rule.keywords);
+            return sum + kList.length;
         }, 0);
         const trainedCount = trainedKeywords.length;
         const totalCount = refCount + trainedCount;
@@ -3045,11 +3063,12 @@
         const list = document.getElementById('kw-list');
         const q = normalizeFilterValue(document.getElementById('kw-search').value);
         const rules = hardcodedRules.emergency_rules || {};
-        const types = Object.keys(rules).filter(function(t) { return t !== 'Other'; });
+        const types = Object.keys(rules).filter(function(t) { return t !== 'Unknown'; });
 
         const groupsHtml = types.map(function(type) {
             const rule = rules[type];
-            const keywords = (rule.keywords || []).filter(function(k) {
+            const kList = getKeywordStrings(rule.keywords);
+            const keywords = kList.filter(function(k) {
                 return !q || k.toLowerCase().includes(q) || type.toLowerCase().includes(q);
             });
             if (q && keywords.length === 0) return '';
@@ -3202,9 +3221,10 @@
         const rules = hardcodedRules.emergency_rules || {};
         const lower = value.toLowerCase();
         for (const type in rules) {
-            if (type === 'Other') continue;
+            if (type === 'Unknown') continue;
             const rule = rules[type];
-            if ((rule.keywords || []).some(function(k) { return k.toLowerCase() === lower; })) {
+            const kList = getKeywordStrings(rule.keywords);
+            if (kList.some(function(k) { return k.toLowerCase() === lower; })) {
                 return { type: type, urgency: rule.urgency };
             }
         }

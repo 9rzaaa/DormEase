@@ -68,7 +68,7 @@ class MaintenanceController extends Controller
                 'walang tubig',
                 'walang tulo',
             ],
-            'exclude' => ['electric', 'power', 'light', 'breaker', 'fire', 'smoke'],
+            'exclude' => ['electric', 'power', 'light', 'breaker'],
         ],
         'electrical' => [
             'priority' => 'urgent',
