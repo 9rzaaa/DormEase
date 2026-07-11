@@ -424,9 +424,11 @@ tbody tr:hover { background: var(--soft-bg); }
 .tenant-section-bar-active { background: linear-gradient(90deg, #1f9d69, #4ecb8d); }
 .tenant-section-bar-pending { background: linear-gradient(90deg, #f0c040, #ffd84d); }
 
-.tv-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1.5px solid var(--petal); }
+.tv-header { display: flex; align-items: flex-start; gap: 1rem; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1.5px solid var(--petal); }
 .tv-avatar { width: 58px; height: 58px; border-radius: 50%; background: var(--gradient-pink); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.3rem; letter-spacing: .02em; flex-shrink: 0; box-shadow: 0 8px 20px rgba(232,23,93,.25); }
 .tv-header-info { flex: 1; min-width: 0; }
+.tv-header-delete { margin-left: auto; flex-shrink: 0; border-color: #ffc2ce; }
+.tv-header-delete:hover { border-color: #e04867; background: #fff0f2; box-shadow: 0 6px 14px rgba(224,72,103,.18); }
 .tv-name { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -.01em; line-height: 1.25; }
 .tv-account-id { font-size: .78rem; color: var(--bright-pink); font-family: monospace; font-weight: 700; margin-top: .2rem; letter-spacing: .03em; }
 .tv-header-badges { display: flex; gap: .4rem; margin-top: .55rem; flex-wrap: wrap; }
@@ -3810,6 +3812,7 @@ function viewTenant(t) {
                 + '<div class="tv-account-id">' + (t.account_id || '\u2014') + '</div>'
                 + '<div class="tv-header-badges">' + statusBadge(t.status) + (t.is_temp_password && t.status !== 'reserved' ? tempBadge(true) : '') + vacationBadge(t.is_on_vacation) + '</div>'
             + '</div>'
+            + '<button class="act-btn tv-header-delete" title="Delete" onclick="openDeleteFromView(' + t.tenant_id + ', \'' + tenantName + '\')"><img src="{{ asset("icons/delete.png") }}" class="icon-sm" alt="Delete"></button>'
         + '</div>'
         + '<div class="modal-section-title">Personal Information</div>'
         + '<div class="tv-grid">'
@@ -3841,8 +3844,7 @@ function viewTenant(t) {
             '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
             + (t.status === 'reserved'
                 ? '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>'
-                : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>')
-            + '<button class="btn-submit" onclick="openDeleteFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.25);">Delete</button>';
+                : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>');
     }
     openModal('view-modal');
 }
