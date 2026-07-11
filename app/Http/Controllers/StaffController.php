@@ -8,6 +8,7 @@ use App\Models\StaffAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
@@ -50,6 +51,10 @@ class StaffController extends Controller
                 'email'          => $s->email,
                 'role'           => $s->role,
                 'contact_number' => $s->contact_number,
+                'staff_address'   => $s->staff_address,
+                'valid_id_path'   => $s->valid_id_path,
+                'valid_id_url'    => $s->valid_id_path ? Storage::disk('public')->url($s->valid_id_path) : null,
+                'profile_picture' => $s->profile_picture,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
                 'is_on_leave'    => $s->is_on_leave,
@@ -70,6 +75,10 @@ class StaffController extends Controller
                 'email'          => $s->email,
                 'role'           => $s->role,
                 'contact_number' => $s->contact_number,
+                'staff_address'   => $s->staff_address,
+                'valid_id_path'   => $s->valid_id_path,
+                'valid_id_url'    => $s->valid_id_path ? Storage::disk('public')->url($s->valid_id_path) : null,
+                'profile_picture' => $s->profile_picture,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
                 'is_on_leave'    => $s->is_on_leave,
@@ -91,6 +100,10 @@ class StaffController extends Controller
                 'email'             => $r->email,
                 'role'              => $r->role,
                 'contact_number'    => $r->contact_number,
+                'staff_address'      => $r->staff_address,
+                'valid_id_path'      => $r->valid_id_path,
+                'valid_id_url'       => $r->valid_id_path ? Storage::disk('public')->url($r->valid_id_path) : null,
+                'profile_picture'    => $r->profile_picture,
                 'shift_schedule'    => $r->shift_schedule,
                 'duty_status'       => $r->duty_status,
                 'is_on_leave'       => $r->is_on_leave,
@@ -163,6 +176,10 @@ class StaffController extends Controller
                 'email'          => $s->email,
                 'role'           => $s->role,
                 'contact_number' => $s->contact_number,
+                'staff_address'   => $s->staff_address,
+                'valid_id_path'   => $s->valid_id_path,
+                'valid_id_url'    => $s->valid_id_path ? Storage::disk('public')->url($s->valid_id_path) : null,
+                'profile_picture' => $s->profile_picture,
                 'shift_schedule' => $s->shift_schedule,
                 'duty_status'    => $s->duty_status,
                 'is_on_leave'    => $s->is_on_leave,
@@ -203,9 +220,14 @@ class StaffController extends Controller
             'email'          => 'required|email|unique:staff,email',
             'role'           => 'required|string|max:50',
             'contact_number' => ['nullable', 'string', 'regex:/^09\d{2}-\d{3}-\d{4}$/', 'unique:staff,contact_number'],
+            'staff_address'  => 'required|string|max:500',
+            'valid_id'       => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
+            'staff_photo'    => 'required|image|mimes:jpg,jpeg,png|max:5120',
             'shift_schedule' => 'nullable|string|max:50',
         ], [
             'contact_number.unique' => 'This mobile number is already registered to another staff member.',
+            'valid_id.required'      => 'Please upload at least one valid ID.',
+            'staff_photo.required'   => 'Please upload a picture of the staff.',
         ]);
 
         if ($request->role === 'admin') {
@@ -228,6 +250,8 @@ class StaffController extends Controller
         $tempPassword = 'Staff@' . $suffix;
 
         $shiftTimes = $this->shiftTimes($request->shift_schedule);
+        $validIdPath = $request->file('valid_id')->store('staff-valid-ids', 'public');
+        $staffPhotoPath = $request->file('staff_photo')->store('staff-photos', 'public');
 
         $staff = Staff::create([
             'staff_code'       => 'ST-' . str_pad((Staff::max('staff_id') ?? 0) + 1, 3, '0', STR_PAD_LEFT),
@@ -238,6 +262,9 @@ class StaffController extends Controller
             'is_temp_password' => true,
             'role'             => $request->role,
             'contact_number'   => $request->contact_number,
+            'staff_address'    => $request->staff_address,
+            'valid_id_path'    => $validIdPath,
+            'profile_picture'  => Storage::disk('public')->url($staffPhotoPath),
             'shift_schedule'   => $request->shift_schedule,
             'shift_start'      => $shiftTimes['shift_start'],
             'shift_end'        => $shiftTimes['shift_end'],
@@ -275,6 +302,7 @@ class StaffController extends Controller
                 'regex:/^09\d{2}-\d{3}-\d{4}$/',
                 Rule::unique('staff', 'contact_number')->ignore($staff->staff_id, 'staff_id'),
             ],
+            'staff_address'  => 'nullable|string|max:500',
             'shift_schedule' => 'nullable|string|max:50',
             'duty_status'    => 'nullable|string|max:50',
             'is_active'      => 'nullable|boolean',
@@ -318,6 +346,7 @@ class StaffController extends Controller
             'email'          => $request->email,
             'role'           => $request->role,
             'contact_number' => $request->contact_number,
+            'staff_address'  => $request->staff_address,
             'shift_schedule' => $request->shift_schedule,
             'shift_start'    => $shiftTimes['shift_start'],
             'shift_end'      => $shiftTimes['shift_end'],
@@ -427,6 +456,9 @@ class StaffController extends Controller
             'email'             => $staff->email,
             'role'              => $staff->role,
             'contact_number'    => $staff->contact_number,
+            'staff_address'      => $staff->staff_address,
+            'valid_id_path'      => $staff->valid_id_path,
+            'profile_picture'    => $staff->profile_picture,
             'shift_schedule'    => $staff->shift_schedule,
             'duty_status'       => $staff->duty_status,
             'is_on_leave'       => $staff->is_on_leave,
