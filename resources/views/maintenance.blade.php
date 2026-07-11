@@ -2319,9 +2319,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="action-btn" title="View" onclick="viewReq(_rowDataMap[${r.id}])">
                         <img src="${eyeIcon}" alt="View">
                     </button>
-                    <button class="action-btn" title="Edit" onclick="openEditModal(_rowDataMap[${r.id}])">
-                        <img src="${editIcon}" alt="Edit">
-                    </button>
                     <button class="action-btn" title="Delete" onclick="openDeleteModal(${r.id}, '#REQ-${String(r.id).padStart(3,'0')}')">
                         <img src="${deleteIcon}" alt="Delete">
                     </button>
