@@ -2875,9 +2875,6 @@ function renderDocTable() {
                         <button class="act-btn" title="View" onclick='viewDoc(${JSON.stringify(r)})'>
                             <img src="${eyeIcon}" alt="View">
                         </button>
-                        <button class="act-btn" title="Review" onclick='openUpdateDoc(${JSON.stringify(r)})'>
-                            <img src="${editIcon}" alt="Review">
-                        </button>
                         <button class="act-btn danger" title="Archive" onclick="promptDeleteDoc(${r.doc_request_id}, '#FSB-${String(r.doc_request_id).padStart(3,'0')}')">
                             <img src="${deleteIcon}" alt="Archive">
                         </button>
@@ -3155,9 +3152,6 @@ function renderReqTable() {
                 <div class="action-group">
                     <button class="act-btn" title="View" onclick='viewReq(${JSON.stringify(r)})'>
                         <img src="${eyeIcon}" alt="View">
-                    </button>
-                    <button class="act-btn" title="Update" onclick='openUpdateReq(${JSON.stringify(r)})'>
-                        <img src="${editIcon}" alt="Update">
                     </button>
                     <button class="act-btn danger" title="Archive" onclick="promptDeleteReq(${r.doc_request_id}, '#DRQ-${String(r.doc_request_id).padStart(3,'0')}')">
                         <img src="${deleteIcon}" alt="Archive">
