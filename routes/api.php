@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\NotificationController;
 
 // public route
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/webhooks/paymongo', [BillingController::class, 'handlePayMongoWebhook']);
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -56,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // billing
         Route::post('/water-bill/pay', [BillingController::class, 'tenantPay']);
+        Route::post('/water-bill/checkout', [BillingController::class, 'createCheckoutSession']);
+
 
         // document request
         Route::get('/document-requests', [DocumentRequestController::class, 'index']);

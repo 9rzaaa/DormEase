@@ -11,6 +11,8 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class BillingController extends Controller
@@ -226,7 +228,7 @@ class BillingController extends Controller
 
         NotificationHelper::sendToAll(
             type: 'billing_overdue',
-            message: $isCash 
+            message: $isCash
                 ? "{$tenant->first_name} {$tenant->last_name} submitted a cash payment request for water billing."
                 : "{$tenant->first_name} {$tenant->last_name} submitted payment proof for water billing.",
             ref_id: $billing->billing_id,
@@ -234,10 +236,217 @@ class BillingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $isCash 
-                ? 'Cash payment request submitted for verification.' 
+            'message' => $isCash
+                ? 'Cash payment request submitted for verification.'
                 : 'Payment proof submitted for verification.',
             'status' => 'Pending',
         ]);
+    }
+
+    public function createCheckoutSession(Request $request)
+    {
+        $request->validate([
+            'billing_id' => 'required|integer',
+        ]);
+
+        /** @var Tenant $tenant */
+        $tenant = Auth::user();
+
+        if (!$tenant || !$tenant->is_active) {
+            return response()->json(['message' => 'Tenant not found.'], 404);
+        }
+
+        $billing = WaterBilling::where('billing_id', $request->billing_id)
+            ->where('tenant_id', $tenant->tenant_id)
+            ->first();
+
+        if (!$billing) {
+            return response()->json(['message' => 'Billing record not found.'], 404);
+        }
+
+        if (strtolower($billing->payment_status) === 'paid') {
+            return response()->json(['message' => 'Already verified as paid.'], 422);
+        }
+
+        $amount = (float) $billing->room_share;
+        $totalPayable = round($amount / 0.9866, 2);
+        $surcharge = round($totalPayable - $amount, 2);
+
+        $totalPayableCentavos = (int) round($totalPayable * 100);
+        $surchargeCentavos = (int) round($surcharge * 100);
+        $baseCentavos = (int) round($amount * 100);
+
+        $secretKey = config('services.paymongo.secret_key');
+        if (empty($secretKey) || $secretKey === 'sk_test_placeholder_key') {
+            return response()->json(['message' => 'PayMongo gateway secret key is not configured.'], 500);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic ' . base64_encode($secretKey . ':'),
+            ])->post('https://api.paymongo.com/v1/checkout_sessions', [
+                'data' => [
+                    'attributes' => [
+                        'billing' => [
+                            'name' => $tenant->first_name . ' ' . $tenant->last_name,
+                            'email' => $tenant->email,
+                            'phone' => $tenant->contact_number ?? '',
+                        ],
+                        'line_items' => [
+                            [
+                                'amount' => $baseCentavos,
+                                'currency' => 'PHP',
+                                'name' => 'Water Bill Room Share - ' . $billing->billing_month,
+                                'quantity' => 1,
+                            ],
+                            [
+                                'amount' => $surchargeCentavos,
+                                'currency' => 'PHP',
+                                'name' => 'Payment Gateway Surcharge (1.34% QR Ph)',
+                                'quantity' => 1,
+                            ]
+                        ],
+                        'payment_method_types' => ['qrph'],
+                        'success_url' => 'dormease://payment-success',
+                        'cancel_url' => 'dormease://payment-cancelled',
+                        'send_email_receipt' => true,
+                        'show_description' => true,
+                        'description' => 'Water Bill Payment for Floor ' . $billing->floor . ', Period ' . $billing->billing_month,
+                    ]
+                ]
+            ]);
+
+            if ($response->failed()) {
+                Log::error('PayMongo Checkout Session Creation Failed', [
+                    'body' => $response->body(),
+                    'status' => $response->status()
+                ]);
+                return response()->json([
+                    'message' => 'Unable to create payment session. Please try again later.'
+                ], 502);
+            }
+
+            $sessionData = $response->json()['data'];
+            $sessionId = $sessionData['id'];
+            $checkoutUrl = $sessionData['attributes']['checkout_url'];
+
+            $billing->update([
+                'payment_reference_code' => $sessionId,
+                'payment_status' => 'pending',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'checkout_url' => $checkoutUrl,
+                'session_id' => $sessionId,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('PayMongo Checkout API Exception', [
+                'exception' => $e->getMessage()
+            ]);
+            return response()->json(['message' => 'Server error connecting to payment gateway.'], 500);
+        }
+    }
+
+    public function handlePayMongoWebhook(Request $request)
+    {
+        $signature = $request->header('Paymongo-Signature');
+        $webhookSigKey = config('services.paymongo.webhook_sig');
+
+        if (!$signature || empty($webhookSigKey) || $webhookSigKey === 'whsec_placeholder_key') {
+            Log::warning('PayMongo Webhook Rejected: Missing signature or configuration.');
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $parts = explode(',', $signature);
+        $timestamp = null;
+        $signatureVal = null;
+        foreach ($parts as $part) {
+            if (strpos($part, 't=') === 0) {
+                $timestamp = substr($part, 2);
+            } elseif (strpos($part, 'te=') === 0) {
+                $signatureVal = substr($part, 3);
+            }
+        }
+
+        if (!$timestamp || !$signatureVal) {
+            Log::warning('PayMongo Webhook Rejected: Invalid signature format.');
+            return response()->json(['message' => 'Invalid signature format'], 400);
+        }
+
+        $payload = $request->getContent();
+        $comparisonSignature = hash_hmac('sha256', $timestamp . '.' . $payload, $webhookSigKey);
+
+        if (!hash_equals($signatureVal, $comparisonSignature)) {
+            Log::warning('PayMongo Webhook Rejected: Signature mismatch.', [
+                'expected' => $comparisonSignature,
+                'received' => $signatureVal,
+            ]);
+            return response()->json(['message' => 'Signature mismatch'], 401);
+        }
+
+        $data = $request->json()->all();
+        $event = $data['data']['attributes']['type'] ?? '';
+
+        Log::info('PayMongo Webhook Received', ['event' => $event]);
+
+        if ($event === 'checkout_session.payment.paid') {
+            $checkoutSession = $data['data']['attributes']['data'] ?? null;
+            if ($checkoutSession) {
+                $sessionId = $checkoutSession['id'];
+                $payments = $checkoutSession['attributes']['payments'] ?? [];
+                $paymentDetails = !empty($payments) ? $payments[0] : null;
+                $paymentId = $paymentDetails['id'] ?? 'PAY-' . strval(uniqid());
+                $amountPaidCentavos = $paymentDetails['attributes']['amount'] ?? 0;
+                $amountPaid = $amountPaidCentavos / 100;
+
+                $billing = WaterBilling::where('payment_reference_code', $sessionId)->first();
+
+                if ($billing) {
+                    $billing->update([
+                        'payment_status' => 'paid',
+                        'payment_submitted_at' => $billing->payment_submitted_at ?? now(),
+                    ]);
+
+                    Payment::updateOrCreate(
+                        [
+                            'billing_id' => $billing->billing_id,
+                        ],
+                        [
+                            'tenant_id' => $billing->tenant_id,
+                            'confirmed_by' => null, // null means automated system verified it
+                            'payment_method' => 'QR Ph (PayMongo)',
+                            'amount_paid' => $billing->room_share, // Base amount we receive
+                            'proof_of_payment' => null,
+                            'reference_number' => $paymentId,
+                            'payment_date' => now(),
+                            'status' => 'success',
+                        ]
+                    );
+
+                    $tenant = Tenant::find($billing->tenant_id);
+                    $tenantName = $tenant ? $tenant->first_name . ' ' . $tenant->last_name : 'Tenant';
+
+                    NotificationHelper::sendToAll(
+                        type: 'billing_paid',
+                        message: "Water bill payment of ₱" . number_format($billing->room_share, 2) . " from {$tenantName} was successfully automated & paid.",
+                        ref_id: $billing->billing_id,
+                    );
+
+                    Log::info('PayMongo Automated Verification Successful', [
+                        'billing_id' => $billing->billing_id,
+                        'session_id' => $sessionId
+                    ]);
+                } else {
+                    Log::warning('PayMongo Webhook: Billing record not found for session ID.', [
+                        'session_id' => $sessionId
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['success' => true]);
     }
 }
