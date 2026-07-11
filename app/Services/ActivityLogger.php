@@ -80,10 +80,85 @@ class ActivityLogger
 
     private static function description(string $module, string $action, string $routeName, string $path): string
     {
-        $label = Str::of($module)->replace(['-', '_'], ' ')->title();
-        $verb = Str::of($action)->replace('_', ' ')->title();
+        $target = self::targetLabel($module, $routeName, $path);
+        $verb = self::actionLabel($action);
 
-        return trim("{$verb} in {$label}" . ($routeName ? " ({$routeName})" : " ({$path})"));
+        return trim("{$verb} {$target}");
+    }
+
+    private static function actionLabel(string $action): string
+    {
+        return match ($action) {
+            'create' => 'Created',
+            'update' => 'Updated',
+            'delete' => 'Deleted',
+            'archive' => 'Archived',
+            'restore' => 'Restored',
+            'reactivate' => 'Reactivated',
+            'reset_password' => 'Reset password for',
+            'checkout' => 'Checked out',
+            'timein', 'time_in' => 'Timed in',
+            'time_out' => 'Timed out',
+            'acknowledge' => 'Acknowledged',
+            'clear_now' => 'Cleared',
+            'read_all' => 'Marked all read in',
+            'notify_tenant' => 'Notified tenant from',
+            'request_resubmission' => 'Requested resubmission for',
+            'resubmit' => 'Resubmitted',
+            default => Str::of($action)->replace('_', ' ')->title()->toString(),
+        };
+    }
+
+    private static function targetLabel(string $module, string $routeName, string $path): string
+    {
+        if (str_contains($routeName, 'reset-password')) {
+            return str_starts_with($routeName, 'staff.') ? 'staff account' : 'tenant account';
+        }
+
+        if (str_contains($routeName, 'attendance.clear')) {
+            return 'staff attendance logs';
+        }
+
+        if (str_contains($routeName, 'keywords')) {
+            return str_contains($routeName, 'emergency') ? 'emergency keyword' : 'maintenance keyword';
+        }
+
+        if (str_contains($routeName, 'terms')) {
+            return str_contains($routeName, 'emergency') ? 'emergency term' : 'maintenance term';
+        }
+
+        $labels = [
+            'auth' => 'session',
+            'tenants' => 'tenant record',
+            'staff' => 'staff record',
+            'rooms' => 'room record',
+            'billing' => 'billing record',
+            'visitors' => 'visitor log',
+            'announcements' => 'announcement',
+            'documents' => 'document',
+            'document_requests' => 'document request',
+            'downloadable_forms' => 'downloadable form',
+            'maintenance' => 'maintenance request',
+            'emergency' => 'emergency report',
+            'profile' => 'profile',
+            'settings' => 'settings',
+            'notifications' => 'notifications',
+            'contact_inquiries' => 'contact inquiry',
+            'frontdesk' => 'front desk record',
+            'admin' => 'admin record',
+        ];
+
+        $module = str_replace('-', '_', $module);
+
+        if ($module === 'document-requests') {
+            $module = 'document_requests';
+        }
+
+        if ($module === 'downloadable-forms') {
+            $module = 'downloadable_forms';
+        }
+
+        return $labels[$module] ?? Str::of($module ?: $path)->replace(['-', '_'], ' ')->lower()->append(' record')->toString();
     }
 
     private static function normalize(string $value): string

@@ -37,11 +37,16 @@ class ActivityLogController extends Controller
 
         $logs = $query->paginate(25)->withQueryString();
 
+        $baseQuery = ActivityLog::query();
+
         return view('activity-logs', [
             'logs' => $logs,
             'modules' => ActivityLog::select('module')->distinct()->orderBy('module')->pluck('module'),
             'actions' => ActivityLog::select('action')->distinct()->orderBy('action')->pluck('action'),
             'staffOptions' => Staff::orderBy('first_name')->orderBy('last_name')->get(['staff_id', 'first_name', 'last_name', 'role']),
+            'totalLogs' => (clone $baseQuery)->count(),
+            'todayLogs' => (clone $baseQuery)->whereDate('created_at', today())->count(),
+            'staffActors' => (clone $baseQuery)->whereNotNull('staff_id')->distinct('staff_id')->count('staff_id'),
         ]);
     }
 }
