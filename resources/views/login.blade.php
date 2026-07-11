@@ -1467,7 +1467,6 @@
                         type="button"
                         class="toggle-pw"
                         id="pw-toggle"
-                        onclick="togglePw()"
                         aria-label="Toggle password visibility"
                     >
                         <img
@@ -1754,6 +1753,22 @@
         if (!pwInput || !normal || !cover) return;
         pwInput.addEventListener('focus', function () { normal.style.opacity = '0'; cover.style.opacity = '1'; });
         pwInput.addEventListener('blur',  function () { normal.style.opacity = '1'; cover.style.opacity = '0'; });
+    })();
+
+    (function () {
+        var toggleBtn = document.getElementById('pw-toggle');
+        var pwField   = document.getElementById('password');
+        var eyeIcon   = document.getElementById('pw-eye-icon');
+        if (!toggleBtn || !pwField || !eyeIcon) return;
+
+        toggleBtn.addEventListener('click', function () {
+            var show = pwField.type === 'password';
+            pwField.type   = show ? 'text' : 'password';
+            eyeIcon.src    = show
+                ? "{{ asset('icons/eye-off.png') }}"
+                : "{{ asset('icons/eye.png') }}";
+            toggleBtn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        });
     })();
 
     var fpAdminEmail = '';
