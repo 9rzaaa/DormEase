@@ -25,6 +25,7 @@ use App\Http\Controllers\ArchiveSettingsController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\PublicContactController;
 use App\Http\Controllers\ContactInquiryController;
+use App\Http\Controllers\ActivityLogController;
 
 // public pages
 Route::get('/', fn() => view('public.home'))->name('home');
@@ -127,6 +128,11 @@ Route::post('/login', function () {
         session()->flash('prompt_temp_password', true);
     }
 
+    \App\Services\ActivityLogger::log('auth', 'login', "{$user->first_name} {$user->last_name} logged in.", [
+        'selected_role' => $role,
+        'duty_status' => $dutyStatus,
+    ], request(), $user);
+
     return in_array($user->role, $staffRoles, true)
         ? redirect()->route('frontdesk.dashboard')
         : redirect()->route('dashboard');
@@ -142,6 +148,8 @@ Route::post('/logout', function () {
             ->latest('login_at')
             ->first()
             ?->update(['logout_at' => now()]);
+
+        \App\Services\ActivityLogger::log('auth', 'logout', "{$user->first_name} {$user->last_name} logged out.", [], request(), $user);
     }
     Auth::guard('staff')->logout();
     request()->session()->invalidate();
@@ -155,11 +163,12 @@ Route::post('/forgot-password/verify-master', [ForgotPasswordController::class, 
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'reset'])->name('forgot-password.reset')->middleware('throttle:5,1');
 
 // protected (staff)
-Route::middleware(['auth:staff', 'staff.active', 'force.temp.password', 'no.back'])->group(function () {
+Route::middleware(['auth:staff', 'staff.active', 'force.temp.password', 'no.back', 'activity.log'])->group(function () {
 
     Route::middleware('staffrole:admin,secretary')->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
         // tenants
         Route::get('/tenants', [TenantController::class, 'index'])->name('tenants.index');
