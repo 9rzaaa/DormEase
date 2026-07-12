@@ -2015,8 +2015,8 @@
         </div>
         <div id="view-content" style="padding:1.2rem 1.5rem;max-height:55vh;overflow-y:auto;"></div>
         <div class="modal-actions" style="margin:0;padding:1rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);position:sticky;bottom:0;z-index:1;display:flex;justify-content:space-between;">
-            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
     </div>
 </div>
@@ -2079,16 +2079,16 @@
             </div>
 
             <div style="padding:.9rem 1.5rem;border-top:1.5px solid var(--baby-pink);background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:.6rem;">
-                <button type="submit"
-                    style="padding:.6rem 1.6rem;border-radius:10px;border:none;background:var(--gradient-pink);color:#fff;font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);box-shadow:0 4px 14px rgba(232,23,93,.3);transition:.2s;"
-                    onmouseover="this.style.boxShadow='0 6px 18px rgba(232,23,93,.45)'"
-                    onmouseout="this.style.boxShadow='0 4px 14px rgba(232,23,93,.3)'"
-                >Save Changes</button>
                 <button type="button" onclick="closeModal('edit-modal')"
                     style="padding:.6rem 1.4rem;border-radius:10px;border:1.5px solid var(--baby-pink);background:var(--white);color:var(--hot-pink);font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:.2s;"
                     onmouseover="this.style.borderColor='var(--bright-pink)'"
                     onmouseout="this.style.borderColor='var(--baby-pink)'"
                 >Cancel</button>
+                <button type="submit"
+                    style="padding:.6rem 1.6rem;border-radius:10px;border:none;background:var(--gradient-pink);color:#fff;font-size:.875rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);box-shadow:0 4px 14px rgba(232,23,93,.3);transition:.2s;"
+                    onmouseover="this.style.boxShadow='0 6px 18px rgba(232,23,93,.45)'"
+                    onmouseout="this.style.boxShadow='0 4px 14px rgba(232,23,93,.3)'"
+                >Save Changes</button>
             </div>
         </form>
     </div>
