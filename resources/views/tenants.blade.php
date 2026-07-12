@@ -3838,6 +3838,7 @@ function viewTenant(t) {
     if (viewPhotoImg) {
         viewPhotoImg.onclick = function() { openPhotoLightbox(viewPhotoImg.src); };
     }
+
 var viewActions = document.getElementById('view-actions');
     if (viewActions) {
         viewActions.innerHTML =
@@ -3846,6 +3847,8 @@ var viewActions = document.getElementById('view-actions');
                 : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>')
             + '<button class="btn-submit" onclick="switchToEdit()">Edit</button>';
     }
+    openModal('view-modal');
+}
 
 function switchToEdit() {
     if (currentTenant) {
