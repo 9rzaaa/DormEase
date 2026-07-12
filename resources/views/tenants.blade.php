@@ -3838,16 +3838,14 @@ function viewTenant(t) {
     if (viewPhotoImg) {
         viewPhotoImg.onclick = function() { openPhotoLightbox(viewPhotoImg.src); };
     }
-    var viewActions = document.getElementById('view-actions');
+var viewActions = document.getElementById('view-actions');
     if (viewActions) {
         viewActions.innerHTML =
-            '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
-            + (t.status === 'reserved'
-                ? '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>'
-                : '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>');
+            (t.status === 'reserved'
+                ? '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>'
+                : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>')
+            + '<button class="btn-submit" onclick="switchToEdit()">Edit</button>';
     }
-    openModal('view-modal');
-}
 
 function switchToEdit() {
     if (currentTenant) {
