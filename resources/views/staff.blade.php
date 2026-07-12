@@ -1293,6 +1293,14 @@
         </div>
     </div>
 </div>
+
+<div class="modal-overlay" id="id-lightbox-modal" style="z-index:9500;background:rgba(20,10,16,.82);">
+    <div style="position:relative;max-width:90vw;max-height:90vh;">
+        <button onclick="closeModal('id-lightbox-modal')" style="position:absolute;top:-42px;right:0;width:34px;height:34px;border-radius:8px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#x2715;</button>
+        <img id="id-lightbox-img" src="" alt="Uploaded ID" style="max-width:90vw;max-height:90vh;border-radius:12px;display:block;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+    </div>
+</div>
+
 <div class="status-legend-popup" id="status-legend-popup" onmouseenter="clearTimeout(statusLegendHideTimer)" onmouseleave="scheduleHideStatusLegend()">
     <div class="slg-title">Duty Status</div>
     <div class="slg-row"><span class="badge badge-onduty">On Duty</span><span class="slg-desc">Staff member is currently active and on shift.</span></div>
@@ -1540,8 +1548,8 @@
         </div>
         <div id="view-content" style="padding:1.25rem 1.5rem 0;overflow-y:auto;flex:1;"></div>
         <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
-            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
         </div>
     </div>
 </div>
@@ -1700,9 +1708,9 @@
         <form method="POST" id="delete-form" action="" data-loading-message="Deleting staff...">
             @csrf
             @method('DELETE')
-            <div class="modal-actions">
-                <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
-                <button type="submit" class="btn-submit" style="background:var(--red);">Delete</button>
+            <div class="modal-actions" style="flex-direction:column;gap:.6rem;">
+                <button type="button" class="btn-cancel" style="width:100%;" onclick="closeModal('delete-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" style="background:var(--red);width:100%;">Delete</button>
             </div>
         </form>
     </div>
@@ -1898,7 +1906,7 @@
         ? '<div style="display:flex;justify-content:center;margin-bottom:1rem;"><img src="' + s.profile_picture + '" alt="Staff photo" style="width:96px;height:96px;border-radius:14px;object-fit:cover;border:2px solid var(--baby-pink);"></div>'
         : '';
     var validIdHtml = s.valid_id_url
-        ? '<a href="' + s.valid_id_url + '" target="_blank" style="color:var(--hot-pink);font-weight:800;text-decoration:none;">View uploaded ID</a>'
+        ? '<a href="javascript:void(0)" onclick="openIdLightbox(\'' + s.valid_id_url + '\')" style="color:var(--hot-pink);font-weight:800;text-decoration:none;">View uploaded ID</a>'
         : 'Not uploaded';
     currentStaff = s;
     document.getElementById('view-modal-name').textContent = s.first_name + ' ' + s.last_name;
@@ -2303,6 +2311,11 @@
             var submitBtn = document.getElementById('add-staff-submit-btn');
             if (submitBtn) submitBtn.disabled = true;
         }
+    }
+
+    function openIdLightbox(url) {
+        document.getElementById('id-lightbox-img').src = url;
+        openModal('id-lightbox-modal');
     }
 
     document.querySelectorAll('.modal-overlay').forEach(function(m) {
