@@ -1541,15 +1541,17 @@
                     <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;" id="view-modal-role-sub">—</div>
                 </div>
             </div>
-            <button id="view-modal-delete-btn" onclick="openDeleteFromView()" title="Delete staff" style="position:absolute;top:1rem;right:3.4rem;width:30px;height:30px;border-radius:8px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;" onmouseover="this.style.background='#e04867';this.style.borderColor='#e04867';" onmouseout="this.style.background='rgba(255,255,255,.14)';this.style.borderColor='rgba(255,255,255,.4)';">
-                <img src="{{ asset('icons/delete.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) invert(1);" alt="Delete">
-            </button>
             <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
         <div id="view-content" style="padding:1.25rem 1.5rem 0;overflow-y:auto;flex:1;"></div>
-        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
-            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
+        <div style="padding:1rem 1.5rem 0;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
+            <div class="modal-actions" style="margin-top:0;gap:.55rem;flex-wrap:wrap;justify-content:space-between;">
+                <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+                <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
+            </div>
+        </div>
+        <div style="padding:.7rem 1.5rem 1.5rem;flex-shrink:0;">
+            <button type="button" onclick="openDeleteFromView()" style="width:100%;padding:.6rem 1.4rem;border-radius:9px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.87rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff';" onmouseout="this.style.background='#fff0f3';this.style.color='var(--red)';">Delete Staff</button>
         </div>
     </div>
 </div>
