@@ -738,20 +738,18 @@ class EmergencyController extends Controller
         $rawDescription = trim($validated['description'] ?? '');
 
         if ($rawDescription === '') {
-            return response()->json(['emergency_type' => null, 'urgency_level' => null]);
+            return response()->json(['emergency_type' => null, 'urgency_level' => null, 'location' => null]);
         }
 
         $cleanedDescription = $this->cleanText($rawDescription);
         $isPanicAlert = $this->isPanicAlert(null, $cleanedDescription);
         $classification = $this->classify($cleanedDescription, null, $isPanicAlert);
-
-        if ($classification['emergency_type'] === 'Unknown') {
-            return response()->json(['emergency_type' => null, 'urgency_level' => null]);
-        }
+        $location = $this->detectLocation($cleanedDescription);
 
         return response()->json([
-            'emergency_type' => $classification['emergency_type'],
-            'urgency_level' => $classification['urgency_level'],
+            'emergency_type' => $classification['emergency_type'] === 'Unknown' ? null : $classification['emergency_type'],
+            'urgency_level' => $classification['emergency_type'] === 'Unknown' ? null : $classification['urgency_level'],
+            'location' => $location,
         ]);
     }
 

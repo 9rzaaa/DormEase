@@ -1872,13 +1872,13 @@
             }
 
             const data = await res.json();
-            renderTypeSuggestion(data.emergency_type, data.urgency_level);
+            renderTypeSuggestion(data.emergency_type, data.urgency_level, data.location);
         } catch {
             hideTypeSuggestion();
         }
-    }
+     }
 
-    function renderTypeSuggestion(emergencyType, urgencyLevel) {
+     function renderTypeSuggestion(emergencyType, urgencyLevel, location) {
         const select = document.getElementById('report-type-select');
         const checkbox = document.getElementById('panic-check');
 
@@ -1894,8 +1894,12 @@
             updateReportHotlines(mapped);
         }
 
+        if (location) {
+            selectLocation(location);
+        }
+
         hideTypeSuggestion();
-    }
+     }
 
     function hideTypeSuggestion() {
         document.getElementById('type-suggest-banner').classList.remove('visible');
