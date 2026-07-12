@@ -1514,16 +1514,16 @@
             </div>
 
             <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
-                <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('add-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" id="add-staff-submit-btn" disabled onclick="if(!validateAddForm()){event.preventDefault();}">Add Staff</button>
             </div>
         </form>
     </div>
 </div>
 
 <div class="modal-overlay" id="view-modal">
-    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;">
-        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;">
+    <div class="modal" style="max-width:480px;padding:0;overflow:hidden;display:flex;flex-direction:column;max-height:90vh;">
+        <div style="background:var(--gradient-pink);padding:1.5rem 1.5rem 1.2rem;position:relative;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:.85rem;">
                 <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid rgba(255,255,255,.35);">
                     <img src="{{ asset('icons/staff-2.png') }}" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);" alt="">
@@ -1533,10 +1533,13 @@
                     <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-top:.1rem;" id="view-modal-role-sub">—</div>
                 </div>
             </div>
+            <button id="view-modal-delete-btn" onclick="openDeleteFromView()" title="Delete staff" style="position:absolute;top:1rem;right:3.4rem;width:30px;height:30px;border-radius:8px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.14);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s;" onmouseover="this.style.background='#e04867';this.style.borderColor='#e04867';" onmouseout="this.style.background='rgba(255,255,255,.14)';this.style.borderColor='rgba(255,255,255,.4)';">
+                <img src="{{ asset('icons/delete.png') }}" style="width:15px;height:15px;object-fit:contain;filter:brightness(0) invert(1);" alt="Delete">
+            </button>
             <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
-        <div id="view-content" style="padding:1.25rem 1.5rem 0;"></div>
-        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;">
+        <div id="view-content" style="padding:1.25rem 1.5rem 0;overflow-y:auto;flex:1;"></div>
+        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
             <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
         </div>
@@ -1924,8 +1927,7 @@
     if (viewActions) {
         viewActions.innerHTML =
             '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
-            + '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>'
-            + '<button class="btn-submit" onclick="openDeleteFromView()" style="background:#e04867;box-shadow:0 8px 20px rgba(224,72,103,.25);">Delete</button>';
+            + '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>';
     }
     openModal('view-modal');
 }

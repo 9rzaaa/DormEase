@@ -3843,8 +3843,8 @@ function viewTenant(t) {
         viewActions.innerHTML =
             '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
             + (t.status === 'reserved'
-                ? '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>'
-                : '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>');
+                ? '<button class="btn-submit" onclick="openResetFromView(' + t.tenant_id + ', \'' + tenantName + '\')" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>'
+                : '<button class="btn-submit" onclick="openTagMovedInFromView(' + t.tenant_id + ', \'' + tenantName + '\')">Tag as Moved In</button>');
     }
     openModal('view-modal');
 }
