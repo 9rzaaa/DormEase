@@ -135,6 +135,30 @@
         border-top: 1px solid var(--border); flex-wrap: wrap; gap: .75rem;
     }
     .table-showing { font-size: .8rem; color: var(--ink-muted); }
+    .pagination {
+        display: flex;
+        align-items: center;
+        gap: .35rem;
+        flex-wrap: wrap;
+    }
+    .page-btn {
+        min-width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid var(--gray-light);
+        background: var(--white);
+        color: var(--ink-muted);
+        font-size: .83rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 .55rem;
+        transition: border-color .2s, background .2s, color .2s;
+    }
+    .page-btn:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
+    .page-btn.active { background: var(--gradient-pink); color: var(--white); border-color: var(--hot-pink); }
+    .page-btn.disabled { opacity: .45; pointer-events: none; }
 
     @media (max-width: 980px) {
         .stats-row { grid-template-columns: 1fr; }
@@ -260,8 +284,26 @@
             <div class="table-showing">
                 Showing {{ $logs->firstItem() ?? 0 }} to {{ $logs->lastItem() ?? 0 }} of {{ $logs->total() }} logs
             </div>
-            <div>
-                {{ $logs->links() }}
+            <div class="pagination">
+                @if($logs->onFirstPage())
+                    <span class="page-btn disabled">&lt;</span>
+                @else
+                    <a class="page-btn" href="{{ $logs->previousPageUrl() }}" rel="prev">&lt;</a>
+                @endif
+
+                @foreach($logs->getUrlRange(1, $logs->lastPage()) as $page => $url)
+                    @if($page === $logs->currentPage())
+                        <span class="page-btn active">{{ $page }}</span>
+                    @else
+                        <a class="page-btn" href="{{ $url }}">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                @if($logs->hasMorePages())
+                    <a class="page-btn" href="{{ $logs->nextPageUrl() }}" rel="next">&gt;</a>
+                @else
+                    <span class="page-btn disabled">&gt;</span>
+                @endif
             </div>
         </div>
     </section>
