@@ -1785,8 +1785,8 @@
             </div>
 
             <div class="log-modal-footer" style="justify-content:space-between;">
-                <button type="submit" class="btn-submit">Log &amp; Distribute →</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('log-modal')">Cancel</button>
+                <button type="submit" class="btn-submit">Log &amp; Distribute →</button>
             </div>
         </form>
 
@@ -1888,8 +1888,8 @@
       </div>
 
       <div class="modal-actions" style="background:var(--pink-bg-soft);border-top:1px solid var(--border-pink-mid);padding:1rem 1.5rem;display:flex;justify-content:space-between;">
-          <button type="submit" class="btn-submit">Save changes</button>
           <button type="button" class="btn-cancel" onclick="closeModal('update-modal')">Cancel</button>
+          <button type="submit" class="btn-submit">Save changes</button>
       </div>
     </form>
   </div>

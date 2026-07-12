@@ -1762,8 +1762,8 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="modal-body" id="view-content"></div>
         <div class="modal-footer" style="justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
-            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
         </div>
     </div>
 </div>
@@ -1974,8 +1974,8 @@ tbody tr:hover { background: var(--soft-bg); }
                 </div>
             </div>
             <div class="modal-footer" style="justify-content:space-between;">
-               <button type="submit" class="btn-submit">Save Changes</button>
                <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+               <button type="submit" class="btn-submit">Save Changes</button>
            </div>
         </form>
     </div>
@@ -2144,14 +2144,14 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
         <div class="modal-footer" style="justify-content:space-between;">
-            <button type="button" id="moveout-print-btn" style="display:none;padding:.55rem 1.1rem;border-radius:10px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s;" onmouseover="this.style.background='var(--petal)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';" onclick="printMoveOutBillSlip()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px;margin-right:.35rem;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                Print Bill Slip
-            </button>
-            <div style="display:flex;align-items:center;gap:.55rem;margin-left:auto;">
+            <div style="display:flex;align-items:center;gap:.55rem;">
                 <button type="button" class="btn-cancel" onclick="closeMoveOutVerify()">Cancel</button>
-                <button type="button" id="moveout-confirm-btn" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:#e04867;color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(224,72,103,.25);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 12px 28px rgba(224,72,103,.35)';" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 20px rgba(224,72,103,.25)';" onclick="confirmMoveOut()">Confirm Move Out</button>
+                <button type="button" id="moveout-print-btn" style="display:none;padding:.55rem 1.1rem;border-radius:10px;border:1.5px solid var(--pink-100);background:var(--white);color:var(--hot-pink);font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,color .2s;" onmouseover="this.style.background='var(--petal)';this.style.borderColor='var(--bright-pink)';" onmouseout="this.style.background='var(--white)';this.style.borderColor='var(--pink-100)';" onclick="printMoveOutBillSlip()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px;margin-right:.35rem;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Print Bill Slip
+                </button>
             </div>
+            <button type="button" id="moveout-confirm-btn" style="padding:.6rem 1.4rem;border-radius:10px;border:none;background:#e04867;color:var(--white);font-size:.875rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(224,72,103,.25);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 12px 28px rgba(224,72,103,.35)';" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 20px rgba(224,72,103,.25)';" onclick="confirmMoveOut()">Confirm Move Out</button>
         </div>
     </div>
 </div>
