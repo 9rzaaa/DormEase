@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -897,6 +897,20 @@
         general:      'General',
     };
 
+    function normalizeNotifType(rawType) {
+        if (!rawType) return 'general';
+        if (typeLabels.hasOwnProperty(rawType)) return rawType;
+        if (rawType === 'tenant_reserved') return 'reservation';
+        if (rawType.indexOf('maintenance')  === 0) return 'maintenance';
+        if (rawType.indexOf('emergency')    === 0) return 'emergency';
+        if (rawType.indexOf('billing')      === 0) return 'billing';
+        if (rawType.indexOf('document')     === 0) return 'document';
+        if (rawType.indexOf('announcement') === 0) return 'announcement';
+        if (rawType.indexOf('visitor')      === 0) return 'visitor';
+        if (rawType.indexOf('tenant')       === 0) return 'tenant';
+        return 'general';
+    }
+
     function handleNotifClick(e, el) {
         if (e) e.stopPropagation();
         var dd = document.getElementById('notif-dropdown');
@@ -920,11 +934,12 @@
             return;
         }
 
-        var isReservation = notif.type === 'reservation';
+        var normType = normalizeNotifType(notif.type);
+        var isReservation = normType === 'reservation';
 
         var badge = document.getElementById('notif-detail-badge');
-        badge.className = 'notif-detail-type-badge ' + (notif.type || 'general');
-        badge.textContent = typeLabels[notif.type] || 'General';
+        badge.className = 'notif-detail-type-badge ' + normType;
+        badge.textContent = typeLabels[normType] || 'General';
 
         var iconWrap = document.getElementById('notif-detail-icon-wrap');
         iconWrap.className = 'notif-detail-icon-wrap' + (isReservation ? ' reservation' : '');
