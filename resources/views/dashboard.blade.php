@@ -1236,12 +1236,58 @@ window.openDeleteModal = function(id) {
     openModal('delete-ann-modal');
 };
 
+var NOTIF_TYPE_LABELS = {
+    tenant_reserved:          'New Reservation',
+    reservation:               'New Reservation',
+    reservation_overdue:       'Reservation Overdue',
+    tenant_moveout_reminder:   'Move-out Reminder',
+    moveout_reminder:          'Move-out Reminder',
+    maintenance:                'Maintenance',
+    emergency:                  'Emergency',
+    billing:                    'Billing',
+    document:                   'Document',
+    announcement:                'Announcement',
+    visitor:                     'Visitor',
+    tenant:                      'Tenant',
+    general:                     'General'
+};
+
+var NOTIF_TYPE_ICONS = {
+    tenant_reserved:          'pending',
+    reservation:               'pending',
+    reservation_overdue:       'warn',
+    tenant_moveout_reminder:   'bell',
+    moveout_reminder:          'bell',
+    maintenance:                'maintenance',
+    emergency:                  'warn',
+    billing:                    'billing',
+    document:                   'nav-docu',
+    announcement:                'nav-announ',
+    visitor:                     'nav-visit',
+    tenant:                      'nav-tenants'
+};
+
+function prettifyNotifType(rawType) {
+    var key = (rawType || '').toLowerCase();
+    if (NOTIF_TYPE_LABELS[key]) return NOTIF_TYPE_LABELS[key];
+    return key
+        .split('_')
+        .filter(Boolean)
+        .map(function(word) { return word.charAt(0).toUpperCase() + word.slice(1); })
+        .join(' ') || 'General';
+}
+
+function resolveNotifIcon(rawType) {
+    var key = (rawType || '').toLowerCase();
+    return NOTIF_TYPE_ICONS[key] || key || 'bell';
+}
+
 window.openNotifModal = function(message, type, time, id) {
     document.getElementById('nd-message').textContent = message;
     document.getElementById('nd-time').textContent    = time;
-    document.getElementById('nd-type').textContent    = type.charAt(0).toUpperCase() + type.slice(1);
+    document.getElementById('nd-type').textContent    = prettifyNotifType(type);
     var icon = document.getElementById('nd-icon');
-    icon.src = '{{ asset('icons/') }}' + type + '.png';
+    icon.src = '{{ asset('icons/') }}' + resolveNotifIcon(type) + '.png';
     icon.onerror = function() { this.src = '{{ asset('icons/bell.png') }}'; };
     openModal('dashboard-notif-detail-modal');
     if (id) {
