@@ -1843,6 +1843,26 @@
         const trimmed = value.trim();
 
         if (trimmed.length < 4) {
+            const select = document.getElementById('report-type-select');
+            const checkbox = document.getElementById('panic-check');
+            const locHidden = document.getElementById('location-hidden-input');
+            const locSearch = document.getElementById('location-search-input');
+
+            if (select) {
+                select.value = "";
+                updateReportHotlines("");
+            }
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            if (locHidden) {
+                locHidden.value = "";
+            }
+            if (locSearch) {
+                locSearch.value = "";
+            }
+            lastSuggestedDescription = '';
+
             hideTypeSuggestion();
             return;
         }
