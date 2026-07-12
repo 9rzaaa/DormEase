@@ -1544,14 +1544,9 @@
             <button class="modal-close" onclick="closeModal('view-modal')" style="position:absolute;top:1rem;right:1rem;color:#fff;opacity:.8;font-size:1.1rem;">&#x2715;</button>
         </div>
         <div id="view-content" style="padding:1.25rem 1.5rem 0;overflow-y:auto;flex:1;"></div>
-        <div style="padding:1rem 1.5rem 0;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
-            <div class="modal-actions" style="margin-top:0;gap:.55rem;flex-wrap:wrap;justify-content:space-between;">
-                <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
-                <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
-            </div>
-        </div>
-        <div style="padding:.7rem 1.5rem 1.5rem;flex-shrink:0;">
-            <button type="button" onclick="openDeleteFromView()" style="width:100%;padding:.6rem 1.4rem;border-radius:9px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.87rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff';" onmouseout="this.style.background='#fff0f3';this.style.color='var(--red)';">Delete Staff</button>
+        <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;gap:.55rem;flex-wrap:wrap;justify-content:space-between;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
+            <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <div id="view-actions" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;"></div>
         </div>
     </div>
 </div>
@@ -1928,11 +1923,14 @@
                 + ((s.leave_start || s.leave_end) ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.25rem;">' + (fmtLeaveDate(s.leave_start) || '—') + ' → ' + (fmtLeaveDate(s.leave_end) || 'Ongoing') + '</div>' : '')
                 + (s.leave_note ? '<div style="font-size:.78rem;color:var(--ink-muted);margin-top:.15rem;">' + s.leave_note + '</div>' : '')
             : 'Not on leave') + '</span></div>'
-        + '<div class="view-row" style="border-bottom:none;"><span class="view-label">Account Status</span><span class="view-val">'
+        + '<div class="view-row"><span class="view-label">Account Status</span><span class="view-val">'
             + (s.is_active
                 ? '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#1f9d69;background:#e8faf5;border:1px solid #8ce0bb;padding:.18rem .6rem;border-radius:99px;">Active</span>'
                 : '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#888;background:#f3f4f6;border:1px solid #d0d0d8;padding:.18rem .6rem;border-radius:99px;">Inactive</span>')
-            + '</span></div>';
+            + '</span></div>'
+        + '<div style="padding:.9rem 0 .5rem;border-bottom:none;">'
+            + '<button type="button" onclick="openDeleteFromView()" style="width:100%;padding:.6rem 1.4rem;border-radius:9px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.87rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onmouseover="this.style.background=\'var(--red)\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#fff0f3\';this.style.color=\'var(--red)\';">Delete Staff</button>'
+        + '</div>';
     var viewActions = document.getElementById('view-actions');
     if (viewActions) {
         viewActions.innerHTML =
