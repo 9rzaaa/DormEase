@@ -1914,8 +1914,8 @@
         </div>
         <div class="modal-body" id="view-content"></div>
         <div class="modal-footer" style="justify-content:space-between;">
-            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
     </div>
 </div>
@@ -1959,8 +1959,8 @@
             </div>
         </div>
         <div class="modal-footer" style="justify-content:space-between;">
-            <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
             <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+            <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
         </div>
     </div>
 </div>
