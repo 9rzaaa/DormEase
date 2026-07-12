@@ -103,24 +103,31 @@
                 item.addEventListener('click', (function(n, ri) {
                     return function() {
                         var typeMap = {
-                            'tenant_reserved':  'reservation',
-                            'reservation':      'reservation',
-                            'reservation_overdue': 'reservation_overdue',
-                            'maintenance':      'maintenance',
-                            'emergency':        'emergency',
-                            'billing':          'billing',
-                            'document':         'document',
-                            'announcement':     'announcement',
-                            'visitor':          'visitor',
-                            'moveout_reminder': 'moveout_reminder',
-                            'tenant':           'tenant',
+                            'tenant_reserved':          'reservation',
+                            'reservation':               'reservation',
+                            'reservation_overdue':       'reservation_overdue',
+                            'tenant_moveout_reminder':   'moveout_reminder',
+                            'moveout_reminder':          'moveout_reminder',
+                            'maintenance':                'maintenance',
+                            'emergency':                  'emergency',
+                            'billing':                    'billing',
+                            'document':                   'document',
+                            'announcement':               'announcement',
+                            'visitor':                    'visitor',
+                            'tenant':                     'tenant',
                         };
                         var mappedType = typeMap[n.type] || typeMap[n.raw_type];
                         if (!mappedType) {
-                            var keys = Object.keys(typeMap);
-                            for (var i = 0; i < keys.length; i++) {
-                                if ((n.type && n.type.indexOf(keys[i]) === 0) || (n.raw_type && n.raw_type.indexOf(keys[i]) === 0)) {
-                                    mappedType = typeMap[keys[i]];
+                            var prefixOrder = [
+                                'tenant_reserved', 'reservation_overdue', 'reservation',
+                                'tenant_moveout_reminder', 'moveout_reminder',
+                                'maintenance', 'emergency', 'billing', 'document',
+                                'announcement', 'visitor', 'tenant',
+                            ];
+                            for (var i = 0; i < prefixOrder.length; i++) {
+                                var key = prefixOrder[i];
+                                if ((n.type && n.type.indexOf(key) === 0) || (n.raw_type && n.raw_type.indexOf(key) === 0)) {
+                                    mappedType = typeMap[key];
                                     break;
                                 }
                             }
