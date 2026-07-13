@@ -1017,11 +1017,11 @@ tbody tr:hover { background: var(--soft-bg); }
                 </button>
                 <div class="export-menu header-more-menu" id="header-more-menu">
                     <button onclick="openHardwareDrawer(); closeAllExportDropdowns()">
-                        <img src="{{ asset('icons/bed.png') }}" class="header-more-icon" alt="">
+                        <img src="{{ asset('icons/hardware.png') }}" class="header-more-icon" alt="">
                         <span>Hardware Devices</span>
                     </button>
                     <button onclick="openAdminLogDrawer(); closeAllExportDropdowns()">
-                        <img src="{{ asset('icons/archive.png') }}" class="header-more-icon" alt="">
+                        <img src="{{ asset('icons/entry.png') }}" class="header-more-icon" alt="">
                         <span>Entry / Exit Log</span>
                     </button>
                     <button onclick="openTenantArchive(); closeAllExportDropdowns()">
