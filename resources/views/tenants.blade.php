@@ -593,6 +593,33 @@ tbody tr:hover { background: var(--soft-bg); }
 .export-menu.open { display: block; }
 .export-menu button { display: block; width: 100%; padding: .65rem 1rem; background: none; border: none; text-align: left; font-size: .84rem; font-weight: 600; color: var(--ink); cursor: pointer; transition: background .15s; font-family: var(--ff-body); }
 .export-menu button:hover { background: var(--petal); color: var(--hot-pink); }
+.header-more-menu {
+    min-width: 220px;
+    padding: .4rem;
+}
+.header-more-menu button {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .55rem .65rem;
+    border-radius: 10px;
+    margin-bottom: .1rem;
+}
+.header-more-menu button:last-child { margin-bottom: 0; }
+.header-more-menu button:hover { background: var(--petal); }
+.header-more-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(23%) sepia(92%) saturate(3204%) hue-rotate(329deg) brightness(95%) contrast(96%);
+    opacity: .85;
+}
+.header-more-divider {
+    height: 1px;
+    background: var(--pink-100);
+    margin: .35rem .2rem;
+}
 .action-loading-overlay { position: fixed; inset: 0; z-index: 1200; display: none; align-items: center; justify-content: center; background: rgba(255,255,255,.72); backdrop-filter: blur(2px); }
 .action-loading-overlay.open { display: flex; }
 .action-loading-box { display: flex; align-items: center; flex-direction: column; gap: .75rem; padding: 1.25rem 1.6rem; border: 1px solid var(--border); border-radius: 12px; background: var(--white); box-shadow: 0 12px 32px rgba(26,26,46,.14); color: var(--ink); font-size: .9rem; font-weight: 700; }
@@ -988,12 +1015,28 @@ tbody tr:hover { background: var(--soft-bg); }
                     More
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="margin-left:.1rem;"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div class="export-menu" id="header-more-menu" style="min-width:210px;">
-                    <button onclick="openHardwareDrawer(); closeAllExportDropdowns()">Hardware Devices</button>
-                    <button onclick="openAdminLogDrawer(); closeAllExportDropdowns()">Entry / Exit Log</button>
-                    <button onclick="openTenantArchive(); closeAllExportDropdowns()">Archive / History</button>
-                    <button onclick="exportTenants(); closeAllExportDropdowns()">Export as CSV</button>
-                    <button onclick="exportTenantsPDF(); closeAllExportDropdowns()">Export as PDF</button>
+                <div class="export-menu header-more-menu" id="header-more-menu">
+                    <button onclick="openHardwareDrawer(); closeAllExportDropdowns()">
+                        <img src="{{ asset('icons/bed.png') }}" class="header-more-icon" alt="">
+                        <span>Hardware Devices</span>
+                    </button>
+                    <button onclick="openAdminLogDrawer(); closeAllExportDropdowns()">
+                        <img src="{{ asset('icons/archive.png') }}" class="header-more-icon" alt="">
+                        <span>Entry / Exit Log</span>
+                    </button>
+                    <button onclick="openTenantArchive(); closeAllExportDropdowns()">
+                        <img src="{{ asset('icons/archive.png') }}" class="header-more-icon" alt="">
+                        <span>Archive / History</span>
+                    </button>
+                    <div class="header-more-divider"></div>
+                    <button onclick="exportTenants(); closeAllExportDropdowns()">
+                        <img src="{{ asset('icons/export.png') }}" class="header-more-icon" alt="">
+                        <span>Export as CSV</span>
+                    </button>
+                    <button onclick="exportTenantsPDF(); closeAllExportDropdowns()">
+                        <img src="{{ asset('icons/export.png') }}" class="header-more-icon" alt="">
+                        <span>Export as PDF</span>
+                    </button>
                 </div>
             </div>
         </div>
