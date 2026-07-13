@@ -3129,7 +3129,7 @@ function openUpdateModal(room) {
                 <div style="padding:.9rem 1rem;">
                     <div class="modal-field">
                         <label>Payment status</label>
-                        <select class="status-select" data-billing-id="${t.billing_id??''}" data-has-proof="${hasProof}" onchange="toggleRejectionReason(this)">
+                        <select class="status-select" data-billing-id="${t.billing_id??''}" data-has-proof="${hasProof}" onchange="toggleRejectionReason(this)" ${isQrPh ? 'disabled' : ''}>
                             <option value="unpaid"   ${t.payment_status==='unpaid'  ?'selected':''}>Unpaid</option>
                             <option value="paid"     ${t.payment_status==='paid'    ?'selected':''}>Paid</option>
                             <option value="overdue"  ${t.payment_status==='overdue' ?'selected':''}>Overdue</option>
