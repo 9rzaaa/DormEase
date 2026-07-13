@@ -1427,6 +1427,23 @@
 
     .kw-card-row select:focus { border-color: var(--bright-pink); }
 
+    .kw-custom-type-input {
+        width: 100%;
+        padding: .45rem .65rem;
+        border-radius: 9px;
+        border: 1.5px solid var(--pink-200);
+        background: var(--white);
+        font-size: .8rem;
+        font-weight: 600;
+        color: var(--ink);
+        outline: none;
+        box-sizing: border-box;
+        font-family: var(--ff-body);
+        transition: border-color .2s;
+        margin-top: .4rem;
+    }
+    .kw-custom-type-input:focus { border-color: var(--bright-pink); }
+
     .kw-checkbox-row {
         display: flex;
         align-items: center;
@@ -2965,6 +2982,19 @@
         }).join('');
     }
 
+    function isBuiltinEmergencyType(type) {
+        return EMERGENCY_TYPE_OPTIONS.some(function(t) {
+            return t.toLowerCase() === (type || '').toLowerCase();
+        }) && (type || '').toLowerCase() !== 'unknown';
+    }
+
+    function handleTypeDropdownChange(id, value) {
+        const customInput = document.getElementById('kw-custom-type-' + id);
+        if (customInput) {
+            customInput.style.display = (value === 'Unknown') ? 'block' : 'none';
+        }
+    }
+
     function urgencyOptionsHtml(selected) {
         const opts = [['', 'Use type default'], ['moderate', 'Moderate'], ['urgent', 'Urgent'], ['critical', 'Critical']];
         return opts.map(function(o) {
@@ -3128,10 +3158,10 @@
                 '</div>' +
                 '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-counter-' + term.id + '">' + buildKwPhrase(term.id).length + '/255</span><span class="kw-validation-msg" id="kw-msg-' + term.id + '"></span></div>' +
                 '<div class="kw-card-row">' +
-                '<div><span class="kw-field-label">Emergency type</span><select id="kw-type-' + term.id + '">' + typeOptionsHtml('Other') + '</select></div>' +
+                '<div><span class="kw-field-label">Emergency type</span><select id="kw-type-' + term.id + '" onchange="handleTypeDropdownChange(' + term.id + ', this.value)">' + typeOptionsHtml('Unknown') + '</select><input type="text" id="kw-custom-type-' + term.id + '" class="kw-custom-type-input" placeholder="Enter custom type..." style="display:block;"></div>' +
                 '<div><span class="kw-field-label">Urgency override</span><select id="kw-urgency-' + term.id + '">' + urgencyOptionsHtml('') + '</select></div>' +
                 '</div>' +
-                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past reports still marked Other</label>' +
+                '<label class="kw-checkbox-row"><input type="checkbox" id="kw-reclassify-' + term.id + '"> Also reclassify matching past reports still marked Unknown</label>' +
                 '<div class="kw-card-actions">' +
                 '<button class="kw-btn-ignore" onclick="ignoreKwTerm(' + term.id + ')">Ignore</button>' +
                 '<button class="kw-btn-save" onclick="submitKwClassify(' + term.id + ')">Save Keyword</button>' +
@@ -3253,7 +3283,16 @@
             return;
         }
         const saveBtn = document.querySelector('#kw-card-' + termId + ' .kw-btn-save');
-        const type = document.getElementById('kw-type-' + termId).value;
+        const typeSelect = document.getElementById('kw-type-' + termId).value;
+        const customInput = document.getElementById('kw-custom-type-' + termId);
+        let type = typeSelect;
+        if (typeSelect === 'Unknown' && customInput) {
+            type = customInput.value.trim();
+        }
+        if (!type || type.toLowerCase() === 'unknown' || type.length < 2) {
+            showToast('Please specify a valid emergency type.', 'error');
+            return;
+        }
         const urgency = document.getElementById('kw-urgency-' + termId).value;
         const reclassify = document.getElementById('kw-reclassify-' + termId).checked;
 
@@ -3366,7 +3405,7 @@
             '</div>' +
             '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-add-counter">0/255</span><span class="kw-validation-msg" id="kw-add-msg"></span></div>' +
             '<div class="kw-card-row">' +
-            '<div><span class="kw-field-label">Emergency type</span><select id="kw-add-type">' + typeOptionsHtml('Other') + '</select></div>' +
+            '<div><span class="kw-field-label">Emergency type</span><select id="kw-add-type" onchange="handleTypeDropdownChange(\'add\', this.value)">' + typeOptionsHtml('Unknown') + '</select><input type="text" id="kw-custom-type-add" class="kw-custom-type-input" placeholder="Enter custom type..." style="display:block;"></div>' +
             '<div><span class="kw-field-label">Urgency override</span><select id="kw-add-urgency">' + urgencyOptionsHtml('') + '</select></div>' +
             '</div>' +
             '<div class="kw-card-actions">' +
@@ -3392,7 +3431,16 @@
             return;
         }
         const saveBtn = document.querySelector('#kw-add-new .kw-btn-save');
-        const type = document.getElementById('kw-add-type').value;
+        const typeSelect = document.getElementById('kw-add-type').value;
+        const customInput = document.getElementById('kw-custom-type-add');
+        let type = typeSelect;
+        if (typeSelect === 'Unknown' && customInput) {
+            type = customInput.value.trim();
+        }
+        if (!type || type.toLowerCase() === 'unknown' || type.length < 2) {
+            showToast('Please specify a valid emergency type.', 'error');
+            return;
+        }
         const urgency = document.getElementById('kw-add-urgency').value;
 
         if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
@@ -3435,13 +3483,18 @@
         const kw = trainedKeywords.find(function(k) { return k.id === id; });
         if (!kw) return;
         const card = document.getElementById('kw-trained-' + id);
+        const isCustom = !isBuiltinEmergencyType(kw.emergency_type);
+        const selectedVal = isCustom ? 'Unknown' : kw.emergency_type;
+        const displayStyle = isCustom ? 'block' : 'none';
+        const prefilledText = isCustom ? kw.emergency_type : '';
+
         card.outerHTML = '' +
             '<div class="kw-card" id="kw-trained-' + id + '">' +
             '<input type="text" class="kw-phrase-input" id="kw-edit-phrase-' + id + '" value="' + escHtml(kw.keyword) + '" oninput="validateKwPhraseInput(\'kw-edit-phrase-' + id + '\', \'kw-edit-counter-' + id + '\', \'kw-edit-msg-' + id + '\', \'#kw-trained-' + id + ' .kw-btn-save\', ' + id + ')">' +
             '<div class="kw-validation-row"><span class="kw-char-counter" id="kw-edit-counter-' + id + '">' + kw.keyword.length + '/255</span><span class="kw-validation-msg" id="kw-edit-msg-' + id + '"></span></div>' +
             '<div class="kw-card-row">' +
-            '<select id="kw-edit-type-' + id + '">' + typeOptionsHtml(kw.emergency_type) + '</select>' +
-            '<select id="kw-edit-urgency-' + id + '">' + urgencyOptionsHtml(kw.urgency_level) + '</select>' +
+            '<div><select id="kw-edit-type-' + id + '" onchange="handleTypeDropdownChange(' + id + ', this.value)">' + typeOptionsHtml(selectedVal) + '</select><input type="text" id="kw-custom-type-' + id + '" class="kw-custom-type-input" placeholder="Enter custom type..." value="' + escHtml(prefilledText) + '" style="display:' + displayStyle + ';"></div>' +
+            '<div><select id="kw-edit-urgency-' + id + '">' + urgencyOptionsHtml(kw.urgency_level) + '</select></div>' +
             '</div>' +
             '<div class="kw-card-actions">' +
             '<button class="kw-btn-ignore" onclick="renderTrainedKeywords()">Cancel</button>' +
@@ -3452,7 +3505,16 @@
 
     async function saveKwKeywordEdit(id) {
         const keyword = document.getElementById('kw-edit-phrase-' + id).value.trim();
-        const type = document.getElementById('kw-edit-type-' + id).value;
+        const typeSelect = document.getElementById('kw-edit-type-' + id).value;
+        const customInput = document.getElementById('kw-custom-type-' + id);
+        let type = typeSelect;
+        if (typeSelect === 'Unknown' && customInput) {
+            type = customInput.value.trim();
+        }
+        if (!type || type.toLowerCase() === 'unknown' || type.length < 2) {
+            showToast('Please specify a valid emergency type.', 'error');
+            return;
+        }
         const urgency = document.getElementById('kw-edit-urgency-' + id).value;
         if (!keyword) {
             showToast('Keyword cannot be empty.', 'error');
