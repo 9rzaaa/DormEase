@@ -240,7 +240,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
+            'issue_type' => 'required|string|min:2|max:255',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
         ]);
 
@@ -287,7 +287,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
+            'issue_type' => 'required|string|min:2|max:255',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
             'reclassify_matching' => 'nullable|boolean',
         ]);
@@ -391,7 +391,7 @@ class MaintenanceController extends Controller
     {
         $validated = $request->validate([
             'keyword' => 'required|string|min:2|max:255',
-            'issue_type' => 'required|in:plumbing,electrical,hvac,appliance,carpentry,pest,cleaning,internet,unknown',
+            'issue_type' => 'required|string|min:2|max:255',
             'urgency_level' => 'nullable|in:low,moderate,urgent',
         ]);
 
