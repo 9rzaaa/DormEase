@@ -29,14 +29,12 @@ class ActivityLogController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
                     ->orWhere('staff_name', 'like', "%{$search}%")
-                    ->orWhere('route_name', 'like', "%{$search}%")
                     ->orWhere('path', 'like', "%{$search}%")
                     ->orWhere('ip_address', 'like', "%{$search}%");
             });
         }
 
         $logs = $query->paginate(25)->withQueryString();
-
         $baseQuery = ActivityLog::query();
 
         return view('activity-logs', [
