@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\HardwareDeviceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\VisitorController;
@@ -166,6 +167,13 @@ Route::middleware(['auth:staff', 'staff.active', 'force.temp.password', 'no.back
         Route::post('/tenants', [TenantController::class, 'store'])->name('tenants.store');
         Route::put('/tenants/{id}', [TenantController::class, 'update'])->name('tenants.update');
         Route::delete('/tenants/{id}', [TenantController::class, 'destroy'])->name('tenants.destroy');
+        Route::prefix('hardware-devices')->middleware(['auth:staff'])->group(function () {
+            Route::get('/',              [HardwareDeviceController::class, 'index']);
+            Route::post('/',             [HardwareDeviceController::class, 'store']);
+            Route::put('/{id}',          [HardwareDeviceController::class, 'update']);
+            Route::post('/{id}/regen-token', [HardwareDeviceController::class, 'regenerateToken']);
+            Route::delete('/{id}',       [HardwareDeviceController::class, 'destroy']);
+        });
         Route::post('/tenants/{id}/reset-password', [TenantController::class, 'resetPassword'])->name('tenants.reset-password');
         Route::post('/tenants/{id}/tag-moved-in', [TenantController::class, 'tagAsMovedIn'])->name('tenants.tag-moved-in');
         Route::post('/tenants/{id}/reschedule', [TenantController::class, 'reschedule'])->name('tenants.reschedule');

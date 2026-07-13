@@ -893,15 +893,16 @@ public function timeIn($id)
 
     $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
-        'tenant_id'   => $tenant->tenant_id,
-        'account_id'  => $tenant->account_id,
-        'first_name'  => $tenant->first_name,
-        'last_name'   => $tenant->last_name,
-        'room_number' => $tenant->room_number,
-        'floor'       => $tenant->floor,
-        'action'      => 'time_in',
-        'logged_at'   => now(),
-        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'tenant_id'            => $tenant->tenant_id,
+        'account_id'           => $tenant->account_id,
+        'first_name'           => $tenant->first_name,
+        'last_name'            => $tenant->last_name,
+        'room_number'          => $tenant->room_number,
+        'floor'                => $tenant->floor,
+        'action'               => 'time_in',
+        'logged_at'            => now(),
+        'logged_by'            => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'hardware_device_type' => 'manual',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed in successfully.']);
@@ -923,15 +924,16 @@ public function timeOut($id)
 
     $staff = Auth::guard('staff')->user();
     \App\Models\TenantLog::create([
-        'tenant_id'   => $tenant->tenant_id,
-        'account_id'  => $tenant->account_id,
-        'first_name'  => $tenant->first_name,
-        'last_name'   => $tenant->last_name,
-        'room_number' => $tenant->room_number,
-        'floor'       => $tenant->floor,
-        'action'      => 'time_out',
-        'logged_at'   => now(),
-        'logged_by'   => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'tenant_id'            => $tenant->tenant_id,
+        'account_id'           => $tenant->account_id,
+        'first_name'           => $tenant->first_name,
+        'last_name'            => $tenant->last_name,
+        'room_number'          => $tenant->room_number,
+        'floor'                => $tenant->floor,
+        'action'               => 'time_out',
+        'logged_at'            => now(),
+        'logged_by'            => $staff ? trim($staff->first_name . ' ' . $staff->last_name) : 'Front Desk',
+        'hardware_device_type' => 'manual',
     ]);
 
     return response()->json(['message' => $tenant->first_name . ' ' . $tenant->last_name . ' timed out successfully.']);
@@ -949,15 +951,16 @@ public function tenantLogs()
         ->get()
         ->map(function ($log) {
             return [
-                'tenant_id'   => $log->tenant_id,
-                'account_id'  => $log->tenant?->account_id,
-                'first_name'  => $log->tenant?->first_name,
-                'last_name'   => $log->tenant?->last_name,
-                'room_number' => $log->tenant?->room_number,
-                'floor'       => $log->tenant?->floor,
-                'action'      => $log->action,
-                'logged_at'   => $log->logged_at,
-                'logged_by'   => $log->logged_by,
+                'tenant_id'            => $log->tenant_id,
+                'account_id'           => $log->tenant?->account_id,
+                'first_name'           => $log->tenant?->first_name,
+                'last_name'            => $log->tenant?->last_name,
+                'room_number'          => $log->tenant?->room_number,
+                'floor'                => $log->tenant?->floor,
+                'action'               => $log->action,
+                'logged_at'            => $log->logged_at,
+                'logged_by'            => $log->logged_by,
+                'hardware_device_type' => $log->hardware_device_type ?? 'manual',
             ];
         });
 
