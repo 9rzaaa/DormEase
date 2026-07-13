@@ -1278,7 +1278,7 @@
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Staff</button>
             <button class="btn-outline" onclick="openAttendanceLog()">
-                <img src="{{ asset('icons/clock.png') }}" class="icon-sm" alt="Attendance">
+                <img src="{{ asset('icons/attendance.png') }}" class="icon-sm" alt="Attendance">
                 Attendance Log
             </button>
             <a class="btn-outline" href="{{ route('activity-logs.index') }}">
