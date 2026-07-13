@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Staff;
 use App\Models\ArchivedStaff;
 use App\Models\StaffAttendance;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -138,6 +139,21 @@ class StaffController extends Controller
             ];
         });
 
+        $activityLogs = ActivityLog::latest()->take(100)->get()->map(function ($log) {
+            return [
+                'created_at_date' => $log->created_at?->format('M d, Y'),
+                'created_at_time' => $log->created_at?->format('g:i A'),
+                'staff_name'      => $log->staff_name ?: 'System',
+                'staff_role'      => $log->staff_role ?: 'No role',
+                'module'          => $log->module,
+                'action'          => $log->action,
+                'description'     => $log->description,
+                'method'          => $log->method,
+                'path'            => $log->path,
+                'ip_address'      => $log->ip_address,
+            ];
+        });
+
         return view('staff', [
             'staffList'       => $staffList,
             'totalStaff'      => $activeStaff->count(),
@@ -147,6 +163,10 @@ class StaffController extends Controller
             'deletedArchive'  => $deletedArchive,
             'inactiveArchive' => $inactiveArchive,
             'attendanceLogs'  => $attendanceLogs,
+            'activityLogs'    => $activityLogs,
+            'activityTotal'   => ActivityLog::count(),
+            'activityToday'   => ActivityLog::whereDate('created_at', today())->count(),
+            'activityActors'  => ActivityLog::whereNotNull('staff_id')->distinct('staff_id')->count('staff_id'),
         ]);
     }
 
