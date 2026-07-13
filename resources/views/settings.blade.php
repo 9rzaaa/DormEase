@@ -488,6 +488,35 @@
     }
     .btn-apply-all:hover { opacity: .88; }
 
+    .settings-card-header.collapsible {
+        cursor: pointer;
+        user-select: none;
+    }
+    .settings-card-header.collapsible:hover .settings-card-title { color: var(--hot-pink); }
+    .collapse-chevron {
+        margin-left: auto;
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform .25s ease;
+        color: var(--ink-muted);
+    }
+    .settings-card.collapsed .collapse-chevron { transform: rotate(-90deg); }
+    .collapse-body {
+        overflow: hidden;
+        transition: grid-template-rows .3s ease;
+        display: grid;
+        grid-template-rows: 1fr;
+    }
+    .settings-card.collapsed .collapse-body {
+        grid-template-rows: 0fr;
+    }
+    .collapse-body-inner { overflow: hidden; min-height: 0; }
+    .settings-card.collapsed .collapse-body-inner { padding-top: 0; }
+
 </style>
 @endsection
 
@@ -517,7 +546,7 @@
         <button class="tab-btn"
             onclick="switchTab('archive')">
             <img src="{{ asset('icons/archive.png') }}" alt="">
-            Archive Clearing
+            Data Backup
         </button>
         @endif
     </div>
@@ -626,8 +655,8 @@
         @if(Auth::guard('staff')->user()?->role === 'admin')
         <div class="tab-panel fade-up d3" id="tab-archive">
 
-        <div class="settings-card">
-            <div class="settings-card-header">
+        <div class="settings-card" id="card-cleanup">
+            <div class="settings-card-header collapsible" onclick="toggleCard('card-cleanup')">
                 <div class="settings-card-icon">
                     <img src="{{ asset('icons/archive.png') }}" alt="">
                 </div>
@@ -667,7 +696,12 @@
                     </div>
                    <div class="settings-card-sub">Old records are automatically backed up and removed on a schedule you control. Nothing is lost, every removed record can be downloaded again below.</div>
                 </div>
+                <div class="collapse-chevron">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
             </div>
+
+            <div class="collapse-body"><div class="collapse-body-inner">
 
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
@@ -769,18 +803,25 @@
             <div class="form-actions">
                 <button type="button" class="btn-save" onclick="saveArchiveSettings()">Save Archive Settings</button>
             </div>
+
+            </div></div>
         </div>
 
-        <div class="settings-card">
-            <div class="settings-card-header">
+        <div class="settings-card" id="card-exports">
+            <div class="settings-card-header collapsible" onclick="toggleCard('card-exports')">
                 <div class="settings-card-icon">
                     <img src="{{ asset('icons/archive.png') }}" alt="">
                 </div>
-                <div>
+                <div style="flex:1;min-width:0;">
                     <div class="settings-card-title">Past Exports (Your Recovery Point)</div>
                     <div class="settings-card-sub">Every time records are cleared, a backup file is created here. Download any file below to get that data back.</div>
                 </div>
+                <div class="collapse-chevron">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
             </div>
+
+            <div class="collapse-body"><div class="collapse-body-inner">
 
             <table class="archive-table" id="exports-table">
                 <thead>
@@ -796,6 +837,8 @@
                     <tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">Loading exports...</td></tr>
                 </tbody>
             </table>
+
+            </div></div>
         </div>
 
     </div>
@@ -844,6 +887,10 @@
             });
         });
     });
+
+    function toggleCard(cardId) {
+        document.getElementById(cardId).classList.toggle('collapsed');
+    }
 
     function switchTab(name) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
