@@ -415,8 +415,19 @@ class BillingController extends Controller
         ]);
 
         foreach ($request->billing_ids as $i => $id) {
-            WaterBilling::where('billing_id', $id)
-                ->update(['payment_status' => $request->statuses[$i]]);
+            $billingToUpdate = WaterBilling::findOrFail($id);
+            $hasQrPhPayment = Payment::where('billing_id', $billingToUpdate->billing_id)
+                ->where('payment_method', 'like', '%QR Ph%')
+                ->exists();
+
+            if ($hasQrPhPayment && $request->statuses[$i] !== 'paid') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Automated online payments via QR Ph cannot be changed.',
+                ], 422);
+            }
+
+            $billingToUpdate->update(['payment_status' => $request->statuses[$i]]);
         }
 
         return response()->json(['success' => true]);
@@ -466,6 +477,18 @@ class BillingController extends Controller
         if ($request->filled('status_updates')) {
             foreach ($request->status_updates as $statusUpdate) {
                 $billingToUpdate = WaterBilling::findOrFail($statusUpdate['billing_id']);
+
+                // If billing was paid online via QR Ph, do not allow changing its status
+                $hasQrPhPayment = Payment::where('billing_id', $billingToUpdate->billing_id)
+                    ->where('payment_method', 'like', '%QR Ph%')
+                    ->exists();
+
+                if ($hasQrPhPayment && $statusUpdate['payment_status'] !== 'paid') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Automated online payments via QR Ph cannot be changed.',
+                    ], 422);
+                }
 
                 if ($statusUpdate['payment_status'] === 'paid' && empty($billingToUpdate->proof_of_payment) && !$request->boolean('force_paid_without_proof')) {
                     return response()->json([
