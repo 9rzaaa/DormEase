@@ -289,6 +289,8 @@ Route::middleware(['auth:staff', 'staff.active', 'force.temp.password', 'no.back
         Route::middleware('dormhead')->group(function () {
             Route::put('/settings/archive', [ArchiveSettingsController::class, 'update'])->name('settings.archive.update');
             Route::post('/settings/archive/clear-now', [ArchiveSettingsController::class, 'clearNow'])->name('settings.archive.clearNow');
+            Route::get('/settings/archive/exports', [ArchiveSettingsController::class, 'exports'])->name('settings.archive.exports');
+            Route::get('/settings/archive/exports/{id}/download', [ArchiveSettingsController::class, 'downloadExport'])->name('settings.archive.exports.download');
         });
     });
 

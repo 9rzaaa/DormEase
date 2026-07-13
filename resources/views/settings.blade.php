@@ -651,8 +651,8 @@
                                     <div class="agp-desc">Days before the scheduled clear that you receive a reminder notification. Disable the toggle before that date to cancel.</div>
                                 </div>
                                 <div class="agp-row">
-                                    <div class="agp-col-label"><span class="agp-term">Clear Now</span></div>
-                                    <div class="agp-desc">Immediately and permanently deletes all records older than the retention period. Save settings first before using this.</div>
+                                    <div class="agp-col-label"><span class="agp-term">Export & Clear</span></div>
+                                    <div class="agp-desc">Exports all records older than the retention period to backup storage, then removes them from the live table. Save settings first before using this.</div>
                                 </div>
                                 <div class="agp-row">
                                     <div class="agp-col-label"><span class="agp-term">Apply to All</span></div>
@@ -668,11 +668,11 @@
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
-                    All clearing is <strong>permanent and cannot be undone</strong>.
-                    Records deleted by auto-clear or manual clear are <strong>gone forever</strong>.
+                    Records older than the retention period are <strong>exported to secure backup storage</strong> before being removed from the live database.
+                    You can browse and download past exports anytime from the list below.
                     You will receive a notification <strong>before the scheduled clear runs</strong> based on your warn days setting.
                     To cancel, <strong>disable the toggle</strong> for that module before the clear date.
-                    <strong>Save settings first</strong> before using Clear Now.
+                    <strong>Save settings first</strong> before using Export & Clear.
                 </span>
             </div>
 
@@ -754,7 +754,7 @@
                                     data-label="{{ $moduleLabel }}"
                                     {{ $s?->is_enabled ? '' : 'disabled' }}
                                     onclick="confirmClearNow('{{ $moduleKey }}', '{{ $moduleLabel }}', this)">
-                                    Clear Now
+                                    Export & Clear
                                 </button>
                             </td>
                         </tr>
@@ -765,6 +765,33 @@
             <div class="form-actions">
                 <button type="button" class="btn-save" onclick="saveArchiveSettings()">Save Archive Settings</button>
             </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <div class="settings-card-icon">
+                    <img src="{{ asset('icons/archive.png') }}" alt="">
+                </div>
+                <div>
+                    <div class="settings-card-title">Past Exports</div>
+                    <div class="settings-card-sub">Download previously exported records from backup storage.</div>
+                </div>
+            </div>
+
+            <table class="archive-table" id="exports-table">
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Records</th>
+                        <th>Date Range</th>
+                        <th>Exported</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody id="exports-table-body">
+                    <tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">Loading exports...</td></tr>
+                </tbody>
+            </table>
         </div>
 
     </div>
@@ -820,6 +847,43 @@
 
         document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`).classList.add('active');
         document.getElementById('tab-' + name).classList.add('active');
+
+        if (name === 'archive') {
+            loadExports();
+        }
+    }
+
+    function loadExports() {
+        var body = document.getElementById('exports-table-body');
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">Loading exports...</td></tr>';
+
+        fetch('{{ route("settings.archive.exports") }}', {
+            headers: { 'Accept': 'application/json' },
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(result) {
+            if (!result.success || !result.exports.length) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">No exports yet.</td></tr>';
+                return;
+            }
+
+            var rows = result.exports.map(function(e) {
+                var range = (e.date_from && e.date_to) ? (e.date_from + ' - ' + e.date_to) : 'N/A';
+                var downloadUrl = '{{ url("/settings/archive/exports") }}/' + e.id + '/download';
+                return '<tr>' +
+                    '<td>' + e.label + '</td>' +
+                    '<td>' + e.record_count + '</td>' +
+                    '<td>' + range + '</td>' +
+                    '<td>' + e.created_at + '</td>' +
+                    '<td><a class="btn-clear-now" href="' + downloadUrl + '" style="text-decoration:none;display:inline-block;">Download</a></td>' +
+                    '</tr>';
+            }).join('');
+
+            body.innerHTML = rows;
+        })
+        .catch(function() {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);">Failed to load exports.</td></tr>';
+        });
     }
 
     function checkStrength(val) {
@@ -945,13 +1009,13 @@
         var retentionInput = document.querySelector(`.module-retention[data-module="${module}"]`);
         var retentionDays  = retentionInput ? parseInt(retentionInput.value) : null;
 
-        if (!confirm('This will permanently delete all ' + label + ' records older than ' + retentionDays + ' day(s). This action cannot be undone. Proceed?')) {
+        if (!confirm('This will export all ' + label + ' records older than ' + retentionDays + ' day(s) to backup storage, then remove them from the live table. Proceed?')) {
             return;
         }
 
         btn.disabled = true;
-        btn.textContent = 'Clearing...';
-        showActionLoading('Clearing ' + label + '...');
+        btn.textContent = 'Exporting...';
+        showActionLoading('Exporting ' + label + '...');
 
         fetch('{{ route("settings.archive.clearNow") }}', {
             method: 'POST',
@@ -971,7 +1035,7 @@
         .then(function(result) {
             document.getElementById('action-loading').classList.remove('open');
             btn.disabled = false;
-            btn.textContent = 'Clear Now';
+            btn.textContent = 'Export & Clear';
 
             if (result.ok && result.data.success) {
                 showToast(result.data.message, 'success');
@@ -993,7 +1057,7 @@
         .catch(function() {
             document.getElementById('action-loading').classList.remove('open');
             btn.disabled = false;
-            btn.textContent = 'Clear Now';
+            btn.textContent = 'Export & Clear';
             showToast('Network error.', 'error');
         });
     }
