@@ -20,10 +20,14 @@ class TenantLog extends Model
         'action',
         'logged_at',
         'logged_by',
+        'device_id',
+        'hardware_device_type',
+        'raw_payload',
     ];
 
     protected $casts = [
-        'logged_at' => 'datetime',
+        'logged_at'   => 'datetime',
+        'raw_payload' => 'array',
     ];
 
     public function tenant()

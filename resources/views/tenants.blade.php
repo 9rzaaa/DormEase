@@ -979,6 +979,10 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
+            <button class="btn-outline" onclick="openHardwareDrawer()">
+                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Devices">
+                Hardware Devices
+            </button>
             <button class="btn-outline" onclick="openAdminLogDrawer()">
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Log">
                 Entry / Exit Log
@@ -1389,6 +1393,92 @@ tbody tr:hover { background: var(--soft-bg); }
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal('delete-room-modal')">Cancel</button>
             <button class="btn-submit" style="background:#e04867;" onclick="submitDeleteRoom()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="tenant-archive-backdrop" id="hardware-backdrop" onclick="closeHardwareDrawer()"></div>
+
+<div class="tenant-archive-drawer" id="hardware-drawer">
+    <div class="tad-header">
+        <div>
+            <div class="tad-title">Hardware Devices</div>
+            <div class="tad-sub">Registered RFID readers and biometric scanners</div>
+        </div>
+        <button class="tad-close" onclick="closeHardwareDrawer()">&#x2715;</button>
+    </div>
+    <div style="padding:.75rem 1.8rem .5rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;border-bottom:1px solid var(--pink-100);">
+        <div class="tad-search-inner" style="flex:1;max-width:260px;">
+            <img src="{{ asset('icons/search.png') }}" class="tad-search-icon" alt="">
+            <input type="text" id="hw-search" placeholder="Search devices..." oninput="renderHardwareDevices()">
+        </div>
+        <button class="btn-primary" style="font-size:.8rem;padding:.5rem 1rem;" onclick="openAddDeviceModal()">+ Add Device</button>
+    </div>
+    <div class="tad-list" id="hw-list" style="padding-top:.75rem;"></div>
+    <div class="tad-footer">
+        <div class="tad-count-label" id="hw-count-label">0 devices</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="add-device-modal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+            <div class="modal-title">Add Hardware Device</div>
+            <button class="modal-close" onclick="closeModal('add-device-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body" style="padding:.75rem .9rem;">
+            <div class="modal-grid">
+                <div class="modal-field full">
+                    <label>Device Name <span class="field-req-star">*</span></label>
+                    <input type="text" id="adev-name" placeholder="e.g. Main Entrance RFID" maxlength="100">
+                </div>
+                <div class="modal-field">
+                    <label>Device Type <span class="field-req-star">*</span></label>
+                    <select id="adev-type">
+                        <option value="rfid">RFID Reader</option>
+                        <option value="fingerprint">Fingerprint Scanner</option>
+                        <option value="face_recognition">Face Recognition</option>
+                        <option value="pin">PIN Pad</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Floor</label>
+                    <input type="number" id="adev-floor" placeholder="e.g. 1" min="1" max="99">
+                </div>
+                <div class="modal-field full">
+                    <label>Location Description</label>
+                    <input type="text" id="adev-location" placeholder="e.g. Ground floor main entrance" maxlength="200">
+                </div>
+            </div>
+            <div style="background:var(--soft-bg);border:1.5px solid var(--pink-100);border-radius:12px;padding:.75rem .9rem;font-size:.78rem;color:var(--ink-muted);line-height:1.6;margin-top:.25rem;">
+                A unique device token will be generated automatically. Copy it and configure it on the physical device. The token can be regenerated at any time.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('add-device-modal')">Cancel</button>
+            <button class="btn-submit" onclick="submitAddDevice()">Register Device</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="device-token-modal">
+    <div class="modal" style="max-width:440px;">
+        <div class="modal-header">
+            <div class="modal-title">Device Token</div>
+            <button class="modal-close" onclick="closeModal('device-token-modal')">&#x2715;</button>
+        </div>
+        <div class="modal-body" style="padding:.75rem .9rem;">
+            <div style="background:var(--soft-bg);border:1.5px solid var(--pink-100);border-radius:12px;padding:.85rem 1rem;margin-bottom:.9rem;">
+                <div style="font-size:.7rem;font-weight:700;color:var(--hot-pink);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.45rem;">Device Token</div>
+                <div id="device-token-value" style="font-size:.78rem;font-weight:700;color:var(--ink);font-family:monospace;word-break:break-all;line-height:1.6;"></div>
+            </div>
+            <div style="display:flex;gap:.6rem;">
+                <button class="btn-submit" style="flex:1;" onclick="copyDeviceToken()">Copy Token</button>
+                <button class="btn-cancel" onclick="closeModal('device-token-modal')">Close</button>
+            </div>
+            <div style="margin-top:.75rem;background:#fff9e6;border:1.5px solid #f0c040;border-radius:10px;padding:.55rem .8rem;font-size:.78rem;color:#7a5400;line-height:1.5;">
+                Configure this token in the device firmware under the X-Device-Token header. It grants the device permission to record time-in and time-out events. Store it securely.
+            </div>
         </div>
     </div>
 </div>
@@ -5050,6 +5140,200 @@ async function submitDeleteRoom() {
         });
     }
 
+    var hardwareDevicesData = [];
+
+    function openHardwareDrawer() {
+        document.getElementById('hardware-drawer').classList.add('open');
+        document.getElementById('hardware-backdrop').classList.add('open');
+        document.getElementById('hw-search').value = '';
+        fetchHardwareDevices();
+    }
+
+    function closeHardwareDrawer() {
+        document.getElementById('hardware-drawer').classList.remove('open');
+        document.getElementById('hardware-backdrop').classList.remove('open');
+    }
+
+    async function fetchHardwareDevices() {
+        try {
+            var res = await fetch('/hardware-devices', { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF } });
+            if (!res.ok) throw new Error('Failed to load devices.');
+            hardwareDevicesData = await res.json();
+            renderHardwareDevices();
+        } catch (e) {
+            document.getElementById('hw-list').innerHTML = '<div class="tad-empty">Failed to load devices.</div>';
+            showToast(e.message || 'Failed to load devices.', 'error');
+        }
+    }
+
+    function renderHardwareDevices() {
+        var q    = document.getElementById('hw-search').value.toLowerCase();
+        var list = document.getElementById('hw-list');
+        var data = hardwareDevicesData.filter(function (d) {
+            return (d.device_name || '').toLowerCase().indexOf(q) !== -1
+                || (d.location    || '').toLowerCase().indexOf(q) !== -1
+                || (d.device_type || '').toLowerCase().indexOf(q) !== -1;
+        });
+        document.getElementById('hw-count-label').textContent = data.length + ' device' + (data.length !== 1 ? 's' : '');
+        if (!data.length) {
+            list.innerHTML = '<div class="tad-empty">No devices found.</div>';
+            return;
+        }
+        var typeLabels = { rfid: 'RFID Reader', fingerprint: 'Fingerprint Scanner', face_recognition: 'Face Recognition', pin: 'PIN Pad' };
+        list.innerHTML = data.map(function (d, i) {
+            var isActive    = d.is_active;
+            var lastPing    = d.last_ping_at ? new Date(d.last_ping_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Never';
+            var statusDot   = isActive
+                ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#1f9d69;box-shadow:0 0 0 2.5px rgba(31,157,105,.2);flex-shrink:0;"></span>'
+                : '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#e04867;flex-shrink:0;"></span>';
+            var statusLabel = isActive
+                ? '<span style="font-size:.68rem;font-weight:700;color:#1f9d69;">Active</span>'
+                : '<span style="font-size:.68rem;font-weight:700;color:#e04867;">Disabled</span>';
+            return '<div class="tad-card" style="animation-delay:' + (i * 0.04) + 's;">'
+                + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.5rem;">'
+                    + '<div style="flex:1;min-width:0;">'
+                        + '<div style="font-size:.9rem;font-weight:700;color:var(--ink);line-height:1.3;">' + escapeHtml(d.device_name) + '</div>'
+                        + '<div style="font-size:.72rem;color:var(--ink-muted);margin-top:.1rem;">' + (typeLabels[d.device_type] || d.device_type) + (d.floor ? ' &nbsp;&middot;&nbsp; Floor ' + d.floor : '') + (d.location ? ' &nbsp;&middot;&nbsp; ' + escapeHtml(d.location) : '') + '</div>'
+                    + '</div>'
+                    + '<div style="display:flex;align-items:center;gap:.35rem;">' + statusDot + statusLabel + '</div>'
+                + '</div>'
+                + '<div style="font-size:.7rem;color:var(--ink-muted);margin-bottom:.7rem;">Last ping: ' + lastPing + '</div>'
+                + '<div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">'
+                    + '<button class="copy-btn" onclick="viewDeviceToken(' + d.id + ')">View Token</button>'
+                    + '<button class="copy-btn" onclick="regenDeviceToken(' + d.id + ', ' + JSON.stringify(d.device_name) + ')">Regen Token</button>'
+                    + '<button class="copy-btn" onclick="toggleDeviceActive(' + d.id + ', ' + !isActive + ', ' + JSON.stringify(d.device_name) + ')">' + (isActive ? 'Disable' : 'Enable') + '</button>'
+                    + '<button class="copy-btn" style="color:#e04867;border-color:#ffc2ce;" onclick="deleteDevice(' + d.id + ', ' + JSON.stringify(d.device_name) + ')">Remove</button>'
+                + '</div>'
+            + '</div>';
+        }).join('');
+    }
+
+    function openAddDeviceModal() {
+        document.getElementById('adev-name').value     = '';
+        document.getElementById('adev-type').value     = 'rfid';
+        document.getElementById('adev-floor').value    = '';
+        document.getElementById('adev-location').value = '';
+        openModal('add-device-modal');
+    }
+
+    async function submitAddDevice() {
+        var name     = document.getElementById('adev-name').value.trim();
+        var type     = document.getElementById('adev-type').value;
+        var floor    = document.getElementById('adev-floor').value;
+        var location = document.getElementById('adev-location').value.trim();
+        if (!name) { showToast('Device name is required.', 'error'); document.getElementById('adev-name').focus(); return; }
+        showActionLoading('Registering device...');
+        try {
+            var res = await fetch('/hardware-devices', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ device_name: name, device_type: type, floor: floor || null, location: location || null }),
+            });
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Failed to register device.');
+            closeModal('add-device-modal');
+            hardwareDevicesData.unshift(data.device);
+            renderHardwareDevices();
+            document.getElementById('device-token-value').textContent = data.device.device_token;
+            openModal('device-token-modal');
+            showSuccessPopup('Device Registered', data.device.device_name + ' has been registered successfully.');
+        } catch (e) {
+            showToast(e.message, 'error');
+        } finally {
+            document.getElementById('action-loading').classList.remove('open');
+        }
+    }
+
+    function viewDeviceToken(id) {
+        var device = hardwareDevicesData.find(function (d) { return d.id === id; });
+        if (!device) return;
+        document.getElementById('device-token-value').textContent = device.device_token;
+        openModal('device-token-modal');
+    }
+
+    function copyDeviceToken() {
+        var val = document.getElementById('device-token-value').textContent;
+        navigator.clipboard.writeText(val).then(function () {
+            showToast('Token copied to clipboard.', 'success');
+        }).catch(function () {
+            showToast('Failed to copy token.', 'error');
+        });
+    }
+
+    async function regenDeviceToken(id, name) {
+        showConfirm(
+            'Regenerate Token?',
+            'The old token for ' + name + ' will stop working immediately. You must update the firmware with the new token.',
+            async function () {
+                showActionLoading('Regenerating token...');
+                try {
+                    var res = await fetch('/hardware-devices/' + id + '/regen-token', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    });
+                    var data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Failed.');
+                    var idx = hardwareDevicesData.findIndex(function (d) { return d.id === id; });
+                    if (idx !== -1) hardwareDevicesData[idx].device_token = data.device_token;
+                    document.getElementById('device-token-value').textContent = data.device_token;
+                    openModal('device-token-modal');
+                    showToast('Token regenerated.', 'success');
+                } catch (e) {
+                    showToast(e.message, 'error');
+                } finally {
+                    document.getElementById('action-loading').classList.remove('open');
+                }
+            },
+            { danger: true, confirmLabel: 'Regenerate' }
+        );
+    }
+
+    async function toggleDeviceActive(id, enable, name) {
+        showActionLoading((enable ? 'Enabling' : 'Disabling') + ' device...');
+        try {
+            var res = await fetch('/hardware-devices/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ is_active: enable }),
+            });
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Failed.');
+            var idx = hardwareDevicesData.findIndex(function (d) { return d.id === id; });
+            if (idx !== -1) hardwareDevicesData[idx].is_active = enable;
+            renderHardwareDevices();
+            showToast(name + ' has been ' + (enable ? 'enabled' : 'disabled') + '.', 'success');
+        } catch (e) {
+            showToast(e.message, 'error');
+        } finally {
+            document.getElementById('action-loading').classList.remove('open');
+        }
+    }
+
+    async function deleteDevice(id, name) {
+        showConfirm(
+            'Remove Device?',
+            'Remove ' + name + '? This cannot be undone. Log records referencing this device will remain, but the device will no longer be able to authenticate.',
+            async function () {
+                showActionLoading('Removing device...');
+                try {
+                    var res = await fetch('/hardware-devices/' + id, {
+                        method: 'DELETE',
+                        headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                    });
+                    if (!res.ok) { var d = await res.json(); throw new Error(d.message || 'Failed.'); }
+                    hardwareDevicesData = hardwareDevicesData.filter(function (d) { return d.id !== id; });
+                    renderHardwareDevices();
+                    showToast(name + ' has been removed.', 'success');
+                } catch (e) {
+                    showToast(e.message, 'error');
+                } finally {
+                    document.getElementById('action-loading').classList.remove('open');
+                }
+            },
+            { danger: true, confirmLabel: 'Remove' }
+        );
+    }
+
     function enableSubmit(selector) {
         document.querySelectorAll(selector).forEach(function(btn) {
             btn.disabled = false; btn.style.opacity = ''; btn.style.cursor = ''; btn.title = '';
@@ -6077,6 +6361,9 @@ function renderAdminLogDrawer() {
                     + '<div class="log-name">' + l.first_name + ' ' + l.last_name + '</div>'
                     + '<div class="log-meta">' + roomLabel + ' &nbsp;&middot;&nbsp; '
                         + '<span class="tad-pill ' + (isIn ? 'tad-pill-timein' : 'tad-pill-timeout') + '" style="font-size:.65rem;">' + (isIn ? 'Time In' : 'Time Out') + '</span>'
+                        + (l.hardware_device_type && l.hardware_device_type !== 'manual'
+                            ? ' &nbsp;&middot;&nbsp; <span style="font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:99px;background:#fff8e0;color:#9a6200;border:1px solid #f0c840;">' + l.hardware_device_type.replace('_', ' ') + '</span>'
+                            : '')
                     + '</div>'
                 + '</div>'
                 + '<div class="log-time-col">' + timeOnly + '<br><span style="font-size:.65rem;color:var(--ink-muted);">' + (l.logged_by || '') + '</span></div>'

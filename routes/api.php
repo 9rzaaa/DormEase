@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\HardwareDeviceController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\VisitorController;
@@ -18,6 +19,13 @@ use App\Http\Controllers\Api\NotificationController;
 // public route
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/webhooks/paymongo', [BillingController::class, 'handlePayMongoWebhook']);
+
+Route::prefix('device')->group(function () {
+    Route::post('/ping',               [HardwareDeviceController::class, 'ping']);
+    Route::post('/lookup',             [HardwareDeviceController::class, 'deviceLookupByIdentifier']);
+    Route::post('/time-in/{tenantId}', [HardwareDeviceController::class, 'deviceTimeIn']);
+    Route::post('/time-out/{tenantId}',[HardwareDeviceController::class, 'deviceTimeOut']);
+});
 
 // protected routes
 Route::middleware('auth:sanctum')->group(function () {
