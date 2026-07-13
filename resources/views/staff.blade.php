@@ -3148,7 +3148,7 @@
                     + '<div class="modal-title">Clear Attendance Log</div>'
                     + '<button class="modal-close" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">&#x2715;</button>'
                 + '</div>'
-                + '<div class="delete-warning">This will permanently delete all attendance records. This action cannot be undone.</div>'
+                + '<div class="delete-warning">A backup of all attendance records will be saved before clearing. You can download it later from Settings > Data Backup.</div>'
                 + '<p style="font-size:.9rem;color:var(--ink-muted);">Are you sure you want to clear the entire attendance log?</p>'
                 + '<div class="modal-actions">'
                     + '<button class="btn-cancel" onclick="document.getElementById(\'clear-log-confirm-modal\').remove()">Cancel</button>'

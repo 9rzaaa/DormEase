@@ -20,6 +20,7 @@ class ArchiveSettingsController extends Controller
         'maintenance_archive' => 'Maintenance Archive',
         'emergency_archive'   => 'Emergency Archive',
         'staff_archive'       => 'Staff Archive',
+        'attendance_logs'     => 'Attendance Logs',
     ];
 
     public function update(Request $request)
