@@ -633,46 +633,50 @@
                 </div>
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;align-items:center;gap:.5rem;">
-                        <div class="settings-card-title">Archive Auto-Clear Settings</div>
+                        <div class="settings-card-title">Data Cleanup & Backup</div>
                         <div class="archive-guide-wrap">
                             <img src="{{ asset('icons/info.png') }}" alt="Guide">
                             <div class="archive-guide-popup">
-                                <div class="agp-title">Archive Clearing Guide</div>
+                                <div class="agp-title">How This Works</div>
                                 <div class="agp-row">
-                                    <div class="agp-col-label"><span class="agp-term">Enable Toggle</span></div>
-                                    <div class="agp-desc">Turns auto-clearing on or off for a module. When off, no automatic deletion will run for that module.</div>
+                                    <div class="agp-col-label"><span class="agp-term">Enable</span></div>
+                                    <div class="agp-desc">Turns automatic clearing on or off for this module. If off, records for this module are kept forever until you clear them manually.</div>
                                 </div>
                                 <div class="agp-row">
-                                    <div class="agp-col-label"><span class="agp-term">Retention Days</span></div>
-                                    <div class="agp-desc">Records older than this number of days are deleted when the auto-clear runs. Min 30, max 3650.</div>
+                                    <div class="agp-col-label"><span class="agp-term">Retention (days)</span></div>
+                                    <div class="agp-desc">How long a record stays in the live database before it's backed up and removed. For example, 365 means records older than a year get cleared.</div>
                                 </div>
                                 <div class="agp-row">
-                                    <div class="agp-col-label"><span class="agp-term">Warn Before</span></div>
-                                    <div class="agp-desc">Days before the scheduled clear that you receive a reminder notification. Disable the toggle before that date to cancel.</div>
+                                    <div class="agp-col-label"><span class="agp-term">Warn Before (days)</span></div>
+                                    <div class="agp-desc">How many days ahead you get a heads-up notification before an automatic clear runs, so you have time to stop it if needed.</div>
                                 </div>
                                 <div class="agp-row">
                                     <div class="agp-col-label"><span class="agp-term">Export & Clear</span></div>
-                                    <div class="agp-desc">Exports all records older than the retention period to backup storage, then removes them from the live table. Save settings first before using this.</div>
+                                    <div class="agp-desc">Saves a backup file of matching old records right now, then removes them from the live table. Save your settings first before clicking this.</div>
+                                </div>
+                                <div class="agp-row">
+                                    <div class="agp-col-label"><span class="agp-term">Recovering data</span></div>
+                                    <div class="agp-desc">Nothing is ever deleted without a backup. Scroll to "Past Exports" below, find the module and date, and click Download to get the file back.</div>
                                 </div>
                                 <div class="agp-row">
                                     <div class="agp-col-label"><span class="agp-term">Apply to All</span></div>
-                                    <div class="agp-desc">Sets the retention days field to all modules at once. Save settings to confirm the change.</div>
+                                    <div class="agp-desc">Fills in the same retention period for every module at once, to save time. Save settings to confirm.</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="settings-card-sub">Configure automatic clearing of archive records per module.</div>
+                   <div class="settings-card-sub">Old records are automatically backed up and removed on a schedule you control. Nothing is lost, every removed record can be downloaded again below.</div>
                 </div>
             </div>
 
             <div class="archive-warning-banner">
                 <span style="font-size:1.1rem;flex-shrink:0;">&#9888;</span>
                 <span>
-                    Records older than the retention period are <strong>exported to secure backup storage</strong> before being removed from the live database.
-                    You can browse and download past exports anytime from the list below.
-                    You will receive a notification <strong>before the scheduled clear runs</strong> based on your warn days setting.
-                    To cancel, <strong>disable the toggle</strong> for that module before the clear date.
-                    <strong>Save settings first</strong> before using Export & Clear.
+                    Old records are never deleted outright. Before removal, they are <strong>saved as a backup file</strong> you can download anytime from the "Past Exports" list below.
+                    If you ever need old data back, download the file for that module and date range, it contains every record that was removed.
+                    You'll get a notification a few days before a scheduled clear happens, based on your "Warn Before" setting.
+                    To stop a scheduled clear, <strong>turn off the Enable toggle</strong> for that module before the clear date arrives.
+                    Remember to <strong>save your settings</strong> before using "Export & Clear".
                 </span>
             </div>
 
@@ -773,8 +777,8 @@
                     <img src="{{ asset('icons/archive.png') }}" alt="">
                 </div>
                 <div>
-                    <div class="settings-card-title">Past Exports</div>
-                    <div class="settings-card-sub">Download previously exported records from backup storage.</div>
+                    <div class="settings-card-title">Past Exports (Your Recovery Point)</div>
+                    <div class="settings-card-sub">Every time records are cleared, a backup file is created here. Download any file below to get that data back.</div>
                 </div>
             </div>
 
