@@ -286,6 +286,130 @@
 
     .staff-archive-drawer.open { transform: translateX(0); }
 
+    .activity-log-drawer {
+        width: min(980px, 100vw);
+    }
+
+    .activity-summary-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: .8rem;
+        padding: 1rem 1.8rem;
+        border-bottom: 1px solid var(--pink-100);
+        background: var(--white);
+        flex-shrink: 0;
+    }
+
+    .activity-summary-card {
+        background: var(--gradient-pink);
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 8px 20px rgba(232,23,93,.16);
+    }
+
+    .activity-summary-value {
+        color: var(--white);
+        font-size: 1.55rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .activity-summary-label {
+        color: rgba(255,255,255,.9);
+        font-size: .75rem;
+        font-weight: 700;
+        margin-top: .3rem;
+    }
+
+    .activity-log-content {
+        padding: 0 1.8rem 1.8rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .activity-table-card {
+        background: var(--white);
+        border: 1px solid var(--bright-pink);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 16px rgba(232,23,93,.07);
+    }
+
+    .activity-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 900px;
+    }
+
+    .activity-table th {
+        background: var(--blush);
+        color: var(--ink-muted);
+        border-bottom: 1px solid var(--bright-pink);
+    }
+
+    .activity-table td,
+    .activity-table th {
+        padding: .75rem .85rem;
+        text-align: center;
+        font-size: .82rem;
+    }
+
+    .activity-table tbody tr {
+        border-bottom: 1.5px solid var(--baby-pink);
+    }
+
+    .activity-table tbody tr:hover {
+        background: #fff7fb;
+    }
+
+    .activity-desc {
+        text-align: left !important;
+    }
+
+    .activity-main {
+        color: var(--ink);
+        font-weight: 800;
+        line-height: 1.25;
+    }
+
+    .activity-sub {
+        color: var(--ink-muted);
+        font-size: .74rem;
+        margin-top: .15rem;
+        word-break: break-word;
+    }
+
+    .activity-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .28rem .75rem;
+        border-radius: 7px;
+        font-size: .72rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .activity-badge.module {
+        background: var(--petal);
+        color: var(--hot-pink);
+        border: 1.5px solid var(--baby-pink);
+    }
+
+    .activity-badge.action {
+        background: var(--gray-light);
+        color: var(--badge-frontdesk-text);
+        border: 1.5px solid var(--badge-frontdesk-border);
+    }
+
+    .activity-empty {
+        padding: 2rem;
+        text-align: center;
+        color: var(--ink-muted);
+        font-weight: 700;
+    }
+
     .staff-archive-backdrop {
         position: fixed; inset: 0;
         background: rgba(232,23,93,.18);
@@ -1157,6 +1281,10 @@
                 <img src="{{ asset('icons/clock.png') }}" class="icon-sm" alt="Attendance">
                 Attendance Log
             </button>
+            <a class="btn-outline" href="{{ route('activity-logs.index') }}">
+                <img src="{{ asset('icons/clock.png') }}" class="icon-sm" alt="Activity">
+                Activity Logs
+            </a>
             <button class="btn-outline" onclick="openStaffArchive()">
                 <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
                 Archive / History
@@ -1409,6 +1537,87 @@
                     <button onclick="exportAttendanceLogs('csv'); closeAllExportDropdowns()">Export as CSV</button>
                     <button onclick="exportAttendanceLogs('pdf'); closeAllExportDropdowns()">Export as PDF</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="staff-archive-backdrop" id="activity-log-backdrop" onclick="closeActivityLog()"></div>
+
+<div class="staff-archive-drawer activity-log-drawer" id="activity-log-drawer">
+    <div class="sad-header">
+        <div>
+            <div class="sad-title">Activity Logs</div>
+            <div class="sad-sub">Recent system and staff activities</div>
+        </div>
+        <button class="sad-close" onclick="closeActivityLog()">&#x2715;</button>
+    </div>
+
+    <div class="activity-summary-row">
+        <div class="activity-summary-card">
+            <div class="activity-summary-value">{{ number_format($activityTotal) }}</div>
+            <div class="activity-summary-label">Total Logs</div>
+        </div>
+        <div class="activity-summary-card">
+            <div class="activity-summary-value">{{ number_format($activityToday) }}</div>
+            <div class="activity-summary-label">Today</div>
+        </div>
+        <div class="activity-summary-card">
+            <div class="activity-summary-value">{{ number_format($activityActors) }}</div>
+            <div class="activity-summary-label">Staff Actors</div>
+        </div>
+    </div>
+
+    <div class="sad-search-bar">
+        <div class="sad-search-inner">
+            <img src="{{ asset('icons/search.png') }}" class="sad-search-icon" alt="">
+            <input type="text" id="activity-log-search" placeholder="Search activity logs..." oninput="filterActivityLogs()">
+        </div>
+    </div>
+
+    <div class="activity-log-content">
+        <div class="activity-table-card">
+            <div class="table-wrap">
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th style="width:130px;">Date & Time</th>
+                            <th style="width:150px;">Staff</th>
+                            <th style="width:115px;">Module</th>
+                            <th style="width:115px;">Action</th>
+                            <th>Activity</th>
+                            <th style="width:125px;">IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-log-tbody">
+                        @forelse($activityLogs as $log)
+                            <tr data-search="{{ strtolower($log['created_at_date'] . ' ' . $log['created_at_time'] . ' ' . $log['staff_name'] . ' ' . $log['staff_role'] . ' ' . $log['module'] . ' ' . $log['action'] . ' ' . $log['description'] . ' ' . $log['path'] . ' ' . $log['ip_address']) }}">
+                                <td>
+                                    <div class="activity-main">{{ $log['created_at_date'] }}</div>
+                                    <div class="activity-sub">{{ $log['created_at_time'] }}</div>
+                                </td>
+                                <td>
+                                    <div class="activity-main">{{ $log['staff_name'] }}</div>
+                                    <div class="activity-sub">{{ \Illuminate\Support\Str::of($log['staff_role'])->replace('_', ' ')->title() }}</div>
+                                </td>
+                                <td><span class="activity-badge module">{{ \Illuminate\Support\Str::of($log['module'])->replace('_', ' ')->title() }}</span></td>
+                                <td><span class="activity-badge action">{{ \Illuminate\Support\Str::of($log['action'])->replace('_', ' ')->title() }}</span></td>
+                                <td class="activity-desc">
+                                    <div class="activity-main">{{ $log['description'] }}</div>
+                                    <div class="activity-sub">{{ $log['method'] }} /{{ $log['path'] }}</div>
+                                </td>
+                                <td>{{ $log['ip_address'] ?: '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="activity-empty">No activity logs found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-showing" id="activity-log-count">{{ $activityLogs->count() }} recent log{{ $activityLogs->count() === 1 ? '' : 's' }}</div>
             </div>
         </div>
     </div>
@@ -2609,6 +2818,33 @@
     function closeAttendanceLog() {
         document.getElementById('atdlog-drawer').classList.remove('open');
         document.getElementById('atdlog-backdrop').classList.remove('open');
+    }
+
+    function openActivityLog() {
+        document.getElementById('activity-log-drawer').classList.add('open');
+        document.getElementById('activity-log-backdrop').classList.add('open');
+        document.getElementById('activity-log-search').value = '';
+        filterActivityLogs();
+    }
+
+    function closeActivityLog() {
+        document.getElementById('activity-log-drawer').classList.remove('open');
+        document.getElementById('activity-log-backdrop').classList.remove('open');
+    }
+
+    function filterActivityLogs() {
+        var q = (document.getElementById('activity-log-search').value || '').toLowerCase();
+        var rows = Array.from(document.querySelectorAll('#activity-log-tbody tr[data-search]'));
+        var visible = 0;
+
+        rows.forEach(function(row) {
+            var show = !q || (row.dataset.search || '').indexOf(q) !== -1;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        var count = document.getElementById('activity-log-count');
+        if (count) count.textContent = visible + ' recent log' + (visible !== 1 ? 's' : '');
     }
 
     function renderAtdLog() {
