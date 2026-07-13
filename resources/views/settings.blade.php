@@ -823,6 +823,21 @@
 
             <div class="collapse-body"><div class="collapse-body-inner">
 
+            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <span style="font-size:.84rem;font-weight:700;color:var(--ink-muted);">Filter by module:</span>
+                <select id="exports-module-filter" class="retention-input" style="width:auto;padding:.42rem .8rem;" onchange="loadExports()">
+                    <option value="">All modules</option>
+                    <option value="water_billing">Water Billing</option>
+                    <option value="visitor_logs">Visitor Logs</option>
+                    <option value="announcements">Announcements</option>
+                    <option value="tenant_archive">Tenant Archive</option>
+                    <option value="maintenance_archive">Maintenance Archive</option>
+                    <option value="emergency_archive">Emergency Archive</option>
+                    <option value="staff_archive">Staff Archive</option>
+                    <option value="attendance_logs">Attendance Logs</option>
+                </select>
+            </div>
+
             <table class="archive-table" id="exports-table">
                 <thead>
                     <tr>
@@ -906,6 +921,9 @@
 
     function loadExports() {
         var body = document.getElementById('exports-table-body');
+        var moduleFilterEl = document.getElementById('exports-module-filter');
+        var moduleFilter = moduleFilterEl ? moduleFilterEl.value : '';
+
         body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">Loading exports...</td></tr>';
 
         fetch('{{ route("settings.archive.exports") }}', {
@@ -918,7 +936,16 @@
                 return;
             }
 
-            var rows = result.exports.map(function(e) {
+            var filteredExports = moduleFilter
+                ? result.exports.filter(function(e) { return e.module === moduleFilter; })
+                : result.exports;
+
+            if (!filteredExports.length) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-muted);">No exports for this module yet.</td></tr>';
+                return;
+            }
+
+            var rows = filteredExports.map(function(e) {
                 var range = (e.date_from && e.date_to) ? (e.date_from + ' - ' + e.date_to) : 'N/A';
                 var downloadUrl = '{{ url("/settings/archive/exports") }}/' + e.id + '/download';
                 return '<tr>' +

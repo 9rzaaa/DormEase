@@ -453,11 +453,36 @@ class StaffController extends Controller
     public function clearAttendance()
     {
         $count = StaffAttendance::count();
+
+        if ($count === 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No attendance records to clear.',
+            ]);
+        }
+
+        $records  = StaffAttendance::orderBy('login_at')->get();
+        $payload  = gzencode($records->toJson(), 9);
+        $fileName = 'attendance_logs_' . now()->format('Ymd_His') . '.json.gz';
+        $s3Key    = 'archive-exports/attendance_logs/' . $fileName;
+
+        Storage::disk('s3')->put($s3Key, $payload);
+
+        \App\Models\ArchiveExport::create([
+            'module'       => 'attendance_logs',
+            's3_key'       => $s3Key,
+            'file_name'    => $fileName,
+            'record_count' => $count,
+            'date_from'    => $records->min('login_at'),
+            'date_to'      => $records->max('login_at'),
+            'exported_by'  => \Illuminate\Support\Facades\Auth::guard('staff')->id(),
+        ]);
+
         StaffAttendance::truncate();
 
         return response()->json([
             'success' => true,
-            'message' => "Cleared {$count} attendance record(s).",
+            'message' => "Backed up and cleared {$count} attendance record(s). You can download the backup from Settings > Data Backup.",
         ]);
     }
 
