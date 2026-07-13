@@ -979,28 +979,19 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="openModal('add-modal')">+ Add Tenant</button>
-            <button class="btn-outline" onclick="openHardwareDrawer()">
-                <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Devices">
-                Hardware Devices
-            </button>
-            <button class="btn-outline" onclick="openAdminLogDrawer()">
-                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Log">
-                Entry / Exit Log
-            </button>
             <button class="btn-outline" onclick="openRoomsDrawer()">
                 <img src="{{ asset('icons/bed.png') }}" class="icon-sm" alt="Rooms">
                 Manage Rooms
             </button>
-            <button class="btn-outline" onclick="openTenantArchive()">
-                <img src="{{ asset('icons/archive.png') }}" class="icon-sm" alt="Archive">
-                Archive / History
-            </button>
-            <div class="export-dropdown" id="export-dropdown-main">
-                <button class="btn-outline" onclick="toggleExportDropdown('export-dropdown-main')">
-                    <img src="{{ asset('icons/export.png') }}" class="icon-sm" alt="Export">
-                    Export
+            <div class="export-dropdown" id="header-more-dropdown">
+                <button class="btn-outline" onclick="toggleExportDropdown('header-more-dropdown')">
+                    More
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="margin-left:.1rem;"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
-                <div class="export-menu" id="export-menu-main">
+                <div class="export-menu" id="header-more-menu" style="min-width:210px;">
+                    <button onclick="openHardwareDrawer(); closeAllExportDropdowns()">Hardware Devices</button>
+                    <button onclick="openAdminLogDrawer(); closeAllExportDropdowns()">Entry / Exit Log</button>
+                    <button onclick="openTenantArchive(); closeAllExportDropdowns()">Archive / History</button>
                     <button onclick="exportTenants(); closeAllExportDropdowns()">Export as CSV</button>
                     <button onclick="exportTenantsPDF(); closeAllExportDropdowns()">Export as PDF</button>
                 </div>
@@ -5501,6 +5492,17 @@ async function submitDeleteRoom() {
             'edit-floor'
         );
     });
+
+    window.openHardwareDrawer   = openHardwareDrawer;
+    window.closeHardwareDrawer  = closeHardwareDrawer;
+    window.renderHardwareDevices = renderHardwareDevices;
+    window.openAddDeviceModal   = openAddDeviceModal;
+    window.submitAddDevice      = submitAddDevice;
+    window.viewDeviceToken      = viewDeviceToken;
+    window.copyDeviceToken      = copyDeviceToken;
+    window.regenDeviceToken     = regenDeviceToken;
+    window.toggleDeviceActive   = toggleDeviceActive;
+    window.deleteDevice         = deleteDevice;
 })();
 
 function setAddMode(mode) {
