@@ -1908,8 +1908,8 @@
             </div>
 
             <div class="modal-actions" style="padding:1rem 1.5rem 1.5rem;flex-shrink:0;border-top:1px solid var(--baby-pink);margin-top:0;">
-                <button type="submit" class="btn-submit" onclick="if(!validateEditForm()){event.preventDefault();}">Save Changes</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" onclick="if(!validateEditForm()){event.preventDefault();}">Save Changes</button>
             </div>
         </form>
     </div>
