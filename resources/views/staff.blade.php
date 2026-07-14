@@ -2154,7 +2154,7 @@
                 ? '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#1f9d69;background:#e8faf5;border:1px solid #8ce0bb;padding:.18rem .6rem;border-radius:99px;">Active</span>'
                 : '<span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#888;background:#f3f4f6;border:1px solid #d0d0d8;padding:.18rem .6rem;border-radius:99px;">Inactive</span>')
             + '</span></div>'
-        + '<div style="padding:.9rem 0 .5rem;border-bottom:none;text-align:left;">'
+        + '<div style="padding:.9rem 0 .5rem;border-bottom:none;text-align:center;">'
             + '<button type="button" onclick="openDeleteFromView()" style="padding:.5rem 1.1rem;border-radius:9px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.82rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onmouseover="this.style.background=\'var(--red)\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#fff0f3\';this.style.color=\'var(--red)\';">Delete Staff</button>'
         + '</div>';
 
@@ -2176,8 +2176,8 @@
     var viewActions = document.getElementById('view-actions');
     if (viewActions) {
         viewActions.innerHTML =
-            '<button class="btn-submit" onclick="switchToEdit()">Edit</button>'
-            + '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>';
+            '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>'
+            + '<button class="btn-submit" onclick="switchToEdit()">Edit</button>';
     }
     openModal('view-modal');
     }
