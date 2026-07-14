@@ -1495,10 +1495,10 @@
             </div>
 
             <div class="add-modal-footer">
+                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
                 <button type="submit" class="amf-btn-submit" id="av_submit_btn" onclick="return avSubmit(event)">
                     Log Visitor
                 </button>
-                <button type="button" class="amf-btn-cancel" onclick="closeModal('add-modal'); resetAddForm()">Cancel</button>
             </div>
 
         </form>
