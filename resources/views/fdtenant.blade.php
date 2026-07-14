@@ -1206,7 +1206,7 @@ tbody tr:hover { background: var(--soft-bg); }
     padding: .9rem 1.8rem;
     border-top: 1px solid var(--pink-100);
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-shrink: 0;
     background: #fff8fb;
 }
@@ -1950,8 +1950,8 @@ tbody tr:hover { background: var(--soft-bg); }
         </div>
         <div class="td-modal-body" id="td-modal-body"></div>
         <div class="td-modal-footer">
-            <button class="btn-submit" id="td-note-action-btn" onclick="openNoteFromView()">Add / Edit Note</button>
             <button class="td-modal-close-btn" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" id="td-note-action-btn" onclick="openNoteFromView()">Add / Edit Note</button>
         </div>
     </div>
 </div>
@@ -1977,8 +1977,8 @@ tbody tr:hover { background: var(--soft-bg); }
             </div>
         </div>
         <div class="modal-actions">
-            <button type="button" class="btn-submit" id="notes-save-btn" onclick="submitNote()">Save Note</button>
             <button type="button" class="btn-cancel" onclick="closeModal('notes-modal')">Cancel</button>
+            <button type="button" class="btn-submit" id="notes-save-btn" onclick="submitNote()">Save Note</button>
         </div>
     </div>
 </div>

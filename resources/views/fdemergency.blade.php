@@ -1545,8 +1545,8 @@
                 <div class="modal-field-full report-hotline-wrap" id="report-hotline-wrap"></div>
             </div>
             <div class="modal-actions" style="display:flex;align-items:center;justify-content:space-between;gap:.55rem;">
-                <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('report-modal')">Cancel</button>
+                <button type="submit" class="btn-submit" id="report-submit-btn">Submit Report</button>
             </div>
         </form>
     </div>
@@ -1560,8 +1560,8 @@
         </div>
         <div class="modal-body" id="view-content"></div>
         <div class="modal-footer">
-            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
             <button class="btn-cancel" onclick="closeModal('view-modal')">Close</button>
+            <button class="btn-submit" onclick="switchToEdit()">Edit / Update</button>
         </div>
     </div>
 </div>
@@ -1605,8 +1605,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
             <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Cancel</button>
+            <button type="button" class="btn-submit" onclick="submitUpdate()">Save Changes</button>
         </div>
     </div>
 </div>
@@ -1624,8 +1624,8 @@
             </p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-submit" style="background:var(--red);box-shadow:0 6px 16px rgba(224,72,103,.3);" onclick="submitDelete()">Delete</button>
             <button type="button" class="btn-cancel" onclick="closeModal('delete-modal')">Cancel</button>
+            <button type="button" class="btn-submit" style="background:var(--red);box-shadow:0 6px 16px rgba(224,72,103,.3);" onclick="submitDelete()">Delete</button>
         </div>
     </div>
 </div>
