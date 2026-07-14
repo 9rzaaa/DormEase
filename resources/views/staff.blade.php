@@ -247,6 +247,26 @@
     .view-label { color: var(--ink-muted); font-weight: 500; }
     .view-val   { font-weight: 600; color: var(--ink); }
 
+    .view-tabs { display:flex; gap:.4rem; border-bottom:1.5px solid var(--baby-pink); margin-bottom:1rem; }
+    .view-tab {
+        padding:.6rem 1rem; font-size:.82rem; font-weight:700; color:var(--ink-muted);
+        background:none; border:none; border-bottom:2.5px solid transparent; margin-bottom:-1.5px;
+        cursor:pointer; transition:color .2s, border-color .2s; font-family:var(--ff-body);
+    }
+    .view-tab:hover { color:var(--hot-pink); }
+    .view-tab.active { color:var(--hot-pink); border-bottom-color:var(--hot-pink); }
+    .view-tab-panel { display:none; }
+    .view-tab-panel.active { display:block; }
+
+    .id-photo-preview-wrap { display:flex; flex-direction:column; align-items:center; gap:.75rem; padding:1rem 0 1.5rem; }
+    .id-photo-preview {
+    max-width:100%; max-height:320px; border-radius:12px; border:2px solid var(--baby-pink);
+    cursor:zoom-in; box-shadow:0 4px 16px rgba(232,23,93,.1); transition:transform .2s, box-shadow .2s; object-fit:contain;
+    }
+    .id-photo-preview:hover { transform:scale(1.02); box-shadow:0 8px 24px rgba(232,23,93,.18); }
+    .id-photo-hint { font-size:.76rem; color:var(--ink-muted); }
+    .id-photo-empty { text-align:center; padding:2.5rem 1rem; color:var(--ink-muted); font-size:.85rem; }
+
     .delete-warning { background: var(--blush); border: 1px solid var(--baby-pink); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; font-size: .88rem; color: var(--red); line-height: 1.6; }
 
     .credentials-box { background: var(--petal); border: 1.5px solid var(--baby-pink); padding: 1rem; border-radius: 14px; margin-bottom: 1rem; }
@@ -2111,19 +2131,16 @@
     var photoHtml = s.profile_picture
         ? '<div style="display:flex;justify-content:center;margin-bottom:1rem;"><img src="' + s.profile_picture + '" alt="Staff photo" style="width:96px;height:96px;border-radius:14px;object-fit:cover;border:2px solid var(--baby-pink);"></div>'
         : '';
-    var validIdHtml = s.valid_id_url
-        ? '<a href="javascript:void(0)" onclick="openIdLightbox(\'' + s.valid_id_url + '\')" style="color:var(--hot-pink);font-weight:800;text-decoration:none;">View uploaded ID</a>'
-        : 'Not uploaded';
     currentStaff = s;
     document.getElementById('view-modal-name').textContent = s.first_name + ' ' + s.last_name;
     document.getElementById('view-modal-role-sub').textContent = fmtStaffId(s.staff_id) + ' · ' + (s.role ? s.role.charAt(0).toUpperCase() + s.role.slice(1) : '—') + ' · ' + (s.shift_schedule || 'No shift set');
-    document.getElementById('view-content').innerHTML =
+
+    var personalTab =
         photoHtml
         + '<div class="view-row"><span class="view-label">Staff ID</span><span class="view-val" style="font-family:monospace">' + fmtStaffId(s.staff_id) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Email</span><span class="view-val">' + (s.email || '—') + '</span></div>'
         + '<div class="view-row"><span class="view-label">Contact No.</span><span class="view-val">' + normalizeContactDisplay(s.contact_number) + '</span></div>'
         + '<div class="view-row" style="align-items:flex-start;"><span class="view-label">Address</span><span class="view-val" style="text-align:right;">' + (s.staff_address || 'Not set') + '</span></div>'
-        + '<div class="view-row"><span class="view-label">Valid ID</span><span class="view-val">' + validIdHtml + '</span></div>'
         + '<div class="view-row"><span class="view-label">Role</span><span class="view-val">' + roleBadge(s.role) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Shift Schedule</span><span class="view-val">' + shiftLabel(s.shift_schedule) + '</span></div>'
         + '<div class="view-row"><span class="view-label">Duty Status</span><span class="view-val">' + dutyBadge(s.duty_status) + '</span></div>'
@@ -2140,6 +2157,22 @@
         + '<div style="padding:.9rem 0 .5rem;border-bottom:none;">'
             + '<button type="button" onclick="openDeleteFromView()" style="width:100%;padding:.6rem 1.4rem;border-radius:9px;border:1.5px solid var(--red);background:#fff0f3;color:var(--red);font-size:.87rem;font-weight:700;cursor:pointer;font-family:var(--ff-body);transition:background .2s,color .2s;" onmouseover="this.style.background=\'var(--red)\';this.style.color=\'#fff\';" onmouseout="this.style.background=\'#fff0f3\';this.style.color=\'var(--red)\';">Delete Staff</button>'
         + '</div>';
+
+    var idPhotoTab = s.valid_id_url
+        ? '<div class="id-photo-preview-wrap">'
+            + '<img src="' + s.valid_id_url + '" alt="Uploaded ID" class="id-photo-preview" onclick="openIdLightbox(\'' + s.valid_id_url + '\')">'
+            + '<div class="id-photo-hint">Click the image to view full size</div>'
+          + '</div>'
+        : '<div class="id-photo-empty">No ID has been uploaded for this staff member.</div>';
+
+    document.getElementById('view-content').innerHTML =
+        '<div class="view-tabs">'
+            + '<button class="view-tab active" id="view-tab-personal" onclick="switchViewTab(\'personal\')">Personal Details</button>'
+            + '<button class="view-tab" id="view-tab-id" onclick="switchViewTab(\'id\')">ID Photo</button>'
+        + '</div>'
+        + '<div class="view-tab-panel active" id="view-panel-personal">' + personalTab + '</div>'
+        + '<div class="view-tab-panel" id="view-panel-id">' + idPhotoTab + '</div>';
+
     var viewActions = document.getElementById('view-actions');
     if (viewActions) {
         viewActions.innerHTML =
@@ -2147,6 +2180,13 @@
             + '<button class="btn-submit" onclick="resetTempPasswordFromView()" style="background:var(--white);color:var(--hot-pink);border:1.5px solid var(--pink-100);box-shadow:none;">Reset Password</button>';
     }
     openModal('view-modal');
+    }
+
+function switchViewTab(tab) {
+    document.getElementById('view-tab-personal').classList.toggle('active', tab === 'personal');
+    document.getElementById('view-tab-id').classList.toggle('active', tab === 'id');
+    document.getElementById('view-panel-personal').classList.toggle('active', tab === 'personal');
+    document.getElementById('view-panel-id').classList.toggle('active', tab === 'id');
 }
 
     function switchToEdit() {
