@@ -494,7 +494,7 @@ class EmergencyController extends Controller
         $reclassifiedCount = 0;
 
         $originatingReport = EmergencyReport::find($term->report_id);
-        if ($originatingReport && $originatingReport->emergency_type === 'Other') {
+        if ($originatingReport && $originatingReport->emergency_type === 'Unknown') {
             $originatingReport->update([
                 'emergency_type' => $validated['emergency_type'],
                 'urgency_level'  => $validated['urgency_level'] ?? $originatingReport->urgency_level,
@@ -506,7 +506,7 @@ class EmergencyController extends Controller
             $needle = strtolower(trim($validated['keyword']));
             $needle = str_replace(['%', '_'], ['\%', '\_'], $needle);
 
-            $matchingReports = EmergencyReport::where('emergency_type', 'Other')
+            $matchingReports = EmergencyReport::where('emergency_type', 'Unknown')
                 ->where('description', 'like', '%' . $needle . '%')
                 ->get();
 
@@ -518,7 +518,7 @@ class EmergencyController extends Controller
                 $reclassifiedCount++;
             }
 
-            $matchingArchives = ArchivedEmergencyReport::where('emergency_type', 'Other')
+            $matchingArchives = ArchivedEmergencyReport::where('emergency_type', 'Unknown')
                 ->where('description', 'like', '%' . $needle . '%')
                 ->get();
 
