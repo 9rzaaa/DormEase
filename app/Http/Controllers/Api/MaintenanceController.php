@@ -927,7 +927,7 @@ class MaintenanceController extends Controller
             $emergencyController = new \App\Http\Controllers\Api\EmergencyController();
             $emergClassification = $emergencyController->classifyText($cleanedDescription, null);
             
-            if ($emergClassification['emergency_type'] !== 'Other' && in_array($emergClassification['urgency_level'], ['critical', 'urgent'])) {
+            if ($emergClassification['emergency_type'] !== 'Unknown' && in_array($emergClassification['urgency_level'], ['critical', 'urgent'])) {
                 $location = $tenant?->room_number ?? 'Unknown';
                 
                 $emergencyReport = \App\Models\EmergencyReport::create([
